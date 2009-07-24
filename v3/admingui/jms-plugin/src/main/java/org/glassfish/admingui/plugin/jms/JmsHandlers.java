@@ -24,6 +24,8 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import org.glassfish.admingui.common.util.GuiUtil;
 
+
+
 /**
  *
  * @author jasonlee
@@ -394,5 +396,17 @@ public class JmsHandlers {
             }
         }
         return false;
+    }
+
+    @Handler(id="pingJms")//,input={@HandlerInput(name="dummy", type=String.class)})
+    public static void pingJms(HandlerContext handlerCtx) {
+//        // Get the ServletContext
+//        ServletContext servletCtx = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+//
+//        // Get the Habitat from the ServletContext
+//        Habitat habitat = (Habitat) servletCtx.getAttribute(
+//                org.glassfish.admingui.common.plugin.ConsoleClassLoader.HABITAT_ATTRIBUTE);
+//        JmsPluginService jmsps = habitat.getComponent(JmsPluginService.class);
+//        jmsps.pingJms();
     }
 }

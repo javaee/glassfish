@@ -50,15 +50,14 @@
             setPageSessionAttribute(key="editPage" value="#{request.contextPath}/jms/jmsPhysicalDestinationEdit.jsf");
             setPageSessionAttribute(key="viewPage" value="#{request.contextPath}/jms/jmsPhysicalDestinationStats.jsf");
 
-            getPhysicalDestinations(targetName="#{targetName}", result=>$attribute{listOfRows} );
+            pingJms();
         />
     </event>
 #include "/shared/restart.inc"
     <sun:form id="propertyForm">
  #include treeBreadcrumbs.inc
 #include "/shared/alertMsg.inc"
-        <sun:title id="propertyContentPage" title="$resource{i18njms.jmsPhysDestinations.pageTitle}"
-            helpText="$resource{i18njms.jmsPhysDestinations.pageHelp}"/>
+        <sun:title id="propertyContentPage" title="$resource{i18njms.jmsPhysDestinations.pageTitle}" helpText="$resource{i18njms.jmsPhysDestinations.pageHelp}"/>
         "<br /> <br />
         <sun:table id="configs" title="$resource{i18njms.jmsPhysDestinations.tableTitle}">
             <!facet actionsTop>

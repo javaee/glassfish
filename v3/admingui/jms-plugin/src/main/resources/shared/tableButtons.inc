@@ -4,7 +4,7 @@
             <!command redirect(page="#{pageSession.createLink}") />
         </sun:button>
 
-        <sun:button id="deleteConnButton" text="$resource{i18n.button.Delete} Connection" disabled="#{false}" primary="#{false}" rendered="#{isConnPage}"
+        <sun:button id="deleteConnButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}" rendered="#{isConnPage}"
             onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') ) { return submitAndDisable(this, '$resource{i18n.button.Processing}');} else {return false;} "
         >
             <!command
@@ -35,7 +35,7 @@
             <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                updateStatus(objectNameStr="#{pageSession.updateObjectNameStr}", selectedRows="${selectedRows}", enabled="true");
+                updateStatus(resType="#{pageSession.childType}", selectedRows="${selectedRows}", enabled="true");
                 setAttribute(key="selectedRows" value="${selectedRows}");
                 redirect(page="#{pageSession.listLink}");
             />
@@ -45,7 +45,7 @@
             <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                updateStatus(objectNameStr="#{pageSession.updateObjectNameStr}", selectedRows="${selectedRows}", enabled="false");
+                updateStatus(resType="#{pageSession.childType}", selectedRows="${selectedRows}", enabled="false");
                 setAttribute(key="selectedRows" value="${selectedRows}");
                 redirect(page="#{pageSession.listLink}");
             />

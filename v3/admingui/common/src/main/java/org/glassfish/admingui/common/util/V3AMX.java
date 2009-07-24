@@ -5,6 +5,7 @@
 
 package org.glassfish.admingui.common.util;
 
+import com.sun.enterprise.config.serverbeans.JmsService;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -168,8 +169,9 @@ public class V3AMX {
 
 
     public static Config getServerConfig(String configName){
-        if ((configName == null) || configName.equals(""))
-                configName = "server-config";
+        if ((configName == null) || configName.equals("")) {
+            configName = "server-config";
+        }
         return V3AMX.getInstance().getConfigs().getConfig().get(configName);
     }
 
@@ -515,7 +517,7 @@ public class V3AMX {
          }
      }
 
-     private static String getA(Map<String, Object> attrs,  String key){
+    private static String getA(Map<String, Object> attrs,  String key){
         Object val = attrs.get(key);
         return (val == null) ? "" : val.toString();
     }

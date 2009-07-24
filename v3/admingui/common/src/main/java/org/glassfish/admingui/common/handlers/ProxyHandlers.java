@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.logging.Level;
 import javax.management.Attribute;
 import java.util.Iterator;
 
@@ -67,6 +68,19 @@ import org.glassfish.admingui.common.util.GuiUtil;
 //TODO: Document these handlers
 public class ProxyHandlers {
 
+    @Handler(id="getAmxProxy",
+        input = {
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true)
+        },
+        output = {
+            @HandlerOutput(name = "result", type = AMXProxy.class)
+    })
+    public static void getAmxProxy(HandlerContext handlerCtx) {
+        String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+        AMXProxy amx = V3AMX.objectNameToProxy(objectNameStr);
+        handlerCtx.setOutputValue("result", amx);
+    }
+    
     @Handler(id = "getChildrenTable",
         input = {
             @HandlerInput(name = "objectNameStr", type = String.class, required = true),
@@ -355,8 +369,10 @@ public class ProxyHandlers {
                 //Ensure the resource itself is enabled.
                 if (status.equals("true")){
                     String resObjectName = V3AMX.getInstance().getResources().childrenMap(resType).get(name).objectName().toString();
-                    if (! V3AMX.getAttribute(resObjectName, "Enabled").equals("true")){
-                        V3AMX.setAttribute(resObjectName, attr);
+                    if (V3AMX.getAttrsMap(resObjectName).containsKey("Enabled")) {
+                        if (! V3AMX.getAttribute(resObjectName, "Enabled").equals("true")){
+                            V3AMX.setAttribute(resObjectName, attr);
+                        }
                     }
                 }
             }
@@ -675,17 +691,23 @@ public class ProxyHandlers {
         }
     }
 
-    @Handler(id = "setResourceRefEnabled",
+    @Handler(id = "createResourceRef",
         input = {
-            @HandlerInput(name = "resourceName", type = String.class, required = true),
-            @HandlerInput(name = "state", type = String.class, required = true)
+            @HandlerInput(name = "resourceName", type = String.class, required = true)
         })
-    public static void setResourceRefEnabled(HandlerContext handlerCtx) {
+    public static void createResourceRef(HandlerContext handlerCtx) {
         String resourceName = (String) handlerCtx.getInputValue("resourceName");
-        Boolean state = Boolean.parseBoolean((String) handlerCtx.getInputValue("state"));
-        String objectNameStr = "amx:pp=/domain/servers/server[server],config-ref=server-config";
 
-        AMXProxy amx = V3AMX.objectNameToProxy(objectNameStr);
+        try {
+            AMXConfigProxy amxConfig = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName("amx:pp=/domain/servers,type=server,name=server"));
+            Map<String, Object> attrs = new HashMap<String, Object>();
+            attrs.put("Name", resourceName);
+            attrs.put("Ref", resourceName);
+            attrs.put("Enabled", "true");
+            amxConfig.createChild("resource-ref", attrs);
+        } catch (Exception ex) {
+            GuiUtil.getLogger().log(Level.SEVERE, null, ex);
+        }
     }
 
     public static Map getDefaultProxyAttrsMap(String parentObjectNameStr, String childType) {
