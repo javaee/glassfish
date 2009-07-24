@@ -53,9 +53,15 @@ import javax.naming.InitialContext;
 
 import com.sun.appserv.jdbc.DataSource;
 
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.spi.ConnectorNamingEventListener;
+import com.sun.appserv.connectors.internal.spi.ConnectorNamingEvent;
+
 import com.sun.jdo.api.persistence.support.JDOFatalInternalException;
 import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
 import org.glassfish.persistence.common.I18NHelper;
+import org.glassfish.internal.api.Globals;
 
 
 /** Sun specific implementation for TransactionHelper interface.
@@ -64,9 +70,9 @@ import org.glassfish.persistence.common.I18NHelper;
 * object that registers Synchronization instance to be processed after 
 * any bean's beforeCompletion method.
 */
-public class SunTransactionHelper extends TransactionHelperImpl  
-//        implements ApplicationLoaderEventListener,
-//                   ConnectorNamingEventListener
+public class SunTransactionHelper extends TransactionHelperImpl
+        implements //ApplicationLoaderEventListener,
+        ConnectorNamingEventListener
     {
 
     /** I18N message handler */
@@ -74,14 +80,15 @@ public class SunTransactionHelper extends TransactionHelperImpl
         "com.sun.jdo.spi.persistence.support.sqlstore.Bundle", // NOI18N
         SunTransactionHelper.class.getClassLoader());
 
-    private static List pmf_list;
+    private static List<PersistenceManagerFactory> pmf_list;
     
     private final static Object pmf_listSyncObject = new Object();
     
     /**
      * Array of registered ApplicationLifeCycleEventListener 
      */ 
-    private List applicationLifeCycleEventListeners = new ArrayList(); 
+    private final List<ApplicationLifeCycleEventListener> applicationLifeCycleEventListeners = new ArrayList<ApplicationLifeCycleEventListener>();
+
 
     /** Garantees singleton.
      * Registers itself during initial load
@@ -92,8 +99,10 @@ public class SunTransactionHelper extends TransactionHelperImpl
         // Register with ApplicationLoaderEventNotifier to receive Sun
         // Application Server specific lifecycle events.
 //        ApplicationLoaderEventNotifier.getInstance().addListener(helper);
-//        ConnectorRuntime.getRuntime().getResourceRebindEventNotifier().addListener(helper);
-        pmf_list = new ArrayList();
+        ConnectorRuntime connectorRuntime = Globals.getDefaultHabitat().getByContract(ConnectorRuntime.class);
+        connectorRuntime.registerConnectorNamingEventListener(helper);
+        
+        pmf_list = new ArrayList<PersistenceManagerFactory>();
     }
  
     /** Default constructor should not be public */
@@ -152,7 +161,7 @@ public class SunTransactionHelper extends TransactionHelperImpl
 	        return pmf;
 	    }
 
-	    return (PersistenceManagerFactory)pmf_list.get(i);
+	    return pmf_list.get(i);
         }
     }
 
@@ -180,7 +189,7 @@ public class SunTransactionHelper extends TransactionHelperImpl
      * without username and password validation.
      * @param password the password for the resource username.
      * @return a Connection.
-     * @throws java.sql.SQLException.
+     * @throws java.sql.SQLException
      */
     public java.sql.Connection getNonTransactionalConnection(
             Object resource, String username, String password) 
@@ -247,15 +256,15 @@ public class SunTransactionHelper extends TransactionHelperImpl
 //        //Ignore EjbContainerEvents
 //    }
 //
-//    /**
-//     * @inheritDoc
-//     */
-//    public void connectorNamingEventPerformed(ConnectorNamingEvent event){
-//        if(event.getEventType() == ConnectorNamingEvent.EVENT_OBJECT_REBIND){
-//            String dsName = ResourceInstaller.getPMJndiName(event.getJndiName());
-//            cleanUpResources(dsName);
-//        } // Ignore all other events.
-//    }
+    /**
+     * @inheritDoc
+     */
+    public void connectorNamingEventPerformed(ConnectorNamingEvent event){
+        if(event.getEventType() == ConnectorNamingEvent.EVENT_OBJECT_REBIND){
+            String dsName = ConnectorsUtil.getPMJndiName(event.getJndiName());
+            cleanUpResources(dsName);
+        } // Ignore all other events.
+    }
 
     /** 
      * Removes all entries that correspond to the same connection factory name.
