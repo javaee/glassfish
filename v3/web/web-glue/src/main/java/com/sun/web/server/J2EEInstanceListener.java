@@ -67,6 +67,7 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.security.integration.AppServSecurityContext;
 import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.enterprise.security.integration.SecurityConstants;
+import com.sun.enterprise.web.WebComponentDecorator;
 import com.sun.enterprise.web.WebComponentInvocation;
 import com.sun.enterprise.web.WebModule;
 
@@ -283,13 +284,24 @@ public final class J2EEInstanceListener implements InstanceListener {
                         && instance.getClass() != DefaultServlet.class
                         && instance.getClass() != JspServlet.class) {
                     injectionMgr.injectInstance(instance, desc);
-                    // WebBeans injection TBD
-                    // Acquire WebBeansBootstrap from web module's
-                    // DeploymentContext
-                    /*
-                    wm.getWebModuleConfig().getDeploymentContext();
-                    */
-                }
+
+                    // Give a chance for other decorators to decorate.
+                    // Ideally we should even do the J2EE injection in a decorator
+                    Collection<WebComponentDecorator> decorators =
+                        wm.getServerContext().getDefaultHabitat().getAllByContract(WebComponentDecorator.class);
+                    if (decorators == null || decorators.isEmpty()) {
+                        // Perform dependency injection and invoke post construct method
+                        injectionMgr.injectInstance(instance, desc);
+                    } else {
+                        // Perform dependency injection only
+                        injectionMgr.injectInstance(instance, desc, false);
+                        for (WebComponentDecorator d : decorators) {
+                            d.decorate(instance, wm);
+                        }
+                        // Invoke post construct method
+                        injectionMgr.invokeInstancePostConstruct(instance, desc);
+                    }
+                } 
             }
         } catch (Exception ex) {            
             String message = null;

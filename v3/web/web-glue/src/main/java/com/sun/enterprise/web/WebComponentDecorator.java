@@ -34,55 +34,26 @@
  * holder.
  */
 
-package org.glassfish.webbeans;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+package com.sun.enterprise.web;
 
-import javax.servlet.ServletContext;
-
-import com.sun.enterprise.deployment.WebBundleDescriptor;
+import org.jvnet.hk2.annotations.Contract;
 import com.sun.enterprise.web.WebModule;
-import com.sun.faces.spi.FacesConfigResourceProvider;
-import org.glassfish.api.invocation.ComponentInvocation;
-import org.glassfish.api.invocation.InvocationManager;
-import org.jvnet.hk2.component.Habitat;
 
 /**
- * This provider returns the Web Beans faces-config.xml to the JSF runtime.
- * It will only return the configuraion file for Web Beans deployments.
- */  
-public class WebBeansFacesConfigProvider implements FacesConfigResourceProvider {
-
-    private static final String HABITAT_ATTRIBUTE =
-            "org.glassfish.servlet.habitat";
-    private InvocationManager invokeMgr;
-
-    private static final String META_INF_FACES_CONFIG = "META-INF/faces-config.xml";
-
-    public Collection<URL> getResources(ServletContext context) {
-
-        Habitat defaultHabitat = (Habitat)context.getAttribute(
-                HABITAT_ATTRIBUTE);
-        invokeMgr = defaultHabitat.getByContract(InvocationManager.class);
-        ComponentInvocation inv = invokeMgr.getCurrentInvocation();
-        WebModule webModule = (WebModule)inv.getContainer();
-        WebBundleDescriptor wdesc = webModule.getWebBundleDescriptor();
-
-        List<URL> list = new ArrayList<URL>(1);
-
-        if (!wdesc.hasExtensionProperty(WebBeansDeployer.WEB_BEAN_EXTENSION)) {
-            return list;
-        }
-
-        // Don't use Util.getCurrentLoader().  This config resource should
-        // be available from the same classloader that loaded this instance.
-        // Doing so allows us to be more OSGi friendly.
-        ClassLoader loader = this.getClass().getClassLoader();
-        list.add(loader.getResource(META_INF_FACES_CONFIG));
-        return list;
-    }
-
+ * Used to decorate a web component before it is put to service.
+ * e.g., WebBeans module may like to perform additional injection
+ * in a servlet or a filter.
+ *
+ * @author Sanjeeb.Sahoo@Sun.COM
+ */
+@Contract
+public interface WebComponentDecorator
+{
+    /**
+     * Decoare a web component.
+     * @param webComponent web component to be decorated.
+     * @param wm web module which owns this web component.
+     */
+    void decorate(Object webComponent, WebModule wm);
 }

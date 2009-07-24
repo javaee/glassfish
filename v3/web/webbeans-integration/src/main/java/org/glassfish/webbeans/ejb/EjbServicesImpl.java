@@ -41,7 +41,7 @@ import org.jboss.webbeans.ejb.spi.EjbServices;
 
 import org.jboss.webbeans.ejb.api.SessionObjectReference;
 
-import javax.inject.manager.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.jboss.webbeans.ejb.spi.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
@@ -93,6 +93,7 @@ public class EjbServicesImpl implements EjbServices
         // Look for @EJB annotation.  (Do it by class name matching to avoid direct dependency
         // from this module on javax.ejb)
         Annotation ejbAnnotation = null;
+/*
         for(Annotation annotation : injectionPoint.getAnnotations()) {
             if( annotation.annotationType().getName().equals("javax.ejb.EJB")) {
                 ejbAnnotation = annotation;
@@ -104,6 +105,7 @@ public class EjbServicesImpl implements EjbServices
             throw new IllegalArgumentException("injection point is not annotated with @EJB " +
                 injectionPoint);
         }
+*/
 
         return containerServices.resolveRemoteEjb(ejbAnnotation, injectionPoint.getMember());
 
@@ -137,12 +139,12 @@ public class EjbServicesImpl implements EjbServices
                 sessionObj = new SessionObjectReferenceImpl(containerServices, ejbRef);
 
             } catch(NamingException ne) {
-                throw new IllegalStateException("Error resolving session object reference for ejb name " +
-                        ejbDescriptor.getEjbName() + " and jndi name " + globalJndiName, ne);
+//                throw new IllegalStateException("Error resolving session object reference for ejb name " +
+//                        ejbDescriptor.getEjbName() + " and jndi name " + globalJndiName, ne);
             }
         }  else {
-            throw new IllegalArgumentException("Not enough type information to resolve ejb for " +
-                " ejb name " + ejbDescriptor.getEjbName());
+//            throw new IllegalArgumentException("Not enough type information to resolve ejb for " +
+//                " ejb name " + ejbDescriptor.getEjbName());
         }
 
 	    return sessionObj;

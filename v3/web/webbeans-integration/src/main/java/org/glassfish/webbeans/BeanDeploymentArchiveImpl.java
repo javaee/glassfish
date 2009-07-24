@@ -37,52 +37,44 @@
 package org.glassfish.webbeans;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import javax.servlet.ServletContext;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.web.WebModule;
-import com.sun.faces.spi.FacesConfigResourceProvider;
-import org.glassfish.api.invocation.ComponentInvocation;
-import org.glassfish.api.invocation.InvocationManager;
-import org.jvnet.hk2.component.Habitat;
+import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
+import org.jboss.webbeans.ejb.spi.EjbDescriptor;
 
-/**
- * This provider returns the Web Beans faces-config.xml to the JSF runtime.
- * It will only return the configuraion file for Web Beans deployments.
- */  
-public class WebBeansFacesConfigProvider implements FacesConfigResourceProvider {
+/*
+ * The means by which Web Beans are discovered on the classpath. 
+ */
+public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
+   
+    private Logger logger = Logger.getLogger(BeanDeploymentArchiveImpl.class.getName());
 
-    private static final String HABITAT_ATTRIBUTE =
-            "org.glassfish.servlet.habitat";
-    private InvocationManager invokeMgr;
+    private final List<Class<?>> wbClasses;
+    private final List<URL> wbUrls;
 
-    private static final String META_INF_FACES_CONFIG = "META-INF/faces-config.xml";
-
-    public Collection<URL> getResources(ServletContext context) {
-
-        Habitat defaultHabitat = (Habitat)context.getAttribute(
-                HABITAT_ATTRIBUTE);
-        invokeMgr = defaultHabitat.getByContract(InvocationManager.class);
-        ComponentInvocation inv = invokeMgr.getCurrentInvocation();
-        WebModule webModule = (WebModule)inv.getContainer();
-        WebBundleDescriptor wdesc = webModule.getWebBundleDescriptor();
-
-        List<URL> list = new ArrayList<URL>(1);
-
-        if (!wdesc.hasExtensionProperty(WebBeansDeployer.WEB_BEAN_EXTENSION)) {
-            return list;
-        }
-
-        // Don't use Util.getCurrentLoader().  This config resource should
-        // be available from the same classloader that loaded this instance.
-        // Doing so allows us to be more OSGi friendly.
-        ClassLoader loader = this.getClass().getClassLoader();
-        list.add(loader.getResource(META_INF_FACES_CONFIG));
-        return list;
+    public BeanDeploymentArchiveImpl(List<Class<?>> wbClasses, List<URL> wbUrls) {
+        this.wbClasses = wbClasses;
+        this.wbUrls = wbUrls;
     }
 
+    public List<BeanDeploymentArchive> getBeanDeploymentArchives() {
+        return Collections.emptyList();
+    }
+
+    public Iterable<Class<?>> getBeanClasses() {
+        return wbClasses;
+    }
+
+    public Iterable<URL> getBeansXml() {
+        return wbUrls;
+    }
+   
+    public Iterable<EjbDescriptor<?>> getEjbs() {
+        return Collections.emptyList();
+    }
 }

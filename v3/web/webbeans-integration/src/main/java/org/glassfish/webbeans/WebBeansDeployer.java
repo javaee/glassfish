@@ -36,10 +36,15 @@
 
 package org.glassfish.webbeans;
 
-import java.util.Vector;
-
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.AppListenerDescriptorImpl;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.EjbInterceptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.web.WebComponentInvocation;
 import com.sun.enterprise.web.WebModule;
@@ -49,6 +54,8 @@ import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.SimpleDeployer;
+import org.glassfish.webbeans.ejb.EjbServicesImpl;
+import org.glassfish.ejb.api.EjbContainerServices;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 
@@ -56,27 +63,13 @@ import org.jvnet.hk2.component.Habitat;
 
 import org.jboss.webbeans.bootstrap.WebBeansBootstrap;
 import org.jboss.webbeans.bootstrap.api.Environments;
-import org.jboss.webbeans.bootstrap.spi.WebBeanDiscovery;
+import org.jboss.webbeans.bootstrap.spi.Deployment;
 import org.jboss.webbeans.context.api.BeanStore;
 import org.jboss.webbeans.context.api.helpers.ConcurrentHashMapBeanStore;
 import org.jboss.webbeans.ejb.spi.EjbServices;
 
-import org.glassfish.webbeans.ejb.EjbServicesImpl;
-import org.glassfish.ejb.api.EjbContainerServices;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbInterceptor;
-import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
-import com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
-
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.Collection;
-import java.util.HashSet;
 
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
@@ -88,8 +81,11 @@ import java.lang.reflect.Method;
 @Service
 public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeansApplicationContainer> {
 
-    private static final String WEB_BEAN_EXTENSION = "org.glassfish.webbeans";
-    private static final String WEB_BEAN_LISTENER = "org.jboss.webbeans.servlet.WebBeansListener"; 
+    /* package */ static final String WEB_BEAN_EXTENSION = "org.glassfish.webbeans";
+
+    /* package */ static final String WEB_BEAN_BOOTSTRAP = "org.glassfish.webbeans.WebBeansBootstrap";
+
+    private static final String WEB_BEAN_LISTENER = "org.jboss.webbeans.servlet.WebBeansListener";
 
     @Inject
     private Habitat habitat;
@@ -160,7 +156,7 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
         
         bootstrap.setEnvironment(Environments.SERVLET);
-        bootstrap.getServices().add(WebBeanDiscovery.class, new WebBeanDiscoveryImpl(archive) {});
+        bootstrap.getServices().add(Deployment.class, new DeploymentImpl(archive) {});
         bootstrap.setApplicationContext(applicationBeanStore);
 
 
@@ -196,9 +192,11 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
         // bootstrap.boot() until start phase (see WebBeansApplicationContainer)
         bootstrap.initialize();      
 
+        // Stash the WebBeansBootstrap instance, so we may access the WebBeansManager later..
+        context.addTransientAppMetaData(WEB_BEAN_BOOTSTRAP, bootstrap);
+
         return wbApp; 
     }
-
 
     private EjbBundleDescriptor getEjbBundleFromContext(DeploymentContext context) {
 
@@ -219,7 +217,6 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
     }
 
-    /**
     private EjbInterceptor createEjbInterceptor(EjbBundleDescriptor ejbBundle) {
 
         EjbInterceptor interceptor = new EjbInterceptor();
@@ -261,7 +258,6 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
 
     }
-    **/
 
 }
 

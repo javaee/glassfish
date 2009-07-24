@@ -34,55 +34,36 @@
  * holder.
  */
 
+
 package org.glassfish.webbeans;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.servlet.ServletContext;
-
-import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.web.WebComponentDecorator;
 import com.sun.enterprise.web.WebModule;
-import com.sun.faces.spi.FacesConfigResourceProvider;
-import org.glassfish.api.invocation.ComponentInvocation;
-import org.glassfish.api.invocation.InvocationManager;
-import org.jvnet.hk2.component.Habitat;
+
+import org.glassfish.api.deployment.DeploymentContext;
+import org.jboss.webbeans.BeanManagerImpl;
+import org.jboss.webbeans.bootstrap.WebBeansBootstrap;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * This provider returns the Web Beans faces-config.xml to the JSF runtime.
- * It will only return the configuraion file for Web Beans deployments.
- */  
-public class WebBeansFacesConfigProvider implements FacesConfigResourceProvider {
-
-    private static final String HABITAT_ATTRIBUTE =
-            "org.glassfish.servlet.habitat";
-    private InvocationManager invokeMgr;
-
-    private static final String META_INF_FACES_CONFIG = "META-INF/faces-config.xml";
-
-    public Collection<URL> getResources(ServletContext context) {
-
-        Habitat defaultHabitat = (Habitat)context.getAttribute(
-                HABITAT_ATTRIBUTE);
-        invokeMgr = defaultHabitat.getByContract(InvocationManager.class);
-        ComponentInvocation inv = invokeMgr.getCurrentInvocation();
-        WebModule webModule = (WebModule)inv.getContainer();
-        WebBundleDescriptor wdesc = webModule.getWebBundleDescriptor();
-
-        List<URL> list = new ArrayList<URL>(1);
-
-        if (!wdesc.hasExtensionProperty(WebBeansDeployer.WEB_BEAN_EXTENSION)) {
-            return list;
+ * This is a decorator which calls WebBeans implemetation to
+ * do necessary injection of a web component. It is called by
+ * {@link com.sun.web.server.J2EEInstanceListener}
+ * before a web component is put into service.
+ *
+ * @author Sanjeeb.Sahoo@Sun.COM
+ * @author Roger.Kitain@Sun.COM
+ */
+@Service
+public class WebComponentInjectionManager implements WebComponentDecorator {
+    public void decorate(Object webComponent, WebModule wm) {
+        if (wm.getWebBundleDescriptor().hasExtensionProperty(WebBeansDeployer.WEB_BEAN_EXTENSION)) {
+            DeploymentContext deploymentContext = wm.getWebModuleConfig().getDeploymentContext();
+            WebBeansBootstrap webBeansBootstrap = deploymentContext.getTransientAppMetaData(
+                WebBeansDeployer.WEB_BEAN_BOOTSTRAP, org.jboss.webbeans.bootstrap.WebBeansBootstrap.class); 
+            BeanManagerImpl beanManager = webBeansBootstrap.getManager();
+            // PENDING : Not available in this Web Beans Release
+            // beanManager.createInjectionTarget(webComponent.getClass()).inject(webComponent, beanManager.createCreationalContext(null));
         }
-
-        // Don't use Util.getCurrentLoader().  This config resource should
-        // be available from the same classloader that loaded this instance.
-        // Doing so allows us to be more OSGi friendly.
-        ClassLoader loader = this.getClass().getClassLoader();
-        list.add(loader.getResource(META_INF_FACES_CONFIG));
-        return list;
     }
-
 }

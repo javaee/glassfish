@@ -65,6 +65,10 @@ public class EjbDescriptorImpl<T> implements org.jboss.webbeans.ejb.spi.EjbDescr
         return ejbDesc;
     }
 
+    public Class<T> getBeanClass() {
+        return null;
+    }
+
   /**
     * Gets the EJB type
     * 
