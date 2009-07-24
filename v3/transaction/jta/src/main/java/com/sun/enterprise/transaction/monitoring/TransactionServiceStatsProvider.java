@@ -36,6 +36,7 @@
 package com.sun.enterprise.transaction.monitoring;
 
 import java.util.List;
+import java.util.logging.*;
 
 import org.glassfish.external.statistics.CountStatistic;
 import org.glassfish.external.statistics.StringStatistic;
@@ -47,7 +48,6 @@ import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
 
-import org.jvnet.hk2.annotations.Inject;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.transaction.api.TransactionAdminBean;
 
@@ -82,7 +82,14 @@ public class TransactionServiceStatsProvider {
 
     private boolean isFrozen = false;
 
-    @Inject private JavaEETransactionManager txMgr;
+    private JavaEETransactionManager txMgr;
+
+    private Logger _logger;
+
+    public TransactionServiceStatsProvider(JavaEETransactionManager tm, Logger l) {
+        txMgr = tm;
+        _logger = l;
+    }
 
     @ManagedAttribute(id="activecount")
     @Description( "Provides the number of transactions that are currently active." )
@@ -112,10 +119,11 @@ public class TransactionServiceStatsProvider {
     @ManagedAttribute(id="activeids")
     @Description( "List of inflight transactions." )
     public StringStatistic getActiveIds() {
+try {
         StringBuffer strBuf = new StringBuffer(1024);
 
         if (txMgr == null) {
-            System.out.println("ERROR: Cannot construct the probe. Transaction Manager is NULL!");
+            _logger.warning("transaction.monitor.tm_null");
             inflightTransactions.setCurrent("");
             return inflightTransactions.getStatistic();
         }
@@ -124,8 +132,8 @@ public class TransactionServiceStatsProvider {
         if (!aList.isEmpty()) {
             //Set the headings for the tabular output
             if (aList.size() > 0) {
+                // XXX strBuf.append("\n\n");
                 String colName = "Transaction Id";
-                strBuf.append("\n\n");
                 strBuf.append(colName);
                 for (int i=colName.length(); i<COLUMN_LENGTH+15; i++){
                     strBuf.append(" ");
@@ -145,14 +153,15 @@ public class TransactionServiceStatsProvider {
                 for (int i=colName.length(); i<COLUMN_LENGTH; i++){
                     strBuf.append(" ");
                 }
-                strBuf.append("ResourceNames\n");
+                strBuf.append("ResourceNames "); // XXX \n");
             }
 
             for (int i=0; i < aList.size(); i++) {
                 TransactionAdminBean txnBean = (TransactionAdminBean)aList.get(i);
                 String txnId = txnBean.getId();
 
-                strBuf.append("\n");
+                // XXX strBuf.append("\n");
+                _logger.info("=== Processing txnId: " + txnId);
                 strBuf.append(txnId);
                 for (int j=txnId.length(); j<COLUMN_LENGTH+15; j++){
                     strBuf.append(" ");
@@ -180,28 +189,42 @@ public class TransactionServiceStatsProvider {
             }
         }
 
+        // XXX Change to fine
+        _logger.info("Prepared inflightTransactions text: \n" + strBuf);
+
         inflightTransactions.setCurrent((strBuf == null)? "" : strBuf.toString());
+} catch (Throwable t) {
+t.printStackTrace();
+}
         return inflightTransactions.getStatistic();
     }
     
     @ProbeListener("glassfish:transaction:transaction-service:activated")
     public void transactionActivatedEvent() {
+        // XXX Change to fine
+        _logger.info("=== transaction-service active ++");
         activeCount.increment();
     }
 
     @ProbeListener("glassfish:transaction:transaction-service:deactivated")
     public void transactionDeactivatedEvent() {
+        // XXX Change to fine
+        _logger.info("=== transaction-service active --");
         activeCount.decrement();
     }
 
     @ProbeListener("glassfish:transaction:transaction-service:committed")
     public void transactionCommittedEvent() {
+        // XXX Change to fine
+        _logger.info("=== transaction-service committed ++");
         committedCount.increment();
         activeCount.decrement();
     }
 
     @ProbeListener("glassfish:transaction:transaction-service:rolledback")
     public void transactionRolledbackEvent() {
+        // XXX Change to fine
+        _logger.info("=== transaction-service rolledback ++");
         rolledbackCount.increment();
         activeCount.decrement();
     }

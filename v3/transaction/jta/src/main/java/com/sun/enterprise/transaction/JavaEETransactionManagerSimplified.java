@@ -127,7 +127,7 @@ public class JavaEETransactionManagerSimplified
     // admin and monitoring related parameters
     private  static final Hashtable statusMap = new Hashtable();
     private Vector activeTransactions = new Vector();
-    private boolean monitoringEnabled = false;
+    private boolean monitoringEnabled = Boolean.getBoolean("tx-service-monitoringEnabled"); // false;
 
     private TransactionServiceProbeProvider monitor;
     private Hashtable txnTable = null;
@@ -147,6 +147,7 @@ public class JavaEETransactionManagerSimplified
         statusMap.put(Status.STATUS_PREPARING, "Preparing");
         statusMap.put(Status.STATUS_COMMITTING, "Committing");
         statusMap.put(Status.STATUS_ROLLING_BACK, "RollingBack");
+
     }
     public JavaEETransactionManagerSimplified() {
         transactions = new ThreadLocal<JavaEETransaction>();
@@ -212,15 +213,17 @@ public class JavaEETransactionManagerSimplified
 
         // START IASRI 4705808 TTT004 -- monitor resource table stats
         try {
+            // XXX TODO:
             String doStats
                 = System.getProperty("MONITOR_JTA_RESOURCE_TABLE_STATISTICS");
             if (Boolean.getBoolean(doStats)) {
                 registerStatisticMonitorTask();
             }
+
             StatsProviderManager.register(
                     "transaction-service", // element in domain.xml <monitoring-service>/<monitoring-level>
                     PluginPoint.SERVER, "transaction-service", // server.transaction-service node in asadmin get
-                    new TransactionServiceStatsProvider());
+                    new TransactionServiceStatsProvider(this, _logger));
         } catch (Exception ex) {
             // ignore
         }
@@ -1081,15 +1084,29 @@ public class JavaEETransactionManagerSimplified
         for(int i=0;i<active.size();i++){
             try{
                 Transaction tran = (Transaction)active.elementAt(i);
-                TransactionAdminBean tBean = getDelegate().getTransactionAdminBean(tran);
+                TransactionAdminBean tBean = null;
+                if(tran instanceof JavaEETransaction){
+                    JavaEETransactionImpl tran1 = (JavaEETransactionImpl)tran;
+                    String id = tran1.getTransactionId();
+                    long startTime = tran1.getStartTime();
+                    String componentName = tran1.getComponentName();
+                    ArrayList<String> resourceNames = tran1.getResourceNames();
+                    long elapsedTime = System.currentTimeMillis()-startTime;
+                    String status = getStatusAsString(tran.getStatus());
+
+                    tBean = new TransactionAdminBean(tran, id, status, elapsedTime,
+                             componentName, resourceNames);
+                } else {
+                    tBean = getDelegate().getTransactionAdminBean(tran);
+                }
+
                 if (tBean == null) {
                     // Shouldn't happen
-                    tBean = new TransactionAdminBean(tran, "unknown", null,
-                            System.currentTimeMillis(), "unknown", null);
+                    _logger.warning("enterprise_distributedtx.txbean_null" + tran);
                 } else {
                     txnTable.put(tBean.getIdentifier(), tran);
+                    tranBeans.add(tBean);
                 }
-                tranBeans.add(tBean);
             }catch(Exception ex){
                 //LOG !!!
             }
@@ -1112,15 +1129,23 @@ public class JavaEETransactionManagerSimplified
         activeTransactions.removeAllElements();
     }
 
-    protected void monitorTxCompleted(Object tran, boolean committed){
-        if(tran==null || !activeTransactions.remove(tran)){
-            // WARN !!!
-            return;
-        }
-        if(committed){
-            monitor.transactionCommittedEvent();
-        }else{
-            monitor.transactionRolledbackEvent();
+    protected void monitorTxCompleted(Object obj, boolean committed){
+        if(obj != null) {
+            if (obj instanceof JavaEETransactionImpl) {
+                JavaEETransactionImpl t = (JavaEETransactionImpl) obj;
+                if (!t.isLocalTx()) {
+                    obj = t.getJTSTx();
+                }
+            }
+            if(activeTransactions.remove(obj)){
+                if(committed){
+                    monitor.transactionCommittedEvent();
+                }else{
+                    monitor.transactionRolledbackEvent();
+                }
+            } else {
+                // WARN ???
+            } 
         }
     }
 
