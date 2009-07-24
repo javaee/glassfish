@@ -106,6 +106,8 @@ public class WebTest {
             throw new Exception("Missing Set-Cookie response header");
         }
 
+        System.out.println();
+
         return getSessionCookie(line, MYJSESSIONID);
     }
 
@@ -121,9 +123,10 @@ public class WebTest {
             sock = new Socket(host, new Integer(port).intValue());
             os = sock.getOutputStream();
             String get = "GET " + contextRoot + "/ResumeSession" + " HTTP/1.0\n";
-            System.out.println(get);
+            System.out.print(get);
             os.write(get.getBytes());
             String cookie = "Cookie: " + sessionCookie + "\n";
+            System.out.println(cookie);
             os.write(cookie.getBytes());
             os.write("\r\n".getBytes());
         
