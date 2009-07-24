@@ -817,14 +817,16 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if (listener !=null) {
             defaultHost = listener.findProtocol().getHttp().getDefaultVirtualServer();
             jkConnectorName = listener.getName();     
-            portMap.put(listener.getName(), Integer.valueOf(listener.getPort()));
-            connectorMap.put(listener.getName(), jkConnector);
         }
         jkConnector.setDefaultHost(defaultHost);
         jkConnector.setName(jkConnectorName);
         jkConnector.setDomain(_serverContext.getDefaultDomainName());
         jkConnector.setInstanceName(instanceName);
-        jkConnector.configure(listener, isSecure, httpService);
+        if (listener!=null) {
+            jkConnector.configure(listener, isSecure, httpService);
+            portMap.put(listener.getName(), Integer.valueOf(listener.getPort()));
+            connectorMap.put(listener.getName(), jkConnector);
+        }
         
         _logger.log(Level.INFO, "Apache mod_jk/jk2 attached to virtual-server "
                                 + defaultHost + " listening on port: "
