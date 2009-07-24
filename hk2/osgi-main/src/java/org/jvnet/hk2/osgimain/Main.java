@@ -319,7 +319,7 @@ public class Main implements BundleActivator
                 context.getServiceReference(PackageAdmin.class.getName());
         PackageAdmin pa = PackageAdmin.class.cast(
                 context.getService(reference));
-        pa.refreshPackages(new Bundle[0]);
+        pa.refreshPackages(null); // null to refresh any bundle that's obsolete
         context.ungetService(reference);
 
         // This is a HACK - thanks to some weired optimization trick
