@@ -499,20 +499,6 @@ public class Request
     private static int maxDispatchDepth = Constants.DEFAULT_MAX_DISPATCH_DEPTH;
     // END S1AS 4703023
 
-
-    // START CR 6309511
-    /**
-     * The match string for identifying a session ID parameter.
-     */
-    private static final String match =
-        ";" + Globals.SESSION_PARAMETER_NAME + "=";
-
-    /**
-     * The match string for identifying a session ID parameter.
-     */
-    private static final char[] SESSION_ID = match.toCharArray();
-    // END CR 6309511
-
     // START SJSAS 6346226
     private String jrouteId;
     // END SJSAS 6346226
@@ -3576,17 +3562,18 @@ public class Request
     /**
      * Parse session id in URL.
      */
-    protected void parseSessionId() {
+    protected void parseSessionId(String sessionParam) {
 
         ByteChunk uriBB = coyoteRequest.decodedURI().getByteChunk();
-        int semicolon = uriBB.indexOf(match, 0, match.length(), 0);
+        int semicolon = uriBB.indexOf(sessionParam, 0, sessionParam.length(),
+                0);
         if (semicolon > 0) {
 
             // Parse session ID, and extract it from the decoded request URI
             int start = uriBB.getStart();
             int end = uriBB.getEnd();
 
-            int sessionIdStart = start + semicolon + match.length();
+            int sessionIdStart = start + semicolon + sessionParam.length();
             int semicolon2 = uriBB.indexOf(';', sessionIdStart);
             /* SJSAS 6346226
             if (semicolon2 >= 0) {
@@ -3603,10 +3590,10 @@ public class Request
             String sessionId = null;
             if (semicolon2 >= 0) {
                 sessionId = new String(uriBB.getBuffer(), sessionIdStart, 
-                                       semicolon2 - semicolon - match.length());
+                    semicolon2 - semicolon - sessionParam.length());
             } else {
                 sessionId = new String(uriBB.getBuffer(), sessionIdStart, 
-                                       end - sessionIdStart);
+                    end - sessionIdStart);
             }
             int jrouteIndex = sessionId.lastIndexOf(':');
             if (jrouteIndex > 0) {
@@ -3650,7 +3637,7 @@ public class Request
              * URI is not null, to allow for lazy evaluation
              */
             if (!coyoteRequest.requestURI().getByteChunk().isNull()) {
-                parseSessionIdFromRequestURI();
+                parseSessionIdFromRequestURI(sessionParam);
             }
             // END SJSWS 6376484
 
@@ -3658,7 +3645,6 @@ public class Request
             setRequestedSessionId(null);
             setRequestedSessionURL(false);
         }
-
     }
     // END CR 6309511
 
@@ -3675,8 +3661,7 @@ public class Request
 
         ByteChunk uriBB = coyoteRequest.decodedURI().getByteChunk();
         int semicolon = uriBB.indexOf(Globals.SESSION_VERSION_PARAMETER, 0,
-                                      Globals.SESSION_VERSION_PARAMETER.length(),
-                                      0);
+            Globals.SESSION_VERSION_PARAMETER.length(), 0);
         if (semicolon > 0) {
 
             int start = uriBB.getStart();
@@ -3710,19 +3695,19 @@ public class Request
     /**
      * Extracts the session ID from the request URI.
      */
-    protected void parseSessionIdFromRequestURI() {
+    protected void parseSessionIdFromRequestURI(String sessionParam) {
 
         int start, end, sessionIdStart, semicolon, semicolon2;
 
         ByteChunk uriBC = coyoteRequest.requestURI().getByteChunk();
         start = uriBC.getStart();
         end = uriBC.getEnd();
-        semicolon = uriBC.indexOf(match, 0, match.length(), 0);
+        semicolon = uriBC.indexOf(sessionParam, 0, sessionParam.length(), 0);
 
         if (semicolon > 0) {
             sessionIdStart = start + semicolon;
             semicolon2 = uriBC.indexOf
-                (';', semicolon + match.length());
+                (';', semicolon + sessionParam.length());
             uriBC.setEnd(start + semicolon);
             byte[] buf = uriBC.getBuffer();
             if (semicolon2 >= 0) {

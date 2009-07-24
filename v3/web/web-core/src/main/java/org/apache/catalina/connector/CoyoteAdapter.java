@@ -56,13 +56,12 @@
 package org.apache.catalina.connector;
 
 import java.io.IOException;
-
 import java.security.cert.X509Certificate;
 import java.security.cert.CertificateException;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
@@ -80,9 +79,6 @@ import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.buf.UEncoder;
 import com.sun.appserv.ProxyHandler;
 import com.sun.grizzly.util.http.mapper.MappingData;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 /**
  * Implementation of a request processor which delegates the processing to a
@@ -115,7 +111,15 @@ public class CoyoteAdapter
         Boolean.valueOf(System.getProperty(
             "com.sun.enterprise.web.collapseAdjacentSlashes", "true")).booleanValue();
 
-   /**
+    // START CR 6309511
+    /**
+     * The match string for identifying a session ID parameter.
+     */
+    private static final String SESSION_PARAMETER =
+        ";" + Globals.SESSION_PARAMETER_NAME + "=";
+    // END CR 6309511
+
+    /**
      * When mod_jk is used, the adapter must be invoked the same way 
      * Tomcat does by invoking service(...) and the afterService(...). This
      * is a hack to make it compatible with Tomcat 5|6.
@@ -164,23 +168,6 @@ public class CoyoteAdapter
     // START GlassFish 936
     private UEncoder urlEncoder = new UEncoder();
     // END GlassFish 936
-
-    /**
-     * The match string for identifying a session ID parameter.
-     */
-    /* CR 6309511
-    private static final String match =
-        ";" + Globals.SESSION_PARAMETER_NAME + "=";
-     */
-
-
-    /**
-     * The match string for identifying a session ID parameter.
-     */
-    /* CR 6309511
-    private static final char[] SESSION_ID = match.toCharArray();
-     */
-
 
     /**
      * The string manager for this package.
@@ -503,7 +490,12 @@ public class CoyoteAdapter
         }
 
         // Parse session Id
-        request.parseSessionId();
+        String sessionParam = SESSION_PARAMETER;
+        Context ctx = (Context) request.getMappingData().context;
+        if (ctx != null && ctx.getSessionCookieName() != null) {
+            sessionParam = ";" + ctx.getSessionCookieName() + "=";
+        }
+        request.parseSessionId(sessionParam);
         // END CR 6309511
 
         // Remove any remaining parameters (other than session id, which has
@@ -522,6 +514,7 @@ public class CoyoteAdapter
             /*mod_jk*/
             connector.getMapper().map(req.serverName(), decodedURI, 
                                   request.getMappingData());
+            ctx = (Context) request.getMappingData().context;
         }
 
         // START GlassFish 1024
@@ -532,7 +525,6 @@ public class CoyoteAdapter
         // request.setContext((Context) request.getMappingData().context);
         // END SJSAS 6253524
         // START SJSAS 6253524
-        Context ctx = (Context) request.getMappingData().context;
         request.setContext(ctx);
         // END SJSAS 6253524
 

@@ -1611,13 +1611,23 @@ public class Response
         if (serverPort != urlPort)
             return (false);
 
-        String contextPath = getContext().getPath();
-        if ( contextPath != null ) {
-            String file = url.getFile();
-            if ((file == null) || !file.startsWith(contextPath))
-                return (false);
-            if( file.indexOf(";" + Globals.SESSION_PARAMETER_NAME + "=" + session.getIdInternal()) >= 0 )
-                return (false);
+        Context ctx = getContext();
+        if (ctx != null) {
+            String contextPath = ctx.getPath();
+            if (contextPath != null) {
+                String file = url.getFile();
+                if ((file == null) || !file.startsWith(contextPath)) {
+                    return false;
+                }
+                String sessionParamName =
+                    (ctx.getSessionCookieName() != null) ?
+                        ctx.getSessionCookieName() :
+                        Globals.SESSION_PARAMETER_NAME;
+                if (file.indexOf(";" + sessionParamName + "=" +
+                        session.getIdInternal()) >= 0) {
+                    return false;
+                }
+            }
         }
 
         // This URL belongs to our web application, so it is encodeable
@@ -1764,9 +1774,13 @@ public class Response
 
         StringBuffer sb = new StringBuffer(path);
         if( sb.length() > 0 ) { // jsessionid can't be first.
-            sb.append(";" + Globals.SESSION_PARAMETER_NAME + "=");
-            sb.append(sessionId);
             StandardContext ctx = (StandardContext) getContext();
+            String sessionParamName =
+                (ctx != null && ctx.getSessionCookieName() != null) ?
+                    ctx.getSessionCookieName() :
+                    Globals.SESSION_PARAMETER_NAME;
+            sb.append(";" + sessionParamName + "=");
+            sb.append(sessionId);
             if (ctx != null && ctx.getJvmRoute() != null) {
                 sb.append('.').append(ctx.getJvmRoute());
             }                    
