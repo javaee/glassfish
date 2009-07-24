@@ -144,7 +144,7 @@
         <ant dir="httpServletGetAllDeclaredMethods" target="all"/>
         <ant dir="getServerNameAndPort" target="all"/>
         <ant dir="sessionIdUrlRewrite" target="all"/>
-        <ant dir="sessionIdUrlRewriteSessionTrackingMode" target="all"/>
+        <ant dir="servlet-3.0/sessionIdUrlRewriteSessionTrackingMode" target="all"/>
         <ant dir="sessionIdPresentInBothRewrittenUrlAndCookieByDefault" target="all"/>
         <ant dir="sessionIdPresentOnlyInCookieIfUrlRewritingDisabled" target="all"/>
         <ant dir="dirListing" target="all"/>
