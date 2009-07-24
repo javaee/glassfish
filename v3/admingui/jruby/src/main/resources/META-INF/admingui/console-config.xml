@@ -28,7 +28,7 @@
             type="org.glassfish.admingui:appTypeDropdown"
             priority="500"
             parentId="form"
-            content="JRuby Application;jruby"
+            content="Ruby Application;jruby"
     />
 
 </console-config>

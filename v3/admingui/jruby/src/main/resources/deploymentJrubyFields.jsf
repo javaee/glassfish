@@ -44,6 +44,15 @@
     </sun:textField>
 </sun:property>
 
+
+<sun:property id="cxp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.ContextRoot}" helpText="$resource{i18n.webApp.contextRootHelp}" >
+    <sun:textField id="ctx" columns="$int{40}" text="#{pageSession.jruby['contextroot']}" >
+        <!afterCreate
+            getClientId(component="$this{component}" clientId=>$page{contextRootId});
+        />
+    </sun:textField>
+</sun:property>
+
 <sun:property id="enableProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.status}"  helpText="$resource{i18n.deploy.statusHelp}">
 	<sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.jruby['enabled']}" selectedValue="true" >
         <!beforeCreate
@@ -82,15 +91,14 @@
 </sun:property>
 
 
-<!--
 <sun:property id="jruby-mtSafe" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.mtSafe}" helpText="$resource{i18n_jruby.mtSafeHelp}">
-	<sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.jruby['PROPERTY-jruby.MTSafe']}" selectedValue="true" >
+	<sun:dropDown id="applicationType" selected="#{pageSession.jruby['PROPERTY-jruby.MTSafe']}"
+            labels={"true ", "false  ", "default  "} values={"true", "false", "default"} >
         <!beforeCreate
-            mapPut(map="#{pageSession.jruby}", key="PROPERTY-MTSafe", value="true" );
+            mapPut(map="#{pageSession.jruby}", key="PROPERTY-jruby.MTSafe", value="default" );
         />
-    </sun:checkbox>
+    </sun:dropDown>
 </sun:property>
--->
 
 
 <sun:property id="vsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}">
