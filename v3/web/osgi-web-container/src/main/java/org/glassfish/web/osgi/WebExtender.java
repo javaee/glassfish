@@ -49,9 +49,11 @@ import org.osgi.service.url.URLStreamHandlerService;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.Globals;
 
 import java.util.Properties;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -69,12 +71,9 @@ public class WebExtender implements BundleActivator, SynchronousBundleListener
     private BundleContext context;
     private Events events = Globals.get(Events.class);
     private EventListener listener;
+    private Semaphore serverReady = new Semaphore(0);
 
-    public void start(BundleContext context) throws Exception
-    {
-        this.context = context;
-        // TODO(Sahoo): Wait for GlassFish kernel to start before instantiating
-        // OSGiWebContainer.
+    public void doActualWork() {
         wc = new OSGiWebContainer();
         context.addBundleListener(this);
         registerGlassFishEventListener();
@@ -91,6 +90,62 @@ public class WebExtender implements BundleActivator, SynchronousBundleListener
             }
         }
         addURLHandler();
+    }
+
+    public void start(BundleContext context) throws Exception
+    {
+        this.context = context;
+        // spawn a thread and wait for server to start before proceeding
+        waitForServerToStart();
+    }
+
+    /**
+     * This method spawns a new thread, waits for server to start.
+     * After being notified of server start, it proceeds by calling
+     * {@link #doActualWork()}
+     */
+    private void waitForServerToStart()
+    {
+        final EventListener serverStartedListener = new EventListener()
+        {
+            public void event(Event event)
+            {
+                if (EventTypes.SERVER_READY.equals(event.type()))
+                {
+                    logger.logp(Level.INFO, "WebExtender", "event", "Received Server Started Event");
+                    serverReady.release();
+                    events.unregister(this);
+                }
+            }
+        };
+        events.register(serverStartedListener);
+
+        new Thread(new Runnable(){
+            public void run()
+            {
+                // Check again to ensure that we did not miss the event
+                // after we checked the status and before we registered
+                // the listener. If we don't check and we have indeed
+                // missed the event, we will end up waiting for ever.
+                if (!isServerStarted()) {
+                    logger.logp(Level.INFO, "WebExtender", "run", "Waiting for Server to start");
+                    try
+                    {
+                        serverReady.acquire();
+                    }
+                    catch (InterruptedException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                }
+                doActualWork();
+            }
+        }).start();
+    }
+
+    private boolean isServerStarted() {
+        ServerEnvironment serverEnv = Globals.get(ServerEnvironment.class);
+        return serverEnv.getStatus() == ServerEnvironment.Status.started;
     }
 
     public void stop(BundleContext context) throws Exception

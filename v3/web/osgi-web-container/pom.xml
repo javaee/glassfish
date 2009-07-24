@@ -58,30 +58,6 @@
         </developer>
     </developers>
     
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Export-Package>!*</Export-Package>
-                        <Private-Package>org.glassfish.web.osgi.*</Private-Package>
-                        <Bundle-Activator>org.glassfish.web.osgi.WebExtender</Bundle-Activator>
-                    </instructions>
-                </configuration>
-                <executions>
-                   <execution>
-                      <id>bundle</id>
-                      <phase>package</phase>
-                      <goals>
-                         <goal>bundle</goal>
-                      </goals>
-                   </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
     <dependencies>
         <dependency>
             <groupId>org.glassfish.web</groupId>
