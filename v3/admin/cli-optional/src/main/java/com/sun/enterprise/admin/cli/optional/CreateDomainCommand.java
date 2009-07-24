@@ -288,7 +288,7 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
 
         final int portToVerify = convertPortStr(portNum);
         NetUtils.PortAvailability avail = NetUtils.checkPort(portToVerify);
-
+        System.out.println(" *******************" + getClass().getName() + " *******************");
         switch(avail) {
             case illegalNumber:
                 throw new CommandException(getLocalizedString("InvalidPortRange",

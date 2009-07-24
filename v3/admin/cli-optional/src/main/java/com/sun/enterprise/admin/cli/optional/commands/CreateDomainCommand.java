@@ -352,6 +352,7 @@ public final class CreateDomainCommand extends CLICommand {
 
         final int portToVerify = convertPortStr(portNum);
         NetUtils.PortAvailability avail = NetUtils.checkPort(portToVerify);
+	String domainName = operands.get(0);
 
         switch (avail) {
         case illegalNumber:
@@ -361,15 +362,19 @@ public final class CreateDomainCommand extends CLICommand {
         case inUse:
             if (checkPorts)
                 throw new CommandException(
-                    strings.get("PortInUseError", operands.get(0), portNum));
+                    strings.get("PortInUseError", domainName, portNum));
             else
                 logger.printWarning(strings.get("PortInUseWarning", portNum));
             break;
 
         case noPermission:
-            throw new CommandException(
-                strings.get("NoPermissionForPortMsg",
-                    portNum, operands.get(0)));
+                if(checkPorts)
+                    throw new CommandException(strings.get("NoPermissionForPortError", 
+                        portNum, domainName));
+                else
+                    logger.printWarning(strings.get("NoPermissionForPortWarning", 
+                        portNum, domainName));
+                break;
 
         case unknown:
             throw new CommandException(strings.get("UnknownPortMsg", portNum));
