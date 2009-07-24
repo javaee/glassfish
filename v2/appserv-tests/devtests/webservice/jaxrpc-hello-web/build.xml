@@ -32,8 +32,8 @@
 
     </path>
 
-  <target name="all" description="Executes the test" depends="clean,deploy,run,undeploy">
-  </target>
+  <target name="all" depends="clean,deploy,assemble-client,deploy-client,runtest,undeploy"/>
+  
 
   <target name="create-war" description="Packages the WAR file">
      <echo message="Creating the WAR...."/>
@@ -73,7 +73,7 @@
 
 
 
-   <target name="undeploy" depends="init-common">
+   <target name="undeploy-war1" depends="init-common">
       <echo message="Undeploying ${war.file} from ${basedir}." level="verbose"/>
       <exec executable="${ASADMIN}">
         <arg line="undeploy"/>
@@ -86,11 +86,11 @@
     </target>
  
 
-  <target name="build-client" depends="build-static"
+ <!-- <target name="build-client" depends="build-static"
      description="Executes the targets needed to build a static stub client.">
   </target>
 
-  <target name="run" depends="run-client"
+  <target name="runclient1" depends="run-client"
      description="Runs the client.">
   </target>
 
@@ -103,14 +103,14 @@
   </target>
 
 
-  <target name="generate-stubs"
+  <target name="generate-client-stubs"
       description="Runs wscompile to generate the client stub classes">
     <antcall target="run-wscompile">
-      <param name="param1" value="-gen:client -d ${build.classes.dir} -classpath ${build.classes.dir} ${config.wsdl.file}"/>
+      <param name="param1" value="-gen:client -d ${build.classes.dir} -keep -s ${build.classes.dir} -classpath ${build.classes.dir} ${config.wsdl.file}"/>
     </antcall>
   </target>
 
-    <target name="assemble-client" depends="init-common,generate-stubs">
+    <target name="assemble-client" depends="init-common,generate-client-stubs">
     <antcall target="compile-common">
         <param name="src" value="client"/>
     </antcall>
@@ -120,16 +120,80 @@
         dest="${build.classes.dir}"/>
     <antcall target="appclient-jar-common">
       <param name="appclientjar.classes"
-             value="build/mapping.xml,META-INF/wsdl/**,helloservice/**,com/**" />
+             value="mapping.xml,META-INF/wsdl/**,helloservice/**,com/**" />
     </antcall>
+
+        <antcall target="deploy-client-common"/>
+        <move file="${assemble.dir}/${appname}-client.jar" toFile="${assemble.dir}/${appname}AppClient.jar"/>
   </target>
 
-     <target name="run" depends="init-common">
+     <target name="run" depends="init-common,assemble-client">
         <antcall target="runclient-common">
           <param name="appclient.application.args" value="http://${http.host}:${http.port}/hello-jaxrpc/hello"/>
         </antcall>
-    </target>
+    </target>      -->
 
+    <target name="assemble-client" depends="init-common">
+             <mkdir dir="${build.classes.dir}/webclient/WEB-INF/classes"/>
+             <antcall target="run-wscompile">
+              <param name="param1" value="-gen:client -d ${build.classes.dir}/webclient/WEB-INF/classes -keep -s ${build.classes.dir}/webclient/WEB-INF/classes -classpath ${build.classes.dir}/webclient/WEB-INF/classes ${config.wsdl.file}"/>
+             </antcall>
+
+             <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
+                   includes="webclient/**">
+                <classpath refid="class.path"/>
+             </javac>
+             <copy file="client-web.xml" tofile="${build.classes.dir}/webclient/WEB-INF/web.xml"/>
+             <copy file="build/mapping.xml" tofile="${build.classes.dir}/webclient/WEB-INF/hello-mapping.xml"/>
+             <copy file="build/MyHelloService.wsdl" tofile="${build.classes.dir}/webclient/WEB-INF/wsdl/hello.wsdl"/>
+             <copy file="config-wsdl.xml" tofile="${build.classes.dir}/webclient/WEB-INF/hello-config.xml"/>
+
+
+
+
+             <copy file="client-sun-web.xml" tofile="${build.classes.dir}/webclient/WEB-INF/sun-web.xml"/>
+             <jar destfile="${assemble.dir}/wsclient.war" basedir="${build.classes.dir}/webclient" includes="**"/>
+           </target>
+
+           <target name="deploy-client" depends="init-common">
+             <property name="client.war" value="${assemble.dir}/wsclient.war"/>
+             <echo message="Deploying wsclient.war from ${assemble.dir}." level="verbose"/>
+             <exec executable="${ASADMIN}">
+               <arg line="deploy"/>
+               <arg line="--user ${admin.user}"/>
+               <arg line="--passwordfile ${admin.password.file}"/>
+               <arg line="--host ${admin.host}"/>
+               <arg line="--port ${admin.port}"/>
+               <arg line="${client.war}"/>
+             </exec>
+           </target>
+
+       <target name="undeploy-client" depends="init-common">
+           <exec executable="${ASADMIN}">
+             <arg line="undeploy"/>
+             <arg line="--user ${admin.user}"/>
+             <arg line="--passwordfile ${admin.password.file}"/>
+             <arg line="--host ${admin.host}"/>
+             <arg line="--port ${admin.port}"/>
+             <arg line="wsclient"/>
+           </exec>
+         </target>
+
+       <target  name="undeploy" depends="undeploy-war1,undeploy-client"/>
+    
+       <target name="runtest" depends="init-common">
+             <mkdir dir="${build.classes.dir}/client"/>
+             <javac srcdir="." destdir="${build.classes.dir}/client"
+                   classpath="${env.APS_HOME}/lib/reporter.jar"
+                   includes="client/**"/>
+             <unjar src="${env.APS_HOME}/lib/reporter.jar" dest="${build.classes.dir}/client"/>
+             <java classname="client.TestClient">
+               <classpath>
+                 <pathelement path="${build.classes.dir}/client"/>
+               </classpath>
+               <arg value="http://${http.host}:${http.port}/wsclient/RequestProcessor"/>
+             </java>
+           </target>
 
 
 
