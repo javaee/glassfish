@@ -49,6 +49,12 @@ public class ASMain {
     public enum Platform {Felix, Knopflerfish, Equinox, Static}
 
     public static void main(final String args[]) {
+        int minor = getMinorJdkVersion();
+
+        if(minor < 6) {
+            logger.severe("GlassFish requires JDK 6, you are using JDK version " + minor);
+            System.exit(1);
+        }
         setStartupContextProperties(args);
         String platform = Platform.Felix.toString(); // default is Felix
 
@@ -163,4 +169,21 @@ public class ASMain {
             props.getProperty("-asadmin-args")      != null;
     }
 
+    private static int getMinorJdkVersion() {
+        // this is a subset of the code in com.sun.enterprise.util.JDK
+        // this module has no dependencies on util code so it was dragged in here.
+
+        try {
+            String jv = System.getProperty("java.version");
+            String[] ss = jv.split("\\.");
+
+            if(ss == null || ss.length < 3 || !ss[0].equals("1"))
+                return 1;
+
+            return Integer.parseInt(ss[1]);
+        }
+        catch(Exception e) {
+            return 1;
+        }
+    }
 }
