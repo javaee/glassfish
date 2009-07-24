@@ -492,7 +492,8 @@ public class CoyoteAdapter
         // Parse session Id
         String sessionParam = SESSION_PARAMETER;
         Context ctx = (Context) request.getMappingData().context;
-        if (ctx != null && ctx.getSessionCookieName() != null) {
+        if (ctx != null && ctx.isSessionCookieConfigInitialized() &&
+                ctx.getSessionCookieName() != null) {
             sessionParam = ";" + ctx.getSessionCookieName() + "=";
         }
         request.parseSessionId(sessionParam);
