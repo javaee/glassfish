@@ -221,6 +221,8 @@ public class AMXTestBase
         //
         // final String urlStr = "service:jmx:jmxmp://" + mHost + ":" + mPort;
         final String urlStr = "service:jmx:rmi:///jndi/rmi://" + mHost + ":" + mPort + "/jmxrmi";
+        
+        final long start = System.currentTimeMillis();
 
         final JMXServiceURL url = new JMXServiceURL(urlStr);
 
@@ -228,6 +230,7 @@ public class AMXTestBase
         //debug( "BaseAMXTest: connecting to: " + url );
         final MBeanServerConnection conn = jmxConn.getMBeanServerConnection();
         conn.getDomains();	// sanity check
+        //System.out.println( "Got connection, verified connectivity: " + (System.currentTimeMillis() - start));
         return conn;
     }
 

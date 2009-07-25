@@ -361,6 +361,35 @@ public final class AMXProxyTests extends AMXTestBase
         // don't mark this as a failure just yet
         // assert problems.size() == 0;
     }
+    
+    
+    @Test
+    public void testSingletonOrNot()
+    {
+        final Domain domain = getDomainConfig();
+        final Configs configs = getDomainConfig().getConfigs();
+        
+        try
+        {
+            domain.child(Configs.class);
+        }
+        catch( final Exception e )
+        {
+            assert false : e;
+        }
+        
+        try
+        {
+            configs.child(Config.class);
+            assert false : "expecting failure";
+        }
+        catch( final Exception e )
+        {
+            // good
+        }
+    }
+    
+    
 
     /**
       Used to test the AMXProxyHandler processing of Set/List/Map/[] on any AMX MBean that

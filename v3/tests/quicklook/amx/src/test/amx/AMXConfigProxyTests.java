@@ -60,6 +60,7 @@ import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.ListUtil;
+import org.glassfish.admin.amx.util.MapUtil;
 import org.glassfish.admin.amx.logging.Logging;
 import org.glassfish.admin.amx.annotation.*;
 
@@ -227,7 +228,80 @@ public final class AMXConfigProxyTests extends AMXTestBase
             assert domainConfig.removeChild( "system-property", prop.get("Name") ) != null;
         }
     }
+    
+    private Map<String,Object> newPropMap(final String name)
+    {
+        final Map<String,Object>    m = MapUtil.newMap();
+        
+        m.put( "Name", name );
+        m.put( "Value", name + "-value" );
+        m.put( "Description", "dummy property " + name );
+        
+        return m;
+    }
+    
+    
+    @Test
+    public void createChildTest()
+    {
+        final Configs configs = getDomainConfig().getConfigs();
+        
+        final String CONFIG_NAME = "AMXConfigProxyTests.TEST";
+        
+        // remove any existing test element
+        if ( configs.childrenMap(Config.class).get(CONFIG_NAME) != null )
+        {
+            try
+            {
+                configs.removeChild( Util.deduceType(Config.class), CONFIG_NAME );
+                System.out.println( "Removed stale test config " + CONFIG_NAME );
+            }
+            catch( final Exception e )
+            {
+               assert false : "Unable to remove config " + CONFIG_NAME + ": " + e;
+            }
+        }
+        
+        /*
+        
+        final Map<String,Object>    configMap = MapUtil.newMap();
+        
+        final Map<String,Object>    testProps = MapUtil.newMap();
+        testProps.put(  newPropMap("prop1") );
+        testProps.put(  newPropMap("prop2") );
+        testProps.put(  newPropMap("prop3") );
+        
+        for( final Map<String,Object> prop : testProps.values() )
+        {
+            configMap.putAll( Util.deduceType(Property.class), prop );
+        }
+        */
+        
+        /*
+        // create a new ConnectorConnectionPool with a SecurityMap containing a BackendPrincipal
+        final Map<String,Object> params = new HashMap<String,Object>();
+        params.put( "Name", NAME );
+        params.put( "ResourceAdapterName", NAME );
+        params.put( "ConnectionDefinitionName", NAME );
+        params.put( "SteadyPoolSize", 23 ); // check that it works
+        
+        final Map<String,Object> securityParams = new HashMap<String,Object>();
+        securityParams.put( "Name", NAME );
+        params.put( Util.deduceType(SecurityMap.class), securityParams );
+        
+        final Map<String,Object> backendParams = new HashMap<String,Object>();
+        backendParams.put( "UserName", "testUser" );
+        backendParams.put( "Password", "testPassword" );
+        securityParams.put( Util.deduceType(BackendPrincipal.class), backendParams );
+        
+        */
+        
+       //final AMXConfigProxy result = configs.createChild( Util.deduceType(Config.class), configMap);
+        
+       // return result.objectName();
 
+        
+    }
 
 }
 
