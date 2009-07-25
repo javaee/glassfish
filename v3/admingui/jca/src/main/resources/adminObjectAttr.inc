@@ -53,7 +53,7 @@
             <sun:textField id="ResType" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['ResType']}" required="#{true}"/>
         </sun:property>   
 
-        <sun:property id="resAdaptorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}">
+        <sun:property id="resAdaptorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njca.adminObjectResource.resourceAdapterHelp}">
             <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['ResAdapter']}" labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" >
                 <!beforeCreate
                      getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{requestScope.connList}")
