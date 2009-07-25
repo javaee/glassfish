@@ -171,11 +171,11 @@
         <echo message="@@## embeddedweb ##@@"/>
         <ant dir="embeddedweb" target="${connector-target}"/>
 
-        <!--<echo message="@@## mq ##@@"/>
-      <ant dir="mq" target="${connector-target}"/>-->
+        <echo message="@@## mq ##@@"/>
+        <ant dir="../mq" target="${connector-target}"/>
 
-      <echo message="@@## nonacc ##@@"/>
-      <ant dir="../nonacc" target="${connector-target}"/>
+        <echo message="@@## nonacc ##@@"/>
+        <ant dir="../nonacc" target="${connector-target}"/>
 
         <!--	    Commented out the defaultConnectorResource test because we  cannot
         add a non-XA Resource [a database connection in this case] to a global JTS transaction containing
