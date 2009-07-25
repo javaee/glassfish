@@ -147,9 +147,11 @@ public class LifecycleListenerImpl implements LifecycleListener {
 
     private void updateDB() {
         try {
-            Class.forName("com.inet.ora.OraDriver");
-            String url = "jdbc:inetora::wrx.india.sun.com:1521:dbsmpl1";
-            java.sql.Connection con = DriverManager.getConnection(url,"connector", "connector");
+            //Class.forName("com.inet.ora.OraDriver");
+            Class.forName("org.apache.derby.jdbc.ClientDriver");
+            ////String url = "jdbc:inetora::wrx.india.sun.com:1521:dbsmpl1";
+            String url = "jdbc:derby://localhost:1527/testdb;create=true;";
+            java.sql.Connection con = DriverManager.getConnection(url,"dbuser", "dbpassword");
             String qry = "update lifecycle_test1 set status=1" ;
             con.createStatement().executeUpdate(qry);
             con.close();

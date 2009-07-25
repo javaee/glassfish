@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "file:./../../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
-<!ENTITY commonRun SYSTEM "file:./../../../../config/run.xml">
-<!ENTITY testproperties SYSTEM "file:./build.properties">
+<!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "./../../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "./build.properties">
 ]>
 
 <project name="simplestressApp" default="usage" basedir=".">
@@ -150,7 +150,7 @@
     </target>
 
     <target name="create-jms-user" depends="init-common">
-           <exec executable="${env.S1AS_HOME}/imq/bin/imqusermgr" failonerror="${FAILONERR}">
+           <exec executable="${env.S1AS_HOME}/../mq/bin/imqusermgr" failonerror="${FAILONERR}">
                <env key="IMQ_JAVAHOME" value="${java.home}"/>
                   <arg line="${jmsServer}"/>
                   <arg line="${vardir}"/>
