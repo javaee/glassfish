@@ -45,6 +45,7 @@ import com.sun.ejb.containers.EJBLocalRemoteObject;
 import com.sun.ejb.containers.EjbFutureTask;
 import com.sun.ejb.containers.EJBContextImpl;
 import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.api.invocation.ResourceHandler;
 import com.sun.enterprise.transaction.spi.TransactionOperationsManager;
 
 import javax.ejb.EJBContext;
@@ -645,6 +646,14 @@ public class EjbInvocation
        return getEjbSecurityManager().isCallerInRole(role);
    } 
 
+   public ResourceHandler getResourceHandler() {
+       ResourceHandler rh = super.getResourceHandler();
+       if (rh == null && context instanceof ResourceHandler) {
+           rh = (ResourceHandler)context;
+       }
+
+       return rh;
+   }
        
     }
     
