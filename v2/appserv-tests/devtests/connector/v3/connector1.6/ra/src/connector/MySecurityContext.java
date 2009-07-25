@@ -22,12 +22,16 @@ public class MySecurityContext  extends SecurityContext {
     protected String principalName;
     protected boolean translationRequired;
     protected Subject subject;
+    protected boolean expectSuccess = true;
+    protected boolean expectPVSuccess = true;
 
-    public MySecurityContext(String userName, String password, String principalName, boolean translationRequired) {
+    public MySecurityContext(String userName, String password, String principalName, boolean translationRequired, boolean expectSuccess, boolean expectPasswordValidationSuccess) {
         this.userName = userName;
         this.password = password;
         this.principalName = principalName;
         this.translationRequired = translationRequired;
+        this.expectSuccess = expectSuccess;
+        this.expectPVSuccess = expectPasswordValidationSuccess;
     }
 
     public boolean isTranslationRequired() {
@@ -67,9 +71,15 @@ public class MySecurityContext  extends SecurityContext {
         } catch (UnsupportedCallbackException e) {
             debug("exception occured : " + e.getMessage());
             e.printStackTrace();
+            if(expectSuccess){
+                throw new Error("Container has thrown UnsupportedCallbackException");
+            }
         } catch (IOException e) {
             e.printStackTrace();
             debug("exception occured : " + e.getMessage());
+            if(expectSuccess){
+                throw new Error("Container has thrown IOException while handling callbacks");
+            }
         }
 
         if (!translationRequired) {
@@ -77,8 +87,14 @@ public class MySecurityContext  extends SecurityContext {
                 debug("Password validation callback failure for user : " + userName);
                 //throw new RuntimeException("Password validation callback failed for user " + userName);
                 //TODO need to throw exception later (once spec defines it) and fail setup security context
+                if(expectPVSuccess){
+                    throw new Error("Password validation callback failed for user " + userName);
+                }
             } else {
                 debug("Password validation callback succeded for user : " + userName);
+                if(!expectPVSuccess){
+                    throw new Error("Password validation callback failed for user " + userName);
+                }
             }
         }
     }

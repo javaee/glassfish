@@ -10,7 +10,7 @@ import java.util.List;
 
 public class RogueSecurityContextWithListener extends MySecurityContextWithListener{
     public RogueSecurityContextWithListener(String userName, String password, String principalName) {
-        super(userName, password, principalName, true); //with translationRequired
+        super(userName, password, principalName, true, true, false); //with translationRequired
     }
 
     protected void addCallbackHandlers(List<Callback> callbacks, Subject execSubject) {

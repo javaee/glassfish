@@ -31,6 +31,7 @@ public class WorkDispatcher implements Work {
     private XATerminator xa;
 
     private int numOfMessages = 1;
+
     public WorkDispatcher(
             String id,
             BootstrapContext ctx,
@@ -78,52 +79,52 @@ public class WorkDispatcher implements Work {
                     //wm.doWork(d, 0, null, null);
                 } else {
 
-                    String jagadish="jagadish";
+                    String jagadish = "jagadish";
                     String prasath = "prasath";
                     String groupName = "iec";
-                    
+
                     boolean translationRequired = determineIdentityType();
-                    if(translationRequired){
-                        jagadish= "eis-jagadish";
+                    if (translationRequired) {
+                        jagadish = "eis-jagadish";
                         prasath = "eis-prasath";
-                        groupName="eis-group";
+                        groupName = "eis-group";
                     }
                     newLine(1);
-                    
 
-                    int count =0;
+
+                    int count = 0;
                     count = testExecutionContext(count);
 
 
-                    count = testTransactionContext(count, translationRequired, "abc", "xyz", "abc");
+                    count = testTransactionContext(count, translationRequired, "abc", "xyz", "abc", true, false);
 
-                    count = testTICWithSIC(count, translationRequired, "jagadish", "prasath", jagadish);
+                    count = testTICWithSIC(count, translationRequired, "jagadish", "prasath", jagadish, true, true);
 
                     //testTICWithSIC(translationRequired, "", "", "ADM");
                     //testTICWithSIC(translationRequired, "", "", "j2ee");
 
 
-                    count = testRollbackTICWithSIC(count, translationRequired, "jagadish", "prasath", jagadish);
+                    count = testRollbackTICWithSIC(count, translationRequired, "jagadish", "prasath", jagadish, true, true);
 
-                    count = testDuplicateTICWithSIC(count, translationRequired, "jagadish", "prasath",  jagadish);
+                    count = testDuplicateTICWithSIC(count, translationRequired, "jagadish", "prasath", jagadish);
 
-                    count = testTICWithSICAndSICListener(count, translationRequired, "jagadish", "prasath",  prasath);
+                    count = testTICWithSICAndSICListener(count, translationRequired, "jagadish", "prasath", prasath, true, true);
 
                     count = testTICWithSICAndSICListenerForGroupCallback(count, groupName);
 
-                    if(translationRequired){
+                    if (translationRequired) {
                         count = testTICWithSICAndSICListenerForDomainXMLFlag(count, "jagadish", "prasath", jagadish);
 
-                        count = testTICSICWithoutMappingValue(count, "jagadish", "prasath", "eis-user");
+                        count = testTICSICWithoutMappingValue(count, "jagadish", "prasath", "eis-user", true, true);
 
                         count = testTICWithRogueSIC(count, "jagadish", "prasath", jagadish);
                     }
 
-                    count = testTICWithECWithSIC(count, translationRequired, "abc", "xyz", "abc");
+                    count = testTICWithECWithSIC(count, translationRequired, "abc", "xyz", "abc", false, false);
 
                     count = testECWithoutAnyWorkContext(count);
 
-                    count = testRollbackTICWithSC(count, translationRequired, "abc", "xyz", "abc");
+                    count = testRollbackTICWithSC(count, translationRequired, "abc", "xyz", "abc", true, false);
 
                     count = testSICAbstractClassSupport(count);
 
@@ -147,11 +148,23 @@ public class WorkDispatcher implements Work {
 
                     //testTICWithUnauthenticatedICWithSinglePrincipal();
 
-                    count = testSinglePrincipalSIC(count,  jagadish);
+                    count = testSinglePrincipalSIC(count, jagadish);
 
-                    count = testUnauthenticatedSIC_NullName(count );
+                    count = testUnauthenticatedSIC_NullName(count);
 
                     count = testUnauthenticatedSIC_NullPrincipal(count);
+
+                    count = testNestedWorkSupport(count, false, false, "jagadish", "prasath", "jagadish", true, true, true, translationRequired);
+
+
+                    count = testNestedWorkSupport(count, true, false, "jagadish", "prasath", "jagadish", true, true, true, translationRequired);
+
+                    count = testNestedWorkSupport(count, true, false, "jagadish", "xyz", "jagadish", true, false, true, translationRequired);
+
+                    count = testNestedWorkSupport(count, true, false, "jagadish", "prasath", "jagadish", true, true, false, translationRequired);
+
+
+                    count = testNestedWorkSupport(count, false, true, "jagadish", "prasath", "jagadish", true, true, true, translationRequired);
 
 
 /*
@@ -188,11 +201,64 @@ public class WorkDispatcher implements Work {
         debug("LEAVE...");
     }
 
+    private int testNestedWorkSupport(int count, boolean transacted, boolean transactedChild, String user, String password,
+                                      String principal, boolean expectSuccess, boolean expectPVSuccess, boolean successfulPVForChild, boolean translationRequired) {
+        ExecutionContext ec = null;
+        try {
+            int numOfMessages = 1;
+
+            debug("writing to DB - nested work");
+            //MessageEndpoint ep = factory.createEndpoint(null);
+            MessageEndpoint ep = factory.createEndpoint(new FakeXAResource());
+
+            if (transacted)
+                count++;
+
+            if (transactedChild)
+                count++;
+
+            //importing transaction
+
+            NestedWork_Parent w =
+                    new NestedWork_Parent(ep, numOfMessages, "WRITE", false, 1, wm, xa, transacted, transactedChild, successfulPVForChild,  translationRequired);
+
+            if (transacted) {
+                //write/commit
+                ec = startTx();
+                TransactionContext tc = new TransactionContext();
+                tc.setXid(ec.getXid());
+                w.addWorkContext(tc);
+                debug("Start TX - " + ec.getXid());
+            }
+
+            MySecurityContext sic =
+                    new MySecurityContextWithListener(user, password, principal, translationRequired, expectSuccess, expectPVSuccess);
+            w.addWorkContext(sic);
+
+            wm.doWork(w, 0, null, null);
+            if (transacted) {
+                xa.commit(ec.getXid(), true);
+                debug("commited write to DB - with ExecutionContext");
+            }
+
+
+            debug("completed - nested work");
+        } catch (Throwable e) {
+            debug(e.toString());
+            e.printStackTrace();
+        } finally {
+            Controls.expectedResults = count;
+            notifyAndWait();
+            newLine(2);
+            return Controls.expectedResults;
+        }
+    }
+
     private boolean determineIdentityType() {
         String raName = "generic-ra";
-        if(System.getProperty(raName+"-principals-map") != null){
+        if (System.getProperty(raName + "-principals-map") != null) {
             return true;
-        }else if (System.getProperty(raName+"-groups-map") != null){
+        } else if (System.getProperty(raName + "-groups-map") != null) {
             return true;
         }
         return false;
@@ -219,7 +285,7 @@ public class WorkDispatcher implements Work {
         } catch (Throwable e) {
             debug(e.toString());
             e.printStackTrace();
-        }finally{
+        } finally {
             Controls.expectedResults = 0;
             notifyAndWait();
             newLine(2);
@@ -260,9 +326,10 @@ public class WorkDispatcher implements Work {
     }
 
     //"jagadish", "prasath", "eis-user", true
-    private int testTICSICWithoutMappingValue(int count, String user, String password, String principal) {
+    private int testTICSICWithoutMappingValue(int count, String user, String password, String principal,
+                                              boolean expectSuccess, boolean expectPVSuccess) {
         try {
-
+            count++;
             //MessageEndpoint ep = factory.createEndpoint(null);
             MessageEndpoint ep = factory.createEndpoint(new FakeXAResource());
 
@@ -281,19 +348,20 @@ public class WorkDispatcher implements Work {
             tic.setXid(ec.getXid());
             w1.addWorkContext(tic);
 
-            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal, true);
+            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal, true,
+                    expectSuccess, expectPVSuccess);
             w1.addWorkContext(sic);
 
 
             wm.doWork(w1, 0, null, null);
             //wm.doWork(w1, 0, ec, null);
             xa.commit(ec.getXid(), true);
-            count++;
+
 
             debug("commited write to DB - with TransactionContext, SecurityContext With LISTENER, " +
                     "Translation Required (no mapping available)");
             //   newLine(2);
-            Controls.expectedResults = 5;
+            //Controls.expectedResults = 5;
 
         } catch (Throwable e) {
             debug(e.toString());
@@ -310,7 +378,8 @@ public class WorkDispatcher implements Work {
         try {
             MessageEndpoint ep2 = factory.createEndpoint(new FakeXAResource());
             ExecutionContext ec1 = startTx();
-            debug("writing to DB - with TransactionContext, with UnauthenticatedIdentityOptWorkContext - single principal exec. subject");
+            debug("writing to DB - with TransactionContext, with UnauthenticatedIdentityOptWorkContext -" +
+                    " single principal exec. subject");
             debug("Start TX - " + ec1.getXid());
 
             JSR322Work w1 =
@@ -321,7 +390,8 @@ public class WorkDispatcher implements Work {
             w1.addWorkContext(tic);
 
 
-            UnauthenticatedIdentityOptWorkContext uic = new UnauthenticatedIdentityOptWorkContext(true, true, "eis-jagadish", "jagadish", "prasath");
+            UnauthenticatedIdentityOptWorkContext uic = new UnauthenticatedIdentityOptWorkContext(true, true,
+                    "eis-jagadish", "jagadish", "prasath");
             w1.addWorkContext(uic);
 
 
@@ -329,7 +399,8 @@ public class WorkDispatcher implements Work {
             xa.rollback(ec1.getXid());
 
 
-            debug("writing to DB - with TransactionContext, with UnauthenticatedIdentityOptWorkContext - single principal exec. subject");
+            debug("writing to DB - with TransactionContext, with UnauthenticatedIdentityOptWorkContext - " +
+                    "single principal exec. subject");
             //   newLine(2);
 
             Controls.expectedResults = 6;
@@ -345,15 +416,17 @@ public class WorkDispatcher implements Work {
     }
 
     //"abc", "xyz", "abc", true
-    private void testTICWIthNestedWorkWithSICWithoutEC(boolean translationRequired, String user, String password, String principal) {
+    private void testTICWIthNestedWorkWithSICWithoutEC(boolean translationRequired, String user, String password,
+                                                       String principal, boolean expectSuccess,
+                                                       boolean expectPVSuccess) {
         try {
             MessageEndpoint ep2 = factory.createEndpoint(new FakeXAResource());
             ExecutionContext ec1 = startTx();
             debug("writing to DB - NestedWork with TransactionContext, with SIC, without ExecutionContext");
             debug("Start TX - " + ec1.getXid());
 
-            JSR322NestedWork w1 =
-                    new JSR322NestedWork(ep2, numOfMessages, "WRITE", 1, wm, xa);
+            NestedWork_Parent w1 =
+                    new NestedWork_Parent(ep2, numOfMessages, "WRITE", 1, wm, xa, true, false, true, translationRequired);
 
 
             TransactionContext tic = new TransactionContext();
@@ -361,7 +434,8 @@ public class WorkDispatcher implements Work {
             w1.addWorkContext(tic);
 
 
-            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal, translationRequired);
+            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal,
+                    translationRequired, expectSuccess, expectPVSuccess);
             w1.addWorkContext(sic);
 
             wm.doWork(w1, 0, null, null);
@@ -386,7 +460,8 @@ public class WorkDispatcher implements Work {
         try {
             MessageEndpoint ep2 = factory.createEndpoint(new FakeXAResource());
             ExecutionContext ec1 = startTx();
-            debug("writing to DB - with TransactionContext, with UnauthenticatedIdentityOptWorkContext - empty exec. subject");
+            debug("writing to DB - with TransactionContext, with UnauthenticatedIdentityOptWorkContext - " +
+                    "empty exec. subject");
             debug("Start TX - " + ec1.getXid());
 
             JSR322Work w1 =
@@ -397,14 +472,16 @@ public class WorkDispatcher implements Work {
             w1.addWorkContext(tic);
 
 
-            UnauthenticatedIdentityOptWorkContext uic = new UnauthenticatedIdentityOptWorkContext(true, false, null, null, null);
+            UnauthenticatedIdentityOptWorkContext uic = new UnauthenticatedIdentityOptWorkContext(
+                    true, false, null, null, null);
             w1.addWorkContext(uic);
 
             wm.doWork(w1, 0, null, null);
             xa.rollback(ec1.getXid());
 
 
-            debug("writing to DB - with TransactionContext, with UnauthenticatedIdentityOptWorkContext - empty exec. subject");
+            debug("writing to DB - with TransactionContext, with UnauthenticatedIdentityOptWorkContext -" +
+                    " empty exec. subject");
             //   newLine(2);
 
             Controls.expectedResults = 6;
@@ -422,7 +499,8 @@ public class WorkDispatcher implements Work {
         try {
             MessageEndpoint ep2 = factory.createEndpoint(new FakeXAResource());
             ExecutionContext ec1 = startTx();
-            debug("writing to DB - with TransactionContext, with UnauthenticatedIdentityOptWorkContext - null principal");
+            debug("writing to DB - with TransactionContext, with UnauthenticatedIdentityOptWorkContext -" +
+                    " null principal");
             debug("Start TX - " + ec1.getXid());
 
             JSR322Work w1 =
@@ -433,14 +511,16 @@ public class WorkDispatcher implements Work {
             w1.addWorkContext(tic);
 
 
-            UnauthenticatedIdentityOptWorkContext uic = new UnauthenticatedIdentityOptWorkContext(true, true, null, null, null);
+            UnauthenticatedIdentityOptWorkContext uic = new UnauthenticatedIdentityOptWorkContext(
+                    true, true, null, null, null);
             w1.addWorkContext(uic);
 
             wm.doWork(w1, 0, null, null);
             xa.rollback(ec1.getXid());
 
 
-            debug("writing to DB - with TransactionContext, with UnauthenticatedIdentityOptWorkContext - null principal");
+            debug("writing to DB - with TransactionContext, with UnauthenticatedIdentityOptWorkContext " +
+                    "- null principal");
             //   newLine(2);
 
             Controls.expectedResults = 6;
@@ -456,6 +536,8 @@ public class WorkDispatcher implements Work {
 
     private int testTICWithUnsupportedIC(int count) {
         try {
+            //expect failure
+            //count++;
             MessageEndpoint ep2 = factory.createEndpoint(new FakeXAResource());
             ExecutionContext ec1 = startTx();
             debug("writing to DB - with TransactionContext, with UnSupportedWorkContext");
@@ -473,8 +555,8 @@ public class WorkDispatcher implements Work {
             w1.addWorkContext(uic);
 
             wm.doWork(w1, 0, null, null);
-            xa.commit(ec1.getXid(), true );
-            count++;
+            xa.commit(ec1.getXid(), true);
+
 
 
             debug("writing to DB - with TransactionContext, with UnsupportedWorkContext");
@@ -492,6 +574,7 @@ public class WorkDispatcher implements Work {
 
     private int testTICWithCIC_D(int count) {
         try {
+            count++;
             MessageEndpoint ep2 = factory.createEndpoint(new FakeXAResource());
             ExecutionContext ec1 = startTx();
             debug("writing to DB - with TransactionContext, with CustomWorkContext_D");
@@ -510,7 +593,7 @@ public class WorkDispatcher implements Work {
 
             wm.doWork(w1, 0, null, null);
             xa.commit(ec1.getXid(), true);
-            count++;
+
 
 
             debug("writing to DB - with TransactionContext, with CustomWorkContext_D");
@@ -529,6 +612,7 @@ public class WorkDispatcher implements Work {
 
     private int testTICWithCIC_E(int count) {
         try {
+            count++;
             MessageEndpoint ep2 = factory.createEndpoint(new FakeXAResource());
             ExecutionContext ec1 = startTx();
             debug("writing to DB - with TransactionContext, with CustomWorkContext_E");
@@ -547,7 +631,7 @@ public class WorkDispatcher implements Work {
 
             wm.doWork(w1, 0, null, null);
             xa.commit(ec1.getXid(), true);
-            count++;
+
 
 
             debug("writing to DB - with TransactionContext, with CustomWorkContext_E");
@@ -566,6 +650,7 @@ public class WorkDispatcher implements Work {
 
     private int testTICWithCIC_C(int count) {
         try {
+            count++;
             MessageEndpoint ep2 = factory.createEndpoint(new FakeXAResource());
             ExecutionContext ec1 = startTx();
             debug("writing to DB - with TransactionContext, with CustomWorkContext_C");
@@ -584,7 +669,7 @@ public class WorkDispatcher implements Work {
 
             wm.doWork(w1, 0, null, null);
             xa.commit(ec1.getXid(), true);
-            count++;
+
 
             debug("writing to DB - with TransactionContext, with CustomWorkContext_C");
 
@@ -600,8 +685,11 @@ public class WorkDispatcher implements Work {
     }
 
     //"abc", "xyz", "abc", false
-    private int testRollbackTICWithSC(int count, boolean translationRequired, String user, String password, String principal) {
+    private int testRollbackTICWithSC(int count, boolean translationRequired, String user, String password,
+                                      String principal, boolean expectSuccess, boolean expectPVSuccess) {
         try {
+            //expect failure
+            //count++;
             MessageEndpoint ep2 = factory.createEndpoint(new FakeXAResource());
             ExecutionContext ec1 = startTx();
             debug("writing to DB - with TransactionContext, with ExecutionContext, with SIC");
@@ -615,12 +703,13 @@ public class WorkDispatcher implements Work {
             w1.addWorkContext(tic);
 
 
-            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal, translationRequired);
+            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal, translationRequired,
+                    expectSuccess, expectPVSuccess);
             w1.addWorkContext(sic);
 
             wm.doWork(w1, 0, ec1, null);
             xa.commit(ec1.getXid(), true);
-            count++;
+
 
 
             debug("commited write to DB - with TransactionContext, with ExecutionContext, with SIC");
@@ -639,6 +728,8 @@ public class WorkDispatcher implements Work {
 
     private int testECWithoutAnyWorkContext(int count) {
         try {
+            //expect failure
+            //count++;
             MessageEndpoint ep2 = factory.createEndpoint(new FakeXAResource());
             ExecutionContext ec1 = startTx();
             debug("writing to DB - without any WorkContext, with ExecutionContext");
@@ -649,7 +740,7 @@ public class WorkDispatcher implements Work {
 
             wm.doWork(w1, 0, ec1, null);
             xa.commit(ec1.getXid(), true);
-            count++;
+
 
 
             debug("commited write to DB - without any WorkContext, with ExecutionContext");
@@ -669,8 +760,11 @@ public class WorkDispatcher implements Work {
     }
 
     //"abc", "xyz", "abc", false
-    private int testTICWithECWithSIC(int count, boolean translationRequired, String user, String password, String principal) {
+    private int testTICWithECWithSIC(int count, boolean translationRequired, String user, String password,
+                                     String principal, boolean expectSuccess, boolean expectPVSuccess) {
         try {
+            //expect failure
+            //count++;
             MessageEndpoint ep2 = factory.createEndpoint(new FakeXAResource());
             ExecutionContext ec1 = startTx();
             debug("writing to DB - without TransactionContext, with SIC, with ExecutionContext");
@@ -684,17 +778,17 @@ public class WorkDispatcher implements Work {
             tic.setXid(ec1.getXid());
             w1.addWorkContext(tic);
 
-            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal, translationRequired);
+            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal, translationRequired,
+                    expectSuccess, expectPVSuccess);
             w1.addWorkContext(sic);
 
             wm.doWork(w1, 0, ec1, null);
             xa.commit(ec1.getXid(), true);
-            count++;
+
 
 
             debug("rolled back write to DB - without TransactionContext, with SIC,  with ExecutionContext");
             //   newLine(2);
-
 
 
         } catch (Throwable e) {
@@ -711,7 +805,8 @@ public class WorkDispatcher implements Work {
     //"jagadish", "prasath", "eis-jagadish" [ONLY FOR TRANSLATION REQUIRED]
     private int testTICWithRogueSIC(int count, String user, String password, String principal) {
         try {
-
+            //expect failure
+            //count++;
             //MessageEndpoint ep = factory.createEndpoint(null);
             MessageEndpoint ep = factory.createEndpoint(new FakeXAResource());
 
@@ -736,7 +831,7 @@ public class WorkDispatcher implements Work {
 
             wm.doWork(w1, 0, null, null);
             xa.commit(ec.getXid(), true);
-            count++;
+
 
             debug("commited write to DB - with TransactionContext, ROGUE SecurityContext " +
                     "having PasswordValidationCallback for " +
@@ -756,7 +851,7 @@ public class WorkDispatcher implements Work {
     //"jagadish", "prasath", "eis-jagadish"
     private int testTICWithSICAndSICListenerForDomainXMLFlag(int count, String user, String password, String principal) {
         try {
-
+            count++;
             //MessageEndpoint ep = factory.createEndpoint(null);
             MessageEndpoint ep = factory.createEndpoint(new FakeXAResource());
 
@@ -781,13 +876,13 @@ public class WorkDispatcher implements Work {
             wm.doWork(w1, 0, null, null);
             //wm.doWork(w1, 0, ec, null);
             xa.commit(ec.getXid(), true);
-            count++;
+
 
 
             debug("commited write to DB - with TransactionContext, " +
                     "SecurityContext");
             //   newLine(2);
-            Controls.expectedResults = 1;
+            //Controls.expectedResults = 1;
         } catch (Throwable e) {
             debug(e.toString());
             e.printStackTrace();
@@ -802,7 +897,7 @@ public class WorkDispatcher implements Work {
     //eis-group
     private int testTICWithSICAndSICListenerForGroupCallback(int count, String groupName) {
         try {
-
+            count++;
             MessageEndpoint ep = factory.createEndpoint(new FakeXAResource());
 
             //importing transaction
@@ -815,9 +910,9 @@ public class WorkDispatcher implements Work {
             JSR322Work w1 =
                     new JSR322Work(ep, numOfMessages, "WRITE");
 
-                TransactionContext tic = new TransactionContext();
-                tic.setXid(ec.getXid());
-                w1.addWorkContext(tic);
+            TransactionContext tic = new TransactionContext();
+            tic.setXid(ec.getXid());
+            w1.addWorkContext(tic);
 
             MyPlainSICWithGPC sic = new MyPlainSICWithGPC(new String[]{groupName});
             w1.addWorkContext(sic);
@@ -826,7 +921,7 @@ public class WorkDispatcher implements Work {
             wm.doWork(w1, 0, null, null);
             //wm.doWork(w1, 0, ec, null);
             xa.commit(ec.getXid(), true);
-            count++;
+
 
 
             debug("commited write to DB - with TransactionContext, " +
@@ -845,9 +940,10 @@ public class WorkDispatcher implements Work {
     }
 
     //"jagadish", "prasath", "eis-prasath", true
-    private int testTICWithSICAndSICListener(int count, boolean translationRequired, String user, String password, String principal) {
+    private int testTICWithSICAndSICListener(int count, boolean translationRequired, String user, String password,
+                                             String principal, boolean expectSuccess, boolean expectPVSuccess) {
         try {
-
+            count++;
 
             //MessageEndpoint ep = factory.createEndpoint(null);
             MessageEndpoint ep = factory.createEndpoint(new FakeXAResource());
@@ -866,14 +962,15 @@ public class WorkDispatcher implements Work {
             tic.setXid(ec.getXid());
             w1.addWorkContext(tic);
 
-            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal, translationRequired);
+            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal, translationRequired,
+                    expectSuccess, expectPVSuccess);
             w1.addWorkContext(sic);
 
 
             wm.doWork(w1, 0, null, null);
             //wm.doWork(w1, 0, ec, null);
             xa.commit(ec.getXid(), true);
-            count++;
+
 
 
             debug("commited write to DB - with TransactionContext, " +
@@ -892,8 +989,11 @@ public class WorkDispatcher implements Work {
     }
 
     //jagadish prasath eis-jagadish true
-    private int testDuplicateTICWithSIC(int count, boolean translationRequired, String user, String password, String principal) {
+    private int testDuplicateTICWithSIC(int count, boolean translationRequired, String user, String password,
+                                        String principal) {
         try {
+            //expect failure
+            //count++;
             MessageEndpoint ep = factory.createEndpoint(new FakeXAResource());
 
             //write/commit
@@ -908,7 +1008,8 @@ public class WorkDispatcher implements Work {
             tic.setXid(ec.getXid());
             w1.addWorkContext(tic);
 
-            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal, translationRequired);
+            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal,
+                    translationRequired, false, false);
             w1.addWorkContext(sic);
 
             //duplicate tx inflow context
@@ -919,7 +1020,7 @@ public class WorkDispatcher implements Work {
 
             wm.doWork(w1, 0, null, null);
             xa.commit(ec.getXid(), true);
-            count++;
+
 
 
             debug("commited write to DB - with DUPLICATE TransactionContext, SecurityContext");
@@ -936,9 +1037,10 @@ public class WorkDispatcher implements Work {
     }
 
     //jagadish, prasath, eis-jagadish, true
-    private int testRollbackTICWithSIC(int count, boolean translationRequired, String user, String password, String principal) {
+    private int testRollbackTICWithSIC(int count, boolean translationRequired, String user, String password,
+                                       String principal, boolean expectSuccess, boolean expectPVSuccess) {
         try {
-
+            count++;
             MessageEndpoint ep = factory.createEndpoint(new FakeXAResource());
 
             //write/commit
@@ -953,11 +1055,12 @@ public class WorkDispatcher implements Work {
             tic.setXid(ec.getXid());
             w1.addWorkContext(tic);
 
-            MySecurityContext sic = new MySecurityContext(user, password, principal, translationRequired);
+            MySecurityContext sic = new MySecurityContext(user, password, principal, translationRequired,
+                    expectSuccess, expectPVSuccess);
             w1.addWorkContext(sic);
             wm.doWork(w1, 0, null, null);
-            xa.commit(ec.getXid(),true);
-            count++;
+            xa.commit(ec.getXid(), true);
+
 
             debug("committed write to DB - with TransactionContext, SecurityContext");
 
@@ -973,8 +1076,10 @@ public class WorkDispatcher implements Work {
     }
 
     //jagadish, prasath, eis-jagadish, true
-    private int testTICWithSIC(int count, boolean translationRequired, String user, String password, String principal) {
+    private int testTICWithSIC(int count, boolean translationRequired, String user, String password, String principal,
+                               boolean expectSuccess, boolean expectPVSuccess) {
         try {
+            count++;
             MessageEndpoint ep = factory.createEndpoint(new FakeXAResource());
 
             //write/commit
@@ -989,11 +1094,11 @@ public class WorkDispatcher implements Work {
             tic.setXid(ec.getXid());
             w1.addWorkContext(tic);
 
-            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal, translationRequired);
+            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal, translationRequired, expectSuccess, expectPVSuccess);
             w1.addWorkContext(sic);
             wm.doWork(w1, 0, null, null);
             xa.commit(ec.getXid(), true);
-            count++;
+
 
             debug("Committed write to DB - with TransactionContext, SecurityContext");
 
@@ -1010,9 +1115,10 @@ public class WorkDispatcher implements Work {
     }
 
     //abc, xyz, abc, true
-    private int testTransactionContext(int count, boolean translationRequired, String user, String password, String principal) {
+    private int testTransactionContext(int count, boolean translationRequired, String user, String password,
+                                       String principal, boolean expectSuccess, boolean expectPVSuccess) {
         try {
-
+            count++;
             MessageEndpoint ep2 = factory.createEndpoint(new FakeXAResource());
             ExecutionContext ec1 = startTx();
             debug("writing to DB - with TransactionContext");
@@ -1025,12 +1131,13 @@ public class WorkDispatcher implements Work {
             tic.setXid(ec1.getXid());
             w1.addWorkContext(tic);
 
-            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal, translationRequired);
+            MySecurityContext sic = new MySecurityContextWithListener(user, password, principal, translationRequired,
+                    expectSuccess, expectPVSuccess);
             w1.addWorkContext(sic);
 
             wm.doWork(w1, 0, null, null);
             xa.commit(tic.getXid(), true);
-            count++;
+
 
             debug("committed write to DB - with TransactionContext");
 
@@ -1046,8 +1153,8 @@ public class WorkDispatcher implements Work {
     }
 
 
-    private void testUnauthenticatedSIC_EmptyExecutionSubject(){
-        try{
+    private void testUnauthenticatedSIC_EmptyExecutionSubject() {
+        try {
 
             debug("writing to DB - Unauthenticated SIC With Empty Execution Subject");
 
@@ -1082,9 +1189,9 @@ public class WorkDispatcher implements Work {
     }
 
 
-    private int testUnauthenticatedSIC_NullPrincipal(int count){
-        try{
-
+    private int testUnauthenticatedSIC_NullPrincipal(int count) {
+        try {
+            count++;
             debug("writing to DB - Unauthenticated SIC With Null Principal");
 
             //importing transaction
@@ -1098,12 +1205,12 @@ public class WorkDispatcher implements Work {
                     new JSR322Work(ep2, numOfMessages, "WRITE");
 
             UnauthenticatedSecurityContext_NullPrincipalOrName uscees =
-                    new UnauthenticatedSecurityContext_NullPrincipalOrName(true,"", true);
+                    new UnauthenticatedSecurityContext_NullPrincipalOrName(true, "", true);
             w1.addWorkContext(uscees);
 
             wm.doWork(w1, 0, null, null);
             xa.commit(ec1.getXid(), true);
-            count++;
+
 
             debug("commited write to DB - Unauthenticated SIC With Null Principal");
 
@@ -1119,9 +1226,9 @@ public class WorkDispatcher implements Work {
         }
     }
 
-    private int testUnauthenticatedSIC_NullName(int count){
-        try{
-
+    private int testUnauthenticatedSIC_NullName(int count) {
+        try {
+            count++;
             debug("writing to DB - Unauthenticated SIC With Null name");
 
             //importing transaction
@@ -1140,7 +1247,7 @@ public class WorkDispatcher implements Work {
 
             wm.doWork(w1, 0, null, null);
             xa.commit(ec1.getXid(), true);
-            count++;
+
 
             debug("commited write to DB - Unauthenticated SIC With Null name");
 
@@ -1157,9 +1264,9 @@ public class WorkDispatcher implements Work {
     }
 
     //principal = eis-jagadish/jagadish
-    private int testSinglePrincipalSIC(int count, String principal){
-        try{
-
+    private int testSinglePrincipalSIC(int count, String principal) {
+        try {
+            count++;
             debug("writing to DB - Single Principal SIC with TIC");
 
             //importing transaction
@@ -1181,7 +1288,7 @@ public class WorkDispatcher implements Work {
 
             wm.doWork(w1, 0, null, null);
             xa.commit(ec1.getXid(), true);
-            count++;
+
 
             debug("commited write to DB - Single Principal SIC with TIC");
 
@@ -1202,20 +1309,20 @@ public class WorkDispatcher implements Work {
 
         ExecutionContext ec = null;
         try {
-
+            count++;
             debug("writing to DB - with ExecutionContext");
             //MessageEndpoint ep = factory.createEndpoint(null);
             MessageEndpoint ep = factory.createEndpoint(new FakeXAResource());
 
             //write/commit
-             ec = startTx();
+            ec = startTx();
             debug("Start TX - " + ec.getXid());
 
             DeliveryWork w =
                     new DeliveryWork(ep, numOfMessages, "WRITE");
             wm.doWork(w, 0, ec, null);
             xa.commit(ec.getXid(), true);
-            count++;
+
 
             debug("commited write to DB - with ExecutionContext");
 
@@ -1244,7 +1351,7 @@ public class WorkDispatcher implements Work {
         } catch (Throwable e) {
             debug(e.toString());
             e.printStackTrace();
-        }finally{
+        } finally {
             //notifyAndWait();
         }
     }
