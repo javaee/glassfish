@@ -11,7 +11,7 @@ public class XID implements Xid {
     private static int ID = initializeID();
 
     private static int initializeID() {
-        return  (int)(Math.random()*1000);
+        return  (int)(Math.random()*100000);
     }
 
     public int formatID;   // Format identifier

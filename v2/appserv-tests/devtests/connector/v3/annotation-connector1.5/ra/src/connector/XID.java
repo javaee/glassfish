@@ -8,7 +8,12 @@ import javax.transaction.xa.Xid;
  */
 public class XID implements Xid {
 
-    private static int ID = 100;
+    private static int ID = initializeID();
+
+    private static int initializeID() {
+        return  (int)(Math.random()*100000);
+    }
+
 
     public int formatID;   // Format identifier
                            // (-1) means that the XID is null
