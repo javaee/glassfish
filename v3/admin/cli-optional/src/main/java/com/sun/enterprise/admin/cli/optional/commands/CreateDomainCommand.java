@@ -157,7 +157,7 @@ public final class CreateDomainCommand extends CLICommand {
         addOption(opts, DOMAIN_PROPERTIES, '\0', "STRING", false, null);
         addOption(opts, KEYTOOLOPTIONS, '\0', "STRING", false, null);
         addOption(opts, SAVELOGIN_OPTION, '\0', "BOOLEAN", false, "false");
-        addOption(opts, CHECKPORTS_OPTION, '\0', "BOOLEAN", false, "false");
+        addOption(opts, CHECKPORTS_OPTION, '\0', "BOOLEAN", false, "true");
         addOption(opts, ADMIN_PASSWORD, '\0', "PASSWORD", false, null);
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);

@@ -417,8 +417,14 @@ public class ProgramOptions {
      */
     public boolean isHelp() {
         boolean help = false;
-        if (options.containsKey(HELP))
-            help = true;    // don't care about the value
+        if (options.containsKey(HELP)) {
+            String value = options.get(HELP);
+            if (ok(value))
+                help = Boolean.parseBoolean(value);
+            else
+                help = true;
+        } else
+            help = env.getBooleanOption(HELP);
         return help;
     }
 

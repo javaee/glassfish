@@ -529,10 +529,10 @@ public abstract class CLICommand {
 
         boolean missingOption = false;
         for (ValidOption opt : commandOpts) {
-            if (opt.isValueRequired() != ValidOption.REQUIRED)
-                continue;
             if (opt.getType().equals("PASSWORD"))
                 continue;       // passwords are handled later
+            if (opt.isValueRequired() != ValidOption.REQUIRED)
+                continue;
             // if option isn't set, prompt for it (if interactive)
             if (getOption(opt.getName()) == null && cons != null &&
                     !missingOption) {
@@ -772,12 +772,30 @@ public abstract class CLICommand {
 
     /**
      * Get an option value, that might come from the command line
-     * or from the environment.
+     * or from the environment.  Return the default value for the
+     * option if not otherwise specified.
      */
     protected String getOption(String name) {
         String val = options.get(name);
         if (val == null)
             val = env.getStringOption(name);
+        if (val == null) {
+            // no value, find the default
+            for (ValidOption opt : commandOpts) {
+                // XXX - hack alert!  the description is stored in the default
+                // value for passwords
+                if (opt.getType().equals("PASSWORD"))
+                    continue;
+                if (opt.getName().equals(name)) {
+                    // if no value was specified and there's a default value,
+                    // return it
+                    if (opt.getDefaultValue() != null) {
+                        val = opt.getDefaultValue();
+                        break;
+                    }
+                }
+            }
+        }
         return val;
     }
 
