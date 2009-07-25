@@ -96,7 +96,7 @@ public class StartDomainCommand extends LocalDomainCommand {
         addOption(opts, "domaindir", '\0', "STRING", false, null);
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         addOption(opts, "upgrade", '\0', "BOOLEAN", false, "false");
-        addOption(opts, "verbose", 'v', "BOOLEAN", false, "false");
+        addOption(opts, "verbose", '\0', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandName = "domain_name";
         operandType = "STRING";
@@ -215,43 +215,7 @@ public class StartDomainCommand extends LocalDomainCommand {
         throw new CommandException("Number of attempts (" + times + ") exhausted, giving up");
     }
 
-    private boolean verifyMasterPassword(String mpv) {
-        //only tries to open the keystore
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(super.getJKS());
-            KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-            ks.load(fis, mpv.toCharArray());
-            return true;
-        } catch (Exception e) {
-            logger.printDebugMessage(e.getMessage());
-            return false;
-        } finally {
-            try {
-                if (fis != null)
-                    fis.close();
-            } catch(IOException ioe) {
-                //ignore, I know ...
-            }
-        }
-    }
 
-    /** Checks if the create-domain was created using --savemasterpassword flag which obtains security
-     *  by obfuscation! Returns null in case of failure of any kind.
-     * @return String representing the password from the JCEKS store named master-password in domain folder
-     */
-    private String checkMasterPasswordFile() {
-        File mpf = super.getMasterPasswordFile();
-        if (mpf == null)
-            return null;   //no master password  saved
-        try {
-            PasswordAdapter pw = new PasswordAdapter(mpf.getAbsolutePath(), "master-password".toCharArray()); //fixed key
-            return pw.getPasswordForAlias("master-password");
-        } catch (Exception e) {
-            logger.printDebugMessage("master password file reading error: " + e.getMessage());
-            return null;
-        }
-    }
 
     private void runCommandEmbedded() throws CommandException {
         try {

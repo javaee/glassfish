@@ -53,6 +53,7 @@ public class CommandTable extends HashMap<String, Class> {
     public CommandTable() {
         super();
         put("change-admin-password",    ChangeAdminPasswordCommand.class);
+        put("change-master-password",   null);
         put("list-commands",            ListCommandsCommand.class);
         put("monitor",                  MonitorCommand.class);
         put("multimode",                MultimodeCommand.class);

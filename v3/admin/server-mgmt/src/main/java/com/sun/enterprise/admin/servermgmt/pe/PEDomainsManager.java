@@ -577,7 +577,7 @@ public class PEDomainsManager extends RepositoryManager
     }
      
     /** Returns the domain user from the domainConfig.
-     *  @param Map that represents the domain configuration
+     *  @param domainConfig that represents the domain configuration
      *  @return String representing the domain user if the given map contains
      *  it, null otherwise
     */
@@ -588,7 +588,7 @@ public class PEDomainsManager extends RepositoryManager
     }
     
     /** Returns the domain user's password in cleartext from the domainConfig.
-     *  @param Map that represents the domain configuration
+     *  @param domainConfig that represents the domain configuration
      *  @return String representing the domain user password if the 
      *  given map contains it, null otherwise
     */
@@ -616,18 +616,9 @@ public class PEDomainsManager extends RepositoryManager
     /**
      * Changes the master password for the domain
      */    
-    /* Comment out for now, because status checking is not available 
     public void changeMasterPassword(DomainConfig config) throws DomainException
     {                                      
         try {
-            //Ensure that the entity is stopped
-            final int status = getInstancesManager(config).getInstanceStatus();
-            if (status != Status.kInstanceNotRunningCode) {
-                throw new DomainException(
-                    strMgr.getString("cannotChangePassword_invalidState",
-                        config.getDisplayName(), Status.getStatusString(status)));
-            }
-            
             String oldPass = getMasterPasswordClear(config);
             String newPass = getNewMasterPasswordClear(config);                        
             
@@ -645,7 +636,6 @@ public class PEDomainsManager extends RepositoryManager
                 strMgr.getString("masterPasswordNotChanged"), ex);
         }
     }
-    */
     public String[] getExtraPasswordOptions(DomainConfig config)
         throws DomainException
     {
