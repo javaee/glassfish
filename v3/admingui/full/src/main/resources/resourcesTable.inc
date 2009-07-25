@@ -77,7 +77,7 @@
             url="#{pageSession.editPoolLink}?name=#{td.value.PoolName}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colResType}" sort="resType" rendered="#{pageSession.hasResType}"  rowHeader="$boolean{true}" id="coltype">
+    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colResType}" sort="resource" rendered="#{pageSession.hasResType}"  rowHeader="$boolean{true}" id="coltype">
         <staticText id="typeCol" rendered="#{pageSession.hasResType}" value="#{td.value.ResType}" />
     </sun:tableColumn>
 
@@ -99,7 +99,7 @@
     -->
      
     
-    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">
+    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colDesc}" sort="description" rowHeader="$boolean{true}" id="col4">
         <staticText id="typeDesc" value="#{td.value.Description}" />
     </sun:tableColumn>
     
