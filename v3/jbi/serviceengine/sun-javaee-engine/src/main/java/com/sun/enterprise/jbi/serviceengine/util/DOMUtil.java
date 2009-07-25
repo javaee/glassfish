@@ -129,7 +129,7 @@ public class DOMUtil {
      * Inherit the namespace attributes from e's parents and set it
      * in e, if the prefix is not already resolved.
      */
-    private void resolvePrefix(
+    private String resolvePrefix(
             Element e,
             Map<String,String> resolvedPrefixes) {
         String nodePrefix = fixNull(e.getPrefix());
@@ -145,6 +145,7 @@ public class DOMUtil {
                 resolvedPrefixes.put(nodePrefix, nodeNamespace);
             }
         }
+        return nodePrefix;
     }
     
     
@@ -258,8 +259,7 @@ public class DOMUtil {
                 Element e = (Element)node;
                 String n = e.getTagName();
                 
-                resolvePrefix(e, resolvedPrefixes);
-                
+                String resolvedPrefix = resolvePrefix(e, resolvedPrefixes);                
                 writer.writeStartElement(n);
                 
                 NamedNodeMap a = e.getAttributes();
@@ -272,8 +272,11 @@ public class DOMUtil {
                 if ( e.hasChildNodes() ) {
                     writeChildren(writer, node, resolvedPrefixes);
                     writer.writeEndElement();
-                } else
+                    resolvedPrefixes.remove(resolvedPrefix);
+                } else {
                     writer.writeEndElement();
+                    resolvedPrefixes.remove(resolvedPrefix);
+                }
                 break;
             }
             
