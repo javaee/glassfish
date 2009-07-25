@@ -25,6 +25,19 @@ public interface RequestDispatcher {
                                  ApplicationContainer container) throws EndpointRegistrationException;
 
 
+   /*
+     * Registers a new endpoint (proxy implementation) for a particular
+     * context-root. All request coming with the context root will be dispatched
+     * to the proxy instance passed in.
+     * @param contextRoot for the proxy
+     * @param endpointAdapter servicing requests.
+     * @param application container
+     * @param virtualServers comma separated list of the virtual servers
+     */
+    public void registerEndpoint(String contextRoot, Adapter endpointAdapter,
+        ApplicationContainer container, String virtualServers) throws EndpointRegistrationException;
+
+
     /*
      * Registers a new endpoint (proxy implementation) for a particular
      * context-root. All request coming with the context root will be dispatched
