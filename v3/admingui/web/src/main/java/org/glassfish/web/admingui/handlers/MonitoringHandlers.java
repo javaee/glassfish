@@ -217,6 +217,22 @@ public class MonitoringHandlers {
         handlerCtx.setOutputValue("monitorLevelList",  levels);
      }
     
+    @Handler(id = "getFirstValueFromList",
+    input={
+        @HandlerInput(name="values",   type=List.class, required=true)},
+    output = {
+        @HandlerOutput(name = "firstValue", type = String.class)
+    })
+    public static void getFirstValueFromList(HandlerContext handlerCtx) {
+        List values = (List) handlerCtx.getInputValue("values");
+        String firstval = "";
+        if (values.size()!=0){
+            firstval = (String)values.get(0);
+
+        }
+        handlerCtx.setOutputValue("firstValue",  firstval);
+     }    
+    
     final private static List<String> levels= new ArrayList();
     static{
         levels.add("OFF");
