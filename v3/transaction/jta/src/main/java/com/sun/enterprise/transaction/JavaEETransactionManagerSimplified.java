@@ -1395,7 +1395,11 @@ public class JavaEETransactionManagerSimplified
         Object key = null;
         if ( inv != null) {
             key = inv.getResourceTableKey();
-        } else {
+        }
+
+        // If ComponentInvocation is null or doesn't hold the key, 
+        // use instance as the key.
+        if (key == null) {
             key = instance;
         }
         return key;
