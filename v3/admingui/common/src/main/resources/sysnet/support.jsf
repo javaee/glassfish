@@ -123,7 +123,7 @@
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
-                            <image src="#{request.contextPath}/resource/images/squares/#{imageList[0]}" alt="" border=0 align="right"  style="float:right; margin:5px 20px 0px 20px;" >
+                            <image src="#{request.contextPath}/resource/common/images/squares/#{imageList[0]}" alt="" border=0 align="right"  style="float:right; margin:5px 20px 0px 20px;" >
                             <font face=arial size=-1> $resource{i18n.support.techDays}<br>$resource{i18n.support.techDaysDesc}</font>
     </f:verbatim>
                             <jmaki:widget name="jmaki.blockList" service="/xhp?key=events" args="{count:2}" template="/resources/jmaki/blockList/events.htm" />
@@ -145,7 +145,7 @@
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
-                            <img src="#{request.contextPath}/resource/images/squares/#{imageList[1]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
+                            <img src="#{request.contextPath}/resource/common/images/squares/#{imageList[1]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
                             <h3>$resource{i18n.support.coreTechTips}</h3>
     </f:verbatim>
                             <jmaki:widget name="jmaki.blockList" service="/xhp?key=coretechtips&count=20" args="{count:4}" template="/resources/jmaki/blockList/coretechtips.htm" />
@@ -167,7 +167,7 @@
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
-                            <img src="#{request.contextPath}/resource/images/squares/#{imageList[2]}" alt=""  border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
+                            <img src="#{request.contextPath}/resource/common/images/squares/#{imageList[2]}" alt=""  border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
     </f:verbatim>
                             <jmaki:widget name="jmaki.blockList" service="/xhp?key=javaee" args="{count:2}" template="/resources/jmaki/blockList/javaee.htm" />
     <f:verbatim>
@@ -183,7 +183,7 @@
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
-                            <img src="#{request.contextPath}/resource/images/squares/#{imageList[3]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
+                            <img src="#{request.contextPath}/resource/common/images/squares/#{imageList[3]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
     <!--
                             <h3>Enterprise Java</h3>
     </f:verbatim>
@@ -242,7 +242,7 @@
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
                             <font face=arial size=-1>
-                            <img src="#{request.contextPath}/resource/images/squares/#{imageList[4]}" alt="" border=0 align="left" style="float:left; margin:5px 10px 5px 10px;" />
+                            <img src="#{request.contextPath}/resource/common/images/squares/#{imageList[4]}" alt="" border=0 align="left" style="float:left; margin:5px 10px 5px 10px;" />
                             <a href="$resource{i18n.support.appServerSubscriptionLink}" target="_blank"> $resource{i18n.support.supportAndService}</a><br>
                             $resource{i18n.support.s1}
                             <p><br>
