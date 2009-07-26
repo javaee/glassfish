@@ -78,10 +78,10 @@
       />
   </event>
 
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
 #include "iiopTab.inc"
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
 
         <!-- Page Title -->
         <sun:title id="propertyContentPage" title="$resource{i18n_corba.sslPageTitle}" helpText="$resource{i18n_corba.sslPageTitleHelp}">
@@ -92,7 +92,7 @@
 
 	<sun:hidden id="helpKey" value="$resource{help_corba.iiop.sslEdit}" />
 </sun:form>
-#include "/shared/changeButtonsJS.inc"
+#include "/common/shared/changeButtonsJS.inc"
 #include "sslValidationsJS.inc"
 </define>
 </composition>

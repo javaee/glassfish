@@ -59,18 +59,18 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
     />
  </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
         <sun:title id="propertyContentPage" title="$resource{i18n_corba.iiopListener.newPageTitle}" helpText="$resource{i18n_corba.iiopListener.newPageHelp}">
-#include "/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons.inc"
         </sun:title>
         "<br><br>
 #include "/corba/iiopListenerAttrs.inc"
-#include "/shared/propertyDescTable.inc"
+#include "/common/shared/propertyDescTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help_corba.iiopListenerNew}" />
 </sun:form>
-#include "/shared/changeButtonsJS.inc"
+#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>
 

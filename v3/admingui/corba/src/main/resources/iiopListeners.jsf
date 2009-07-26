@@ -56,10 +56,10 @@
         setPageSessionAttribute(key="tableTitle" value="$resource{i18n_corba.iiopListeners.TableTitle}");
     />
     </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
 
             <sun:form id="propertyForm">
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
          <sun:title id="propertyContentPage" title="$resource{i18n_corba.iiopListeners.ListPageTitle}"
                  helpText="$resource{i18n_corba.iiopListeners.ListPageHelp}" />
 		 "<br /> <br />
@@ -72,7 +72,7 @@
         getClientId(component="$this{component}" clientId=>$page{tableId});
     />
 
-#include "/shared/listTableButtons.inc"
+#include "/common/shared/listTableButtons.inc"
 
 <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate
@@ -105,7 +105,7 @@
 
 	<sun:hidden id="helpKey" value="$resource{help_corba.iiopListeners}" />
             </sun:form>
-#include "/shared/changeButtonsJS.inc"
+#include "/common/shared/changeButtonsJS.inc"
 
 </define>
 </composition>

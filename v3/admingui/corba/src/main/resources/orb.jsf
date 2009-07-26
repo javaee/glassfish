@@ -66,12 +66,12 @@
 
     />
     </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
 
     <sun:form id="form1">
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
 <sun:title id="propertyContentPage" title="$resource{i18n_corba.headings.Orb}" helpText="$resource{i18n_corba.orb.OrbInfo}" >
-#include "/shared/editPageLoadDefaultButton.inc"
+#include "/common/shared/editPageLoadDefaultButton.inc"
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
@@ -136,12 +136,12 @@
          </sun:propertySheetSection>
      </sun:propertySheet>
 
-#include "/shared/propertyDescTable.inc"
+#include "/common/shared/propertyDescTable.inc"
 
 	<sun:hidden id="helpKey" value="$resource{help_corba.orb}" />
     </sun:form>
     "<br/>
-#include "/shared/changeButtonsJS.inc"
+#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>
 
