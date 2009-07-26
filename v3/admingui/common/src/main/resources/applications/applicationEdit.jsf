@@ -56,11 +56,11 @@
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.enterpriseApplications.editPageTitleHelp}");
     />
     </event>
-#include "/shared/restart.inc"    
+#include "/common/shared/restart.inc"    
         <sun:form id="propertyForm">
         
 #include "/common/applications/appGeneralTabs.inc"
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
 #include "/common/applications/edit.inc"
 #include "/common/applications/subComponentTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.applicationEdit}" />

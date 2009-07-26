@@ -50,10 +50,10 @@
         setPageSessionAttribute(key="forDeploy" value="false");
     />
     </event>
-#include "/shared/restart.inc"    
+#include "/common/shared/restart.inc"    
 <sun:form id="form" method="POST" enctype="multipart/form-data">  
-    #include "/shared/treeBreadcrumbs.inc"
-#include "/shared/alertMsg.inc"
+    #include "/common/shared/treeBreadcrumbs.inc"
+#include "/common/shared/alertMsg.inc"
     <sun:title id="title" title="$resource{i18n.redeploy.pageTitle}" helpText="$resource{i18n.redeploy.pageTitleHelp}">
         <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">

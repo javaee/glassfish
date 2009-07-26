@@ -53,15 +53,15 @@
             setPageSessionAttribute(key="hasContextRoot" value="#{true}" );
         />
     </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
                 <!-- Page Title -->
                  <sun:title id="propertyContentPage" title="$resource{i18n.enterpriseApplications.title}" helpText="$resource{i18n.enterpriseApplications.titleHelp}"/>
                  "<br />
 #include "/common/applications/deployTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.applications}" />
             </sun:form>
-#include "/shared/changeButtonsJS.inc"
+#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>

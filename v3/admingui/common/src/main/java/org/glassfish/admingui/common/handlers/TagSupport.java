@@ -417,27 +417,27 @@ public class TagSupport {
 	*/
 
 	TagSupport.addTag("bar", "deploy.jsf?a=z&c=e", "Display Name", "jane");
-	TagSupport.addTag("bar", "index.jsf?a=z&c=f", "Display Name", "jane");
-	TagSupport.addTag("bar", "index.jsf?a=z&c=e", "Display Name", "jane");
+	TagSupport.addTag("bar", "/index.jsf?a=z&c=f", "Display Name", "jane");
+	TagSupport.addTag("bar", "/index.jsf?a=z&c=e", "Display Name", "jane");
 	TagSupport.addTag("bar", "deploy.jsf?a=z&c=g", "Display Name", "jane");
 	TagSupport.addTag("bar", "indexdeployjsf?a=z&c=h", "Display Name", "jack");
-	TagSupport.addTag("bar", "index.jsf?deploy=z&c=i", "Display Name", "jack");
-	TagSupport.addTag("foo", "index.jsf?a=z&c=j", "Display Name", "jack");
-	TagSupport.addTag("bar", "index.jsf?a=z&c=e", "Display Name", "jane");
-	TagSupport.addTag("bar", "index.jsf?a=z&c=f", "Display Name", "jane");
+	TagSupport.addTag("bar", "/index.jsf?deploy=z&c=i", "Display Name", "jack");
+	TagSupport.addTag("foo", "/index.jsf?a=z&c=j", "Display Name", "jack");
+	TagSupport.addTag("bar", "/index.jsf?a=z&c=e", "Display Name", "jane");
+	TagSupport.addTag("bar", "/index.jsf?a=z&c=f", "Display Name", "jane");
 	TagSupport.addTag("bar", "deploy.jsf?a=z&c=e", "Display Name", "jane");
-	TagSupport.addTag("bar", "index.jsf?a=z&c=g", "Display Name", "jane");
+	TagSupport.addTag("bar", "/index.jsf?a=z&c=g", "Display Name", "jane");
 	TagSupport.addTag("bar", "deploy.jsf?a=z&c=h", "Display Name", "jack");
-	TagSupport.addTag("bar", "index.jsf?a=z&c=i", "Display Name", "jack");
+	TagSupport.addTag("bar", "/index.jsf?a=z&c=i", "Display Name", "jack");
 	TagSupport.addTag("foo", "deploy.jsf?a=z&c=j", "Display Name", "jack");
 	TagSupport.addTag("foo", "deploy.jsf?a=z&c=k", "Display Name", "jack");
 	TagSupport.addTag("bat", "deploy.jsf?a=z&c=l", "Display Name", "jack");
-	TagSupport.addTag("foo", "index.jsf?a=z&c=m", "Display Name", "jack");
+	TagSupport.addTag("foo", "/index.jsf?a=z&c=m", "Display Name", "jack");
 	TagSupport.addTag("foo", "deploy.jsf?a=z&c=k", "Display Name", "jack");
 	TagSupport.addTag("bat", "deploy.jsf?a=z&c=l", "Display Name", "jack");
 	TagSupport.addTag("foo", "deploy.jsf?a=z&c=m", "Display Name", "jack");
 	TagSupport.addTag("bat", "deploy.jsf?a=z&c=n", "Display Name", "jack");
-	TagSupport.addTag("bat", "index.jsf?a=z&c=o", "Display Name", "bill");
+	TagSupport.addTag("bat", "/index.jsf?a=z&c=o", "Display Name", "bill");
 	TagSupport.addTag("bat", "deploy.jsf?a=z&c=p", "Display Name", "bill");
 	TagSupport.addTag("bat", "deploy.jsf?a=z&c=q", "Display Name", "bill");
 	TagSupport.addTag("foo", "deploy.jsf?a=z&c=s", "Display Name", "bill");
@@ -451,14 +451,14 @@ public class TagSupport {
 //	List<Tag> results = TagSupport.queryTags("foo", null, null);
 //	List<Tag> results = TagSupport.queryTags("foo", null, "anonymous");
 //	List<Tag> results = TagSupport.queryTags("foo", null, "admin");
-//	List<Tag> results = TagSupport.queryTags("foo", "index.jsf?a=b&c=d", "admin");
-//	List<Tag> results = TagSupport.queryTags("foo", "index.jsf?a=b&c=e", "anonymous");
-//	List<Tag> results = TagSupport.queryTags("bar", "index.jsf?a=b&c=e", "admin");
-//	List<Tag> results = TagSupport.queryTags(null, "index.jsf?a=b&c=e", "admin");
-//	List<Tag> results = TagSupport.queryTags(null, "index.jsf?a=b&c=e", "anonymous");
-//	List<Tag> results = TagSupport.queryTags("foo", "index.jsf?a=b&c=d", null);
-//	List<Tag> results = TagSupport.queryTags("bar", "index.jsf?a=b&c=e", null);
-//	List<Tag> results = TagSupport.queryTags(null, "index.jsf?a=b&c=d", null);
+//	List<Tag> results = TagSupport.queryTags("foo", "/index.jsf?a=b&c=d", "admin");
+//	List<Tag> results = TagSupport.queryTags("foo", "/index.jsf?a=b&c=e", "anonymous");
+//	List<Tag> results = TagSupport.queryTags("bar", "/index.jsf?a=b&c=e", "admin");
+//	List<Tag> results = TagSupport.queryTags(null, "/index.jsf?a=b&c=e", "admin");
+//	List<Tag> results = TagSupport.queryTags(null, "/index.jsf?a=b&c=e", "anonymous");
+//	List<Tag> results = TagSupport.queryTags("foo", "/index.jsf?a=b&c=d", null);
+//	List<Tag> results = TagSupport.queryTags("bar", "/index.jsf?a=b&c=e", null);
+//	List<Tag> results = TagSupport.queryTags(null, "/index.jsf?a=b&c=d", null);
 	if (results != null) {
 	    for (Tag tag : results) {
 		System.out.println("Found==> " + tag);

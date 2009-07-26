@@ -52,9 +52,9 @@
         createMap(result="#{pageSession.deployMap}")
     />
     </event>
-#include "/shared/restart.inc"  
+#include "/common/shared/restart.inc"  
 	    	<sun:form id="form">
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
     <sun:title id="title" title="$resource{i18n.enterpriseApplications.deployPageTitle}" helpText="$resource{i18n.enterpriseApplications.deployPageTitleHelp}">
          <!facet pageButtonsTop>
                 <sun:panelGroup id="topButtons">
@@ -64,7 +64,7 @@
     </sun:title>
 #include "/common/applications/uploadComponent.jsf"
 "<br/>
-//#include "/shared/propertyDescTable.inc"
+//#include "/common/shared/propertyDescTable.inc"
 	<sun:hidden id="helpKey" value="uploadDev" />
     "<br/>
     <sun:title id="title2">

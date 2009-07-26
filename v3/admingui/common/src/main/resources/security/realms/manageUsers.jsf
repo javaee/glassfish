@@ -47,11 +47,11 @@
     getFileUsers(Realm="#{name}" result=>$attribute{listOfRows} );
     />
     </event>
-#include "/shared/restart.inc"    
+#include "/common/shared/restart.inc"    
  
             <sun:form id="propertyForm">
-   #include "/shared/treeBreadcrumbs.inc"
-#include "/shared/alertMsg.inc"
+   #include "/common/shared/treeBreadcrumbs.inc"
+#include "/common/shared/alertMsg.inc"
                 <sun:title id="propertyContentPage" title="$resource{i18nc.manageUsers.TablePageTitle}" 
                 helpText="$resource{i18nc.manageUsers.TablePageHelp}">
                     <!facet pageButtonsTop>

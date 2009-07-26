@@ -44,10 +44,10 @@
             getDeploymentDescriptors(appName="#{pageSession.appName}"  descriptors="#{requestScope.descriptors}");
         />
     </event>
-#include "/shared/restart.inc"    
+#include "/common/shared/restart.inc"    
             <sun:form id="propertyForm">
 #include "/common/applications/appGeneralTabs.inc"
-#include "/shared/alertMsg.inc"                
+#include "/common/shared/alertMsg.inc"                
             <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18n.enterpriseApplications.descriptorPageTitle}" helpText="$resource{i18n.enterpriseApplications.descriptorPageTitleHelp}" />
        

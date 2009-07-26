@@ -56,8 +56,8 @@
 </event>
 
         <sun:form id="form1">
-    #include "/shared/treeBreadcrumbs.inc"
-#include "/shared/alertMsg.inc"
+    #include "/common/shared/treeBreadcrumbs.inc"
+#include "/common/shared/alertMsg.inc"
         <!-- there seems to be a bug with the radio button component where if we switch from 'input' to 'predefine',
              the selected value will not get updated.  It will always stay as 'input'.
              So i work around the problem by using a hidden field
@@ -77,7 +77,7 @@
             </sun:title>
 
 #include "/security/realms/realmAttrs.inc" 
-#include "/shared/propertyDescTable.inc"
+#include "/common/shared/propertyDescTable.inc"
 
         <sun:title id="title2">
             <!facet pageButtonsBottom>
@@ -89,4 +89,4 @@
     </sun:form>
     "<br/><br/>
 #include "/common/security/realms/realmjs.inc"
-#include "/shared/changeButtonsJS.inc"
+#include "/common/shared/changeButtonsJS.inc"

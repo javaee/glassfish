@@ -48,10 +48,10 @@
         getUserInfo(Realm="#{name}", User="#{user}", GroupList=>$attribute{groupList});
         />
         </event>
-#include "/shared/restart.inc"        
+#include "/common/shared/restart.inc"        
             <sun:form id="propertyForm">
-   #include "/shared/treeBreadcrumbs.inc"
-#include "/shared/alertMsg.inc"               
+   #include "/common/shared/treeBreadcrumbs.inc"
+#include "/common/shared/alertMsg.inc"               
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18nc.manageUsers.EditPageTitle}" 
                 helpText="$resource{i18nc.manageUsers.EditPageTitleHelp}"> 

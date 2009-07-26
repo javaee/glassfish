@@ -44,9 +44,9 @@
         getRequestValue(key="ddPath" value="#{pageSession.ddPath}");
     />
     </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
     <sun:title id="propertyContentPage" title="$resource{i18n.application.DD.title}" helpText="$resource{i18n.application.DD.titleHelp}">
         <!facet pageButtonsTop>
             <sun:panelGroup id="topButtons">

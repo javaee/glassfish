@@ -60,22 +60,22 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
     />
     </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
         //#include treeBreadcrumbs.inc
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
 
         <!-- Page Title -->
         <sun:title id="propertyContentPage" title="$resource{i18nc.jacc.EditTitle}" helpText="$resource{i18nc.jacc.EditPageHelp}">
-#include "/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons.inc"
         </sun:title>
         "<br><br>
 #include "/common/security/jacc/jaccProvider.inc"
-#include "/shared/propertyDescTable.inc"
+#include "/common/shared/propertyDescTable.inc"
 
 	<sun:hidden id="helpKey" value="$resource{help_common.jaccProviderEdit}" />
 </sun:form>
-#include "/shared/changeButtonsJS.inc"
+#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>
 
