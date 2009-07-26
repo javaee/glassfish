@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -86,26 +86,26 @@
 	<sun:treeNode id="registration"
 	    rendered="#{sessionScope.registrationNodePage == 'registration'}"
 	    text="$resource{i18n.tree.registration}"
-	    url="#{request.contextPath}/sysnet/registration.jsf"
+	    url="#{request.contextPath}/common/sysnet/registration.jsf"
 	    >
 	    <!facet image>
-		<sun:imageHyperlink imageURL="/resource/images/registration.gif" url="#{request.contextPath}/sysnet/registration.jsf"  border="0" immediate="true" />
+		<sun:imageHyperlink imageURL="/resource/images/registration.gif" url="#{request.contextPath}/common/sysnet/registration.jsf"  border="0" immediate="true" />
 	    </facet>
 	</sun:treeNode>
 
     <sun:treeNode id="support"
 	    text="$resource{i18n.tree.support}"
-	    url="/sysnet/support.jsf"
+	    url="/common/sysnet/support.jsf"
 	    >
 	    <!facet image>
-		<sun:imageHyperlink imageURL="/resource/images/support.gif" url="#{request.contextPath}/sysnet/support.jsf"  border="0" immediate="true" />
+		<sun:imageHyperlink imageURL="/resource/images/support.gif" url="#{request.contextPath}/common/sysnet/support.jsf"  border="0" immediate="true" />
 	    </facet>
 	</sun:treeNode>
 
 	<!--  ===================================== Application Server  ======================  -->
 	<sun:treeNode id="applicationServer" 
 		      text="$resource{i18n.tree.appServer}"
-		      url="/appServer/serverInstGeneralPe.jsf?instanceName=server"
+		      url="/common/appServer/serverInstGeneralPe.jsf?instanceName=server"
 		      imageURL="/resource/images/instance.gif"
 		      >
 	    <!facet image>
@@ -139,7 +139,7 @@
 
 	<sun:treeNode  id="resources"
 	    text="$resource{i18n.tree.resources}"
-	    url="/resourceNode/resources.jsf"
+	    url="/common/resourceNode/resources.jsf"
 	    imageURL="/resource/images/resources.gif"
 	    expanded="$boolean{true}" 
 	    />
