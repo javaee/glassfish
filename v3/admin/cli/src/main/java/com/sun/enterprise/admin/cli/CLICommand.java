@@ -504,6 +504,15 @@ public abstract class CLICommand {
                 new Parser(argv, 1, commandOpts, unknownOptionsAreOperands);
             options = rcp.getOptions();
             operands = rcp.getOperands();
+
+            /*
+             * In the case where we're accepting unknown options as
+             * operands, the special "--" delimiter will also be
+             * accepted as an operand.  We eliminate it here.
+             */
+            if (unknownOptionsAreOperands &&
+                    operands.size() > 0 && operands.get(0).equals("--"))
+                operands.remove(0);
         }
         logger.printDebugMessage("params: " + options);
         logger.printDebugMessage("operands: " + operands);
