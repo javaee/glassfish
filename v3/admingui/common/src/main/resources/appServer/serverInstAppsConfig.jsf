@@ -74,7 +74,7 @@
     </sun:title>
     
     "<br><br>
-#include "/common/shared/appConfig_2.inc"
+#include "/common/appServer/appConfig_2.inc"
 #include "/common/shared/propertyDescTable.inc"
 #include "/common/shared/editPageBottomButtons.inc"
 	<sun:hidden id="helpKey" value="$resource{help.serverInstAppsConfig}" />

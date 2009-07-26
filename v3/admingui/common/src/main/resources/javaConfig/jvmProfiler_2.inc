@@ -93,7 +93,7 @@
                             "<br /><br />
                         </sun:propertySheetSection>
                     </sun:propertySheet>  
-#include "/common/shared/jvmOptionsTable.inc"
+#include "/common/javaConfig/jvmOptionsTable.inc"
                 
 	<sun:hidden id="helpKey" value="$resource{help.serverInstProfiler}" />
             </sun:form>
