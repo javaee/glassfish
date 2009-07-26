@@ -197,10 +197,10 @@
         <echo message="@@## nonstringraproperties ##@@"/>
         <ant dir="../nonstringraproperties" target="${connector-target}" />
 
-        <!--<echo message="@@## txlevelswitch ##@@"/>
-        <ant dir="txlevelswitch" target="${connector-target}" />
+        <echo message="@@## txlevelswitch ##@@"/>
+        <ant dir="../txlevelswitch" target="${connector-target}" />
 
-        <echo message="@@## threadpool ##@@"/>
+        <!--<echo message="@@## threadpool ##@@"/>
         <ant dir="threadpool" target="${connector-target}" />-->
 
         <echo message="@@## connector1.6 ##@@"/>
