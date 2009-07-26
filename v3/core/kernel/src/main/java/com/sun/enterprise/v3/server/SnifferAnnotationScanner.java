@@ -29,6 +29,10 @@ public class SnifferAnnotationScanner extends AnnotationScanner {
         }
     }
 
+    public Map getRegisteredAnnotations() {
+        return annotations;
+    }
+
     public List<Sniffer> getApplicableSniffers() {
         List<Sniffer> appSniffers = new ArrayList<Sniffer>();
         for (String annotationName : annotations.keySet()) {

@@ -154,8 +154,12 @@ public class SnifferManagerImpl implements SnifferManager {
                     sniffer.getAnnotationTypes());        
             }
         }
-        snifferAnnotationScanner.scanArchive(archive);      
-        appSniffers.addAll(snifferAnnotationScanner.getApplicableSniffers());
+
+        // we only scan archive when there are annotations registered
+        if (!snifferAnnotationScanner.getRegisteredAnnotations().isEmpty()) {
+            snifferAnnotationScanner.scanArchive(archive);      
+            appSniffers.addAll(snifferAnnotationScanner.getApplicableSniffers());
+        }
  
 
         // call handles method of the sniffers
@@ -200,8 +204,12 @@ public class SnifferManagerImpl implements SnifferManager {
             snifferAnnotationScanner.register(sniffer, 
                 sniffer.getAnnotationTypes());        
         }
-        snifferAnnotationScanner.scanArchive(context.getSource());      
-        appSniffers.addAll(snifferAnnotationScanner.getApplicableSniffers());
+
+        // we only scan archive when there are annotations registered
+        if (!snifferAnnotationScanner.getRegisteredAnnotations().isEmpty()) {
+            snifferAnnotationScanner.scanArchive(context.getSource());      
+            appSniffers.addAll(snifferAnnotationScanner.getApplicableSniffers());
+        }
 
         // call handles method of the sniffers
         for (CompositeSniffer sniffer : getCompositeSniffers()) {
