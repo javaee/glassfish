@@ -44,7 +44,7 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.updateCenter.ConfigPageTitle}" guiOnLoad="showSection('#{proxyGroup}');">
 <!define name="content">
  
-#include "/shared/restart.inc"    
+#include "/common/shared/restart.inc"    
             <sun:form id="propertyForm">
 <f:verbatim>
     <script type="text/javascript">
@@ -52,7 +52,7 @@
     </script>
 </f:verbatim>
 #include "/updateCenter/ucTabs.inc"
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
 <!-- Page Title -->
  <sun:title id="propertyContentPage" title="$resource{i18nUC.updateCenter.ConfigPageTitle}" helpText="$resource{i18nUC.updateCenter.ConfigPageTitleHelp}" >
   <!facet pageButtonsTop>

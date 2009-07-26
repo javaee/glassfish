@@ -36,16 +36,16 @@
 <!-- updateCenter/udateCenterContent.inc -->
 
 
-#include "/shared/restart.inc"    
+#include "/common/shared/restart.inc"    
             <sun:form id="propertyForm">
 <f:verbatim>
     <script type="text/javascript">
         admingui.nav.selectTreeNodeById('form:tree:updateCenter');
     </script>
 </f:verbatim>
- #include "/shared/treeBreadcrumbs.inc"
+ #include "/common/shared/treeBreadcrumbs.inc"
 #include "/updateCenter/ucTabs.inc"
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
         <!-- Page Title -->
          <sun:title id="propertyContentPage" title="$attribute{pageTitle}" helpText="$attribute{pageTitleHelp}"/>
          <sun:propertySheet id="propertySheet">			 
@@ -68,7 +68,7 @@
          "<br /><br />
 	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
             </sun:form>
-#include "/shared/changeButtonsJS.inc"
+#include "/common/shared/changeButtonsJS.inc"
 
 <f:verbatim>
     <script type="text/javascript">
