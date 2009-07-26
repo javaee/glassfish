@@ -68,7 +68,7 @@ public class DataSource implements javax.sql.DataSource, java.io.Serializable,
     	} catch (ResourceException re) {
 // This is temporary. This needs to be changed to SEVERE after TP
 	    _logger.log(Level.WARNING, "jdbc.exc_get_conn", re.getMessage());
-    	    throw new SQLException (re.getMessage());
+    	    throw new SQLException (re);
     	}
     }
     
@@ -87,7 +87,7 @@ public class DataSource implements javax.sql.DataSource, java.io.Serializable,
     	} catch (ResourceException re) {
 // This is temporary. This needs to be changed to SEVERE after TP
 	    _logger.log(Level.WARNING, "jdbc.exc_get_conn", re.getMessage());
-    	    throw new SQLException (re.getMessage());
+    	    throw new SQLException (re);
     	}
     }    
 
@@ -184,5 +184,13 @@ public class DataSource implements javax.sql.DataSource, java.io.Serializable,
      */
     public void setReference(Reference reference) {
     	this.reference = reference;
-    }    
+    }
+
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return null;
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return false; 
+    }
 }

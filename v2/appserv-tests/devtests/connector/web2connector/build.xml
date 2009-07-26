@@ -61,7 +61,7 @@
 
      <target name="create-admin-object" depends="init-common">
          <antcall target="asadmin-common">
-            <param name="admin.command" value="create-admin-object --target ${appserver.instance.name} --restype com.sun.jdbcra.spi.JdbcSetupAdmin --raname jdbcra --property TableName=customer2:JndiName=jdbc/ejb-subclassing:SchemaName=connector:NoOfRows=1"/>
+            <param name="admin.command" value="create-admin-object --target ${appserver.instance.name} --restype com.sun.jdbcra.spi.JdbcSetupAdmin --raname jdbcra --property TableName=customer2:JndiName=jdbc/ejb-subclassing:SchemaName=DBUSER:NoOfRows=1"/>
 	    <param name="operand.props" value="eis/jdbcAdmin"/>
          </antcall>
      </target>
@@ -71,7 +71,7 @@
 	    <param name="admin.command" value="delete-admin-object"/>
 	    <param name="operand.props" value="--target ${appserver.instance.name} eis/jdbcAdmin"/>
 	 </antcall>
-	 <antcall target="reconfig-common"/>
+	 <!--<antcall target="reconfig-common"/>-->
      </target>
     
     <target name="restart">
@@ -90,7 +90,7 @@
 	    <param name="admin.command" value="delete-resource-adapter-config"/>
 	    <param name="operand.props" value="jdbcra"/>
 	 </antcall>
-	 <antcall target="reconfig-common"/>
+	 <!--<antcall target="reconfig-common"/>-->
      </target>
 
     <target name="unsetup">

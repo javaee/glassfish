@@ -9,6 +9,7 @@ import java.sql.*;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Enumeration;
+import java.util.Properties;
 
 /**
  * Holds the java.sql.Connection object, which is to be 
@@ -254,7 +255,11 @@ public class ConnectionHolder implements Connection{
 	checkValidity();    
     	return con.getTypeMap();
     }
-    
+
+    public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
+        con.setTypeMap(map);
+    }
+
     /**
      * Retrieves the the first warning reported by calls on the underlying
      * <code>Connection</code> object.
@@ -438,8 +443,52 @@ public class ConnectionHolder implements Connection{
     public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
 	checkValidity();    
     	return con.prepareStatement(sql,columnNames);
-    } 
-    
+    }
+
+    public Clob createClob() throws SQLException {
+        return con.createClob();
+    }
+
+    public Blob createBlob() throws SQLException {
+        return con.createBlob();
+    }
+
+    public NClob createNClob() throws SQLException {
+        return con.createNClob();
+    }
+
+    public SQLXML createSQLXML() throws SQLException {
+        return con.createSQLXML();
+    }
+
+    public boolean isValid(int timeout) throws SQLException {
+        return con.isValid(timeout);
+    }
+
+    public void setClientInfo(String name, String value) throws SQLClientInfoException {
+        con.setClientInfo(name, value);
+    }
+
+    public void setClientInfo(Properties properties) throws SQLClientInfoException {
+        con.setClientInfo(properties);
+    }
+
+    public String getClientInfo(String name) throws SQLException {
+        return con.getClientInfo(name);
+    }
+
+    public Properties getClientInfo() throws SQLException {
+        return getClientInfo();
+    }
+
+    public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
+        return createArrayOf(typeName, elements);
+    }
+
+    public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
+        return createStruct(typeName, attributes);
+    }
+
     /**
      * Removes the given <code>Savepoint</code> object from the current transaction.
      *
@@ -551,17 +600,7 @@ public class ConnectionHolder implements Connection{
     	con.setTransactionIsolation(level);
     }     
     
-    /**
-     * Installs the given <code>Map</code> object as the tyoe map for this 
-     * <code> Connection </code> object.
-     *
-     * @param	map	<code>Map</code> a Map object to install.
-     * @throws SQLException In case of a database error.      
-     */
-    public void setTypeMap(Map map) throws SQLException {
-	checkValidity();
-    	con.setTypeMap(map);
-    }
+    
     
     /**
      * Checks the validity of this object
@@ -582,5 +621,12 @@ public class ConnectionHolder implements Connection{
     void setActive(boolean actv) {
         active = actv;
     }
-    
+
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return con.unwrap(iface);
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return con.isWrapperFor(iface);
+    }
 }

@@ -103,34 +103,47 @@
                 <config-property>
                     <config-property-name>PortNumber</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>9092</config-property-value>
+                    <config-property-value>1527</config-property-value>
                 </config-property>
+                <config-property>
+                    <config-property-name>databaseName</config-property-name>
+                    <config-property-type>java.lang.String</config-property-type>
+                    <config-property-value>testdb</config-property-value>
+                </config-property>
+
                 <config-property>    
                     <config-property-name>User</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>DBUSER</config-property-value>
+                    <config-property-value>dbuser</config-property-value>
                 </config-property>
+                <config-property>
+                    <config-property-name>UserName</config-property-name>
+                    <config-property-type>java.lang.String</config-property-type>
+                    <config-property-value>dbuser</config-property-value>
+                </config-property>
+
                 <config-property>    
                     <config-property-name>Password</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>DBPASSWORD</config-property-value>
+                    <config-property-value>dbpassword</config-property-value>
                 </config-property>
                 <config-property>    
-                    <config-property-name>DatabaseName</config-property-name>
+                    <config-property-name>URL</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>jdbc:pointbase:server://localhost:9092/sqe-samples,new</config-property-value>
+                    <config-property-value>jdbc:derby://localhost:1527/testdb;create=true</config-property-value>
                 </config-property>
-                <config-property>    
+                <!--<config-property>
                     <config-property-name>DataSourceName</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
                     <config-property-value></config-property-value>
-                </config-property>
+                </config-property>-->
                 <config-property>    
                     <config-property-name>Description</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
                     <config-property-value>Oracle thin driver Datasource</config-property-value>
                  </config-property>
-                <config-property>    
+<!--
+                <config-property>
                     <config-property-name>NetworkProtocol</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
                     <config-property-value></config-property-value>
@@ -150,7 +163,8 @@
                     <config-property-type>java.lang.String</config-property-type>
                     <config-property-value></config-property-value>
                 </config-property>
-                <config-property>    
+-->
+                <config-property>
                     <config-property-name>Delimiter</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
                     <config-property-value>#</config-property-value>
@@ -158,9 +172,16 @@
                 <config-property>    
                     <config-property-name>ClassName</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>com.pointbase.jdbc.jdbcDataSource</config-property-value>
+                    <config-property-value>org.apache.derby.jdbc.ClientDataSource40</config-property-value>
                 </config-property>
-      		<config-property>    
+                <config-property>
+                      <config-property-name>ConnectionAttributes</config-property-name>
+                      <config-property-type>java.lang.String</config-property-type>
+                      <config-property-value>;create=true</config-property-value>
+              </config-property>
+
+<!--
+      		<config-property>
             	    <config-property-name>ConnectionValidationRequired</config-property-name>
             	    <config-property-type>java.lang.String</config-property-type>
             	    <config-property-value>false</config-property-value>
@@ -185,7 +206,8 @@
             	    <config-property-type>java.lang.String</config-property-type>
             	    <config-property-value></config-property-value>
         	</config-property>
-                
+-->
+
                 <connectionfactory-interface>javax.sql.DataSource</connectionfactory-interface>
                 
                 <connectionfactory-impl-class>com.sun.jdbcra.spi.DataSource</connectionfactory-impl-class>

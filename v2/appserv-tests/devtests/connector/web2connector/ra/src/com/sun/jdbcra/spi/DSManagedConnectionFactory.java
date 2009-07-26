@@ -86,15 +86,18 @@ public class DSManagedConnectionFactory extends ManagedConnectionFactory {
 		    new String(pc.getPassword()));
 	    }
         } catch(java.sql.SQLException sqle) {
+            sqle.printStackTrace();
 	    _logger.log(Level.WARNING, "jdbc.exc_create_conn", sqle);
             throw new javax.resource.spi.ResourceAllocationException("The connection could not be allocated: " + 
                 sqle.getMessage());
+        } catch(Exception e){
+            e.printStackTrace();   
         }
         
         com.sun.jdbcra.spi.ManagedConnection mc = new com.sun.jdbcra.spi.ManagedConnection(null, dsConn, pc, this);
         //GJCINT
-        setIsolation(mc);
-        isValid(mc);
+        /*setIsolation(mc);
+        isValid(mc); */
         return mc;
     }
     
