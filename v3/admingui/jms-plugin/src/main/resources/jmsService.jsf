@@ -68,13 +68,13 @@
     </event>   
 <!-- TO DO: NEED TO ADD CHECK FOR PE OR EE IN ORDER TO POPULATE JMS HOST DROPDOWN  -->   
 <!-- TO DO: NEED TO ADD HANDLER FOR PING BUTTON ONCE MESSAGES ARE WORKING  -->  
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
- #include treeBreadcrumbs.inc
-#include "/shared/alertMsg.inc"
+   //#include "/common/shared/treeBreadcrumbs.inc"
+#include "/common/shared/alertMsg.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njms.jms.Title}" helpText="$resource{i18njms.jms.PageHelp}">
-#include "/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons.inc"
                     <!-- PropertySheet .... -->
                     <sun:propertySheet id="propertySheet">			 
                         <!-- Text Field section -->               
@@ -127,7 +127,7 @@
                             "<br /><br />
                         </sun:propertySheetSection>
                     </sun:propertySheet>    
-#include "/shared/propertyTable.inc"
+#include "/common/shared/propertyTable.inc"
                 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help.jmsService}" />
             </sun:form>

@@ -60,18 +60,18 @@
             setPageSessionAttribute(key="hasPool" value="#{false}");
             setPageSessionAttribute(key="hasResType" value="#{false}");
             setPageSessionAttribute(key="viewKeyValue" value="jmsConnectionSummaryView");
-#include "/shared/viewSummaryDetail.inc"
+#include "/common/shared/viewSummaryDetail.inc"
         />
     </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
 
     <sun:head id="propertyhead" title="$resource{i18njms.connectionFactories.pageTitle}" >
-        <sun:script url="/resource/js/adminjsf.js" />
+        <sun:script url="/resource/common/js/adminjsf.js" />
     </sun:head>
 
     <sun:form id="propertyForm">
- #include treeBreadcrumbs.inc
-#include "/shared/alertMsg.inc"
+   //#include "/common/shared/treeBreadcrumbs.inc"
+#include "/common/shared/alertMsg.inc"
         <sun:title id="propertyContentPage" title="$resource{i18njms.connectionFactories.pageTitle}" helpText="$resource{i18njms.connectionFactories.pageTitleHelp}"/>
         "<br /> <br />
 #include "/jms/shared/resourcesTable.inc"

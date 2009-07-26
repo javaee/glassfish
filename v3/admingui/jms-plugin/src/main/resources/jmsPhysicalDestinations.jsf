@@ -53,10 +53,10 @@
             pingJms();
         />
     </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
     <sun:form id="propertyForm">
- #include treeBreadcrumbs.inc
-#include "/shared/alertMsg.inc"
+   //#include "/common/shared/treeBreadcrumbs.inc"
+#include "/common/shared/alertMsg.inc"
         <sun:title id="propertyContentPage" title="$resource{i18njms.jmsPhysDestinations.pageTitle}" helpText="$resource{i18njms.jmsPhysDestinations.pageHelp}"/>
         "<br /> <br />
         <sun:table id="configs" title="$resource{i18njms.jmsPhysDestinations.tableTitle}">

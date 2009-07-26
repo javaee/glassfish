@@ -71,7 +71,7 @@
     </event>
 
     <sun:form id="propertyForm" >
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njms.connectionFactory.newPageTitle}" helpText="$resource{i18njms.connectionFactory.newPageTitleHelp}">
         <sun:button id="loadDefaults" style="margin-left: 8pt" immediate="#{true}"  primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
@@ -86,8 +86,7 @@
         </facet>
     </sun:title>
 #include "/jms/poolProperties.inc"
-#include "/shared/propertyDescTable.inc"
-#include "/shared/targetSectionForCreate.inc"
+#include "/common/shared/propertyDescTable.inc"
     <sun:title id="title2" >
         <!facet pageButtonsBottom>
             <sun:panelGroup id="bottomButtons">

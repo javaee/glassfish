@@ -70,8 +70,8 @@
         />
     </event>
     <sun:form id="propertyForm">
- #include treeBreadcrumbs.inc
-#include "/shared/alertMsg.inc"
+   //#include "/common/shared/treeBreadcrumbs.inc"
+#include "/common/shared/alertMsg.inc"
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}">
         <!-- Buttons  -->
@@ -83,8 +83,7 @@
     </sun:title>
     <!-- PropertySheet .... -->
 #include "/jms/jmsDestinationSheet.inc"
-#include "/shared/propertyTable.inc"
-#include "/shared/targetSectionForCreate.inc"
+#include "/common/shared/propertyTable.inc"
         <sun:title id="propertyContentPage2">
             <!facet pageButtonsBottom>
                 <sun:panelGroup id="bottomButtons">

@@ -52,9 +52,9 @@
         gui.log(message="***** statsData = #{statsData}");
     />
     </event>
-#include "/shared/restart.inc"
-#include "/shared/alertMsg.inc"
- #include treeBreadcrumbs.inc
+#include "/common/shared/restart.inc"
+#include "/common/shared/alertMsg.inc"
+   //#include "/common/shared/treeBreadcrumbs.inc"
     <sun:form id="jmsPhysDestForm">
         <sun:title title="#{pageTitle}">
             <!facet pageButtonsTop>

@@ -78,11 +78,10 @@
             </sun:panelGroup>
         </facet>
     </sun:title>
- #include treeBreadcrumbs.inc
- #include "resourceNode/resourcesTabs.inc"
+//#include "/common/shared/treeBreadcrumbs.inc"
+#include "resourceNode/resourcesTabs.inc"
 #include "/jms/jmsDestinationSheet.inc"
-#include "/shared/propertyTable.inc"
-#include "/shared/targetSectionForCreate.inc"
+#include "/common/shared/propertyTable.inc"
         <sun:title id="propertyContentPage2">
             <!facet pageButtonsBottom>
                 <sun:panelGroup id="bottomButtons">

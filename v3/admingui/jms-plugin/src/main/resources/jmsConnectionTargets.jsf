@@ -47,23 +47,23 @@
         setPageSessionAttribute(key="pageTitle" value="$resource{i18n.connectionFactory.targetPageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.resource.targetPageTitleHelp}");
     />
-#include "/shared/restart.inc"    
+#include "/common/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="#{pageTitle}" >
-            <sun:script url="../js/restart.js" />
+            <sun:script url="/resource/common/js/restart.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
-#include "resourceNode/resourcesTabs.inc"
-#include "alertMsg.inc"                <!-- Page Title -->
+  //#include "/common/shared/treeBreadcrumbs.inc"
+  //#include "resourceNode/resourcesTabs.inc"
+#include "/common/shared/alertMsg.inc"                <!-- Page Title -->
                  <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}"/>
                  "<br />
 #include "resourceNode/resourcesTargetTable.inc"
                 <sun:hidden id="helpKey" value="$resource{help.jmsConnectionTargets}" />
             </sun:form>
         </sun:body>
-#include "changeButtonsJS.inc"
+#include "/common/shared/changeButtonsJS.inc"
   </sun:html>
 
 </sun:page>

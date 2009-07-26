@@ -52,12 +52,12 @@
         getPhysicalDestination(name="#{pageSession.destName}", type="#{pageSession.destType}", destData="#{pageSession.valueMap}");
     />
     </event>
-#include "/shared/restart.inc"
-#include "/shared/alertMsg.inc"
- #include treeBreadcrumbs.inc
+#include "/common/shared/restart.inc"
+#include "/common/shared/alertMsg.inc"
+   //#include "/common/shared/treeBreadcrumbs.inc"
     <sun:form id="jmsPhysDestForm">
 #include "jmsPhysicalDestinationSheet.inc"
- #include "/shared/propertyTable.inc"
+ #include "/common/shared/propertyTable.inc"
         <sun:hidden id="helpKey" value="$resource{help.jmsPhysicalDestinationNew}" />
     </sun:form>
     "<br/><br/>
