@@ -42,7 +42,7 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.httpService.accesslog.pageTitle}" >
 <!define name="content">
             <sun:form id="propertyForm">
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
                 " Create Transport (TBD)
             </sun:form>
 </define>

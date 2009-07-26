@@ -37,7 +37,7 @@
 
 <sun:table id="configs" title="#{tableTitle}">
 
-#include "/shared/listTableButtons.inc"
+#include "/common/shared/listTableButtons.inc"
     
    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate

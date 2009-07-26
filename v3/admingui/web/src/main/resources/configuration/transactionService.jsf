@@ -59,12 +59,12 @@
     />
      
     </event>   
-#include "/shared/restart.inc"    
+#include "/common/shared/restart.inc"    
             <sun:form id="propertyForm">
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.ts.TransactionService}" helpText="$resource{i18n_web.ts.PageHelp}">
-#include "/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons.inc"
                 </sun:title>
                     <!-- PropertySheet .... -->
                     <sun:propertySheet id="propertySheet">			 
@@ -95,12 +95,12 @@
                             "<br /><br />
                         </sun:propertySheetSection>
                     </sun:propertySheet>       
-#include "/shared/propertyDescTable.inc"
+#include "/common/shared/propertyDescTable.inc"
                 <sun:title id="propertyContentPage2">
-#include "/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons_2.inc"
                 </sun:title>                
 	<sun:hidden id="helpKey" value="$resource{help_web.transactionService}" />
             </sun:form>
-#include "/shared/changeButtonsJS.inc"
+#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>

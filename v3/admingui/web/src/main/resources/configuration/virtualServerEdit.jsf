@@ -61,18 +61,18 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
         />
     </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
 
 
 <sun:title id="propertyContentPage" title="$resource{i18n_web.vs.EditTitle}" helpText="$resource{i18n_web.vs.PageHelp}">
-#include "/shared/editPageLoadDefaultButton.inc"
+#include "/common/shared/editPageLoadDefaultButton.inc"
 #include "/web/configuration/virtualServerButtons.inc"
     </sun:title>
     "<br>
 #include "/web/configuration/virtualServerAttrs.inc"
-#include "/shared/propertyDescTable.inc"
+#include "/common/shared/propertyDescTable.inc"
     <sun:title id="title2">
 #include "/web/configuration/virtualServerButtons.inc"
     </sun:title>
@@ -81,7 +81,7 @@
 
     </sun:form>
     "<br/>
-#include "/shared/changeButtonsJS.inc"
+#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>
 

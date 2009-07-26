@@ -60,20 +60,20 @@
     />
     </event>
 
-#include "/shared/restart.inc"    
+#include "/common/shared/restart.inc"    
     
             <sun:form id="form1">
-    //#include "/shared/treeBreadcrumbs.inc"
+    //#include "/common/shared/treeBreadcrumbs.inc"
 #include "webContainerTabs.inc"
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
 <sun:title id="propertyContentPage" title="$resource{i18n_web.headings.webGeneral}">
-#include "/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons.inc"
 </sun:title>
 
-#include "/shared/propertyDescTable.inc"
+#include "/common/shared/propertyDescTable.inc"
     	<sun:hidden id="helpKey" value="$resource{help_web.webContainerGeneral}" />
 </sun:form>
             "<br/>
-#include "/shared/changeButtonsJS.inc" 
+#include "/common/shared/changeButtonsJS.inc" 
     </define>
 </composition>

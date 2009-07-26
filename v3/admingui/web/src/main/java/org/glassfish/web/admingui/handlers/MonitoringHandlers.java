@@ -226,7 +226,7 @@ public class MonitoringHandlers {
     public static void getFirstValueFromList(HandlerContext handlerCtx) {
         List values = (List) handlerCtx.getInputValue("values");
         String firstval = "";
-        if (values.size()!=0){
+        if ((values != null) && (values.size()!=0)){
             firstval = (String)values.get(0);
 
         }

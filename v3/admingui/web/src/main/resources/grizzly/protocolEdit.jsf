@@ -62,14 +62,14 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
         />
     </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
 #include "/web/grizzly/protocolTabs.inc"
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.protocolEditPageTitle}" helpText="$resource{i18n_web.grizzly.protocolEditPageTitleHelp}">
-#include "/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons.inc"
                     </sun:title>
     <sun:propertySheet id="propertySheet">
 #include "/web/grizzly/protocolAttr.inc"

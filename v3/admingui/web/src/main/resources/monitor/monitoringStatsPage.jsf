@@ -54,11 +54,11 @@
         
     />
 </event>    
-#include "/shared/restart.inc"        
+#include "/common/shared/restart.inc"        
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
-#include "/appServer/serverInstTabs.inc"   
-#include "/shared/alertMsg.inc"
+#include "/common/shared/treeBreadcrumbs.inc"
+#include "/common/appServer/serverInstTabs.inc"
+#include "/common/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{web.appMonitor}"
                  helpText="$resource{web.monitoring.webContainer.PageHelp}">
             <!facet pageButtonsTop>
@@ -160,6 +160,6 @@
 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help_web.monitoringService}" />
             </sun:form>
-#include "/shared/changeButtonsJS.inc"        
+#include "/common/shared/changeButtonsJS.inc"        
 </define>
 </composition>

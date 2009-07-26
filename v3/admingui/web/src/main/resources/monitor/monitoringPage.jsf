@@ -52,10 +52,10 @@
     />
 </event>
 
-#include "/shared/restart.inc"    
+#include "/common/shared/restart.inc"    
     
             <sun:form id="form1">
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
 <sun:title id="title" title="$resource{web.monitoring.Title}"  helpText="$resource{web.monitoring.PageHelp}">
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
@@ -129,6 +129,6 @@
     	<sun:hidden id="helpKey" value="$resource{help_web.monitoringService}" />
 </sun:form>
             "<br/>
-#include "/shared/changeButtonsJS.inc" 
+#include "/common/shared/changeButtonsJS.inc" 
     </define>
 </composition>

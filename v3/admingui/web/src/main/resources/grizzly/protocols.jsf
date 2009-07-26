@@ -56,17 +56,17 @@
         setPageSessionAttribute(key="tableTitle"  value="$resource{i18n_web.grizzly.protocol.tableName}");
     />
     </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
 
             <sun:form id="propertyForm">
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.protocolsPageTitle}"
                  helpText="$resource{i18n_web.grizzly.protocolsPageTitleHelp}" />
 		 "<br /> <br />
 
 <sun:table id="configs" title="#{tableTitle}">
 
-#include "/shared/listTableButtons.inc"
+#include "/common/shared/listTableButtons.inc"
 
    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate

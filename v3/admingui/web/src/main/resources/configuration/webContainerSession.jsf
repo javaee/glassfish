@@ -61,13 +61,13 @@
     />
     </event>
 
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
 
             <sun:form id="form1">
 #include "webContainerTabs.inc"
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
 <sun:title id="propertyContentPage" title="$resource{i18n_web.webContainer.sessionProp}">
-#include "/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons.inc"
 </sun:title>
 
     <sun:propertySheet requiredFields="#{hasRequiredFields}">
@@ -80,13 +80,13 @@
     </sun:propertySheetSection>
     </sun:propertySheet>
 
-#include "/shared/propertyDescTable.inc"
+#include "/common/shared/propertyDescTable.inc"
 
 <sun:hidden id="helpKey" value="$resource{help_web.webContainerSession}" />
 
     </sun:form>
     "<br/>
-#include "/shared/changeButtonsJS.inc"
+#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>
 

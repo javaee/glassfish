@@ -59,14 +59,14 @@
 
     />
     </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
         //#include treeBreadcrumbs.inc
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.configuration.threadPoolNewPageTitle}" helpText="$resource{i18n_web.configuration.threadPoolNewPageTitleHelp}">
-#include "/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons.inc"
                 </sun:title>
                 "<br>
 
