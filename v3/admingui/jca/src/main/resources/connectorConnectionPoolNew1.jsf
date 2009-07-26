@@ -66,10 +66,10 @@
       
     />
     </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
         //#include treeBreadcrumbs.inc
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title -->
                 <!-- Page Title -->
@@ -129,6 +129,6 @@
 	<sun:hidden id="helpKey" value="$resource{help_jca.connectorConnectionPoolNew1}" />
             </sun:form>
                         "<br/>
-#include "/shared/changeButtonsJS.inc" 
+#include "/common/shared/changeButtonsJS.inc" 
 </define>
 </composition>

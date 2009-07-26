@@ -62,14 +62,14 @@
     setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
     />
 </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
 <sun:form id="propertyForm">
 #include "/jca/connectorConnectionPoolTabs.inc"
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
     
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njca.connectorConnectionPool.advancePageTitle}" helpText="$resource{i18njca.connectorConnectionPool.advancePageTitleHelp}" >
-#include "/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons.inc"
     </sun:title>
     "<br><br>
     
@@ -78,7 +78,7 @@
     <sun:hidden id="helpKey" value="$resource{help_jca.jcaResourceEdit}" />
 </sun:form>
             "<br/>
-#include "/shared/changeButtonsJS.inc" 
+#include "/common/shared/changeButtonsJS.inc" 
 </define>
 </composition>
 

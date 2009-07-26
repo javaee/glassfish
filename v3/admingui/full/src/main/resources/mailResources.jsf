@@ -58,10 +58,10 @@
         setPageSessionAttribute(key="hasResType" value="#{false}" );
     />
     </event>
-#include "/shared/restart.inc"    
+#include "/common/shared/restart.inc"    
 
             <sun:form id="propertyForm">
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18njmail.javaMailSessions.pageTitle}"
                  helpText="$resource{i18njmail.javaMailSessions.pageTitleHelp}" />
 		 "<br /> <br />

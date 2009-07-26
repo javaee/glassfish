@@ -75,22 +75,22 @@
     />
     </event>
 
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
             <sun:form id="form2">
-#include "/shared/treeBreadcrumbs.inc"
-#include "/shared/alertMsg.inc"
+#include "/common/shared/treeBreadcrumbs.inc"
+#include "/common/shared/alertMsg.inc"
             <sun:hidden id="validate"  value="TRUE" />
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.Step2PageTitle}"
                     helpText="$resource{i18njdbc.jdbcConnection.step2PageHelp}">
                     
-#include "/shared/editPageLoadDefaultButton.inc"
+#include "/common/shared/editPageLoadDefaultButton.inc"
     <!facet pageButtonsTop>
 #include "jdbcConnectionPoolNew2Buttons.inc"
     </facet>
                  </sun:title>
 #include "/jdbc/poolPropertyNew.inc"
-#include "/shared/propertyDescTable.inc"
+#include "/common/shared/propertyDescTable.inc"
                     <sun:title id="propertyContentPage2">
                     <!facet pageButtonsBottom>
 #include "jdbcConnectionPoolNew2Buttons.inc"
@@ -98,7 +98,7 @@
                     </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPoolNew2}" />
             </sun:form>
-#include "/shared/changeButtonsJS.inc"
+#include "/common/shared/changeButtonsJS.inc"
 
 <f:verbatim>
     <script type="text/javascript">

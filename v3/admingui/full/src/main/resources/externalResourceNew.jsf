@@ -74,10 +74,10 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
     />
     </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
             <sun:form id="form1">
         //#include treeBreadcrumbs.inc
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njmail.jndiResource.newPageTitle}" helpText="$resource{i18njmail.jndiResource.newPageTitleHelp}">
@@ -85,7 +85,7 @@
                     </sun:title>
                     "<br><br>
 #include "/full/jndiResourceAttr.inc"
-#include "/shared/propertyDescTable.inc"
+#include "/common/shared/propertyDescTable.inc"
 
 
 	<sun:hidden id="helpKey" value="$resource{help_jmail.externalResourceNew}" />
@@ -93,6 +93,6 @@
 #include "/full/jndijs.inc"        
             
                         "<br/>
-#include "/shared/changeButtonsJS.inc" 
+#include "/common/shared/changeButtonsJS.inc" 
 </define>
 </composition>

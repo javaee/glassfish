@@ -63,24 +63,24 @@
     setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
     />
 </event>
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
 <sun:form id="propertyForm">
 #include "/jca/resourcesTabs.inc"
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
     
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njca.adminObjectResource.editPageTitle}" helpText="$resource{i18njca.adminObjectResource.editPageHelp}" >
-#include "/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons.inc"
     </sun:title>
     "<br><br>
     
 #include "/jca/adminObjectAttr.inc"
-#include "/shared/propertyDescTable.inc"
+#include "/common/shared/propertyDescTable.inc"
     
     <sun:hidden id="helpKey" value="$resource{help_jca.adminObjectEdit}" />
 </sun:form>
             "<br/>
-#include "/shared/changeButtonsJS.inc" 
+#include "/common/shared/changeButtonsJS.inc" 
 </define>
 </composition>
 

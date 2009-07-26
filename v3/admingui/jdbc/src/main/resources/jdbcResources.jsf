@@ -58,10 +58,10 @@
         setPageSessionAttribute(key="editPoolLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf");
     />
     </event>
-#include "/shared/restart.inc"    
+#include "/common/shared/restart.inc"    
 
             <sun:form id="propertyForm">
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcResources.pageTitle}"
                  helpText="$resource{i18njdbc.jdbcResources.pageTitleHelp}" />
 		 "<br /> <br />

@@ -56,15 +56,15 @@
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         />
         </event>
-#include "/shared/restart.inc"        
+#include "/common/shared/restart.inc"        
             <sun:form id="propertyForm">
-   #include "/shared/treeBreadcrumbs.inc"
+   #include "/common/shared/treeBreadcrumbs.inc"
 #include "/jdbc/jdbcConnectionPoolTabs.inc"
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" 
                     helpText="$resource{i18njdbc.jdbcConnectionPool.advancePageTitleHelp}">
-#include "/shared/editPageLoadDefaultButton.inc"
+#include "/common/shared/editPageLoadDefaultButton.inc"
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"

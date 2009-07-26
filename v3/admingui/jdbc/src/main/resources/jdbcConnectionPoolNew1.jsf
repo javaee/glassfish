@@ -56,9 +56,9 @@
                 DBVendorList=>$attribute{DBVendorList});
     />
     </event>
-#include "/shared/restart.inc"    
+#include "/common/shared/restart.inc"    
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+#include "/common/shared/treeBreadcrumbs.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.step1PageTitle}"
                     helpText="$resource{i18njdbc.jdbcConnection.step1PageHelp}">

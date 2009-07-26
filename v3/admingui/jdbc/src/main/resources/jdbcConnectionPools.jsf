@@ -58,10 +58,10 @@
 
         />
     </event>
-#include "/shared/restart.inc"        
+#include "/common/shared/restart.inc"        
             <sun:form id="propertyForm">
-   #include "/shared/treeBreadcrumbs.inc"
-#include "/shared/alertMsg.inc"
+   #include "/common/shared/treeBreadcrumbs.inc"
+#include "/common/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPools.pageTitle}"
                  helpText="$resource{i18njdbc.jdbcConnectionPools.pageTitleHelp}"/>
 		 "<br /><br />
@@ -69,6 +69,6 @@
 #include "/jdbc/poolTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPools}" />
             </sun:form>
-#include "/shared/changeButtonsJS.inc"        
+#include "/common/shared/changeButtonsJS.inc"        
 </define>
 </composition>

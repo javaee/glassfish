@@ -68,16 +68,16 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
         />
         </event>
-#include "/shared/restart.inc"        
+#include "/common/shared/restart.inc"        
             <sun:form id="propertyForm">
-   #include "/shared/treeBreadcrumbs.inc"
+   #include "/common/shared/treeBreadcrumbs.inc"
 #include "/jdbc/jdbcConnectionPoolTabs.inc"
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.editPageTitle}" 
                     helpText="$resource{i18njdbc.jdbcConnection.editPageHelp}">
                     <!-- Buttons  -->  
-#include "/shared/editPageLoadDefaultButton.inc"
+#include "/common/shared/editPageLoadDefaultButton.inc"
                     <sun:button id="ping"  text="$resource{i18n.button.Ping}" primary="#{false}" >
                         <!command
                             pingJdbcConnectionPool(jndiName="#{pageSession.Name}");
@@ -88,15 +88,15 @@
                             flushConnectionPool(jndiName="#{pageSession.Name}");
                         />
                     </sun:button>                      
-#include "/shared/editPageButtons_2.inc"               
+#include "/common/shared/editPageButtons_2.inc"
                 </sun:title>
 #include "/jdbc/poolPropertyNew.inc"
 
                 
-#include "/shared/editPageBottomButtons.inc"
+#include "/common/shared/editPageBottomButtons.inc"
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPoolEdit}" />
             </sun:form>
-#include "/shared/changeButtonsJS.inc"
+#include "/common/shared/changeButtonsJS.inc"
 
 "<SCRIPT language = "Javascript" > \
 function disableTableField() {  \

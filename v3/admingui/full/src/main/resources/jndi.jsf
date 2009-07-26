@@ -44,9 +44,9 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njmail.connectors.pageTitle}" >
 <!define name="content">
 
-#include "/shared/restart.inc"    
+#include "/common/shared/restart.inc"    
         <sun:head id="connectorsHead" title="$resource{i18njmail.jndi.pageTitle}">
-            <sun:script url="/resource/js/adminjsf.js" />
+            <sun:script url="/resource/common/js/adminjsf.js" />
         </sun:head>
             <sun:form id="curstomResourcesForm"> 
                 <sun:title 
