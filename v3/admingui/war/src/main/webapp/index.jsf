@@ -34,7 +34,7 @@
  holder.
 -->
 
-#include "/commonTask.jsf"
+#include "/common/commonTask.jsf"
 
 <!--  for v3-new-gui, we use the homePage as the index page
 <sun:page>
@@ -67,7 +67,7 @@
             />
 	</sun:head>
 	<sun:frameSet id="outerFrameset" rows="$attribute{framesetRows}, *" frameborder="$boolean{true}" border="$int{1}" toolTip="#{version} $resource{i18n.common.AdminConsole}" title="$resource{i18n.common.AdminConsole}">
-	    <sun:frame name="header" title="#{version}" scrolling="no" url="/header.jsf" marginHeight="$int{0}" marginWidth="$int{0}" longdesc="" />
+	    <sun:frame name="header" title="#{version}" scrolling="no" url="/common/header.jsf" marginHeight="$int{0}" marginWidth="$int{0}" longdesc="" />
 	    <sun:frameSet cols="25%, *" frameBorder="$boolean{true}" border="$int{0}" toolTip="$resource{i18n.TODO}" title="$resource{i18n.common.AdminConsole}">
    		<!beforeCreate
                     checkSupport(supportCluster=>$session{supportCluster});
@@ -86,11 +86,11 @@
    		/>
 		<!if !#{supportCluster}>
 		<sun:frame name="index" title="$resource{i18n.display.Navigation}" scrolling="yes" url="/peTree.jsf" marginHeight="$int{0}" marginWidth="$int{0}" longdesc="" />
-                <sun:frame name="main" title="$resource{i18n.display.contentArea}" scrolling="auto" url="/homePage.jsf" marginHeight="$int{10}" marginWidth="$int{20}" longdesc="" />
+                <sun:frame name="main" title="$resource{i18n.display.contentArea}" scrolling="auto" url="/common/homePage.jsf" marginHeight="$int{10}" marginWidth="$int{20}" longdesc="" />
 		</!if>
                 <!if #{supportCluster}>
 		<sun:frame name="index" title="$resource{i18n.display.Navigation}" scrolling="yes" url="/clusterProfileTree.jsf" marginHeight="$int{0}" marginWidth="$int{0}" longdesc="" />
-                <sun:frame name="main" title="$resource{i18n.display.contentArea}" scrolling="auto" url="/homePage.jsf" marginHeight="$int{10}" marginWidth="$int{20}" longdesc="" />
+                <sun:frame name="main" title="$resource{i18n.display.contentArea}" scrolling="auto" url="/common/homePage.jsf" marginHeight="$int{10}" marginWidth="$int{20}" longdesc="" />
 		</!if>
 	    </sun:frameSet>
 	</sun:frameSet>
