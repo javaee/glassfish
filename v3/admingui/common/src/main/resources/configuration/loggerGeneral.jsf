@@ -83,7 +83,7 @@
             </sun:property>
 
             <sun:property id="FileRotationLimitProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.log.FileRotationLimit}" helpText="$resource{i18n.log.FileRotationLimitHelp}">
-                <sun:textField id="FileRotationLimit" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['rotationTimelimitInBytes']}" />
+                <sun:textField id="FileRotationLimit" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['rotationLimitInBytes']}" />
                 <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
             </sun:property>
             <sun:property id="FileRotationTimeLimitProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.log.FileRotationTimeLimit}" helpText="$resource{i18n.log.FileRotationTimeLimitHelp}">
