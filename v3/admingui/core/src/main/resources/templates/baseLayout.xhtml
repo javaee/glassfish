@@ -55,7 +55,7 @@
     <sun:head title="#{guiTitle}" debug="false" parseOnLoad="false">
         <sc:links/>
         <link rel="stylesheet" type="text/css" href="#{request.contextPath}/style.css" />
-        <sun:script url="/resource/js/adminjsf.js" />
+        <sun:script url="/resource/common/js/adminjsf.js" />
         <jsfExt:scripts/>
 	<ui:insert name="guiTemplateExtraHead" />
 	<ui:insert name="guiExtraHead" />
@@ -123,7 +123,7 @@
     <!--
 
       I am commenting out the tags panel for now... this functionality should go back into the UI at some point...
-	//<ui:include src="/tagsPanel.jsf" />
+	//<ui:include src="/common/templates/tagsPanel.jsf" />
     -->
 
     <sc:layoutUnit rendered="#{pageSession.rightContent[0] != null}" id="gfLayoutRight" position="right" width="250" gutter="5px" resize="true" header="#{pageSession.rightContent[0].content}" collapse="true">
