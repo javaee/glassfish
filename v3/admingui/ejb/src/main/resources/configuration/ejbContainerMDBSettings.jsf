@@ -61,13 +61,13 @@
     />
     </event>
 
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
 
     <sun:form id="form1">
 #include "/ejb-lite/configuration/ejbContainerTabs.inc"
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
 <sun:title id="propertyContentPage" title="$resource{i18n_ejb.headings.ejbMdbSettings}" helpText="$resource{i18n_ejb.ejb.ejbMdbSettingsInfo}" >
-#include "/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons.inc"
 </sun:title>
 
 
@@ -95,14 +95,14 @@
      </sun:propertySheet>
 
 
-#include "/shared/propertyDescTable.inc"
+#include "/common/shared/propertyDescTable.inc"
 
-#include "/shared/editPageBottomButtons.inc"
+#include "/common/shared/editPageBottomButtons.inc"
 
 	<sun:hidden id="helpKey" value="$resource{help_ejb.ejbContainerMDBSettings}" />
     </sun:form>
     "<br/>
-#include "/shared/changeButtonsJS.inc"
+#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>
 

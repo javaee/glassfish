@@ -63,13 +63,13 @@
     />
     </event>
 
-#include "/shared/restart.inc"
+#include "/common/shared/restart.inc"
 
     <sun:form id="form1">
 #include "/ejb-lite/configuration/ejbContainerTabs.inc"
-#include "/shared/alertMsg.inc"
+#include "/common/shared/alertMsg.inc"
 <sun:title id="propertyContentPage" title="$resource{i18n_ejb.headings.ejbTimerSettings}" helpText="$resource{i18n_ejb.ejb.ejbTimerSettingsInfo}" >
-#include "/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons.inc"
 </sun:title>
 
      <!-- PropertySheet .... -->
