@@ -83,11 +83,11 @@
    		/>
 		<!if !#{supportCluster}>
 		<sun:frame name="index" title="$resource{i18n.display.Navigation}" scrolling="yes" url="/peTree.jsf" marginHeight="$int{0}" marginWidth="$int{0}" longdesc="" />
-                <sun:frame name="main" title="$resource{i18n.display.contentArea}" scrolling="auto" url="/homePage.jsf" marginHeight="$int{10}" marginWidth="$int{20}" longdesc="" />
+                <sun:frame name="main" title="$resource{i18n.display.contentArea}" scrolling="auto" url="/common/homePage.jsf" marginHeight="$int{10}" marginWidth="$int{20}" longdesc="" />
 		</!if>
                 <!if #{supportCluster}>
 		<sun:frame name="index" title="$resource{i18n.display.Navigation}" scrolling="yes" url="/clusterProfileTree.jsf" marginHeight="$int{0}" marginWidth="$int{0}" longdesc="" />
-                <sun:frame name="main" title="$resource{i18n.display.contentArea}" scrolling="auto" url="/homePage.jsf" marginHeight="$int{10}" marginWidth="$int{20}" longdesc="" />
+                <sun:frame name="main" title="$resource{i18n.display.contentArea}" scrolling="auto" url="/common/homePage.jsf" marginHeight="$int{10}" marginWidth="$int{20}" longdesc="" />
 		</!if>
 	    </sun:frameSet>
 	</sun:frameSet>
