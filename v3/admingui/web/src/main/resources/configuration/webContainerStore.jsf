@@ -67,15 +67,18 @@
 #include "webContainerTabs.inc"
 #include "/common/shared/alertMsg.inc"
 <sun:title id="propertyContentPage" title="$resource{i18n_web.webContainer.storeProp}">
-#include "/common/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons_2.inc"
 </sun:title>
 
     <sun:propertySheet requiredFields="#{hasRequiredFields}">
     <sun:propertySheetSection>
+        <!-- commented out, refer to issue# 8903 -->
+        <!--
         <sun:property id="ReapIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webManager.reapIntervalLabel}" helpText="$resource{i18n_web.webManager.reapIntervalHelp}" >
             <sun:textField id="ReapInterval" styleClass="integer" columns="$int{20}" text="#{pageSession.valueMap['ReapIntervalInSeconds']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
+        -->
         <sun:property id="DirectoryProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webStore.directoryLabel}" helpText="$resource{i18n_web.webStore.directoryHelp}" >
             <sun:textField id="Directory" columns="$int{50}" text="#{pageSession.valueMap['Directory']}" />
         </sun:property>
