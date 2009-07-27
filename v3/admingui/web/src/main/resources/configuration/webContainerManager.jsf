@@ -82,9 +82,12 @@
         <sun:property id="SessFileNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webManager.sessFileNameLabel}" helpText="$resource{i18n_web.webManager.sessFileNameHelp}" >
             <sun:textField id="SessFileName" columns="$int{50}" text="#{pageSession.valueMap['SessionFileName']}" />
         </sun:property>
+        <!-- commented out, refer to issue# 8903 -->
+        <!--
         <sun:property id="SessionIdGenProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webManager.sessionIdGenLabel}" helpText="$resource{i18n_web.webManager.sessionIdGenHelp}" >
             <sun:textField id="SessionIdGen" columns="$int{50}" text="#{pageSession.valueMap['SessionIdGeneratorClassname']}" />
         </sun:property>
+        -->
     
     </sun:propertySheetSection>
     </sun:propertySheet>    
