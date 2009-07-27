@@ -41,7 +41,7 @@
     bundles are already included.
 -->
     getProductInstanceURN();
-#include "/sysnet/regInit.inc"
+#include "/common/sysnet/regInit.inc"
 />
 <!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}">
 <!define name="content">
@@ -71,18 +71,18 @@
                             toolTip="registration"
                             infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=registration.html"
                             onClick="admingui.nav.selectTreeNodeById('form:tree:registration');
-                            parent.location='#{facesContext.externalContext.requestContextPath}/sysnet/registration.jsf'; return false;"
+                            parent.location='#{facesContext.externalContext.requestContextPath}/common/sysnet/registration.jsf'; return false;"
                             onKeyPress="admingui.nav.selectTreeNodeById('form:tree:registration');
-                            parent.location='#{facesContext.externalContext.requestContextPath}/sysnet/registration.jsf'; return false;">
+                            parent.location='#{facesContext.externalContext.requestContextPath}/common/sysnet/registration.jsf'; return false;">
             </sun:commonTask>
             <sun:commonTask
                             text="$resource{i18n.tree.support}"
                             toolTip="$resource{i18n.tree.support}"
                             infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=support.html"
                             onClick="admingui.nav.selectTreeNodeById('form:tree:support');
-                            parent.location='#{facesContext.externalContext.requestContextPath}/sysnet/support.jsf'; return false;"
+                            parent.location='#{facesContext.externalContext.requestContextPath}/common/sysnet/support.jsf'; return false;"
                             onKeyPress="admingui.nav.selectTreeNodeById('form:tree:support');
-                            parent.location='#{facesContext.externalContext.requestContextPath}/sysnet/support.jsf'; return false;">
+                            parent.location='#{facesContext.externalContext.requestContextPath}/common/sysnet/support.jsf'; return false;">
             </sun:commonTask>
             <sun:commonTask
               text="$resource{i18n.commonTasks.task.subscriptions}"
@@ -116,7 +116,7 @@
           includeIntegrations(type="org.glassfish.admingui:commonTask" root="#{component}");
           />
         </event>
-#include "/sysnet/regReminder.inc"
+#include "/common/sysnet/regReminder.inc"
         <sun:hidden id="helpKey" value="$resource{help.commonTask}" />
       </sun:form>
       "</div>
