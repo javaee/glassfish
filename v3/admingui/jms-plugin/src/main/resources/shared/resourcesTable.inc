@@ -59,7 +59,16 @@
             <sun:hyperlink id="link" text="#{td.value.Name}" url="#{pageSession.editLink}?name=#{td.value.Name}" />
         </sun:tableColumn>
 
-        <sun:tableColumn id="colEnabled" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{!isConnPage}" sort="Enabled" rowHeader="$boolean{true}">
+        <sun:tableColumn id="colEnabled1" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{isConnPage}" sort="Enabled" rowHeader="$boolean{true}">
+            <staticText id="enabled" value="#{requestScope.connRes and requestScope.resourceRef}">
+                <!event type="beforeEncode">
+                    getProxyAttribute(objectNameStr="amx:pp=/domain/resources,type=connector-resource,name=#{td.value.Name}", attrName="Enabled", value="#{requestScope.connRes}");
+                    getProxyAttribute(objectNameStr="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{td.value.Name}", attrName="Enabled", value="#{requestScope.resourceRef}");
+                </event>
+            </staticText>
+        </sun:tableColumn>
+
+        <sun:tableColumn id="colEnabled2" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{!isConnPage}" sort="Enabled" rowHeader="$boolean{true}">
             <staticText id="enabled" value="#{td.value.Enabled and requestScope.resourceRef}">
                 <!event type="beforeEncode">
                     getProxyAttribute(objectNameStr="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{td.value.Name}", attrName="Enabled", value="#{requestScope.resourceRef}");
