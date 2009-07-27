@@ -40,6 +40,7 @@ import com.sun.enterprise.deployment.annotation.introspection.ConstantPoolInfo;
 import com.sun.enterprise.deployment.annotation.introspection.DefaultAnnotationScanner;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.logging.LogDomains;
 import org.glassfish.apf.Scanner;
 import org.glassfish.apf.impl.AnnotationUtils;
@@ -254,7 +255,8 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
     protected void addLibraryJars(T bundleDesc, 
         ReadableArchive moduleArchive) throws IOException {
         List<URL> libraryURLs = new ArrayList<URL>();
-        Application app = ((BundleDescriptor)bundleDesc).getApplication();
+        ModuleDescriptor moduleDesc = ((BundleDescriptor)bundleDesc).getModuleDescriptor();
+        Application app = ((BundleDescriptor)moduleDesc.getDescriptor()).getApplication();
         ReadableArchive appArchive = moduleArchive.getParentArchive();
         if (app != null && appArchive != null) {
             // ear case
