@@ -355,6 +355,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         }
         if(reference==null) {
             children.add(0, newChild);
+            habitat.addIndex(newNode, newNode.getProxyType().getName(), newNode.getKey());
             return;
         }
 
@@ -386,6 +387,8 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
             if (child instanceof NodeChild) {
                 NodeChild nc = (NodeChild) child;
                 if(nc.dom==reference) {
+                    habitat.removeIndex(reference.getProxyType().getName(), reference.getKey());
+                    habitat.addIndex(newNode, newNode.getProxyType().getName(), newNode.getKey());                    
                     itr.set(new NodeChild(name,newNode));
                     return;
                 }
