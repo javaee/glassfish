@@ -275,7 +275,7 @@ public class StopDomainCommand extends CLICommand {
             new Socket(host, port);
             return true;
         } catch (Exception ex) {
-            logger.printDetailMessage(
+            logger.printDebugMessage(
                 strings.get("pingPort got Exception: " + ex));  // XXX
             return false;
         }
