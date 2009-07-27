@@ -198,7 +198,9 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
             WebBundleDescriptor wDesc = context.getModuleMetaData(WebBundleDescriptor.class);
             if( wDesc != null ) {
                 Collection<EjbBundleDescriptor> ejbBundles = wDesc.getExtensionsDescriptors(EjbBundleDescriptor.class);
-                ejbBundle = ejbBundles.iterator().next();
+                if (ejbBundles.iterator().hasNext()) {
+                    ejbBundle = ejbBundles.iterator().next();
+                }
             }
 
         }
