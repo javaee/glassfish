@@ -15,16 +15,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.annotation.WebServlet;
 import javax.naming.*;
+import javax.annotation.Resource;
 
 @WebServlet(urlPatterns="/HelloServlet", loadOnStartup=1)
 public class HelloServlet extends HttpServlet {
-    
+
+    @Resource    
+    private ManagedBeanExtra mbExtra;
+
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-
 	System.out.println("In HelloServlet::init");
+	mbExtra.hello();
     }
 
     @Override
