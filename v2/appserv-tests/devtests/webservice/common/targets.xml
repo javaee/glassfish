@@ -39,6 +39,13 @@
      <mkdir dir="${dist}" />
   </target>
 
+  <target name="generate-stubs"
+      description="Runs wscompile to generate the client stub classes">
+    <antcall target="run-wscompile">
+      <param name="param1" value="-gen:client -d ${build.classes.dir} -classpath ${build.classes.dir} ${config.wsdl.file}"/>
+    </antcall>
+  </target>
+
 
  <target name="compile-client" depends="prepare"
       description="Compiles the client-side source code"  >
@@ -66,6 +73,7 @@
   
   <target name="clean" >
       <delete dir="${build}" />
+      <delete dir="${APS_HOME}/build" />
       <delete dir="${dist}" />    
       <delete dir="${assemble}" />
       <delete file="${ear.name}" />
@@ -77,7 +85,7 @@
   <target name="generate-wsdl"
       description="Runs wscompile to generate the WSDL file and mapping file">
     <antcall target="run-wscompile">
-      <param name="param1" value="-define -mapping ${build}/${mapping.file} -d ${build} -nd ${build}  -classpath ${build} ${config.interface.file}"/>
+      <param name="param1" value="-define -mapping ${build}/${mapping.file} -keep -d ${build} -nd ${build}  -classpath ${build} ${config.interface.file}"/>
     </antcall>
   </target>
 
