@@ -58,20 +58,18 @@
             />
     </sun:tableColumn>    
 
-    <sun:tableColumn headerText="$resource{i18njca.resourcesTable.colJndiName}" sort="name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18njca.resourcesTable.colJndiName}" sort="Name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.Name}" 
             url="#{pageSession.editLink}?name=#{td.value.Name}" />
     </sun:tableColumn>
 
 
-    <sun:tableColumn headerText="#{resHeader}" sort="resource" rowHeader="$boolean{true}" id="col22">
-        <staticText id="resAdap" rendered="#{!jcapool}" value="#{td.value.ResourceAdapterName}" />
-        <staticText id="resType" rendered="#{jcapool}" value="#{td.value.ResType}" />
+    <sun:tableColumn headerText="#{resHeader}" sort="ResourceAdapterName" rowHeader="$boolean{true}" id="col22">
+        <staticText id="resAdap"  value="#{td.value.ResourceAdapterName}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="#{extraInfoHeader}" sort="connection"   rowHeader="$boolean{true}" id="col3">
-        <staticText id="connDef" rendered="#{!jcapool}" value="#{td.value.ConnectionDefinitionName}" />
-        <staticText id="datasourceClassname" rendered="#{jcapool}" value="#{td.value.DatasourceClassname}" />
+    <sun:tableColumn headerText="#{extraInfoHeader}" sort="ConnectionDefinitionName"   rowHeader="$boolean{true}" id="col3">
+        <staticText id="connDef"  value="#{td.value.ConnectionDefinitionName}" />
     </sun:tableColumn>  
     
     <sun:tableColumn headerText="$resource{i18njca.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">

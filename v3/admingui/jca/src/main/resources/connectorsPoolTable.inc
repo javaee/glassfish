@@ -58,17 +58,17 @@
             />
     </sun:tableColumn>    
 
-    <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colJndiName}" sort="name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colJndiName}" sort="Name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.Name}" 
             url="#{pageSession.editLink}?name=#{td.value.Name}" />
     </sun:tableColumn>
 
 
-    <sun:tableColumn headerText="#{resHeader}" sort="resource" rowHeader="$boolean{true}" id="col22">
+    <sun:tableColumn headerText="#{resHeader}" sort="ResourceAdapterName" rowHeader="$boolean{true}" id="col22">
         <staticText id="typeCol" value="#{td.value.ResourceAdapterName}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="#{extraInfoHeader}" sort="connection"   rowHeader="$boolean{true}" id="col3">
+    <sun:tableColumn headerText="#{extraInfoHeader}" sort="ConnectionDefinitionName"   rowHeader="$boolean{true}" id="col3">
         <staticText id="typeCol" value="#{td.value.ConnectionDefinitionName}" />
     </sun:tableColumn>  
     

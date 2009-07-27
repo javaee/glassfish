@@ -58,7 +58,7 @@
             />
     </sun:tableColumn>    
 
-    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colJndiName}" sort="name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colJndiName}" sort="Name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.Name}" 
             url="#{pageSession.editLink}?name=#{td.value.Name}" />
     </sun:tableColumn>
@@ -68,16 +68,16 @@
         <sun:hyperlink rendered="#{supportCluster}" id="targetLink" text="#{td.value.enabled}" url="#{targetLink}?name=#{td.value.name}" />
     </sun:tableColumn>-->
 
-    <sun:tableColumn headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col22">
+    <sun:tableColumn headerText="$resource{i18n.deployTable.colEnabled}" sort="Enabled" rowHeader="$boolean{true}" id="col22">
         <staticText id="typeCol" value="#{td.value.Enabled}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colPool}" sort="pool" rendered="#{pageSession.hasPool}"  rowHeader="$boolean{true}" id="col3">
+    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colPool}" sort="PoolName" rendered="#{pageSession.hasPool}"  rowHeader="$boolean{true}" id="col3">
         <sun:hyperlink id="pool" text="#{td.value.PoolName}" 
             url="#{pageSession.editPoolLink}?name=#{td.value.PoolName}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colResType}" sort="resource" rendered="#{pageSession.hasResType}"  rowHeader="$boolean{true}" id="coltype">
+    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colResType}" sort="ResType" rendered="#{pageSession.hasResType}"  rowHeader="$boolean{true}" id="coltype">
         <staticText id="typeCol" rendered="#{pageSession.hasResType}" value="#{td.value.ResType}" />
     </sun:tableColumn>
 
@@ -99,7 +99,7 @@
     -->
      
     
-    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colDesc}" sort="description" rowHeader="$boolean{true}" id="col4">
+    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">
         <staticText id="typeDesc" value="#{td.value.Description}" />
     </sun:tableColumn>
     

@@ -58,20 +58,18 @@
             />
     </sun:tableColumn>    
 
-    <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colJndiName}" sort="name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colJndiName}" sort="Name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.Name}" 
             url="#{pageSession.editLink}?name=#{td.value.Name}" />
     </sun:tableColumn>
 
 
-    <sun:tableColumn headerText="#{resHeader}" sort="resource" rowHeader="$boolean{true}" id="col22">
-        <staticText id="resAdap" rendered="#{!jdbcpool}" value="#{td.value.ResourceAdapterName}" />
-        <staticText id="resType" rendered="#{jdbcpool}" value="#{td.value.ResType}" />
+    <sun:tableColumn headerText="#{resHeader}" sort="ResType" rowHeader="$boolean{true}" id="col22">
+        <staticText id="resType"  value="#{td.value.ResType}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="#{extraInfoHeader}" sort="connection"   rowHeader="$boolean{true}" id="col3">
-        <staticText id="connDef" rendered="#{!jdbcpool}" value="#{td.value.ConnectionDefinitionName}" />
-        <staticText id="datasourceClassname" rendered="#{jdbcpool}" value="#{td.value.DatasourceClassname}" />
+    <sun:tableColumn headerText="#{extraInfoHeader}" sort="DatasourceClassname"   rowHeader="$boolean{true}" id="col3">
+        <staticText id="datasourceClassname"  value="#{td.value.DatasourceClassname}" />
     </sun:tableColumn>  
     
     <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">
