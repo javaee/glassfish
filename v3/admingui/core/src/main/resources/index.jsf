@@ -33,6 +33,9 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
+<sun:page id="index" >
+    <!beforeCreate
+        redirect(page="#{request.contextPath}/common/index.jsf")
+    />
+</sun:page>
 
-<!--  for v3-new-gui, we use the homePage as the index page -->
-#include "/common/commonTask.jsf"
