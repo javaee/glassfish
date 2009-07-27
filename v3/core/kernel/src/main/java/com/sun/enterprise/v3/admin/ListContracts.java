@@ -83,7 +83,7 @@ public class ListContracts implements AdminCommand {
         if (contract==null) {
             dumpContracts(sb);
         } else {
-            dumpContract(contract, sb);
+            dumpInhabitantsImplementingContractPattern(contract, sb);
         }
         String msg = sb.toString();
         ActionReport report = context.getActionReport();
@@ -119,15 +119,21 @@ public class ListContracts implements AdminCommand {
         }
     }
 
-    private void dumpContract(String name, StringBuilder sb) {
-        sb.append("\n*********** List of all services for contract " + contract + " **************\n");
-         for (Inhabitant i : habitat.getInhabitantsByContract(name)) {
-             sb.append("Service-"+i.typeName());
+    private void dumpInhabitantsImplementingContractPattern(String pattern, StringBuilder sb) {
+        sb.append("\n*********** List of all services for contract named like " + contract + " **************\n");
+        Iterator<String> it = habitat.getAllContracts();
+        while (it.hasNext()) {
+            String cn = it.next();
+            if (cn.toLowerCase().indexOf(pattern.toLowerCase()) < 0)
+                    continue;
+             sb.append("\n-----------------------------\n");
+             for (Inhabitant i : habitat.getInhabitantsByContract(cn)) {
+             sb.append("Inhabitant-Metadata: "+i.metadata().toCommaSeparatedString());
              boolean isStarted = Boolean.parseBoolean(started);
              if (isStarted) {
                  sb.append((i.isInstantiated()?" started": " not started"));
              }
-             sb.append("\n");
-         }
+            }
+        }
     }
 }
