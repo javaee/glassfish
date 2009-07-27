@@ -218,12 +218,6 @@ public class ApplicationNode extends BundleNode<Application> {
     public Node writeDescriptor(Node parent, Application application) {
         Node appNode = super.writeDescriptor(parent, application);
 
-        // application-name
-        appendTextChild(appNode, ApplicationTagNames.APPLICATION_NAME, application.getAppName());
-        
-        // description, display-name, icons...
-        writeDisplayableComponentInfo(appNode, application);
-
         // initialize-in-order
         appendTextChild(appNode, ApplicationTagNames.INITIALIZE_IN_ORDER, String.valueOf(application.isInitializeInOrder()));
 

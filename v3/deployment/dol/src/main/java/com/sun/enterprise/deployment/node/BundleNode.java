@@ -38,6 +38,7 @@ package com.sun.enterprise.deployment.node;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.xml.TagNames;
+import com.sun.enterprise.deployment.xml.ApplicationTagNames;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -162,8 +163,14 @@ public abstract class BundleNode<T extends RootDeploymentDescriptor>
         } else {              
             bundleNode = appendChild(parent, getXMLRootTag().getQName());
         }
-        // module-name
-        appendTextChild(bundleNode, TagNames.MODULE_NAME, descriptor.getModuleDescriptor().getModuleName());
+        if (descriptor instanceof Application) {
+            Application application = (Application)descriptor;
+            // in case of application, write application-name
+            appendTextChild(bundleNode, ApplicationTagNames.APPLICATION_NAME, application.getAppName());
+        } else {
+            // in case of bundle, write module-name
+            appendTextChild(bundleNode, TagNames.MODULE_NAME, descriptor.getModuleDescriptor().getModuleName());
+        }
 
         // description, display-name, icons...
         writeDisplayableComponentInfo(bundleNode, descriptor);
@@ -217,7 +224,8 @@ public abstract class BundleNode<T extends RootDeploymentDescriptor>
         // when we come here to write it out, the annotation information
         // has already been processed and saved in DD, so written out DD
         // is always a full DD.
-        if (descriptor instanceof BundleDescriptor) {
+        if (descriptor instanceof BundleDescriptor && 
+            !(descriptor instanceof Application) ) {
             BundleDescriptor bundleDesc = (BundleDescriptor)descriptor;
             if (! bundleDesc.isDDWithNoAnnotationAllowed()) {
                 bundleNode.setAttribute(TagNames.METADATA_COMPLETE, "true"); 
