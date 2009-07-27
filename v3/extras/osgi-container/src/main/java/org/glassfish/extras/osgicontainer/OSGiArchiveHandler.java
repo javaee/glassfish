@@ -137,7 +137,7 @@ public class OSGiArchiveHandler extends GenericHandler {
         // add the new module or retrieve the existing one.
         final Module module = mr.add(moduleDef);
 
-        if (module!=null) {
+        if (module==null) {
             throw new RuntimeException("Cannot install bundle " + context.getSource() + " in osgi runtime");
         }
             return getClassLoader(parent, module);
