@@ -41,6 +41,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.internal.api.Init;
+import org.glassfish.internal.api.Globals;
 import org.glassfish.api.naming.GlassfishNamingManager;
 
 import com.sun.logging.LogDomains;
@@ -53,6 +54,11 @@ import java.util.logging.Logger;
  */
 @Service
 public class MEJBService implements Init, PostConstruct {
+
+    // we need to inject Globals as it used by the naming manager and
+    // therefore needs to be allocated.
+    @Inject
+    Globals globals;
 
     @Inject
     Habitat habitat;

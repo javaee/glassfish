@@ -192,8 +192,8 @@
                 <scope>test</scope>
         </dependency>
         <dependency>
-                <groupId>org.glassfish.core</groupId>
-                <artifactId>glassfish</artifactId>
+                <groupId>org.glassfish.extras</groupId>
+                <artifactId>glassfish-embedded-shell</artifactId>
                 <version>${project.version}</version>
                 <scope>test</scope>
         </dependency>

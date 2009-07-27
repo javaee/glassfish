@@ -35,7 +35,7 @@ public class EmbeddedTest {
         // ok now let's look up the EJB...
         try {
             InitialContext ic = new InitialContext();
-            SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/test-classes/SimpleEjb");
+            SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/sample/SimpleEjb");
             if (ejb!=null) {
                 try {
                     System.out.println(ejb.saySomething());
