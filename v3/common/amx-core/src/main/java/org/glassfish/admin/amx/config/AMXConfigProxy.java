@@ -104,18 +104,33 @@ public interface AMXConfigProxy extends AMXProxy, AttributeResolver
     @Description("Create a child of the specified type")
     public AMXConfigProxy createChild(
             @Param(name = "childType") String childType,
+            
             @Param(name = "params")
-            @Description("name/value pairs for attributes") Map<String, Object> params);
+            @Description("name/value pairs for attributes")
+            Map<String, Object> params);
 
     /** same as the Map variant, but the name/value are in the array; even entries are names, odd are values */
     @ManagedOperation
     public AMXConfigProxy createChild(
             @Param(name = "childType") String childType,
+            
             @Param(name = "params")
-            @Description("name/value pairs, even entries are names, odd entries are values") Object[] params);
+            @Description("name/value pairs, even entries are names, odd entries are values")
+            Object[] params);
 
     /**
-    Generically remove a config by type and name.
+     * Create one or more children of any type(s).  Outer map is keyed by type.
+     * Inner maps are the attributes of each child.
+     */
+    @ManagedOperation
+    public AMXConfigProxy[] createChildren(
+            @Param(name = "childrenMaps")
+            @Description("Keyed by type, then one Map per child of that type, with each map containing name/value pairs for attributes")
+            Map<String,Map<String,Object>[]> childrenMaps);
+
+
+    /**
+    Remove a config by type and name.
     @param childType the AMX j2eeType as defined
     @param name the name of the child
     @return the ObjectName of the removed child, or null if not found

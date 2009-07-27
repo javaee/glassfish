@@ -81,6 +81,10 @@ import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.ConfigCode;
+import java.beans.PropertyVetoException;
+
+
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.RetryableException;
 import org.jvnet.hk2.config.Transaction;
@@ -326,15 +330,81 @@ public class AMXConfigImpl extends AMXImplBase
 
         return resolvedAttrs;
     }
+    
 
 //========================================================================================
+
+
+    public ObjectName[] createChildren(final Map<String, Map<String,Object>[]> childrenMaps)
+    {
+        final ConfigBeanProxy parent = getConfigBeanProxy();
+        
+        final ChildrenCreator creator = new ChildrenCreator( (Map<String,Map<String,Object>[]>)childrenMaps);
+        try
+        {
+            ConfigSupport.apply(creator, parent);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+    
+     /** Create one or more children */
+    private final class ChildrenCreator implements ConfigCode
+    {
+        protected final Map<String, Map<String,Object>[]> mChildrenMaps;
+
+        ChildrenCreator( final Map<String, Map<String,Object>[]> childrenMaps)
+        {
+            mChildrenMaps= childrenMaps;
+        }
+
+        public Object run(ConfigBeanProxy... params)
+                throws PropertyVetoException, TransactionFailure
+        {
+            if (params.length != 1)
+            {
+                throw new IllegalArgumentException();
+            }
+            final ConfigBeanProxy parent = params[0];
+
+            final ConfigBean source = (ConfigBean) ConfigBean.unwrap(parent);
+            final ConfigSupport configSupport = source.getHabitat().getComponent(ConfigSupport.class);
+
+            return _run(parent, configSupport);
+        }
+
+        public Object _run(
+            final ConfigBeanProxy parent,
+            final ConfigSupport configSupport)
+                throws PropertyVetoException, TransactionFailure
+        {
+            final SubElementsCallback callback = new SubElementsCallback(mChildrenMaps);
+        
+            final WriteableView parentW = WriteableView.class.cast(Proxy.getInvocationHandler(Proxy.class.cast(parent)));
+
+            final ConfigBeanJMXSupport sptRoot = ConfigBeanJMXSupportRegistry.getInstance( Dom.unwrap(parent).getProxyType() );
+            callback.recursiveCreate( parentW, sptRoot, configSupport, mChildrenMaps);
+
+            return null;
+        }
+    }
+
+    
+    
     /**
     Convert incoming parameters to HK2 data structures and sub-element Maps.
+    Plain attributes are converted to ConfigSupport.AttributeChanges at the top level.
+    Recursive creates are represented by type in a Map of Map<String,Object>[], where each Map in the []
+    is one child of that type.
      */
     static private void toAttributeChanges(
             final Map<String, Object> values,
             final List<ConfigSupport.AttributeChanges> changes,
-            final Map<String, Map<String, Object>> subs)
+            final Map<String, Map<String,Object>[]> subs)
     {
         if (values != null)
         {
@@ -357,9 +427,21 @@ public class AMXConfigImpl extends AMXImplBase
                 }
                 else if (value instanceof Map)
                 {
-                    // a value that's a Map indicates a sub-element
+                    // one sub-element whose type is its key in the containing Map
                     final Map<String, Object> m = TypeCast.checkMap(Map.class.cast(value), String.class, Object.class);
-                    subs.put(xmlName, m);
+                    final Map<String,Object>[] maps = new Map[] { m };
+                    subs.put(xmlName, maps);
+                }
+                else if (value instanceof Map[])
+                {
+                    // one or more sub elements whose type is its key in the containing Map
+                    final Map[] maps = (Map[])value;
+                    // basic sanity check on each Map (not a recursive check)
+                    for( final Map m : maps )
+                    {
+                        TypeCast.checkMap(m, String.class, Object.class);
+                    }
+                    subs.put(xmlName, maps);
                 }
                 else if (value instanceof String[])
                 {
@@ -377,7 +459,7 @@ public class AMXConfigImpl extends AMXImplBase
     private ObjectName finishCreate(
             final Class<? extends ConfigBeanProxy> elementClass,
             final List<ConfigSupport.AttributeChanges> changes,
-            final Map<String, Map<String, Object>> subs)
+            final Map<String, Map<String,Object>[]> subs)
             throws ClassNotFoundException, TransactionFailure
     {
         if (subs.keySet().size() != 0)
@@ -517,7 +599,7 @@ public class AMXConfigImpl extends AMXImplBase
         }
 
         final List<ConfigSupport.AttributeChanges> changes = new ArrayList<ConfigSupport.AttributeChanges>();
-        final Map<String, Map<String, Object>> subs = new HashMap<String, Map<String, Object>>();
+        final Map<String, Map<String,Object>[]> subs = MapUtil.newMap();
         toAttributeChanges(params, changes, subs);
 
         return finishCreate(intf, changes, subs);
@@ -528,9 +610,9 @@ public class AMXConfigImpl extends AMXImplBase
      */
     private final class SubElementsCallback implements ConfigSupport.TransactionCallBack<WriteableView>
     {
-        private final Map<String, Map<String, Object>> mSubs;
+        private final Map<String, Map<String,Object>[]> mSubs;
 
-        public SubElementsCallback(final Map<String, Map<String, Object>> subs)
+        public SubElementsCallback(final Map<String, Map<String,Object>[]> subs)
         {
             mSubs = subs;
         }
@@ -579,47 +661,68 @@ public class AMXConfigImpl extends AMXImplBase
             final WriteableView parent,
             final ConfigBeanJMXSupport sptRoot,
             final ConfigSupport  configSupport,
-            final Map<String, Map<String, Object>> subs ) throws TransactionFailure
+            final Map<String, Map<String,Object>[]> subs ) throws TransactionFailure
         {
+            cdebug( "recursiveCreate: types to create: " + subs.keySet().size() );
+            for( final String type : subs.keySet() )
+            {
+                final Map<String,Object>[] maps = subs.get(type);
+                cdebug( "recursiveCreate: create " + type + ": " + maps.length );
+                for( final Map<String,Object> m : maps )
+                {
+                    cdebug( "recursiveCreate: type: " + type + " = " + m );
+                }
+            }
             
             // create each sub-element, recursively
             for (final String type : subs.keySet())
             {
                 final Class<? extends ConfigBeanProxy> clazz = ConfigBeanJMXSupportRegistry.getConfigBeanProxyClassFor(sptRoot, type);
                 
-                final ConfigBeanProxy childProxy = parent.allocateProxy(clazz);
-                addToList( parent, childProxy);
-                final ConfigBean child = (ConfigBean)Dom.unwrap(childProxy);
-                final WriteableView childW = WriteableView.class.cast(Proxy.getInvocationHandler(Proxy.class.cast(childProxy)));
-                //cdebug("Created sub-element of type: " + type + ", " + clazz);
-                
                 // set attributes on newly-created item
-                final Map<String, Object> attrs = subs.get(type);
-                if ( attrs == null ) throw new IllegalArgumentException( "Null attributes Map for type " + type );
-                final Map<String,Map<String,Object>> moreSubs = MapUtil.newMap();
-                for (final String attrName : attrs.keySet())
+                final Map<String,Object>[] childrenMaps = subs.get(type);
+                for( final Map<String,Object>  childMap : childrenMaps )
                 {
-                    final Object attrValue = attrs.get(attrName);
-                    if ( attrValue instanceof Map )
-                    {
-                        // another child/sub-element of this new one
-                        //cdebug("Found sub-element " + attrName + " for " + type + " with Map " + attrValue);
-                        moreSubs.put( attrName, Map.class.cast(attrValue) );
-                        continue;
-                    }
+                    final ConfigBeanProxy childProxy = parent.allocateProxy(clazz);
+                    addToList( parent, childProxy);
+                    final ConfigBean child = (ConfigBean)Dom.unwrap(childProxy);
+                    final WriteableView childW = WriteableView.class.cast(Proxy.getInvocationHandler(Proxy.class.cast(childProxy)));
+                    cdebug("Created sub-element of type: " + type + ", " + clazz);
+                
+                    cdebug( "recursiveCreate: create type: " + type + " = " + childMap);
                     
-                    final ConfigModel.Property modelProp = child.model.findIgnoreCase( Dom.convertName(attrName) );
-                    //final WriteableView childW = (WriteableView)configSupport.getWriteableView( childProxy );
-                    //final WriteableView childW = (WriteableView)child;
-                    if ( modelProp == null ) throw new IllegalArgumentException( "Can't find ConfigModel.Property for attr " + attrName + " on " + type );
-                    //cdebug( "setting attribute \"" + attrName + "\" to \"" + attrValue + "\" on " + type );
-                    childW.setter( modelProp, attrValue, String.class);
-                    //cdebug( "set attribute \"" + attrName + "\" to \"" + attrValue + "\" on " + type );
-                }
-
-                if ( moreSubs.keySet().size() != 0 )
-                {
-                    recursiveCreate( childW, sptRoot, configSupport, moreSubs );
+                    final Map<String,Map<String,Object>[]> moreSubs = MapUtil.newMap();
+                    for (final String attrName : childMap.keySet())
+                    {
+                        final Object attrValue = childMap.get(attrName);
+                        
+                        if ( attrValue instanceof Map )
+                        {
+                            // single child of this type
+                            cdebug("Found sub-element of type " + attrName + " within type " + type + " with Map " + attrValue);
+                            final Map<String,Object>[] maps = new Map[] { Map.class.cast(attrValue) };
+                            moreSubs.put( attrName, maps );
+                            continue;
+                        }
+                        else if ( attrValue instanceof Map[] )
+                        {
+                            final Map<String,Object>[] maps = (Map[])attrValue;
+                            // multiple children of the same type
+                            cdebug( "Found" + maps.length + " sub-elements of type " + attrName + " within type " + type );
+                            moreSubs.put( attrName, maps);
+                            continue;
+                        }
+                        
+                        final ConfigModel.Property modelProp = child.model.findIgnoreCase( Dom.convertName(attrName) );
+                        if ( modelProp == null ) throw new IllegalArgumentException( "Can't find ConfigModel.Property for attr " + attrName + " on " + type );
+                        cdebug( "setting attribute \"" + attrName + "\" to \"" + attrValue + "\" on " + type );
+                        childW.setter( modelProp, attrValue, String.class);
+                        cdebug( "set attribute \"" + attrName + "\" to \"" + attrValue + "\" on " + type );
+                    }
+                    if ( moreSubs.keySet().size() != 0 )
+                    {
+                        recursiveCreate( childW, sptRoot, configSupport, moreSubs );
+                    }
                 }
             }
         }
