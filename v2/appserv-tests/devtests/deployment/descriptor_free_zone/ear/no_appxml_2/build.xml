@@ -42,10 +42,10 @@
             <fileset dir="${build}"
                      includes="com/sun/s1asdev/deployment/noappxml/ejb/**.class"/>
         </jar>
-        <jar destfile="${web.war}">
+        <war destfile="${web.war}" webxml="web/web.xml">
             <fileset dir="web"
                      includes="**.html"/>
-        </jar>
+        </war>
         <jar destfile="${appclient.jar}" manifest="client/MANIFEST.MF">
             <fileset dir="${build}"
                      includes="com/sun/s1asdev/deployment/noappxml/client/**.class,
@@ -146,12 +146,10 @@
         <antcall target="declare-test">
             <param name="description" value="descriptor_free/ear/no_appxml_2 Test asadmin re-deploy"/>
         </antcall>
-<!--
         <antcall target="redeploy.asadmin"/>
         <antcall target="runclient">
             <param name="log.id" value="2"/>
         </antcall>
--->
         <antcall target="undeploy.asadmin"/>
         <delete file="${testName}Client.jar"/>
     </target>

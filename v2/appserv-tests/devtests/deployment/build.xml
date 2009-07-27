@@ -38,11 +38,9 @@
         <ant dir="ejb30" target="private-all">
             <property name="build" value="${build}/ejb30"/>
         </ant>
-<!--
         <ant dir="descriptor_free_zone" target="private-all">
             <property name="build" value="${build}/descriptor_free_zone"/>
         </ant>
--->
         <ant dir="directorydeploy" target="private-all">
             <property name="build" value="${build}/directorydeploy"/>
         </ant>

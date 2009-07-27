@@ -25,9 +25,9 @@
 		<ant dir="security" target="private-all">
 			<property name="build" value="${build}/security"/>
 		</ant>
+-->
 		<ant dir="xmloverride" target="private-all">
 			<property name="build" value="${build}/xmloverride"/>
 		</ant>
--->
 	</target>
 </project>

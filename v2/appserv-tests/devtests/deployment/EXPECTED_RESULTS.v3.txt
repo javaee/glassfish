@@ -1,7 +1,7 @@
 Results of deployment dev tests with v3
 ===========================================================
 
-PASS: 124
+PASS: 132
 FAIL: 0
 UNKNOWN: 0
 
@@ -105,12 +105,20 @@ UNKNOWN: 0
 [PASSED] session : ejb30/session Test asadmin redeploy  
 [PASSED] session2 : ejb30/session2 Test asadmin deploy  
 [PASSED] session2 : ejb30/session2 Test asadmin redeploy  
-[PASSED] webclient : ejb30/mdb/webClient Test asadmin deploy (server)
-[PASSED] webclient : ejb30/mdb/webClient Test asadmin redeploy (server)
+[PASSED] webclient : ejb30/mdb/webClient Test asadmin deploy
+[PASSED] webclient : ejb30/mdb/webClient Test asadmin redeploy
+[PASSED] xmloverride : ejb30/security Test asadmin deploy
+[PASSED] xmloverride : ejb30/security Test asadmin redeploy
 [PASSED] jsp : ejb30/war/jsp Test asadmin deploy  
 [PASSED] jsp : ejb30/war/jsp Test asadmin redeploy  
 [PASSED] servlet : ejb30/war/servlet Test asadmin deploy  
 [PASSED] servlet : ejb30/war/servlet Test asadmin redeploy  
+[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin deploy
+[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin re-deploy
+[PASSED] dir_deploy : descriptor_free/ear/dir_deploy asadmin deploydir
+[PASSED] dir_deploy : descriptor_free/ear/dir_deploy asadmin re-deploy
+[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin deploy
+[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin re-deploy
 [PASSED] ear : directorydeploy/ear Test asadmin deploydir  
 [PASSED] ear : directorydeploy/ear Test asadmin redeploydir  
 [PASSED] ear : directorydeploy/ear Test asadmin undeploydir  

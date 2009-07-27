@@ -164,8 +164,14 @@
     </target>
 
     <target name="runclient" depends="setOrbPort">
-        <javac srcdir="../../ejb/statelesshello/standaloneclient" destdir="${build}"
-               classpath="${inst}/lib/j2ee.jar:../../build/ejb/statelesshello"/>
+        <javac srcdir="../../ejb/statelesshello/standaloneclient" destdir="${build}">
+           <classpath>
+                <path refid="gfv3.classpath"/>
+                <path location="../../build/ejb/statelesshello"/>
+            </classpath>
+
+        </javac>
+
         <javaWithResult
             fork="true"
             failonerror="false"
