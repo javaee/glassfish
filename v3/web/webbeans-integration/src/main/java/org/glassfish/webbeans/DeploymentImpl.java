@@ -44,10 +44,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 
 import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
@@ -72,12 +73,14 @@ public class DeploymentImpl implements Deployment {
     private final List<URL> wbUrls;
     private final ReadableArchive archive;
     private final List<BeanDeploymentArchive> beanDeploymentArchives;
+    private final Collection<EjbDescriptor> ejbs;
 
-    public DeploymentImpl(ReadableArchive archive) {
+    public DeploymentImpl(ReadableArchive archive, Collection<EjbDescriptor> ejbs) {
         this.wbClasses = new ArrayList<Class<?>>();
         this.wbUrls = new ArrayList<URL>();
         this.beanDeploymentArchives = new ArrayList<BeanDeploymentArchive>();
         this.archive = archive;
+        this.ejbs = ejbs;
         scan();
     }
 
@@ -154,7 +157,7 @@ public class DeploymentImpl implements Deployment {
             logger.log(Level.SEVERE, cne.getLocalizedMessage(), cne);
         }
 
-        BeanDeploymentArchive beanDeploymentArchive = new BeanDeploymentArchiveImpl(wbClasses, wbUrls);
+        BeanDeploymentArchive beanDeploymentArchive = new BeanDeploymentArchiveImpl(wbClasses, wbUrls, ejbs);
         beanDeploymentArchives.add(beanDeploymentArchive);
     }
 

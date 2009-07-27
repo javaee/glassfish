@@ -69,6 +69,7 @@ import org.jboss.webbeans.context.api.helpers.ConcurrentHashMapBeanStore;
 import org.jboss.webbeans.ejb.spi.EjbServices;
 
 import java.util.Set;
+import java.util.HashSet;
 import java.util.Collection;
 
 import javax.interceptor.AroundInvoke;
@@ -114,10 +115,7 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
         // If the app contains any ejbs associate the web beans interceptor
         // with each of the ejbs so it's available during the ejb load phase
 
-        /**  Skip this until org.jboss.webbeans.ejb package is exported
-         *   from webbeans impl OSGI bundle so we can access interceptor
-         *   class
-         
+        /**
         EjbBundleDescriptor ejbBundle = getEjbBundleFromContext(context);
 
         if( ejbBundle != null ) {
@@ -125,8 +123,6 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
             Set<EjbDescriptor> ejbs = ejbBundle.getEjbs();
 
             EjbInterceptor interceptor = createEjbInterceptor(ejbBundle);
-
-
 
             for(EjbDescriptor next : ejbs) {
 
@@ -137,8 +133,7 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
             }
         }
-
-        **/
+         **/
 
         return true;
     }
@@ -154,12 +149,22 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
         WebBeansBootstrap bootstrap = new WebBeansBootstrap();
 
+        EjbBundleDescriptor ejbBundle = getEjbBundleFromContext(context);
+
+        Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
+
+        if( ejbBundle != null ) {
+
+            ejbs = ejbBundle.getEjbs();
+
+            EjbServices ejbServices = new EjbServicesImpl(habitat, ejbs);
+            bootstrap.getServices().add(EjbServices.class, ejbServices);
+
+        }
         
         bootstrap.setEnvironment(Environments.SERVLET);
-        bootstrap.getServices().add(Deployment.class, new DeploymentImpl(archive) {});
+        bootstrap.getServices().add(Deployment.class, new DeploymentImpl(archive, ejbs) {});
         bootstrap.setApplicationContext(applicationBeanStore);
-
-
 
         WebBundleDescriptor wDesc = context.getModuleMetaData(WebBundleDescriptor.class);
         if( wDesc != null) {
@@ -168,22 +173,7 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
             // Add the Web Beans Listener if it does not already exist..
             wDesc.addAppListenerDescriptor(new AppListenerDescriptorImpl(WEB_BEAN_LISTENER));
         }
-
-        /** TODO Holding off on EjbServices registration until interceptor /
-         *  and EnterpriseBeanInstance proxy classloading issues are resolved
-         * 
-        EjbBundleDescriptor ejbBundle = getEjbBundleFromContext(context);
-
-
-        if( ejbBundle != null ) {
-
-            Set<EjbDescriptor> ejbs = ejbBundle.getEjbs();
-
-            EjbServices ejbServices = new EjbServicesImpl(habitat, ejbs);
-            bootstrap.getServices().add(EjbServices.class, ejbServices);
-
-        }
-         **/
+        
 
         WebBeansApplicationContainer wbApp = new WebBeansApplicationContainer(bootstrap);
 
@@ -254,8 +244,6 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
         }
 
         return interceptor;
-
-
 
     }
 

@@ -59,12 +59,4 @@ public class BusinessInterfaceDescriptorImpl<T> implements BusinessInterfaceDesc
 	    return clientViewType;
     }
 
-   /**
-    * Gets the JNDI name under which the EJB is registered
-    * 
-    * @return The JNDI name
-    */
-    public String getJndiName() {
-	    return jndiName;
-    }
 }

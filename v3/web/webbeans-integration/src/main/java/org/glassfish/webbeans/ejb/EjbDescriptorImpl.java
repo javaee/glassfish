@@ -66,15 +66,6 @@ public class EjbDescriptorImpl<T> implements org.jboss.webbeans.ejb.spi.EjbDescr
     }
 
     public Class<T> getBeanClass() {
-        return null;
-    }
-
-  /**
-    * Gets the EJB type
-    * 
-    * @return The EJB Bean class
-    */
-    public Class<T> getType() {
         Class beanClassType = null;
 	    try {
 
@@ -124,37 +115,6 @@ public class EjbDescriptorImpl<T> implements org.jboss.webbeans.ejb.spi.EjbDescr
         }
        
         return localBusIntfs;
-    }
-   
-   /**
-    * Gets the remote business interfaces of the EJB
-    * 
-    * @return An iterator over the remote business interfaces
-    */
-    public Iterable<BusinessInterfaceDescriptor<?>> getRemoteBusinessInterfaces() {
-	     Set<BusinessInterfaceDescriptor<?>> remoteBusIntfs = new HashSet<BusinessInterfaceDescriptor<?>>();
-
-        if( ejbDesc.getType().equals(EjbSessionDescriptor.TYPE) ) {
-
-            EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDesc;
-            Set<String> remoteNames = sessionDesc.getRemoteBusinessClassNames();
-
-            for(String remote : remoteNames) {
-                try {
-
-                    Class remoteClass = sessionDesc.getEjbBundleDescriptor().getClassLoader().loadClass(remote);
-                    String jndiName = sessionDesc.getPortableJndiName(remote);
-                    BusinessInterfaceDescriptor busIntfDesc =
-                            new BusinessInterfaceDescriptorImpl(remoteClass, jndiName);
-                    remoteBusIntfs.add(busIntfDesc);
-
-                } catch(ClassNotFoundException e) {
-                    throw new IllegalStateException(e);
-                }
-            }
-        }
-
-        return remoteBusIntfs;
     }
    
    /**
@@ -227,13 +187,5 @@ public class EjbDescriptorImpl<T> implements org.jboss.webbeans.ejb.spi.EjbDescr
 	    return (ejbDesc.getType().equals(EjbMessageBeanDescriptor.TYPE));
     }
 
-   /**
-    * Gets the EJB name
-    * 
-    * @return The name
-    */
-    public String getEjbName() {
-	    return ejbDesc.getName();
-    }
 
 }

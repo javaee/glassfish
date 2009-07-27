@@ -56,7 +56,6 @@ import java.lang.reflect.Member;
 @Contract
 public interface EjbContainerServices {
 
-    public Object resolveRemoteEjb(Annotation ejbAnnotation, Member member);
 
     public <S> S  getBusinessObject(Object ejbRef, java.lang.Class<S> sClass);
 

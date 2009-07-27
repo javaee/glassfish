@@ -115,6 +115,8 @@ public class ApplicationValidator extends EjbBundleValidator
      * @param descriptor the web bundle descriptor
      */
     public void accept(WebBundleDescriptor descriptor) {
+        bundleDescriptor = descriptor;
+        
         if (descriptor.getSessionConfig() == null) {
             descriptor.setSessionConfig(new SessionConfigDescriptor());
         }
@@ -150,6 +152,7 @@ public class ApplicationValidator extends EjbBundleValidator
      * @param descriptor the web component
      */
     public void accept(WebComponentDescriptor descriptor) {
+
         //set default value
         if (descriptor.getLoadOnStartUp() == null) {
             descriptor.setLoadOnStartUp(-1);

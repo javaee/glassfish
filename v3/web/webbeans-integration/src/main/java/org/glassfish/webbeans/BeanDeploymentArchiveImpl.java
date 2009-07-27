@@ -37,15 +37,16 @@
 package org.glassfish.webbeans;
 
 import java.net.URL;
-import java.util.List;
-import java.util.Collections;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.webbeans.ejb.EjbDescriptorImpl;
 
 import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.webbeans.ejb.spi.EjbDescriptor;
+
 
 /*
  * The means by which Web Beans are discovered on the classpath. 
@@ -56,10 +57,13 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
 
     private final List<Class<?>> wbClasses;
     private final List<URL> wbUrls;
+    private final Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbDescs;
 
-    public BeanDeploymentArchiveImpl(List<Class<?>> wbClasses, List<URL> wbUrls) {
+    public BeanDeploymentArchiveImpl(List<Class<?>> wbClasses, List<URL> wbUrls,
+                                     Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs) {
         this.wbClasses = wbClasses;
         this.wbUrls = wbUrls;
+        this.ejbDescs = ejbs;
     }
 
     public List<BeanDeploymentArchive> getBeanDeploymentArchives() {
@@ -73,8 +77,25 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     public Iterable<URL> getBeansXml() {
         return wbUrls;
     }
-   
+
+    /**
+    * Gets a descriptor for each EJB
+    *
+    * @return the EJB descriptors
+    */
     public Iterable<EjbDescriptor<?>> getEjbs() {
-        return Collections.emptyList();
+
+        Set<EjbDescriptor<?>> ejbs = new HashSet<EjbDescriptor<?>>();
+
+        for(com.sun.enterprise.deployment.EjbDescriptor next : ejbDescs) {
+
+            EjbDescriptorImpl wbEjbDesc = new EjbDescriptorImpl(next);
+            ejbs.add(wbEjbDesc);
+
+        }
+
+       return ejbs;
     }
+   
+
 }

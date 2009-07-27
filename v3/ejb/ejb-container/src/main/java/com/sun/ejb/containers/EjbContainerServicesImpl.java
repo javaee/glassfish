@@ -59,12 +59,6 @@ import com.sun.enterprise.deployment.EjbSessionDescriptor;
 @Service
 public class EjbContainerServicesImpl implements EjbContainerServices {
 
-    public Object resolveRemoteEjb(Annotation ejbAnnotation, Member member)
-    {
-
-        return null;
-
-    }
 
     public <S> S  getBusinessObject(Object ejbRef, java.lang.Class<S> businessInterface) {
 

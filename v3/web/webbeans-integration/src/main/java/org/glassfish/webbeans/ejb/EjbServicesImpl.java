@@ -44,9 +44,10 @@ import org.jboss.webbeans.ejb.api.SessionObjectReference;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.jboss.webbeans.ejb.spi.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.deployment.*;
 
 
+import org.glassfish.webbeans.InjectionPointHelper;
 import java.util.Vector;
 import java.util.Iterator;
 import java.util.Set;
@@ -58,6 +59,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import org.glassfish.ejb.api.EjbContainerServices;
 
@@ -68,10 +71,12 @@ public class EjbServicesImpl implements EjbServices
 
     private Set<com.sun.enterprise.deployment.EjbDescriptor> ejbDescs;
     private Habitat habitat;
+    private InjectionPointHelper injectionPointHelper;
 
     public EjbServicesImpl(Habitat h, Set<com.sun.enterprise.deployment.EjbDescriptor> ejbs) {
         habitat = h;
         ejbDescs = ejbs;
+        injectionPointHelper = new InjectionPointHelper(h);
     }
 
     /**
@@ -93,8 +98,8 @@ public class EjbServicesImpl implements EjbServices
         // Look for @EJB annotation.  (Do it by class name matching to avoid direct dependency
         // from this module on javax.ejb)
         Annotation ejbAnnotation = null;
-/*
-        for(Annotation annotation : injectionPoint.getAnnotations()) {
+
+        for(Annotation annotation : injectionPoint.getBindings()) {
             if( annotation.annotationType().getName().equals("javax.ejb.EJB")) {
                 ejbAnnotation = annotation;
                 break;
@@ -105,9 +110,18 @@ public class EjbServicesImpl implements EjbServices
             throw new IllegalArgumentException("injection point is not annotated with @EJB " +
                 injectionPoint);
         }
-*/
 
-        return containerServices.resolveRemoteEjb(ejbAnnotation, injectionPoint.getMember());
+        Object resolvedEjb = null;
+
+        try {
+            Application app = ejbDescs.iterator().next().getApplication();
+            resolvedEjb = injectionPointHelper.resolveInjectionPoint(injectionPoint.getMember(), app);    
+        } catch(NamingException ne) {
+            throw new IllegalArgumentException("Unable to resolve injection point " +
+                    injectionPoint, ne);
+        }
+
+        return resolvedEjb;
 
     }
    
@@ -139,12 +153,12 @@ public class EjbServicesImpl implements EjbServices
                 sessionObj = new SessionObjectReferenceImpl(containerServices, ejbRef);
 
             } catch(NamingException ne) {
-//                throw new IllegalStateException("Error resolving session object reference for ejb name " +
-//                        ejbDescriptor.getEjbName() + " and jndi name " + globalJndiName, ne);
+               throw new IllegalStateException("Error resolving session object reference for ejb name " +
+                       ejbDescriptor.getBeanClass() + " and jndi name " + globalJndiName, ne);
             }
         }  else {
-//            throw new IllegalArgumentException("Not enough type information to resolve ejb for " +
-//                " ejb name " + ejbDescriptor.getEjbName());
+           throw new IllegalArgumentException("Not enough type information to resolve ejb for " +
+               " ejb name " + ejbDescriptor.getBeanClass());
         }
 
 	    return sessionObj;
@@ -196,24 +210,7 @@ public class EjbServicesImpl implements EjbServices
         return remoteRef;
     }
    
-   /**
-    * Gets a descriptor for each EJB 
-    * 
-    * @return the EJB descriptors
-    */
-    public Iterable<EjbDescriptor<?>> discoverEjbs() {
-
-        Set<EjbDescriptor<?>> ejbs = new HashSet<EjbDescriptor<?>>();
-
-        for(com.sun.enterprise.deployment.EjbDescriptor next : ejbDescs) {
-
-            EjbDescriptorImpl wbEjbDesc = new EjbDescriptorImpl(next);
-            ejbs.add(wbEjbDesc);
-
-        }
-
-       return ejbs;
-    }
+   
 
     private String getDefaultGlobalJndiName(EjbDescriptor ejbDesc) {
 
@@ -233,4 +230,7 @@ public class EjbServicesImpl implements EjbServices
         return (clientView != null) ? sessionDesc.getPortableJndiName(clientView) : null;
 
     }
+
+
+
 }
