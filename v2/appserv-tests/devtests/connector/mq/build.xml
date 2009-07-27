@@ -60,7 +60,7 @@
 
     <target name="mq">
         <record name="mq.output" action="start" />
-            <!--<ant dir="cmt" target="${mdb-target}"/>-->
+            <ant dir="cmt" target="${mdb-target}"/>
             <ant dir="simplestress" target="${mdb-target}"/>
             <ant dir="stress" target="${mdb-target}"/>
             <ant dir="lifecycle" target="${mdb-target}"/>
