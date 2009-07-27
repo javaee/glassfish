@@ -13,16 +13,18 @@
 
 <!--	<ant dir="prepkged-svc-1" target="all"/>-->
 	<ant dir="dol-override-1" target="all"/>
-<!--	<ant dir="provider" target="all"/>-->
+	<ant dir="provider" target="all"/>
 	<ant dir="svchandler-1" target="all"/>
 	<ant dir="svchandler-2" target="all"/>
 	<ant dir="svchandler-3" target="all"/>
 	<ant dir="svchandler-4" target="all"/>
 	<ant dir="client-handler-1" target="all"/>
 	<ant dir="client-handler-2" target="all"/>
+	<ant dir="mtom" target="all"/>
+	<ant dir="containerresolver" target="all"/>
+	<ant dir="endpointaddress" target="all"/>
 <!--	<ant dir="wsctxt" target="all"/>
 	<ant dir="mappedname" target="all"/>-->
-	<ant dir="mtom" target="all"/>
 <!--	<ant dir="async" target="all"/>-->
 	<!--<ant dir="mbyte" target="all"/>-->
 <!--	<ant dir="postconstruct" target="all"/>
@@ -39,7 +41,5 @@
 	<ant dir="restful" target="all"/>
 	<ant dir="restful-2" target="all"/>
 -->
-	<ant dir="containerresolver" target="all"/>
-	<ant dir="endpointaddress" target="all"/>
     </target>
 </project>
