@@ -613,6 +613,8 @@ public class RemoteCommand extends CLICommand {
             Document doc = d.parse(in);
             NodeList cmd = doc.getElementsByTagName("command");
             Node cmdnode = cmd.item(0);
+            if (cmdnode == null)
+                return null;    // no command info, must be invalid command
             NamedNodeMap cmdattrs = cmdnode.getAttributes();
             String dashOk = getAttr(cmdattrs, "unknown-options-are-operands");
             if (dashOk != null)
