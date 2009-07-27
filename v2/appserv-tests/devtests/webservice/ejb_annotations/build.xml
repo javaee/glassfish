@@ -32,6 +32,8 @@
 -->
 	<ant dir="libdependent" target="all"/>
 	<ant dir="singleton" target="all"/>
+	<ant dir="ejbwebservicesinwar" target="all"/>
+	<ant dir="ejbwebservicesinwar-2" target="all"/>
 	<!--ant dir="wsnameejbname" target="all"/-->
     </target>
 </project>
