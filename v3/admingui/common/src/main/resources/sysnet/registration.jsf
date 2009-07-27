@@ -61,7 +61,7 @@
         setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
         setAttribute(key="accountGroup", value="hasAccount");
         setAttribute(key="contextRoot" value="#{request.contextPath}");
-        setAttribute(key="samplePath" value="$attribute{contextRoot}/resource/sysnet/sample.html");
+        setAttribute(key="samplePath" value="$attribute{contextRoot}/resource/common/sysnet/sample.html");
         setAttribute(key="PageTitleHelp" value="$resource{i18n.reg.PageTitleHelp, ${samplePath}}");
     />
     

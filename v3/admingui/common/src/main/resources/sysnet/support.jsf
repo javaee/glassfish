@@ -77,7 +77,7 @@
         <sun:breadcrumbs id="boom" style="background-color: #E5E9ED;">
             <sun:hyperlink text="$resource{i18n.tree.support}">
                 <!command
-                    redirect("#{request.contextPath}/sysnet/support.jsf");
+                    redirect("#{request.contextPath}/common/sysnet/support.jsf");
                 />
             </sun:hyperlink>
         </sun:breadcrumbs>
@@ -89,7 +89,7 @@
     <sun:hidden id="helpKey" value="$resource{help.support}" />
 </sun:form>
 <f:verbatim>
-    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resource/sysnet/support.css"/>
+    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resource/common/sysnet/support.css"/>
     <style type="text/css">
         .hd, div.hd a, .hd, li.on a{
             background-image:url(#{request.contextPath}/resource/images/regbkgrnd.png);
@@ -285,7 +285,7 @@
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
     </f:verbatim>
-                            <jmaki:widget name="jmaki.blockList" id="learning" args="{count:5}" service="/resource/sysnet/learning.json" template="/resources/jmaki/blockList/learning.htm" />
+                            <jmaki:widget name="jmaki.blockList" id="learning" args="{count:5}" service="/resource/common/sysnet/learning.json" template="/resources/jmaki/blockList/learning.htm" />
     <f:verbatim>
                         </div>
                     </div>

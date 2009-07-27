@@ -2,7 +2,7 @@
     "dataType" : "jmakiRSS",
     "channel" : {
 	"title" : "Java EE Reference Documents",
-	"link" : "/sysnet/learning.json",
+	"link" : "/common/sysnet/learning.json",
 	"date" : "",
 	"description" : "Java EE Reference Documents and Resources",
 	"items" : [
