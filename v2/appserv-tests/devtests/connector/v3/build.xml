@@ -186,10 +186,10 @@
         -->
         <!-- running web2connector twice -->
         <echo message="@@## web2connector ##@@"/>
-        <ant dir="web2connector" target="${connector-target}" />
+        <ant dir="../web2connector" target="${connector-target}" />
 
         <echo message="@@## web2connector (second time) ##@@"/>
-        <ant dir="web2connector" target="${connector-target}" />
+        <ant dir="../web2connector" target="${connector-target}" />
 
         <echo message="@@## nonstringmcfproperties ##@@"/>
         <ant dir="nonstringmcfproperties" target="${connector-target}"/>
