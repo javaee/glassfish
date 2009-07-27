@@ -38,6 +38,7 @@ package org.glassfish.api.embedded;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.api.container.Sniffer;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -256,6 +257,83 @@ public class Server {
      */
     public <T extends ContainerBuilder<?>> T createConfig(Class<T> configType) {
         return habitat.getComponent(configType);        
+    }
+
+    /**
+     *
+     */
+    public void addContainer(final ContainerBuilder.Type type) {
+        containers.add(new Container(new EmbeddedContainer() {
+
+            final List<Container> delegates = new ArrayList<Container>();
+            final ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
+
+            public List<Sniffer> getSniffers() {
+                synchronized(sniffers) {
+                    if (sniffers.isEmpty()) {
+                        if (type == ContainerBuilder.Type.all) {
+                            for (final ContainerBuilder.Type t : ContainerBuilder.Type.values()) {
+                                if (t!=ContainerBuilder.Type.all) {
+                                    delegates.add(getContainerFor(t));
+                                }
+                            }
+                        } else {
+                            delegates.add(getContainerFor(type));
+                        }
+                    }
+                    for (Container c : delegates) {
+                        sniffers.addAll(c.container.getSniffers());
+                    }
+                }
+                return sniffers;
+            }
+
+            private Container getContainerFor(final ContainerBuilder.Type type) {
+                ContainerBuilder b = getConfig(type);
+                if (b!=null) {
+                    return new Container(b.create(Server.this));
+                } else {
+                    return new Container(new EmbeddedContainer() {
+
+                        public List<Sniffer> getSniffers() {
+                            List<Sniffer> sniffers = new ArrayList<Sniffer>();
+                            Sniffer s = habitat.getComponent(Sniffer.class, type.toString());
+                            if (s!=null) {
+                                sniffers.add(s);
+                            }
+                            return sniffers;
+                        }
+
+                        public void start() throws LifecycleException {
+
+                        }
+
+                        public void stop() throws LifecycleException {
+
+                        }
+                    });
+                }
+            }
+
+            public void start() throws LifecycleException {
+                for (Container c : delegates) {
+                    if (!c.started) {
+                        c.container.start();
+                        c.started=true;
+                    }
+                }
+            }
+
+            public void stop() throws LifecycleException {
+                for (Container c : delegates) {
+                    if (c.started) {
+                        c.container.stop();
+                        c.started=false;
+                    }
+                }
+
+            }
+        }));
     }
 
     /**

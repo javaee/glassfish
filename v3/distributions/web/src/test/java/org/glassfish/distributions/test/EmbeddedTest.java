@@ -36,12 +36,15 @@
 package org.glassfish.distributions.test;
 
 
+import java.util.*;
 import org.junit.Test;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.LifecycleException;
-import org.glassfish.api.embedded.EmbeddedDeployer;
+import org.glassfish.api.embedded.EmbeddedContainer;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.embedded.Port;
@@ -53,6 +56,7 @@ import org.glassfish.api.embedded.admin.EmbeddedAdminContainer;
 import org.glassfish.api.embedded.admin.CommandExecution;
 import org.glassfish.api.embedded.admin.CommandParameters;
 import org.glassfish.api.ActionReport.MessagePart;
+import org.glassfish.api.container.Sniffer;
 import org.glassfish.distributions.test.ejb.SampleEjb;
 
 import javax.naming.InitialContext;
@@ -73,8 +77,50 @@ public class EmbeddedTest {
         Server.Builder builder = new Server.Builder("build");
 
         server = builder.build();
+        NetworkConfig nc = server.getHabitat().getComponent(NetworkConfig.class);
+        List<NetworkListener> listeners = nc.getNetworkListeners().getNetworkListener();
+        System.out.println("Network listener size before creation " + listeners.size());
+        for (NetworkListener nl : listeners) {
+            System.out.println("Network listener " + nl.getPort());
+        }
         http = server.createPort(8080);
+        listeners = nc.getNetworkListeners().getNetworkListener();
+        System.out.println("Network listener size after creation " + listeners.size());
+        for (NetworkListener nl : listeners) {
+            System.out.println("Network listener " + nl.getPort());
+        }
+        Collection<NetworkListener> cnl = server.getHabitat().getAllByContract(NetworkListener.class);
+        System.out.println("Network listener size after creation " + cnl.size());
+        for (NetworkListener nl : cnl) {
+            System.out.println("Network listener " + nl.getPort());
+        }
     }
+
+    @Test
+    public void testJpa() throws LifecycleException {
+        server.addContainer(ContainerBuilder.Type.jpa);
+        ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
+        for (EmbeddedContainer c : server.getContainers()) {
+            sniffers.addAll(c.getSniffers());
+        }
+        System.out.println("Sniffer size "  + sniffers.size());
+        for (Sniffer sniffer : sniffers) {
+            System.out.println("Registered Sniffer " + sniffer.getModuleType());
+        }
+    }
+
+    @Test
+    public void testAll() throws LifecycleException {
+        server.addContainer(ContainerBuilder.Type.all);
+        ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
+        for (EmbeddedContainer c : server.getContainers()) {
+            sniffers.addAll(c.getSniffers());
+        }
+        System.out.println("Sniffer size "  + sniffers.size());
+        for (Sniffer sniffer : sniffers) {
+            System.out.println("Registered Sniffer " + sniffer.getModuleType());
+        }
+    }    
 
     @Test
     public void testEjb() throws LifecycleException {

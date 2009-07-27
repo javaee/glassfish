@@ -48,7 +48,7 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface ContainerBuilder<T extends EmbeddedContainer> {
 
-    public enum Type { ejb, web, jruby }
+    public enum Type { ejb, web, jruby, jpa, webservices, all }
 
     // we will need more port types.
     public enum PortType { http, https, iiop };

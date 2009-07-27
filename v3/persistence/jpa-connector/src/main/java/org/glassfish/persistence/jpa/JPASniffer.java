@@ -40,7 +40,7 @@ import java.io.IOException;
  *
  * @author Mitesh Meswani
  */
-@Service(name="jpaSniffer")
+@Service(name="jpa")
 @Scoped(Singleton.class)
 public class JPASniffer  extends GenericSniffer implements Sniffer {
 
