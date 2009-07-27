@@ -36,12 +36,19 @@ public class EmbeddedEjbContainer implements EmbeddedContainer {
 
     public List<Sniffer> getSniffers() {
         List<Sniffer> sniffers = new ArrayList<Sniffer>();
-        sniffers.add(habitat.getComponent(Sniffer.class, "Ejb"));
-        Sniffer security = habitat.getComponent(Sniffer.class, "Security");
-        if (security!=null) {
-            sniffers.add(security);
-        }
+        addSniffer(sniffers, "Ejb");
+        addSniffer(sniffers, "Security");
+        addSniffer(sniffers, "jpaSniffer");
+        addSniffer(sniffers, "jpaCompositeSniffer");
         return sniffers;
+
+    }
+
+    private void addSniffer(List<Sniffer> sniffers, String name) {
+        Sniffer sniffer = habitat.getComponent(Sniffer.class, name);
+        if (sniffer != null) {
+            sniffers.add(sniffer);
+        }
     }
 
     public void start() throws LifecycleException {

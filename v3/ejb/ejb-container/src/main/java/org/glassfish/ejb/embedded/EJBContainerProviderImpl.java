@@ -47,13 +47,15 @@ import java.util.logging.Level;
 import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import javax.ejb.spi.EJBContainerProvider;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
+
+
+import org.glassfish.api.embedded.ContainerBuilder;
+import org.glassfish.api.embedded.EmbeddedDeployer;
+import org.glassfish.api.embedded.EmbeddedFileSystem;
+import org.glassfish.api.embedded.Server;
 
 import com.sun.logging.LogDomains;
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.EmbeddedDeployer;
-import com.sun.ejb.containers.EjbContainerUtilImpl;
-import com.sun.enterprise.universal.i18n.LocalStrings;
-import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.i18n.StringManager;
 
 /**
@@ -73,6 +75,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     private static final Object lock = new Object();
 
     private static EJBContainerImpl container;
+    private static Server server;
 
     public EJBContainerProviderImpl() {}
 
@@ -80,7 +83,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         if (properties == null || properties.get(EJBContainer.PROVIDER) == null || 
                 properties.get(EJBContainer.PROVIDER).equals(GF_PROVIDER_NAME)) {
 
-            init();
+            init(properties);
             if (container.isOpen()) {
                 throw new EJBException(localStrings.getString(
                         "ejb.embedded.exception_exists_container"));
@@ -105,13 +108,58 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         return null;
     }
 
-    private void init() {
+    private void init(Map<?, ?> properties) throws EJBException {
         synchronized(lock) {
             if (container == null) {
                 Server.Builder builder = new Server.Builder("GFEJBContainerProviderImpl");
-                Server server = builder.build();
+
+                File installed_root = null;
+                File domain_file = null;
+                if (properties != null) {
+                    String gf_root = (String) properties.get(
+                            "glassfish.ejb.embedded.glassfish.installation");
+System.err.println("+++ gf_root : " + gf_root);
+                    if (gf_root != null) {
+                        installed_root = new File(gf_root);
+                        if (!installed_root.exists()) {
+                            _logger.log(Level.SEVERE, "ejb.embedded.location_not_exists", gf_root);
+                            installed_root = null;
+                        } else {
+                            // TODO - support a separate location for the domain
+                            String domain_root = gf_root + File.separatorChar 
+                                    + "domains" + File.separatorChar 
+                                    + "domain1" + File.separatorChar 
+                                    + "config" + File.separatorChar 
+                                    + "domain.xml";
+System.err.println("+++ domain_root : " + domain_root);
+                            domain_file = new File(domain_root);
+                            if (!domain_file.exists()) {
+                                _logger.log(Level.SEVERE, "ejb.embedded.location_not_exists", domain_root);
+                                installed_root = null;
+                            }
+                        }
+                    }
+                }
+System.err.println("+++ installed_root: " + installed_root);
+System.err.println("+++ domain_file: " + domain_file);
+
+                if (installed_root == null) {
+                    server = builder.build();
+                } else {
+                    //TODO: Stop previous version?
+
+                    EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
+                    efsb.setInstallRoot(installed_root);
+                    efsb.setConfigurationFile(domain_file);
+
+                    builder.setEmbeddedFileSystem(efsb.build());
+                    server = builder.build();
+                }
+
+
                 EjbBuilder ejb = server.createConfig(EjbBuilder.class);
                 EmbeddedEjbContainer ejbContainer = server.addContainer(ejb);
+                server.addContainer(ContainerBuilder.Type.jpa);
                 EmbeddedDeployer deployer = server.getDeployer();
 
                 container = new EJBContainerImpl(server, ejbContainer, deployer);

@@ -57,9 +57,19 @@ public class UnitTest {
         String cname = "org/glassfish/tests/ejb/UnitTest.class";
         URL source = UnitTest.class.getClassLoader().getResource(cname);
         String dir = source.getPath().substring(0, source.getPath().length()-cname.length());
+        String[] list = (new File(dir + "/META-INF")).list();
+        System.out.println("Files in dir/META-INF: " + java.util.Arrays.toString(list));
 
-        Map<String, File> p = new HashMap<String, File>();
+        Map<String, Object> p = new HashMap<String, Object>();
         p.put(EJBContainer.MODULES, new File(dir));
+        String gf = System.getenv().get("S1AS_HOME");
+        if (gf != null) {
+            System.err.println("+++GF location: " + gf);
+            p.put("glassfish.ejb.embedded.glassfish.installation", gf);
+        } else {
+            System.err.println("+++GF location NOT specified via S1AS_HOME");
+        }
+
         EJBContainer c = EJBContainer.createEJBContainer(p);
         // ok now let's look up the EJB...
         Context ic = c.getContext();
@@ -69,6 +79,7 @@ public class UnitTest {
             if (ejb!=null) {
                 System.out.println("Invoking EJB...");
                 System.out.println(ejb.saySomething());
+                System.out.println(ejb.testJPA());
             }
         } catch (Exception e) {
             System.out.println("ERROR calling EJB:");
