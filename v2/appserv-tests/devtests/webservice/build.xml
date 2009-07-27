@@ -18,18 +18,20 @@
         <delete file="${env.APS_HOME}/test_resultsValid.xml"/>
         <delete file="${env.APS_HOME}/test_results.xml"/>
         <record name="webservice.output" action="start" />
-        <ant dir="google" target="all"/> <!-- 1 test -->
-	<ant dir="googleserver" target="all"/> <!-- 3 tests -->
+<!--        <ant dir="google" target="all"/>--> <!-- 1 test -->
+<!--	<ant dir="googleserver" target="all"/>--> <!-- 3 tests -->
         <ant dir="xsdany" target="all"/> <!-- 1 test -->
         <ant dir="mapping/j2w/signature" target="all"/> <!-- 2 tests -->
         <ant dir="webstub_properties" target="all"/> <!-- 1 test -->
         <ant dir="filter_urlhandling" target="all"/> <!-- 1 test -->
-        <ant dir="security" target="all"/>         <!-- 9 test -->
-	<ant dir="simplefault" target="all"/> <!-- 1 test -->
-	<ant dir="handler" target="all"/> <!-- 1 test -->
-	<ant dir="servlethandler" target="all"/> <!-- 1 test -->
+    <!--    <ant dir="security" target="all"/>-->         <!-- 9 test -->
+<!--	<ant dir="simplefault" target="all"/>
+	<ant dir="handler" target="all"/> 
+	<ant dir="servlethandler" target="all"/>--> 
 	<ant dir="annotations" target="all"/>
 	<ant dir="ejb_annotations" target="all"/>
+        <ant dir="jaxrpc-hello-ejb" target="all"/>
+        <ant dir="jaxrpc-hello-web" target="all"/>
         <record name="webservice.output" action="stop" />
         <antcall target="report"/>
     </target>
