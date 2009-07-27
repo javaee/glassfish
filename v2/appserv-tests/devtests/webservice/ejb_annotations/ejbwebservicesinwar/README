@@ -1,0 +1,2 @@
+This test is for bug 6852
+When the page for webservices is clicked the endpoint address should contain host name and port name and not just the URL pattern
