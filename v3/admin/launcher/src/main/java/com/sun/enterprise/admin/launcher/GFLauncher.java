@@ -466,22 +466,31 @@ public abstract class GFLauncher {
         if(parser.isMonitoringEnabled() == false)
             return;
 
-        // if the user has a hard-coded "-javaagent" jvm-option then we do NOT want
-        // to add our own.
+        // if the user has a hard-coded "-javaagent" jvm-option that uses OUR jar
+        //then we do NOT want to add our own.
         Set<String> plainKeys = jvmOptions.plainProps.keySet();
         for(String key : plainKeys) {
-            if(key.startsWith("-javaagent:"))
-                return; // Done!!!!
+            if(key.startsWith("javaagent:")) {
+                // complications -- of course!!  They may have mix&match forward and back slashes
+                key = key.replace('\\', '/');
+                if(key.indexOf(BTRACE_PATH) > 0)
+                    return; // Done!!!!
+            }
         }
 
         // It is not already specified AND monitoring is enabled.
         jvmOptions.plainProps.put(getMonitoringJvmOptionString(), null);
     }
 
-    private String getMonitoringJvmOptionString() {
+    private String getMonitoringJvmOptionString() throws GFLauncherException {
         //-javaagent:${ASINSTALL_ROOT}/lib/monitor/btrace-agent.jar=unsafe=true
-        File jarFile = new File(getInfo().getInstallDir(), "lib/monitor/btrace-agent.jar");
+        File jarFile = new File(getInfo().getInstallDir(), BTRACE_PATH);
         String jarPath = SmartFile.sanitize(jarFile).getPath().replace('\\', '/');
+
+        // make sure it exists
+        if(!jarFile.isFile())
+            throw new GFLauncherException("no_btrace_jar", jarPath);
+        
         return "javaagent:" + jarPath + "=unsafe=true";
     }
     private List<String> getSpecialSystemProperties() throws GFLauncherException {

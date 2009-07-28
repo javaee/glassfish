@@ -20,4 +20,5 @@ class GFLauncherConstants {
     static final String AMD64                       = "amd64";
     static final String NATIVE_LIB_PREFIX           = "native-library-path-prefix";
     static final String NATIVE_LIB_SUFFIX           = "native-library-path-suffix";
+    static final String BTRACE_PATH                 = "lib/monitor/btrace-agent.jar";
 }
