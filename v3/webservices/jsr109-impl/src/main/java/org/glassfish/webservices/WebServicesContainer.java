@@ -29,8 +29,12 @@ import org.glassfish.api.deployment.Deployer;
 import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.webservices.monitoring.Deployment109StatsProvider;
+import org.glassfish.webservices.monitoring.Deployment109ProbeProvider;
+import org.glassfish.webservices.monitoring.Deployment109StatsProviderBootstrap;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.enterprise.web.WebDeployer;
 
@@ -40,17 +44,17 @@ import com.sun.enterprise.web.WebDeployer;
  */
 @Service(name="org.glassfish.webservices.WebServicesContainer")
 public class WebServicesContainer implements Container, PostConstruct {
+    @Inject
+    private Habitat habitat;
+
+    private final Deployment109ProbeProvider wsProbeProvider = new Deployment109ProbeProvider();
 
     public String getName() {
         return "webservices";
     }
 
     public void postConstruct() {
-        StatsProviderManager.register(
-            "WebServiceContainer",
-            PluginPoint.SERVER,
-            "Web Services",
-            new Deployment109StatsProvider());
+        habitat.getByType(Deployment109StatsProviderBootstrap.class);
 
 //        For sun-jaxws.xml style of deployment
 //        Enable once it is integrated
@@ -62,7 +66,10 @@ public class WebServicesContainer implements Container, PostConstruct {
 //            new RIDeploymentStatsProvider());
     }
 
-   
+    /* package */ Deployment109ProbeProvider getDeploymentProbeProvider() {
+        return wsProbeProvider;
+    }
+
     public Class<? extends Deployer> getDeployer() {
         return WebServicesDeployer.class;
     }

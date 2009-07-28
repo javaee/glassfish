@@ -92,7 +92,10 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
     @Inject Habitat habitat;
 
-   private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(WebServicesDeployer.class);
+
+    private Deployment109ProbeProvider probe;
+
+    private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(WebServicesDeployer.class);
 
     
     /**
@@ -638,13 +641,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             //I think we need that to set the endpointAddressURL of WebServiceEndpoint
             logger.info(format(rb.getString("enterprise.deployment.endpoint.registration"),
             nextEndpoint.getEndpointName(), actualAddress.toString() ));
-            new Deployment109ProbeProvider().deploy(nextEndpoint.getEndpointName(),
-                    actualAddress.toString(),
-                    nextEndpoint.getServiceName().getLocalPart(),
-                    "",
-                    nextEndpoint.getServiceName().getNamespaceURI(),
-                    nextEndpoint.getServletImplClass(),
-                    actualAddress.toString()+"?wsdl");
+
         }
     }
 
@@ -658,12 +655,29 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         new File(sourceFile).delete();
     }
 
-    public void unload(WebServicesApplication container, DeploymentContext context) {}
+    public void unload(WebServicesApplication container, DeploymentContext context) {
+        Application app = context.getModuleMetaData(Application.class);
+        for(WebService svc : app.getWebServiceDescriptors()) {
+            for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
+                probe.undeploy(app.getName()+"#"+endpoint.getEndpointName());
+            }
+        }
+    }
 
     public void clean(DeploymentContext context) {}
 
 
     public WebServicesApplication load(WebServicesContainer container, DeploymentContext context) {
+        probe = container.getDeploymentProbeProvider();
+        Application app = context.getModuleMetaData(Application.class);
+        
+        for(WebService svc : app.getWebServiceDescriptors()) {
+            for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
+                // TODO app.getName()#endpoint.getEndpointName() is unique ?
+                probe.deploy(app.getName()+"#"+endpoint.getEndpointName(), app, endpoint);
+            }
+        }
+
         return new WebServicesApplication(context, env, dispatcher, config, habitat);
     }
 }

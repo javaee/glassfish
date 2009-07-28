@@ -3,6 +3,8 @@ package org.glassfish.webservices.monitoring;
 import org.glassfish.external.probe.provider.annotations.ProbeProvider;
 import org.glassfish.external.probe.provider.annotations.Probe;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
+import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.enterprise.deployment.Application;
 
 /**
  * 109 deployment probe. A registered listener get to listen the emited
@@ -14,13 +16,9 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
 public class Deployment109ProbeProvider {
 
     @Probe(name="deploy")
-    public void deploy(@ProbeParam("name")String name,
-                       @ProbeParam("address")String address,
-                       @ProbeParam("serviceName")String serviceName,
-                       @ProbeParam("portName")String portName,
-                       @ProbeParam("namespace")String namespace,
-                       @ProbeParam("implClass")String implClass,
-                       @ProbeParam("wsdl")String wsdl) {
+    public void deploy(@ProbeParam("name") String name,
+                       @ProbeParam("app") Application app,
+                       @ProbeParam("endpoint") WebServiceEndpoint endpoint) {
         // intentionally left empty.
     }
 

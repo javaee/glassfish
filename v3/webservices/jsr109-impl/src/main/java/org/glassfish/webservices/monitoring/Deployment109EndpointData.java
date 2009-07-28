@@ -3,67 +3,56 @@ package org.glassfish.webservices.monitoring;
 import org.glassfish.gmbal.ManagedData;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
-import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.enterprise.deployment.Application;
 
 /**
  * @author Jitendra Kotamraju
  */
-
 @ManagedData
-@Description("sun-jaxws.xml deployed endpoint info")
+@Description("109 deployed endpoint info")
 public class Deployment109EndpointData { // extends EndpointData {
-    private final String namespace;
-    private final String serviceName;
-    private String portName;
-    private String implClass;
-    private String address;
-    private String wsdl;
-
-    public Deployment109EndpointData(String namespace, String serviceName,
-                                     String portName, String implClass,
-                                     String address, String wsdl) {
-        this.namespace = namespace;
-        this.serviceName = serviceName;
-        this.portName = portName;
-        this.implClass = implClass;
-        this.address = address;
-        this.wsdl = wsdl;
-    }
+    @ManagedAttribute
+    @Description("Application Name")
+    public final String appName;
 
     @ManagedAttribute
     @Description("Target Namespace of the Web Service")
-    public String getNamespace() {
-        return namespace;
-    }
+    public final String namespace;
 
     @ManagedAttribute
     @Description("Web Service name")
-    public String getServiceName() {
-        return serviceName;
-    }
+    public final String serviceName;
 
     @ManagedAttribute
     @Description("Web Service port name")
-    public String getPortName() {
-        return portName;
-    }
+    public final String portName;
 
     @ManagedAttribute
     @Description("Service Implementation Class")
-    public String getImplClass() {
-        return implClass;
-    }
+    public final String implClass;
 
     @ManagedAttribute
     @Description("Address for Web Service")
-    public String getAddress() {
-        return address;
-    }
+    public final String address;
 
     @ManagedAttribute
     @Description("WSDL for Web Service")
-    public String getWSDL() {
-        return wsdl;
+    public final String wsdl;
+
+    @ManagedAttribute
+    @Description("Tester for Web Service")
+    public final String tester;
+
+    public Deployment109EndpointData(Application app, WebServiceEndpoint endpoint) {
+        this.appName = app.getAppName();
+        this.namespace = endpoint.getServiceName().getNamespaceURI();
+        this.serviceName = endpoint.getServiceName().getLocalPart();
+        this.portName = "";
+        this.implClass = endpoint.getServletImplClass();
+        this.address = endpoint.getEndpointAddressUri();
+        this.wsdl = address+"?wsdl";
+        this.tester = address+"?Tester";
     }
 
 }
