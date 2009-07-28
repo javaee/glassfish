@@ -43,6 +43,7 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
@@ -84,6 +85,11 @@ public class UndeployedLaunchable implements Launchable {
 
         ArchivistFactory af = Util.getArchivistFactory();
 
+        /*
+         * Try letting the factory decide what type of archive this is.  That
+         * will often allow an app client or an EAR archive to be detected
+         * automatically.
+         */
         Archivist archivist = af.getArchivist(ra, classLoader);
 
         if (archivist.getModuleType().equals(XModuleType.CAR)) {
@@ -130,6 +136,32 @@ public class UndeployedLaunchable implements Launchable {
             throw new UserError(localStrings.get("appclient.noMatchingClientInEAR",
                     ra.getURI(), callerSuppliedMainClassName, callerSuppliedAppName));
         } else {
+            /*
+             * There is a possibility that the user is trying to launch an
+             * archive that is more than one type of archive: such as an EJB
+             * but also an app client (because the manifest identifies a main
+             * class, for example).
+             *
+             * Earlier the archivist factory might have returned the other type
+             * of archivist - such as the EJB archivist.  Now see if the app
+             * client archivist will work when selected directly.
+             */
+            archivist = af.getArchivist(XModuleType.CAR);
+
+            /*
+             * Try to open the archive as an app client archive just to see
+             * if it works.
+             */
+            RootDeploymentDescriptor tempACD = archivist.open(ra);
+            if (tempACD != null && tempACD instanceof ApplicationClientDescriptor) {
+                /*
+                 * Start with a fresh archivist - unopened - so we can request
+                 * anno processing, etc. before opening it for real.
+                 */
+                archivist = af.getArchivist(XModuleType.CAR);
+                return new UndeployedLaunchable(habitat, ra, (AppClientArchivist) archivist,
+                                callerSuppliedMainClassName);
+            }
             throw new UserError(
                     localStrings.get("appclient.unexpectedArchive", ra.getURI()));
         }
@@ -210,6 +242,7 @@ public class UndeployedLaunchable implements Launchable {
             archivist = completeInit((AppClientArchivist) af.getArchivist(
                     clientRA, classLoader));
         }
+        archivist.setClassLoader(classLoader);
         return archivist;
     }
 
