@@ -93,6 +93,8 @@
         <module>corba</module>
         <module>full</module>
         <module>updatecenter</module>
+        <module>jruby</module>
+        <module>jython</module>
         <module>war</module>
         <module>dist-fragment</module>
     </modules>
