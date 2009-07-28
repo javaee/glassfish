@@ -87,44 +87,32 @@ public class MiniXmlParser {
     }
 
     public Map<String, String> getJavaConfig() throws MiniXmlParserException {
-        if (!valid) {
-            throw new MiniXmlParserException(strings.get("invalid"));
-        }
+        checkValid();
         return javaConfig;
     }
 
     public List<String> getJvmOptions() throws MiniXmlParserException {
-        if (!valid) {
-            throw new MiniXmlParserException(strings.get("invalid"));
-        }
+        checkValid();
         return jvmOptions;
     }
 
     public Map<String, String> getProfilerConfig() throws MiniXmlParserException {
-        if (!valid) {
-            throw new MiniXmlParserException(strings.get("invalid"));
-        }
+        checkValid();
         return profilerConfig;
     }
 
     public List<String> getProfilerJvmOptions() throws MiniXmlParserException {
-        if (!valid) {
-            throw new MiniXmlParserException(strings.get("invalid"));
-        }
+        checkValid();
         return profilerJvmOptions;
     }
 
     public Map<String, String> getProfilerSystemProperties() throws MiniXmlParserException {
-        if (!valid) {
-            throw new MiniXmlParserException(strings.get("invalid"));
-        }
+        checkValid();
         return profilerSysProps;
     }
 
     public Map<String, String> getSystemProperties() throws MiniXmlParserException {
-        if (!valid) {
-            throw new MiniXmlParserException(strings.get("invalid"));
-        }
+        checkValid();
         return sysProps;
     }
 
@@ -463,6 +451,11 @@ public class MiniXmlParser {
             }
         }
         return map;
+    }
+
+    private void checkValid() throws MiniXmlParserException {
+        if (!valid)
+            throw new MiniXmlParserException(strings.get("invalid"));
     }
 
     private static abstract class ChildNodeIterator {
