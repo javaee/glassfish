@@ -134,6 +134,7 @@ public abstract class GFLauncher {
         info.setAdminPorts(parser.getAdminPorts());
         javaConfig = new JavaConfig(parser.getJavaConfig());
         setupProfilerAndJvmOptions(parser);
+        setupMonitoring(parser);
         sysPropsFromXml = parser.getSystemProperties();
         asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
         debugOptions = getDebug();
@@ -145,7 +146,6 @@ public abstract class GFLauncher {
         // There are problems when you use a non-Sun JVM -- like the JVM won't start!
         // The user needs to be able to see & delete these args from domain.xml
         //jvmOptions.addJvmLogging();
-        
         
         resolveAllTokens();
         GFLauncherLogger.addLogFileHandler(logFilename);
@@ -458,6 +458,32 @@ public abstract class GFLauncher {
         jvmOptions = new JvmOptions(rawJvmOptions);
     }
 
+
+    private void setupMonitoring(MiniXmlParser parser) throws GFLauncherException {
+        // As usual we have to be very careful.
+
+        // If it is NOT enabled -- we are out of here!!!
+        if(parser.isMonitoringEnabled() == false)
+            return;
+
+        // if the user has a hard-coded "-javaagent" jvm-option then we do NOT want
+        // to add our own.
+        Set<String> plainKeys = jvmOptions.plainProps.keySet();
+        for(String key : plainKeys) {
+            if(key.startsWith("-javaagent:"))
+                return; // Done!!!!
+        }
+
+        // It is not already specified AND monitoring is enabled.
+        jvmOptions.plainProps.put(getMonitoringJvmOptionString(), null);
+    }
+
+    private String getMonitoringJvmOptionString() {
+        //-javaagent:${ASINSTALL_ROOT}/lib/monitor/btrace-agent.jar=unsafe=true
+        File jarFile = new File(getInfo().getInstallDir(), "lib/monitor/btrace-agent.jar");
+        String jarPath = SmartFile.sanitize(jarFile).getPath().replace('\\', '/');
+        return "javaagent:" + jarPath + "=unsafe=true";
+    }
     private List<String> getSpecialSystemProperties() throws GFLauncherException {
         Map<String, String> props = new HashMap<String, String>();
         props.put(INSTALL_ROOT_PROPERTY, getInfo().getInstallDir().getAbsolutePath());
