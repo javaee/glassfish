@@ -60,7 +60,6 @@ import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-//import org.glassfish.api.amx.AMXCreatorInfo;
 import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.DomDocument;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
@@ -1243,17 +1242,6 @@ public class ConfigBeanJMXSupport
     public Set<Class<? extends ConfigBeanProxy>> childInterfaces()
     {
         final Set<Class<? extends ConfigBeanProxy>> intfs = childInterfaces(mElementInfos);
-
-        /*
-        final AMXCreatorInfo creatorInfo = mIntf.getAnnotation(AMXCreatorInfo.class);
-        if ( creatorInfo != null )
-        {
-        for( final Class<? extends ConfigBeanProxy> childInterface : creatorInfo.creatables() )
-        {
-        intfs.add( childInterface );
-        }
-        }
-         */
         return intfs;
     }
 

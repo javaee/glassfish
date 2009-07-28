@@ -45,8 +45,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.glassfish.api.amx.AMXCreatorInfo;
-
 /**
  * J2EE Applications look up resources registered with the Application server,
  * using portable JNDI names.                    
@@ -57,10 +55,6 @@ import org.glassfish.api.amx.AMXCreatorInfo;
 }) */
 
 
-// general solution needed; this is intermediate solution
-@AMXCreatorInfo( creatables={CustomResource.class, ExternalJndiResource.class, JdbcResource.class,
-        MailResource.class, AdminObjectResource.class,
-        ConnectorResource.class, ResourceAdapterConfig.class, JdbcConnectionPool.class, ConnectorConnectionPool.class })
 @Configured
 public interface Resources extends ConfigBeanProxy, Injectable  {
 

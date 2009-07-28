@@ -38,7 +38,6 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.glassfish.api.amx.AMXCreatorInfo;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.RestRedirect;
 import org.jvnet.hk2.component.Injectable;
@@ -59,8 +58,6 @@ import java.util.List;
 }) */
 
 
-// general solution needed; this is intermediate solution
-@AMXCreatorInfo( creatables={Application.class})
 @Configured
 public interface Applications extends ConfigBeanProxy, Injectable  {
 
