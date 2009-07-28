@@ -1,19 +1,16 @@
 package client;
 
 import javax.servlet.*;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.naming.InitialContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.rpc.Stub;
-import helloservice.*;
 
+import javax.xml.ws.*;
 
 public class Client extends HttpServlet {
 
+        @javax.xml.ws.WebServiceRef(HelloService.class)
+        Hello hiport;
 
        public void doGet(HttpServletRequest req, HttpServletResponse resp) 
 		throws javax.servlet.ServletException {
@@ -23,19 +20,7 @@ public class Client extends HttpServlet {
        public void doPost(HttpServletRequest req, HttpServletResponse resp)
               throws javax.servlet.ServletException {
             try {
-           String targetEndpointAddress = "http://localhost:8080/hello-jaxrpc-ejb/hello";//?wsdl
-            InitialContext ic = new InitialContext();
-
-            MyHelloService myHelloService =
-                (MyHelloService) ic.lookup(
-                    "java:comp/env/service/MyHelloService");
-
-           HelloIF helloPort = myHelloService.getHelloIFPort();
-           ((Stub)helloPort)._setProperty(Stub.ENDPOINT_ADDRESS_PROPERTY,
-                    targetEndpointAddress);
-
-           String ret= helloPort.sayHello("All");
-
+                String ret = hiport.sayHello("All");
                 PrintWriter out = resp.getWriter();
                 resp.setContentType("text/html");
                 out.println("<html>");
@@ -44,7 +29,7 @@ public class Client extends HttpServlet {
                 out.println("</head>");
                 out.println("<body>");
                 out.println("<p>");
-                out.println("So the RESULT OF jaxrpc web SERVICE IS :");
+                out.println("So the RESULT OF HELLO SERVICE IS :");
                 out.println("</p>");
                 out.println("[" + ret + "]");
                 out.println("</body>");

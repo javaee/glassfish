@@ -8,7 +8,7 @@
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
-<project name="warservice" default="all" basedir=".">
+<project name="endpointaddress" default="all" basedir=".">
 
     &commonSetup;
     &commonBuild;

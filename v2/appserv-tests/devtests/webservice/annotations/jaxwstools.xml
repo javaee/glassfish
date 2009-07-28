@@ -4,6 +4,19 @@
     <property name="ASAPT" value="${env.S1AS_HOME}/bin/asapt.bat"/>
 </target>
 
+<path id="classpath">
+        <fileset dir="${env.AS_HOME}/modules">
+                      <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${env.AS_HOME}/modules/endorsed">
+                      <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${env.APS_HOME}/lib">
+                      <include name="*.jar"/>
+        </fileset>
+    </path>
+
+
 <target name="setJAXWSToolsForUnix" if="isUnix">
     <property name="WSGEN" value="${env.S1AS_HOME}/bin/wsgen"/>
     <property name="WSIMPORT" value="${env.S1AS_HOME}/bin/wsimport"/>
@@ -30,8 +43,9 @@
                value="-keep  -Xendorsed  -d ${build.classes.dir}/client http://${http.host}:${http.port}/${test-wsdl-uri}"/>
     </antcall>
     <javac srcdir="." destdir="${build.classes.dir}/client" 
-            classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/modules/webservices-osgi.jar:${env.S1AS_HOME}/modules/endorsed/webservices-api-osgi.jar:${env.S1AS_HOME}/modules/jaxb-osgi.jar:${env.S1AS_HOME}/modules/endorsed/jaxb-api-osgi.jar" 
-            includes="${client-src}/**"/>
+            includes="${client-src}/**">
+        <classpath refid="classpath"/>
+    </javac>
 </target>
 
 <target name="run-client">

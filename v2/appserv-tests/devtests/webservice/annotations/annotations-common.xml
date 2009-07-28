@@ -8,6 +8,19 @@
     <delete dir="${env.APS_HOME}/build/module/classes"/>
 </target>
 
+ <path id="classpath">
+        <fileset dir="${env.AS_HOME}/modules">
+                      <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${env.AS_HOME}/modules/endorsed">
+                      <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${env.APS_HOME}/lib">
+                      <include name="*.jar"/>
+        </fileset>
+    </path>
+
+
 <target name="compile">
     <mkdir dir="${env.APS_HOME}/build/module/classes"/>   
     <basename file="${src-name}" property="server" suffix=".java"/>
@@ -16,8 +29,9 @@
     <property name="class-name" value="${pkg-name}/${server}.class"/>
     <echo message="Compiling into ${pkg-name}/${server}.class"/>
     <javac srcdir="." destdir="${env.S1AS_HOME}/domains/domain1/autodeploy" 
-        classpath="${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/webservices-rt.jar:${env.S1AS_HOME}/lib/webservices-tools.jar" 
-        includes="${src-name}"/>
+        includes="${src-name}">
+    <classpath refid="classpath"/>
+   </javac>
 </target>
 
 <target name="compile-client">

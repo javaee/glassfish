@@ -61,7 +61,7 @@
         <classpath>
           <pathelement path="${build.classes.dir}/client"/>
         </classpath>
-        <arg value="http://${http.host}:${http.port}/wsclient/RequestProcessor"/>
+        <arg value="http://${http.host}:${http.port}/wsejbclient/RequestProcessor"/>
       </java>
     </target>
 
@@ -77,12 +77,12 @@
          <classpath refid="classpath"/>
       </javac>
       <copy file="client-web.xml" tofile="${build.classes.dir}/webclient/WEB-INF/web.xml"/>
-      <jar destfile="${assemble.dir}/wsclient.war" basedir="${build.classes.dir}/webclient" includes="**"/>
+      <jar destfile="${assemble.dir}/wsejbclient.war" basedir="${build.classes.dir}/webclient" includes="**"/>
     </target>
 
 
     <target name="deploy-client" depends="init-common">
-      <property name="client.war" value="${assemble.dir}/wsclient.war"/>
+      <property name="client.war" value="${assemble.dir}/wsejbclient.war"/>
       <echo message="Deploying wsclient.war from ${basedir}." level="verbose"/>
       <exec executable="${ASADMIN}">
         <arg line="deploy"/>
@@ -101,7 +101,7 @@
         <arg line="--passwordfile ${admin.password.file}"/>
         <arg line="--host ${admin.host}"/>
         <arg line="--port ${admin.port}"/>
-        <arg line="wsclient"/>
+        <arg line="wsejbclient"/>
       </exec>
     </target>
 

@@ -152,6 +152,7 @@
 
 
              <copy file="client-sun-web.xml" tofile="${build.classes.dir}/webclient/WEB-INF/sun-web.xml"/>
+            <mkdir dir="${assemble.dir}"/>
              <jar destfile="${assemble.dir}/wsclient.war" basedir="${build.classes.dir}/webclient" includes="**"/>
            </target>
 

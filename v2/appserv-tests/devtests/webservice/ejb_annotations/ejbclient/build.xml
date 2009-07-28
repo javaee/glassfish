@@ -31,8 +31,9 @@
 		<param name="port" value="WebServiceEJB"/>
 	</antcall>
         <javac srcdir="." destdir="${env.APS_HOME}/build/module/classes"
-            classpath="${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/jaxrpc-impl.jar:${env.S1AS_HOME}/lib/jaxws-impl.jar"
-            includes="ejb/HelloEJB.java"/>
+            includes="ejb/HelloEJB.java">
+            classpath refid="classpath"/>
+        </javac>
         <jar destfile="${env.S1AS_HOME}/domains/domain1/autodeploy/EjbClient.jar"
 	    basedir="${env.APS_HOME}/build/module/classes"
 	    includes="ejb/**,endpoint/**"/>

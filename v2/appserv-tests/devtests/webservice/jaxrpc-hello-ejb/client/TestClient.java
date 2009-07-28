@@ -46,7 +46,7 @@ public class TestClient {
         String line = null;
         while ((line = input.readLine()) != null) {
             log(line);
-            if(line.indexOf("So the RESULT OF jaxrpc SERVICE IS") != -1)
+            if(line.indexOf("So the RESULT OF jaxrpc web SERVICE IS") != -1)
 		found1 = true;
             if(line.indexOf("[Hello All]") != -1)
 		found2 = true;

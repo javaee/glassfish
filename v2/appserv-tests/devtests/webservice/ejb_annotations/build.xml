@@ -20,20 +20,21 @@
 	<ant dir="portmethodinjection" target="all"/>
         <ant dir="serviceejbclient" target="all"/>
 	<ant dir="portejbclient" target="all"/>
-        <ant dir="svchandler" target="all"/>
-	<ant dir="wsctxt" target="all"/>
 	<ant dir="oneway" target="all"/>
-	<ant dir="async" target="all"/>
 	<ant dir="asyncejbclient" target="all"/>
 	<ant dir="wsctxtinterceptor" target="all"/>
-	<ant dir="libdependent" target="all"/>
 	<ant dir="msgctxt" target="all"/>
-	<ant dir="libdependent-2" target="all"/>
 -->
 	<ant dir="libdependent" target="all"/>
 	<ant dir="singleton" target="all"/>
 	<ant dir="ejbwebservicesinwar" target="all"/>
 	<ant dir="ejbwebservicesinwar-2" target="all"/>
-	<!--ant dir="wsnameejbname" target="all"/-->
+	<ant dir="async" target="all"/>
+	<ant dir="bigint" target="all"/>
+	<ant dir="libdependent" target="all"/>
+	<ant dir="libdependent-2" target="all"/>
+        <ant dir="svchandler" target="all"/>
+	<ant dir="wsctxt" target="all"/>
+	<ant dir="wsnameejbname" target="all"/>
     </target>
 </project>

@@ -26,6 +26,7 @@ public class Client {
        public void doTest(String[] args) {
             MyHello port = null;
             try {
+System.out.println("Service" + service);
                 port = service.getMyHelloPort();
             } catch(Exception e) {
                 e.printStackTrace();
