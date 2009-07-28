@@ -38,8 +38,7 @@ public class WebServiceContractImpl implements WebServicesContract{
     @Inject
     private InvocationManager invManager;
 
-    @Inject(name="server-config")
-    private Config config;
+
 
     private  static WebServiceContractImpl wscImpl;
 
@@ -50,7 +49,7 @@ public class WebServiceContractImpl implements WebServicesContract{
     }
 
     public Config getConfig() {
-        return config;
+        return habitat.getByContract(Config.class);
     }
     
     public Habitat getHabitat() {
