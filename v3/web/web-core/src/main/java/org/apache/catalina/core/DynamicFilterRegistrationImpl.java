@@ -54,19 +54,6 @@ public class DynamicFilterRegistrationImpl
         super(filterDef, ctx);
     }
 
-
-    public void setDescription(String description) {
-        if (ctx.isContextInitializedCalled()) {
-            throw new IllegalStateException(
-                sm.getString("filterRegistration.alreadyInitialized",
-                             "description", filterDef.getFilterName(),
-                             ctx.getName()));
-        }
-
-        filterDef.setDescription(description);
-    }
-
-
     public void setAsyncSupported(boolean isAsyncSupported) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(

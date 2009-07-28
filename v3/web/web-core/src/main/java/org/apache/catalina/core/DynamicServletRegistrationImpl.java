@@ -54,18 +54,6 @@ public class DynamicServletRegistrationImpl
     }
 
 
-    public void setDescription(String description) {
-        if (ctx.isContextInitializedCalled()) {
-            throw new IllegalStateException(
-                sm.getString("servletRegistration.alreadyInitialized",
-                             "description", wrapper.getName(),
-                             ctx.getName()));
-        }
-
-        wrapper.setDescription(description);
-    }
-
-
     public void setLoadOnStartup(int loadOnStartup) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
