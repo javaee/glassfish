@@ -11,14 +11,7 @@
         <ant dir="ejbclient" target="all"/>
 	<ant dir="security" target="all"/>-->
 	<!--ant dir="provider" target="all"/-->
-<!--	<ant dir="exception" target="all"/>
-	<ant dir="methodinjection" target="all"/>
-	<ant dir="invalidmethodinjection" target="all"/>
-	<ant dir="dependencynoinjection" target="all"/>
-        <ant dir="portdependencynoinjection" target="all"/>
-	<ant dir="portfieldinjection" target="all"/>
-	<ant dir="portmethodinjection" target="all"/>
-        <ant dir="serviceejbclient" target="all"/>
+        <!--<ant dir="serviceejbclient" target="all"/>
 	<ant dir="portejbclient" target="all"/>
 	<ant dir="oneway" target="all"/>
 	<ant dir="asyncejbclient" target="all"/>
@@ -36,5 +29,12 @@
         <ant dir="svchandler" target="all"/>
 	<ant dir="wsctxt" target="all"/>
 	<ant dir="wsnameejbname" target="all"/>
+	<ant dir="dependencynoinjection" target="all"/>
+	<ant dir="exception" target="all"/>
+	<ant dir="methodinjection" target="all"/>
+	<ant dir="invalidmethodinjection" target="all"/>
+        <ant dir="portdependencynoinjection" target="all"/>
+	<ant dir="portfieldinjection" target="all"/>
+	<ant dir="portmethodinjection" target="all"/>
     </target>
 </project>
