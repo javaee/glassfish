@@ -3564,7 +3564,7 @@ public class Request
      */
     protected void parseSessionId(String sessionParam) {
 
-        CharChunk uriBB = coyoteRequest.decodedURI().getCharChunk();
+        ByteChunk uriBB = coyoteRequest.decodedURI().getByteChunk();
         int semicolon = uriBB.indexOf(sessionParam, 0, sessionParam.length(),
                 0);
         if (semicolon > 0) {
