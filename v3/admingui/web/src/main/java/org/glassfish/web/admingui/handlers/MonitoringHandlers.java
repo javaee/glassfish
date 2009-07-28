@@ -139,6 +139,8 @@ public class MonitoringHandlers {
                         String start = "--";
                         String last = "--";
                         String unit = "";
+                        String current = "";
+                        
                         if (val instanceof CompositeDataSupport) {
                             CompositeDataSupport cds = ((CompositeDataSupport) val);
                             statMap.put("Name", cds.get("name"));
@@ -167,7 +169,12 @@ public class MonitoringHandlers {
                             }
                             if(cds.containsKey("count")){
                                 val = cds.get("count") + " " + unit;
+                            } else if(cds.containsKey("current")){
+                                val = cds.get("current");
+                            }else {
+                                val = "--";
                             }
+                            
                             
                         } else if (val instanceof String[]) {
                             statMap.put("Name", monName);
@@ -180,6 +187,8 @@ public class MonitoringHandlers {
                         } else {
                             statMap.put("Name", monName);
                         }
+                        
+                        statMap.put("Current", current);
                         statMap.put("StartTime", start);
                         statMap.put("LastTime", last);
                         statMap.put("Description", desc);
