@@ -258,12 +258,20 @@ public class ConfigBeanJMXSupport
         if (configuredAnnotation != null && configuredAnnotation.name().length() != 0)
         {
             type = configuredAnnotation.name();
+            if ( type == null || type.length() == 0 )
+            {
+                throw new IllegalArgumentException("ConfigBeanJMXSupport.getTypeString(): Malformed @Configured annotation on " + intf.getName() );
+            }
         }
         else
         {
             final Package pkg = intf.getPackage();
             String simple = intf.getName().substring(pkg.getName().length() + 1, intf.getName().length());
             type = Util.typeFromName(simple);
+            if ( type == null || type.length() == 0 )
+            {
+                throw new IllegalArgumentException("ConfigBeanJMXSupport.getTypeString(): Malformed type generated from " + intf.getName() );
+            }
         }
         return type;
     }
