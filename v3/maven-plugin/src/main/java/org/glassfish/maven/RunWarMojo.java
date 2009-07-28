@@ -48,6 +48,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.embedded.ContainerBuilder;
 
 
 
@@ -63,9 +64,9 @@ public class RunWarMojo extends AbstractMojo
     
     protected int port;
 /**
- * @parameter expression="${war}"
+ * @parameter expression="${webapp}"
  */
-    protected String war;
+    protected String webapp;
 
 /**
  * @parameter expression="${name}" default-value="test"
@@ -91,18 +92,23 @@ public class RunWarMojo extends AbstractMojo
         try {
             Server server = new Server.Builder("First").build();
             server.createPort(port);
-            // server.addContainer(webContainer)
+            ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
+            System.out.println("builder is " + b);
+            server.addContainer(b);
             server.start();
             EmbeddedDeployer deployer = server.getDeployer();
             DeployCommandParameters cmdParams = new DeployCommandParameters();
             cmdParams.name = name;
             cmdParams.contextroot = contextRoot;
             cmdParams.precompilejsp = precompilejsp;
-            cmdParams.virtualservers = virtualservers;
+//            cmdParams.virtualservers = virtualservers;
             while(true) {
-                deployer.deploy(new File(war), cmdParams);
+                deployer.deploy(new File(webapp), cmdParams);
+                System.out.println("Deployed Application " + name + "[" + webapp + "]"
+                        + " contextroot is " + contextRoot);
                 System.out.println("");
-                System.out.println("Hit ENTER to redeploy " + war + "   <Ctrl-C> to exit");
+                System.out.println("Hit ENTER to redeploy " + name + "[" + webapp + "]"
+                        + " <Ctrl-C> to exit");
                 // wait for enter
                 new BufferedReader(new InputStreamReader(System.in)).readLine();
                 deployer.undeployAll();
