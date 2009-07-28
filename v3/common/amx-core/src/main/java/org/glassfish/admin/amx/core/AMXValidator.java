@@ -78,8 +78,10 @@ import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
 /**
 Validation of key behavioral requirements of AMX MBeans.
-These tests do not validate any MBean-specific semantics, only general requirements for
-all AMX MBeans.
+These tests do not validate any MBean-specific semantics, only general requirements for all AMX MBeans.
+<p>
+Note that all tests have to account for the possibility that an MBean can be unregistered while
+the validation is in progress— that is not a test failure, since it is perfectly legal.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
 public final class AMXValidator
@@ -298,8 +300,29 @@ public final class AMXValidator
         }
     }
 
+    boolean instanceNotFound(final Throwable t )
+    {
+        return ExceptionUtil.getRootCause(t) instanceof InstanceNotFoundException;
+    }
+    
+    private void addToProblems( final String msg, final List<String> problems, final Throwable t )
+    {
+        // it's not an issue if the MBean went missing
+        final Throwable rootCause = ExceptionUtil.getRootCause(t);
+        if ( ! instanceNotFound(rootCause) )
+        {
+            problems.add( msg + rootCause.toString() );
+        }
+    }
+    
+    private void addToProblems( final List<String> problems, final Throwable t )
+    {
+        addToProblems( "", problems, t );
+    }
+    
     private List<String> _validate(final AMXProxy proxy)
     {
+        //debug( "Validate: " + proxy.objectName() );
         final List<String> problems = new ArrayList<String>();
         final ObjectName objectName = proxy.objectName();
 
@@ -309,7 +332,7 @@ public final class AMXValidator
         }
         catch (Throwable t)
         {
-            problems.add(t.toString());
+            addToProblems( problems, t);
         }
 
         List<String> temp = null;
@@ -323,7 +346,7 @@ public final class AMXValidator
         }
         catch (Throwable t)
         {
-            problems.add(t.toString());
+            addToProblems( problems, t);
         }
 
         try
@@ -332,7 +355,7 @@ public final class AMXValidator
         }
         catch (Throwable t)
         {
-            problems.add(t.toString());
+            addToProblems( problems, t);
         }
 
 
@@ -343,7 +366,7 @@ public final class AMXValidator
         }
         catch (Throwable t)
         {
-            problems.add("Proxy access to 'Name' failed: " + toString(t));
+            addToProblems( "Proxy access to 'Name' failed: ", problems, t);
         }
 
         try
@@ -352,7 +375,7 @@ public final class AMXValidator
         }
         catch (Throwable t)
         {
-            problems.add("Proxy access to 'Parent' failed: " + toString(t));
+            addToProblems( "Proxy access to 'Parent' failed: ", problems, t);
         }
         try
         {
@@ -360,7 +383,7 @@ public final class AMXValidator
         }
         catch (Throwable t)
         {
-            problems.add("Proxy access to 'Children' failed: " + toString(t));
+            addToProblems( "Proxy access to 'Children' failed: ", problems, t);
         }
 
 
@@ -374,7 +397,10 @@ public final class AMXValidator
             final ObjectName o = paths.resolvePath(path);
             if (o == null)
             {
-                problems.add("Path " + path + " does not resolve to any ObjectName, should resolve to: " + actualObjectName);
+                if ( proxy.valid() )   // could have been unregistered
+                {
+                    problems.add("Path " + path + " does not resolve to any ObjectName, should resolve to: " + actualObjectName);
+                }
             }
             else if (!actualObjectName.equals(o))
             {
@@ -383,7 +409,7 @@ public final class AMXValidator
         }
         catch (Throwable t)
         {
-            problems.add(ExceptionUtil.toString(ExceptionUtil.getRootCause(t)));
+            addToProblems( problems, t);
         }
 
         // test attributes
@@ -398,7 +424,7 @@ public final class AMXValidator
             }
             catch (final Throwable t)
             {
-                problems.add("Attribute failed: '" + attrName + "': " + toString(t));
+                addToProblems( "Attribute failed: '" + attrName + "': ", problems, t);
             }
         }
 
@@ -409,7 +435,7 @@ public final class AMXValidator
         }
         catch (Throwable t)
         {
-            problems.add(t.toString());
+            addToProblems( problems, t);
         }
 
         // test proxy methods
@@ -467,7 +493,7 @@ public final class AMXValidator
         }
         catch (final Throwable t)
         {
-            problems.add("Test failure: " + toString(t));
+            addToProblems( "General test failure: ", problems, t);
         }
 
 
@@ -477,7 +503,7 @@ public final class AMXValidator
         }
         catch (Throwable t)
         {
-            problems.add(t.toString());
+            addToProblems( "General test failure in validateAMXConfig: ", problems, t);
         }
 
         return problems;
@@ -669,7 +695,10 @@ public final class AMXValidator
             }
             catch (final Exception e)
             {
-                fail(proxy, "MBean failed to supply Children attribute");
+                if ( ! instanceNotFound(e) )
+                {
+                    fail(proxy, "MBean failed to supply Children attribute");
+                }
             }
 
             // children of the same type must have the same MBeanInfo
@@ -697,7 +726,10 @@ public final class AMXValidator
             }
             catch (final Exception e)
             {
-                fail(proxy, "MBean failed validating the MBeanInfo of children");
+                if ( ! instanceNotFound(e) )
+                {
+                    fail(proxy, "MBean failed validating the MBeanInfo of children");
+                }
             }
         }
     }
@@ -896,7 +928,10 @@ public final class AMXValidator
             }
             catch (final Exception e)
             {
-                fail(objectName, "does not supply children correctly");
+                if ( ! instanceNotFound(e) )
+                {
+                    fail(objectName, "does not supply children correctly");
+                }
             }
         }
         else
@@ -984,11 +1019,7 @@ public final class AMXValidator
             }
             catch( final Exception e )
             {
-                if ( ExceptionUtil.getRootCause(e) instanceof InstanceNotFoundException )
-                {
-                    problems.add( "Instance not found: " + objectName );
-                }
-                else
+                if ( ! instanceNotFound(e) )
                 {
                     debug( "Unable to create AMXProxy for " + objectName );
                     e.printStackTrace();
@@ -1009,7 +1040,7 @@ public final class AMXValidator
                 catch( final Exception e )
                 {
                     problems = new ArrayList<String>();
-                    problems.add( "Validation failure for MBean " + objectName + ", " + e);
+                    addToProblems( "Validation failure for MBean " + objectName + ", ", problems, e);
                 }
             }
 
