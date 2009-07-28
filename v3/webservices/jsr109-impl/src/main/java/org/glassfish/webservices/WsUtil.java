@@ -794,6 +794,18 @@ public class WsUtil {
                     }
                     // This is a JAXWS endpoint with @WebService;
                     jaxwsEndPtFound = true;
+                    continue;
+                }
+                if (JAXWSServlet.class.isAssignableFrom(implClass)) {
+                     // if we already found a jaxrpcendpoint, flag error since we do not support jaxws+jaxrpc endpoint
+                    // in the same service
+                    if(jaxrpcEndPtFound) {
+                        logger.log(Level.SEVERE, rb.getString("jaxws-jaxrpc.error"));
+                        continue;
+                    }
+                    // This is a JAXWS endpoint with @WebService;
+                    jaxwsEndPtFound = true;
+                    continue;
                 } else {
                     // this is a jaxrpc endpoint
                     // if we already found a jaxws endpoint, flag error since we do not support jaxws+jaxrpc endpoint

@@ -145,12 +145,13 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             for (WebService ws : wsDesc.getWebServices()) {
                 if ((new WsUtil()).isJAXWSbasedService(ws)){
                     setupJaxWSServiceForDeployment(dc, ws);
-                }
-                JAXRPCCodeGenFacade facade= habitat.getByContract(JAXRPCCodeGenFacade.class);
-                if (facade != null) {
-                    facade.run(habitat, dc, moduleCP);
-                }  else {
-                    throw new DeploymentException(rb.getString("jaxrpc.codegen.fail")) ;
+                } else {
+                    JAXRPCCodeGenFacade facade= habitat.getByContract(JAXRPCCodeGenFacade.class);
+                    if (facade != null) {
+                        facade.run(habitat, dc, moduleCP);
+                    }  else {
+                        throw new DeploymentException(rb.getString("jaxrpc.codegen.fail")) ;
+                    }
                 }
                 doWebServicesDeployment(app,dc);
             }
