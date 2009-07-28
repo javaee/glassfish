@@ -57,9 +57,8 @@
 
 package org.apache.catalina;
 
-
+import java.util.*;
 import javax.servlet.http.Cookie;
-
 
 /**
  * An <b>HttpResponse</b> is the Catalina-internal facade for an
@@ -96,20 +95,19 @@ public interface HttpResponse
 
 
     /**
-     * @return an Iterable over all the header names of this response,
-     * or an empty Iterable if no headers have been set on this response
+     * @return a (possibly empty) <code>Collection</code> of the names
+     * of the headers of this response
      */
-    public Iterable<String> getHeaderNames();
+    public Collection<String> getHeaderNames();
 
 
     /**
      * @param name the name of the response header whose values to return
      *
-     * @return an Iterable over the values of the response header with
-     * the given name, or an empty Iterable if no header with the given name
-     * has been set on this response
+     * @return a (possibly empty) <code>Collection</code> of the values
+     * of the response header with the given name
      */
-    public Iterable<String> getHeaders(String name);
+    public Collection<String> getHeaders(String name);
 
 
     /**

@@ -112,7 +112,7 @@ public class ServletRegistrationImpl implements ServletRegistration {
         return ctx.addServletMapping(wrapper.getName(), urlPatterns);
     }
 
-    public Iterable<String> getMappings() {
+    public Collection<String> getMappings() {
         return wrapper.getMappings();
     }
 }

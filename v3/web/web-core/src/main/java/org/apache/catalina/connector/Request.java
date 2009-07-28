@@ -4023,7 +4023,7 @@ public class Request
     }
 
     @Override
-    public Iterable<Part> getParts() throws IOException, ServletException {
+    public Collection<Part> getParts() throws IOException, ServletException {
         return getMultipart().getParts();
     }
 

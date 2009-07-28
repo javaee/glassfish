@@ -54,13 +54,8 @@
  */
 package org.apache.catalina.fileupload;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 /**
  * @author Michael C. Macaluso
@@ -85,15 +80,15 @@ class PartHeaders implements Serializable {
         return headerValueList.get(0);
     }
 
-    public Iterable<String> getHeaderNames() {
+    public Collection<String> getHeaderNames() {
         return headerMap.keySet();
     }
 
-    public Iterable<String> getHeaders(String name) {
+    public Collection<String> getHeaders(String name) {
         String nameLower = name.toLowerCase();
         List<String> headerValueList = headerMap.get(nameLower);
         if (null == headerValueList) {
-            return (Iterable<String>)Collections.EMPTY_LIST;
+            return Collections.EMPTY_LIST;
         }
         return headerValueList;
     }

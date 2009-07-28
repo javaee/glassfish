@@ -84,7 +84,7 @@ public class JspConfigDescriptor extends Descriptor
     }
 
     /**
-     * return Iterable over jsp-group elements
+     * return Collection of jsp-group elements
      */
     public Collection<JspPropertyGroupDescriptor> getJspPropertyGroups() {
         if (jspGroups == null) {

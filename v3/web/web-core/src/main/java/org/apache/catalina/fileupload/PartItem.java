@@ -54,20 +54,8 @@
  */
 package org.apache.catalina.fileupload;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.io.Serializable;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 import javax.servlet.http.Part;
 import javax.servlet.ServletException;
@@ -752,24 +740,24 @@ class PartItem
     /**
      * Returns all the values of the specified Part header
      * @param name - a String specifying the header name
-     * @return an Iterable containing the values of the requested header.
+     * @return a Collection of the values of the requested header.
      *     If the Part does not have any headers of that name return an
-     *     empty Iterable. If the container does not allow access to header
+     *     empty Collection. If the container does not allow access to header
      *     information, return null
      */
-    public Iterable<String> getHeaders(String name) {
+    public Collection<String> getHeaders(String name) {
         return headers.getHeaders(name);
     }
 
 
     /**
-     * Returns an Iterable of all the header names this part contains.
-     * @return an Iterable of all the header names sent with this part;
-     *     if the part has no headers, an empty Iterable;
+     * Returns a Collection of all the header names this part contains.
+     * @return a Collection of all the header names sent with this part;
+     *     if the part has no headers, an empty Collection;
      *     if the servlet container does not allow servlets to use this
      *     method, null
      */
-    public Iterable<String> getHeaderNames() {
+    public Collection<String> getHeaderNames() {
         return headers.getHeaderNames();
     }
 }

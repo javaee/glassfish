@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import java.util.Locale;
+import java.util.*;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletResponse;
@@ -73,11 +73,11 @@ class HttpResponseWrapper extends HttpServletResponseWrapper
         return httpResponse.getHeader(name);
     }
     
-    public Iterable<String> getHeaderNames() {
+    public Collection<String> getHeaderNames() {
         return httpResponse.getHeaderNames();
     }
     
-    public Iterable<String> getHeaders(String name) {
+    public Collection<String> getHeaders(String name) {
         return httpResponse.getHeaders(name);
     }
     

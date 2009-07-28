@@ -58,22 +58,14 @@
 package org.apache.catalina.core;
 
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.util.Locale;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import java.io.*;
+import java.util.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
 import org.apache.catalina.Connector;
 import org.apache.catalina.Context;
 import org.apache.catalina.Request;
 import org.apache.catalina.HttpResponse;
-
 
 /**
  * Dummy response object, used for JSP precompilation.
@@ -140,8 +132,8 @@ public class DummyResponse
 
     public Cookie[] getCookies() { return null; }
     public String getHeader(String name) { return null; }
-    public Iterable<String> getHeaderNames() { return null; }
-    public Iterable<String> getHeaders(String name) { return null; }
+    public Collection<String> getHeaderNames() { return null; }
+    public Collection<String> getHeaders(String name) { return null; }
     public String getMessage() { return null; }
     public int getStatus() { return -1; }
     public void reset(int status, String message) {}

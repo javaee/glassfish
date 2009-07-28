@@ -57,19 +57,14 @@
 
 package org.apache.catalina.connector;
 
-import java.io.InputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.*;
 import java.security.AccessController;
 import java.security.AccessControlException;
 import java.security.Permission;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.SecurityPermission;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.Locale;
-import java.net.Socket;
+import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -1158,7 +1153,7 @@ public class RequestFacade
 
 
     @Override
-    public Iterable<Part> getParts() throws IOException, ServletException {
+    public Collection<Part> getParts() throws IOException, ServletException {
         if (request == null) {
             throw new IllegalStateException(
                 sm.getString("requestFacade.nullRequest"));

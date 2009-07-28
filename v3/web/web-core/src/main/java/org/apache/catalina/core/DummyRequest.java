@@ -337,7 +337,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
                                  ServletResponse servletResponse) {}
     public boolean isSetAsyncTimeoutCalled() { return false; }
     public void disableAsyncSupport() {}
-    public Iterable<Part> getParts() {return null;}
+    public Collection<Part> getParts() {return null;}
     public Part getPart(String name) {return null;}
     public boolean authenticate(HttpServletResponse response)
         throws IOException, ServletException { return false; }

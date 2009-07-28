@@ -67,12 +67,7 @@ import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.TimeZone;
-import java.util.Vector;
+import java.util.*;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -988,25 +983,22 @@ public class Response
 
 
     /**
-     * @return an Iterable over all the header names of this response,
-     * or an empty Iterable if no headers have been set on this response
+     * @return a (possibly empty) <code>Collection</code> of the names
+     * of the headers of this response
      */
-    public Iterable<String> getHeaderNames() {
-        return new IterableAdapter(
-            coyoteResponse.getMimeHeaders().names());
+    public Collection<String> getHeaderNames() {
+        return Collections.list(coyoteResponse.getMimeHeaders().names());
     }
 
 
     /**
      * @param name the name of the response header whose values to return
      *
-     * @return an Iterable over the values of the response header with
-     * the given name, or an empty Iterable if no header with the given name
-     * has been set on this response
+     * @return a (possibly empty) <code>Collection</code> of the values
+     * of the response header with the given name
      */
-    public Iterable<String> getHeaders(String name) {
-        return new IterableAdapter(
-            coyoteResponse.getMimeHeaders().values(name));
+    public Collection<String> getHeaders(String name) {
+        return Collections.list(coyoteResponse.getMimeHeaders().values(name));
     }
 
 
