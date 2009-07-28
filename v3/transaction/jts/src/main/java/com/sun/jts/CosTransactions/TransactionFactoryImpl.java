@@ -529,7 +529,6 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
              _logger.log(Level.WARNING,"jts.unable_to_create_subordinate_coordinator");
              String msg = LogFormatter.getLocalizedMessage(_logger,
                                         "jts.unable_to_create_subordinate_coordinator");
-            // ErrorLog.error(Messages.SUBORDINATE_CREATE_FAILED, null, true);
             INTERNAL intExc = new INTERNAL(msg);
             //INTERNAL intExc = new INTERNAL("tx recreate failed");
             intExc.initCause(exc);

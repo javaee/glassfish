@@ -1212,7 +1212,6 @@ public class CurrentTransaction {
 			_logger.log(Level.WARNING,"jts.unable_to_create_subordinate_coordinator");
 			 String msg = LogFormatter.getLocalizedMessage(_logger,
 			 							"jts.unable_to_create_subordinate_coordinator");
-            //ErrorLog.error(Messages.SUBORDINATE_CREATE_FAILED, null, true);
             throw new INVALID_TRANSACTION(
                 MinorCode.TX_RECREATE_FAILED, CompletionStatus.COMPLETED_MAYBE);
         }
