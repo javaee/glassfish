@@ -46,25 +46,15 @@
         setAttribute(key="popupId" value="$this{clientId}");
     />
     <f:verbatim>
-	<style type="text/css">
-	    .bulletList {font-weight: bold; font-size: 1.2em; font-style: italic; color: #FFFFFF;}
-	    .bulletList a {font-weight: normal;}
-	    .bulletList a:link, .bulletList a:visited {color: #b9d2e9;}
-	    .bulletList ul {padding-left: 0px; padding-bottom: 15px; margin-left: 90px;}
-	    .bulletList li {font-style: normal; font-size: .9em; letter-spacing: -1px; list-style: url('#{request.contextPath}/resource/images/regReminderBullets.png'); padding-bottom: 8px;}
-	    .please {color: #FFFFFF; font-size: 1.6em; font-weight: bold; padding-bottom: 10px;}
-	    .why {color: #b9d2e9; font-size: 1.3em; font-weight: bold; font-style: italic; padding-bottom: 8px;}
-	    .why a:link, .why a:visited {color: #b9d2e9;}
-	</style>
-            <div style="padding-left: 135px; font-size: 1.2em;">
-		<br />
-		<div class="please" >$resource{i18n.reg.pleaseReg}</div>
-		<div id="why" class="why">
-		    <a href="https://reg.sun.com/whyregister?program=sdn" target="_blank" >$resource{i18n.reg.whyRegister}</a>
-		</div>
-		<div class="bulletList">
-		    $resource{i18n.reg.whyRegisterList}
-		</div>
+        <div style="padding-left: 135px; font-size: 1.2em;">
+		    <br />
+		    <div class="please" >$resource{i18n.reg.pleaseReg}</div>
+		    <div id="why" class="why">
+		        <a href="https://reg.sun.com/whyregister?program=sdn" target="_blank" >$resource{i18n.reg.whyRegister}</a>
+		    </div>
+		    <div class="bulletList">
+		        $resource{i18n.reg.whyRegisterList}
+		    </div>
 	    </div>
 
 		<div style="text-align: center;">

@@ -72,7 +72,17 @@
             .tagDiv .tagList a.removeTag {margin-left: 6px;padding: 1px 2px 1px 2px; text-decoration:none; background:#EEEEEE;border:1px solid #AAA;}
             .tagDiv .tagList a.removeTag:hover {color:red; font-weight:bold; text-decoration:none;}
             #yui-gen1 .yui-layout-hd { display: none; }
-        </style>
+            /* regReminder CSS */
+            .bulletList {font-weight: bold; font-size: 1.2em; font-style: italic; color: #FFFFFF;}
+            .bulletList a {font-weight: normal;}
+            .bulletList a:link, .bulletList a:visited {color: #b9d2e9;}
+            .bulletList ul {padding-left: 0px; padding-bottom: 15px; margin-left: 90px;}
+            .bulletList li {font-style: normal; font-size: .9em; letter-spacing: -1px; list-style: url('#{request.contextPath}/resource/images/regReminderBullets.png'); padding-bottom: 8px;}
+            .please {color: #FFFFFF; font-size: 1.6em; font-weight: bold; padding-bottom: 10px;}
+            .why {color: #b9d2e9; font-size: 1.3em; font-weight: bold; font-style: italic; padding-bottom: 8px;}
+            .why a:link, .why a:visited {color: #b9d2e9;}
+     </style>
+
     </sun:head>
 
     <sun:body onLoad="#{guiOnLoad}#{guiTemplateOnLoad}">
