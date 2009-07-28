@@ -89,7 +89,7 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, org.glas
 
     /**
      * Gets the value of the mbean-enabled attribute.
-     * This boolean attribute determines whether monitoring mebans are enabled
+     * This boolean attribute determines whether monitoring mbeans are enabled
      * or disabled. When disabled, all montioring activity will be disabled
      *
      * @return present monitoring activity status
@@ -98,12 +98,36 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, org.glas
     public String getMbeanEnabled();
 
     /**
-     * Sets the value of the meban-enabled attribute.
+     * Sets the value of the mbean-enabled attribute.
      *
-     * @param value allowed object is
-     *              {@link ModuleMonitoringLevels }
+     * @param value allowed object is a String
+     * 
      */
     public void setMbeanEnabled(String value) throws PropertyVetoException;
+
+    // TODO: Ref: Issue # 8706. Sreeni to work with GmBal team and provide a
+    // final resolution on where the above mbean-enabled flag would reside.
+    // With the addition of the new attribute below, the above attribute becomes
+    // misplaced. The attribute monitoring-enabled actually enables/disables the
+    // monitoring infrastructure (POJOs) while mbean-enabled enables/disables
+    // one type of veneer viz the mbean-layer
+
+    /**
+     * Gets the value of the monitoring-enabled attribute.
+     * This boolean attribute determines whether monitoring mebans are enabled
+     * or disabled. When disabled, all montioring activity will be disabled
+     *
+     * @return present monitoring activity status
+     */
+    @Attribute(defaultValue="true")
+    public String getMonitoringEnabled();
+
+    /**
+     * Sets the value of the monitoring-enabled attribute.
+     *
+     * @param value allowed object is String
+     */
+    public void setMonitoringEnabled(String value) throws PropertyVetoException;
 
     /**
      * Get the monitoring configuration for other types of containers.
