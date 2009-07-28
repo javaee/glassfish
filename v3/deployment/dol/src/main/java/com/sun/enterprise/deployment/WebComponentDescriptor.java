@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.deployment;
 
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.deployment.web.InitializationParameter;
 import com.sun.enterprise.deployment.web.MultipartConfig;
 import com.sun.enterprise.deployment.web.SecurityRoleReference;
@@ -43,8 +44,10 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -59,6 +62,9 @@ import javax.servlet.http.HttpServletResponse;
  * @author Jerome Dochez
  */
 public class WebComponentDescriptor extends Descriptor {
+
+    private static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(WebComponentDescriptor.class);
 
     /**
      * Constant for Basic authentication.
@@ -175,7 +181,38 @@ public class WebComponentDescriptor extends Descriptor {
      */
     public Set<String> getUrlPatternsSet() {
         if (urlPatterns == null) {
-            urlPatterns = new OrderedSet();
+            urlPatterns = new OrderedSet<String>() {
+                @Override
+                public boolean add(String s) {
+                    Map<String, String> up2sname = getUrlPatternToServletNameMap();
+                    if (up2sname != null) {
+                        String name = getCanonicalName();
+                        String oldName = up2sname.put(s, getCanonicalName());
+                        if (oldName != null && (!oldName.equals(name))) {
+                            throw new RuntimeException(localStrings.getLocalString(
+                                "enterprise.deployment.exceptionsameurlpattern",
+                                "There are more than one serlvet with the same url pattern: [{0}]",
+                                new Object[] { s }));
+                        }
+                    }
+                    return super.add(s);
+                }
+
+                @Override
+                public boolean remove(Object o) {
+                    Map<String, String> up2sname = getUrlPatternToServletNameMap();
+                    if (up2sname != null) {
+                        up2sname.remove((String)o);
+                    }   
+                    return super.remove(o);
+                }
+
+                private Map<String, String> getUrlPatternToServletNameMap() {
+                    return ((getWebBundleDescriptor() != null) ?
+                            getWebBundleDescriptor().getUrlPatternToServletNameMap() :
+                            null);
+                }
+            };
         }
         return urlPatterns;
     }

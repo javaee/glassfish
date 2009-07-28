@@ -120,7 +120,10 @@ public class WebBundleDescriptor extends BundleDescriptor
     //
     private Map<String, String> extensionProperty = null;
 
-    private Map<String, String> jarName2WebFragNameMap = null;
+    private Map<String, String> jarName2WebFragNameMap  = null;
+
+    // this is for checking whether there are more than one servlets for a given url-pattern
+    private Map<String, String> urlPattern2ServletName = null;
 
     private List<String> orderedLibs = new ArrayList<String>();
 
@@ -137,11 +140,38 @@ public class WebBundleDescriptor extends BundleDescriptor
     public void addWebBundleDescriptor(WebBundleDescriptor webBundleDescriptor) {
         super.addBundleDescriptor(webBundleDescriptor);
 
+        // need to check if there are more than one servlets mapping to the same url pattern
+        Map<String, String> otherUrlPattern2ServletName  = webBundleDescriptor.urlPattern2ServletName;
         for (WebComponentDescriptor webComponentDesc :webBundleDescriptor.getWebComponentDescriptors())
         {
+            // don't modify the original one
             WebComponentDescriptor webComponentDescriptor =
                 new WebComponentDescriptor(webComponentDesc);
             webComponentDescriptor.setWebBundleDescriptor(this);
+
+            if (otherUrlPattern2ServletName != null) { // should not be null here
+                List<String> removeUrlPatterns = null;
+                for (String urlPattern: webComponentDescriptor.getUrlPatternsSet()) {
+                    String servletName = null;
+                    if (urlPattern2ServletName != null) {
+                        servletName = urlPattern2ServletName.get(urlPattern);
+                    }
+                    if (servletName != null &&
+                            (!servletName.equals(webComponentDescriptor.getCanonicalName()))) {
+                        // url pattern already exists in current bundle
+                        // need to remove the url pattern in current bundle servlet
+                        if (removeUrlPatterns == null) {
+                            removeUrlPatterns = new ArrayList<String>();
+                        }
+                        removeUrlPatterns.add(urlPattern);
+                    }
+                }
+
+                if (removeUrlPatterns != null) {
+                    webComponentDescriptor.getUrlPatternsSet().removeAll(removeUrlPatterns);
+                }
+            }
+
             addWebComponentDescriptor(webComponentDescriptor);
         }
 
@@ -295,18 +325,43 @@ public class WebBundleDescriptor extends BundleDescriptor
 
     /**
      * Adds a new Web Component Descriptor to me.
+     * @param webComponentDescriptor
      */
-
     public void addWebComponentDescriptor(WebComponentDescriptor webComponentDescriptor) {
+        addWebComponentDescriptor(webComponentDescriptor, false);
+    }
+
+    /**
+     * Adds a new Web Component Descriptor to me.
+     * This API is used by annotation processing to override the web.xml.
+     * @param webComponentDescriptor
+     * @param overrideServletMapping
+     */
+    public void addWebComponentDescriptor(WebComponentDescriptor webComponentDescriptor,
+            boolean overrideServletMapping) {
+
+        WebComponentDescriptor resultDesc = webComponentDescriptor;
+        String name = webComponentDescriptor.getCanonicalName();
         webComponentDescriptor.setWebBundleDescriptor(this);
-        WebComponentDescriptor webCompDesc =
-            getWebComponentByCanonicalName(webComponentDescriptor.getCanonicalName());
+        WebComponentDescriptor webCompDesc = getWebComponentByCanonicalName(name);
 
         if (webCompDesc != null) {
             // combine the contents of the given one to this one
             webCompDesc.add(webComponentDescriptor);
+            resultDesc = webCompDesc;
         } else {
             this.getWebComponentDescriptors().add(webComponentDescriptor);
+        }
+
+        // sync up urlPattern2ServletName map
+        for (String up : resultDesc.getUrlPatternsSet()) {
+            String oldName = getUrlPatternToServletNameMap().put(up, name);
+            if (!overrideServletMapping && oldName != null && (!oldName.equals(name))) {
+                throw new RuntimeException(localStrings.getLocalString(
+                    "enterprise.deployment.exceptionsameurlpattern",
+                    "There are more than one serlvet with the same url pattern: [{0}]",
+                    new Object[] { up }));
+            }
         }
     }
 
@@ -1526,6 +1581,17 @@ public class WebBundleDescriptor extends BundleDescriptor
             jarName2WebFragNameMap = new HashMap<String, String>();
         }
         return Collections.unmodifiableMap(jarName2WebFragNameMap);
+    }
+
+    /**
+     * This method is used by WebComponentDescriptor only.
+     * The returned map is supposed to be only modified by the corresponding url patterns set.
+     */
+    Map<String, String> getUrlPatternToServletNameMap() {
+        if (urlPattern2ServletName == null) {
+            urlPattern2ServletName = new HashMap<String, String>();
+        }
+        return urlPattern2ServletName;
     }
 
     public List<String> getOrderedLibs() {
