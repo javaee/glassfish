@@ -333,6 +333,8 @@ public final class RealmsImpl extends AMXImplBase
         AuthRealm adminFileAuthRealm = null;
         for( final Config config : configs.values() )
         {
+            if ( config.getSecurityService() == null ) continue;
+            
             for( final AuthRealm auth : config.getSecurityService().childrenMap(AuthRealm.class).values() )
             {
                 if ( auth.getName().equals(ADMIN_REALM) )

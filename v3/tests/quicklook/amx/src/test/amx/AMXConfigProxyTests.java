@@ -230,23 +230,23 @@ public final class AMXConfigProxyTests extends AMXTestBase
         }
     }
     
-    private Map<String,Object> newPropMap(final String name)
+    private Map<String,Object> newPropertyMap(final String name)
     {
         final Map<String,Object>    m = MapUtil.newMap();
         
         m.put( "Name", name );
         m.put( "Value", name + "-value" );
-        m.put( "Description", "blah blah blah for " + name );
+        m.put( "Description", "desc.for." + name );
         
         return m;
     }
     
-    private Map<String,Object>[] newPropMaps(final String baseName, final int count)
+    private Map<String,Object>[] newPropertyMaps(final String baseName, final int count)
     {
         final Map<String,Object>[] maps = TypeCast.asArray( new Map[count] );
         for( int i = 0; i < count; ++i )
         {
-            maps[i] = newPropMap(baseName + i);
+            maps[i] = newPropertyMap(baseName + i);
         }
         return maps;
     }
@@ -257,13 +257,13 @@ public final class AMXConfigProxyTests extends AMXTestBase
         final Domain amx = getDomainConfig();
         
         final String PROP_NAME = "AMXConfigProxyTests.TEST_PROP1";
-        
+        final String propType = Util.deduceType(Property.class);
         // remove any existing test element
         if ( amx.childrenMap(Property.class).get(PROP_NAME) != null )
         {
             try
             {
-                amx.removeChild( Util.deduceType(Property.class), PROP_NAME );
+                amx.removeChild( propType, PROP_NAME );
                 System.out.println( "Removed stale test config " + PROP_NAME );
             }
             catch( final Exception e )
@@ -272,22 +272,85 @@ public final class AMXConfigProxyTests extends AMXTestBase
             }
         }
         
-        final Map<String,Object> attrs = newPropMap(PROP_NAME);
+        final Map<String,Object> attrs = newPropertyMap(PROP_NAME);
         
-        amx.createChild( Util.deduceType(Property.class), attrs );
+        final AMXConfigProxy prop = amx.createChild( propType, attrs );
+        assert prop.getName().equals(PROP_NAME);
         assert amx.childrenMap(Property.class).get(PROP_NAME) != null;
         
-        amx.removeChild( Util.deduceType(Property.class), PROP_NAME );
+        amx.removeChild( propType, PROP_NAME );
         assert amx.childrenMap(Property.class).get(PROP_NAME) == null;
+    }
+    
+
+    private void removeChild( final AMXConfigProxy amx, final String type, final String name )
+    {
+        if ( amx.childrenMap(type).get(name) != null )
+        {
+            try
+            {
+                amx.removeChild( type, name );
+                System.out.println( "Removed stale test config " + name );
+            }
+            catch( final Exception e )
+            {
+               assert false : "Unable to remove config " + name + ": " + e;
+            }
+        }
+    }
+    
+    @Test
+    /**
+        Verify that a resource with properties can be created and removed.
+     */
+    public void testCreateResource()
+    {
+        final Resources parent = getDomainConfig().getResources();
+        
+        final String name = "AMXConfigProxyTests.test-resource";
+        final String type = Util.deduceType(CustomResource.class);
+        removeChild( parent, type, name );
+        
+        final Map<String,Object> attrs = MapUtil.newMap();
+        attrs.put( "Name", name );  // IMPORTANT: this verifies that Name is mapped to jndi-name
+        attrs.put( "ResType", "java.lang.Properties" );
+        attrs.put( "ObjectType", "user" );
+        attrs.put( "Enabled", "false" );
+        attrs.put( "Description", "test" );
+        attrs.put( "FactoryClass", "com.foo.bar.FooFactory" );
+        
+        // include two property children in the new resource
+        final Map[] propMaps = new Map[2];
+        String prop1 = "prop1"; String prop2 = "prop2";
+        propMaps[0] = newPropertyMap(prop1);
+        propMaps[1] = newPropertyMap(prop2);
+        attrs.put( Util.deduceType(Property.class), propMaps);
+                
+        AMXConfigProxy child = parent.createChild( type, attrs );
+        assert child.getName().equals(name);
+        assert parent.childrenMap(type).get(name) != null;
+        parent.removeChild( type, name );
+        assert parent.childrenMap(type).get(name) == null;
+        
+        // do it again, but this time we'll specify the name as its ral key value instead of "Name"
+        attrs.remove("Name");
+        attrs.put( "JndiName", name);
+        child = parent.createChild( type, attrs );
+        assert child.getName().equals(name);
+        assert parent.childrenMap(type).get(name) != null;
+        parent.removeChild( type, name );
+        assert parent.childrenMap(type).get(name) == null;
     }
     
     @Test
     public void testCreateProperties()
     {
-        final Domain amx = getDomainConfig();
+        final Domain parent = getDomainConfig();
         
-        // create 5 <property> children
-        final Map<String,Object>[] propMaps = newPropMaps( "AMXConfigProxyTests.testCreateProperties-", 5);
+        // create 100 <property> children
+        // this is in part ot ensure that the AMXValidator doens't barf when objects register/unregister
+        final int NUM_PROPS = 100;
+        final Map<String,Object>[] propMaps = newPropertyMaps( "AMXConfigProxyTests.testCreateProperties-", NUM_PROPS);
         
         final Set<String> propNames = new HashSet<String>();
         for( int i = 0; i < propMaps.length; ++i )
@@ -295,14 +358,16 @@ public final class AMXConfigProxyTests extends AMXTestBase
             propNames.add( (String)propMaps[i].get("Name") );
         }
         
+        final String propType = Util.deduceType(Property.class);
         // first remove any existing test elements
+        final Map<String,Property> existing = parent.childrenMap(Property.class);
         for( final String propName : propNames )
         {
-            if ( amx.childrenMap(Property.class).get(propName) != null )
+            if ( existing.get(propName) != null )
             {
                 try
                 {
-                    amx.removeChild( Util.deduceType(Property.class), propName );
+                    parent.removeChild( propType, propName );
                     System.out.println( "Removed stale test config " + propName );
                 }
                 catch( final Exception e )
@@ -313,57 +378,66 @@ public final class AMXConfigProxyTests extends AMXTestBase
         }
         
         final Map<String,Map<String,Object>[]>  childrenMaps = MapUtil.newMap();
-        childrenMaps.put( Util.deduceType(Property.class), propMaps );
-        final AMXConfigProxy[] newChildren = amx.createChildren( childrenMaps );
+        childrenMaps.put( propType, propMaps );
+        final Map<String,Object> parentAttrs = MapUtil.newMap(); // FIXME  ad some
+        parentAttrs.put( "Locale", "EN_US");
+        parentAttrs.put( "LogRoot",  parent.getLogRoot() );
+        
+        /*
+        ** FIXME: HK2 code broken, see bug 
+        ** https://glassfish.dev.java.net/issues/show_bug.cgi?id=8923
+        parentAttrs.put( "Foo",  new String[] { "hello", "world" } );   // test List<String> elements
+        @Element
+        List<String>  getFoo();
+        void setFoo( List<String> value) throws PropertyVetoException;
+        
+        Need to test this on a special @Configured which has both sub-elements and @Element List<String>
+        */
+        System.out.println( "SKIPPING test for String[] parameters due to HK2 bug #8923" );
+        
+        final AMXConfigProxy[] newChildren = parent.createChildren( childrenMaps, parentAttrs);
+        final int numExpected = propMaps.length;
+        assert newChildren.length == numExpected : "Expected " + numExpected + ", got " + newChildren.length;
+        final Map<String,Property>  childrenProps = parent.childrenMap(Property.class);
         for( final String propName : propNames )
         {
-            assert amx.childrenMap(Property.class).get(propName) != null : "property not created: " + propName;
+            assert childrenProps.get(propName) != null : "property not created: " + propName;
         }
         
         for( final String propName : propNames )
         {
-            amx.removeChild( Util.deduceType(Property.class), propName );
-            assert amx.childrenMap(Property.class).get(propName) == null;
+            parent.removeChild( propType, propName );
+        }
+        // verify that they're all gone
+        final Map<String,Property>  remaining = parent.childrenMap(Property.class);
+        for( final String propName : propNames )
+        {
+            parent.removeChild( propType, propName );
+            assert remaining.get(propName) == null;
         }
     }
     
     
     
+    /**
+        Tests creating a whole config hiearchy
+     */
     @Test
     public void createChildTest()
     {
         final Configs configs = getDomainConfig().getConfigs();
         
-        final String CONFIG_NAME = "AMXConfigProxyTests.TEST";
+        final String configName = "AMXConfigProxyTests.TEST";
+        final String type = Util.deduceType(Config.class);
+        removeChild( configs, type, configName );
         
-        // remove any existing test element
-        if ( configs.childrenMap(Config.class).get(CONFIG_NAME) != null )
-        {
-            try
-            {
-                configs.removeChild( Util.deduceType(Config.class), CONFIG_NAME );
-                System.out.println( "Removed stale test config " + CONFIG_NAME );
-            }
-            catch( final Exception e )
-            {
-               assert false : "Unable to remove config " + CONFIG_NAME + ": " + e;
-            }
-        }
-        
-        /*
-        
-        final Map<String,Object>    configMap = MapUtil.newMap();
-        
-        final Map<String,Object>    testProps = MapUtil.newMap();
-        testProps.put(  newPropMap("prop1") );
-        testProps.put(  newPropMap("prop2") );
-        testProps.put(  newPropMap("prop3") );
-        
-        for( final Map<String,Object> prop : testProps.values() )
-        {
-            configMap.putAll( Util.deduceType(Property.class), prop );
-        }
-        */
+        final Map<String,Object>  configParams = MapUtil.newMap();
+        configParams.put( "Name", configName );
+        configParams.put( Util.deduceType(Property.class), newPropertyMaps("prop", 5) );
+        configParams.put("DynamicReconfigurationEnabled", false );
+                
+        final Config child = configs.createChild( type, configParams ).as(Config.class);
+
         
         /*
         // create a new ConnectorConnectionPool with a SecurityMap containing a BackendPrincipal
@@ -387,8 +461,6 @@ public final class AMXConfigProxyTests extends AMXTestBase
        //final AMXConfigProxy result = configs.createChild( Util.deduceType(Config.class), configMap);
         
        // return result.objectName();
-
-        
     }
 
 }

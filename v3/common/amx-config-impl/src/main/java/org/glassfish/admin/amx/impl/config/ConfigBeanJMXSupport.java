@@ -1300,6 +1300,18 @@ public class ConfigBeanJMXSupport
                 break;
             }
         }
+        if ( match == null )
+        {
+            // could be somethign generic, list List<Resource>
+            for (final ElementMethodInfo info : mElementInfos)
+            {
+                if ( internalReturnType(info.method()).isAssignableFrom(intf) )
+                {
+                    match = info;
+                    break;
+                }
+            }
+        }
         return match;
     }
 

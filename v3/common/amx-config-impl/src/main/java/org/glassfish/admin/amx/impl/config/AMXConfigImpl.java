@@ -46,6 +46,7 @@ import java.util.AbstractQueue;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -71,6 +72,7 @@ import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.admin.amx.util.ListUtil;
 import org.glassfish.admin.amx.util.MapUtil;
+import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.TypeCast;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
@@ -334,12 +336,134 @@ public class AMXConfigImpl extends AMXImplBase
 
 //========================================================================================
 
-
-    public ObjectName[] createChildren(final Map<String, Map<String,Object>[]> childrenMaps)
-    {
-        final ConfigBeanProxy parent = getConfigBeanProxy();
+    /**
+        Parameters for creating one or more children, each of which can (recursively) contain
+        other descendants.
+     */
+    class CreateParams {
+        final String              mType;
+        final Map<String,Object>  mAttrs;
+        final List<CreateParams>  mChildren;
         
-        final ChildrenCreator creator = new ChildrenCreator( (Map<String,Map<String,Object>[]>)childrenMaps);
+        public CreateParams( final String type, final Map<String,?> values )
+        {
+            mAttrs    = MapUtil.newMap();
+            mChildren = ListUtil.newList();
+            mType     = type;
+            
+            for (final String nameAsProvided : values.keySet())
+            {
+                final String xmlName = ConfigBeanJMXSupport.toXMLName(nameAsProvided);  // or type
+                final Object value   = values.get(nameAsProvided);
+
+                if (value == null ||
+                    (value instanceof String) ||
+                    (value instanceof Number) ||
+                    (value instanceof Boolean))
+                {
+                    //System.out.println( "toAttributeChanges: " + xmlName + " = " + value );
+                    // auto-convert specific basic types to String
+                    final String valueString = value == null ? null : "" + value;
+                    mAttrs.put( xmlName, valueString);
+                }
+                else if (value instanceof String[])
+                {
+                    // A String[] is always mapped to a List<String>
+                    mAttrs.put( xmlName, ListUtil.asStringList( value ) );
+                }
+                else if (value instanceof Map)
+                {
+                    // one sub-element whose type is its key in the containing Map
+                    final Map<String, Object> m = TypeCast.checkMap(Map.class.cast(value), String.class, Object.class);
+                    final CreateParams child = new CreateParams( xmlName, m);
+                    //cdebug( "CreateParams for Map: create child of type: " + xmlName );
+                    mChildren.add(child);
+                }
+                else if (value instanceof Map[])
+                {
+                    // one or more sub elements whose type is its key in the containing Map
+                    final Map[] maps = (Map[])value;
+                    for( final Map m : maps )
+                    {
+                        final Map<String,Object>  mTyped = TypeCast.checkMap(m, String.class, Object.class);
+                        final CreateParams child = new CreateParams( xmlName, mTyped);
+                        //cdebug( "CreateParams for Map[]: create child of type: " + xmlName );
+                        mChildren.add(child);
+                    }
+                }
+                else
+                {
+                    throw new IllegalArgumentException("Value of class " + value.getClass().getName() + " not supported for attribute " + nameAsProvided);
+                }
+            }
+        }
+        
+        public String              type()     { return mType; }
+        public Map<String,Object>  attrs()    { return Collections.unmodifiableMap(mAttrs); }
+        public List<CreateParams>  children() { return Collections.unmodifiableList(mChildren); }
+       
+        /**
+            Convert incoming attributes to HK2 requirements.
+         */
+            List<ConfigSupport.AttributeChanges>
+        toAttributeChanges(final Map<String, Object> values)
+        {
+            if ( values == null ) return null;
+            
+            final List<ConfigSupport.AttributeChanges> changes = ListUtil.newList();
+            for (final String xmlName : mAttrs.keySet() )
+            {
+                final Object value = mAttrs.get(xmlName);
+
+                if ( value instanceof String )
+                {
+                    changes.add( new ConfigSupport.SingleAttributeChange(xmlName, (String)value) );
+                }
+                else
+                {
+                    // what about String[]?
+                    throw new IllegalArgumentException();
+                }
+            }
+            return changes;
+        }
+
+        public String toString( final String prefix )
+        {
+            final StringBuilder buf = new StringBuilder();
+            final String NL = StringUtil.LS;
+            
+            // crude toString, really should indent
+            buf.append( prefix + mType + " = " + mAttrs + NL );
+            if ( mChildren.size() != 0 )
+            {
+                buf.append( prefix + "[" );
+                for ( final CreateParams child : mChildren )
+                {
+                    buf.append( child.toString("    " + prefix ) + NL );
+                }
+                buf.append( prefix + "]" );
+            }
+            
+            return buf.toString();
+        }
+        public String toString()
+        {
+            return toString("");
+        }
+    }
+    
+    
+        ObjectName[]
+    createChildren(
+        final List<CreateParams>  children,
+        final Map<String,Object>  attrs )
+    {
+        cdebug( children.toString() );
+
+        final ConfigBeanProxy parent = getConfigBeanProxy();
+
+        final ChildrenCreator creator = new ChildrenCreator( children, attrs);
         try
         {
             ConfigSupport.apply(creator, parent);
@@ -349,20 +473,56 @@ public class AMXConfigImpl extends AMXImplBase
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        return null;
+
+        // ensure that all new ConfigBeans have been registered as MBeans
+        final List<ObjectName> newMBeans = ListUtil.newList();
+        final List<ConfigBean> newDescendants = creator.configBeans();
+
+        final AMXConfigLoader amxLoader = SingletonEnforcer.get(AMXConfigLoader.class);
+        for( final ConfigBean newDescendant : newDescendants )
+        {
+           amxLoader.handleConfigBean(newDescendant, true);
+           final ObjectName objectName = ConfigBeanRegistry.getInstance().getObjectName(newDescendant);
+           newMBeans.add(objectName);
+           //cdebug( "ADDED: " + objectName );
+        }
+
+        return CollectionUtil.toArray( newMBeans, ObjectName.class );
+    }
+    
+        public ObjectName[]
+    createChildren(
+        final Map<String, Map<String,Object>[]> childrenMaps,
+        final Map<String,Object> attrs )
+    {
+        final List<CreateParams> children = ListUtil.newList();
+        for( final String type : childrenMaps.keySet() )
+        {
+            for( final Map<String,Object> m : childrenMaps.get(type) )
+            {
+                children.add( new CreateParams(type, m) );
+            }
+        }
+        
+        return createChildren( children, attrs);
     }
     
      /** Create one or more children */
     private final class ChildrenCreator implements ConfigCode
     {
-        protected final Map<String, Map<String,Object>[]> mChildrenMaps;
+        protected final List<CreateParams> mChildrenMaps;
+        protected final Map<String,Object> mAttrs;
+        
+        protected final List<ConfigBean>  mNewConfigBeans;
 
-        ChildrenCreator( final Map<String, Map<String,Object>[]> childrenMaps)
+        ChildrenCreator( final List<CreateParams>  childrenMaps, final Map<String,Object> attrs)
         {
-            mChildrenMaps= childrenMaps;
+            mChildrenMaps = childrenMaps;
+            mAttrs = attrs;
+            mNewConfigBeans    = ListUtil.newList();
         }
 
-        public Object run(ConfigBeanProxy... params)
+        public Object run(final ConfigBeanProxy... params)
                 throws PropertyVetoException, TransactionFailure
         {
             if (params.length != 1)
@@ -382,237 +542,134 @@ public class AMXConfigImpl extends AMXImplBase
             final ConfigSupport configSupport)
                 throws PropertyVetoException, TransactionFailure
         {
-            final SubElementsCallback callback = new SubElementsCallback(mChildrenMaps);
-        
             final WriteableView parentW = WriteableView.class.cast(Proxy.getInvocationHandler(Proxy.class.cast(parent)));
+            
+            // if attributes were specified, set them first.
+            if ( mAttrs != null )
+            {
+                setAttrs( parent, mAttrs );
+            }
+            
+            final SubElementsCallback callback = new SubElementsCallback(mChildrenMaps);
 
             final ConfigBeanJMXSupport sptRoot = ConfigBeanJMXSupportRegistry.getInstance( Dom.unwrap(parent).getProxyType() );
-            callback.recursiveCreate( parentW, sptRoot, configSupport, mChildrenMaps);
-
+            final List<ConfigBean>  newDescendants = callback.recursiveCreate( parentW, sptRoot, mChildrenMaps);
+            mNewConfigBeans.addAll( newDescendants );
+            
             return null;
         }
+        
+        public List<ConfigBean> configBeans() { return mNewConfigBeans; }
     }
 
-    
-    
-    /**
-    Convert incoming parameters to HK2 data structures and sub-element Maps.
-    Plain attributes are converted to ConfigSupport.AttributeChanges at the top level.
-    Recursive creates are represented by type in a Map of Map<String,Object>[], where each Map in the []
-    is one child of that type.
-     */
-    static private void toAttributeChanges(
-            final Map<String, Object> values,
-            final List<ConfigSupport.AttributeChanges> changes,
-            final Map<String, Map<String,Object>[]> subs)
-    {
-        if (values != null)
-        {
-            for (final String nameAsProvided : values.keySet())
-            {
-                final Object value = values.get(nameAsProvided);
-
-                final String xmlName = ConfigBeanJMXSupport.toXMLName(nameAsProvided);
-
-                // auto-convert specific basic types to String
-                if (value == null ||
-                    (value instanceof String) ||
-                    (value instanceof Number) ||
-                    (value instanceof Boolean))
-                {
-                    //System.out.println( "toAttributeChanges: " + xmlName + " = " + value );
-                    final String valueString = value == null ? null : "" + value;
-                    final ConfigSupport.SingleAttributeChange change = new ConfigSupport.SingleAttributeChange(xmlName, valueString);
-                    changes.add(change);
-                }
-                else if (value instanceof Map)
-                {
-                    // one sub-element whose type is its key in the containing Map
-                    final Map<String, Object> m = TypeCast.checkMap(Map.class.cast(value), String.class, Object.class);
-                    final Map<String,Object>[] maps = new Map[] { m };
-                    subs.put(xmlName, maps);
-                }
-                else if (value instanceof Map[])
-                {
-                    // one or more sub elements whose type is its key in the containing Map
-                    final Map[] maps = (Map[])value;
-                    // basic sanity check on each Map (not a recursive check)
-                    for( final Map m : maps )
-                    {
-                        TypeCast.checkMap(m, String.class, Object.class);
-                    }
-                    subs.put(xmlName, maps);
-                }
-                else if (value instanceof String[])
-                {
-                    //System.out.println( "toAttributeChanges: MultipleAttributeChanges" );
-                    changes.add(new ConfigSupport.MultipleAttributeChanges(xmlName, (String[]) value));
-                }
-                else
-                {
-                    throw new IllegalArgumentException("Value of class " + value.getClass().getName() + " not supported for attribute " + nameAsProvided);
-                }
-            }
-        }
-    }
-
-    private ObjectName finishCreate(
-            final Class<? extends ConfigBeanProxy> elementClass,
-            final List<ConfigSupport.AttributeChanges> changes,
-            final Map<String, Map<String,Object>[]> subs)
-            throws ClassNotFoundException, TransactionFailure
-    {
-        if (subs.keySet().size() != 0)
-        {
-            //cdebug("Sub-elements to create: " + CollectionUtil.toString(subs.keySet(), ", "));
-        }
-
-        ConfigBean newConfigBean = null;
-        final SubElementsCallback callback = new SubElementsCallback(subs);
-        try
-        {
-            newConfigBean = ConfigSupport.createAndSet(getConfigBean(), elementClass, changes, callback);
-        }
-        catch (Throwable t)
-        {
-            cdebug(ExceptionUtil.toString(t));
-            throw new RuntimeException(t);
-        }
-
-        //----------------------
-        //
-        // Force a synchronous processing of the new ConfigBean into an AMX MBean
-        // It will be processed (guaranteed), but we should ensure that it's available
-        // prior to returning to the caller.
-        //
-        final AMXConfigLoader amxLoader = SingletonEnforcer.get(AMXConfigLoader.class);
-        amxLoader.handleConfigBean(newConfigBean, true);
-        final ObjectName objectName = ConfigBeanRegistry.getInstance().getObjectName(newConfigBean);
-
-        // final AMXConfigProxy newAMX = AMXConfigProxy.class.cast(getProxyFactory().getProxy(objectName, AMXConfigProxy.class));
-
-        return objectName;
-    }
-
-    /**
-        Create a child of the specified type.
-     */
     public ObjectName createChild(final String type, final Map<String, Object> params)
     {
-        final Class<? extends ConfigBeanProxy> intf = getConfigBeanProxyClassForContainedType(type);
-        if (intf == null)
-        {
-            throw new IllegalArgumentException("ConfigBean of type " + getConfigBean().getProxyType() +
-                                               " does not support sub-element of type " + type);
-        }
-
-        try
-        {
-            return createChild(intf, params);
-        }
-        catch (final Exception e)
-        {
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
-        }
-    }
-
-    /**
-        Convert parameters in an array to a Map.  Even entries are keys, odd entries are values
-        and values that are arrays are sub-maps.
-     */
-    private static Map<String, Object> paramsToMap(final Object[] params)
-    {
-        final Map<String, Object> m = new HashMap<String, Object>();
-
-        for (int i = 0; i < params.length; i += 2)
-        {
-            final String name = (String) params[i];
-
-            final Object value = params[i + 1];
-
-            // interpret an Object[] as meaning to create a sub-map
-            if (value == null || value instanceof String)
-            {
-                m.put(name, value);
-            }
-            else if (value instanceof Object[])
-            {
-                m.put(name, paramsToMap((Object[]) value));
-            }
-            else
-            {
-                // let it be dealt with further on...
-                m.put(name, value);
-            }
-        }
-        return m;
-    }
-
-    public ObjectName createChild(final String type, final Object[] params)
-    {
-        if ((params.length % 2) != 0)
-        {
-            throw new IllegalArgumentException();
-        }
-
-        return createChild(type, paramsToMap(params));
-    }
-
-    private ObjectName createChild(final Class<? extends ConfigBeanProxy> intf, final Map<String, Object> paramsIn)
-            throws ClassNotFoundException, TransactionFailure
-    {
-        //cdebug( "createChild: " + intf.getName() + ", params =  " + MapUtil.toString(params) );
-        final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance(intf);
+        final CreateParams childParams = new CreateParams( type, params );
         
-         // If present, cconvert the Name attribute to the key attribute
-         // so that callers can always use ATTR_NAME to refer to the unique id
-        final Map<String, Object> params = new HashMap<String,Object>(paramsIn);
-        if ( params.containsKey(ATTR_NAME) )
+        final List<CreateParams> children = ListUtil.newList();
+        children.add(childParams);
+        final ObjectName[] objectNames = createChildren( children, null);
+        
+        return objectNames[0];
+    }
+    
+        Map<String,Object>
+    replaceNameWithKey(
+        final Map<String,Object>  attrs,
+        final ConfigBeanJMXSupport spt)
+    {
+        String key = null;
+        if ( attrs.containsKey(ATTR_NAME) )
         {
+            key = ATTR_NAME;
+        }
+        else if ( attrs.containsKey("name") )
+        {
+            key = "name";
+        }
+        
+        Map<String,Object> m = attrs;
+        
+        if ( key != null )
+        {
+            // map "Name" or "name" to the actual key value (which could be "name')
             final String xmlKeyName = spt.getNameHint();
             if ( xmlKeyName != null )
             {
-                //cdebug( "Mapped Name to " + xmlKeyName );
-                final Object value = params.remove(ATTR_NAME);
-                params.put(xmlKeyName, value);
+                m = new HashMap<String,Object>(attrs);
+                final Object value = m.remove(key);
+                m.put( xmlKeyName, value );
             }
         }
-    
-        if (!spt.isSingleton())
-        {
-            if (params == null)
-            {
-                throw new IllegalArgumentException("Named element requires at least its name");
-            }
-            final Set<String> requiredAttrs = spt.requiredAttributeNames();
-            //cdebug( "createChild: " + intf.getName() + ", requiredAttributeNames =  " + CollectionUtil.toString(requiredAttrs, ", ") );
-            for (final String reqName : requiredAttrs)
-            {
-                final String xmlName = ConfigBeanJMXSupport.toXMLName(reqName);
-                // allow either the Attribute name or the xml name at this stage
-                if (!(params.containsKey(reqName) || params.containsKey(xmlName)))
-                {
-                    throw new IllegalArgumentException("Required attribute missing: " + reqName);
-                }
-            }
-        }
-
-        final List<ConfigSupport.AttributeChanges> changes = new ArrayList<ConfigSupport.AttributeChanges>();
-        final Map<String, Map<String,Object>[]> subs = MapUtil.newMap();
-        toAttributeChanges(params, changes, subs);
-
-        return finishCreate(intf, changes, subs);
+        
+        return m;
     }
-
+    
+    /** exists so we can get the parameterized return type */
+    public static List<String> listOfString() { return null; }
+    
+    
+    private void setAttrs(
+        final ConfigBeanProxy     target,
+        final Map<String,Object>  attrs )
+    {
+       final WriteableView targetW = WriteableView.class.cast(Proxy.getInvocationHandler(Proxy.class.cast(target)));
+    
+        
+        for ( final String attrName : attrs.keySet() )
+        {
+            final Object attrValue = attrs.get(attrName);
+            final String xmlName = Dom.convertName(attrName);
+            
+            final ConfigBean targetCB = (ConfigBean)Dom.unwrap(target);
+            final ConfigModel.Property modelProp = targetCB.model.findIgnoreCase( xmlName );
+            if ( modelProp == null )
+            {
+                throw new IllegalArgumentException( "Can't find ConfigModel.Property for attr " + xmlName + " on " + targetCB.getProxyType() );
+            }
+            //cdebug( "setting attribute \"" + attrName + "\" to \"" + attrValue + "\" on " + type );
+            if ( modelProp.isCollection() )
+            {
+                //cdebug( "HANDLING COLLECTION FOR " + xmlName + " on " + targetCB.getProxyType().getName() );
+                java.lang.reflect.Method m;
+                try
+                {
+                    m = getClass().getMethod("listOfString", null);
+                }
+                catch( final Exception e )
+                {
+                    e.printStackTrace();
+                    throw new IllegalStateException("impossible");
+                }
+                final java.lang.reflect.Type  listOfStringClass = m.getGenericReturnType();
+                
+                List<String>  list;
+                if ( attrValue instanceof String[] )
+                {
+                    list = ListUtil.asStringList( attrValue );
+                }
+                else
+                {
+                    list = TypeCast.checkList( TypeCast.asList(attrValue), String.class);
+                }
+                targetW.setter( modelProp, list, listOfStringClass);
+            }
+            else
+            {
+                targetW.setter( modelProp, attrValue, String.class);
+            }
+            //cdebug( "set attribute \"" + attrName + "\" to \"" + attrValue + "\" on " + type );
+        }
+    }
+    
     /**
     Callback to create sub-elements (recursively) on a newly created child element.
      */
     private final class SubElementsCallback implements ConfigSupport.TransactionCallBack<WriteableView>
     {
-        private final Map<String, Map<String,Object>[]> mSubs;
+        private final List<CreateParams> mSubs;
 
-        public SubElementsCallback(final Map<String, Map<String,Object>[]> subs)
+        public SubElementsCallback(final List<CreateParams> subs)
         {
             mSubs = subs;
         }
@@ -623,7 +680,7 @@ public class AMXConfigImpl extends AMXImplBase
         
             final ConfigSupport configSupport = mConfigBean.getHabitat().getComponent(ConfigSupport.class);
             
-            recursiveCreate( item, sptRoot, configSupport, mSubs );
+            recursiveCreate( item, sptRoot, mSubs );
         }
         
         /**
@@ -639,7 +696,7 @@ public class AMXConfigImpl extends AMXImplBase
             final ConfigBeanJMXSupport  parentSpt = ConfigBeanJMXSupportRegistry.getInstance(parentClass);
             
             final ConfigBeanJMXSupport.ElementMethodInfo elementInfo = parentSpt.getElementMethodInfo(childClass);
-            //cdebug( "Found: " + elementInfo + " for " + childClass );
+            //cdebug( "Found: " + elementInfo + " for " + childClass + " on parent class " + parentClass.getName() );
             final ConfigBean parentBean = (ConfigBean)Dom.unwrap(parent.getProxy(parentClass));
             if ( elementInfo != null && Collection.class.isAssignableFrom(elementInfo.method().getReturnType()) )
             {
@@ -653,80 +710,48 @@ public class AMXConfigImpl extends AMXImplBase
             {
                 //cdebug( "Child is a singleton, adding via setter " + elementInfo.method().getName() + "()" );
                 final ConfigModel.Property modelProp = parentBean.model.findIgnoreCase( elementInfo.xmlName() );
+                if ( modelProp == null )
+                {
+                    throw new IllegalArgumentException( "Can't find ConfigModel.Property for \"" + elementInfo.xmlName() + "\"" );
+                }
                 parent.setter( modelProp, child, childClass );
             }
         }
         
-        private void recursiveCreate(
+        private List<ConfigBean> recursiveCreate(
             final WriteableView parent,
             final ConfigBeanJMXSupport sptRoot,
-            final ConfigSupport  configSupport,
-            final Map<String, Map<String,Object>[]> subs ) throws TransactionFailure
+            final List<CreateParams> subs ) throws TransactionFailure
         {
-            cdebug( "recursiveCreate: types to create: " + subs.keySet().size() );
-            for( final String type : subs.keySet() )
-            {
-                final Map<String,Object>[] maps = subs.get(type);
-                cdebug( "recursiveCreate: create " + type + ": " + maps.length );
-                for( final Map<String,Object> m : maps )
-                {
-                    cdebug( "recursiveCreate: type: " + type + " = " + m );
-                }
-            }
+            final List<ConfigBean> newChildren = ListUtil.newList();
             
             // create each sub-element, recursively
-            for (final String type : subs.keySet())
+            for (final CreateParams childParams : subs )
             {
+                final String type = childParams.type();
+                //cdebug( "recursiveCreate: " + type );
+                
                 final Class<? extends ConfigBeanProxy> clazz = ConfigBeanJMXSupportRegistry.getConfigBeanProxyClassFor(sptRoot, type);
+                final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance(clazz);
+
+                final ConfigBeanProxy childProxy = parent.allocateProxy(clazz);
+                addToList( parent, childProxy);
+                final ConfigBean child = (ConfigBean)Dom.unwrap(childProxy);
+                newChildren.add(child);
+                final WriteableView childW = WriteableView.class.cast(Proxy.getInvocationHandler(Proxy.class.cast(childProxy)));
+                //cdebug("Created sub-element of type: " + type + ", " + clazz);
                 
-                // set attributes on newly-created item
-                final Map<String,Object>[] childrenMaps = subs.get(type);
-                for( final Map<String,Object>  childMap : childrenMaps )
+                final Map<String,Object> childAttrs = replaceNameWithKey( childParams.attrs(), spt);
+                setAttrs( childProxy, childAttrs );
+                
+                if ( childParams.children().size() != 0 )
                 {
-                    final ConfigBeanProxy childProxy = parent.allocateProxy(clazz);
-                    addToList( parent, childProxy);
-                    final ConfigBean child = (ConfigBean)Dom.unwrap(childProxy);
-                    final WriteableView childW = WriteableView.class.cast(Proxy.getInvocationHandler(Proxy.class.cast(childProxy)));
-                    cdebug("Created sub-element of type: " + type + ", " + clazz);
-                
-                    cdebug( "recursiveCreate: create type: " + type + " = " + childMap);
-                    
-                    final Map<String,Map<String,Object>[]> moreSubs = MapUtil.newMap();
-                    for (final String attrName : childMap.keySet())
-                    {
-                        final Object attrValue = childMap.get(attrName);
-                        
-                        if ( attrValue instanceof Map )
-                        {
-                            // single child of this type
-                            cdebug("Found sub-element of type " + attrName + " within type " + type + " with Map " + attrValue);
-                            final Map<String,Object>[] maps = new Map[] { Map.class.cast(attrValue) };
-                            moreSubs.put( attrName, maps );
-                            continue;
-                        }
-                        else if ( attrValue instanceof Map[] )
-                        {
-                            final Map<String,Object>[] maps = (Map[])attrValue;
-                            // multiple children of the same type
-                            cdebug( "Found" + maps.length + " sub-elements of type " + attrName + " within type " + type );
-                            moreSubs.put( attrName, maps);
-                            continue;
-                        }
-                        
-                        final ConfigModel.Property modelProp = child.model.findIgnoreCase( Dom.convertName(attrName) );
-                        if ( modelProp == null ) throw new IllegalArgumentException( "Can't find ConfigModel.Property for attr " + attrName + " on " + type );
-                        cdebug( "setting attribute \"" + attrName + "\" to \"" + attrValue + "\" on " + type );
-                        childW.setter( modelProp, attrValue, String.class);
-                        cdebug( "set attribute \"" + attrName + "\" to \"" + attrValue + "\" on " + type );
-                    }
-                    if ( moreSubs.keySet().size() != 0 )
-                    {
-                        recursiveCreate( childW, sptRoot, configSupport, moreSubs );
-                    }
+                    final List<ConfigBean> more = recursiveCreate( childW, spt, childParams.children() );
+                    newChildren.addAll(more);
                 }
             }
+            return newChildren;
         }
-
     }
 
     public ObjectName removeChild(final String type)
@@ -753,8 +778,8 @@ public class AMXConfigImpl extends AMXImplBase
 
             try
             {
-                cdebug("REMOVING config of class " + childConfigBean.getProxyType().getName() + " from  parent of type " +
-                       getConfigBean().getProxyType().getName() + ", ObjectName = " + JMXUtil.toString(childObjectName));
+                //cdebug("REMOVING config of class " + childConfigBean.getProxyType().getName() + " from  parent of type " +
+                       //getConfigBean().getProxyType().getName() + ", ObjectName = " + JMXUtil.toString(childObjectName));
                 ConfigSupport.deleteChild(this.getConfigBean(), childConfigBean);
             }
             catch (final TransactionFailure tf)
@@ -1189,45 +1214,6 @@ public class AMXConfigImpl extends AMXImplBase
         }
     }
 
-
-
-//         public String[]
-//     getAnonymousElementList( final String elementName )
-//     {
-//         return (String[])getAttributeFromConfigBean( elementName );
-//     }
-//     
-//         public String[]
-//     modifyAnonymousElementList(
-//         final String   elementName,
-//         final String   cmd,
-//         final String[] values)
-//     {
-//         //cdebug( "modifyAnonymousElementList: " + elementName + ", " + cmd + ", {" + StringUtil.toString(values) + "}" );
-//         getAnonymousElementList(elementName); // force an error right away if it's a bad name
-//         
-//         final String xmlName = mNameMappingHelper.getXMLName(elementName, true);
-//         try
-//         {
-//             final ModifyCollectionApplyer mca = new ModifyCollectionApplyer( mConfigBean, xmlName, cmd, values );
-//             mca.apply();
-//             return ListUtil.toStringArray(mca.mResult);
-//         }
-//         catch( final TransactionFailure e )
-//         {
-//             throw new RuntimeException( "Could not modify element collection " + elementName, e);
-//         }
-//     }
-//     
-//     
-//         public String[]
-//     modifyAnonymousElementList(
-//         final String   elementName,
-//         final String   cmd,
-//         final String[] values)
-//     {
-//         return getConfigDelegate().modifyAnonymousElementList(elementName, cmd, values);
-//    }
     /**
     Handle an update to a collection, returning the List<String> that results.
      */

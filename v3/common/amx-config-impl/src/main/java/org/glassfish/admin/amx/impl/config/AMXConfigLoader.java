@@ -566,9 +566,9 @@ public final class AMXConfigLoader extends MBeanImplBase
         final ConfigBean parentCB = getActualParent(cb);
         if ( parentCB != null && mRegistry.getObjectName(parentCB) == null )
         {
-            //debug( "REGISTER parent first: " + parentCB.getProxyType().getNameProp() );
+            //debug( "REGISTER parent first: " + parentCB.getProxyType().getName() );
             registerConfigBeanAsMBean( parentCB );
-            //debug( "REGISTERED parent: " + parentCB.getProxyType().getNameProp() + " as " + JMXUtil.toString(parentCB.getObjectName()) );
+            //debug( "REGISTERED parent: " + parentCB.getProxyType().getName() + " as " + JMXUtil.toString(parentCB.getObjectName()) );
         }
        objectName =  _registerConfigBeanAsMBean( cb, parentCB );
        assert objectName == null || mRegistry.getObjectName(cb) != null;
@@ -585,7 +585,7 @@ public final class AMXConfigLoader extends MBeanImplBase
     {
         final Class<? extends ConfigBeanProxy> cbClass = cb.getProxyType();
         
-        //debug( "_registerConfigBeanAsMBean: " + cb.getProxyType().getNameProp() );
+        //debug( "_registerConfigBeanAsMBean: " + cb.getProxyType().getName() );
         
         ObjectName objectName = mRegistry.getObjectName(cb);
         if ( objectName != null )
@@ -686,6 +686,11 @@ public final class AMXConfigLoader extends MBeanImplBase
         else
         {
             name = cb.rawAttribute( nameHint );
+        }
+        
+        if ( name == null || name.length() == 0 )
+        {
+            throw new IllegalArgumentException( "Non-singleton ConfigBean of type has null or empty name (key)" + cb.getProxyType().getName() );
         }
 
         return name;
