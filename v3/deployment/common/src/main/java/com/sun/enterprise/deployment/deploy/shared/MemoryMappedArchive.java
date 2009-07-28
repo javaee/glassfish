@@ -50,7 +50,9 @@ import java.util.zip.ZipEntry;
  */
 @Service
 public class MemoryMappedArchive extends JarArchive implements ReadableArchive {
-    
+
+    private URI uri;
+
     byte[] file;
     
     /** Creates a new instance of MemoryMappedArchive */
@@ -181,7 +183,11 @@ public class MemoryMappedArchive extends JarArchive implements ReadableArchive {
     }
     
     public URI getURI() {
-        return null;
+        return uri;
+    }
+
+    public void setURI(final URI uri) {
+        this.uri = uri;
     }
     
     /**

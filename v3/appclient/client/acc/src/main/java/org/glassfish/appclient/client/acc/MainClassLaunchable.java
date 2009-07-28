@@ -40,9 +40,20 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
+import com.sun.enterprise.deployment.deploy.shared.MemoryMappedArchive;
 import com.sun.enterprise.deployment.util.XModuleType;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.jar.Attributes;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.component.Habitat;
 import org.xml.sax.SAXParseException;
 
@@ -77,15 +88,100 @@ public class MainClassLaunchable implements Launchable {
          * use a default one.
          */
         if (acDesc == null) {
-            ArchivistFactory af = Util.getArchivistFactory();
-            archivist = (AppClientArchivist) af.getArchivist(XModuleType.CAR);
-            acDesc = (ApplicationClientDescriptor) archivist.getDefaultBundleDescriptor();
-            Application.createApplication(habitat, null, acDesc.getModuleDescriptor());
+            ReadableArchive tempArchive = null;
+            tempArchive = createArchive(loader, mainClass);
+            final AppClientArchivist acArchivist = getArchivist(tempArchive, loader);
+            archivist.setClassLoader(loader);
             archivist.setDescriptor(acDesc);
-            archivist.setClassLoader(classLoader);
+            acDesc = acArchivist.open(tempArchive);
+            Application.createApplication(habitat, null, acDesc.getModuleDescriptor());
             this.classLoader = loader;
         }
         return acDesc;
+    }
+
+//    private ReadableArchive createArchive(final ClassLoader loader,
+//            final Class mainClass) throws IOException, URISyntaxException {
+//        Manifest mf = new Manifest();
+//        mf.getMainAttributes().put(Attributes.Name.MAIN_CLASS, mainClass.getName());
+//        final File tempFile = File.createTempFile("acc", ".jar");
+//        tempFile.deleteOnExit();
+//        JarOutputStream jos = new JarOutputStream(
+//                new BufferedOutputStream(new FileOutputStream(tempFile)), mf);
+//        final String mainClassResourceName = mainClass.getName().replace('.', '/') + ".class";
+//        final ZipEntry mainClassEntry = new ZipEntry(mainClassResourceName);
+//        jos.putNextEntry(mainClassEntry);
+//        InputStream is = loader.getResourceAsStream(mainClassResourceName);
+//        int bytesRead;
+//        byte[] buffer = new byte[1024];
+//        while ( (bytesRead = is.read(buffer)) != -1) {
+//            jos.write(buffer, 0, bytesRead);
+//        }
+//        is.close();
+//        jos.closeEntry();
+//        jos.close();
+//
+//        final InputJarArchive result = new InputJarArchive();
+//        result.open(new URI("jar", tempFile.toURI().toASCIIString(), null));
+//        return result;
+//    }
+
+    private ReadableArchive createArchive(final ClassLoader loader,
+            final Class mainClass) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        Manifest mf = new Manifest();
+        Attributes mainAttrs = mf.getMainAttributes();
+        /*
+         * Note - must set the version or the attributes won't write
+         * themselves to the output stream!
+         */
+        mainAttrs.put(Attributes.Name.MANIFEST_VERSION, "1.0");
+        mainAttrs.put(Attributes.Name.MAIN_CLASS, mainClass.getName());
+        JarOutputStream jos = new JarOutputStream(baos, mf);
+
+        final String mainClassResourceName = mainClass.getName().replace('.', '/') + ".class";
+        final ZipEntry mainClassEntry = new ZipEntry(mainClassResourceName);
+        jos.putNextEntry(mainClassEntry);
+        InputStream is = loader.getResourceAsStream(mainClassResourceName);
+        int bytesRead;
+        byte[] buffer = new byte[1024];
+        while ( (bytesRead = is.read(buffer)) != -1) {
+            jos.write(buffer, 0, bytesRead);
+        }
+        is.close();
+        jos.closeEntry();
+        jos.close();
+
+        MemoryMappedArchive mma = new MemoryMappedArchive(baos.toByteArray());
+        /*
+         * Some archive-related processing looks for the file type from the URI, so set it
+         * to something.
+         */
+        mma.setURI(URI.create("file:///tempClient.jar"));
+
+        return mma;
+    }
+
+
+    private AppClientArchivist getArchivist(final ReadableArchive clientRA,
+            final ClassLoader classLoader) throws IOException {
+        if (archivist == null) {
+            ArchivistFactory af = Util.getArchivistFactory();
+            /*
+             * Get the archivist by type rather than by archive to avoid
+             * having to set the URI to some fake URI that the archivist
+             * factory would understand.
+             */
+            archivist = completeInit((AppClientArchivist) 
+                    af.getArchivist(XModuleType.CAR));
+        }
+        return archivist;
+    }
+
+    private AppClientArchivist completeInit(final AppClientArchivist arch) {
+            arch.setAnnotationProcessingRequested(true);
+            return arch;
     }
 
     public void validateDescriptor() {
