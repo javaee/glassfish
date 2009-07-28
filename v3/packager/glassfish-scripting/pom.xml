@@ -76,7 +76,7 @@
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>
                             <excludeTransitive>false</excludeTransitive>
-                            <excludeArtifactIds>glassfish-api,stax-api,wstx-asl,bean-validator,javax.servlet,common-util,config-api,gmbal,grizzly-config,grizzly-utils</excludeArtifactIds>
+                            <excludeArtifactIds>glassfish-api,stax-api,wstx-asl,bean-validator,javax.servlet,common-util,config-api,gmbal,management-api,grizzly-config,grizzly-utils</excludeArtifactIds>
                             <excludeTypes>pom</excludeTypes>
                             <excludeGroupIds>com.sun.enterprise</excludeGroupIds>
                             <includeScope>compile</includeScope>
