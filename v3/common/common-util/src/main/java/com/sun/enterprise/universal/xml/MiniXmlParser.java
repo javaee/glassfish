@@ -51,26 +51,6 @@ import org.w3c.dom.Text;
  * @author jlee
  */
 public class MiniXmlParser {
-    private static final String DEFAULT_ADMIN_VS_ID = "__asadmin";
-    private static final String DEFAULT_VS_ID = "server";
-    private LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
-    private List<Map<String, String>> listenerAttributes = new ArrayList<Map<String, String>>();
-    private List<Map<String, String>> vsAttributes = new ArrayList<Map<String, String>>();
-    private Document document;
-    private String configRef;
-    private List<String> jvmOptions = new ArrayList<String>();
-    private List<String> profilerJvmOptions = new ArrayList<String>();
-    private Map<String, String> javaConfig;
-    private Map<String, String> profilerConfig = Collections.emptyMap();
-    private Map<String, String> sysProps = new HashMap<String, String>();
-    private Map<String, String> profilerSysProps = new HashMap<String, String>();
-    private boolean valid = false;
-    private Set<Integer> adminPorts = new HashSet<Integer>();
-    private String domainName;
-    private String logFilename;
-    private static final LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
-    private String serverName;
-
     public MiniXmlParser(File domainXml) throws MiniXmlParserException {
         this(domainXml, "server");
     }
@@ -138,6 +118,10 @@ public class MiniXmlParser {
         }
 
         return logFilename;
+    }
+
+    public boolean isMonitoringEnabled() {
+        return monitoringEnabled;
     }
 
     private void read() throws XMLStreamException {
@@ -231,6 +215,8 @@ public class MiniXmlParser {
                     parseNetworkConfig(node);
                 } else if ("log-service".equals(name)) {
                     parseLogService(node);
+                } else if ("monitoring-service".equals(name)) {
+                    parseMonitoringService(node);
                 }
                 return false;
             }
@@ -349,6 +335,11 @@ public class MiniXmlParser {
         logFilename = parseAttributes(node).get("file");
     }
 
+    private void parseMonitoringService(Node node) {
+        // it will be true iff it is there and it is "true"
+        monitoringEnabled = Boolean.parseBoolean(parseAttributes(node).get("monitoring-enabled"));
+    }
+
     private void parseHttpService(Node node) {
         new ChildNodeIterator(node) {
             public boolean process(Node node) {
@@ -457,6 +448,26 @@ public class MiniXmlParser {
         if (!valid)
             throw new MiniXmlParserException(strings.get("invalid"));
     }
+    private static final String         DEFAULT_ADMIN_VS_ID = "__asadmin";
+    private static final String         DEFAULT_VS_ID = "server";
+    private LoggingConfigImpl           loggingConfig = new LoggingConfigImpl();
+    private List<Map<String, String>>   listenerAttributes = new ArrayList<Map<String, String>>();
+    private List<Map<String, String>>   vsAttributes = new ArrayList<Map<String, String>>();
+    private Document                    document;
+    private String                      configRef;
+    private List<String>                jvmOptions = new ArrayList<String>();
+    private List<String>                profilerJvmOptions = new ArrayList<String>();
+    private Map<String, String>         javaConfig;
+    private Map<String, String>         profilerConfig = Collections.emptyMap();
+    private Map<String, String>         sysProps = new HashMap<String, String>();
+    private Map<String, String>         profilerSysProps = new HashMap<String, String>();
+    private boolean                     valid = false;
+    private Set<Integer>                adminPorts = new HashSet<Integer>();
+    private String                      domainName;
+    private String                      logFilename;
+    private String                      serverName;
+    private boolean                     monitoringEnabled;
+    private static final LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
 
     private static abstract class ChildNodeIterator {
         public ChildNodeIterator(Node node) {
