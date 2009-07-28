@@ -323,6 +323,9 @@
                 <module>verifier/verifier-impl</module>
                 <module>verifier/verifier-scripts</module>
                 <module>verifier/verifier-jdk-extension-bundle</module>
+                <module>extras/embedded/all</module>
+                <module>extras/embedded/web</module>
+                <module>extras/embedded/nucleus</module>
             </modules>
        </profile>
 
@@ -368,6 +371,9 @@
                 <module>verifier/verifier-impl</module>
                 <module>verifier/verifier-scripts</module>
                 <module>verifier/verifier-jdk-extension-bundle</module>
+                <module>extras/embedded/all</module>
+                <module>extras/embedded/web</module>
+                <module>extras/embedded/nucleus</module>
             </modules>
         </profile>
     </profiles>
