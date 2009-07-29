@@ -337,16 +337,19 @@ public class MiniXmlParser {
 
     private void parseMonitoringService(Node node) {
         // The default is, by definition, true.
-        // it will be false iff it's there and its value is "false"
-        // if it is NOT there or its value is anything other than "false" 
-        // -- then it is true
+        // Here are all the possibilities and their resolution:
+        // 1. Attribute is not present  --> true
+        // 2. Attribute is present and set to the exact string "false" --> false
+        // 3. Attribute is present and set to anything except "false"  --> true
 
         String s = parseAttributes(node).get("monitoring-enabled");
 
-        if(s != null && s.equals("false"))
-            monitoringEnabled = false;
+        if(s == null)
+            monitoringEnabled = true;  // case 1
+        else if(s.equals("false"))
+            monitoringEnabled = false; // case 2
         else
-            monitoringEnabled = true;
+            monitoringEnabled = true;  // case 3
     }
 
     private void parseHttpService(Node node) {
