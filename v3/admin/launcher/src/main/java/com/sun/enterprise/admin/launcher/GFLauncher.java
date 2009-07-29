@@ -479,7 +479,13 @@ public abstract class GFLauncher {
         }
 
         // It is not already specified AND monitoring is enabled.
-        jvmOptions.plainProps.put(getMonitoringJvmOptionString(), null);
+        try {
+            jvmOptions.plainProps.put(getMonitoringJvmOptionString(), null);
+        }
+        catch(GFLauncherException gfe) {
+            // This has been defined as a non-fatal error.
+            // Silently ignore it -- but do NOT add it as an option
+        }
     }
 
     private String getMonitoringJvmOptionString() throws GFLauncherException {
