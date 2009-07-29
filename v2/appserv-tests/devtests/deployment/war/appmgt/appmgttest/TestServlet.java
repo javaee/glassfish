@@ -74,9 +74,9 @@ public class TestServlet extends HttpServlet {
              * Write the env-entry information.
              */
             Context ctx = new InitialContext();
-            for (NamingEnumeration<Binding> e = ctx.listBindings("java:module/env"); e.hasMore(); ) {
+            for (NamingEnumeration<Binding> e = ctx.listBindings("java:comp/env"); e.hasMore(); ) {
                 Binding b = e.next();// java:comp/env/xxx
-                final String name = b.getName().substring("java:module/env/".length());
+                final String name = b.getName().substring("java:comp/env/".length());
                 final String cl = b.getClassName();
                 final Object o = b.getObject();
                 EnvEntryInfo env = new EnvEntryInfo(name, cl, o.toString());
