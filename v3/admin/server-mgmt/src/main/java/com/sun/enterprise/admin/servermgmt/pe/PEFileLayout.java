@@ -710,15 +710,15 @@ public class PEFileLayout
         return new File(getConfigRoot(), DEFAULT_WEB_XML);
     }
 
-    public static final String LOGGING_PROPERTIES = "logging.properties";
+    public static final String LOGGING_PROPERTIES_FILE = "logging.properties";
     public File getLoggingPropertiesTemplate()
     {
-        return new File(getTemplatesDir(), LOGGING_PROPERTIES);
+        return new File(getTemplatesDir(), LOGGING_PROPERTIES_FILE);
     }
 
     public File getLoggingProperties()
     {
-        return new File(getConfigRoot(), LOGGING_PROPERTIES);
+        return new File(getConfigRoot(), LOGGING_PROPERTIES_FILE);
     }
 
     public static final String LOGIN_CONF = "login.conf";

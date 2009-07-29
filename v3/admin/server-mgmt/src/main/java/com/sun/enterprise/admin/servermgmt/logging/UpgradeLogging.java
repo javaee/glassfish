@@ -10,12 +10,16 @@ import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.LogService;
 import com.sun.enterprise.config.serverbeans.ModuleLogLevels;
+import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.admin.servermgmt.pe.PEFileLayout;
+import com.sun.enterprise.admin.servermgmt.RepositoryConfig;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.common.util.logging.LoggingPropertyNames;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
+import java.io.File;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.Map;
@@ -47,6 +51,21 @@ public class UpgradeLogging implements ConfigurationUpgrade, PostConstruct {
     	// check if null and exit
     	if (logService == null )
     		return;
+	// get a copy of the logging.properties file
+
+ 	    try {
+	        RepositoryConfig rc = new RepositoryConfig();
+            String configDir = rc.getRepositoryRoot()+  File.separator +rc.getRepositoryName() +
+                     File.separator+ rc.getInstanceName() +File.separator + "config";
+	        PEFileLayout layout = new PEFileLayout(rc);
+	        File src = new File(layout.getTemplatesDir(), layout.LOGGING_PROPERTIES_FILE);
+	        File dest = new File (configDir, layout.LOGGING_PROPERTIES_FILE);
+
+	        FileUtils.copy(src, dest);
+	    } catch (IOException ioe) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading log-service. Could not create logging.properties file. ", ioe);     
+	    }
+
         try {
             
             //Get the logLevels

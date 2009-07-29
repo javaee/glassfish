@@ -103,7 +103,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 		try {
             file =new File(loggingConfigDir, loggingPropertiesName);
             if (!file.exists()) {
-                Logger.getAnonymousLogger().log(Level.WARNING, file.getAbsolutePath() + " not found, no glassfish specific logging settings");
+                Logger.getAnonymousLogger().log(Level.WARNING, file.getAbsolutePath() + " not found, will create one with properties given.");
                 return;
             }
 			fis = new java.io.FileInputStream (file);
@@ -111,26 +111,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
             fis.close();            
 		} catch (java.io.FileNotFoundException e ) {
 			Logger.getAnonymousLogger().log(Level.INFO, "Cannot read logging.properties file. Creating new one ");
-/*
-            File parent = file.getParentFile();
-            if (!parent.exists()) {
-                parent.mkdirs();
-            }
 
-            file =new File(loggingConfigDir, loggingPropertiesName);
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-
-            fis = new java.io.FileInputStream (file);
-            props = new java.util.Properties();
-
-            //need to set a bunch of properties
-			props.setProperty("handlers","java.util.logging.ConsoleHandler");
-            props.setProperty("java.util.logging.ConsoleHandler.formatter", "com.sun.enterprise.server.logging.UniformLogFormatter");
-            props.setProperty("java.util.logging.ConsoleHandler.level","FINEST");
-            Logger.getAnonymousLogger().log(Level.INFO, "New logging.properties file created. ");
-*/
             throw new IOException();
 		} catch (IOException e) {
 			Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot read logging.properties file : ", e);
