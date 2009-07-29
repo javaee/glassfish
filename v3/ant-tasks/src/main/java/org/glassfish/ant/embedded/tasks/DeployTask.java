@@ -42,19 +42,15 @@ import org.apache.tools.ant.BuildException;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.deployment.archive.ReadableArchiveFactory;
-import org.glassfish.internal.deployment.SnifferManager;
 
 import java.io.*;
-import java.util.*;
 
 
 public class DeployTask extends Task {
 
-    String serverID = "test";
+    String serverID = Constants.DEFAULT_SERVER_ID;
     String file = null; // a default value?
 
-    int port = 8080;
     DeployCommandParameters cmdParams = new DeployCommandParameters();
 
 
@@ -69,10 +65,6 @@ public class DeployTask extends Task {
 
     public void setFile(String file) {
         this.file = file;
-    }
-
-	public void setPort(int port) {
-        this.port = port;
     }
 
     public void setName(String name) {
@@ -141,25 +133,17 @@ public class DeployTask extends Task {
     }
 
 
+
     public void execute() throws BuildException {
-        log("deploying");
+        log("deploying " + file);
 
         Server server = new Server.Builder(serverID).build();
-
-        //Server server = new Server.Builder("test").build();
-//        server.createPort(port);
-  //      server.start();
-
         EmbeddedDeployer deployer = server.getDeployer();
-
-  //        File toDeploy = new File(file);
-  //      toDeploy.getName();
-        //ReadableArchiveFactory.open(
-//        SnifferManager.getSniffers(
-  //              new File(file),
-    //            getClass().getClassLoader());
-
         deployer.deploy(new File(file), cmdParams);
+        log("Enter to CONTINUE");
+        Console cons = System.console();
+        cons.readLine();
+
 
     }
 }

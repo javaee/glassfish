@@ -36,37 +36,51 @@
 
 package org.glassfish.ant.embedded.tasks;
 
+import org.glassfish.api.embedded.ContainerBuilder;
+
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 
 import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.EmbeddedDeployer;
+import org.glassfish.api.embedded.EmbeddedFileSystem;
+import org.glassfish.web.embed.EmbeddedWebContainer;
+import org.glassfish.web.embed.WebBuilder;
 
+import java.io.File;
 
-public class UndeployTask extends Task {
+public class StartWebTask extends Task {
 
     String serverID = Constants.DEFAULT_SERVER_ID;
-    String name;
+    int port = Constants.DEFAULT_HTTP_PORT;
 
     public void setServerID(String serverID) {
         this.serverID = serverID;
     }
 
-    public void setName(String name) {
-        this.name = name;
+	public void setPort(int port) {
+        this.port = port;
     }
 
-    public void execute() throws BuildException {
-        log("undeploying");
-        if (name == null) {
-            log("Name of application to be undeployed must be specified", Project.MSG_WARN);
-            return;
-        }
 
+	public void execute() throws BuildException {
+        log ("Starting server - web");
         Server server = new Server.Builder(serverID).build();
-        EmbeddedDeployer deployer = server.getDeployer();
-        deployer.undeploy(name);
+        EmbeddedFileSystem efs = server.getFileSystem();
+        File docroot = new File(efs.installRoot, "docroot");
 
+        server.createPort(port);
+
+        ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
+        server.addContainer(b);
+
+        ((WebBuilder)b).setDocRootDir(docroot);
+        EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
+        embedded.setConfiguration((WebBuilder)b);
+
+        try {
+            embedded.start();
+        } catch (Exception ex) {
+            log(ex.getMessage());
+        }
     }
 }

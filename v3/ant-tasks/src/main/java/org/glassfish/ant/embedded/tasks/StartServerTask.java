@@ -36,6 +36,8 @@
 
 package org.glassfish.ant.embedded.tasks;
 
+import org.glassfish.api.embedded.ContainerBuilder;
+
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 
@@ -43,8 +45,8 @@ import org.glassfish.api.embedded.Server;
 
 public class StartServerTask extends Task {
 
-    String serverID = "test";
-    int port = 8080;
+    String serverID = Constants.DEFAULT_SERVER_ID;
+    int port = Constants.DEFAULT_HTTP_PORT;
 
     public void setServerID(String serverID) {
         this.serverID = serverID;
@@ -54,10 +56,12 @@ public class StartServerTask extends Task {
         this.port = port;
     }
 
+
 	public void execute() throws BuildException {
-        log ("Starting server");
+        log ("Starting server - all containers");
         Server server = new Server.Builder(serverID).build();
         server.createPort(port);
+        server.addContainer(server.getConfig(ContainerBuilder.Type.all));
         try {
             server.start();
         } catch (Exception ex) {

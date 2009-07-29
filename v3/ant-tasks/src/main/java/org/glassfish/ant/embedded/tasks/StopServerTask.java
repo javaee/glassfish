@@ -44,7 +44,7 @@ import org.glassfish.api.embedded.Server;
 
 public class StopServerTask extends Task{
 
-    String serverID = "test";
+    String serverID = Constants.DEFAULT_SERVER_ID;
 
     public void setServerID(String serverID) {
         this.serverID = serverID;

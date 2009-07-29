@@ -47,7 +47,7 @@ import java.util.*;
 
 public class AdminTask extends Task {
 
-    String serverID = "test";
+    String serverID = Constants.DEFAULT_SERVER_ID;
     String command; 
     CommandProperty commandProperty;
     List<CommandProperty> commandProperties = new ArrayList<CommandProperty>();
@@ -61,11 +61,6 @@ public class AdminTask extends Task {
     }
 
 
-    public CommandProperty createCommandProperty() {
-        commandProperty = new CommandProperty();
-        commandProperties.add(commandProperty);
-        return commandProperty;
-    }
   
     public CommandProperty createCommandProperty(String name, String value) {
         CommandProperty property = new CommandProperty();
