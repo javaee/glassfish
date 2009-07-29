@@ -248,14 +248,6 @@ public final class J2EEInstanceListener implements InstanceListener {
 	    }
         }
         // END OF IASRI 4713234
-        //} catch (Exception ex) {
-            /** IASRI 4660742
-            ex.printStackTrace();
-	          **/
-	          // START OF IASRI 4660742
-                  //_logger.log(Level.SEVERE,"web_server.excep_handle_before_event",ex);
-	          // END OF IASRI 4660742
-        //}
         // END IASRI 4688449
 
         ComponentInvocation inv = new WebComponentInvocation(wm, instance);
@@ -406,14 +398,9 @@ public final class J2EEInstanceListener implements InstanceListener {
                             securityContext.setCurrentSecurityContext(null);
                         }
                     } catch (Exception ex) {
-                        /** IASRI 4660742
-                        ex.printStackTrace();
-                        **/
-                        // START OF IASRI 4660742
-                            _logger.log(Level.SEVERE,
-                                        "web_server.excep_handle_after_event",
-                                        ex);
-                        // END OF IASRI 4660742
+                        _logger.log(Level.SEVERE,
+                                    "web_server.excep_handle_after_event",
+                                    ex);
                     }
                     try {
                         if (tm.getTransaction() != null) {
