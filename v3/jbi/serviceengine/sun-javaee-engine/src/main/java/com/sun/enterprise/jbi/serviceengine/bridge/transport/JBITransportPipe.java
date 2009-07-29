@@ -69,13 +69,18 @@ public class JBITransportPipe extends AbstractPipeImpl {
             Codecs.createSOAPEnvelopeXmlCodec(binding.getSOAPVersion());
         codec = Codecs.createSOAPBindingCodec(binding, xmlEnvCodec);
          */
-        this.wsdlLocation = wsdlLocation;
-        this.service = service;
-        this.wsdlPort = wsdlPort;
+        setWSDLLocation(wsdlLocation);
+        setWSDLPort(wsdlPort);
+        setServiceName(service);
     }
 
-    private JBITransportPipe(Pipe that, PipeCloner cloner) {
+    private JBITransportPipe(JBITransportPipe that, PipeCloner cloner) {
         super(that, cloner);
+        if(that != null) {
+            setWSDLLocation(that.getWSDLLocation());
+            setWSDLPort(that.getWSDLPort());
+            setServiceName(that.getServiceName());
+        }
     }
 
     public Packet process(Packet request) {
@@ -119,5 +124,29 @@ public class JBITransportPipe extends AbstractPipeImpl {
 
     public Pipe copy(PipeCloner cloner) {
         return new JBITransportPipe(this, cloner);
+    }
+
+    private void setWSDLLocation(URL wsdlLocation) {
+        this.wsdlLocation = wsdlLocation;
+    }
+
+    private void setWSDLPort(WSDLPort wsdlPort) {
+        this.wsdlPort = wsdlPort;
+    }
+
+    private void setServiceName(QName service) {
+        this.service = service;
+    }
+
+    public URL getWSDLLocation() {
+        return this.wsdlLocation;
+    }
+
+    public WSDLPort getWSDLPort() {
+        return this.wsdlPort;
+    }
+
+    public QName getServiceName() {
+        return this.service;
     }
 }
