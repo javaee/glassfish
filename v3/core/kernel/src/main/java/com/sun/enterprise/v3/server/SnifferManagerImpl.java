@@ -58,14 +58,7 @@ import com.sun.enterprise.module.impl.ClassLoaderProxy;
  */
 @Service
 public class SnifferManagerImpl implements SnifferManager {
-    // I am not injecting the sniffers because this can rapidly become an expensive
-    // operation especially when no application has been deployed.
-    volatile List<Sniffer> sniffers;
-
-    volatile List<CompositeSniffer> compositeSniffers;
-
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(SnifferManagerImpl.class);
-
 
     @Inject
     protected Habitat habitat;
@@ -76,22 +69,21 @@ public class SnifferManagerImpl implements SnifferManager {
      * @return Collection (possibly empty but never null) of Sniffer
      */
     public Collection<Sniffer> getSniffers() {
-        if (sniffers==null) {
-            // this is a little bit of a hack, sniffers are now ordered by their names
-            // which is useful since connector is before ejb which is before web so if
-            // a standalone module happens to implement the three types of components,
-            // they will be naturally ordered correctly. We might want to revisit this
-            // later and formalize the ordering of sniffers. The hard thing as usual
-            // is that sniffers are highly pluggable so you never know which sniffers
-            // set you are working with depending on the distribution
-            sniffers = new ArrayList<Sniffer>();
-            sniffers.addAll(habitat.getAllByContract(Sniffer.class));
-            Collections.sort(sniffers, new Comparator<Sniffer>() {
-                public int compare(Sniffer o1, Sniffer o2) {
-                    return o1.getModuleType().compareTo(o2.getModuleType());
-                }
-            });            
-        }
+        // this is a little bit of a hack, sniffers are now ordered by their names
+        // which is useful since connector is before ejb which is before web so if
+        // a standalone module happens to implement the three types of components,
+        // they will be naturally ordered correctly. We might want to revisit this
+        // later and formalize the ordering of sniffers. The hard thing as usual
+        // is that sniffers are highly pluggable so you never know which sniffers
+        // set you are working with depending on the distribution
+        List<Sniffer> sniffers = new ArrayList<Sniffer>();
+        sniffers.addAll(habitat.getAllByContract(Sniffer.class));
+        Collections.sort(sniffers, new Comparator<Sniffer>() {
+            public int compare(Sniffer o1, Sniffer o2) {
+                return o1.getModuleType().compareTo(o2.getModuleType());
+            }
+        });            
+
         return sniffers;
     }
 
@@ -101,11 +93,7 @@ public class SnifferManagerImpl implements SnifferManager {
      * @return Collection (possibly empty but never null) of Sniffer
      */
     public Collection<CompositeSniffer> getCompositeSniffers() {
-        if (compositeSniffers==null) {
-            compositeSniffers = new ArrayList<CompositeSniffer>();
-            compositeSniffers.addAll(habitat.getAllByContract(CompositeSniffer.class));
-        }
-        return compositeSniffers;
+        return habitat.getAllByContract(CompositeSniffer.class);
     }
 
     /**
