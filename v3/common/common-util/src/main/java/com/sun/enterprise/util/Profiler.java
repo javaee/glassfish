@@ -88,6 +88,15 @@ public class Profiler {
         return profiler.toString();
     }
 
+    /**
+     * Convenience method to avoid endItem() beginItem() bracketing
+     * @param desc - Descriptive text for the item
+     */
+    public static void subItem(String desc) {
+        endItem();
+        beginItem(desc);
+    }
+    
     ////////////////////////////////////////////////////////////////////////////
     /**
      * @param notUsed  */
