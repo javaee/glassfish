@@ -81,7 +81,6 @@ public class StartDomainCommand extends LocalDomainCommand {
      */
     public StartDomainCommand(String name, ProgramOptions po, Environment env) {
         super(name, po, env);
-        profileBeginItem("start-domain entire command");
     }
 
     /**
@@ -109,24 +108,29 @@ public class StartDomainCommand extends LocalDomainCommand {
     @Override
     protected int executeCommand() throws CommandException {
         String gfejar = System.getenv("GFE_JAR");
+        Profiler.beginItem("start-domain entire command");
 
         if (gfejar != null && gfejar.length() > 0)
             runCommandEmbedded();
         else
             runCommandNotEmbedded();
 
-        profileEndItem();   // entire command
+        Profiler.endItem();
+        if (CLIConstants.debugMode) {
+            logger.printMessage("*************  TIMING RESULTS **********" +
+                    Profiler.report() +
+                    "****************************************");
+            Profiler.reset();
+        }
+
         return 0;
     }
 
     private void runCommandNotEmbedded() throws CommandException {
         try {
-            profileBeginItem("Launcher Construction");
             GFLauncher launcher = GFLauncherFactory.getInstance(
                     GFLauncherFactory.ServerType.domain);
             info = launcher.getInfo();
-            profileEndItem();
-            profileBeginItem("Set calls on Info Object");
 
             if (!operands.isEmpty()) {
                 info.setDomainName(operands.get(0));
@@ -145,14 +149,11 @@ public class StartDomainCommand extends LocalDomainCommand {
                             programOpts.getClassPath(),
                             programOpts.getProgramArguments());
 
-            profileEndItem();
-            profileBeginItem("Set Master Password");
+            Profiler.beginItem("Set Master Password");
             setMasterPassword(info);
-            profileEndItem();
-            profileBeginItem("Launcher.setup()");
+            Profiler.subItem("Launcher.setup()");
             launcher.setup();
-            profileEndItem();
-            profileBeginItem("isServerAlive()");
+            Profiler.subItem("isServerAlive()");
 
             // CLI calls this method only to ensure that domain.xml is parsed
             // once. This is a performance optimization.
@@ -162,25 +163,20 @@ public class StartDomainCommand extends LocalDomainCommand {
                 String msg = strings.get("ServerRunning",
                         definitePort+"");
                 logger.printWarning(msg);
+                Profiler.endItem();
                 return;
             }
-            profileEndItem();
 
-            profileBeginItem("Restart Stuff");
             boolean isRestart = Boolean.getBoolean(RESTART_FLAG);
             if (isRestart)
                 waitForParentToDie();
 
-            profileEndItem();
-            profileBeginItem("launcher.launch()");
+            Profiler.subItem("launcher.launch()");
 
             // launch returns very quickly if verbose is not set
             // if verbose is set then it returns after the domain dies
             launcher.launch();
-
-            profileEndItem();
-            profileEndItem(); // entire command time
-            profilerFinish();
+            Profiler.endItem();
             
             if (verbose) { // we can potentially loop forever here...
                 while (launcher.getExitValue() == RESTART_EXIT_VALUE) {
@@ -193,7 +189,9 @@ public class StartDomainCommand extends LocalDomainCommand {
                     launcher.relaunch();
                 }
             } else {
+                Profiler.beginItem("DAS Startup Time");
                 waitForDAS(info.getAdminPorts());
+                Profiler.endItem();
                 report(info);
             }
         } catch (GFLauncherException gfle) {
@@ -372,25 +370,6 @@ public class StartDomainCommand extends LocalDomainCommand {
         } catch (IOException ex) {
             Logger lg = Logger.getLogger(StartDomainCommand.class.getName());
             lg.log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private void profileBeginItem(String name) {
-        if (CLIConstants.debugMode)
-            Profiler.beginItem(name);
-    }
-
-    private void profileEndItem() {
-        if (CLIConstants.debugMode)
-            Profiler.endItem();
-    }
-    
-    private void profilerFinish() {
-        if (CLIConstants.debugMode) {
-            logger.printMessage("*************  TIMING RESULTS **********" +
-                    Profiler.report() +
-                    "****************************************");
-            Profiler.reset();
         }
     }
 }
