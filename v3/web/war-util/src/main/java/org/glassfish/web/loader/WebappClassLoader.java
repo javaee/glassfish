@@ -2344,11 +2344,9 @@ public class WebappClassLoader
                 pos += n;
             }
             binaryStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING,
+                "Unable to read data for class with name " + name, e);
             return;
         }
 

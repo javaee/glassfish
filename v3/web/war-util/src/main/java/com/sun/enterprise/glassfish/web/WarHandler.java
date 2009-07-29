@@ -168,7 +168,6 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                         URL url = new URL(path);
                         cloader.addRepository(path);
                     } catch (MalformedURLException mue1) {
-                        mue1.printStackTrace();
                         // Not a URL, interpret as file
                         File file = new File(path);
                         // START GlassFish 904
@@ -183,7 +182,6 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                             URL url = file.toURI().toURL();
                             cloader.addRepository(url.toString());
                         } catch (MalformedURLException mue2) {
-                            mue2.printStackTrace();
                             String msg = rb.getString(
                                 "webcontainer.classpathError");
                             Object[] params = { path };
