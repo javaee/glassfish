@@ -71,6 +71,8 @@ class PartHeaders implements Serializable {
     private final Map<String, List<String>> headerMap =
         new LinkedHashMap<String, List<String>>();
 
+    private Set<String> headerNames = null;
+
     public String getHeader(String name) {
         String nameLower = name.toLowerCase();
         List<String> headerValueList = headerMap.get(nameLower);
@@ -80,11 +82,14 @@ class PartHeaders implements Serializable {
         return headerValueList.get(0);
     }
 
-    public Collection<String> getHeaderNames() {
-        return headerMap.keySet();
+    public synchronized Collection<String> getHeaderNames() {
+        if (null == headerNames) {
+            headerNames = Collections.unmodifiableSet(headerMap.keySet());
+        }
+        return headerNames;
     }
 
-    public Collection<String> getHeaders(String name) {
+    public List<String> getHeaders(String name) {
         String nameLower = name.toLowerCase();
         List<String> headerValueList = headerMap.get(nameLower);
         if (null == headerValueList) {

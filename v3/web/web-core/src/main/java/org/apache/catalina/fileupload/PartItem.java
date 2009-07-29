@@ -746,7 +746,11 @@ class PartItem
      *     information, return null
      */
     public Collection<String> getHeaders(String name) {
-        return headers.getHeaders(name);
+        List<String> values = headers.getHeaders(name);
+        if (values != Collections.EMPTY_LIST) {
+            values = Collections.unmodifiableList(values);
+        }
+        return values;
     }
 
 

@@ -59,6 +59,7 @@ public class Multipart {
 
     private final HttpServletRequest request;
     private ArrayList<Part> parts;
+    private List<Part> unmodifiableParts;
 
     public Multipart(HttpServletRequest request, String location,
                 long maxFileSize, long maxRequestSize, int fileSizeThreshold) {
@@ -134,13 +135,19 @@ public class Multipart {
         }
     }
 
-    public Collection<Part> getParts() throws IOException, ServletException {
+    public synchronized Collection<Part> getParts()
+            throws IOException, ServletException {
         if (! isMultipart()) {
             throw new ServletException("The request content-type is not a multipart/form-data");
         }
 
         initParts();
-        return parts;
+
+        if (null == unmodifiableParts) {
+            unmodifiableParts = Collections.unmodifiableList(parts);
+        }
+
+        return unmodifiableParts;
     }
 
     public Part getPart(String name) throws IOException, ServletException {
