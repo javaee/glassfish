@@ -1146,11 +1146,9 @@ public class WebappLoader
                 // Silent catch: it's valid that no /WEB-INF/lib directory
                 // exists
             } catch (IOException e) {
-                e.printStackTrace();
+                log("Unable to configure repositories", e);
             }
-
         }
-
     }
 
 

@@ -1450,7 +1450,6 @@ public class MBeanUtils {
      * Load an MBean descriptor resource.
      */
     public synchronized static void loadMBeanDescriptors(String resource) {
-
         try {
             URL url = ServerLifecycleListener.class.getResource(resource);
             if (url != null) {
@@ -1462,9 +1461,8 @@ public class MBeanUtils {
                 log.warning("MBean descriptors not found:" + resource);
             }
         } catch (Throwable t) {
-            t.printStackTrace(System.out);
+            log.log(Level.SEVERE, "Error during loadMBeanDescriptors", t);
         }
-
     }
 
 
@@ -1474,14 +1472,13 @@ public class MBeanUtils {
      * registering our <code>ModelMBean</code> implementations.
      */
     public synchronized static MBeanServer createServer() {
-
         if (mserver == null) {
             try {
                 //Trace.parseTraceProperties();
                 //mserver = MBeanServerFactory.createMBeanServer();
                 mserver = Registry.getRegistry(null, null).getMBeanServer();
             } catch (Throwable t) {
-                t.printStackTrace(System.out);
+                log.log(Level.SEVERE, "Error during createServer", t);
                 System.exit(1);
             }
         }
