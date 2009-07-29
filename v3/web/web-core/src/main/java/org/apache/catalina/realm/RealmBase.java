@@ -1470,20 +1470,17 @@ public abstract class RealmBase
      * @param message Message to be logged
      */
     protected void log(String message) {
-
         org.apache.catalina.Logger logger = null;
         String name = null;
         if (container != null) {
             logger = container.getLogger();
             name = container.getName();
         }
-
         if (logger != null) {
             logger.log(getName()+"[" + name + "]: " + message);
         } else {
-            System.out.println(getName()+"[" + name + "]: " + message);
+            log.info(getName()+"[" + name + "]: " + message);
         }
-
     }
 
 
@@ -1491,22 +1488,20 @@ public abstract class RealmBase
      * Log a message on the Logger associated with our Container (if any)
      *
      * @param message Message to be logged
-     * @param throwable Associated exception
+     * @param t Associated exception
      */
-    protected void log(String message, Throwable throwable) {
-
+    protected void log(String message, Throwable t) {
         org.apache.catalina.Logger logger = null;
         String name = null;
         if (container != null) {
             logger = container.getLogger();
             name = container.getName();
         }
-
         if (logger != null) {
-            logger.log(getName()+"[" + name + "]: " + message, throwable);
+            logger.log(getName()+"[" + name + "]: " + message, t,
+                org.apache.catalina.Logger.WARNING);
         } else {
-            System.out.println(getName()+"[" + name + "]: " + message);
-            throwable.printStackTrace(System.out);
+            log.log(Level.WARNING, getName()+"[" + name + "]: " + message, t);
         }
     }
     
@@ -1538,74 +1533,8 @@ public abstract class RealmBase
     //END SJSAS 6202703
 
 
-    // --------------------------------------------------------- Static Methods
-
-
-    /**
-     * Digest password using the algorithm specified and
-     * convert the result to a corresponding hex string.
-     * If exception, the plain credentials string is returned
-     *
-     * @param credentials Password or other credentials to use in
-     *  authenticating this username
-     * @param algorithm Algorithm used to do the digest
-     * @param encoding Character encoding of the string to digest
-     */
-    public final static String Digest(String credentials, String algorithm,
-                                      String encoding) {
-
-        try {
-            // Obtain a new message digest with "digest" encryption
-            MessageDigest md =
-                (MessageDigest) MessageDigest.getInstance(algorithm).clone();
-
-            // encode the credentials
-            // Should use the digestEncoding, but that's not a static field
-            if (encoding == null) {
-                md.update(credentials.getBytes());
-            } else {
-                md.update(credentials.getBytes(encoding));                
-            }
-
-            // Digest the credentials and return as hexadecimal
-            return (HexUtils.convert(md.digest()));
-        } catch(Exception ex) {
-            ex.printStackTrace();
-            return credentials;
-        }
-
-    }
-
-
-    /**
-     * Digest password using the algorithm specified and
-     * convert the result to a corresponding hex string.
-     * If exception, the plain credentials string is returned
-     */
-    public static void main(String args[]) {
-
-        String encoding = null;
-        int firstCredentialArg = 2;
-        
-        if (args.length > 4 && args[2].equalsIgnoreCase("-e")) {
-            encoding = args[3];
-            firstCredentialArg = 4;
-        }
-        
-        if(args.length > firstCredentialArg && args[0].equalsIgnoreCase("-a")) {
-            for(int i=firstCredentialArg; i < args.length ; i++){
-                System.out.print(args[i]+":");
-                System.out.println(Digest(args[i], args[1], encoding));
-            }
-        } else {
-            System.out.println
-                ("Usage: RealmBase -a <algorithm> [-e <encoding>] <credentials>");
-        }
-
-    }
-
-
     // -------------------- JMX and Registration  --------------------
+
     protected String type;
     protected String domain;
     protected String host;

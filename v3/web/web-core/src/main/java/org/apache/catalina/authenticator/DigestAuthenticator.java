@@ -90,7 +90,6 @@ public class DigestAuthenticator
 
     // -------------------------------------------------------------- Constants
 
-
     /**
      * Indicates that no once tokens are used only once.
      */
@@ -124,33 +123,29 @@ public class DigestAuthenticator
 
     // ----------------------------------------------------------- Constructors
 
-
     public DigestAuthenticator() {
         super();
         try {
             if (md5Helper == null)
                 md5Helper = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            throw new IllegalStateException();
+            throw new IllegalStateException(
+                "MD5 digest algorithm not available", e);
         }
     }
 
 
     // ----------------------------------------------------- Instance Variables
 
-
     /**
      * MD5 message digest provider.
      */
     protected static MessageDigest md5Helper;
 
-
     /**
      * No once hashtable.
      */
     protected Hashtable nOnceTokens = new Hashtable();
-
 
     /**
      * No once expiration (in millisecond). A shorter amount would mean a
@@ -159,14 +154,12 @@ public class DigestAuthenticator
      */
     protected long nOnceTimeout = TIMEOUT_INFINITE;
 
-
     /**
      * No once expiration after a specified number of uses. A lower number
      * would produce more overhead, since a token would have to be generated
      * more often, but would be more secure.
      */
     protected int nOnceUses = USE_ONCE;
-
 
     /**
      * Private key.
@@ -176,19 +169,15 @@ public class DigestAuthenticator
 
     // ------------------------------------------------------------- Properties
 
-
     /**
      * Return descriptive information about this Valve implementation.
      */
     public String getInfo() {
-
         return (info);
-
     }
 
 
     // --------------------------------------------------------- Public Methods
-
 
     /**
      * Authenticate the user making this request, based on the specified

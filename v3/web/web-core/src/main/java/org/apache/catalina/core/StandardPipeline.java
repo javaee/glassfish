@@ -738,10 +738,11 @@ public class StandardPipeline
 
 
     /**
-     * Log a message on the Logger associated with our Container (if any).
+     * Logs the given message to the Logger associated with the Container
+     * (if any) of this StandardPipeline.
      *
-     * @param message Message to be logged
-     * @param throwable Associated exception
+     * @param message the message
+     * @param t the Throwable
      */
     protected void log(String message, Throwable t) {
         org.apache.catalina.Logger logger = null;
@@ -750,10 +751,10 @@ public class StandardPipeline
         }
         if (logger != null) {
             logger.log("StandardPipeline[" + container.getName() + "]: " +
-                       message, t);
+                message, t, org.apache.catalina.Logger.WARNING);
         } else {
             log.log(Level.WARNING, "StandardPipeline[" + container.getName() +
-                    "]: " + message, t);
+                "]: " + message, t);
         }
     }
 

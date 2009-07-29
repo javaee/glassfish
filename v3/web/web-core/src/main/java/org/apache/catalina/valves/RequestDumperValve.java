@@ -89,19 +89,17 @@ import org.apache.catalina.util.StringManager;
  * @version $Revision: 1.3 $ $Date: 2005/12/08 01:28:25 $
  */
 
-public class RequestDumperValve
-    extends ValveBase {
+public class RequestDumperValve extends ValveBase {
 
-
-    // ----------------------------------------------------- Instance Variables
-
+    private static final java.util.logging.Logger log =
+        java.util.logging.Logger.getLogger(
+            RequestDumperValve.class.getName());
 
     /**
      * The descriptive information related to this implementation.
      */
     private static final String info =
         "org.apache.catalina.valves.RequestDumperValve/1.0";
-
 
     /**
      * The StringManager for this package.
@@ -267,13 +265,12 @@ public class RequestDumperValve
      * @param message Message to be logged
      */
     protected void log(String message) {
-
         Logger logger = container.getLogger();
-        if (logger != null)
+        if (logger != null) {
             logger.log(this.toString() + ": " + message);
-        else
-            System.out.println(this.toString() + ": " + message);
-
+        } else {
+            log.info(this.toString() + ": " + message);
+        }
     }
 
 
@@ -281,18 +278,17 @@ public class RequestDumperValve
      * Log a message on the Logger associated with our Container (if any).
      *
      * @param message Message to be logged
-     * @param throwable Associated exception
+     * @param t Associated exception
      */
-    protected void log(String message, Throwable throwable) {
-
+    protected void log(String message, Throwable t) {
         Logger logger = container.getLogger();
-        if (logger != null)
-            logger.log(this.toString() + ": " + message, throwable);
-        else {
-            System.out.println(this.toString() + ": " + message);
-            throwable.printStackTrace(System.out);
+        if (logger != null) {
+            logger.log(this.toString() + ": " + message, t,
+                Logger.WARNING);
+        } else {
+            log.log(java.util.logging.Level.WARNING,
+                this.toString() + ": " + message, t);
         }
-
     }
 
 

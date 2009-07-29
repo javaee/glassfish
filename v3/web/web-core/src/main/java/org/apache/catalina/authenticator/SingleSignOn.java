@@ -120,15 +120,17 @@ public class SingleSignOn
     // END CR 6411114
 
 
-    // ----------------------------------------------------- Instance Variables
+    // ----------------------------------------------------- Static Variables
 
+    private static final java.util.logging.Logger log =
+        java.util.logging.Logger.getLogger(
+            SingleSignOn.class.getName());
 
     /**
-     * The cache of SingleSignOnEntry instances for authenticated Principals,
-     * keyed by the cookie value that is used to select them.
+     * The string manager for this package.
      */
-    protected HashMap cache = new HashMap();
-
+    protected final static StringManager sm =
+        StringManager.getManager(Constants.Package);
 
     /**
      * Descriptive information about this Valve implementation.
@@ -137,6 +139,14 @@ public class SingleSignOn
         "org.apache.catalina.authenticator.SingleSignOn";
 
 
+    // ----------------------------------------------------- Instance Variables
+
+    /**
+     * The cache of SingleSignOnEntry instances for authenticated Principals,
+     * keyed by the cookie value that is used to select them.
+     */
+    protected HashMap cache = new HashMap();
+
     /**
      * The lifecycle event support for this component.
      */
@@ -144,20 +154,11 @@ public class SingleSignOn
     protected LifecycleSupport lifecycle = new LifecycleSupport(this);
     */
 
-
     /**
      * The cache of single sign on identifiers, keyed by the Session that is
      * associated with them.
      */
     protected HashMap reverse = new HashMap();
-
-
-    /**
-     * The string manager for this package.
-     */
-    protected final static StringManager sm =
-        StringManager.getManager(Constants.Package);
-
 
     /**
      * Component started flag.
@@ -169,16 +170,12 @@ public class SingleSignOn
 
     // ------------------------------------------------------------- Properties
 
-
     /**
      * Return the debugging detail level.
      */
     public int getDebug() {
-
         return (this.debug);
-
     }
-
 
     /**
      * Set the debugging detail level.
@@ -186,14 +183,11 @@ public class SingleSignOn
      * @param debug The new debugging detail level
      */
     public void setDebug(int debug) {
-
         this.debug = debug;
-
     }
 
 
     // ------------------------------------------------------ Lifecycle Methods
-
 
     /**
      * Add a lifecycle event listener to this component.
@@ -531,13 +525,12 @@ public class SingleSignOn
      * @param message Message to be logged
      */
     protected void log(String message) {
-
         Logger logger = container.getLogger();
-        if (logger != null)
+        if (logger != null) {
             logger.log(this.toString() + ": " + message);
-        else
-            System.out.println(this.toString() + ": " + message);
-
+        } else {
+            log.info(this.toString() + ": " + message);
+        }
     }
 
 
@@ -545,18 +538,17 @@ public class SingleSignOn
      * Log a message on the Logger associated with our Container (if any).
      *
      * @param message Message to be logged
-     * @param throwable Associated exception
+     * @param t Associated exception
      */
-    protected void log(String message, Throwable throwable) {
-
+    protected void log(String message, Throwable t) {
         Logger logger = container.getLogger();
-        if (logger != null)
-            logger.log(this.toString() + ": " + message, throwable);
-        else {
-            System.out.println(this.toString() + ": " + message);
-            throwable.printStackTrace(System.out);
+        if (logger != null) {
+            logger.log(this.toString() + ": " + message, t,
+                Logger.WARNING);
+        } else {
+            log.log(java.util.logging.Level.WARNING,
+                this.toString() + ": " + message, t);
         }
-
     }
 
 

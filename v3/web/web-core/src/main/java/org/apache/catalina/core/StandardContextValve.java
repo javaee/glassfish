@@ -321,7 +321,7 @@ final class StandardContextValve
      * Log a message on the Logger associated with our Container (if any)
      *
      * @param message Message to be logged
-     * @param throwable Associated exception
+     * @param t Associated exception
      */
     private void log(String message, Throwable t) {
         org.apache.catalina.Logger logger = null;
@@ -332,10 +332,10 @@ final class StandardContextValve
         }
         if (logger != null) {
             logger.log("StandardContextValve[" + container.getName() + "]: " +
-                       message, t);
+                message, t, org.apache.catalina.Logger.WARNING);
         } else {
             log.log(Level.WARNING, "StandardContextValve[" + containerName +
-                    "]: " + message, t);
+                "]: " + message, t);
         }
     }
 

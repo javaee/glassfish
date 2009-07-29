@@ -1132,7 +1132,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * @deprecated
      */
     protected void log(String message) {
-        log.info( message );
+        log.info(message);
     }
 
 

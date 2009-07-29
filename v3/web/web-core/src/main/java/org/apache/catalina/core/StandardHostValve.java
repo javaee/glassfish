@@ -510,12 +510,13 @@ final class StandardHostValve
      * Log a message on the Logger associated with our Container (if any).
      *
      * @param message Message to be logged
-     * @param throwable Associated exception
+     * @param t Associated exception
      */
     protected void log(String message, Throwable t) {
         org.apache.catalina.Logger logger = container.getLogger();
         if (logger != null) {
-            logger.log(this.toString() + ": " + message, t);
+            logger.log(this.toString() + ": " + message, t,
+                org.apache.catalina.Logger.WARNING);
         } else {
             log.log(Level.WARNING, this.toString() + ": " + message, t);
         }

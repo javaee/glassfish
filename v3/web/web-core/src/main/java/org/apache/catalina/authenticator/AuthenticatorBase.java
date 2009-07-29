@@ -142,14 +142,19 @@ public abstract class AuthenticatorBase
     */
     // START CR 6411114
     implements Authenticator {
-    // END CR 6411114
+    // END CR 6411114    
+    
+    // ----------------------------------------------------- Static Variables
+    
     private static Logger log = Logger.getLogger(
         AuthenticatorBase.class.getName());
-    
-    
-    // ----------------------------------------------------- Instance Variables
-    
-    
+
+    /**
+     * Descriptive information about this implementation.
+     */
+    protected static final String info =
+        "org.apache.catalina.authenticator.AuthenticatorBase/1.0";
+
     /**
      * The default message digest algorithm to use if we cannot use
      * the requested one.
@@ -163,7 +168,14 @@ public abstract class AuthenticatorBase
      */
     protected static final int SESSION_ID_BYTES = 16;
     
-    
+    /**
+     * The string manager for this package.
+     */
+    protected static final StringManager sm =
+            StringManager.getManager(Constants.Package);
+
+
+    // ----------------------------------------------------- Instance Variables    
     /**
      * The message digest algorithm to be used when generating session
      * identifiers.  This must be an algorithm supported by the
@@ -197,14 +209,7 @@ public abstract class AuthenticatorBase
      * the initialization of our random number generator.
      */
     protected String entropy = null;
-    
-    
-    /**
-     * Descriptive information about this implementation.
-     */
-    protected static final String info =
-            "org.apache.catalina.authenticator.AuthenticatorBase/1.0";
-    
+        
     /**
      * Flag to determine if we disable proxy caching, or leave the issue
      * up to the webapp developer.
@@ -218,33 +223,22 @@ public abstract class AuthenticatorBase
     protected LifecycleSupport lifecycle = new LifecycleSupport(this);
     */
     
-
     /**
      * A random number generator to use when generating session identifiers.
      */
     protected Random random = null;
     
-    
     /**
      * The Java class name of the random number generator class to be used
      * when generating session identifiers.
      */
-    protected String randomClass = "java.security.SecureRandom";
-    
-    
-    /**
-     * The string manager for this package.
-     */
-    protected static final StringManager sm =
-            StringManager.getManager(Constants.Package);
-    
-    
+    protected String randomClass = java.security.SecureRandom.class.getName();
+        
     /**
      * The SingleSignOn implementation in our request processing chain,
      * if there is one.
      */
     protected SingleSignOn sso = null;
-    
     
     /**
      * Has this component been started?
@@ -252,7 +246,6 @@ public abstract class AuthenticatorBase
     /** CR 6411114 (Lifecycle implementation moved to ValveBase)
     protected boolean started = false;
     */
-
     
     /**
      * "Expires" header always set to Date(1), so generate once only
@@ -262,10 +255,8 @@ public abstract class AuthenticatorBase
     private static final String DATE_ONE =
             (new SimpleDateFormat(DateTool.HTTP_RESPONSE_DATE_HEADER,
             Locale.US)).format(new Date(1));
-
     */
     //END SJSAS 6202703
-
 
     /**
      * Flag to determine if we disable proxy caching with headers incompatible
@@ -273,16 +264,14 @@ public abstract class AuthenticatorBase
      */
     protected boolean securePagesWithPragma = true;
     
+
     // ------------------------------------------------------------- Properties
-    
-    
+        
     /**
      * Return the message digest algorithm for this Manager.
      */
-    public String getAlgorithm() {
-        
+    public String getAlgorithm() {    
         return (this.algorithm);
-        
     }
     
     
@@ -292,9 +281,7 @@ public abstract class AuthenticatorBase
      * @param algorithm The new message digest algorithm
      */
     public void setAlgorithm(String algorithm) {
-        
         this.algorithm = algorithm;
-        
     }
     
     
@@ -302,9 +289,7 @@ public abstract class AuthenticatorBase
      * Return the cache authenticated Principals flag.
      */
     public boolean getCache() {
-        
         return (this.cache);
-        
     }
     
     
@@ -314,9 +299,7 @@ public abstract class AuthenticatorBase
      * @param cache The new cache flag
      */
     public void setCache(boolean cache) {
-        
         this.cache = cache;
-        
     }
     
     
@@ -324,9 +307,7 @@ public abstract class AuthenticatorBase
      * Return the Container to which this Valve is attached.
      */
     public Container getContainer() {
-        
         return (this.context);
-        
     }
     
     
@@ -351,9 +332,7 @@ public abstract class AuthenticatorBase
      * Return the debugging detail level for this component.
      */
     public int getDebug() {
-        
         return (this.debug);
-        
     }
     
     
@@ -363,9 +342,7 @@ public abstract class AuthenticatorBase
      * @param debug The new debugging detail level
      */
     public void setDebug(int debug) {
-        
         this.debug = debug;
-        
     }
     
     
@@ -379,8 +356,7 @@ public abstract class AuthenticatorBase
         if (this.entropy == null)
             setEntropy(this.toString());
         
-        return (this.entropy);
-        
+        return (this.entropy);        
     }
     
     
@@ -390,9 +366,7 @@ public abstract class AuthenticatorBase
      * @param entropy The new entropy increaser value
      */
     public void setEntropy(String entropy) {
-        
         this.entropy = entropy;
-        
     }
     
     
@@ -400,9 +374,7 @@ public abstract class AuthenticatorBase
      * Return descriptive information about this Valve implementation.
      */
     public String getInfo() {
-        
         return (this.info);
-        
     }
     
     
@@ -410,9 +382,7 @@ public abstract class AuthenticatorBase
      * Return the random number generator class name.
      */
     public String getRandomClass() {
-        
         return (this.randomClass);
-        
     }
     
     
@@ -422,9 +392,7 @@ public abstract class AuthenticatorBase
      * @param randomClass The new random number generator class name
      */
     public void setRandomClass(String randomClass) {
-        
         this.randomClass = randomClass;
-        
     }
     
     /**
@@ -872,15 +840,14 @@ public abstract class AuthenticatorBase
      * @param message Message to be logged
      */
     protected void log(String message) {
-        
         org.apache.catalina.Logger logger = context.getLogger();
-        if (logger != null)
+        if (logger != null) {
             logger.log("Authenticator[" + context.getPath() + "]: " +
                     message);
-        else
-            System.out.println("Authenticator[" + context.getPath() +
-                    "]: " + message);
-        
+        } else {
+            log.info("Authenticator[" + context.getPath() +
+                     "]: " + message);
+        }
     }
     
     
@@ -888,20 +855,17 @@ public abstract class AuthenticatorBase
      * Log a message on the Logger associated with our Container (if any).
      *
      * @param message Message to be logged
-     * @param throwable Associated exception
+     * @param t Associated exception
      */
-    protected void log(String message, Throwable throwable) {
-        
+    protected void log(String message, Throwable t) {
         org.apache.catalina.Logger logger = context.getLogger();
-        if (logger != null)
+        if (logger != null) {
             logger.log("Authenticator[" + context.getPath() + "]: " +
-                    message, throwable);
-        else {
-            System.out.println("Authenticator[" + context.getPath() +
-                    "]: " + message);
-            throwable.printStackTrace(System.out);
-        }
-        
+                message, t, org.apache.catalina.Logger.WARNING);
+        } else {
+            log.log(Level.WARNING,
+                "Authenticator[" + context.getPath() + "]: " + message, t);
+        }        
     }
     
     

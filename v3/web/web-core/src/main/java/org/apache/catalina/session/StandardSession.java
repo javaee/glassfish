@@ -121,7 +121,6 @@ public class StandardSession
 
     // ----------------------------------------------------------- Constructors
 
-
     /**
      * Construct a new Session associated with the specified Manager.
      *
@@ -137,14 +136,16 @@ public class StandardSession
     }
 
 
-    // ----------------------------------------------------- Instance Variables
+    // ----------------------------------------------------- Class Variables
 
+    private static final java.util.logging.Logger log =
+        java.util.logging.Logger.getLogger(
+            StandardSession.class.getName());
 
     /**
      * Type array.
      */
     protected static final String EMPTY_ARRAY[] = new String[0];
-
 
     /**
      * The dummy attribute value serialized when a NotSerializableException is
@@ -161,12 +162,42 @@ public class StandardSession
     protected static final String SYNC_STRING = "com.sun.sync";
     //end HERCULES:add
 
+    /**
+     * The method signature for the <code>fireContainerEvent</code> method.
+     */
+    protected static final Class<?> containerEventTypes[] =
+        { String.class, Object.class };
+
+    /**
+     * Descriptive information describing this Session implementation.
+     */
+    protected static final String info = "StandardSession/1.0";
+
+    /**
+     * Set of attribute names which are not allowed to be persisted.
+     */
+    private static final String[] excludedAttributes = {
+        Globals.SUBJECT_ATTR
+    };
+
+    /**
+     * The string manager for this package.
+     */
+    protected static final StringManager sm =
+        StringManager.getManager(Constants.Package);
+
+    /**
+     * The HTTP session context associated with this session.
+     */
+    protected static HttpSessionContext sessionContext = null;
+
+
+    // ----------------------------------------------------- Instance Variables
 
     /**
      * The collection of user data attributes associated with this Session.
      */
     protected Map<String, Object> attributes = new ConcurrentHashMap<String, Object>();    
-
 
     /**
      * The authentication type used to authenticate our cached Principal,
@@ -174,7 +205,6 @@ public class StandardSession
      * version of this object.
      */
     protected transient String authType = null;
-
 
     /**
      * The <code>java.lang.Method</code> for the
@@ -186,35 +216,17 @@ public class StandardSession
      */
     protected transient Method containerEventMethod = null;
 
-
-    /**
-     * The method signature for the <code>fireContainerEvent</code> method.
-     */
-    protected static final Class<?> containerEventTypes[] =
-        { String.class, Object.class };
-
-
     /**
      * The time this session was created, in milliseconds since midnight,
      * January 1, 1970 GMT.
      */
     protected long creationTime = 0L;
 
-
     /**
      * The debugging detail level for this component.  NOTE:  This value
      * is not included in the serialized version of this object.
      */
     protected transient int debug = 0;
-
-
-    /**
-     * Set of attribute names which are not allowed to be persisted.
-     */
-    private static final String[] excludedAttributes = {
-        Globals.SUBJECT_ATTR
-    };
-
 
     /**
      * We are currently processing a session expiration, so bypass
@@ -223,31 +235,21 @@ public class StandardSession
      */
     protected transient boolean expiring = false;
 
-
     /**
      * The facade associated with this session.  NOTE:  This value is not
      * included in the serialized version of this object.
      */
     protected transient StandardSessionFacade facade = null;
 
-
     /**
      * The session identifier of this Session.
      */
     protected String id = null;
 
-
-    /**
-     * Descriptive information describing this Session implementation.
-     */
-    protected static final String info = "StandardSession/1.0";
-
-
     /**
      * The last accessed time for this Session.
      */
     protected long lastAccessedTime = creationTime;
-
 
     /**
      * The session event listeners for this Session.
@@ -255,18 +257,15 @@ public class StandardSession
     protected transient ArrayList<SessionListener> listeners =
         new ArrayList<SessionListener>();
 
-
     /**
      * The Manager with which this Session is associated.
      */
     protected transient Manager manager = null;
 
-
     /**
      * The context with which this Session is associated.
      */
     protected transient StandardContext context = null;
-
 
     /**
      * The maximum time interval, in seconds, between client requests before
@@ -275,18 +274,15 @@ public class StandardSession
      */
     protected int maxInactiveInterval = -1;
 
-
     /**
      * Flag indicating whether this session is new or not.
      */
     protected boolean isNew = false;
 
-
     /**
      * Flag indicating whether this session is valid or not.
      */
     protected boolean isValid = false;
-
 
     /**
      * Internal notes associated with this session by Catalina components
@@ -294,7 +290,6 @@ public class StandardSession
      * <em>not</em> saved and restored across session serializations!
      */
     protected transient Map<String, Object> notes = new Hashtable<String, Object>();
-
 
     /**
      * The authenticated Principal associated with this session, if any.
@@ -305,25 +300,10 @@ public class StandardSession
      */
     protected transient Principal principal = null;
 
-
-    /**
-     * The string manager for this package.
-     */
-    protected static final StringManager sm =
-        StringManager.getManager(Constants.Package);
-
-
-    /**
-     * The HTTP session context associated with this session.
-     */
-    protected static HttpSessionContext sessionContext = null;
-
-
     /**
      * The current accessed time for this session.
      */
     protected long thisAccessedTime = creationTime;
-
 
     /**
      * The session version, incremented and used by in-memory-replicating
@@ -2123,13 +2103,11 @@ public class StandardSession
      * @param message Message to be logged
      */
     protected void log(String message) {
-
         if ((manager != null) && (manager instanceof ManagerBase)) {
             ((ManagerBase) manager).log(message);
         } else {
-            System.out.println("StandardSession: " + message);
+            log.info("StandardSession: " + message);
         }
-
     }
 
 
@@ -2137,17 +2115,15 @@ public class StandardSession
      * Log a message on the Logger associated with our Manager (if any).
      *
      * @param message Message to be logged
-     * @param throwable Associated exception
+     * @param t Associated exception
      */
-    protected void log(String message, Throwable throwable) {
-
+    protected void log(String message, Throwable t) {
         if ((manager != null) && (manager instanceof ManagerBase)) {
-            ((ManagerBase) manager).log(message, throwable);
+            ((ManagerBase) manager).log(message, t);
         } else {
-            System.out.println("StandardSession: " + message);
-            throwable.printStackTrace(System.out);
+            log.log(java.util.logging.Level.WARNING,
+                "StandardSession: " + message, t);
         }
-
     }
 
 

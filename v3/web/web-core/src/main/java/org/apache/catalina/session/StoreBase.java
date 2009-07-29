@@ -88,6 +88,16 @@ import java.io.ObjectOutputStream;
 public abstract class StoreBase
     implements Lifecycle, Store {
 
+    private static final java.util.logging.Logger log =
+        java.util.logging.Logger.getLogger(
+            StoreBase.class.getName());
+
+    /**
+     * The string manager for this package.
+     */
+    protected static final StringManager sm = StringManager.getManager(
+                                                    Constants.Package);
+
     // ----------------------------------------------------- Instance Variables
 
     /**
@@ -139,12 +149,6 @@ public abstract class StoreBase
      * The property change support for this component.
      */
     protected PropertyChangeSupport support = new PropertyChangeSupport(this);
-
-    /**
-     * The string manager for this package.
-     */
-    protected static final StringManager sm = StringManager.getManager(
-                                                    Constants.Package);
 
     /**
      * The Manager with which this JDBCStore is associated.
@@ -316,13 +320,12 @@ public abstract class StoreBase
     }     
     
 
-    // --------------------------------------------------------- Protected Methods
+    // ----------------------------------------------------- Protected Methods
 
     /**
      * Called by our background reaper thread to check if Sessions
      * saved in our store are subject of being expired. If so expire
      * the Session and remove it from the Store.
-     *
      */
     public void processExpires() {
         String[] keys = null;
@@ -334,8 +337,7 @@ public abstract class StoreBase
         try {
             keys = keys();
         } catch (IOException e) {
-            log (e.toString());
-            e.printStackTrace();
+            log("Error during processExpires", e);
             return;
         }
 
@@ -357,11 +359,9 @@ public abstract class StoreBase
                 }
                 remove(session.getIdInternal());
             } catch (IOException e) {
-                log (e.toString());
-                e.printStackTrace();
+                log("Error during processExpires", e);
             } catch (ClassNotFoundException e) {
-                log (e.toString());
-                e.printStackTrace();
+                log("Error during processExpires", e);
             }
         }
     }
@@ -373,25 +373,44 @@ public abstract class StoreBase
      */
     protected void log(String message) {
         Logger logger = null;
+        String containerName = null;
         Container container = manager.getContainer();
-
         if (container != null) {
             logger = container.getLogger();
+            containerName = container.getName();
         }
-
         if (logger != null) {
-            logger.log(getStoreName()+"[" + container.getName() + "]: "
-                       + message);
+            logger.log(getStoreName()+"[" + containerName + "]: " +
+                       message);
         } else {
-            String containerName = null;
-            if (container != null) {
-                containerName = container.getName();
-            }
-            System.out.println(getStoreName()+"[" + containerName
-                               + "]: " + message);
+            log.fine(getStoreName()+"[" + containerName + "]: " + message);
         }
     }
-    
+
+    /**
+     * Logs the given message to the Logger associated with the Container
+     * (if any) of this StoreBase.
+     *
+     * @param message the message
+     * @param t the Throwable
+     */    
+    private void log(String message, Throwable t) {
+        Logger logger = null;
+        String containerName = null;
+        Container container = manager.getContainer();
+        if (container != null) {
+            logger = container.getLogger();
+            containerName = container.getName();
+        }
+        if (logger != null) {
+            logger.log(getStoreName()+"[" + containerName + "]: " +
+                message, t, Logger.WARNING);
+        } else {
+            log.log(java.util.logging.Level.WARNING,
+                getStoreName()+"[" + containerName + "]: " + message, t);
+        }
+    }
+
     /**
      * Load and return the Session associated with the specified session
      * identifier from this Store, without removing it.  If there is no

@@ -320,7 +320,6 @@ public final class Bootstrap {
 
     }
 
-
     /**
      * Set flag.
      */
@@ -348,57 +347,12 @@ public final class Bootstrap {
         return b.booleanValue();
     }
 
-
     /**
      * Destroy the Catalina Daemon.
      */
     public void destroy() {
 
         // FIXME
-
-    }
-
-
-    /**
-     * Main method, used for testing only.
-     *
-     * @param args Command line arguments to be processed
-     */
-    public static void main(String args[]) {
-
-        if (daemon == null) {
-            daemon = new Bootstrap();
-            try {
-                daemon.init();
-            } catch (Throwable t) {
-                t.printStackTrace();
-                return;
-            }
-        }
-
-        try {
-            String command = "start";
-            if (args.length > 0) {
-                command = args[args.length - 1];
-            }
-
-            if (command.equals("startd")) {
-                args[0] = "start";
-                daemon.load(args);
-                daemon.start();
-            } else if (command.equals("stopd")) {
-                args[0] = "stop";
-                daemon.stop();
-            } else if (command.equals("start")) {
-                daemon.setAwait(true);
-                daemon.load(args);
-                daemon.start();
-            } else if (command.equals("stop")) {
-                daemon.stopServer();
-            }
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
 
     }
 
@@ -409,7 +363,6 @@ public final class Bootstrap {
     public void setCatalinaBase(String s) {
         System.setProperty( "catalina.base", s );
     }
-
 
     /**
      * Set the <code>catalina.base</code> System property to the current
@@ -427,7 +380,6 @@ public final class Bootstrap {
                                System.getProperty("user.dir"));
 
     }
-
 
     /**
      * Set the <code>catalina.home</code> System property to the current

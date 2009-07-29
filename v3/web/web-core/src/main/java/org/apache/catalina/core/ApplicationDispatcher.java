@@ -935,13 +935,13 @@ public final class ApplicationDispatcher
      * Log a message on the Logger associated with our Container (if any)
      *
      * @param message Message to be logged
-     * @param throwable Associated exception
+     * @param t Associated exception
      */
     private void log(String message, Throwable t) {
         org.apache.catalina.Logger logger = context.getLogger();
         if (logger != null) {
             logger.log("ApplicationDispatcher[" + context.getPath() +
-                       "] " + message, t);
+                "] " + message, t, org.apache.catalina.Logger.WARNING);
         } else {
             log.log(Level.WARNING, "ApplicationDispatcher[" +
                     context.getPath() + "]: " + message, t);
