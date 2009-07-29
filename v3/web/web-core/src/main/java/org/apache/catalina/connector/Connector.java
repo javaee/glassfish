@@ -1470,14 +1470,13 @@ public class Connector
      * @param message Message to be logged
      */
     private void log(String message) {
-
         org.apache.catalina.Logger logger = container.getLogger();
         String localName = "Connector";
-        if (logger != null)
+        if (logger != null) {
             logger.log(localName + " " + message);
-        else
-            System.out.println(localName + " " + message);
-
+        } else {
+            log.info(localName + " " + message);
+        }
     }
 
 
@@ -1485,19 +1484,17 @@ public class Connector
      * Log a message on the Logger associated with our Container (if any).
      *
      * @param message Message to be logged
-     * @param throwable Associated exception
+     * @param t Associated exception
      */
-    private void log(String message, Throwable throwable) {
-
+    private void log(String message, Throwable t) {
         org.apache.catalina.Logger logger = container.getLogger();
         String localName = "Connector";
-        if (logger != null)
-            logger.log(localName + " " + message, throwable);
-        else {
-            System.out.println(localName + " " + message);
-            throwable.printStackTrace(System.out);
+        if (logger != null) {
+            logger.log(localName + " " + message, t,
+                org.apache.catalina.Logger.WARNING);
+        } else {
+            log.log(Level.WARNING, localName + " " + message, t);
         }
-
     }
 
 

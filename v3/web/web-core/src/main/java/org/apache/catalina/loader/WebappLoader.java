@@ -862,21 +862,18 @@ public class WebappLoader
      * @param message Message to be logged
      */
     private void log(String message) {
-
         org.apache.catalina.Logger logger = null;
-        if (container != null)
+        String containerName = null;
+        if (container != null) {
             logger = container.getLogger();
-        if (logger != null)
-            logger.log("WebappLoader[" + container.getName() + "]: "
-                       + message);
-        else {
-            String containerName = null;
-            if (container != null)
-                containerName = container.getName();
-            System.out.println("WebappLoader[" + containerName
-                               + "]: " + message);
+            containerName = container.getName();
         }
-
+        if (logger != null) {
+            logger.log("WebappLoader[" + containerName + "]: " +
+                message);
+        } else {
+            log.info("WebappLoader[" + containerName + "]: " + message);
+        }
     }
 
 
@@ -884,26 +881,21 @@ public class WebappLoader
      * Log a message on the Logger associated with our Container (if any)
      *
      * @param message Message to be logged
-     * @param throwable Associated exception
+     * @param t Associated exception
      */
-    private void log(String message, Throwable throwable) {
-
+    private void log(String message, Throwable t) {
         org.apache.catalina.Logger logger = null;
-        if (container != null)
+        String containerName = null;
+        if (container != null) {
             logger = container.getLogger();
-        if (logger != null) {
-            logger.log("WebappLoader[" + container.getName() + "] "
-                       + message, throwable);
-        } else {
-            String containerName = null;
-            if (container != null)
-                containerName = container.getName();
-            System.out.println("WebappLoader[" + containerName
-                               + "]: " + message);
-            System.out.println("" + throwable);
-            throwable.printStackTrace(System.out);
+            containerName = container.getName();
         }
-
+        if (logger != null) {
+            logger.log("WebappLoader[" + containerName + "] " + message, t);
+        } else {
+            log.log(Level.WARNING,
+                "WebappLoader[" + containerName + "]: " + message, t);
+        }
     }
 
 
