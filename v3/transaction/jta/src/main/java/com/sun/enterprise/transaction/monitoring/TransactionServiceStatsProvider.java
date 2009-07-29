@@ -161,7 +161,7 @@ try {
                 String txnId = txnBean.getId();
 
                 // XXX strBuf.append("\n");
-                _logger.info("=== Processing txnId: " + txnId);
+                _logger.fine("=== Processing txnId: " + txnId);
                 strBuf.append(txnId);
                 for (int j=txnId.length(); j<COLUMN_LENGTH+15; j++){
                     strBuf.append(" ");
@@ -189,8 +189,7 @@ try {
             }
         }
 
-        // XXX Change to fine
-        _logger.info("Prepared inflightTransactions text: \n" + strBuf);
+        _logger.fine("Prepared inflightTransactions text: \n" + strBuf);
 
         inflightTransactions.setCurrent((strBuf == null)? "" : strBuf.toString());
 } catch (Throwable t) {
@@ -201,30 +200,26 @@ t.printStackTrace();
     
     @ProbeListener("glassfish:transaction:transaction-service:activated")
     public void transactionActivatedEvent() {
-        // XXX Change to fine
-        _logger.info("=== transaction-service active ++");
+        _logger.fine("=== transaction-service active ++");
         activeCount.increment();
     }
 
     @ProbeListener("glassfish:transaction:transaction-service:deactivated")
     public void transactionDeactivatedEvent() {
-        // XXX Change to fine
-        _logger.info("=== transaction-service active --");
+        _logger.fine("=== transaction-service active --");
         activeCount.decrement();
     }
 
     @ProbeListener("glassfish:transaction:transaction-service:committed")
     public void transactionCommittedEvent() {
-        // XXX Change to fine
-        _logger.info("=== transaction-service committed ++");
+        _logger.fine("=== transaction-service committed ++");
         committedCount.increment();
         activeCount.decrement();
     }
 
     @ProbeListener("glassfish:transaction:transaction-service:rolledback")
     public void transactionRolledbackEvent() {
-        // XXX Change to fine
-        _logger.info("=== transaction-service rolledback ++");
+        _logger.fine("=== transaction-service rolledback ++");
         rolledbackCount.increment();
         activeCount.decrement();
     }

@@ -76,6 +76,7 @@ import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
 
 import com.sun.enterprise.config.serverbeans.TransactionService;
+import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.api.admin.config.Property;
 
@@ -124,7 +125,7 @@ public class JavaEETransactionManagerSimplified
     // admin and monitoring related parameters
     private  static final Hashtable statusMap = new Hashtable();
     private Vector activeTransactions = new Vector();
-    private boolean monitoringEnabled = Boolean.getBoolean("tx-service-monitoringEnabled"); // false;
+    private boolean monitoringEnabled = false;
 
     private TransactionServiceProbeProvider monitor;
     private Hashtable txnTable = null;
@@ -205,6 +206,14 @@ public class JavaEETransactionManagerSimplified
                 TransactionServiceConfigListener listener = 
                         habitat.getComponent(TransactionServiceConfigListener.class);
                 listener.setTM(this);
+            }
+            ModuleMonitoringLevels levels = habitat.getComponent(ModuleMonitoringLevels.class);
+            // running on the server side ?
+            if (levels != null) {
+                String level = levels.getTransactionService();
+                if (!("OFF".equals(level))) {
+                    monitoringEnabled = true;
+                }
             }
         }
 

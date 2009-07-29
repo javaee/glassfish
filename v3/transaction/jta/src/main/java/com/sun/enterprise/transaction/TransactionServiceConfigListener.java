@@ -48,6 +48,7 @@ import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.UnprocessedChangeEvent;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
+import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
 import com.sun.enterprise.config.serverbeans.TransactionService;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.api.admin.config.Property;
@@ -55,7 +56,8 @@ import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 
 /**
- * ConfigListener class for TransactionService changes
+ * ConfigListener class for TransactionService and TransactionService 
+ * monitoring level changes
  *
  * @author Marina Vatkina
  */
@@ -68,6 +70,9 @@ public class TransactionServiceConfigListener implements ConfigListener {
     // Injecting @Configured type triggers the corresponding change 
     // events to be sent to this instance
     @Inject private TransactionService ts;
+
+    // Listen to monitoring level changes
+    @Inject(optional=true) private ModuleMonitoringLevels ml = null;
 
     private JavaEETransactionManager tm;
 
@@ -97,15 +102,27 @@ public class TransactionServiceConfigListener implements ConfigListener {
             boolean accepted = true;
 
             _logger.log(Level.FINE, "Got TransactionService change event ==== "
-                    /* +event.getSource()+ " " */ 
+                    + event.getSource() + " " 
                     + eventName + " " + oldValue + " " + newValue);
 
             if (oldValue != null && oldValue.equals(newValue)) {
                 _logger.log(Level.FINE, "Event " + eventName 
                         + " did not change existing value of " + oldValue);
                 continue;
+            }
 
-            } else if (eventName.equals(ServerTags.TIMEOUT_IN_SECONDS)) {
+           if (event.getSource() instanceof ModuleMonitoringLevels) {
+                if (eventName.equals(ServerTags.TRANSACTION_SERVICE)) {
+                    String oldlevel = oldValue.toString();
+                    String newlevel = newValue.toString();
+                    _logger.log(Level.FINE, "Changing transaction monitoring level"); 
+                    if ("OFF".equals(newlevel)) {
+                        tm.setMonitoringEnabled(false);
+                    } else if ("LOW".equals(newlevel) || "HIGH".equals(newlevel)) {
+                        tm.setMonitoringEnabled(true);
+                    } 
+                } // else skip
+           } else if (eventName.equals(ServerTags.TIMEOUT_IN_SECONDS)) {
                 try {
                     tm.setDefaultTransactionTimeout(Integer.parseInt((String)newValue,10));
                     _logger.log(Level.FINE," Transaction Timeout interval event processed for: " + newValue);
