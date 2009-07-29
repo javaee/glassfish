@@ -79,7 +79,7 @@
         </facet>
     </sun:title>
 //#include "/common/shared/treeBreadcrumbs.inc"
-#include "resourceNode/resourcesTabs.inc"
+//#include "resourceNode/resourcesTabs.inc"
 #include "/jms/jmsDestinationSheet.inc"
 #include "/common/shared/propertyTable.inc"
         <sun:title id="propertyContentPage2">
