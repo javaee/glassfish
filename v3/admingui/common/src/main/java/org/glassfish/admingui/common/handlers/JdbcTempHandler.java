@@ -60,6 +60,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Iterator;
+import java.util.Set;
+
 
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
@@ -119,6 +122,35 @@ public class JdbcTempHandler {
             }
         }    
         
+    /*
+     * This handler returns a list of table names.
+     */
+    @Handler(id = "getTableNames",
+        input = {
+            @HandlerInput(name = "name", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "result", type = List.class)})
+    public static void getTableNames(HandlerContext handlerCtx) {
+        try {
+            String name = (String) handlerCtx.getInputValue("name");
+            List result = new ArrayList();
+            Map<String, Object> tn = V3AMX.getInstance().getConnectorRuntime().getValidationTableNames(name);
+            if (tn != null) {
+                Set keys = (Set) tn.get(SET_KEY);
+                if (keys != null) {
+                   Iterator iter = keys.iterator();
+                   while (iter.hasNext()) {
+                        result.add(iter.next());
+                    }
+                }
+            }
+            handlerCtx.setOutputValue("result", result);
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+        
+        
         /**
          *	<p> This handler gets the default values and resource type and puts them in session
          */
@@ -148,50 +180,67 @@ public class JdbcTempHandler {
             handlerCtx.setOutputValue("DBVendorList", dbVendorList);
         }
         
-        /**
-         *	<p> This handler gets the datasource classname and properties and sets them in session
-         */
-        @Handler(id="updateJDBCPoolWizardStep1")
-        public static void updateJDBCPoolWizardStep1(HandlerContext handlerCtx){
-                //Map pool = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPool");
-                Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
-                
-                String resType = (String) extra.get("ResType");
-                String dbVendor = (String) extra.get("DBVendor");
-                
-                String previousResType = (String) extra.get("PreviousResType");
-                String previousDB = (String) extra.get("PreviousDB");
-                
-                if (resType.equals(previousResType) && dbVendor.equals(previousDB) && 
-                        !GuiUtil.isEmpty((String) extra.get("DatasourceClassname")) ){
-                    //User didn't change type and DB, keep the datasource classname as the same.
-                }else{
-                    
-                    if (!GuiUtil.isEmpty(resType) && !GuiUtil.isEmpty(dbVendor)){
-                        String datasourceClassName = "";
-                        //To Do for V3: Need to call getJdbcDriverClassNames() once it is available 
-                        extra.put("DatasourceClassname",  datasourceClassName);
-                        
-                        Map result = new HashMap();
-                        Map<String, String> props = new HashMap();
-                        List<Map<String, String>> data = new ArrayList<Map<String, String>>();
-                        
-                        try {
-                            //result = (Map) V3AMX.getInstance().getRuntimeMgr().getConnectionDefinitionPropertiesAndDefaults(datasourceClassName);
-                            //props = (Map) result.get(PROPERTY_MAP_KEY);
-                            //handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
-                            handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", data);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
+    /**
+     *	<p> This handler gets the datasource classname and properties and sets them in session
+     */
+    @Handler(id = "updateJDBCPoolWizardStep1")
+    public static void updateJDBCPoolWizardStep1(HandlerContext handlerCtx) {
+        //Map pool = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPool");
+        Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
 
-                         }
+        String resType = (String) extra.get("ResType");
+        String dbVendor = (String) extra.get("DBVendor");
+
+        String previousResType = (String) extra.get("PreviousResType");
+        String previousDB = (String) extra.get("PreviousDB");
+
+        if (resType.equals(previousResType) && dbVendor.equals(previousDB) &&
+                !GuiUtil.isEmpty((String) extra.get("DatasourceClassname"))) {
+        //User didn't change type and DB, keep the datasource classname as the same.
+        } else {
+
+            if (!GuiUtil.isEmpty(resType) && !GuiUtil.isEmpty(dbVendor)) {
+                try {
+                    String classname = "";
+                    Map<String, Object> dcn = V3AMX.getInstance().getConnectorRuntime().getJdbcDriverClassNames(dbVendor, resType);
+                    if (dcn != null) {
+                        Set keys = (Set) dcn.get(SET_KEY);
+                        Iterator iter = keys.iterator();
+                        while (iter.hasNext()) {
+                            classname = (String) iter.next();
+
+                        }
                     }
-                    
-		    extra.put("PreviousResType", resType);
-                    extra.put("PreviousDB", dbVendor);
-                    
+                    if (resType.equals(DRIVER)) {
+                        extra.put("DriverClassname", classname);
+                        extra.put("DatasourceClassname", "");
+                        extra.put("dsClassname", Boolean.FALSE);
+                    } else {
+                        extra.put("DatasourceClassname", classname);
+                        extra.put("DriverClassname", "");
+                        extra.put("dsClassname", Boolean.TRUE);
+                    }
+                    List<Map<String, String>> noprops = new ArrayList<Map<String, String>>();
+                    Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionPropertiesAndDefaults(classname, resType);
+                    if (result != null) {
+                        Map<String, String> props = (Map) result.get(PROPERTY_MAP_KEY);
+                        handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
+
+                    } else {
+                        handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", noprops);
+                    }
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+
                 }
+            }
+
+            extra.put("PreviousResType", resType);
+            extra.put("PreviousDB", dbVendor);
+
         }
+    }
 
     /**
      *	<p> updates the wizard map properties on step 2
@@ -203,15 +252,18 @@ public class JdbcTempHandler {
 
         String resType = (String) extra.get("ResType");
         String classname = (String) extra.get("DatasourceClassname");
+        String driver = (String) extra.get("DriverClassname");
         String name = (String) extra.get("Name");
 
         attrs.put("Name", name);
         attrs.put("DatasourceClassname", classname);
+        attrs.put("DriverClassname", driver);
         attrs.put("ResType", resType);
     }   
 
     
-        public static final  String REASON_FAILED_KEY = "ReasonFailedKey";    
+        public static final  String REASON_FAILED_KEY = "ReasonFailedKey";   
+        public static final  String SET_KEY = "SetKey";
         public static final  String BOOLEAN_KEY = "BooleanKey";
         static private final String PROPERTY_MAP_KEY = "PropertyMapKey"; 
         static private final String DATA_SOURCE = "javax.sql.DataSource";
