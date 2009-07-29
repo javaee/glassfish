@@ -170,9 +170,13 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
 
             } catch (Exception cre) {
                 _logger.log(Level.WARNING, " unable to load the resource-adapter [ " + moduleName + " ]", cre);
+
+                //since resource-adapter creation has failed, remove the class-loader for the RAR
                 if (!(isEmbedded) && ccf != null) {
                     clh.getConnectorClassLoader(null).removeDelegate(ccf);
                 }
+                //since resource-adapter creation has failed, unregister bean validator of the RAR
+                unregisterBeanValidator(moduleName);
                 return null;
             }
         }
@@ -230,6 +234,8 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 //remove the class-finder (class-loader) from connector-class-loader chain
                 clh.getConnectorClassLoader(null).removeDelegate(ccf);
             }
+
+            unregisterBeanValidator(moduleName);
         }
     }
 
@@ -495,5 +501,10 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
             }
         }
         return mappingList;
+    }
+
+    private void unregisterBeanValidator(String rarName){
+        ConnectorRegistry registry = ConnectorRegistry.getInstance();
+        registry.removeBeanValidator(rarName);
     }
 }
