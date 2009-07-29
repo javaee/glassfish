@@ -8,7 +8,18 @@
         <dependencySet>
             <outputDirectory/>
             <unpack>true</unpack>
-            <excludes><exclude>**/META-INF/**</exclude></excludes>
+            <unpackOptions>
+                <excludes>
+                    <exclude>**/META-INF/**</exclude>
+                    <exclude>com/googlecode/jtype/**</exclude>
+                    <exclude>sample/**</exclude>
+                    <exclude>com/sun/**</exclude>
+                    <exclude>**/*.html</exclude>
+                    <exclude>**/*.txt</exclude>
+                    <exclude>**/*.xsd</exclude>
+                    <exclude>org/**</exclude>
+                </excludes>
+            </unpackOptions>
             <includes>
                 <include>org.glassfish:javax.servlet</include>
                 <include>org.glassfish:javax.annotation</include>
