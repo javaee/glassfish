@@ -1,0 +1,10 @@
+This Maven project takes a javax.javaee-api.jar and strip the implementation classes.
+The original script, run.sh and DIY.java are provided by: Roberto.Chinnici@Sun.COM 
+
+To execute:
+
+mvn -Djavaee.api=<location of javax.javaee-api.jar> clean install
+
+Maven will copy the dependencies activation.jar and mail.jar to a tmp directory in target.  It will compile DIY.java and run the script, run.sh, to generate the compacted javax.javaee-api.jar with the stipped implementation classes.
+
+The output is called javax.javaee-api-compact.jar.
