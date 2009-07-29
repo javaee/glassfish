@@ -36,13 +36,13 @@
 -->
 <!-- jdbc/jdbcResource.inc -->
 <!-- used by jdbcResourceEdit.jsf and jdbcResourceNew.jsf -->
-   
+ 
 
 <sun:propertySheet id="propertySheet">
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
         <sun:property id="nameNew"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
-            <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['JndiName']}" />
+            <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['Name']}" />
         </sun:property>
 
         <sun:property id="name"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
@@ -65,8 +65,9 @@
             <sun:textField id="desc" columns="$int{55}" text="#{pageSession.valueMap['Description']}" />      
         </sun:property>
 
-        <sun:property id="statusProp" rendered="#{useCheckBox}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" />  
+        <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" visible="#{false}" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['Enabled']}" selectedValue="true" />
        </sun:property>
         "<br /><br />
     </sun:propertySheetSection>
