@@ -22,7 +22,7 @@
 <h1 style="margin-left: 80px;"><big><font style="font-size: 16pt;"
  size="4"><big><b><font face="Trebuchet MS, sans-serif">Instructions
 for QuickLook tests</font></b></big></font></big></h1>
-Last updated at: May. 1, 2009<br>
+Last updated at: July 29, 2009<br>
 By: Ming.Zhang@sun.com<br>
 <p style="margin-bottom: 0in;" align="left"><big><font size="4"><big><b>I.
 Running QuickLook tests:</b></big></font></big></p>
@@ -48,8 +48,9 @@ command. <br>
 <br>
 The v3 glassfish distribution includes extra modules such as EJB, jts
 and corba other than the modules in web distribution.
-The glassfish profile is the default profile of QL. It runs QL against
-v3 <span style="font-weight: bold;">Glassfish distribution</span>. <br>
+The glassfish profile is the <span style="font-weight: bold;">default</span>
+profile of QL. It runs QL against
+v3 Glassfish distribution. <br>
 <ul>
   <li>For <span style="font-weight: bold;">glassfish</span> bundle of
 V3, {V3 Installation Dir} is equivelent to /test/glassfish in the
@@ -80,7 +81,19 @@ testing the v3 web distribution.<br>
   <li>mvn -Dglassfish.home={V3 Installation Dir} <span
  style="font-weight: bold;">-P test_wd test</span> | tee run.log</li>
 </ul>
-<span style="font-weight: bold;">3. To Run QL in Web Profile with
+<span style="font-weight: bold;">3. To Run QL in </span><span
+ style="font-weight: bold;">Glassfish</span><span
+ style="font-weight: bold;"> Profile with
+Security Manager Turned On:</span><br>
+<br>
+The web profile (-P test_wd_security) should be used for
+testing the v3 web distribution.<br>
+<ul style="font-style: italic;">
+  <li>mvn -Dglassfish.home={V3 Installation Dir} <span
+ style="font-weight: bold;">-P test_gd_security test</span> | tee
+run.log</li>
+</ul>
+<span style="font-weight: bold;">4. To Run QL in Web Profile with
 Security Manager Turned On:</span><br>
 <br>
 The web profile (-P test_wd_security) should be used for
@@ -90,8 +103,7 @@ testing the v3 web distribution.<br>
  style="font-weight: bold;">-P test_wd_security test</span> | tee
 run.log</li>
 </ul>
-<br>
-<span style="font-weight: bold;">4. To Run QL in V3 Debug Profile:</span><br>
+<span style="font-weight: bold;">5. To Run QL in V3 Debug Profile:</span><br>
 <br>
 Usually, user wants to run QL against a running v3 instance started
 in debug mode. The dev_debug profile can be used (-P dev_debug) in this
@@ -109,7 +121,7 @@ Note: The tests require restart domain (admincli) will be skipped in
 this scenario.<br>
 <br>
 <span style="font-weight: bold;"></span><span style="font-weight: bold;"></span><span
- style="font-weight: bold;">5.
+ style="font-weight: bold;">6.
 To Run Individual Test Suite from
 Directory Level:</span><br>
 <br>
@@ -131,7 +143,7 @@ Installation Dir} all</span><br>
     </li>
   </ul>
 </ul>
-<span style="font-weight: bold;">6. To Run JRuby Tests</span><span
+<span style="font-weight: bold;">7. To Run JRuby Tests</span><span
  style="font-weight: bold;"> in QL:</span><br>
 <br>
 The JRuby tests need JRuby/Rails gems environment and JRuby/Rails will
@@ -281,6 +293,15 @@ Installation Dir}&nbsp; runtest</span><br>
 passed <br>
 Please add "all" target to include "build deploy runtest"<br>
 </p>
+<p style="margin-bottom: 0in;">Since QL runs in multiple profiles, the
+test cases need to be defined in the 3 test lists for the profiles:
+testng.xml for the Web profile, testng_gd.xml for Glassfish profile,
+testng_debug.xml for the debug profile. The local testng.xml is
+optional but it
+provides the conveniences of running the module test locally. User can
+also choose to define the class name in the local build.xml. In this
+case, there is no need to defined the test cases in
+local testng.xml . </p>
 <p style="margin-bottom: 0in;">To integrate your tests into quicklook,
 please contact <a href="ming.zhang@sun.com">Ming Zhang</a> .<br>
 </p>
