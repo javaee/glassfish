@@ -253,7 +253,15 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
 
 
     public void setMaxAge(int maxAge) {
+        if (ctx.isContextInitializedCalled()) {
+            throw new IllegalStateException(
+                sm.getString("sessionCookieConfig.alreadyInitialized",
+                             "maxAge", ctx.getName()));
+        }
+
         this.maxAge = maxAge;
+        ctx.setSessionCookieConfigInitialized(true);
+
     }
 
 
