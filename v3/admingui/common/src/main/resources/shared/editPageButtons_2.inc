@@ -111,6 +111,13 @@
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                         setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                     }
+                    //when creating resource, need to create the resource-ref
+                    if (#{pageSession.createResourceRef}){
+                        mapPut(map="#{pageSession.valueMap2}" key="ref" value="#{pageSession.valueMap['Name']}")
+                        createProxy(parentObjectNameStr="amx:pp=/domain/servers,type=server,name=server" childType="resource-ref"
+                            attrs="#{pageSession.valueMap2}"
+                            convertToFalse={"Enabled"} );
+                    }
                     redirect(page="#{parentPage}?configName=#{configName}")
                 />
             </sun:button>
