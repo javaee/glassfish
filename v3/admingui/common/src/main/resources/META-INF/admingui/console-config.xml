@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -35,7 +35,6 @@
  holder.
  
  -->
- 
 
 
 <console-config id="common">
@@ -58,6 +57,16 @@
                 priority="1000"
                 parentId="form"
                 content="Other; other"
+        />
+
+
+        <!-- Add a link under the Configuration Page  -->
+        <integration-point
+                id="commonConfigurationLink"
+                type="org.glassfish.admingui:configuration" 
+                priority="100"
+                parentId="propSheetSection"
+                content="configuration/configurationLink.jsf"
         />
 
 </console-config>
