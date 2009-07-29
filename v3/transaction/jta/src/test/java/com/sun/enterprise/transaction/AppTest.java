@@ -101,7 +101,9 @@ public class AppTest extends TestCase {
         PropertyChangeEvent e1 = new PropertyChangeEvent("", ServerTags.KEYPOINT_INTERVAL, "1", "10");
         PropertyChangeEvent e2 = new PropertyChangeEvent("", ServerTags.RETRY_TIMEOUT_IN_SECONDS, "1", "10");
         try {
-            ((JavaEETransactionManagerSimplified)t).changed(new PropertyChangeEvent[] {e1, e2});
+            TransactionServiceConfigListener l = new TransactionServiceConfigListener();
+            l.setTM(t);
+            l.changed(new PropertyChangeEvent[] {e1, e2});
             assert(true);
         } catch (Exception ex) {
             ex.printStackTrace();

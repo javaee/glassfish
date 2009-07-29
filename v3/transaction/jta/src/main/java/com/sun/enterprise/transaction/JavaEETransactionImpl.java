@@ -162,7 +162,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
         try {
             setRollbackOnly();
         } catch (Exception e) {
-            e.printStackTrace();
+            _logger.log(Level.WARNING, "enterprise_distributedtx.some_excep", e);
         }
     }
 
