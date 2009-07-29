@@ -5450,7 +5450,7 @@ public class StandardContext
             } catch (Throwable t) {
                 log.log(Level.WARNING, 
                     sm.getString(
-                        "standardContext.pluggability.CNFWarning",
+                        "standardContext.servletContainerInitializer.error",
                         initializer.getCanonicalName()),
                     t);
                 continue;
