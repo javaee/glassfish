@@ -46,13 +46,6 @@
 
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.Step2PageTitle}" >
 <!define name="content">
-
-    <event>
-        <!beforeEncode
-            getUIComponent(clientId="$pageSession{tableTextField}" component=>$attribute{tableTextField});
-            setDisableConnectionPoolTableField(tableField="$attribute{tableTextField}" methodValue="#{valueMap.ConnectionValidationMethod}");
-        />
-    </event>
     <event>
     <!beforeCreate
         getRequestValue(key="cancelPage" default="jdbc/jdbcConnectionPools.jsf" value=>$page{cancelPage});

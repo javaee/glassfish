@@ -40,13 +40,11 @@
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
 	setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.editPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.editPageTitle}" guiOnLoad="initDisableFields('#{valueMap.ResType}');" >
 <!define name="content">
     <event>
     <!beforeEncode
-        getUIComponent(clientId="$pageSession{tableTextField}" component=>$attribute{tableTextField});
-        setDisableConnectionPoolTableField(tableField="$attribute{tableTextField}" methodValue="$attribute{connectionValidationMethod}");
-    />
+   />
     </event>
     <event>
     <!beforeCreate
@@ -58,6 +56,7 @@
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="type" value="#{valueMap.ResType}"); 
         setPageSessionAttribute(key="convertToFalseList" value={"IsConnectionValidationRequired" "FailAllConnections" "AllowNonComponentCallers" "NonTransactionalConnections" "IsIsolationLevelGuaranteed"});
          setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
         //set the following for including buttons.inc
@@ -66,6 +65,7 @@
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
+ 
         />
         </event>
 #include "/common/shared/restart.inc"        
@@ -83,11 +83,7 @@
                             pingJdbcConnectionPool(jndiName="#{pageSession.Name}");
                         />
                     </sun:button>
-                    <sun:button id="flush" text="$resource{i18njdbc.button.Flush}" primary="#{false}" > 
-                        <!command
-                            flushConnectionPool(jndiName="#{pageSession.Name}");
-                        />
-                    </sun:button>                      
+                                     
 #include "/common/shared/editPageButtons_2.inc"
                 </sun:title>
 #include "/jdbc/poolPropertyNew.inc"
@@ -99,12 +95,20 @@
 #include "/common/shared/changeButtonsJS.inc"
 
 "<SCRIPT language = "Javascript" > \
-function disableTableField() {  \
-    var methodType = getSelectElement("$pageSession{valMethod}"); \
-    if(methodType.value == 'table') { \
-	webui.suntheme.field.setDisabled("$pageSession{tableTextField}", false); \
+function initDisableFields(type) {  \
+    disableEnableFields(type); \
+} \
+function disableFields() {  \
+    var type = getSelectElement("$pageSession{resTypeVal}"); \
+    disableEnableFields(type.value); \
+} \
+function disableEnableFields(type) {  \
+    if(type == 'java.sql.Driver') { \
+	webui.suntheme.field.setDisabled("$pageSession{dsTextField}", true); \
+        webui.suntheme.field.setDisabled("$pageSession{ddsTextField}", false); \
     } else{ \
-	webui.suntheme.field.setDisabled("$pageSession{tableTextField}", true); \
+	webui.suntheme.field.setDisabled("$pageSession{dsTextField}", false); \
+        webui.suntheme.field.setDisabled("$pageSession{ddsTextField}", true); \
     } \
 } \
 </SCRIPT>

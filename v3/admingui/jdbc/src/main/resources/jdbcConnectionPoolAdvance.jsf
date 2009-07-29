@@ -41,6 +41,13 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" >
 <!define name="content">
     <event>
+    <!beforeEncode
+        getUIComponent(clientId="$pageSession{tableTextField}" component=>$attribute{tableTextField});
+        getUIComponent(clientId="$pageSession{validCNTextField}" component=>$attribute{validCNTextField});
+        setDisableConnectionPoolTableField(tableDD="$attribute{tableTextField}" validationField="$attribute{validCNTextField}" methodValue="$attribute{connectionValidationMethod}");
+    />
+    </event>
+    <event>
     <!beforeCreate
         getRequestValue(key="name" value="#{pageSession.Name}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/jdbcConnectionPoolAdvance.jsf");
@@ -64,7 +71,13 @@
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" 
                     helpText="$resource{i18njdbc.jdbcConnectionPool.advancePageTitleHelp}">
+                                              
 #include "/common/shared/editPageLoadDefaultButton.inc"
+<sun:button id="flush" text="$resource{i18njdbc.button.Flush}" primary="#{false}" > 
+                        <!command
+                            flushConnectionPool(jndiName="#{pageSession.Name}");
+                        />
+                    </sun:button>   
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
@@ -113,7 +126,22 @@
                 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPoolAdvance}" />
             </sun:form>
-#include "/jdbc/lazyConnectionJS.inc"                   
+#include "/jdbc/lazyConnectionJS.inc"    
+"<SCRIPT language = "Javascript" > \
+function disableTableField() {  \
+    var methodType = getSelectElement("$pageSession{valMethod}"); \
+    if(methodType.value == 'table') { \
+	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled("$pageSession{tableTextField}", false); \
+    } else{ \
+	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled("$pageSession{tableTextField}", true); \
+    } \
+    if(methodType.value == 'custom-validation') { \
+	webui.suntheme.field.setDisabled("$pageSession{validCNTextField}", false); \
+    } else{ \
+	webui.suntheme.field.setDisabled("$pageSession{validCNTextField}", true); \
+    } \
+} \
+</SCRIPT>
 </define>
 </composition>
 
