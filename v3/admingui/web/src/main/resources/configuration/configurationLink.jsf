@@ -39,9 +39,9 @@
 <sun:property>
     <sun:hyperlink 
         toolTip="$resource{i18n.tree.webContainer.tooltip}" 
-        url="/web/configuration/webContainerGeneral.jsf?configName=#{configName}" 
+        url="/web/configuration/webContainerGeneral.jsf?configName=server-config"
         >
-        <sun:image url="/resource/images/container.gif" />
+        <sun:image url="/resource/web/images/container.gif" />
         <sun:staticText text="$resource{i18n.tree.webContainer}" />
     </sun:hyperlink>
 </sun:property>
@@ -49,9 +49,9 @@
 <sun:property>
     <sun:hyperlink 
         toolTip="$resource{i18n.tree.transactionService.tooltip}" 
-        url="/web/configuration/transactionService.jsf?configName=#{configName}" 
+        url="/web/configuration/transactionService.jsf?configName=server-config"
         >
-        <sun:image url="/resource/images/transactionService.gif" />
+        <sun:image url="/resource/web/images/transactionService.gif" />
         <sun:staticText text="$resource{i18n.tree.transactionService}" />
     </sun:hyperlink>
 </sun:property>
@@ -59,9 +59,9 @@
 <sun:property>
     <sun:hyperlink 
         toolTip="$resource{i18n.tree.httpService.tooltip}" 
-        url="/web/configuration/httpService.jsf?configName=#{configName}" 
+        url="/web/configuration/accessLog.jsf?configName=server-config"
         >
-    <sun:image url="/resource/images/httpservice.gif" />
+    <sun:image url="/resource/web/images/httpservice.gif" />
     <sun:staticText text="$resource{i18n.tree.httpService}" />
     </sun:hyperlink>
 </sun:property>
@@ -71,20 +71,41 @@
         toolTip="$resource{i18n.tree.virtualServers.tooltip}"
         url="/web/configuration/virtualServers.jsf?configName=#{configName}"
         >
-    <sun:image url="/resource/images/http.gif" />
+    <sun:image url="/resource/web/images/http.gif" />
     <sun:staticText text="$resource{i18n.tree.virtualServers}" />
     </sun:hyperlink>
 </sun:property>
 
 <sun:property>
     <sun:hyperlink
-        toolTip="$resource{i18n.tree.grizzly.networkConfig.tooltip}"
-        url="/web/configuration/networkConfig.jsf?configName=#{configName}"
+        toolTip="$resource{i18n.tree.threadPools.tooltip}"
+        url="/web/configuration/threadPools.jsf?configName=#{configName}"
         >
-    <sun:image url="/resource/images/http.gif" />
-    <sun:staticText text="$resource{i18n.tree.grizzly.networkConfig}" />
+    <sun:image url="/resource/web/images/threadPool.gif" />
+    <sun:staticText text="$resource{i18n.tree.threadPools}" />
     </sun:hyperlink>
 </sun:property>
+
+<sun:property>
+    <sun:hyperlink
+        toolTip="$resource{i18n.tree.grizzly.networkListeners.tooltip}"
+        url="/web/grizzly/networkListeners.jsf?configName=#{configName}"
+        >
+    <sun:image url="/resource/images/http.gif" />
+    <sun:staticText text="$resource{i18n.tree.grizzly.networkListeners}" />
+    </sun:hyperlink>
+</sun:property>
+
+<sun:property>
+    <sun:hyperlink
+        toolTip="$resource{i18n.tree.grizzly.protocols.tooltip}"
+        url="/web/grizzly/protocols.jsf?configName=#{configName}"
+        >
+    <sun:image url="/resource/images/http.gif" />
+    <sun:staticText text="$resource{i18n.tree.grizzly.protocols}" />
+    </sun:hyperlink>
+</sun:property>
+
 
 <sun:property>
     <sun:hyperlink 
