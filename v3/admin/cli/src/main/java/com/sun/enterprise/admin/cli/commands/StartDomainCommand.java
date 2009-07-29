@@ -37,7 +37,6 @@
 package com.sun.enterprise.admin.cli.commands;
 
 import com.sun.enterprise.admin.cli.CLIConstants;
-import com.sun.enterprise.util.Profiler;
 import static com.sun.enterprise.admin.cli.CLIConstants.*;
 import com.sun.enterprise.admin.cli.Environment;
 import com.sun.enterprise.admin.cli.LocalDomainCommand;
@@ -108,21 +107,11 @@ public class StartDomainCommand extends LocalDomainCommand {
     @Override
     protected int executeCommand() throws CommandException {
         String gfejar = System.getenv("GFE_JAR");
-        Profiler.beginItem("start-domain entire command");
 
         if (gfejar != null && gfejar.length() > 0)
             runCommandEmbedded();
         else
             runCommandNotEmbedded();
-
-        Profiler.endItem();
-        if (CLIConstants.debugMode) {
-            logger.printMessage("*************  TIMING RESULTS **********" +
-                    Profiler.report() +
-                    "****************************************");
-            Profiler.reset();
-        }
-
         return 0;
     }
 
@@ -149,12 +138,8 @@ public class StartDomainCommand extends LocalDomainCommand {
                             programOpts.getClassPath(),
                             programOpts.getProgramArguments());
 
-            Profiler.beginItem("Set Master Password");
             setMasterPassword(info);
-            Profiler.subItem("Launcher.setup()");
             launcher.setup();
-            Profiler.subItem("isServerAlive()");
-
             // CLI calls this method only to ensure that domain.xml is parsed
             // once. This is a performance optimization.
             // km@dev.java.net (Aug 2008)
@@ -163,7 +148,6 @@ public class StartDomainCommand extends LocalDomainCommand {
                 String msg = strings.get("ServerRunning",
                         definitePort+"");
                 logger.printWarning(msg);
-                Profiler.endItem();
                 return;
             }
 
@@ -171,13 +155,10 @@ public class StartDomainCommand extends LocalDomainCommand {
             if (isRestart)
                 waitForParentToDie();
 
-            Profiler.subItem("launcher.launch()");
-
             // launch returns very quickly if verbose is not set
             // if verbose is set then it returns after the domain dies
             launcher.launch();
-            Profiler.endItem();
-            
+
             if (verbose) { // we can potentially loop forever here...
                 while (launcher.getExitValue() == RESTART_EXIT_VALUE) {
                     logger.printMessage(strings.get("restart"));
@@ -189,9 +170,7 @@ public class StartDomainCommand extends LocalDomainCommand {
                     launcher.relaunch();
                 }
             } else {
-                Profiler.beginItem("DAS Startup Time");
                 waitForDAS(info.getAdminPorts());
-                Profiler.endItem();
                 report(info);
             }
         } catch (GFLauncherException gfle) {
