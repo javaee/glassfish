@@ -51,9 +51,11 @@
                             <sun:staticText id="resAdapter" text="#{wizardPoolExtra.ResourceAdapterName}"  />
                         </sun:property>  
                         <sun:property id="resAdapterProp"  rendered="#{edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}"  >
-                            <sun:dropDown id="db"  rendered="#{edit}" selected="#{valueMap.ResourceAdapterName}" submitForm="#{true}" immediate="#{true}" labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" required="#{true}" >
+                            <sun:dropDown id="db"  rendered="#{edit}" selected="#{valueMap.ResourceAdapterName}" submitForm="#{true}" immediate="#{true}"
+                                labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" required="#{true}" >
                                 <!beforeCreate
-                                    getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{pageSession.connectorList}")
+                                    getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{pageSession.rarList}")
+                                    addSystemConnectors(rarList="#{requestScope.rarList}" result="#{pageSession.connectorList}")
                                 />
                             </sun:dropDown>
                         </sun:property>

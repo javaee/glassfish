@@ -52,7 +52,8 @@
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
         getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
-        getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{requestScope.modList}")
+        getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{requestScope.rarList}")
+        addSystemConnectors(rarList="#{requestScope.rarList}" result="#{requestScope.modList}")
         addEmptyFirstElement(in="$attribute{modList}"  out="#{pageSession.modules}")
         getConnectorConnectionPoolWizard(
                 fromStep1="$attribute{fromStep1}"
@@ -107,7 +108,8 @@
                             </sun:property>   
 
                             <sun:property id="resAdapterProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njca.adminObjectResource.resourceAdapterHelp}">
-                                <sun:dropDown id="db" selected="#{wizardPoolExtra.ResourceAdapterName}" submitForm="#{true}" immediate="#{true}"   labels="$pageSession{modules}" styleClass="required" required="#{true}" >
+                                <sun:dropDown id="db" selected="#{wizardPoolExtra.ResourceAdapterName}" submitForm="#{true}" immediate="#{true}"
+                                    labels="$pageSession{modules}" styleClass="required" required="#{true}" >
                                 <!command
                                     getUIComponent(clientId="#{jndiNameId}", component=>$attribute{nameComponent});
                                     getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{poolName});

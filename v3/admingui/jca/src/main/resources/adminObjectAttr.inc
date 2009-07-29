@@ -57,6 +57,7 @@
             <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['ResAdapter']}" labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" >
                 <!beforeCreate
                      getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{requestScope.connList}")
+                     listAdd(list="#{requestScope.connList}" value="jmsra")
                      addEmptyFirstElement(in="$attribute{connList}"  out="#{pageSession.connectorList}")
                 />
            </sun:dropDown>

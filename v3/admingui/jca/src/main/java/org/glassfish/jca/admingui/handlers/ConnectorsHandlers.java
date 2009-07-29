@@ -162,6 +162,27 @@ public class ConnectorsHandlers {
         attrs.put("ResourceAdapterName", resAdapter);
     }  
 
+    /**
+     *	<p> Adds the list of pre-installed system resource-adapters
+     */
+    @Handler(id = "addSystemConnectors",
+        input = {
+            @HandlerInput(name = "rarList", type = List.class)},
+        output = {
+            @HandlerOutput(name = "result", type = List.class)
+            })
+    public static void addSystemConnectors(HandlerContext handlerCtx) {
+        //When getSystemConnectorsAllowingPoolCreation() API is available, we should call use that API
+        //instead of hardcoding the list.  refer to issue# 8941
+        List rarList = (List) handlerCtx.getInputValue("rarList");
+        if (rarList == null){
+            rarList = new ArrayList();
+        }
+        rarList.add("jmsra");
+        rarList.add("jaxr-ra");
+        handlerCtx.setOutputValue("result", rarList);
+    }
+
 
     private static List getConnectionDefinitions(String resAdapter) {
         ArrayList defs = new ArrayList();
