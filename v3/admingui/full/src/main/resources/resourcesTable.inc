@@ -72,11 +72,6 @@
         <staticText id="typeCol" value="#{td.value.Enabled}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colPool}" sort="PoolName" rendered="#{pageSession.hasPool}"  rowHeader="$boolean{true}" id="col3">
-        <sun:hyperlink id="pool" text="#{td.value.PoolName}" 
-            url="#{pageSession.editPoolLink}?name=#{td.value.PoolName}" />
-    </sun:tableColumn>
-    
     <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colResType}" sort="ResType" rendered="#{pageSession.hasResType}"  rowHeader="$boolean{true}" id="coltype">
         <staticText id="typeCol" rendered="#{pageSession.hasResType}" value="#{td.value.ResType}" />
     </sun:tableColumn>

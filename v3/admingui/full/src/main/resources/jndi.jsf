@@ -41,7 +41,7 @@
         setResourceBundle(key="help_jmail" bundle="org.glassfish.full.admingui.Helplinks")
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njmail.connectors.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njmail.jndi.pageTitle}" >
 <!define name="content">
 
 #include "/common/shared/restart.inc"    

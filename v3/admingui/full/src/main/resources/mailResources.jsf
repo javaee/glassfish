@@ -49,7 +49,7 @@
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="mail-resource");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
-        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njmail.msg.JS.confirmDeleteMR}");
+        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njmail.msg.JS.confirmDeleteCR}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/full/mailResourceNew.jsf");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/full/mailResources.jsf");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/full/mailResourceEdit.jsf");
