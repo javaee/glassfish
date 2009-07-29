@@ -55,6 +55,7 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import com.sun.webui.jsf.component.Calendar;
 import com.sun.webui.jsf.model.UploadedFile;
 import com.sun.webui.jsf.component.Field;
+import com.sun.webui.jsf.component.DropDown;
 import com.sun.webui.jsf.component.Hyperlink;
 
 import javax.faces.context.ExternalContext;
@@ -139,18 +140,27 @@ public class WoodstockHandler {
      */
     @Handler(id="setDisableConnectionPoolTableField",
         input={
-            @HandlerInput(name="tableField", type=com.sun.webui.jsf.component.Field.class),
+            @HandlerInput(name="tableDD", type=com.sun.webui.jsf.component.DropDown.class),
+            @HandlerInput(name="validationField", type=com.sun.webui.jsf.component.Field.class),
             @HandlerInput(name="methodValue", type=String.class)}
         )
     public static void setDisableConnectionPoolTableField(HandlerContext handlerCtx) {
-        String methodValue = (String)handlerCtx.getInputValue("methodValue");
-        Field tableField = (Field)handlerCtx.getInputValue("tableField");
-        if("table".equals(methodValue)){
-            tableField.setDisabled(false);
-        }else
-            tableField.setDisabled(true);
-    }
+        String methodValue = (String) handlerCtx.getInputValue("methodValue");
+        DropDown tableDD = (DropDown) handlerCtx.getInputValue("tableDD");
+        Field validationField = (Field) handlerCtx.getInputValue("validationField");
+        if ("table".equals(methodValue)) {
+            tableDD.setDisabled(false);
+            validationField.setDisabled(true);
+        } else if ("custom-validation".equals(methodValue)) {
+            tableDD.setDisabled(true);
+            validationField.setDisabled(false);
 
+        } else {
+            tableDD.setDisabled(true);
+            validationField.setDisabled(true);
+        }
+    }
+    
 
     @Handler(id="createHyperlinkArray",
     output={
