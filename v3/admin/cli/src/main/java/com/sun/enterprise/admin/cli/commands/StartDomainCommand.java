@@ -37,6 +37,7 @@
 package com.sun.enterprise.admin.cli.commands;
 
 import com.sun.enterprise.admin.cli.CLIConstants;
+import com.sun.enterprise.util.Profiler;
 import static com.sun.enterprise.admin.cli.CLIConstants.*;
 import com.sun.enterprise.admin.cli.Environment;
 import com.sun.enterprise.admin.cli.LocalDomainCommand;
@@ -80,6 +81,7 @@ public class StartDomainCommand extends LocalDomainCommand {
      */
     public StartDomainCommand(String name, ProgramOptions po, Environment env) {
         super(name, po, env);
+        profileBeginItem("start-domain entire command");
     }
 
     /**
@@ -112,14 +114,19 @@ public class StartDomainCommand extends LocalDomainCommand {
             runCommandEmbedded();
         else
             runCommandNotEmbedded();
+
+        profileEndItem();   // entire command
         return 0;
     }
 
     private void runCommandNotEmbedded() throws CommandException {
         try {
+            profileBeginItem("Launcher Construction");
             GFLauncher launcher = GFLauncherFactory.getInstance(
                     GFLauncherFactory.ServerType.domain);
             info = launcher.getInfo();
+            profileEndItem();
+            profileBeginItem("Set calls on Info Object");
 
             if (!operands.isEmpty()) {
                 info.setDomainName(operands.get(0));
@@ -138,8 +145,15 @@ public class StartDomainCommand extends LocalDomainCommand {
                             programOpts.getClassPath(),
                             programOpts.getProgramArguments());
 
+            profileEndItem();
+            profileBeginItem("Set Master Password");
             setMasterPassword(info);
+            profileEndItem();
+            profileBeginItem("Launcher.setup()");
             launcher.setup();
+            profileEndItem();
+            profileBeginItem("isServerAlive()");
+
             // CLI calls this method only to ensure that domain.xml is parsed
             // once. This is a performance optimization.
             // km@dev.java.net (Aug 2008)
@@ -150,15 +164,24 @@ public class StartDomainCommand extends LocalDomainCommand {
                 logger.printWarning(msg);
                 return;
             }
+            profileEndItem();
 
+            profileBeginItem("Restart Stuff");
             boolean isRestart = Boolean.getBoolean(RESTART_FLAG);
             if (isRestart)
                 waitForParentToDie();
+
+            profileEndItem();
+            profileBeginItem("launcher.launch()");
 
             // launch returns very quickly if verbose is not set
             // if verbose is set then it returns after the domain dies
             launcher.launch();
 
+            profileEndItem();
+            profileEndItem(); // entire command time
+            profilerFinish();
+            
             if (verbose) { // we can potentially loop forever here...
                 while (launcher.getExitValue() == RESTART_EXIT_VALUE) {
                     logger.printMessage(strings.get("restart"));
@@ -349,6 +372,25 @@ public class StartDomainCommand extends LocalDomainCommand {
         } catch (IOException ex) {
             Logger lg = Logger.getLogger(StartDomainCommand.class.getName());
             lg.log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void profileBeginItem(String name) {
+        if (CLIConstants.debugMode)
+            Profiler.beginItem(name);
+    }
+
+    private void profileEndItem() {
+        if (CLIConstants.debugMode)
+            Profiler.endItem();
+    }
+    
+    private void profilerFinish() {
+        if (CLIConstants.debugMode) {
+            logger.printMessage("*************  TIMING RESULTS **********" +
+                    Profiler.report() +
+                    "****************************************");
+            Profiler.reset();
         }
     }
 }
