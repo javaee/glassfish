@@ -49,22 +49,6 @@ import com.sun.appserv.connectors.internal.api.PoolingException;
  * Abstract Pool manager for unimplemented features. Throws UnsupportedOperationException when invoked.
  */
 public abstract class AbstractPoolManager implements PoolManager {
-    /**
-     * Obtain a transactional resource such as JDBC connection
-     *
-     * @param spec  Specification for the resource
-     * @param alloc Allocator for the resource
-     * @param info  Client security for this request
-     * @return An object that represents a connection to the resource
-     * @throws PoolingException Thrown if some error occurs while
-     *                          obtaining the resource
-     */
-
-    private static Logger _logger = null;
-
-    static {
-        _logger = LogDomains.getLogger(AbstractPoolManager.class, LogDomains.RSR_LOGGER);
-    }
 
     public void emptyResourcePool(ResourceSpec spec) {
         throw new UnsupportedOperationException();
@@ -80,7 +64,7 @@ public abstract class AbstractPoolManager implements PoolManager {
 
     public void setMonitoringEnabledLow(String poolName) {
         throw new UnsupportedOperationException();
-    }//get the pooltable
+    }
 
    //register the MonitoringLevelListeners
     public void initializeMonitoring() {
@@ -91,15 +75,7 @@ public abstract class AbstractPoolManager implements PoolManager {
         throw new UnsupportedOperationException();
     }
 
-    public void killFreeConnectionsInPools() {
-        throw new UnsupportedOperationException();
-    }
-
     public void setSelfManaged(String poolName, boolean flag) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void lazyEnlist(ManagedConnection mc) throws ResourceException {
         throw new UnsupportedOperationException();
     }
 
