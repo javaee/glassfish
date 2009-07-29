@@ -42,7 +42,7 @@
         setAttribute(key="fieldMap" value="rar");
         createMap(result="#{pageSession.rar}")
         mapPut(map="#{pageSession.deployMap}", key="rar", value="#{pageSession.rar}");
-        mapPut(map="#{pageSession.rar}", key="convertToFalseList", value={ "PROPERTY-verify", "PROPEERTY-javaWebStartEnabled"} );
+        mapPut(map="#{pageSession.rar}", key="convertToFalseList", value={ "PROPERTY-verify"} );
      />
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{rarId});
