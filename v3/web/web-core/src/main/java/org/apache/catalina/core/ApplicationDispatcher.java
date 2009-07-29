@@ -220,7 +220,7 @@ public final class ApplicationDispatcher
 
     // ----------------------------------------------------- Instance Variables
 
-    private static Logger log = Logger.getLogger(
+    private static final Logger log = Logger.getLogger(
         ApplicationDispatcher.class.getName());
 
     //START OF 6364900
@@ -921,12 +921,13 @@ public final class ApplicationDispatcher
      */
     private void log(String message) {
         org.apache.catalina.Logger logger = context.getLogger();
-        if (logger != null)
+        if (logger != null) {
             logger.log("ApplicationDispatcher[" + context.getPath() +
                        "]: " + message);
-        else
-            System.out.println("ApplicationDispatcher[" +
-                               context.getPath() + "]: " + message);
+        } else {
+            log.info("ApplicationDispatcher[" +
+                     context.getPath() + "]: " + message);
+        }
     }
 
 
@@ -936,15 +937,14 @@ public final class ApplicationDispatcher
      * @param message Message to be logged
      * @param throwable Associated exception
      */
-    private void log(String message, Throwable throwable) {
+    private void log(String message, Throwable t) {
         org.apache.catalina.Logger logger = context.getLogger();
-        if (logger != null)
+        if (logger != null) {
             logger.log("ApplicationDispatcher[" + context.getPath() +
-                       "] " + message, throwable);
-        else {
-            System.out.println("ApplicationDispatcher[" +
-                               context.getPath() + "]: " + message);
-            throwable.printStackTrace(System.out);
+                       "] " + message, t);
+        } else {
+            log.log(Level.WARNING, "ApplicationDispatcher[" +
+                    context.getPath() + "]: " + message, t);
         }
     }
 

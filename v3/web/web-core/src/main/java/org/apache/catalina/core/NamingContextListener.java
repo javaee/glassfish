@@ -103,7 +103,7 @@ import org.apache.catalina.util.StringManager;
 public class NamingContextListener
     implements LifecycleListener, ContainerListener, PropertyChangeListener {
 
-    private static Logger log = Logger.getLogger(
+    private static final Logger log = Logger.getLogger(
         NamingContextListener.class.getName());
 
 
@@ -1077,19 +1077,17 @@ public class NamingContextListener
      * @param message Message to be logged
      */
     protected void log(String message) {
-
         if (!(container instanceof Container)) {
-            System.out.println(logName() + ": " + message);
+            log.info(logName() + ": " + message);
             return;
         }
-
         org.apache.catalina.Logger logger =
             ((Container) container).getLogger();
-        if (logger != null)
+        if (logger != null) {
             logger.log(logName() + ": " + message);
-        else
-            System.out.println(logName() + ": " + message);
-
+        } else {
+            log.info(logName() + ": " + message);
+        }
     }
 
 
@@ -1100,23 +1098,18 @@ public class NamingContextListener
      * @param message Message to be logged
      * @param throwable Related exception
      */
-    protected void log(String message, Throwable throwable) {
-
+    protected void log(String message, Throwable t) {
         if (!(container instanceof Container)) {
-            System.out.println(logName() + ": " + message + ": " + throwable);
-            throwable.printStackTrace(System.out);
+            log.log(Level.WARNING, logName() + ": " + message, t);
             return;
         }
-
         org.apache.catalina.Logger logger =
             ((Container) container).getLogger();
-        if (logger != null)
-            logger.log(logName() + ": " + message, throwable);
-        else {
-            System.out.println(logName() + ": " + message + ": " + throwable);
-            throwable.printStackTrace(System.out);
+        if (logger != null) {
+            logger.log(logName() + ": " + message, t);
+        } else {
+            log.log(Level.WARNING, logName() + ": " + message, t);
         }
-
     }
 
 

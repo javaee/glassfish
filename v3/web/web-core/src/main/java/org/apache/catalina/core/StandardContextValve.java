@@ -123,7 +123,7 @@ final class StandardContextValve
     private StandardContext context = null;
 
 
-    private static Logger log = Logger.getLogger(
+    private static final Logger log = Logger.getLogger(
         StandardContextValve.class.getName());
 
 
@@ -301,21 +301,19 @@ final class StandardContextValve
      * @param message Message to be logged
      */
     private void log(String message) {
-
         org.apache.catalina.Logger logger = null;
-        if (container != null)
+        String containerName = null;
+        if (container != null) {
             logger = container.getLogger();
-        if (logger != null)
-            logger.log("StandardContextValve[" + container.getName() + "]: "
-                       + message);
-        else {
-            String containerName = null;
-            if (container != null)
-                containerName = container.getName();
-            System.out.println("StandardContextValve[" + containerName
-                               + "]: " + message);
+            containerName = container.getName();
         }
-
+        if (logger != null) {
+            logger.log("StandardContextValve[" + container.getName() + "]: " +
+                       message);
+        } else {
+            log.info("StandardContextValve[" + containerName + "]: " +
+                     message);
+        }
     }
 
 
@@ -325,24 +323,20 @@ final class StandardContextValve
      * @param message Message to be logged
      * @param throwable Associated exception
      */
-    private void log(String message, Throwable throwable) {
-
+    private void log(String message, Throwable t) {
         org.apache.catalina.Logger logger = null;
-        if (container != null)
+        String containerName = null;
+        if (container != null) {
             logger = container.getLogger();
-        if (logger != null)
-            logger.log("StandardContextValve[" + container.getName() + "]: "
-                       + message, throwable);
-        else {
-            String containerName = null;
-            if (container != null)
-                containerName = container.getName();
-            System.out.println("StandardContextValve[" + containerName
-                               + "]: " + message);
-            System.out.println("" + throwable);
-            throwable.printStackTrace(System.out);
+            containerName = container.getName();
         }
-
+        if (logger != null) {
+            logger.log("StandardContextValve[" + container.getName() + "]: " +
+                       message, t);
+        } else {
+            log.log(Level.WARNING, "StandardContextValve[" + containerName +
+                    "]: " + message, t);
+        }
     }
 
 

@@ -108,7 +108,7 @@ public class StandardContext
     extends ContainerBase
     implements Context, Serializable
 {
-    private static transient Logger log = Logger.getLogger(
+    private static final transient Logger log = Logger.getLogger(
         StandardContext.class.getName());
 
     private static final ClassLoader standardContextClassLoader =
@@ -5831,19 +5831,14 @@ public class StandardContext
      * @return the previous context class loader
      */
     private ClassLoader bindThread() {
-
         ClassLoader oldContextClassLoader =
             Thread.currentThread().getContextClassLoader();
-
         Thread.currentThread().setContextClassLoader(getClassLoader());
-
         if (isUseNaming()) {
             try {
                 ContextBindings.bindThread(this, this);
             } catch (Throwable e) {
-                e.printStackTrace();
-                // Silent catch, as this is a normal case during the early
-                // startup stages
+                log.log(Level.WARNING, "Error during bindThread", e);
             }
         }
 
@@ -5855,9 +5850,7 @@ public class StandardContext
      * Unbind thread.
      */
     private void unbindThread(ClassLoader oldContextClassLoader) {
-
         Thread.currentThread().setContextClassLoader(oldContextClassLoader);
-
         if (isUseNaming()) {
             ContextBindings.unbindThread(this, this);
         }

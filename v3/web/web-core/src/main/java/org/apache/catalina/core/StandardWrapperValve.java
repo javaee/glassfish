@@ -78,10 +78,9 @@ import org.apache.catalina.valves.ValveBase;
  * @version $Revision: 1.10 $ $Date: 2007/05/05 05:31:54 $
  */
 
-final class StandardWrapperValve
-    extends ValveBase {
+final class StandardWrapperValve extends ValveBase {
 
-    private static java.util.logging.Logger log =
+    private static final java.util.logging.Logger log =
         java.util.logging.Logger.getLogger(
             StandardWrapperValve.class.getName());
 
@@ -428,21 +427,19 @@ final class StandardWrapperValve
      * @param message Message to be logged
      */
     private void log(String message) {
-
         org.apache.catalina.Logger logger = null;
-        if (container != null)
+        String containerName = null;
+        if (container != null) {
             logger = container.getLogger();
-        if (logger != null)
-            logger.log("StandardWrapperValve[" + container.getName() + "]: "
-                       + message);
-        else {
-            String containerName = null;
-            if (container != null)
-                containerName = container.getName();
-            System.out.println("StandardWrapperValve[" + containerName
-                               + "]: " + message);
+            containerName = container.getName();
         }
-
+        if (logger != null) {
+            logger.log("StandardWrapperValve[" + containerName + "]: " +
+                       message);
+        } else {
+            log.info("StandardWrapperValve[" + containerName + "]: " +
+                     message);
+        }
     }
 
 
@@ -452,24 +449,20 @@ final class StandardWrapperValve
      * @param message Message to be logged
      * @param throwable Associated exception
      */
-    private void log(String message, Throwable throwable) {
-
+    private void log(String message, Throwable t) {
         org.apache.catalina.Logger logger = null;
-        if (container != null)
+        String containerName = null;
+        if (container != null) {
             logger = container.getLogger();
-        if (logger != null)
-            logger.log("StandardWrapperValve[" + container.getName() + "]: "
-                       + message, throwable);
-        else {
-            String containerName = null;
-            if (container != null)
-                containerName = container.getName();
-            System.out.println("StandardWrapperValve[" + containerName
-                               + "]: " + message);
-            System.out.println("" + throwable);
-            throwable.printStackTrace(System.out);
+            containerName = container.getName();
         }
-
+        if (logger != null) {
+            logger.log("StandardWrapperValve[" + containerName + "]: " +
+                       message, t);
+        } else {
+            log.log(Level.WARNING, "StandardWrapperValve[" + containerName +
+                    "]: " + message, t);
+        }
     }
 
 

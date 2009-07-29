@@ -103,7 +103,8 @@ public class StandardHost
  {
     /* Why do we implement deployer and delegate to deployer ??? */
 
-    private static Logger log = Logger.getLogger(StandardHost.class.getName());
+    private static final Logger log =
+        Logger.getLogger(StandardHost.class.getName());
     
     // ----------------------------------------------------------- Constructors
 
@@ -1281,19 +1282,19 @@ public class StandardHost
         */
         
         // already registered.
-        if( getParent() == null ) {
+        if(getParent() == null) {
             try {
                 // Register with the Engine
                 ObjectName serviceName=new ObjectName(domain + ":type=Engine");
-                
-                if( mserver.isRegistered( serviceName )) {
+                if (mserver.isRegistered(serviceName)) {
                     log.fine("Registering with the Engine");
-                    mserver.invoke( serviceName, "addChild",
+                    mserver.invoke(serviceName, "addChild",
                             new Object[] { this },
                             new String[] { "org.apache.catalina.Container" } );
                 }
-            } catch( Exception ex ) {
-                ex.printStackTrace();
+            } catch(Exception ex) {
+                log.log(Level.SEVERE, "Error registering host " + getName(),
+                        ex);
             }
         }
         
@@ -1312,8 +1313,9 @@ public class StandardHost
                 controller = oname;
                 // END CR 6368091
                 Registry.getRegistry(null, null).registerComponent(this, oname, null);
-            } catch( Throwable t ) {
-                log.log(Level.INFO, "Error registering ", t);
+            } catch(Throwable t) {
+                log.log(Level.SEVERE, "Error registering host " + getName(),
+                        t);
             }
         }
         // START CR 6368085

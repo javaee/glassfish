@@ -104,7 +104,7 @@ import org.apache.tomcat.util.modeler.Registry;
 public class StandardPipeline
     implements Pipeline, Contained, Lifecycle {
 
-    private static Logger log = Logger.getLogger(
+    private static final Logger log = Logger.getLogger(
         StandardPipeline.class.getName());
    
 
@@ -723,17 +723,17 @@ public class StandardPipeline
      * @param message Message to be logged
      */
     protected void log(String message) {
-
         org.apache.catalina.Logger logger = null;
-        if (container != null)
+        if (container != null) {
             logger = container.getLogger();
-        if (logger != null)
+        }
+        if (logger != null) {
             logger.log("StandardPipeline[" + container.getName() + "]: " +
                        message);
-        else
-            System.out.println("StandardPipeline[" + container.getName() +
-                               "]: " + message);
-
+        } else {
+            log.info("StandardPipeline[" + container.getName() +
+                     "]: " + message);
+        }
     }
 
 
@@ -743,20 +743,18 @@ public class StandardPipeline
      * @param message Message to be logged
      * @param throwable Associated exception
      */
-    protected void log(String message, Throwable throwable) {
-
+    protected void log(String message, Throwable t) {
         org.apache.catalina.Logger logger = null;
-        if (container != null)
+        if (container != null) {
             logger = container.getLogger();
-        if (logger != null)
-            logger.log("StandardPipeline[" + container.getName() + "]: " +
-                       message, throwable);
-        else {
-            System.out.println("StandardPipeline[" + container.getName() +
-                               "]: " + message);
-            throwable.printStackTrace(System.out);
         }
-
+        if (logger != null) {
+            logger.log("StandardPipeline[" + container.getName() + "]: " +
+                       message, t);
+        } else {
+            log.log(Level.WARNING, "StandardPipeline[" + container.getName() +
+                    "]: " + message, t);
+        }
     }
 
     // ------------------------------------------------------ Private Methods

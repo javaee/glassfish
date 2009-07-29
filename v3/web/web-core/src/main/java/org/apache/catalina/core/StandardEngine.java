@@ -88,7 +88,7 @@ public class StandardEngine
     extends ContainerBase
     implements Engine {
 
-    private static Logger log = Logger.getLogger(
+    private static final Logger log = Logger.getLogger(
         StandardEngine.class.getName());
 
     // ----------------------------------------------------------- Constructors
@@ -426,26 +426,6 @@ public class StandardEngine
                 log.log(Level.SEVERE, "Error in init() for " + mbeansFile, e);
             }
         }
-        
-        // not needed since the following if statement does the same thing the right way
-        // remove later after checking
-        //if( service==null ) {
-        //    try {
-        //        ObjectName serviceName=getParentName();        
-        //        if( mserver.isRegistered( serviceName )) {
-        //            log.info("Registering with the service ");
-        //            try {
-        //                mserver.invoke( serviceName, "setContainer",
-        //                        new Object[] { this },
-        //                        new String[] { "org.apache.catalina.Container" } );
-        //            } catch( Exception ex ) {
-        //               ex.printStackTrace();
-        //            }
-        //        }
-        //    } catch( Exception ex ) {
-        //        log.error("Error registering with service ");
-        //    }
-        //}
         
         if( service==null ) {
             // for consistency...: we are probably in embeded mode
