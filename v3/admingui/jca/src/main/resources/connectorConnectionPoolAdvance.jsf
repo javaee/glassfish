@@ -75,7 +75,7 @@
     
 #include "/jca/connectorConnectionPoolAdvancedAttr.inc"
     
-    <sun:hidden id="helpKey" value="$resource{help_jca.jcaResourceEdit}" />
+    <sun:hidden id="helpKey" value="$resource{help_jca.connectorConnectionPoolAdvance}" />
 </sun:form>
             "<br/>
 #include "/common/shared/changeButtonsJS.inc" 
