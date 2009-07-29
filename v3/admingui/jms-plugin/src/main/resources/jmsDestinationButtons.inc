@@ -47,11 +47,11 @@
                 );
             }
         }
-        if (#{pageSession.hasPropertyTable}){
-            getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-            setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
-        }
+
+        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+        setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+
         prepareSuccessfulMsg();
         redirect(page="#{parentPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
     />
@@ -70,8 +70,8 @@
 
             createMap(result=>$attribute{nameMap});
             mapPut(map="$attribute{nameMap}", key="selected", value="false");
-            mapPut(map="$attribute{nameMap}", key="name", value="Name");
-            mapPut(map="$attribute{nameMap}", key="value", value="#{pageSession.name}");
+            mapPut(map="$attribute{nameMap}", key="Name", value="Name");
+            mapPut(map="$attribute{nameMap}", key="Value", value="#{pageSession.physDestName}");
             listAdd(list="$attribute{newList}", value="$attribute{nameMap}");
             gui.log(message="***** newList = $attribute{newList}");
             

@@ -12,6 +12,7 @@
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
                 deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType2}", selectedRows="${selectedRows}");
+                deleteResourceRef(resourceName="#{pageSession.valueMap['Name']");
                 setAttribute(key="selectedRows" value="${selectedRows}");
 
 

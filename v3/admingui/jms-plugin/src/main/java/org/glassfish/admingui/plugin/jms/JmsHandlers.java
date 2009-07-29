@@ -367,6 +367,22 @@ public class JmsHandlers {
         handlerCtx.setOutputValue("map", map);
     }
 
+    @Handler(id="getPhysicalDestinationName",
+        input={@HandlerInput(name="list", type=List.class, required=true)},
+        output={@HandlerOutput(name="physDestName", type=String.class)}
+    )
+    public static void getPhysicalDestinationName(HandlerContext handlerCtx) {
+        List<Map> list = (List<Map>)handlerCtx.getInputValue("list");
+        for (Map map : list) {
+            String name = (String)map.get("Name");
+            if ("Name".equals(name)) {
+                String value = (String)map.get("Value");
+                handlerCtx.setOutputValue("physDestName", value);
+                break;
+            }
+        }
+    }
+
     protected static String getJmsDestinationObjectName(String objectType, String name, String destType) {
         return OBJECT_DEST_BASE+",subtype="+objectType+",desttype="+destType.substring(0,1).toLowerCase()+",name=\""+name+"\"";
     }

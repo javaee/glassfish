@@ -58,7 +58,7 @@
    //#include "/common/shared/treeBreadcrumbs.inc"
     <sun:form id="jmsPhysDestForm">
 #include "jmsPhysicalDestinationSheet.inc"
- #include "/common/shared/propertyTable.inc"
+// #include "/common/shared/propertyDescTable.inc"
         <sun:hidden id="helpKey" value="$resource{help.jmsPhysicalDestinationNew}" />
     </sun:form>
     "<br/><br/>

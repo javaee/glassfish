@@ -83,7 +83,7 @@
     </sun:title>
     <!-- PropertySheet .... -->
 #include "/jms/jmsDestinationSheet.inc"
-#include "/common/shared/propertyTable.inc"
+#include "/common/shared/propertyDescTable.inc"
         <sun:title id="propertyContentPage2">
             <!facet pageButtonsBottom>
                 <sun:panelGroup id="bottomButtons">

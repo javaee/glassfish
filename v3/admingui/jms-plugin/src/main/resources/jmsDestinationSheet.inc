@@ -14,7 +14,7 @@
             <sun:textField id="Jndi" columns="$int{55}" text="#{pageSession.valueMap['Name']}" styleClass="required" required="#{true}" />
         </sun:property>
         <sun:property id="nameProp" labelAlign="left" noWrap="true" overlapLabel="false" label="$resource{i18njms.jmsDestination.destName}" helpText="$resource{i18njms.jmsDestination.destNameHelp}">
-            <sun:textField id="name" columns="55" text="#{pageSession.name}" styleClass="required" required="true" />
+            <sun:textField id="name" columns="55" text="#{pageSession.physDestName}" styleClass="required" required="true" />
         </sun:property>
         <sun:property id="resTypeProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}"  >
             <sun:dropDown id="resType" selected="#{pageSession.valueMap['ResType']}" labels={"" "javax.jms.Topic"  "javax.jms.Queue"}  required="#{true}"/>
