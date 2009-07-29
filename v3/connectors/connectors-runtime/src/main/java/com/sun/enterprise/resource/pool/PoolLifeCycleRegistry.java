@@ -38,10 +38,7 @@ package com.sun.enterprise.resource.pool;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.listener.PoolLifeCycle;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 
@@ -52,13 +49,13 @@ import org.jvnet.hk2.component.Singleton;
  * to listen to the pool's lifecyle. Maintains a list of listeners for this pool
  * identified by poolName.
  * 
- * @author shalini
+ * @author Shalini M
  */
 @Scoped(Singleton.class)
 public class PoolLifeCycleRegistry implements PoolLifeCycle {
 
     //List of listeners 
-    protected Map<String, List<PoolLifeCycle>> lifecycleListenersMap;
+    protected List<PoolLifeCycle> lifeCycleListeners = new ArrayList<PoolLifeCycle>();
     private static PoolLifeCycleRegistry __poolLifeCycleRegistry = 
             new PoolLifeCycleRegistry();
     
@@ -77,20 +74,12 @@ public class PoolLifeCycleRegistry implements PoolLifeCycle {
      * @param poolName
      * @param listener
      */
-    public void registerPoolLifeCycle(String poolName, PoolLifeCycle listener) {
-        if(lifecycleListenersMap == null) {
-            lifecycleListenersMap = Collections.synchronizedMap(new HashMap<String, List<PoolLifeCycle>>());
-        }
-        if(!lifecycleListenersMap.containsKey(poolName)) {
-            List<PoolLifeCycle> listenersList = new ArrayList<PoolLifeCycle>();
-            lifecycleListenersMap.put(poolName, listenersList);   
-        }
-        List<PoolLifeCycle> list = lifecycleListenersMap.get(poolName);
-        list.add(listener);
+    public void registerPoolLifeCycle(PoolLifeCycle listener) {
+        lifeCycleListeners.add(listener);
         
         //Check if lifecycleListeners has already been set to this. There
         //could be multiple listeners.
-        if(!(list.size() > 1)) {
+        if(!(lifeCycleListeners.size() > 1)) {
             //If the pool is already created, set this registry object to the pool.
             PoolManager poolMgr = ConnectorRuntime.getRuntime().getPoolManager();
             poolMgr.registerPoolLifeCycleListener(this);
@@ -102,23 +91,13 @@ public class PoolLifeCycleRegistry implements PoolLifeCycle {
      * This happens when a pool is destroyed so the information about its 
      * listeners need not be stored.
      */
-    public void unRegisterPoolLifeCycle(String poolName, PoolLifeCycle listener) {
-        if(lifecycleListenersMap.containsKey(poolName)) {
-            List<PoolLifeCycle> list = lifecycleListenersMap.get(poolName);
-            if(list != null && !list.isEmpty()) {
-                list.remove(listener);
-            }
-            if(list.isEmpty()) {
-                //TODO V3 : think about unregistering the registry?
-            }
+    public void unRegisterPoolLifeCycle(PoolLifeCycle listener) {
+        if (lifeCycleListeners != null && !lifeCycleListeners.isEmpty()) {
+            lifeCycleListeners.remove(listener);
         }
-        //TODO V3 : Need to remove pool life cycle listener from the pool? since
-        //the pool will already be destroyed, is this needed?
-        //Why should we unregister the whole registry when only one of the listeners
-        //are removed from the list?
-        
-        //PoolManager poolMgr = ConnectorRuntime.getRuntime().getPoolManager();
-        //poolMgr.unregisterPoolLifeCycleListener();
+        if (lifeCycleListeners.isEmpty()) {
+            //TODO V3 : think about unregistering the registry?
+        }
     }
     
     /**
@@ -126,11 +105,8 @@ public class PoolLifeCycleRegistry implements PoolLifeCycle {
      * @param poolName
      */
     public void poolCreated(String poolName) {
-        if(lifecycleListenersMap.containsKey(poolName)) {
-            List<PoolLifeCycle> list = lifecycleListenersMap.get(poolName);
-            for(PoolLifeCycle listener : list) {
-                listener.poolCreated(poolName);
-            }
+        for (PoolLifeCycle listener : lifeCycleListeners) {
+            listener.poolCreated(poolName);
         }
     }
 
@@ -139,11 +115,8 @@ public class PoolLifeCycleRegistry implements PoolLifeCycle {
      * @param poolName
      */
     public void poolDestroyed(String poolName) {
-        if(lifecycleListenersMap.containsKey(poolName)) {
-            List<PoolLifeCycle> list = lifecycleListenersMap.get(poolName);
-            for(PoolLifeCycle listener : list) {
-                listener.poolDestroyed(poolName);
-            }
+        for (PoolLifeCycle listener : lifeCycleListeners) {
+            listener.poolDestroyed(poolName);
         }
     }
 }

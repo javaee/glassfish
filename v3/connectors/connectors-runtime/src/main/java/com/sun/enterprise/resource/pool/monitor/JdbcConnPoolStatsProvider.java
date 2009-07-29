@@ -33,214 +33,89 @@
 * only if the new code is made subject to such option by the copyright
 * holder.
 */
-package com.sun.enterprise.resource.pool.monitor.telemetry;
+package com.sun.enterprise.resource.pool.monitor;
 
 import com.sun.enterprise.resource.pool.PoolLifeCycleListenerRegistry;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.flashlight.client.ProbeClientMediator;
-import org.glassfish.flashlight.client.ProbeClientMethodHandle;
+import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.RangeStatistic;
+import org.glassfish.external.statistics.impl.CountStatisticImpl;
+import org.glassfish.external.statistics.impl.RangeStatisticImpl;
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
-import org.glassfish.flashlight.datatree.TreeNode;
-import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
-import org.glassfish.flashlight.statistics.Average;
-import org.glassfish.flashlight.statistics.Counter;
-import org.glassfish.flashlight.statistics.factory.AverageFactory;
-import org.glassfish.flashlight.statistics.factory.CounterFactory;
-import org.jvnet.hk2.component.PostConstruct;
-
+import org.glassfish.external.statistics.impl.StatisticImpl;
+import org.glassfish.gmbal.Description;
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedObject;
 
 /**
- * Telemetry object for Jdbc pool monitoring. 
+ * StatsProvider object for Jdbc pool monitoring.
  * 
  * Implements various events related to jdbc pool monitoring and provides 
  * objects to the calling modules that retrieve monitoring information.
  * 
- * @author shalini
+ * @author Shalini M
  */
-public class JDBCPoolTelemetry implements PostConstruct {
-    //Flag to indicate if monitoring is enabled.
-    private boolean isEnabled = true;
-    private String monitoringLevel;
+@ManagedObject
+@Description("JDBC Statistics")
+public class JdbcConnPoolStatsProvider {
     
-    //A telemetry object is identified by its pool name
     private String jdbcPoolName;
-    private Collection<ProbeClientMethodHandle> handles;
     private Logger logger;
-    private TreeNode jdbcPoolNode = null;
-    private JDBCPoolTelemetryBootstrap jdbcPoolTMBootstrap = 
-            new JDBCPoolTelemetryBootstrap();
-    private ProbeClientMediator pcm;    
     
-    //A telemetry object is associated with a registry that stores all listeners
-    //to this object,
+    //Registry that stores all listeners to this object
     private PoolLifeCycleListenerRegistry poolRegistry;
-    
+
     
     //Objects that are exposed by this telemetry
-    private Counter numConnFailedValidation = CounterFactory.createCount();
-    private Counter numConnTimedOut = CounterFactory.createCount();
-    private Counter numConnFree = CounterFactory.createCount();
-    private Counter numConnUsed = CounterFactory.createCount();
-    private Average connRequestWaitTime = AverageFactory.createAverage();
-    private Counter numConnDestroyed = CounterFactory.createCount();
-    private Counter numConnAcquired = CounterFactory.createCount();
-    private Counter numConnReleased = CounterFactory.createCount();
-    private Counter numConnCreated = CounterFactory.createCount();
-    private Counter numPotentialConnLeak = CounterFactory.createCount();
-    
-    public void postConstruct() {
-    }
+    private CountStatisticImpl numConnFailedValidation = new CountStatisticImpl(
+            "numconnfailedvalidation", StatisticImpl.UNIT_COUNT,
+            "The total number of connections in the connection pool that failed " +
+            "validation from the start time until the last sample time.");
+    private CountStatisticImpl numConnTimedOut = new CountStatisticImpl(
+            "numconntimedout", StatisticImpl.UNIT_COUNT, "The total number of " +
+            "connections in the pool that timed out between the start time and the last sample time.");
+    private CountStatisticImpl numConnFree = new CountStatisticImpl(
+            "numconnfree", StatisticImpl.UNIT_COUNT, "The total number of free " +
+            "connections in the pool as of the last sampling.");
+    private CountStatisticImpl numConnUsed = new CountStatisticImpl(
+            "numconnused", StatisticImpl.UNIT_COUNT, "Provides connection usage " +
+            "statistics. The total number of connections that are currently being " +
+            "used, as well as information about the maximum number of connections " +
+            "that were used (the high water mark).");
+    private RangeStatisticImpl connRequestWaitTime = new RangeStatisticImpl(
+            Long.MIN_VALUE, Long.MIN_VALUE, Long.MIN_VALUE, 
+            "connrequestwaittime", StatisticImpl.UNIT_MILLISECOND, 
+            "The longest and shortest wait times of connection requests. The " +
+            "current value indicates the wait time of the last request that was " +
+            "serviced by the pool.", 
+            System.currentTimeMillis(), System.currentTimeMillis());
+    private CountStatisticImpl numConnDestroyed = new CountStatisticImpl(
+            "numconndestroyed", StatisticImpl.UNIT_COUNT, 
+            "Number of physical connections that were destroyed since the last reset.");
+    private CountStatisticImpl numConnAcquired = new CountStatisticImpl(
+            "numconnacquired", StatisticImpl.UNIT_COUNT, "Number of logical " +
+            "connections acquired from the pool.");
+    private CountStatisticImpl numConnReleased = new CountStatisticImpl(
+            "numconnreleased", StatisticImpl.UNIT_COUNT, "Number of logical " +
+            "connections released to the pool.");
+    private CountStatisticImpl numConnCreated = new CountStatisticImpl(
+            "numconncreated", StatisticImpl.UNIT_COUNT, 
+            "The number of physical connections that were created since the last reset.");
+    private CountStatisticImpl numPotentialConnLeak = new CountStatisticImpl(
+            "numpotentialconnleak", StatisticImpl.UNIT_COUNT, 
+            "Number of potential connection leaks");
 
-    public JDBCPoolTelemetry(TreeNode parent, String jdbcPoolName, Logger logger, ProbeClientMediator pcm) {    
-        this.jdbcPoolNode = parent;
+    public JdbcConnPoolStatsProvider(String jdbcPoolName, Logger logger) {    
         this.jdbcPoolName = jdbcPoolName;
         this.logger = logger;
-        this.pcm = pcm;
-        addSubNodes(parent);
-    }
-
-    public JDBCPoolTelemetry(TreeNode parent, String jdbcPoolName, Logger logger) {    
-        this.jdbcPoolNode = parent;
-        this.jdbcPoolName = jdbcPoolName;
-        this.logger = logger;
-        addSubNodes(parent);
-    }
-
-    public TreeNode getJdbcPoolNode() {
-        return this.jdbcPoolNode;
-    }
-    
-    private void addSubNodes(TreeNode parent) {    
-        try {
-            //Creating the jdbc-connection-pool name node and adding to parent
-            TreeNode poolNode = TreeNodeFactory.createTreeNode(jdbcPoolName, null, "jdbc-connection-pool");
-            parent.addChild(poolNode);
-
-            //Potential Connection Leak
-            Method m1 = this.getClass().getMethod("getNumPotentialConnLeakCount");
-            TreeNode connLeakNode = TreeNodeFactory.createMethodInvoker("numpotentialconnleak-count", this, "jdbc-connection-pool", m1);
-            poolNode.addChild(connLeakNode);
-            
-            //Connection Validation Failed
-            Method m2 = this.getClass().getMethod("getNumConnFailedValidation");
-            TreeNode connFailValNode = TreeNodeFactory.createMethodInvoker("numconnfailedvalidation-count", this, "jdbc-connection-pool", m2);
-            poolNode.addChild(connFailValNode);
-            
-            //Num Connection Timed Out
-            Method m3 = this.getClass().getMethod("getNumConnTimedOut");
-            TreeNode numConnTimedOutNode = TreeNodeFactory.createMethodInvoker("numconntimedout-count", this, "jdbc-connection-pool", m3);
-            poolNode.addChild(numConnTimedOutNode);
-            
-            //Num Conn Free
-            Method m4 = this.getClass().getMethod("getNumConnFree");
-            TreeNode numConnFreeNode = TreeNodeFactory.createMethodInvoker("numconnfree-count", this, "jdbc-connection-pool", m4);
-            poolNode.addChild(numConnFreeNode);
-            
-            //Num Conn Used
-            Method m5 = this.getClass().getMethod("getNumConnUsed");
-            TreeNode numConnUsedNode = TreeNodeFactory.createMethodInvoker("numconnused-count", this, "jdbc-connection-pool", m5);
-            poolNode.addChild(numConnUsedNode);
-            
-            //Connection Request Wait Time
-            Method m6 = this.getClass().getMethod("getConnRequestWaitTime");
-            TreeNode connReqWaitTimeNode = TreeNodeFactory.createMethodInvoker("connectionrequestwaittime-count", this, "jdbc-connection-pool", m6);
-            poolNode.addChild(connReqWaitTimeNode);
-            
-            //Num Conn Destroyed
-            Method m7 = this.getClass().getMethod("getNumConnDestroyed");
-            TreeNode numConnDestroyedNode = TreeNodeFactory.createMethodInvoker("numconndestroyed-count", this, "jdbc-connection-pool", m7);
-            poolNode.addChild(numConnDestroyedNode);            
-           
-            //Num Conn Acquired
-            Method m8 = this.getClass().getMethod("getNumConnAcquired");
-            TreeNode numConnAcquiredNode = TreeNodeFactory.createMethodInvoker("numconnacquired-count", this, "jdbc-connection-pool", m8);
-            poolNode.addChild(numConnAcquiredNode);            
-
-            //Num Conn Created
-            Method m9 = this.getClass().getMethod("getNumConnCreated");
-            TreeNode numConnCreatedNode = TreeNodeFactory.createMethodInvoker("numconncreated-count", this, "jdbc-connection-pool", m9);
-            poolNode.addChild(numConnCreatedNode);            
-
-            //Num Conn Released
-            Method m10 = this.getClass().getMethod("getNumConnReleased");
-            TreeNode numConnReleasedNode = TreeNodeFactory.createMethodInvoker("numconnreleased-count", this, "jdbc-connection-pool", m10);
-            poolNode.addChild(numConnReleasedNode);            
-            
-            parent.addChild(poolNode);
-        } catch (NoSuchMethodException ex) {
-            Logger.getLogger(JDBCPoolTelemetry.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(JDBCPoolTelemetry.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SecurityException ex) {
-            Logger.getLogger(JDBCPoolTelemetry.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    /**
-     * Get the jdbc pool name of this telemetry object
-     * @return jdbcPoolName
-     */
-    public String getJdbcPoolName() {
-        return jdbcPoolName;
-    }
-
-    /**
-     * Get the pool registry associated with this telemetry object. 
-     * It contains all listeners for this pool's lifecycle.
-     * @return poolRegistry
-     */
-    public PoolLifeCycleListenerRegistry getPoolRegistry() {
-        return poolRegistry;
-    }
-
-    /**
-     * Set registry for this telemetry object.
-     * The registry stores all listeners of the associated pool's lifecycle.
-     * @param poolRegistry
-     */
-    public void setPoolRegistry(PoolLifeCycleListenerRegistry poolRegistry) {
-        this.poolRegistry = poolRegistry;
-    }
-    
-    public void enableMonitoring(boolean flag) {
-        //loop through the handles for this node and enable/disable the listeners
-        //delegate the request to the child nodes
-        if (isEnabled != flag) {
-            for (ProbeClientMethodHandle handle : handles) {
-                if (flag == true) 
-                    handle.enable();
-                else
-                    handle.disable();
-            }
-            isEnabled = flag;
-        }
-    }
-
-    public void setProbeListenerHandles(Collection<ProbeClientMethodHandle> handles) {
-        this.handles = handles;
-    }
-
-    public void removeProbeListenerHandles() {
-        this.handles = null;
-    }
-    
-    /**
-     * Find if monitoring is enabled or disabled.
-     * @return isEnabled
-     */
-    public boolean isEnabled() {
-        return isEnabled;
     }
     
     /**
      * Whenever connection leak happens, increment numPotentialConnLeak
      * @param pool JdbcConnectionPool that got a connLeakEvent
      */
-    @ProbeListener("jdbc-connection-pool:jdbc-connection-pool::potentialConnLeakEvent")
+    @ProbeListener("glassfish:connector:jdbc-connection-pool:potentialConnLeakEvent")
     public void potentialConnLeakEvent(@ProbeParam("poolName") String poolName) {
 	// handle the conn leak probe event
         if((poolName != null) && (poolName.equals(this.jdbcPoolName))) {
@@ -256,7 +131,7 @@ public class JDBCPoolTelemetry implements PostConstruct {
      * Whenever connection timed-out event occurs, increment numConnTimedOut
      * @param pool JdbcConnectionPool that got a connTimedOutEvent
      */
-    @ProbeListener("jdbc-connection-pool:jdbc-connection-pool::connectionTimedOutEvent")
+    @ProbeListener("glassfish:connector:jdbc-connection-pool:connectionTimedOutEvent")
     public void connectionTimedOutEvent(@ProbeParam("poolName") String poolName) {
 	// handle the conn timed out probe event
         if((poolName != null) && (poolName.equals(this.jdbcPoolName))) {
@@ -272,7 +147,7 @@ public class JDBCPoolTelemetry implements PostConstruct {
      * @param poolName
      * @param steadyPoolSize
      */
-    @ProbeListener("jdbc-connection-pool:jdbc-connection-pool::decrementFreeConnectionsSizeEvent")
+    @ProbeListener("glassfish:connector:jdbc-connection-pool:decrementFreeConnectionsSizeEvent")
     public void decrementFreeConnectionsSizeEvent(
             @ProbeParam("poolName") String poolName, 
             @ProbeParam("steadyPoolSize") int steadyPoolSize) {
@@ -295,7 +170,7 @@ public class JDBCPoolTelemetry implements PostConstruct {
      * @param beingDestroyed if the connection is destroyed due to error
      * @param steadyPoolSize
      */
-    @ProbeListener("jdbc-connection-pool:jdbc-connection-pool::decrementConnectionUsedEvent")
+    @ProbeListener("glassfish:connector:jdbc-connection-pool:decrementConnectionUsedEvent")
     public void decrementConnectionUsedEvent(
             @ProbeParam("poolName") String poolName, 
             @ProbeParam("beingDestroyed") boolean beingDestroyed,
@@ -305,7 +180,7 @@ public class JDBCPoolTelemetry implements PostConstruct {
             logger.finest("Decrement Num Connections Used event received - poolName = " + 
                              poolName);
             //Decrement numConnUsed counter
-            numConnUsed.decrement();//.addDataPoint(-1);
+            numConnUsed.decrement();
             //TODO V3 : increment numConnFree accordingly needed?
             if(beingDestroyed) {
                 //if pruned by resizer thread
@@ -323,7 +198,7 @@ public class JDBCPoolTelemetry implements PostConstruct {
      * @param poolName 
      * @param count number of connections freed to the pool
      */
-    @ProbeListener("jdbc-connection-pool:jdbc-connection-pool::connectionsFreedEvent")
+    @ProbeListener("glassfish:connector:jdbc-connection-pool:connectionsFreedEvent")
     public void connectionsFreedEvent(
             @ProbeParam("poolName") String poolName, 
             @ProbeParam("count") int count) {
@@ -343,7 +218,7 @@ public class JDBCPoolTelemetry implements PostConstruct {
      * Connection used event
      * @param poolName
      */
-    @ProbeListener("jdbc-connection-pool:jdbc-connection-pool::connectionUsedEvent")
+    @ProbeListener("glassfish:connector:jdbc-connection-pool:connectionUsedEvent")
     public void connectionUsedEvent(
             @ProbeParam("poolName") String poolName) {
 	// handle the connection used event
@@ -362,7 +237,7 @@ public class JDBCPoolTelemetry implements PostConstruct {
      * Whenever connection leak happens, increment numConnFailedValidation
      * @param pool JdbcConnectionPool that got a failed validation event
      */
-    @ProbeListener("jdbc-connection-pool:jdbc-connection-pool::connectionValidationFailedEvent")
+    @ProbeListener("glassfish:connector:jdbc-connection-pool:connectionValidationFailedEvent")
     public void connectionValidationFailedEvent(
             @ProbeParam("poolName") String poolName, @ProbeParam("increment") int increment) {
         if((poolName != null) && (poolName.equals(this.jdbcPoolName))) {
@@ -370,9 +245,6 @@ public class JDBCPoolTelemetry implements PostConstruct {
                     "poolName = " + poolName);
             //TODO V3 : add support in CounterImpl for addAndGet(increment)
             numConnFailedValidation.increment(increment);
-            /*for(int i=0; i<increment; i++) {
-                numConnFailedValidation.increment();
-            }*/
         }
         
     }
@@ -383,21 +255,21 @@ public class JDBCPoolTelemetry implements PostConstruct {
      * @param poolName
      * @param timeTakenInMillis
      */
-    @ProbeListener("jdbc-connection-pool:jdbc-connection-pool::connectionRequestServedEvent")
+    @ProbeListener("glassfish:connector:jdbc-connection-pool:connectionRequestServedEvent")
     public void connectionRequestServedEvent(
             @ProbeParam("poolName") String poolName, 
             @ProbeParam("timeTakenInMillis") long timeTakenInMillis) {
         if((poolName != null) && (poolName.equals(this.jdbcPoolName))) {
             logger.finest("Connection request served event received - " +
                     "poolName = " + poolName);
-            connRequestWaitTime.addDataPoint(timeTakenInMillis);
+            connRequestWaitTime.setCurrent(timeTakenInMillis);
         }        
     }  
     
     /**
      * When connection destroyed event is got increment numConnDestroyed.
      */
-    @ProbeListener("jdbc-connection-pool:jdbc-connection-pool::connectionDestroyedEvent")
+    @ProbeListener("glassfish:connector:jdbc-connection-pool:connectionDestroyedEvent")
     public void connectionDestroyedEvent(
             @ProbeParam("poolName") String poolName) {
         if((poolName != null) && (poolName.equals(this.jdbcPoolName))) {
@@ -410,7 +282,7 @@ public class JDBCPoolTelemetry implements PostConstruct {
     /**
      * When a connection is acquired increment counter
      */
-    @ProbeListener("jdbc-connection-pool:jdbc-connection-pool::connectionAcquiredEvent")
+    @ProbeListener("glassfish:connector:jdbc-connection-pool:connectionAcquiredEvent")
     public void connectionAcquiredEvent(
             @ProbeParam("poolName") String poolName) {
         if((poolName != null) && (poolName.equals(this.jdbcPoolName))) {
@@ -423,7 +295,7 @@ public class JDBCPoolTelemetry implements PostConstruct {
     /**
      * When a connection is released increment counter
      */
-    @ProbeListener("jdbc-connection-pool:jdbc-connection-pool::connectionReleasedEvent")
+    @ProbeListener("glassfish:connector:jdbc-connection-pool:connectionReleasedEvent")
     public void connectionReleasedEvent(
             @ProbeParam("poolName") String poolName) {
         if((poolName != null) && (poolName.equals(this.jdbcPoolName))) {
@@ -436,7 +308,7 @@ public class JDBCPoolTelemetry implements PostConstruct {
     /**
      * When a connection is created increment counter
      */
-    @ProbeListener("jdbc-connection-pool:jdbc-connection-pool::connectionCreatedEvent")
+    @ProbeListener("glassfish:connector:jdbc-connection-pool:connectionCreatedEvent")
     public void connectionCreatedEvent(
             @ProbeParam("poolName") String poolName) {
         if((poolName != null) && (poolName.equals(this.jdbcPoolName))) {
@@ -444,6 +316,18 @@ public class JDBCPoolTelemetry implements PostConstruct {
                     "poolName = " + poolName);
             numConnCreated.increment();
         }                                        
+    }
+
+    protected String getJdbcPoolName() {
+        return jdbcPoolName;
+    }
+
+    protected void setPoolRegistry(PoolLifeCycleListenerRegistry poolRegistry) {
+        this.poolRegistry = poolRegistry;
+    }
+
+    protected PoolLifeCycleListenerRegistry getPoolRegistry() {
+        return poolRegistry;
     }
     
     /**
@@ -454,14 +338,15 @@ public class JDBCPoolTelemetry implements PostConstruct {
      * @param poolName
      * @param stackTrace
      */
-    @ProbeListener("jdbc-connection-pool:jdbc-connection-pool::toString")
+    //TODO V3 need this?
+    /*@ProbeListener("glassfish:connector:jdbc-connection-pool:toString")
     public void toString(@ProbeParam("poolName") String poolName,
             @ProbeParam("stackTrace") StringBuffer stackTrace) {
         logger.finest("toString(poolName) event received. " +
-                "Monitoring level observed : " + monitoringLevel);
+                "poolName = " + poolName);
         if((poolName != null) && (poolName.equals(this.jdbcPoolName))) {
             //If level is not OFF then print the stack trace.
-            if(jdbcPoolTMBootstrap.getEnabledValue(monitoringLevel)) {
+            if(jdbcPoolStatsProviderBootstrap.getEnabledValue(monitoringLevel)) {
                 if("LOW".equals(monitoringLevel)) {
                     lowLevelLog(stackTrace);
                 } else if("HIGH".equals(monitoringLevel)) {
@@ -469,7 +354,7 @@ public class JDBCPoolTelemetry implements PostConstruct {
                 }
             }
         }    
-    }
+    }*/
     
     private void lowLevelLog(StringBuffer stackTrace) {
         stackTrace.append("\n curNumConnUsed = " + numConnUsed.getCount());
@@ -496,48 +381,54 @@ public class JDBCPoolTelemetry implements PostConstruct {
         stackTrace.append("\n numConnNotSuccessfullyMatched = " + numConnNotSuccessfullyMatched);*/
         stackTrace.append("\n numPotentialConnLeak = " + numPotentialConnLeak.getCount());
     }
-    
-    public void setMonitoringLevel(String newLevel) {
-        this.monitoringLevel = newLevel;
-    }
-    
-    public long getNumPotentialConnLeakCount() {
-        return (numPotentialConnLeak.getCount());
-    }
-    
-    public long getNumConnFailedValidation() {
-        return (numConnFailedValidation.getCount());
-    }
-    
-    public long getNumConnTimedOut() {
-        return (numConnTimedOut.getCount());
-    }
-    
-    public long getNumConnUsed() {
-        return (numConnUsed.getCount());
-    }
-    
-    public long getNumConnFree() {
-        return (numConnFree.getCount());
-    }
-    
-    public long getConnRequestWaitTime() {
-        return (connRequestWaitTime.getCurrent());
-    }
-    
-    public long getNumConnDestroyed() {
-        return (numConnDestroyed.getCount());
-    }
-    
-    public long getNumConnAcquired() {
-        return (numConnAcquired.getCount());
+
+    @ManagedAttribute(id="numpotentialconnleak")
+    public CountStatistic getNumPotentialConnLeakCount() {
+        return numPotentialConnLeak.getStatistic();
     }
 
-    public long getNumConnCreated() {
-        return (numConnCreated.getCount());
+    @ManagedAttribute(id="numconnfailedvalidation")
+    public CountStatistic getNumConnFailedValidation() {
+        return numConnFailedValidation.getStatistic();
     }
 
-    public long getNumConnReleased() {
-        return (numConnReleased.getCount());
+    @ManagedAttribute(id="numconntimedout")
+    public CountStatistic getNumConnTimedOut() {
+        return numConnTimedOut.getStatistic();
+    }
+
+    @ManagedAttribute(id="numconnused")
+    public CountStatistic getNumConnUsed() {
+        return numConnUsed.getStatistic();
+    }
+
+    @ManagedAttribute(id="numconnfree")
+    public CountStatistic getNumConnFree() {
+        return numConnFree.getStatistic();
+    }
+
+    @ManagedAttribute(id="connrequestwaittime")
+    public RangeStatistic getConnRequestWaitTime() {
+        return connRequestWaitTime.getStatistic();
+    }
+
+    @ManagedAttribute(id="numconndestroyed")
+    public CountStatistic getNumConnDestroyed() {
+        return numConnDestroyed.getStatistic();
+    }
+
+    @ManagedAttribute(id="numconnacquired")
+    public CountStatistic getNumConnAcquired() {
+        return numConnAcquired.getStatistic();
+    }
+
+    @ManagedAttribute(id="numconncreated")
+    public CountStatistic getNumConnCreated() {
+        return numConnCreated.getStatistic();
+    }
+
+    @ManagedAttribute(id="numconnreleased")
+    public CountStatistic getNumConnReleased() {
+        return numConnReleased.getStatistic();
     }
 }

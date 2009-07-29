@@ -45,8 +45,8 @@ import org.glassfish.external.probe.provider.annotations.ProbeProvider;
  * 
  * @author Shalini M
  */
-@ProbeProvider(moduleProviderName="glassfish", moduleName="connector", probeProviderName="jdbc-connection-pool")
-public class JdbcConnPoolProbeProvider {
+@ProbeProvider(moduleProviderName="glassfish", moduleName="connector", probeProviderName="connector-connection-pool")
+public class ConnectorConnPoolProbeProvider {
 
     /**
      * Emits probe event/notification that the given jdbc connection pool 

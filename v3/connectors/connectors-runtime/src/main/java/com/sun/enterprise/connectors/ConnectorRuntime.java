@@ -79,6 +79,7 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.resource.pool.monitor.ConnectionPoolProbeProviderUtil;
+import com.sun.enterprise.resource.pool.monitor.ConnectorConnPoolProbeProvider;
 import com.sun.enterprise.resource.pool.monitor.JdbcConnPoolProbeProvider;
 import com.sun.enterprise.security.jmac.callback.ContainerCallbackHandler;
 import com.sun.enterprise.security.SecurityServicesUtil;
@@ -203,6 +204,15 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     public ConnectionPoolProbeProviderUtil getProbeProviderUtil(){
         return habitat.getComponent(ConnectionPoolProbeProviderUtil.class);
     }
+    
+    /**
+     * Get probe provider for connector connection pool related events
+     * @return ConnectorConnPoolProbeProvider
+     */
+    public ConnectorConnPoolProbeProvider getConnectorConnPoolProvider() {
+        return habitat.getComponent(ConnectionPoolProbeProviderUtil.class).getConnectorConnPoolProvider();
+    }
+
     /**
      * Get probe provider for jdbc connection pool related events
      * @return JdbcConnPoolProbeProvider
@@ -655,8 +665,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         jdbcAdminService = (JdbcAdminServiceImpl) 
                 ConnectorAdminServicesFactory.getService(ConnectorConstants.JDBC);
 
-        getProbeProviderUtil().createProbeProviders();
         initializeEnvironment(processEnvironment);
+        if(isServer()) {
+            getProbeProviderUtil().createProbeProviders();
+        }
     }
 
     /**

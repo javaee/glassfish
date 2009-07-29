@@ -35,15 +35,13 @@
 */
 package com.sun.enterprise.resource.pool.monitor;
 
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.logging.LogDomains;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 
 
 /**
@@ -54,16 +52,12 @@ import org.jvnet.hk2.annotations.Service;
 @Service
 public class ConnectionPoolProbeProviderUtil {
 
-    @Inject
-    private ProbeProviderFactory probeProviderFactory;
-
+    private ConnectorConnPoolProbeProvider connectorConnPoolProvider = null;
     private JdbcConnPoolProbeProvider jdbcConnPoolProvider = null;
-    //private static final JdbcConnPoolProbeProvider NO_OP_JDBC_CONN_POOL_PROBE_PROVIDER =
-    //    (JdbcConnPoolProbeProvider) Proxy.newProxyInstance(
-    //        JdbcConnPoolProbeProvider.class.getClassLoader(),
-    //        new Class[] { JdbcConnPoolProbeProvider.class },
-    //        new NoopInvocationHandler());    
     private Logger _logger = LogDomains.getLogger(ConnectionPoolProbeProviderUtil.class, LogDomains.RSR_LOGGER);
+    
+    @Inject 
+    private Habitat habitat;
     
     /**
      * Create probe providers for jdbcPool related events.
@@ -75,11 +69,26 @@ public class ConnectionPoolProbeProviderUtil {
      */   
     public void createProbeProviders() {
         try {
-            //jdbcConnPoolProvider = probeProviderFactory.getProbeProvider(
-                //"jdbc-connection-pool", "jdbc-connection-pool", null, JdbcConnPoolProbeProvider.class);
+            connectorConnPoolProvider = new ConnectorConnPoolProbeProvider();
+            if (connectorConnPoolProvider == null) {
+                // Should never happen
+                _logger.log(Level.WARNING,
+                    "Unable to create probe provider for interface " +
+                    ConnectorConnPoolProbeProvider.class.getName() +
+                    ", using no-op provider");
+            }
+        } catch (Exception e) {
+            _logger.log(Level.SEVERE,
+                        "Unable to create probe provider for interface " +
+                        ConnectorConnPoolProbeProvider.class.getName() +
+                        ", using no-op provider",
+                        e);
+        }
+
+        try {
             jdbcConnPoolProvider = new JdbcConnPoolProbeProvider();
             if (jdbcConnPoolProvider == null) {
-                // Should never happen
+                //Should never happen
                 _logger.log(Level.WARNING,
                     "Unable to create probe provider for interface " +
                     JdbcConnPoolProbeProvider.class.getName() +
@@ -92,11 +101,22 @@ public class ConnectionPoolProbeProviderUtil {
                         ", using no-op provider",
                         e);
         }
-        if (jdbcConnPoolProvider == null) {
-            //jdbcConnPoolProvider = NO_OP_JDBC_CONN_POOL_PROBE_PROVIDER;
+        if(ConnectorRuntime.getRuntime().isServer()) {
+            getConnPoolBootstrap().registerProvider();
         }
     }
-
+    
+    private ConnectionPoolStatsProviderBootstrap getConnPoolBootstrap() {
+        return habitat.getComponent(ConnectionPoolStatsProviderBootstrap.class);
+    }
+    /**
+     * Get probe provider for connector connection pool related events
+     * @return ConnectorConnPoolProbeProvider
+     */
+    public ConnectorConnPoolProbeProvider getConnectorConnPoolProvider() {
+        return connectorConnPoolProvider;
+    }
+    
     /**
      * Get probe provider for jdbc connection pool related events
      * @return JdbcConnPoolProbeProvider
@@ -105,15 +125,4 @@ public class ConnectionPoolProbeProviderUtil {
         return jdbcConnPoolProvider;
     }
 
-    /**
-     * Probe provider that implements each probe provider method as a 
-     * no-op.
-     */
-    /*public static class NoopInvocationHandler implements InvocationHandler {
-
-        public Object invoke(Object proxy, Method method, Object[] args) {
-            // Deliberate no-op
-            return null;
-        }
-    } */   
 }
