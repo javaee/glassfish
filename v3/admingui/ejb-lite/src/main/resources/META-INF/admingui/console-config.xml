@@ -8,15 +8,15 @@
                 parentId="configuration" 
                 content="ejbLitePluginTreeNode.jsf"
         />
-        <!-- Add a link under the Configuration Page 
+        
+        <!-- Add a link under the Configuration Page -->
         <integration-point 
-                id="ejbConfigurationLink" 
+                id="ejbLiteConfigurationLink"
                 type="org.glassfish.admingui:configuration" 
-                priority="100"
+                priority="200"
                 parentId="propSheetSection"
-                content="ejbConfigLink.jsf"
+                content="configuration/ejbLiteConfigLink.jsf"
         />
-        -->
                 
         <!-- Add a Common Task under the 'Deployment' Task group -->
         <!--

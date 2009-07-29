@@ -9,6 +9,15 @@
                 content="webPluginTreeNode.jsf"
         />
 
+        <!-- Add a link under the Configuration Page  -->
+        <integration-point
+                id="webConfigurationLink"
+                type="org.glassfish.admingui:configuration"
+                priority="300"
+                parentId="propSheetSection"
+                content="configuration/configurationLink.jsf"
+        />
+
         <!-- add the property sheet for deployment page, specific for web app -->
         <integration-point
                 id="web_deploy"
@@ -48,13 +57,7 @@
                 content="serverPageNode.jsf"
         />
         
-        <!-- Add a link under the Configuration Page  -->
-        <integration-point 
-                id="webConfigurationLink" 
-                type="org.glassfish.admingui:configuration" 
-                priority="400"
-                parentId="propSheetSection"
-                content="configuration/configurationLink.jsf"/>
+        
                 
         <!-- Add a Common Task under the 'Deployment' Task group -->
         <!--

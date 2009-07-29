@@ -31,4 +31,14 @@
             content="Ruby Application;jruby"
     />
 
+    <!-- Add a link under the Configuration Page -->
+    <integration-point
+        id="jruby_ConfigurationLink"
+        type="org.glassfish.admingui:configuration"
+        priority="230"
+        parentId="propSheetSection"
+        content="configLinks.jsf"
+    />
+
+
 </console-config>

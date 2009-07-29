@@ -12,4 +12,14 @@
                         priority="300"
                         parentId="configuration"
                         content="configurationNodes.jsf" />
+
+
+    <!-- Add a link under the Configuration Page -->
+    <integration-point id="jms_ConfigurationLink"
+                        type="org.glassfish.admingui:configuration"
+                        priority="300"
+                        parentId="propSheetSection"
+                        content="configLinks.jsf"
+    />
+
 </console-config> 
