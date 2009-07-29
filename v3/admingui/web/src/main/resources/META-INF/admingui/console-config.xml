@@ -52,7 +52,7 @@
         <integration-point 
                 id="webConfigurationLink" 
                 type="org.glassfish.admingui:configuration" 
-                priority="100"
+                priority="400"
                 parentId="propSheetSection"
                 content="configuration/configurationLink.jsf"/>
                 
