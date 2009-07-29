@@ -173,8 +173,8 @@ public class CreateConnectorConnectionPool implements AdminCommand {
         attrList.put(ResourceConstants.IDLE_TIME_OUT_IN_SECONDS, idletimeout);
         attrList.put(ResourceConstants.IS_CONNECTION_VALIDATION_REQUIRED, isconnectvalidatereq.toString());
         attrList.put(ResourceConstants.CONN_FAIL_ALL_CONNECTIONS, failconnection.toString());
-        attrList.put(ResourceConstants.VALIDATE_ATMOST_ONCE_PERIOD, validateatmostonceperiod);
-        attrList.put(ResourceConstants.CONNECTION_LEAK_TIMEOUT, leaktimeout);
+        attrList.put(ResourceConstants.VALIDATE_ATMOST_ONCE_PERIOD_IN_SECONDS, validateatmostonceperiod);
+        attrList.put(ResourceConstants.CONNECTION_LEAK_TIMEOUT_IN_SECONDS, leaktimeout);
         attrList.put(ResourceConstants.CONNECTION_LEAK_RECLAIM, leakreclaim.toString());
         attrList.put(ResourceConstants.CONNECTION_CREATION_RETRY_ATTEMPTS, creationretryattempts);
         attrList.put(ResourceConstants.CONNECTION_CREATION_RETRY_INTERVAL_IN_SECONDS, creationretryinterval);

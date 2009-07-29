@@ -251,8 +251,8 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
         idletimeout = (String) attrList.get(IDLE_TIME_OUT_IN_SECONDS);
         isconnectvalidatereq = (String) attrList.get(IS_CONNECTION_VALIDATION_REQUIRED);
         failconnection = (String) attrList.get(FAIL_ALL_CONNECTIONS);
-        validateAtmostOncePeriod = (String) attrList.get(VALIDATE_ATMOST_ONCE_PERIOD);
-        connectionLeakTimeout = (String) attrList.get(CONNECTION_LEAK_TIMEOUT);
+        validateAtmostOncePeriod = (String) attrList.get(VALIDATE_ATMOST_ONCE_PERIOD_IN_SECONDS);
+        connectionLeakTimeout = (String) attrList.get(CONNECTION_LEAK_TIMEOUT_IN_SECONDS);
         connectionLeakReclaim = (String) attrList.get(CONNECTION_LEAK_RECLAIM);
         connectionCreationRetryAttempts = (String) attrList.get(CONNECTION_CREATION_RETRY_ATTEMPTS);
         connectionCreationRetryInterval = (String) attrList.get(CONNECTION_CREATION_RETRY_INTERVAL_IN_SECONDS);
