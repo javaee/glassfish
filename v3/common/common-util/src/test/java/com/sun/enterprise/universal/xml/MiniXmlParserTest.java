@@ -338,7 +338,7 @@ public class MiniXmlParserTest {
     @Test
     public void testMonitoringNone() throws MiniXmlParserException{
             MiniXmlParser instance = new MiniXmlParser(monitoringNone, "server");
-            assertTrue(instance.isMonitoringEnabled() == false);
+            assertTrue(instance.isMonitoringEnabled() == true);
     }
 
     private static File hasProfiler;

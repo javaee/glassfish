@@ -336,8 +336,17 @@ public class MiniXmlParser {
     }
 
     private void parseMonitoringService(Node node) {
-        // it will be true iff it is there and it is "true"
-        monitoringEnabled = Boolean.parseBoolean(parseAttributes(node).get("monitoring-enabled"));
+        // The default is, by definition, true.
+        // it will be false iff it's there and its value is "false"
+        // if it is NOT there or its value is anything other than "false" 
+        // -- then it is true
+
+        String s = parseAttributes(node).get("monitoring-enabled");
+
+        if(s != null && s.equals("false"))
+            monitoringEnabled = false;
+        else
+            monitoringEnabled = true;
     }
 
     private void parseHttpService(Node node) {
