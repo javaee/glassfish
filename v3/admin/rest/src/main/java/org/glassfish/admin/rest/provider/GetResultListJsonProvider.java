@@ -57,16 +57,16 @@ import javax.ws.rs.WebApplicationException;
 /**
  *
  * @author Rajeshwar Patil
- * @author Ludovic Champenois ludo@dev.java.net
+ * @author Luvdovic Champenois ludo@dev.java.net
  */
 @Provider
-@Produces(MediaType.APPLICATION_XML)
-public class SingletonDomXmlProvider extends ProviderUtil implements MessageBodyWriter<GetResult> {
+@Produces(MediaType.APPLICATION_JSON)
+public class GetResultListJsonProvider extends ProviderUtil implements MessageBodyWriter<GetResultList> {
 
      @Context
      protected UriInfo uriInfo;
 
-     public long getSize(final GetResult proxy, final Class<?> type, final Type genericType,
+     public long getSize(final GetResultList proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
           return -1;
      }
@@ -75,98 +75,92 @@ public class SingletonDomXmlProvider extends ProviderUtil implements MessageBody
      public boolean isWriteable(final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
          try {
-             if (Class.forName("org.glassfish.admin.rest.provider.GetResult").equals(genericType)) {
-                 return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
+             if (Class.forName("org.glassfish.admin.rest.provider.GetResultList").equals(genericType)) {
+                 return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
              }
          } catch (java.lang.ClassNotFoundException e) {
              return false;
          }
+
          return false;
      }
 
 
-     public void writeTo(final GetResult proxy, final Class<?> type, final Type genericType,
+     public void writeTo(final GetResultList proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType,
                final MultivaluedMap<String, Object> httpHeaders,
                final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getXml(proxy).getBytes());
+         entityStream.write(getJson(proxy).getBytes());
      }
 
 
-     private String getXml(GetResult proxy) {
+     private String getJson(GetResultList proxy) {
         String result;
-        result ="<" ;
-        result = result + getTypeKey(proxy.getDom());
-
-        String attributes = getAttributes(proxy.getDom());
-        if ((attributes != null) && (attributes.length() > 1)) {
-            result = result + " ";
-            result = result + getAttributes(proxy.getDom());
-        }
-
-        result = result + ">";
-        result = result + "\n";
-             result = result + getResourcesLinks(proxy.getDom(),
+        result ="{" ;
+           result = result + getTypeKey();
+           result = result + ":";
+           result = result + "{";
+             result = result + getAttributes();
+           result = result + "}";
+           result = result + ",";
+           result = result + getResourcesKey();
+           result = result + ":";
+           result = result + "[";
+             result = result + getResourcesLinks(proxy.getDomList(),
                  proxy.getCommandResourcesPaths());
-        result = result + getEndXmlElement(getTypeKey(proxy.getDom()));
+           result = result + "]";
+        result = result + "}" ;
         return result;
     }
 
 
-    private String getTypeKey(Dom proxy) {
-       return getName(proxy.typeName());
+    private String getTypeKey() {
+       return upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/')));
     }
 
 
-    private String getResourceKey() {
-        return "child-resource";
+    private String getAttributes() {
+        //No attributes for this resource. This resource is an abstraction.
+        //for which there does not exists any actual config bean.
+        return "";
     }
 
 
-    private String getAttributes(Dom proxy) {
-        String result ="";
-        Set<String> attributes = proxy.model.getAttributeNames();
-        for (String attribute : attributes) {
-            result = result + attribute + "=" + quote(proxy.attribute(attribute));
-            result = result + " ";
-        }
-        
-        int endIndex = result.length() - 1;
-        if (endIndex > 0) result = result.substring(0, endIndex );
-        return result;
+    private String getResourcesKey() {
+        return quote("child-resources");
     }
 
 
-    private String getResourcesLinks(Dom proxy, String[] commandResourcesPaths) {
+    private String getResourcesLinks(List<Dom> proxyList,
+        String[][] commandResourcesPaths) {
         String result = "";
-        Set<String> elementNames = proxy.getElementNames();
-        for (String elementName : elementNames) { //for each element
+        String elementName;
+        for (Dom proxy: proxyList) {
             try {
-                    result = result + indent; //indent
-                    result = result + getStartXmlElement(getResourceKey());
-                    result = result + getElementLink(uriInfo, elementName);
-                    result = result + getEndXmlElement(getResourceKey());
-                    result = result + "\n";
+                elementName = proxy.getKey();
+                result = result + quote(getElementLink(uriInfo, elementName));
+                result = result + ",";
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
+        int endIndex = result.length() - 1;
+        if (endIndex > 0) result = result.substring(0, endIndex);
 
         //add command resources
-        for (String commandResourcePath : commandResourcesPaths) {
+        for (String[] commandResourcePath : commandResourcesPaths) {
             try {
-                result = result + indent; //indent
-                result = result + getStartXmlElement(getResourceKey());
-                result = result + getElementLink(uriInfo, commandResourcePath);
-                result = result + getEndXmlElement(getResourceKey());
-                result = result + "\n";
+                if (result.length() > 0) {
+                    result = result + ",";
+                }
+                result = result + quote(getElementLink(uriInfo, commandResourcePath[0]));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
         return result;
     }
 
-
-    private static String indent = "    ";
 }

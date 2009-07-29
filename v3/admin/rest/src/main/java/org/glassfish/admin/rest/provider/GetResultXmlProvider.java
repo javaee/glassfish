@@ -53,93 +53,113 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
+
 /**
  *
  * @author Rajeshwar Patil
  * @author Ludovic Champenois ludo@dev.java.net
-
  */
 @Provider
-@Produces(MediaType.TEXT_HTML)
-public class SingletonDomHtmlProvider extends ProviderUtil implements MessageBodyWriter<GetResult> {
+@Produces(MediaType.APPLICATION_XML)
+public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWriter<GetResult> {
 
-    @Context
-    protected UriInfo uriInfo;
+     @Context
+     protected UriInfo uriInfo;
 
-    public long getSize(final GetResult proxy, final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType) {
-        return -1;
-    }
+     public long getSize(final GetResult proxy, final Class<?> type, final Type genericType,
+               final Annotation[] annotations, final MediaType mediaType) {
+          return -1;
+     }
 
-    public boolean isWriteable(final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType) {
-        try {
-            if (Class.forName("org.glassfish.admin.rest.provider.GetResult").equals(genericType)) {
-                return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
-            }
-        } catch (java.lang.ClassNotFoundException e) {
-            return false;
-        }
-        return false;
-    }
 
-    public void writeTo(final GetResult proxy, final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType,
-            final MultivaluedMap<String, Object> httpHeaders,
-            final OutputStream entityStream) throws IOException, WebApplicationException {
-        entityStream.write(getHtml(proxy).getBytes());
-    }
+     public boolean isWriteable(final Class<?> type, final Type genericType,
+               final Annotation[] annotations, final MediaType mediaType) {
+         try {
+             if (Class.forName("org.glassfish.admin.rest.provider.GetResult").equals(genericType)) {
+                 return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
+             }
+         } catch (java.lang.ClassNotFoundException e) {
+             return false;
+         }
+         return false;
+     }
 
-    private String getHtml(GetResult proxy) {
+
+     public void writeTo(final GetResult proxy, final Class<?> type, final Type genericType,
+               final Annotation[] annotations, final MediaType mediaType,
+               final MultivaluedMap<String, Object> httpHeaders,
+               final OutputStream entityStream) throws IOException, WebApplicationException {
+         entityStream.write(getXml(proxy).getBytes());
+     }
+
+
+     private String getXml(GetResult proxy) {
         String result;
-        result = "<html><head><title>GlassFish REST Access to "+getTypeKey(proxy.getDom())+"</title></head><body>";
-        result = result + "<h1>" + getTypeKey(proxy.getDom()) + "</h1>";
-        result = result + "<h2>Attributes:</h2>";
-        result = result + getAttributes(proxy.getDom()) + "<br>";
-        result = result + "<h2>Child Resources:</h2>";
-        result = result + getResourcesLinks(proxy.getDom(),
-            proxy.getCommandResourcesPaths());
-        result = result + "</body></html>";
+        result ="<" ;
+        result = result + getTypeKey(proxy.getDom());
+
+        String attributes = getAttributes(proxy.getDom());
+        if ((attributes != null) && (attributes.length() > 1)) {
+            result = result + " ";
+            result = result + getAttributes(proxy.getDom());
+        }
+
+        result = result + ">";
+        result = result + "\n";
+             result = result + getResourcesLinks(proxy.getDom(),
+                 proxy.getCommandResourcesPaths());
+        result = result + getEndXmlElement(getTypeKey(proxy.getDom()));
         return result;
     }
+
 
     private String getTypeKey(Dom proxy) {
-        return getName(proxy.typeName());
+       return getName(proxy.typeName());
     }
 
-    private String getAttributes(Dom proxy) {
-        String result = "";
-        Set<String> attributes = proxy.model.getAttributeNames();
-        for (String attribute : attributes) { //for each attribute
-            result = result + attribute + "&nbsp;:&nbsp;" + proxy.attribute(attribute);
-            result = result + "<br>";
-        }
 
+    private String getResourceKey() {
+        return "child-resource";
+    }
+
+
+    private String getAttributes(Dom proxy) {
+        String result ="";
+        Set<String> attributes = proxy.model.getAttributeNames();
+        for (String attribute : attributes) {
+            result = result + attribute + "=" + quote(proxy.attribute(attribute));
+            result = result + " ";
+        }
+        
+        int endIndex = result.length() - 1;
+        if (endIndex > 0) result = result.substring(0, endIndex );
         return result;
     }
 
-    private String getResourcesLinks(Dom proxy, String[] commandResourcesPaths) {
+
+    private String getResourcesLinks(Dom proxy, String[][] commandResourcesPaths) {
         String result = "";
         Set<String> elementNames = proxy.getElementNames();
         for (String elementName : elementNames) { //for each element
             try {
-                result = result + "<a href=" + getElementLink(uriInfo, elementName) + ">";
-                result = result + elementName;
-                result = result + "</a>";
-                ///result = result + getElementLink(uriInfo, elementName);
-                result = result + "<br>";
+                    result = result + indent; //indent
+                    result = result + getStartXmlElement(getResourceKey());
+                    result = result + getElementLink(uriInfo, elementName);
+                    result = result + getEndXmlElement(getResourceKey());
+                    result = result + "\n";
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         //add command resources
-        for (String commandResourcePath : commandResourcesPaths) {
+        for (String[] commandResourcePath : commandResourcesPaths) {
             try {
-                result = result + "<a href=" + getElementLink(uriInfo, commandResourcePath) + ">";
-                result = result + commandResourcePath;
-                result = result + "</a>";
-                result = result + "<br>";
+                result = result + indent; //indent
+                result = result + getStartXmlElement(getResourceKey());
+                result = result + getElementLink(uriInfo, commandResourcePath[0]);
+                result = result + getEndXmlElement(getResourceKey());
+                result = result + "\n";
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -147,20 +167,6 @@ public class SingletonDomHtmlProvider extends ProviderUtil implements MessageBod
         return result;
     }
 
-    private String getStartHtmlElement(String name) {
-        assert ((name != null) && name.length() > 0);
-        String result = "<";
-        result = result + name;
-        result = result + ">";
-        return result;
-    }
 
-    private String getEndHtmlElement(String name) {
-        assert ((name != null) && name.length() > 0);
-        String result = "<";
-        result = result + "/";
-        result = result + name;
-        result = result + ">";
-        return result;
-    }
+    private static String indent = "    ";
 }

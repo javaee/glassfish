@@ -1,10 +1,10 @@
-org.glassfish.admin.rest.provider.DomJsonProvider
-org.glassfish.admin.rest.provider.DomXmlProvider
-org.glassfish.admin.rest.provider.DomHtmlProvider
+org.glassfish.admin.rest.provider.GetResultListJsonProvider
+org.glassfish.admin.rest.provider.GetResultListXmlProvider
+org.glassfish.admin.rest.provider.GetResultListHtmlProvider
 org.glassfish.admin.rest.provider.FormWriter
-org.glassfish.admin.rest.provider.SingletonDomJsonProvider
-org.glassfish.admin.rest.provider.SingletonDomXmlProvider
-org.glassfish.admin.rest.provider.SingletonDomHtmlProvider
+org.glassfish.admin.rest.provider.GetResultJsonProvider
+org.glassfish.admin.rest.provider.GetResultXmlProvider
+org.glassfish.admin.rest.provider.GetResultHtmlProvider
 org.glassfish.admin.rest.provider.OptionsResultJsonProvider
 org.glassfish.admin.rest.provider.OptionsResultXmlProvider
 org.glassfish.admin.rest.provider.TreeNodeJsonProvider

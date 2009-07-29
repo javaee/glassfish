@@ -682,8 +682,9 @@ public class GeneratorResource {
                 if (commandResourcesPaths.length() > 1) {
                     commandResourcesPaths = commandResourcesPaths + ", ";
                 }
-                commandResourcesPaths = commandResourcesPaths + "\"" +
-                    ConfigBeansToCommandResourcesMap[i][3] + "\"";
+                commandResourcesPaths = commandResourcesPaths + "{" +
+                    "\"" + ConfigBeansToCommandResourcesMap[i][3] + "\"" + ", " +
+                        "\"" + ConfigBeansToCommandResourcesMap[i][2] + "\"" + "}";
 
                 String commandResourceFileName = genDir + "/" + resourceName +
                     getBeanName(ConfigBeansToCommandResourcesMap[i][3]) +
@@ -709,8 +710,8 @@ public class GeneratorResource {
         commandResourcesPaths = commandResourcesPaths + "}";
 
         //define method to return command resource paths.
-        out.write("public String[] getCommandResourcesPaths() {\n");
-        out.write("return new String[]" +  commandResourcesPaths + ";\n");
+        out.write("public String[][] getCommandResourcesPaths() {\n");
+        out.write("return new String[][]" +  commandResourcesPaths + ";\n");
         out.write("}\n\n");
     }
 

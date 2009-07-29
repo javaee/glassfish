@@ -52,7 +52,7 @@ public class GetResultList extends Result {
     /**
      * Constructor
      */
-    public GetResultList(List<Dom> domList, String[] commandResourcesPaths) {
+    public GetResultList(List<Dom> domList, String[][] commandResourcesPaths) {
         __domList = domList;
         __commandResourcesPaths = commandResourcesPaths;
     }
@@ -65,12 +65,12 @@ public class GetResultList extends Result {
     }
 
     /**
-     * Returns an array of command resources paths.
+     * Returns an array of command resources paths and the operation type.
      */
-    public String[] getCommandResourcesPaths() {
+    public String[][] getCommandResourcesPaths() {
         return __commandResourcesPaths;
     }
 
     List<Dom> __domList;
-    String[] __commandResourcesPaths;
+    String[][] __commandResourcesPaths;
 }

@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Tue Jul 28 17:11:44 PDT 2009
+* date=Tue Jul 28 17:11:41 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -15,16 +15,16 @@ import javax.ws.rs.*;
 import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
 import org.glassfish.admin.rest.provider.GetResultList;
-import com.sun.enterprise.config.serverbeans.GroupMap;
-public class ListGroupMapResource extends TemplateListOfResource<GroupMap> {
+import org.glassfish.api.monitoring.MonitoringItem;
+public class ListMonitoringItemResource extends TemplateListOfResource<MonitoringItem> {
 
 
-	@Path("{MappedGroup}/")
-	public GroupMapResource getGroupMapResource(@PathParam("MappedGroup") String id) {
-		GroupMapResource resource = resourceContext.getResource(GroupMapResource.class);
-		for (GroupMap c: entity){
+	@Path("{Level}/")
+	public MonitoringItemResource getMonitoringItemResource(@PathParam("Level") String id) {
+		MonitoringItemResource resource = resourceContext.getResource(MonitoringItemResource.class);
+		for (MonitoringItem c: entity){
 //THIS KEY IS THE FIRST Attribute ONE ludo
-			if(c.getMappedGroup().equals(id)){
+			if(c.getLevel().equals(id)){
 				resource.setEntity(c);
 			}
 		}

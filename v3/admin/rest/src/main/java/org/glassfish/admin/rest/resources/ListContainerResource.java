@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Mon Jul 13 13:06:35 PDT 2009
+* date=Tue Jul 28 17:11:41 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -19,20 +19,20 @@ import org.glassfish.api.admin.config.Container;
 public class ListContainerResource extends TemplateListOfResource<Container> {
 
 
-	@Path("{Name}/")
-	public ContainerResource getContainerResource(@PathParam("Name") String id) {
+	@Path("{ThisIsAModelBug:NoKeyAttr}/")
+	public ContainerResource getContainerResource(@PathParam("ThisIsAModelBug:NoKeyAttr") String id) {
 		ContainerResource resource = resourceContext.getResource(ContainerResource.class);
 		for (Container c: entity){
-                        //FIXME -- Bean no longer derived from Named  
-			/*if(c.getName().equals(id)){
+//THIS KEY IS THE FIRST Attribute ONE ludo
+			/*if(c.getThisIsAModelBug:NoKeyAttr().equals(id)){
 				resource.setEntity(c);
 			}*/
 		}
 		return resource;
 	}
 
-public String[] getCommandResourcesPaths() {
-return new String[]{};
+public String[][] getCommandResourcesPaths() {
+return new String[][]{};
 }
 
 

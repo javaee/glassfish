@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Mon Jul 13 13:06:36 PDT 2009
+* date=Tue Jul 28 17:11:43 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -17,8 +17,8 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.Resources;
 public class ResourcesResource extends TemplateResource<Resources> {
 
-public String[] getCommandResourcesPaths() {
-return new String[]{};
+public String[][] getCommandResourcesPaths() {
+return new String[][]{};
 }
 
 @Path("jdbc-connection-pool/")
@@ -29,6 +29,22 @@ java.util.List<com.sun.enterprise.config.serverbeans.JdbcConnectionPool> newList
 for (Resource r: l){
 try {
 newList.add((com.sun.enterprise.config.serverbeans.JdbcConnectionPool)r);
+} catch (Exception e){
+}
+}
+resource.setEntity(newList );
+return resource;
+}
+
+
+@Path("mail-resource/")
+public ListMailResourceResource getMailResourceResource() {
+ListMailResourceResource resource = resourceContext.getResource(ListMailResourceResource.class);
+java.util.List<Resource> l = entity.getResources();
+java.util.List<com.sun.enterprise.config.serverbeans.MailResource> newList = new java.util.ArrayList();
+for (Resource r: l){
+try {
+newList.add((com.sun.enterprise.config.serverbeans.MailResource)r);
 } catch (Exception e){
 }
 }
@@ -53,14 +69,14 @@ return resource;
 }
 
 
-@Path("work-security-map/")
-public ListWorkSecurityMapResource getWorkSecurityMapResource() {
-ListWorkSecurityMapResource resource = resourceContext.getResource(ListWorkSecurityMapResource.class);
+@Path("custom-resource/")
+public ListCustomResourceResource getCustomResourceResource() {
+ListCustomResourceResource resource = resourceContext.getResource(ListCustomResourceResource.class);
 java.util.List<Resource> l = entity.getResources();
-java.util.List<com.sun.enterprise.config.serverbeans.WorkSecurityMap> newList = new java.util.ArrayList();
+java.util.List<com.sun.enterprise.config.serverbeans.CustomResource> newList = new java.util.ArrayList();
 for (Resource r: l){
 try {
-newList.add((com.sun.enterprise.config.serverbeans.WorkSecurityMap)r);
+newList.add((com.sun.enterprise.config.serverbeans.CustomResource)r);
 } catch (Exception e){
 }
 }
@@ -101,22 +117,6 @@ return resource;
 }
 
 
-@Path("custom-resource/")
-public ListCustomResourceResource getCustomResourceResource() {
-ListCustomResourceResource resource = resourceContext.getResource(ListCustomResourceResource.class);
-java.util.List<Resource> l = entity.getResources();
-java.util.List<com.sun.enterprise.config.serverbeans.CustomResource> newList = new java.util.ArrayList();
-for (Resource r: l){
-try {
-newList.add((com.sun.enterprise.config.serverbeans.CustomResource)r);
-} catch (Exception e){
-}
-}
-resource.setEntity(newList );
-return resource;
-}
-
-
 @Path("resource-adapter-config/")
 public ListResourceAdapterConfigResource getResourceAdapterConfigResource() {
 ListResourceAdapterConfigResource resource = resourceContext.getResource(ListResourceAdapterConfigResource.class);
@@ -149,14 +149,14 @@ return resource;
 }
 
 
-@Path("admin-object-resource/")
-public ListAdminObjectResourceResource getAdminObjectResourceResource() {
-ListAdminObjectResourceResource resource = resourceContext.getResource(ListAdminObjectResourceResource.class);
+@Path("work-security-map/")
+public ListWorkSecurityMapResource getWorkSecurityMapResource() {
+ListWorkSecurityMapResource resource = resourceContext.getResource(ListWorkSecurityMapResource.class);
 java.util.List<Resource> l = entity.getResources();
-java.util.List<com.sun.enterprise.config.serverbeans.AdminObjectResource> newList = new java.util.ArrayList();
+java.util.List<com.sun.enterprise.config.serverbeans.WorkSecurityMap> newList = new java.util.ArrayList();
 for (Resource r: l){
 try {
-newList.add((com.sun.enterprise.config.serverbeans.AdminObjectResource)r);
+newList.add((com.sun.enterprise.config.serverbeans.WorkSecurityMap)r);
 } catch (Exception e){
 }
 }
@@ -165,14 +165,14 @@ return resource;
 }
 
 
-@Path("mail-resource/")
-public ListMailResourceResource getMailResourceResource() {
-ListMailResourceResource resource = resourceContext.getResource(ListMailResourceResource.class);
+@Path("admin-object-resource/")
+public ListAdminObjectResourceResource getAdminObjectResourceResource() {
+ListAdminObjectResourceResource resource = resourceContext.getResource(ListAdminObjectResourceResource.class);
 java.util.List<Resource> l = entity.getResources();
-java.util.List<com.sun.enterprise.config.serverbeans.MailResource> newList = new java.util.ArrayList();
+java.util.List<com.sun.enterprise.config.serverbeans.AdminObjectResource> newList = new java.util.ArrayList();
 for (Resource r: l){
 try {
-newList.add((com.sun.enterprise.config.serverbeans.MailResource)r);
+newList.add((com.sun.enterprise.config.serverbeans.AdminObjectResource)r);
 } catch (Exception e){
 }
 }

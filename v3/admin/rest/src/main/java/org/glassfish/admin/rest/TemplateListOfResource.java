@@ -186,8 +186,8 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
     abstract public String getPostCommand();
 
 
-    public String[] getCommandResourcesPaths() {
-        return new String[] {};
+    public String[][] getCommandResourcesPaths() {
+        return new String[][] {};
     }
 
 

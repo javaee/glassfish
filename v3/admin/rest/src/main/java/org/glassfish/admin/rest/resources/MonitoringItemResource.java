@@ -14,17 +14,11 @@ import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
 import org.glassfish.admin.rest.provider.GetResult;
-import com.sun.enterprise.config.serverbeans.ThreadPools;
-public class ThreadPoolsResource extends TemplateResource<ThreadPools> {
+import org.glassfish.api.monitoring.MonitoringItem;
+public class MonitoringItemResource extends TemplateResource<MonitoringItem> {
 
 public String[][] getCommandResourcesPaths() {
 return new String[][]{};
 }
 
-	@Path("thread-pool/")
-	public ListThreadPoolResource getThreadPoolResource() {
-		ListThreadPoolResource resource = resourceContext.getResource(ListThreadPoolResource.class);
-		resource.setEntity(getEntity().getThreadPool() );
-		return resource;
-	}
 }

@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Mon Jul 13 13:06:35 PDT 2009
+* date=Tue Jul 28 17:11:40 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -144,8 +144,8 @@ DomainHostPortResource resource = resourceContext.getResource(DomainHostPortReso
 return resource;
 }
 
-public String[] getCommandResourcesPaths() {
-return new String[]{"stop", "restart", "uptime", "version", "rotate-log", "host-port"};
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"stop", "POST"}, {"restart", "POST"}, {"uptime", "GET"}, {"version", "GET"}, {"rotate-log", "POST"}, {"host-port", "GET"}};
 }
 
 	@Path("configs/")

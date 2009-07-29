@@ -232,8 +232,8 @@ public class TemplateResource<E extends ConfigBeanProxy> {
      *
      * */
 
-    public String[] getCommandResourcesPaths() {
-        return new String[] {};
+    public String[][] getCommandResourcesPaths() {
+        return new String[][]{};
     }
 
 

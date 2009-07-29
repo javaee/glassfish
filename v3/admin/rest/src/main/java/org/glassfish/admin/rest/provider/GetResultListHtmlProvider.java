@@ -57,11 +57,11 @@ import javax.ws.rs.WebApplicationException;
 /**
  *
  * @author Rajeshwar Patil
- * @author Luvdovic Champenois ludo@dev.java.net
+ * @author Ludovic Champenois ludo@dev.java.net
  */
 @Provider
-@Produces(MediaType.APPLICATION_JSON)
-public class DomJsonProvider extends ProviderUtil implements MessageBodyWriter<GetResultList> {
+@Produces(MediaType.TEXT_HTML)
+public class GetResultListHtmlProvider extends ProviderUtil implements MessageBodyWriter<GetResultList> {
 
      @Context
      protected UriInfo uriInfo;
@@ -76,13 +76,12 @@ public class DomJsonProvider extends ProviderUtil implements MessageBodyWriter<G
                final Annotation[] annotations, final MediaType mediaType) {
          try {
              if (Class.forName("org.glassfish.admin.rest.provider.GetResultList").equals(genericType)) {
-                 return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
+                 return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
              }
          } catch (java.lang.ClassNotFoundException e) {
              return false;
          }
-
-         return false;
+         return false; 
      }
 
 
@@ -90,26 +89,18 @@ public class DomJsonProvider extends ProviderUtil implements MessageBodyWriter<G
                final Annotation[] annotations, final MediaType mediaType,
                final MultivaluedMap<String, Object> httpHeaders,
                final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getJson(proxy).getBytes());
+         entityStream.write(getHtml(proxy).getBytes());
      }
 
 
-     private String getJson(GetResultList proxy) {
+     private String getHtml(GetResultList proxy) {
         String result;
-        result ="{" ;
-           result = result + getTypeKey();
-           result = result + ":";
-           result = result + "{";
-             result = result + getAttributes();
-           result = result + "}";
-           result = result + ",";
-           result = result + getResourcesKey();
-           result = result + ":";
-           result = result + "[";
-             result = result + getResourcesLinks(proxy.getDomList(),
-                 proxy.getCommandResourcesPaths());
-           result = result + "]";
-        result = result + "}" ;
+        result = "<html><head><title>GlassFish REST Access to "+getTypeKey()+"</title></head><body>";
+        result = result + "<h1>" + getTypeKey() + "</h1>";
+        result = result + "<h2>Child Resources:</h2>" ;
+            result = result + getResourcesLinks(proxy.getDomList(),
+                proxy.getCommandResourcesPaths());
+        result = result + "</html></body>";
         return result;
     }
 
@@ -119,42 +110,31 @@ public class DomJsonProvider extends ProviderUtil implements MessageBodyWriter<G
     }
 
 
-    private String getAttributes() {
-        //No attributes for this resource. This resource is an abstraction.
-        //for which there does not exists any actual config bean.
-        return "";
-    }
-
-
-    private String getResourcesKey() {
-        return quote("child-resources");
-    }
-
-
     private String getResourcesLinks(List<Dom> proxyList,
-        String[] commandResourcesPaths) {
+        String[][] commandResourcesPaths) {
         String result = "";
-        String elementName;
-        for (Dom proxy: proxyList) {
+        for (Dom proxy: proxyList) { //for each element
             try {
-                elementName = proxy.getKey();
-                result = result + quote(getElementLink(uriInfo, elementName));
-                result = result + ",";
+                    result = result + "<a href=" + getElementLink(uriInfo, proxy.getKey()) + ">";
+                    result = result + proxy.getKey();
+                    result = result + "</a>";
+                    result = result +  "<br>";
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        int endIndex = result.length() - 1;
-        if (endIndex > 0) result = result.substring(0, endIndex);
-
         //add command resources
-        for (String commandResourcePath : commandResourcesPaths) {
+        for (String[] commandResourcePath : commandResourcesPaths) {
             try {
-                if (result.length() > 0) {
-                    result = result + ",";
+                if ("GET".equals(commandResourcePath[1])) {
+                    result = result + "<a href=" + getElementLink(uriInfo, commandResourcePath[0]) + ">";
+                    result = result + commandResourcePath[0];
+                    result = result + "</a>";
+                } else {
+                    result = result + commandResourcePath[0];
                 }
-                result = result + quote(getElementLink(uriInfo, commandResourcePath));
+                result = result + "<br>";
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -162,5 +142,4 @@ public class DomJsonProvider extends ProviderUtil implements MessageBodyWriter<G
 
         return result;
     }
-
 }

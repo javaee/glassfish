@@ -60,8 +60,8 @@ import javax.ws.rs.WebApplicationException;
  * @author Ludovic Champenois ludo@dev.java.net
  */
 @Provider
-@Produces(MediaType.TEXT_HTML)
-public class DomHtmlProvider extends ProviderUtil implements MessageBodyWriter<GetResultList> {
+@Produces(MediaType.APPLICATION_XML)
+public class GetResultListXmlProvider extends ProviderUtil implements MessageBodyWriter<GetResultList> {
 
      @Context
      protected UriInfo uriInfo;
@@ -76,12 +76,12 @@ public class DomHtmlProvider extends ProviderUtil implements MessageBodyWriter<G
                final Annotation[] annotations, final MediaType mediaType) {
          try {
              if (Class.forName("org.glassfish.admin.rest.provider.GetResultList").equals(genericType)) {
-                 return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
+                 return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
              }
          } catch (java.lang.ClassNotFoundException e) {
              return false;
          }
-         return false; 
+         return false;
      }
 
 
@@ -89,18 +89,19 @@ public class DomHtmlProvider extends ProviderUtil implements MessageBodyWriter<G
                final Annotation[] annotations, final MediaType mediaType,
                final MultivaluedMap<String, Object> httpHeaders,
                final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getHtml(proxy).getBytes());
+         entityStream.write(getXml(proxy).getBytes());
      }
 
 
-     private String getHtml(GetResultList proxy) {
+     private String getXml(GetResultList proxy) {
         String result;
-        result = "<html><head><title>GlassFish REST Access to "+getTypeKey()+"</title></head><body>";
-        result = result + "<h1>" + getTypeKey() + "</h1>";
-        result = result + "<h2>Child Resources:</h2>" ;
-            result = result + getResourcesLinks(proxy.getDomList(),
-                proxy.getCommandResourcesPaths());
-        result = result + "</html></body>";
+        result ="<" ;
+        result = result + getTypeKey();
+        result = result + ">";
+        result = result + "\n";
+             result = result + getResourcesLinks(proxy.getDomList(),
+                 proxy.getCommandResourcesPaths());
+        result = result + getEndXmlElement(getTypeKey());
         return result;
     }
 
@@ -110,27 +111,36 @@ public class DomHtmlProvider extends ProviderUtil implements MessageBodyWriter<G
     }
 
 
+    private String getResourceKey() {
+        return "child-resource";
+    }
+
+
     private String getResourcesLinks(List<Dom> proxyList,
-        String[] commandResourcesPaths) {
+        String[][] commandResourcesPaths) {
         String result = "";
+        String elementName;
         for (Dom proxy: proxyList) { //for each element
             try {
-                    result = result + "<a href=" + getElementLink(uriInfo, proxy.getKey()) + ">";
-                    result = result + proxy.getKey();
-                    result = result + "</a>";
-                    result = result +  "<br>";
+                    result = result + indent; //indent
+                    result = result + getStartXmlElement(getResourceKey());
+                    elementName = proxy.getKey();
+                    result = result + getElementLink(uriInfo,elementName);
+                    result = result + getEndXmlElement(getResourceKey());
+                    result = result + "\n";
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         //add command resources
-        for (String commandResourcePath : commandResourcesPaths) {
+        for (String[] commandResourcePath : commandResourcesPaths) {
             try {
-                result = result + "<a href=" + getElementLink(uriInfo, commandResourcePath) + ">";
-                result = result + commandResourcePath;
-                result = result + "</a>";
-                result = result + "<br>";
+                result = result + indent; //indent
+                result = result + getStartXmlElement(getResourceKey());
+                result = result + getElementLink(uriInfo, commandResourcePath[0]);
+                result = result + getEndXmlElement(getResourceKey());
+                result = result + "\n";
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -138,4 +148,7 @@ public class DomHtmlProvider extends ProviderUtil implements MessageBodyWriter<G
 
         return result;
     }
+
+
+    private static String indent = "    ";
 }

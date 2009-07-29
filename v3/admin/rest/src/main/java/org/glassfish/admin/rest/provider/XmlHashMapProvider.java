@@ -48,11 +48,11 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 /**
- * @author Rajeshwar Patil
+  * @author Rajeshwar Patil
  */
-@Consumes(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_XML)
 @Provider
-public class JsonDomProvider implements MessageBodyReader<HashMap<String, String>> {
+public class XmlHashMapProvider implements MessageBodyReader<HashMap<String, String>> {
     
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type.equals(HashMap.class);
@@ -62,14 +62,14 @@ public class JsonDomProvider implements MessageBodyReader<HashMap<String, String
         Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> headers, 
         InputStream in) throws IOException {
         try {
-            JsonInputObject jsonObject = new JsonInputObject(in);
-            return (HashMap) jsonObject.initializeMap();
+            XmlInputObject xmlObject = new XmlInputObject(in);
+            return (HashMap) xmlObject.initializeMap();
         } catch (InputException exception) {
             HashMap map = new HashMap();
             map.put("error", "Entity Parsing Error: " + exception.getMessage());
-
-            //throw new RuntimeException(exception);
+              
             return map;
+            ///throw new RuntimeException(exception); 
         }
     }
 }
