@@ -289,6 +289,12 @@ public class AppClientDeployer
 
     @Override
     public AppClientServerApplication load(AppClientContainerStarter containerStarter, DeploymentContext dc) {
+        // if the populated DOL object does not container appclient 
+        // descriptor, this is an indication that appclient deployer
+        // should not handle this module
+        if (dc.getModuleMetaData(ApplicationClientDescriptor.class) == null) { 
+            return null;
+        }
         AppClientDeployerHelper helper = savedHelper(dc);
         helper.addGroupFacadeToEARDownloads();
         final AppClientServerApplication newACServerApp =
@@ -498,6 +504,13 @@ public class AppClientDeployer
 
     @Override
     protected void generateArtifacts(DeploymentContext dc) throws DeploymentException {
+        // if the populated DOL object does not container appclient 
+        // descriptor, this is an indication that appclient deployer
+        // should not handle this module
+        if (dc.getModuleMetaData(ApplicationClientDescriptor.class) == null) { 
+            return;
+        }
+
         DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
 
         try {

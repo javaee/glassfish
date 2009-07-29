@@ -272,20 +272,6 @@ public class ApplicationLifecycle implements Deployment {
                         }
                     }
 
-//                    /*
-//                     * Restore any saved application config (config customization).
-//                     */
-//                    ApplicationConfigInfo savedConfig = new ApplicationConfigInfo(context.getAppProps());
-//                    for (ModuleInfo m : appInfo.getModuleInfos()) {
-//                        for (EngineRef engineRef : m.getEngineRefs()) {
-//                            final ApplicationConfig appConfig = savedConfig.get(
-//                                    m.getName(),
-//                                    engineRef.getContainerInfo().getSniffer().getModuleType());
-//                            if (appConfig != null) {
-//                                engineRef.setApplicationConfig(appConfig);
-//                            }
-//                        }
-//                    }
                     appRegistry.add(appName, appInfo);
 
                 if (events!=null) {

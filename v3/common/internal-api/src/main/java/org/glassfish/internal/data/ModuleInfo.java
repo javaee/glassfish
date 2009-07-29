@@ -78,7 +78,7 @@ public class ModuleInfo {
 
     final static private Logger logger = LogDomains.getLogger(ApplicationInfo.class, LogDomains.CORE_LOGGER);
     
-    protected final Set<EngineRef> engines = new LinkedHashSet<EngineRef>();
+    protected Set<EngineRef> engines = new LinkedHashSet<EngineRef>();
     protected final String name;
     protected final Events events;
     private Properties moduleProps;
@@ -141,6 +141,9 @@ public class ModuleInfo {
                 throw e;
             }
         }
+
+        Set<EngineRef> filteredEngines = new LinkedHashSet<EngineRef>();
+
         for (EngineRef engine : _getEngineRefs()) {
 
             final EngineInfo engineInfo = engine.getContainerInfo();
@@ -154,12 +157,12 @@ public class ModuleInfo {
                 ApplicationContainer appCtr = deployer.load(engineInfo.getContainer(), context);
                 if (appCtr==null) {
                     String msg = "Cannot load application in " + engineInfo.getContainer().getName() + " container";
-                    report.failure(logger, msg, null);
-                    throw new Exception(msg);
+                    logger.fine(msg);
+                    continue;
                 }
                 engine.load(context, tracker);
                 engine.setApplicationContainer(appCtr);
-
+                filteredEngines.add(engine);
 
             } catch(Exception e) {
                 report.failure(logger, "Exception while invoking " + deployer.getClass() + " load method", e);
@@ -168,6 +171,9 @@ public class ModuleInfo {
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
             }
         }
+
+        engines = filteredEngines;
+
         if (events!=null) {
             events.send(new Event<ModuleInfo>(Deployment.MODULE_LOADED, this), false);
         }

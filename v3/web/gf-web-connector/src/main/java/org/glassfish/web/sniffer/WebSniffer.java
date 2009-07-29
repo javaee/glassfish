@@ -143,6 +143,6 @@ public class WebSniffer  extends GenericSniffer implements Sniffer {
      *
      */
     public String[] getIncompatibleSnifferTypes() {
-        return new String[] {"connector", "appclient"};
+        return new String[] {"connector"};
     }
 }

@@ -83,21 +83,7 @@ public class AppClientSniffer extends GenericSniffer implements Sniffer {
             Manifest manifest = location.getManifest();
             if (manifest != null && 
                 manifest.getMainAttributes().containsKey(Attributes.Name.MAIN_CLASS)) {
-                final String uriPath = location.getURI().getPath();
-                /*
-                 * Make sure the module's name ends with .jar if it's an archive
-                 * or jar/ (either .jar/ or _jar/) if it's a directory.  We need
-                 * to handle both .jar/ and _jar/ because either suffix could
-                 * appear in the name of the expanded subdirectory for an app
-                 * client inside an EAR.  
-                 */
-                final boolean isJarArchive = uriPath.endsWith(".jar") &&
-                        (location instanceof InputJarArchive);
-                final boolean isJarDir = 
-                          (uriPath.endsWith(".jar/")
-                           || uriPath.endsWith("_jar/")) &&
-                          (location instanceof FileArchive);
-                return isJarArchive || isJarDir;
+                return true;
             }
         } catch (IOException ignore) {
         }
@@ -121,7 +107,7 @@ public class AppClientSniffer extends GenericSniffer implements Sniffer {
      *
      */
     public String[] getIncompatibleSnifferTypes() {
-        return new String[] {"connector", "web", "ejb"};
+        return new String[] {"connector", "ejb"};
     }
 
     private static final List<String> deploymentConfigurationPaths =
