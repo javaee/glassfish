@@ -69,7 +69,6 @@ import org.glassfish.admin.rest.provider.GetResultList;
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.ParameterMetaData;
-import org.glassfish.admin.rest.resources.ResourceUtil;
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
@@ -140,7 +139,7 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
 
             if (null != commandName) {
                 ActionReport actionReport = __resourceUtil.runCommand(commandName,
-                    data, RestService.habitat);
+                    data, RestService.getHabitat());
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
                 if (exitCode == ActionReport.ExitCode.SUCCESS) {
@@ -172,7 +171,7 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
             String command = getPostCommand();
             if (command != null) {
                 MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
-                    command, RestService.habitat, RestService.logger);
+                    command, RestService.getHabitat(), RestService.logger);
                 optionsResult.putMethodMetaData("POST", postMethodMetaData);
             }
         } catch (Exception e) {

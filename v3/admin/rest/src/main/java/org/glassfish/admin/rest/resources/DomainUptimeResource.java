@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Tue Jul 28 17:11:41 PDT 2009
+* date=Wed Jul 29 15:19:02 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -21,7 +21,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
-import org.glassfish.admin.rest.resources.ResourceUtil;
+import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.api.ActionReport;
 
@@ -31,7 +31,7 @@ public DomainUptimeResource() {
 __resourceUtil = new ResourceUtil();
 }
 @GET
-@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED, MediaType.TEXT_HTML})
+@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 public Response executeCommand(HashMap<String, String> data) {
 try {
 if (data.containsKey("error")) {
@@ -40,7 +40,7 @@ return Response.status(415).entity(
 
 __resourceUtil.adjustParameters(data);
 
-ActionReport actionReport = __resourceUtil.runCommand(commandName, data, RestService.habitat);
+ActionReport actionReport = __resourceUtil.runCommand(commandName, data, RestService.getHabitat());
 
 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
 
@@ -62,7 +62,7 @@ OptionsResult optionsResult = new OptionsResult();
 try {
 //command method metadata
 MethodMetaData methodMetaData = __resourceUtil.getMethodMetaData(
-commandName, RestService.habitat, RestService.logger);
+commandName, RestService.getHabitat(), RestService.logger);
 optionsResult.putMethodMetaData(commandMethod, methodMetaData);
 } catch (Exception e) {
 throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);

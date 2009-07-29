@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Tue Jul 28 17:11:43 PDT 2009
+* date=Wed Jul 29 15:19:04 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -17,18 +17,14 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.Resources;
 public class ResourcesResource extends TemplateResource<Resources> {
 
-public String[][] getCommandResourcesPaths() {
-return new String[][]{};
-}
-
-@Path("jdbc-connection-pool/")
-public ListJdbcConnectionPoolResource getJdbcConnectionPoolResource() {
-ListJdbcConnectionPoolResource resource = resourceContext.getResource(ListJdbcConnectionPoolResource.class);
+@Path("connector-connection-pool/")
+public ListConnectorConnectionPoolResource getConnectorConnectionPoolResource() {
+ListConnectorConnectionPoolResource resource = resourceContext.getResource(ListConnectorConnectionPoolResource.class);
 java.util.List<Resource> l = entity.getResources();
-java.util.List<com.sun.enterprise.config.serverbeans.JdbcConnectionPool> newList = new java.util.ArrayList();
+java.util.List<com.sun.enterprise.config.serverbeans.ConnectorConnectionPool> newList = new java.util.ArrayList();
 for (Resource r: l){
 try {
-newList.add((com.sun.enterprise.config.serverbeans.JdbcConnectionPool)r);
+newList.add((com.sun.enterprise.config.serverbeans.ConnectorConnectionPool)r);
 } catch (Exception e){
 }
 }
@@ -37,30 +33,14 @@ return resource;
 }
 
 
-@Path("mail-resource/")
-public ListMailResourceResource getMailResourceResource() {
-ListMailResourceResource resource = resourceContext.getResource(ListMailResourceResource.class);
+@Path("admin-object-resource/")
+public ListAdminObjectResourceResource getAdminObjectResourceResource() {
+ListAdminObjectResourceResource resource = resourceContext.getResource(ListAdminObjectResourceResource.class);
 java.util.List<Resource> l = entity.getResources();
-java.util.List<com.sun.enterprise.config.serverbeans.MailResource> newList = new java.util.ArrayList();
+java.util.List<com.sun.enterprise.config.serverbeans.AdminObjectResource> newList = new java.util.ArrayList();
 for (Resource r: l){
 try {
-newList.add((com.sun.enterprise.config.serverbeans.MailResource)r);
-} catch (Exception e){
-}
-}
-resource.setEntity(newList );
-return resource;
-}
-
-
-@Path("external-jndi-resource/")
-public ListExternalJndiResourceResource getExternalJndiResourceResource() {
-ListExternalJndiResourceResource resource = resourceContext.getResource(ListExternalJndiResourceResource.class);
-java.util.List<Resource> l = entity.getResources();
-java.util.List<com.sun.enterprise.config.serverbeans.ExternalJndiResource> newList = new java.util.ArrayList();
-for (Resource r: l){
-try {
-newList.add((com.sun.enterprise.config.serverbeans.ExternalJndiResource)r);
+newList.add((com.sun.enterprise.config.serverbeans.AdminObjectResource)r);
 } catch (Exception e){
 }
 }
@@ -85,14 +65,14 @@ return resource;
 }
 
 
-@Path("jdbc-resource/")
-public ListJdbcResourceResource getJdbcResourceResource() {
-ListJdbcResourceResource resource = resourceContext.getResource(ListJdbcResourceResource.class);
+@Path("mail-resource/")
+public ListMailResourceResource getMailResourceResource() {
+ListMailResourceResource resource = resourceContext.getResource(ListMailResourceResource.class);
 java.util.List<Resource> l = entity.getResources();
-java.util.List<com.sun.enterprise.config.serverbeans.JdbcResource> newList = new java.util.ArrayList();
+java.util.List<com.sun.enterprise.config.serverbeans.MailResource> newList = new java.util.ArrayList();
 for (Resource r: l){
 try {
-newList.add((com.sun.enterprise.config.serverbeans.JdbcResource)r);
+newList.add((com.sun.enterprise.config.serverbeans.MailResource)r);
 } catch (Exception e){
 }
 }
@@ -117,30 +97,14 @@ return resource;
 }
 
 
-@Path("resource-adapter-config/")
-public ListResourceAdapterConfigResource getResourceAdapterConfigResource() {
-ListResourceAdapterConfigResource resource = resourceContext.getResource(ListResourceAdapterConfigResource.class);
+@Path("jdbc-resource/")
+public ListJdbcResourceResource getJdbcResourceResource() {
+ListJdbcResourceResource resource = resourceContext.getResource(ListJdbcResourceResource.class);
 java.util.List<Resource> l = entity.getResources();
-java.util.List<com.sun.enterprise.config.serverbeans.ResourceAdapterConfig> newList = new java.util.ArrayList();
+java.util.List<com.sun.enterprise.config.serverbeans.JdbcResource> newList = new java.util.ArrayList();
 for (Resource r: l){
 try {
-newList.add((com.sun.enterprise.config.serverbeans.ResourceAdapterConfig)r);
-} catch (Exception e){
-}
-}
-resource.setEntity(newList );
-return resource;
-}
-
-
-@Path("connector-connection-pool/")
-public ListConnectorConnectionPoolResource getConnectorConnectionPoolResource() {
-ListConnectorConnectionPoolResource resource = resourceContext.getResource(ListConnectorConnectionPoolResource.class);
-java.util.List<Resource> l = entity.getResources();
-java.util.List<com.sun.enterprise.config.serverbeans.ConnectorConnectionPool> newList = new java.util.ArrayList();
-for (Resource r: l){
-try {
-newList.add((com.sun.enterprise.config.serverbeans.ConnectorConnectionPool)r);
+newList.add((com.sun.enterprise.config.serverbeans.JdbcResource)r);
 } catch (Exception e){
 }
 }
@@ -165,14 +129,46 @@ return resource;
 }
 
 
-@Path("admin-object-resource/")
-public ListAdminObjectResourceResource getAdminObjectResourceResource() {
-ListAdminObjectResourceResource resource = resourceContext.getResource(ListAdminObjectResourceResource.class);
+@Path("external-jndi-resource/")
+public ListExternalJndiResourceResource getExternalJndiResourceResource() {
+ListExternalJndiResourceResource resource = resourceContext.getResource(ListExternalJndiResourceResource.class);
 java.util.List<Resource> l = entity.getResources();
-java.util.List<com.sun.enterprise.config.serverbeans.AdminObjectResource> newList = new java.util.ArrayList();
+java.util.List<com.sun.enterprise.config.serverbeans.ExternalJndiResource> newList = new java.util.ArrayList();
 for (Resource r: l){
 try {
-newList.add((com.sun.enterprise.config.serverbeans.AdminObjectResource)r);
+newList.add((com.sun.enterprise.config.serverbeans.ExternalJndiResource)r);
+} catch (Exception e){
+}
+}
+resource.setEntity(newList );
+return resource;
+}
+
+
+@Path("jdbc-connection-pool/")
+public ListJdbcConnectionPoolResource getJdbcConnectionPoolResource() {
+ListJdbcConnectionPoolResource resource = resourceContext.getResource(ListJdbcConnectionPoolResource.class);
+java.util.List<Resource> l = entity.getResources();
+java.util.List<com.sun.enterprise.config.serverbeans.JdbcConnectionPool> newList = new java.util.ArrayList();
+for (Resource r: l){
+try {
+newList.add((com.sun.enterprise.config.serverbeans.JdbcConnectionPool)r);
+} catch (Exception e){
+}
+}
+resource.setEntity(newList );
+return resource;
+}
+
+
+@Path("resource-adapter-config/")
+public ListResourceAdapterConfigResource getResourceAdapterConfigResource() {
+ListResourceAdapterConfigResource resource = resourceContext.getResource(ListResourceAdapterConfigResource.class);
+java.util.List<Resource> l = entity.getResources();
+java.util.List<com.sun.enterprise.config.serverbeans.ResourceAdapterConfig> newList = new java.util.ArrayList();
+for (Resource r: l){
+try {
+newList.add((com.sun.enterprise.config.serverbeans.ResourceAdapterConfig)r);
 } catch (Exception e){
 }
 }

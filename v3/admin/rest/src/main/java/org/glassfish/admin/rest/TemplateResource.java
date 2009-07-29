@@ -70,7 +70,6 @@ import org.jvnet.hk2.config.TransactionFailure;
 import org.glassfish.admin.rest.provider.GetResult;
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
-import org.glassfish.admin.rest.resources.ResourceUtil;
 
 
 /**
@@ -134,7 +133,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
 
             Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
             mapOfChanges.put(getConfigBean(), data);
-            RestService.configSupport.apply(mapOfChanges); //throws TransactionFailure
+            RestService.getConfigSupport().apply(mapOfChanges); //throws TransactionFailure
             return Response.ok().entity("\"" + uriInfo.getAbsolutePath() + "\" updated successfully").build();
         } catch (TransactionFailure ex) {
             System.out.println("exception" + ex);
@@ -211,7 +210,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
                 RestRedirect.OpType.DELETE, getConfigBean());
             if (command != null) {
                 MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
-                        command, RestService.habitat, RestService.logger);
+                        command, RestService.getHabitat(), RestService.logger);
                 optionsResult.putMethodMetaData("DELETE", postMethodMetaData);
             }
         } catch (Exception e) {
@@ -243,7 +242,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         String commandName = __resourceUtil.getCommand(type, getConfigBean());
         if (commandName != null) {
             return __resourceUtil.runCommand(commandName,
-                data, RestService.habitat);//processed
+                data, RestService.getHabitat());//processed
         }
 
         return null;//not processed

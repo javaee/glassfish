@@ -33,19 +33,17 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.rest.resources;
+package org.glassfish.admin.rest;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.PathParam;
 
-import org.glassfish.admin.rest.RestService;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 
@@ -65,7 +63,7 @@ public class MonitoringResource {
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML,MediaType.TEXT_HTML})
     public List<TreeNode> getChildNodes() {
         List<TreeNode> list = new ArrayList<TreeNode>();
-        MonitoringRuntimeDataRegistry monitoringRegistry = RestService.theMonitoringRegistry;
+        MonitoringRuntimeDataRegistry monitoringRegistry = RestService.getMonitoringRegistry();
 
         if (path == null) {
             //FIXME - Return appropriate message to the user
@@ -155,7 +153,7 @@ public class MonitoringResource {
         while (it.hasNext()) {
             tn = (TreeNode) it.next();
             System.out.println("t: " + tn);
-            System.out.println("Has childern: " + tn.hasChildNodes());
+            System.out.println("Has children: " + tn.hasChildNodes());
         }
     }
 }

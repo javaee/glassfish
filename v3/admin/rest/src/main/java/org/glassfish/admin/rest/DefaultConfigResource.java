@@ -14,6 +14,6 @@ public class DefaultConfigResource extends ConfigResource {
 
     @Override
     public Config getEntity() {
-        return RestService.theDomain.getConfigs().getConfig().get(0);
+        return RestService.getDomain().getConfigs().getConfig().get(0);
     }
 }

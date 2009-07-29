@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Tue Jul 28 17:11:40 PDT 2009
+* date=Wed Jul 29 15:19:02 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -18,95 +18,8 @@ import com.sun.enterprise.config.serverbeans.Domain;
 @Path("/domain/")
 public class DomainResource extends TemplateResource<Domain> {
 
-public Domain getEntity() {
-return org.glassfish.admin.rest.RestService.theDomain;
-}
-@Path("commands/stop-domain")
-@POST
-@Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
-public org.glassfish.admin.rest.provider.GetResult execStopDomain(
-	 @QueryParam("force")  @DefaultValue("true")  String Force 
- 	) {
-	java.util.Properties p = new java.util.Properties();
-	p.put("force", Force);
-	org.glassfish.api.ActionReport ar = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.ActionReport.class);
-	org.glassfish.api.admin.CommandRunner cr = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.admin.CommandRunner.class);
-	cr.doCommand("stop-domain", p, ar);
-	System.out.println("exec command =" + ar.getActionExitCode());
-	return get(1);
-}
-@Path("commands/restart-domain")
-@POST
-@Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
-public org.glassfish.admin.rest.provider.GetResult execRestartDomain(
- 	) {
-	java.util.Properties p = new java.util.Properties();
-	org.glassfish.api.ActionReport ar = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.ActionReport.class);
-	org.glassfish.api.admin.CommandRunner cr = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.admin.CommandRunner.class);
-	cr.doCommand("restart-domain", p, ar);
-	System.out.println("exec command =" + ar.getActionExitCode());
-	return get(1);
-}
-@Path("commands/uptime")
-@POST
-@Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
-public org.glassfish.admin.rest.provider.GetResult execUptime(
- 	) {
-	java.util.Properties p = new java.util.Properties();
-	org.glassfish.api.ActionReport ar = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.ActionReport.class);
-	org.glassfish.api.admin.CommandRunner cr = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.admin.CommandRunner.class);
-	cr.doCommand("uptime", p, ar);
-	System.out.println("exec command =" + ar.getActionExitCode());
-	return get(1);
-}
-@Path("commands/version")
-@POST
-@Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
-public org.glassfish.admin.rest.provider.GetResult execVersion(
-	 @QueryParam("verbose")  @DefaultValue("false")  String Verbose 
- 	) {
-	java.util.Properties p = new java.util.Properties();
-	p.put("verbose", Verbose);
-	org.glassfish.api.ActionReport ar = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.ActionReport.class);
-	org.glassfish.api.admin.CommandRunner cr = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.admin.CommandRunner.class);
-	cr.doCommand("version", p, ar);
-	System.out.println("exec command =" + ar.getActionExitCode());
-	return get(1);
-}
-@Path("commands/rotate-log")
-@POST
-@Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
-public org.glassfish.admin.rest.provider.GetResult execRotateLog(
- 	) {
-	java.util.Properties p = new java.util.Properties();
-	org.glassfish.api.ActionReport ar = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.ActionReport.class);
-	org.glassfish.api.admin.CommandRunner cr = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.admin.CommandRunner.class);
-	cr.doCommand("rotate-log", p, ar);
-	System.out.println("exec command =" + ar.getActionExitCode());
-	return get(1);
-}
-@Path("commands/get-host-and-port")
-@POST
-@Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
-public org.glassfish.admin.rest.provider.GetResult execGetHostAndPort(
-	 @QueryParam("target")  @DefaultValue("")  String Target 
- ,
-	 @QueryParam("virtualServer")  @DefaultValue("")  String VirtualServer 
- ,
-	 @QueryParam("securityEnabled")  @DefaultValue("false")  String SecurityEnabled 
- ,
-	 @QueryParam("moduleId")  @DefaultValue("")  String ModuleId 
- 	) {
-	java.util.Properties p = new java.util.Properties();
-	p.put("target", Target);
-	p.put("virtualServer", VirtualServer);
-	p.put("securityEnabled", SecurityEnabled);
-	p.put("moduleId", ModuleId);
-	org.glassfish.api.ActionReport ar = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.ActionReport.class);
-	org.glassfish.api.admin.CommandRunner cr = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.admin.CommandRunner.class);
-	cr.doCommand("get-host-and-port", p, ar);
-	System.out.println("exec command =" + ar.getActionExitCode());
-	return get(1);
+@Override public Domain getEntity() {
+return org.glassfish.admin.rest.RestService.getDomain();
 }
 @Path("stop/")
 public DomainStopResource getDomainStopResource() {

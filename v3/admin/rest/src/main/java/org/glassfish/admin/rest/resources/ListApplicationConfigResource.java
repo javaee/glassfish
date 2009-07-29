@@ -15,23 +15,22 @@ import javax.ws.rs.*;
 import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
 import org.glassfish.admin.rest.provider.GetResultList;
-import com.sun.enterprise.config.serverbeans.MailResource;
-public class ListMailResourceResource extends TemplateListOfResource<MailResource> {
+import com.sun.enterprise.config.serverbeans.ApplicationConfig;
+public class ListApplicationConfigResource extends TemplateListOfResource<ApplicationConfig> {
 
 
-	@Path("{JndiName}/")
-	public MailResourceResource getMailResourceResource(@PathParam("JndiName") String id) {
-		MailResourceResource resource = resourceContext.getResource(MailResourceResource.class);
-		for (MailResource c: entity){
-			if(c.getJndiName().equals(id)){
-				resource.setEntity(c);
-			}
+	@Path("{ThisIsAModelBug:NoKeyAttr}/")
+	public ApplicationConfigResource getApplicationConfigResource(@PathParam("ThisIsAModelBug:NoKeyAttr") String id) {
+		ApplicationConfigResource resource = resourceContext.getResource(ApplicationConfigResource.class);
+		for (ApplicationConfig c: entity){
+//THIS KEY IS THE FIRST Attribute ONE ludo
+			
 		}
 		return resource;
 	}
 
 
 public String getPostCommand() {
-	return "create-javamail-resource";
+	return null;
 }
 }

@@ -59,7 +59,7 @@ public class RestMonitoringAdapter extends RestAdapter {
 
     public ResourceConfig getResourceConfig() {
         final Set<Class<?>> r = new HashSet<Class<?>>();
-        r.add(org.glassfish.admin.rest.resources.MonitoringResource.class);
+        r.add(org.glassfish.admin.rest.MonitoringResource.class);
         return new DefaultResourceConfig(r);
     }
 

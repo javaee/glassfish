@@ -77,13 +77,13 @@ public class GeneratorResource {
     @Produces({"text/plain"})
     public String get() {
 
-        Domain entity = RestService.theDomain;
+        Domain entity = RestService.getDomain();
 
         File loc =
                 new File(System.getProperty("user.home") + "/acvs/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources");
         loc.mkdirs();
         genDir = loc.getAbsolutePath();
-        //        DomDocument dodo = RestService.habitat.getComponent(DomDocument.class);
+        //        DomDocument dodo = RestService.getHabitat().getComponent(DomDocument.class);
         //        Dom root = dodo.getRoot();
         // System.out.println(" root "+ root );
         Dom dom1 = Dom.unwrap(entity);
@@ -93,7 +93,7 @@ public class GeneratorResource {
         ConfigModel rootModel = root.model;
 
 
-        //+ Domain domain = Domain.class.cast(RestService.habitat.getComponent(Domain.class.getName(), ""));
+        //+ Domain domain = Domain.class.cast(RestService.getHabitat().getComponent(Domain.class.getName(), ""));
         try {
             generateSingle(rootModel);
         } catch (Exception ex) {
@@ -231,7 +231,7 @@ public class GeneratorResource {
         out.write("\t\t}\n");
         out.write("\t\treturn resource;\n");
         out.write("\t}\n\n");
-        generateCommand("List" + beanName, out);
+ ///////ludo       generateCommand("List" + beanName, out);
         generateCommandResources("List" + beanName, out);
 
         out.write("\n");
@@ -297,12 +297,12 @@ public class GeneratorResource {
 //        }
 
         if (beanName.equals("Domain")) {
-            out.write("public " + beanName + " getEntity() {\n");
-            out.write("return org.glassfish.admin.rest.RestService.theDomain;\n");
+            out.write("@Override public " + beanName + " getEntity() {\n");
+            out.write("return org.glassfish.admin.rest.RestService.getDomain();\n");
             out.write("}\n");
         }
 
-        generateCommand(beanName, out);
+     /////ludo   generateCommand(beanName, out);
 
         generateCommandResources(beanName, out);
 
@@ -438,70 +438,7 @@ public class GeneratorResource {
 
     }
 
-    private void generateCommand(String resourceName, BufferedWriter out) throws IOException {
-
-        for (int i = 0; i < MappingConfigBeansToCommands.length; i++) {
-            if (resourceName.equals(MappingConfigBeansToCommands[i][0])) {
-                CommandRunner cr = RestService.habitat.getComponent(CommandRunner.class);
-                CommandModel cm = null;
-                try {
-                    cm = cr.getModel(MappingConfigBeansToCommands[i][1], RestService.logger);
-                } catch (Exception e) {
-                    System.out.println("Error Command Unknown: " + MappingConfigBeansToCommands[i][1]);
-                    return;
-                }
-                if (cm == null) {
-                    System.out.println("Error Command Unknown: " + MappingConfigBeansToCommands[i][1]);
-                    return;
-                }
-                java.util.Collection<CommandModel.ParamModel> params = cm.getParameters();
-                boolean first = true;
-                for (CommandModel.ParamModel pm : params) {
-                    System.out.println("command param for " + pm.getName());
-                    System.out.println("command param name is" + pm.getParam().name());
-                }
-                ///\"" + a + "
-                out.write("@Path(\"commands/" + MappingConfigBeansToCommands[i][1] + "\")\n");
-                out.write("@POST\n");
-                String ret = "org.glassfish.admin.rest.provider.GetResult";
-                if (resourceName.startsWith("List")) {
-                    ret = "org.glassfish.admin.rest.provider.GetResultList";
-                }
-                out.write("@Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})\n");
-                out.write("public " + ret + " exec" + getBeanName(MappingConfigBeansToCommands[i][1]) + "(\n");
-
-                for (CommandModel.ParamModel pm : params) {
-                    if (first == false) {
-                        out.write(" ,\n");
-
-                    }
-                    first = false;
-                    out.write("\t @QueryParam(\"" + pm.getName() + "\") ");
-                    out.write(" @DefaultValue(\"" + pm.getParam().defaultValue() + "\") ");
-                    out.write(" String " + getBeanName(pm.getName()) + " \n");
-
-                }
-
-                out.write(" \t) {\n");
-
-                out.write("\tjava.util.Properties p = new java.util.Properties();\n");
-                for (CommandModel.ParamModel pm : params) {
-                    out.write("\tp.put(\"" + pm.getName() + "\", " + getBeanName(pm.getName()) + ");\n");
-                }
-
-                out.write("\torg.glassfish.api.ActionReport ar = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.ActionReport.class);\n");
-                out.write("\torg.glassfish.api.admin.CommandRunner cr = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.admin.CommandRunner.class);\n");
-                out.write("\tcr.doCommand(\"" + MappingConfigBeansToCommands[i][1] + "\", p, ar);\n");
-                out.write("\tSystem.out.println(\"exec command =\" + ar.getActionExitCode());\n");
-
-                out.write("\treturn get(1);\n");
-                out.write("}\n");
-
-
-            }
-        }
-
-    }
+ 
 
     private String getBeanName(String elementName) {
         String ret = "";
@@ -709,10 +646,12 @@ public class GeneratorResource {
         }
         commandResourcesPaths = commandResourcesPaths + "}";
 
-        //define method to return command resource paths.
+        //define method to return command resource paths. only if needed
+        if (!commandResourcesPaths.equals("{}")){
         out.write("public String[][] getCommandResourcesPaths() {\n");
         out.write("return new String[][]" +  commandResourcesPaths + ";\n");
         out.write("}\n\n");
+        }
     }
 
     private void createCommandResourceFile(String commandResourceFileName,
@@ -783,7 +722,7 @@ public class GeneratorResource {
         out.write("}/*unsupported media*/\n\n");
         out.write("__resourceUtil.adjustParameters(data);\n\n");
 
-        out.write("ActionReport actionReport = __resourceUtil.runCommand(commandName, data, RestService.habitat);\n\n");
+        out.write("ActionReport actionReport = __resourceUtil.runCommand(commandName, data, RestService.getHabitat());\n\n");
         out.write("ActionReport.ExitCode exitCode = actionReport.getActionExitCode();\n\n");
 
         out.write("if (exitCode == ActionReport.ExitCode.SUCCESS) {\n");
@@ -807,7 +746,7 @@ public class GeneratorResource {
         out.write("try {\n");
         out.write("//command method metadata\n");
         out.write("MethodMetaData methodMetaData = __resourceUtil.getMethodMetaData(\n");
-        out.write("commandName, RestService.habitat, RestService.logger);\n");
+        out.write("commandName, RestService.getHabitat(), RestService.logger);\n");
 
         out.write("optionsResult.putMethodMetaData(commandMethod, methodMetaData);\n");
         out.write("} catch (Exception e) {\n");

@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Tue Jul 28 17:11:42 PDT 2009
+* date=Wed Jul 29 15:19:04 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -16,9 +16,5 @@ import org.glassfish.admin.rest.TemplateResource;
 import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.grizzly.config.dom.FileCache;
 public class FileCacheResource extends TemplateResource<FileCache> {
-
-public String[][] getCommandResourcesPaths() {
-return new String[][]{};
-}
 
 }

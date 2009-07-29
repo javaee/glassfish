@@ -35,8 +35,10 @@
  */
 package org.glassfish.admin.rest;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import java.util.logging.Logger;
 
+import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -60,7 +62,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
 public class RestService implements Startup, PostConstruct, PreDestroy {
 
     @Inject
-    public static Habitat habitat;
+    private static Habitat habitat;
 
     @Inject
     com.sun.enterprise.config.serverbeans.Domain domain;
@@ -71,9 +73,9 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
     @Inject
     ServerEnvironmentImpl env;
 
-    public static com.sun.enterprise.config.serverbeans.Domain theDomain;
-    public static org.glassfish.flashlight.MonitoringRuntimeDataRegistry theMonitoringRegistry;
-    public static ConfigSupport configSupport;
+    private static com.sun.enterprise.config.serverbeans.Domain theDomain;
+    private static org.glassfish.flashlight.MonitoringRuntimeDataRegistry theMonitoringRegistry;
+    private static ConfigSupport configSupport;
 
     public final static Logger logger =
             LogDomains.getLogger(RestService.class, LogDomains.ADMIN_LOGGER);
@@ -85,6 +87,20 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
         return Lifecycle.SERVER;
     }
 
+    public static Habitat getHabitat() {
+        return habitat;
+    }
+    public static ConfigSupport getConfigSupport() {
+        return configSupport;
+    }
+
+    public static Domain getDomain() {
+        return theDomain;
+    }
+
+    public static MonitoringRuntimeDataRegistry getMonitoringRegistry() {
+        return theMonitoringRegistry;
+    }
     /*
      *     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;

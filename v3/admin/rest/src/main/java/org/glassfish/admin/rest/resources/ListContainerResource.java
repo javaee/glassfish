@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Tue Jul 28 17:11:41 PDT 2009
+* date=Wed Jul 29 15:19:02 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -24,16 +24,10 @@ public class ListContainerResource extends TemplateListOfResource<Container> {
 		ContainerResource resource = resourceContext.getResource(ContainerResource.class);
 		for (Container c: entity){
 //THIS KEY IS THE FIRST Attribute ONE ludo
-			/*if(c.getThisIsAModelBug:NoKeyAttr().equals(id)){
-				resource.setEntity(c);
-			}*/
+			
 		}
 		return resource;
 	}
-
-public String[][] getCommandResourcesPaths() {
-return new String[][]{};
-}
 
 
 public String getPostCommand() {
