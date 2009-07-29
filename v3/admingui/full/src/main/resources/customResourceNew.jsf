@@ -88,7 +88,7 @@
 #include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="AAA$resource{i18njmail.customResource.newPageTitle}" helpText="$resource{i18njmail.customResource.newPageTitleHelp}">
+                <sun:title id="propertyContentPage" title="$resource{i18njmail.customResource.newPageTitle}" helpText="$resource{i18njmail.customResource.newPageTitleHelp}">
 #include "/full/jndiButtons.inc"
                     </sun:title>
                     "<br><br>
