@@ -40,6 +40,8 @@ import org.glassfish.resource.common.Resource;
 import javax.xml.parsers.DocumentBuilder; 
 import javax.xml.parsers.DocumentBuilderFactory;  
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
  
 import org.xml.sax.SAXException;  
 import org.xml.sax.SAXParseException;  
@@ -49,12 +51,8 @@ import org.xml.sax.EntityResolver;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.StringTokenizer;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.DOMException;
@@ -64,11 +62,12 @@ import org.w3c.dom.NamedNodeMap;
 
 import com.sun.enterprise.util.SystemPropertyConstants;
 
+
 //i18n import
 import com.sun.enterprise.util.i18n.StringManager;
 
-//import static com.sun.enterprise.resource.ResourceConstants.*;
-import java.util.HashMap;
+import java.util.*;
+
 import org.xml.sax.ext.LexicalHandler;
 
 import org.glassfish.api.I18n;
@@ -87,6 +86,7 @@ public class ResourcesXMLParser implements EntityResolver
     private File resourceFile = null;
     private Document document;
     private List<Resource> vResources;
+    private boolean isDoctypePresent = false;
     /* list of resources that needs to be created prior to module deployment. This 
      * includes all non-Connector resources and resource-adapter-config
      */
@@ -133,7 +133,6 @@ public class ResourcesXMLParser implements EntityResolver
         }/*catch(SAXParseException saxpe){
             throw new Exception(saxpe.getLocalizedMessage());
         }*/catch (SAXException sxe) {
-            /*
             //This check is introduced to check if DOCTYPE is present in sun-resources.xml
             //And throw proper error message if DOCTYPE is missing
             try {
@@ -151,7 +150,6 @@ public class ResourcesXMLParser implements EntityResolver
                                             "Error Parsing the xml ({0}), doctype is not present", 
                                             resourceFile.toString()));
             }
-             */
             Exception  x = sxe;
             if (sxe.getException() != null)
                x = sxe.getException();
@@ -196,11 +194,13 @@ public class ResourcesXMLParser implements EntityResolver
                 {
                     generateMailResource(nextKid);
                 }
-                else if (nodeName.equalsIgnoreCase(Resource.PERSISTENCE_MANAGER_FACTORY_RESOURCE)) 
+/* //PMF resource is no more supported and hence removing support form sun-resources.xml
+                else if (nodeName.equalsIgnoreCase(Resource.PERSISTENCE_MANAGER_FACTORY_RESOURCE))
                 {
                     generatePersistenceResource(nextKid);
                 }
-                else if (nodeName.equalsIgnoreCase(Resource.ADMIN_OBJECT_RESOURCE)) 
+*/
+                else if (nodeName.equalsIgnoreCase(Resource.ADMIN_OBJECT_RESOURCE))
                 {
                     generateAdminObjectResource(nextKid);
                 }
@@ -215,6 +215,10 @@ public class ResourcesXMLParser implements EntityResolver
                 else if (nodeName.equalsIgnoreCase(Resource.RESOURCE_ADAPTER_CONFIG)) 
                 {
                     generateResourceAdapterConfig(nextKid);
+                }
+                else if (nodeName.equalsIgnoreCase(Resource.CONNECTOR_WORK_SECURITY_MAP))
+                {
+                    generateWorkSecurityMap(nextKid);
                 }
             }
         }
@@ -512,9 +516,9 @@ public class ResourcesXMLParser implements EntityResolver
         Node allowNonComponentCallersNode = 
                 attributes.getNamedItem(ALLOW_NON_COMPONENT_CALLERS);
         Node validateAtmostOncePeriodNode = 
-                attributes.getNamedItem(VALIDATE_ATMOST_ONCE_PERIOD);
+                attributes.getNamedItem(VALIDATE_ATMOST_ONCE_PERIOD_IN_SECONDS);
         Node connectionLeakTimeoutNode = 
-                attributes.getNamedItem(CONNECTION_LEAK_TIMEOUT);
+                attributes.getNamedItem(CONNECTION_LEAK_TIMEOUT_IN_SECONDS);
         Node connectionLeakReclaimNode = 
                 attributes.getNamedItem(CONNECTION_LEAK_RECLAIM);
         Node connectionCreationRetryAttemptsNode = 
@@ -522,7 +526,7 @@ public class ResourcesXMLParser implements EntityResolver
         Node connectionCreationRetryIntervalNode = 
                 attributes.getNamedItem(CONNECTION_CREATION_RETRY_INTERVAL_IN_SECONDS);
         Node statementTimeoutNode = 
-                attributes.getNamedItem(STATEMENT_TIMEOUT);
+                attributes.getNamedItem(STATEMENT_TIMEOUT_IN_SECONDS);
         Node lazyConnectionEnlistmentNode = 
                 attributes.getNamedItem(LAZY_CONNECTION_ENLISTMENT);
         Node lazyConnectionAssociationNode = 
@@ -535,7 +539,21 @@ public class ResourcesXMLParser implements EntityResolver
                 attributes.getNamedItem(MAX_CONNECTION_USAGE_COUNT);
         Node wrapJDBCObjectsNode = 
                 attributes.getNamedItem(WRAP_JDBC_OBJECTS);
-        
+        Node poolingNode
+            = attributes.getNamedItem(POOLING);
+        Node pingNode
+            = attributes.getNamedItem(PING);
+        Node customValidationNode
+            = attributes.getNamedItem(CUSTOM_VALIDATION);
+        Node driverClassNameNode
+            = attributes.getNamedItem(DRIVER_CLASSNAME);
+        Node initSqlNode
+            = attributes.getNamedItem(INIT_SQL);
+        Node sqlTraceListenersNode
+            = attributes.getNamedItem(SQL_TRACE_LISTENERS);
+        Node statementCacheSizeNode
+            = attributes.getNamedItem(STATEMENT_CACHE_SIZE);
+
         String datasource = datasourceNode.getNodeValue();
         
         Resource jdbcConnPool = new Resource(Resource.JDBC_CONNECTION_POOL);
@@ -600,11 +618,11 @@ public class ResourcesXMLParser implements EntityResolver
                                         allowNonComponentCallersNode.getNodeValue());
         }
         if (validateAtmostOncePeriodNode != null) {
-           jdbcConnPool.setAttribute(VALIDATE_ATMOST_ONCE_PERIOD, 
+           jdbcConnPool.setAttribute(VALIDATE_ATMOST_ONCE_PERIOD_IN_SECONDS,
                                         validateAtmostOncePeriodNode.getNodeValue());
         }
         if (connectionLeakTimeoutNode != null) {
-           jdbcConnPool.setAttribute(CONNECTION_LEAK_TIMEOUT, 
+           jdbcConnPool.setAttribute(CONNECTION_LEAK_TIMEOUT_IN_SECONDS,
                                         connectionLeakTimeoutNode.getNodeValue());
         }
         if (connectionLeakReclaimNode != null) {
@@ -620,7 +638,7 @@ public class ResourcesXMLParser implements EntityResolver
                                         connectionCreationRetryIntervalNode.getNodeValue());
         }
         if (statementTimeoutNode != null) {
-           jdbcConnPool.setAttribute(STATEMENT_TIMEOUT, 
+           jdbcConnPool.setAttribute(STATEMENT_TIMEOUT_IN_SECONDS,
                                         statementTimeoutNode.getNodeValue());
         }
         if (lazyConnectionEnlistmentNode != null) {
@@ -647,7 +665,35 @@ public class ResourcesXMLParser implements EntityResolver
            jdbcConnPool.setAttribute(WRAP_JDBC_OBJECTS, 
                                         wrapJDBCObjectsNode.getNodeValue());
         }
-        
+        if(poolingNode != null){
+           String pooling = poolingNode.getNodeValue();
+           jdbcConnPool.setAttribute(POOLING,pooling);
+        }
+        if(pingNode != null){
+           String ping = pingNode.getNodeValue();
+           jdbcConnPool.setAttribute(PING,ping);
+        }
+        if(initSqlNode != null){
+           String initSQL = initSqlNode.getNodeValue();
+           jdbcConnPool.setAttribute(INIT_SQL,initSQL);
+        }
+        if(sqlTraceListenersNode != null){
+           String sqlTraceListeners= sqlTraceListenersNode.getNodeValue();
+           jdbcConnPool.setAttribute(SQL_TRACE_LISTENERS, sqlTraceListeners);
+        }
+        if(customValidationNode != null){
+           String customValidation = customValidationNode.getNodeValue();
+           jdbcConnPool.setAttribute(CUSTOM_VALIDATION,customValidation);
+        }
+        if(driverClassNameNode != null){
+           String driverClassName = driverClassNameNode.getNodeValue();
+           jdbcConnPool.setAttribute(DRIVER_CLASSNAME,driverClassName);
+        }
+        if(statementCacheSizeNode != null){
+           String statementCacheSize = statementCacheSizeNode.getNodeValue();
+           jdbcConnPool.setAttribute(STATEMENT_CACHE_SIZE,statementCacheSize);
+        }
+
         NodeList children = nextKid.getChildNodes();
         generatePropertyElement(jdbcConnPool, children);
         vResources.add(jdbcConnPool);
@@ -720,9 +766,12 @@ public class ResourcesXMLParser implements EntityResolver
         printResourceElements(mailResource);
     }
     
-    /*
+/* //PMF resource is no more supported and hence removing support form sun-resources.xml
+    */
+/*
      * Generate the Persistence Factory Manager resource
      */
+/*
     private void generatePersistenceResource(Node nextKid) throws Exception
     {
         NamedNodeMap attributes = nextKid.getAttributes();
@@ -758,6 +807,7 @@ public class ResourcesXMLParser implements EntityResolver
         //debug strings
         printResourceElements(persistenceResource);
     }
+*/
 
     /*
      * Generate the Admin Object resource
@@ -903,7 +953,37 @@ public class ResourcesXMLParser implements EntityResolver
             = attributes.getNamedItem(CONN_IDLE_TIME_OUT);
         Node failAllConnNode
             = attributes.getNamedItem(CONN_FAIL_ALL_CONNECTIONS);
-        
+        Node maxWaitTimeMillisNode
+            = attributes.getNamedItem(MAX_WAIT_TIME_IN_MILLIS);
+        Node transactionSupportNode
+            = attributes.getNamedItem(CONN_TRANSACTION_SUPPORT);
+        Node connValidationReqdNode
+            = attributes.getNamedItem(IS_CONNECTION_VALIDATION_REQUIRED);
+        Node validateAtmostOncePeriodNode
+            = attributes.getNamedItem(VALIDATE_ATMOST_ONCE_PERIOD_IN_SECONDS);
+        Node connLeakTimeoutNode 
+            = attributes.getNamedItem(CONNECTION_LEAK_TIMEOUT_IN_SECONDS);
+        Node connLeakReclaimNode
+            = attributes.getNamedItem(CONNECTION_LEAK_RECLAIM);
+        Node connCreationRetryAttemptsNode
+            = attributes.getNamedItem(CONNECTION_CREATION_RETRY_ATTEMPTS);
+        Node connCreationRetryIntervalNode
+            = attributes.getNamedItem(CONNECTION_CREATION_RETRY_INTERVAL_IN_SECONDS);
+        Node lazyConnEnlistmentNode
+            = attributes.getNamedItem(LAZY_CONNECTION_ENLISTMENT);
+        Node lazyConnAssociationNode
+            = attributes.getNamedItem(LAZY_CONNECTION_ASSOCIATION);
+        Node associateWithThreadNode
+            = attributes.getNamedItem(ASSOCIATE_WITH_THREAD);
+        Node matchConnectionsNode
+            = attributes.getNamedItem(MATCH_CONNECTIONS);
+        Node maxConnUsageCountNode
+            = attributes.getNamedItem(MAX_CONNECTION_USAGE_COUNT);
+        Node poolingNode
+            = attributes.getNamedItem(POOLING);
+        Node pingNode
+            = attributes.getNamedItem(PING);
+
         String poolName = null;
         
         Resource connectorConnPoolResource = new Resource(Resource.CONNECTOR_CONNECTION_POOL);
@@ -937,9 +1017,83 @@ public class ResourcesXMLParser implements EntityResolver
         }
         if(failAllConnNode != null){
             String failAllConn = failAllConnNode.getNodeValue();
-            connectorConnPoolResource.setAttribute(CONN_FAIL_ALL_CONNECTIONS,failAllConn);
+            connectorConnPoolResource.setAttribute(CONN_FAIL_ALL_CONNECTIONS,
+                                                   failAllConn);
         }
-                     
+        if(maxWaitTimeMillisNode != null){
+           String maxWaitTimeMillis = maxWaitTimeMillisNode.getNodeValue();
+           connectorConnPoolResource.setAttribute(MAX_WAIT_TIME_IN_MILLIS,
+                                                      maxWaitTimeMillis);
+        }
+        if(transactionSupportNode != null){
+           String transactionSupport = transactionSupportNode.getNodeValue();
+           connectorConnPoolResource.setAttribute(CONN_TRANSACTION_SUPPORT,
+                                                      transactionSupport);
+        }
+        if(connValidationReqdNode != null){
+           String connValidationReqd = connValidationReqdNode.getNodeValue();
+           connectorConnPoolResource.setAttribute(IS_CONNECTION_VALIDATION_REQUIRED,
+                                                      connValidationReqd);
+        }
+        if(validateAtmostOncePeriodNode != null){
+           String validateAtmostOncePeriod = validateAtmostOncePeriodNode.getNodeValue();
+           connectorConnPoolResource.setAttribute(VALIDATE_ATMOST_ONCE_PERIOD_IN_SECONDS,
+                                          validateAtmostOncePeriod);
+        }
+        if(connLeakTimeoutNode != null){
+           String connLeakTimeout = connLeakTimeoutNode.getNodeValue();
+           connectorConnPoolResource.setAttribute(CONNECTION_LEAK_TIMEOUT_IN_SECONDS,
+                                          connLeakTimeout);
+        }
+        if(connLeakReclaimNode != null){
+           String connLeakReclaim = connLeakReclaimNode.getNodeValue();
+           connectorConnPoolResource.setAttribute(CONNECTION_LEAK_RECLAIM,
+                                                      connLeakReclaim);
+        }
+        if(connCreationRetryAttemptsNode != null){
+           String connCreationRetryAttempts = connCreationRetryAttemptsNode.getNodeValue();
+           connectorConnPoolResource.setAttribute(CONNECTION_CREATION_RETRY_ATTEMPTS,
+                                                      connCreationRetryAttempts);
+        }
+            if(connCreationRetryIntervalNode != null){
+               String connCreationRetryInterval = connCreationRetryIntervalNode.getNodeValue();
+           connectorConnPoolResource.setAttribute(CONNECTION_CREATION_RETRY_INTERVAL_IN_SECONDS,
+                                          connCreationRetryInterval);
+        }
+        if(lazyConnEnlistmentNode != null){
+               String lazyConnEnlistment = lazyConnEnlistmentNode.getNodeValue();
+           connectorConnPoolResource.setAttribute(LAZY_CONNECTION_ENLISTMENT,
+                                                      lazyConnEnlistment);
+        }
+        if(lazyConnAssociationNode != null){
+               String lazyConnAssociation = lazyConnAssociationNode.getNodeValue();
+           connectorConnPoolResource.setAttribute(LAZY_CONNECTION_ASSOCIATION,
+                                                      lazyConnAssociation);
+        }
+            if(associateWithThreadNode != null){
+               String associateWithThread = associateWithThreadNode.getNodeValue();
+           connectorConnPoolResource.setAttribute(ASSOCIATE_WITH_THREAD,
+                                                      associateWithThread);
+        }
+        if(matchConnectionsNode != null){
+           String matchConnections = matchConnectionsNode.getNodeValue();
+           connectorConnPoolResource.setAttribute(MATCH_CONNECTIONS,
+                                                      matchConnections);
+        }
+        if(maxConnUsageCountNode != null){
+           String maxConnUsageCount = maxConnUsageCountNode.getNodeValue();
+           connectorConnPoolResource.setAttribute(MAX_CONNECTION_USAGE_COUNT,
+                                                      maxConnUsageCount);
+        }
+        if(poolingNode != null){
+           String pooling = poolingNode.getNodeValue();
+           connectorConnPoolResource.setAttribute(POOLING,pooling);
+        }
+        if(pingNode != null){
+           String ping = pingNode.getNodeValue();
+           connectorConnPoolResource.setAttribute(PING,ping);
+        }
+
         NodeList children = nextKid.getChildNodes();
         //get description
         generatePropertyElement(connectorConnPoolResource, children);
@@ -956,7 +1110,69 @@ public class ResourcesXMLParser implements EntityResolver
         //debug strings
         printResourceElements(connectorConnPoolResource);
     }
-    
+
+    private void generateWorkSecurityMap(Node node) throws Exception {
+        NamedNodeMap attributes = node.getAttributes();
+        if(attributes == null){
+            return;
+        }
+
+        Node nameNode = attributes.getNamedItem(WORK_SECURITY_MAP_NAME);
+
+        Resource workSecurityMapResource = new Resource(Resource.CONNECTOR_WORK_SECURITY_MAP);
+        if(nameNode != null){
+            String name = nameNode.getNodeValue();
+            workSecurityMapResource.setAttribute(WORK_SECURITY_MAP_NAME, name);
+        }
+
+        Node raNameNode = attributes.getNamedItem(WORK_SECURITY_MAP_RA_NAME);
+        if(raNameNode != null) {
+            workSecurityMapResource.setAttribute(WORK_SECURITY_MAP_RA_NAME, raNameNode.getNodeValue());
+        }
+
+        NodeList children = node.getChildNodes();
+        if(children != null){
+            for(int i=0; i<children.getLength();i++){
+                Node child = children.item(i);
+                String nodeName = child.getNodeName();
+                if(nodeName.equals(WORK_SECURITY_MAP_GROUP_MAP)){
+                    Properties groupMaps = new Properties();
+                    NamedNodeMap childAttributes = child.getAttributes();
+                    if(childAttributes != null){
+                        Node eisGroup = childAttributes.getNamedItem(WORK_SECURITY_MAP_EIS_GROUP);
+                        Node mappedGroup = childAttributes.getNamedItem(WORK_SECURITY_MAP_MAPPED_GROUP);
+                        if(eisGroup != null && mappedGroup != null){
+                            String eisGroupValue = eisGroup.getNodeValue();
+                            String serverGroupValue = mappedGroup.getNodeValue();
+                            if(eisGroupValue != null && serverGroupValue != null){
+                                groupMaps.put(eisGroupValue, serverGroupValue);
+                            }
+                        }
+                        workSecurityMapResource.setAttribute(WORK_SECURITY_MAP_GROUP_MAP, groupMaps);
+                    }
+                }else if(nodeName.equals(WORK_SECURITY_MAP_PRINCIPAL_MAP)){
+                    Properties principalMaps = new Properties();
+                    NamedNodeMap childAttributes = child.getAttributes();
+                    if(childAttributes != null){
+                        Node eisPrincipal = childAttributes.getNamedItem(WORK_SECURITY_MAP_EIS_PRINCIPAL);
+                        Node mappedPrincipal = childAttributes.getNamedItem(WORK_SECURITY_MAP_MAPPED_PRINCIPAL);
+                        if(eisPrincipal != null && mappedPrincipal != null){
+                            String eisPrincipalValue = eisPrincipal.getNodeValue();
+                            String serverPrincipalValue = mappedPrincipal.getNodeValue();
+                            if(eisPrincipalValue != null && serverPrincipalValue != null){
+                                principalMaps.put(eisPrincipalValue, serverPrincipalValue);
+                            }
+                        }
+                        workSecurityMapResource.setAttribute(WORK_SECURITY_MAP_PRINCIPAL_MAP, principalMaps);
+                    }
+                }
+            }
+        }
+        vResources.add(workSecurityMapResource);
+
+        //debug strings
+        printResourceElements(workSecurityMapResource);
+    }
     private void generateSecurityMap(String poolName,Node mapNode) throws Exception{
         
         NamedNodeMap attributes = mapNode.getAttributes();
@@ -1144,14 +1360,14 @@ public class ResourcesXMLParser implements EntityResolver
         try {
             String dtd = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) +
                          File.separator + "lib" + File.separator + "dtds" + File.separator +
-                         "sun-resources_1_3.dtd";
+                         "sun-resources_1_4.dtd";
             is = new InputSource(new java.io.FileInputStream(dtd));
         } catch(Exception e) {
             throw new SAXException("cannot resolve dtd", e);
         }
         return is;
     }
-    /*
+
     class MyLexicalHandler implements LexicalHandler{
         public void startDTD(String name, String publicId, String systemId) throws SAXException {
             isDoctypePresent = true;
@@ -1176,6 +1392,6 @@ public class ResourcesXMLParser implements EntityResolver
         }
         
     }
-     */
+
 }
 

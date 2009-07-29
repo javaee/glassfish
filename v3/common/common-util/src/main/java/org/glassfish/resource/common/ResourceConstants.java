@@ -77,6 +77,8 @@ public final class ResourceConstants {
 
     public static final String CONNECTION_VALIDATION_METHOD = "connection-validation-method";
 
+    public static final String CUSTOM_VALIDATION = "custom-validation";
+
     public static final String FAIL_ALL_CONNECTIONS = "fail-all-connections";
 
     public static final String VALIDATION_TABLE_NAME = "validation-table-name";
@@ -91,9 +93,9 @@ public final class ResourceConstants {
 
     public static final String ALLOW_NON_COMPONENT_CALLERS = "allow-non-component-callers";
 
-    public static final String VALIDATE_ATMOST_ONCE_PERIOD = "validate-atmost-once-period-in-seconds";
+    public static final String VALIDATE_ATMOST_ONCE_PERIOD_IN_SECONDS = "validate-atmost-once-period-in-seconds";
 
-    public static final String CONNECTION_LEAK_TIMEOUT = "connection-leak-timeout-in-seconds";
+    public static final String CONNECTION_LEAK_TIMEOUT_IN_SECONDS = "connection-leak-timeout-in-seconds";
 
     public static final String CONNECTION_LEAK_RECLAIM = "connection-leak-reclaim";
 
@@ -101,7 +103,7 @@ public final class ResourceConstants {
 
     public static final String CONNECTION_CREATION_RETRY_INTERVAL_IN_SECONDS = "connection-creation-retry-interval-in-seconds";
 
-    public static final String STATEMENT_TIMEOUT = "statement-timeout";
+    public static final String STATEMENT_TIMEOUT_IN_SECONDS = "statement-timeout-in-seconds";
 
     public static final String DRIVER_CLASSNAME = "driver-classname";
 
@@ -182,6 +184,8 @@ public final class ResourceConstants {
 
     public static final String CONN_FAIL_ALL_CONNECTIONS = "fail-all-connections";
 
+    public static final String CONN_TRANSACTION_SUPPORT = "transaction-support";
+
     //Security Map elements...
     public static final String SECURITY_MAP = "security-map";
 
@@ -204,5 +208,27 @@ public final class ResourceConstants {
     public static final String USER_NAME = "user-name";
 
     public static final String PASSWORD = "password";
+
+
+    //work security map elements.
+    public static final String WORK_SECURITY_MAP = "work-security-map";
+
+    public static final String WORK_SECURITY_MAP_NAME = "name";
+
+    public static final String WORK_SECURITY_MAP_RA_NAME = "resource-adapter-name";
+
+    public static final String WORK_SECURITY_MAP_GROUP_MAP = "group-map";
+
+    public static final String WORK_SECURITY_MAP_PRINCIPAL_MAP = "principal-map";
+
+    //work security map - group-map elements ..
+    public static final String WORK_SECURITY_MAP_EIS_GROUP = "eis-group";
+
+    public static final String WORK_SECURITY_MAP_MAPPED_GROUP = "mapped-group";
+
+    //work security map - eis-map elements ..
+    public static final String WORK_SECURITY_MAP_EIS_PRINCIPAL = "eis-principal";
+
+    public static final String WORK_SECURITY_MAP_MAPPED_PRINCIPAL = "mapped-principal";
 
 }

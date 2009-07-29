@@ -56,7 +56,8 @@ public class Resource {
     public static final String CONNECTOR_CONNECTION_POOL = "connector-connection-pool";
     public static final String PERSISTENCE_MANAGER_FACTORY_RESOURCE = "persistence-manager-factory-resource";
     public static final String CONNECTOR_SECURITY_MAP    = "security-map";
-    
+    public static final String CONNECTOR_WORK_SECURITY_MAP    = "work-security-map";
+
     private String resType;
     private HashMap attrList = new HashMap();
     private Properties props = new Properties();
@@ -86,6 +87,10 @@ public class Resource {
     }
 
     public void setAttribute(String name, String[] value) {
+        attrList.put(name, value);
+    }
+
+    public void setAttribute(String name, Properties value) {
         attrList.put(name, value);
     }
 
@@ -172,7 +177,11 @@ public class Resource {
         }
         
         if (rType.equals(RESOURCE_ADAPTER_CONFIG)) {
-            return isEqualAttribute(r, RES_ADAPTER_CONFIG);
+            return isEqualAttribute(r, RES_ADAPTER_NAME);
+        }
+
+        if(rType.equals(CONNECTOR_WORK_SECURITY_MAP)){
+            return isEqualAttribute(r,WORK_SECURITY_MAP_NAME);
         }
         
         return false;
@@ -207,8 +216,10 @@ public class Resource {
         }else if (rType.equals(JDBC_CONNECTION_POOL) || rType.equals(CONNECTOR_CONNECTION_POOL)) {
             identity =  (String) getAttribute(this, CONNECTION_POOL_NAME);
         }else if (rType.equals(RESOURCE_ADAPTER_CONFIG)) {
-            identity =  (String) getAttribute(this, RES_ADAPTER_CONFIG);
-        } 
+            identity =  (String) getAttribute(this, RESOURCE_ADAPTER_CONFIG_NAME);
+        }else if(rType.equals(CONNECTOR_WORK_SECURITY_MAP)){
+            identity = (String) getAttribute(this, WORK_SECURITY_MAP_NAME);
+        }
         
         return identity + " of type " + resType;
     }

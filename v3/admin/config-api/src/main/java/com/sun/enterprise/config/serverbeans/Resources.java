@@ -44,6 +44,7 @@ import org.jvnet.hk2.component.Injectable;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * J2EE Applications look up resources registered with the Application server,
@@ -92,6 +93,9 @@ public interface Resources extends ConfigBeanProxy, Injectable  {
     @DuckTyped
     public <T> Collection<T> getResources(Class<T> type);
 
+    @DuckTyped
+    public <T> Resource getResourceByName(Class<T> type, String name);
+
     public class Duck {
 
         public static <T> Collection<T> getResources(Resources resources, Class<T> type){
@@ -102,6 +106,49 @@ public interface Resources extends ConfigBeanProxy, Injectable  {
                 }
             }
             return filteredResources;
+        }
+
+        public static <T> Resource getResourceByName(Resources resources, Class<T> type, String name){
+            Resource foundRes = null;
+            Collection<T> typedResources ;
+            boolean bindableResource = BindableResource.class.isAssignableFrom(type);
+            boolean poolResource = ResourcePool.class.isAssignableFrom(type);
+            boolean workSecurityMap = WorkSecurityMap.class.isAssignableFrom(type);
+            boolean rac = ResourceAdapterConfig.class.isAssignableFrom(type);
+            Class c;
+            if(bindableResource){
+                c = BindableResource.class;
+            }else if(poolResource){
+                c = ResourcePool.class;
+            }else if(workSecurityMap){
+                c = WorkSecurityMap.class;
+            }else if(rac){
+                c = ResourceAdapterConfig.class;
+            }else{
+                //do not handle any other resource type
+                return null;
+            }
+            typedResources = resources.getResources(c);
+
+            Iterator itr = typedResources.iterator();
+            while(itr.hasNext()){
+                String resourceName = null;
+                Resource res = (Resource)itr.next();
+                if(bindableResource){
+                    resourceName = ((BindableResource)res).getJndiName();
+                } else if(poolResource){
+                    resourceName = ((ResourcePool)res).getName();
+                } else if(rac){
+                    resourceName = ((ResourceAdapterConfig)res).getName();
+                } else if(workSecurityMap){
+                    resourceName = ((WorkSecurityMap)res).getName();
+                }
+                if(name.equals(resourceName)){
+                    foundRes = res;
+                    break;
+                }
+            }
+            return foundRes;
         }
     }
 }
