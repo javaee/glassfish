@@ -691,6 +691,41 @@ public class ProxyHandlers {
         }
     }
 
+
+    /*
+     * This handler takes in a list of rows, there should be 'Enabled' attribute in each row.
+     * Get the resource-ref of this resource and do a logical And with this Enabled attribute
+     * to get the real status
+     */
+    @Handler(id = "getResourceRealStatus",
+        input = {
+            @HandlerInput(name = "rows", type = java.util.List.class, required = true)},
+        output = {
+            @HandlerOutput(name = "result", type = List.class)})
+    public static void getResourceRealStatus(HandlerContext handlerCtx) {
+        List<Map> rows = (List) handlerCtx.getInputValue("rows");
+        for (Map oneRow : rows) {
+            String enabled = (String) oneRow.get("Enabled");
+            String name = (String) oneRow.get("Name");
+            if (enabled == null){
+                continue;   //this should never happen.
+            }
+            Set<AMXProxy> resRefSet = V3AMX.getInstance().getDomainRoot().getQueryMgr().queryTypeName("resource-ref", name);
+            for(AMXProxy ref : resRefSet){
+                String refStatus = (String)ref.attributesMap().get("Enabled");
+                if (refStatus.equals("true")){
+                    oneRow.put("Enabled", enabled);   //depend on the resource itself.
+                }else{
+                    oneRow.put("Enabled", false);
+                }
+            }
+        }
+        handlerCtx.setOutputValue("result", rows);
+    }
+
+
+
+
     @Handler(id = "createResourceRef",
         input = {
             @HandlerInput(name = "resourceName", type = String.class, required = true)
@@ -723,20 +758,7 @@ public class ProxyHandlers {
         }
     }
 
-    /*
-    public static boolean isProxyExist(String objectNameStr){
-    try{
-    ObjectName objName = new ObjectName(objectNameStr);
-    Query query = V3AMX.getInstance().getDomainRoot().getQueryMgr();
-    //            Set<ObjectName> result = query.queryTypeObjectNameSet(objName.getKeyProperty("type"));
-    Set<ObjectName> result = query.queryAllObjectNameSet();
-    return (result.contains(objName));
-    }catch(Exception ex){
-    ex.printStackTrace();
-    return false;
-    }
-    }
-     */
+    
     public static boolean doesProxyExist(String objectNameStr) {
         try {
             final ObjectName objName = new ObjectName(objectNameStr);
@@ -746,6 +768,8 @@ public class ProxyHandlers {
             return false;
         }
     }
+
+
 
     /**
      *
