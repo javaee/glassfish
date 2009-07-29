@@ -61,7 +61,6 @@
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=admin-object-resource,name=#{pageSession.name}");
 
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        gui.log(message="***** valueMap = #{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         getPhysicalDestinationName(list="#{tableList}", physDestName="#{pageSession.physDestName}");
 
@@ -77,6 +76,11 @@
 #include "/common/shared/alertMsg.inc"
     <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}">
         <!-- Buttons  -->
+        <sun:button id="loadDefaults" style="margin-left: 8pt" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
+            <!command
+                getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+            />
+        </sun:button>
         <!facet pageButtonsTop>
             <sun:panelGroup id="topButtons">
 #include "/jms/jmsDestinationButtons.inc"
