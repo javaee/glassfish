@@ -34,162 +34,68 @@
  holder.
 -->
 
+<!initPage
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+    initProductInfoAttributes();
+    getProxyAttribute( objectNameStr="amx:pp=/ext,type=realms" attrName="AnonymousLogin" value="#{pageSession.anonymousLogin}" )
+    convertStrToBoolean(str="#{pageSession.anonymousLogin}" out="#{pageSession.anonLogin}")
+    getThemeFromIntegrationPoints(themeContext=>$application{com.sun.webui.theme.THEME_CONTEXT});
+/>
 <!-- WE MAY HAVE TO LOCALIZE THE PRODUCT IMAGE. CHECKING IN FOR NOW UNTIL LOGIN COMPONENT IS READY -->
-<sun:page id="page1">
-    <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");/>
+<f:verbatim>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>$resource{i18n.loginPageTitle}</title>
+</f:verbatim>
+    <sun:themeLinks/>
+    <sun:link url="/resource/css/css_ns6up.css" />
+    <sun:script url="/resource/js/adminjsf.js" />
+<f:verbatim>
+</head>
 
-<sun:html id="html1">
-<sun:head title="$resource{i18n.loginPageTitle}">
-"<link rel="stylesheet" type="text/css" href="#{request.contextPath}/resource/css/css_ns6up.css" />
-    <sun:script url="/js/adminjsf.js" />
-</sun:head>
-
-<sun:body id="body3" focus="loginform.j_username">
-"<form method="POST" name="loginform" action="j_security_check" >
-
-"  <table border="0" cellpadding="0" cellspacing="0" align="center" title="">
-"    <tr>
-"      <td width="50%"><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="1" alt="" /></td>
-"      <td><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="728" height="1" alt="" /></td>
-"      <td width="50%"><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="1" alt="" /></td>
-"    </tr>
-"    <tr class="LogTopBnd" style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogtop.jpg); background-repeat: repeat-x; background-position: left top;">
-"      <td><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="30" alt="" /></td>
-"      <td nowrap="nowrap" valign="middle">
-    <sun:image icon="DOT" width="1" height="30" border="0" />
-"    </td>
-"      <td>&nbsp;</td>
-"    </tr>
-"    <tr>
-"      <td class="LogMidBnd" style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogsides.jpg);background-repeat:repeat-x;background-position:left top;">&nbsp;</td>
-<!--"      <td class="LogCntTd" style="background-image: url(#{request.contextPath}/resource/images/login-backimage.jpg);background-repeat:no-repeat;background-position:left top;" height="435" align="center" valign="middle">
-"        <table border="0" background="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" cellpadding="0" cellspacing="0" width="100%" title="">
-"          <tr>
-"            <td width="260">-->
-<!--  Customizing the background image -->
-<event>
-    <!afterCreate        
-                getClientId(component="$this{component}" clientId=>$attribute{loginId})
-                getUIComponent(clientId="#{loginId}"  component=>$attribute{component})
-                includeFirstIntegrationPoint(type="org.glassfish.admingui:loginbackground" root="#{component}");                
-        
-    />
-</event>
-"               <img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="260" height="245" alt="" /></td>
-"            <td width="415" bgcolor="#FFFFFF" valign="top" align="left">&nbsp;
-<!--"                <img name="Login.welcomeImg" src="#{request.contextPath}/resource/#{loginProductImageURL}" 
-                     "alt="#{fullProductName}" border="0" height="#{loginProductImageHeight}" width="#{loginProductImageWidth}" />-->
-<sun:image icon="DOT" width="1" height="100" border="0" />
-
-<!--  Customizing the login product name image -->
-<event>
-    <!afterCreate        
-                getClientId(component="$this{component}" clientId=>$attribute{loginId})
-                getUIComponent(clientId="#{loginId}"  component=>$attribute{component})
-                includeFirstIntegrationPoint(type="org.glassfish.admingui:loginimage" root="#{component}");                
-        
-    />
-</event>                     
-"              <table border="0" cellspacing="0" cellpadding="0">
-"                <tr>
-"                  <td colspan="2">
-"                    <div class="logErr">
-"                    <table align="center" border="0" cellpadding="0" cellspacing="0" class="AlrtTbl" title="">
-"                    <tbody><tr>
-"                      <td valign="middle">
-"                      <div class="AlrtErrTxt">
-"                      <img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/alerts/error_large.gif" alt="Error" height="21" width="21" />
-							<sun:label text="$resource{i18n.alert.AuthenticationFailed}" />
-"                      </div>
-"                      <div class="AlrtMsgTxt">
-							<sun:label text="$resource{i18n.alert.ReenterUsernamePassword}" />
-"                      </div>
-"                      </td>
-"                    </tr></tbody>
-"                    </table>
-"                    </div>
-"                  </td>
-"                </tr>
-
-                "<tr>
-                  "<td nowrap="nowrap"><div class="logLbl">
-                    "&nbsp;<span class="LblLev2Txt">
-                    <sun:label for="Login.username" text="$resource{i18n.common.username}" /> 
-                     "</span></div></td>
-                  "<td><div class="logInp"><input type="text" name="j_username" 
-                            "id="Login.username" tabindex="1"></div></td>
-			"<tr><td> </td><td>
-                "</tr>
-                "<tr>
-
-                "  <td nowrap="nowrap"><div class="logLblLst">
-                "    &nbsp;<span class="LblLev2Txt">
-                    <sun:label for="Login.password" text="$resource{i18n.common.password}" /> 
-                "</span></div></td>
-                  "<td><div class="logInpLst"><input type="password" name="j_password" 
-                  "          id="Login.password" onKeyPress="return submitenter(event, 'loginButton', '$resource{i18n.loginPageTitle}')" tabindex="2"></div></td>
-                "</tr>
-
-"<!-- The button that submits this form once the user hits enter or -->
-"<!-- clicks on it. Unless you have a really good reason do not change -->
-"<!-- this botton tag. -->
-                "  <tr>
-                "    <td><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="15" alt="" /></td>
-                "    <td>  
-"<table border="0">
-"<tr><td>
-"<div class="logBtn">
-"<!-- submit the form explicity, and then return false so that it only submits once. This is needed to support Safari -->
-"<div class="logBtn"> <input type="submit"
-" class="Btn1Def" value="Login"
-" title="#{loginButtonTooltip}" tabindex="3"
-" onmouseover="javascript: if (this.disabled==0) this.className='Btn1Hov'" 
-"onmouseout="javascript: if (this.disabled==0) this.className='Btn1'" 
-"onblur="javascript: if (this.disabled==0) this.className='Btn1'" 
-"onfocus="javascript: if (this.disabled==0) this.className='Btn1Hov'"
-"onclick="javascript: submitAndDisable(this, '$resource{i18n.loginPageTitle}');"
-" name="loginButton"
-" id="loginButton">
-"<input type="hidden" name="loginButton.DisabledHiddenField" value="true" />
-"</div>
-"</td></tr></table>
-"                    </td>
-"                  </tr>
-"                  <tr>
-"                    <td>&nbsp;</td>
-"                  </tr>
-"		  <tr>
-"		    <td>
-<sun:image icon="DOT" width="0" height="34" border="0" />
-"    </td>
-"	            <td>&nbsp;</td>
-"		  </tr>
-"              </table>
-"            </td>
-"<!-- Do not insert any authentication specific HTML/JSP after this comment. -->
-"<!-- The rest of the code is common to all login presentation -->
-"<!-- layers to preserve HCI look and feel and consistency among these pages  -->
-
-"          <td>&nbsp;</td>
-"          </tr>
-"        </table>
-"      </td>
-"      <td class="LogMidBnd" 
-"          style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogsides.jpg);background-repeat:repeat-x;background-position:left top;">&nbsp;</td>
-"    </tr>
-" <tr><td><sun:image icon="DOT" width="1" height="500" border="0" /></td></tr>
-"    <tr class="LogBotBnd" style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogbot.jpg);background-repeat:repeat-x;background-position:left top;">
-"      <td>&nbsp;</td>
-"      <td><div class="logCpy"><span class="logTxtCpy">
-	<sun:staticText id="text1" text="$resource{i18n.copyright.shortMessage}" />
-"	</div>
-      "</span></div>
-      "</td>
-      "<td>&nbsp;</td>
-    "</tr>
-  "</table>
-"</form>
-</sun:body>
-</sun:html>
-</sun:page>
+<body id="body3" class="LogBdy" focus="loginform.j_username" style="background-color: #FFFFFF;">
+    <script type="text/javascript">loadInTopWindow();</script>
+    <div id="header"class="LogTopBnd" style="background: url('#{themeImages.LOGIN_GRADIENT_TOP}') repeat-x; height: 30px;"></div>
+    <div class="middle" style="background-image: url(#{themeImages.LOGIN_GRADIENT_SIDES});background-repeat:repeat-x;background-position:left top; background-color: #D4DCE1;">
+        <div class="plugincontent" style="width1: 1px; visibility: #{anonLogin ? 'hidden' : 'visible'};">
+</f:verbatim>
+            <event>
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$attribute{loginId})
+                    getUIComponent(clientId="#{loginId}"  component=>$attribute{component})
+                    includeFirstIntegrationPoint(type="org.glassfish.admingui:loginform" root="#{component}");
+                />
+            </event>
+<f:verbatim>
+            <div id="error" class="AlrtTbl" style="width: 300px; position: fixed; top: 100px; margin: auto;">
+                <div class="AlrtErrTxt">
+                    <img src="#{request.contextPath}/theme/woodstock4_3/suntheme/images/alerts/error_large.gif" alt="Error" height="21" width="21" />
+</f:verbatim>
+                    <sun:label text="$resource{i18n.alert.AuthenticationFailed}" />
+<f:verbatim>
+                </div>
+                <div class="AlrtMsgTxt">
+</f:verbatim>
+                    <sun:label text="$resource{i18n.alert.ReenterUsernamePassword}" />
+<f:verbatim>
+                </div>
+            </div>
+            <script type="text/javascript">
+                var left = document.getElementById('body3').clientWidth;
+                document.getElementById('error').style.left = (left/2- 100) + 'px';
+                if ('#{anonLogin}' == 'true') {
+                    submitAndDisable(document.getElementById('loginButton'), '$resource{i18n.loginPageTitle}');
+                }
+            </script>
+        </div>
+    </div>
+    <div class="footer"
+        style="background-image: url(#{themeImages.LOGIN_GRADIENT_BOTTOM});background-repeat:repeat-x;background-position:left top; color: #FFFFFF; background-color: #4A5C68">
+        <div id="copyright" style="width: 720px; margin-left: auto; margin-right: auto; padding: 5px;">
+            <span>$resource{i18n.copyright.shortMessage}</span>
+        </div>
+    </div>
+</body>
+</html>
+</f:verbatim>
