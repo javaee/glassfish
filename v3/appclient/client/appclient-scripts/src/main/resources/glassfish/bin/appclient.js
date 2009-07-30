@@ -40,13 +40,19 @@
 var wshShell = WScript.CreateObject("WScript.Shell");
 var envVars = wshShell.Environment("PROCESS");
 
+var pathSep = ";";
+
 var AS_INSTALL = envVars("AS_INSTALL");
 var AS_INSTALL_MOD = AS_INSTALL + "\\modules";
+
+var builtinEndorsedDirSetting = AS_INSTALL + "\\lib\\endorsed" + pathSep +
+    AS_INSTALL_MOD + "\\endorsed";
 
 var appcPath = envVars("APPCPATH");
 
 var accJar="\"" + AS_INSTALL_MOD + "\\gf-client.jar\"";
 
+var fso = WScript.CreateObject("Scripting.FileSystemObject");
 var jvmArgs="-Djava.system.class.loader=org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader";
 var VMARGS = envVars("VMARGS");
 if (VMARGS != "") {
@@ -58,6 +64,7 @@ var inputArgs = new String(envVars("inputArgs"));
 var accArgs = "=mode=acscript";
 var appArgs = "";
 var jvmMainArgs = "";
+var userEndorsedDirSetting = null;
 var accMainArgs = "";
 var mainClassIdent = null;
 
@@ -87,7 +94,7 @@ if (jvmMainArgs == "") {
  * command.  Defining the env. variable from this
  * script does not work; the scope is not right.
  */
-var javaCmd = "java " + jvmArgs + " -javaagent:" +
+var javaCmd = "java " + finishJVMArgs() + " -javaagent:" +
     accJar + accArgs + "," + accMainArgs + " " +
     jvmMainArgs + " " + appArgs;
 
@@ -256,12 +263,36 @@ function recordJVMArg(arg1, arg2) {
         if (arg1 == "-jar") {
             recordMainClass(arg1, arg2);
         } else {
+            if (arg1.match("-Djava\\.endorsed\\.dirs=") != null) {
+                /*
+                 * We need to merge the user's setting with the path to the
+                 * app server's endorsed dir.  So for now
+                 * just remember the user's setting
+                 * and do not add it to the jvm args...yet.
+                 */
+                userEndorsedDirSetting = arg1
+            }
             jvmArgs += " " + arg1;
             if (arg2 != null) {
                 jvmArgs += " " + arg2;
             }
         }
     }
+}
+
+function finishJVMArgs() {
+    /*
+     * Note that the user's setting, if present, was stored including the
+     * -Djava.endorsed.dirs= part.  So we just add on if the user specified
+     * anything but we must supply that part if the user did not specify anything.
+     */
+    var endorsedDirSetting;
+    if (userEndorsedDirSetting != null) {
+        endorsedDirSetting = userEndorsedDirSetting + pathSep + builtinEndorsedDirSetting;
+    } else {
+        endorsedDirSetting = "-Djava.endorsed.dirs=" + builtinEndorsedDirSetting + pathSep + jreEndorsedDirValue();
+    }
+    return jvmArgs + " " + endorsedDirSetting;
 }
 
 function recordNonACCOption(value) {
@@ -278,4 +309,45 @@ function recordLoneArg(token) {
     } else {
         recordAPPArg(token);
     }
+}
+
+function jreEndorsedDirValue() {
+    var osPath = envVars("PATH");
+    var jreHomePath = jreHome(osPath);
+    var jreEndorsedDir = null;
+    if (jreHomePath != null) {
+        var endorsedPath = jreHomePath + "\\lib\\endorsed";
+        if (fso.FolderExists(endorsedPath)) {
+            jreEndorsedDir = fso.getFolder(endorsedPath).Path;
+        }
+    }
+    return jreEndorsedDir;
+}
+
+function jreHome(osPath) {
+    var osPathElts = osPath.split(pathSep);
+    var jreHome = null;
+    for (i in osPathElts) {
+        var osPathElt = osPathElts[i];
+        var javaExe = osPathElt + "\\java.exe";
+        if (fso.FileExists(javaExe)) {
+            if (fso.FolderExists(osPathElt + "\\..\\jre")) {
+                // This looks like a JDK installation.
+                jreHome = osPathElt + "\\..\\jre";
+                break;
+            } else {
+                // Doesn't look like a JDK; maybe it's a JRE installation.
+                var jrePath = osPathElt + "\\..\\..\\jre";
+                if (fso.FolderExists(jrePath)) {
+                    // This looks like a JRE.
+                    jreHome = osPathElt + "\\..";
+                    break;
+                } else {
+                    // This path element looks like neither a JDK nor a JRE.
+                    continue;
+                }
+            }
+        }
+    }
+    return jreHome;
 }

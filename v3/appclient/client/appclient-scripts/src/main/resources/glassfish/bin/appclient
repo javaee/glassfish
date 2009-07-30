@@ -96,6 +96,12 @@ accMainArgs=
 # if any, was just processed and therefore what value we expect next.
 expecting=
 
+AS_INSTALL=`dirname $0`/..
+AS_INSTALL_MOD=$AS_INSTALL/modules
+
+builtinEndorsedDirsValue=$AS_INSTALL/lib/endorsed:$AS_INSTALL_MOD/endorsed
+userEndorsedDirsSetting=
+
 jvmArgs=-Djava.system.class.loader=org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader
 if [ "$VMARGS" != "" ]; then
     jvmArgs=$jvmArgs\ $VMARGS
@@ -214,9 +220,19 @@ recordJVMArg() {
     elif [ "$1" = "-jar" ]; then
         recordMainClass -jar $2
     else
-        jvmArgs=$jvmArgs\ $1\ ${2:+$2}
+        case $1 in
+
+            -Djava.endorsed.dirs=*)
+                userEndorsedDirsSetting=$1
+                ;;
+
+            *)
+                jvmArgs=$jvmArgs\ $1\ ${2:+$2}
+                ;;
+        esac
     fi
 }
+
 
 recordNonACCOption() {
     if [ "$mainClassIdent" = "" ]; then
@@ -242,6 +258,61 @@ recordLoneArg() {
     fi
 }
 
+finishJVMArgs() {
+#
+# Note that the user's setting, if present, was stored including the
+# -Djava.endorsed.dirs= part.  So we just add on if the user specified
+# anything but we must supply that part if the user did not specify anything.
+#
+    if [ "$userEndorsedDirsSetting" != "" ]; then
+        endorsedDirSetting=$userEndorsedDirsSetting:$builtinEndorsedDirsValue
+    else
+        computeJREEndorsedDirsValue
+        endorsedDirSetting=-Djava.endorsed.dirs=$builtinEndorsedDirsValue:$jreEndorsedDirsValue
+    fi
+    jvmArgs=$jvmArgs\ $endorsedDirSetting;
+}
+
+computeJREEndorsedDirsValue() {
+    computeJREHome
+    jreEndorsedDirsValue=
+    if [ "$jreHome" != "" ]; then
+        endorsedPath=${jreHome}/lib/endorsed
+        if [ -d $endorsedPath ]; then
+            jreEndorsedDirsValue=$endorsedPath
+        fi
+    fi
+}
+
+computeJREHome() {
+    jreHome=
+    for osPathElt in `echo $PATH | tr ':' ' ' `
+    do
+        javaExe=${osPathElt}/java
+        if [ -f $javaExe ]; then
+            if [ -d $osPathElt/../jre ]; then
+                # This looks like a non-Mac JDK installation.
+                jreHome=$osPathElt/../jre
+                break
+            elif [ -d $osPathElt/../lib ]; then
+                # Looks like a Mac installation
+                jreHome=$osPathElt/..
+                break
+            else
+                # Doesn't look like a JDK; maybe it's a JRE installation.
+                jrePath=$osPathElt/../../jre
+                if [ -d $jrePath ]; then
+                    # This looks like a JRE.
+                    jreHome=$osPathElt/..
+                    break
+                else
+                    continue
+                fi
+            fi
+        fi
+    done
+}
+
 # mainClassIdent can be undefined, tentative, or final
 
 # Once we identify the main class information, further ACC arguments can
@@ -255,8 +326,6 @@ recordLoneArg() {
 ACCArgType=ACC
 JVMArgType=JVM
 
-AS_INSTALL=`dirname $0`/..
-AS_INSTALL_MOD=$AS_INSTALL/modules
 accJar=$AS_INSTALL_MOD/gf-client.jar
 
 # Record the default ACC config file if possible
@@ -302,6 +371,7 @@ if [ "$jvmMainArgs" = "" ]; then
     accMainArgs=-usage
     jvmMainArgs=-jar\ $accJar
 fi
+finishJVMArgs
 exec java $jvmArgs -javaagent:$accJar=mode=acscript${accArgs},$accMainArgs \
     $jvmMainArgs \
     $appArgs
