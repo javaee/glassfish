@@ -656,7 +656,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     }
 
     public void unload(WebServicesApplication container, DeploymentContext context) {
-        Application app = context.getModuleMetaData(Application.class);
+        Application app = container.getApplication();
         for(WebService svc : app.getWebServiceDescriptors()) {
             for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
                 probe.undeploy(app.getName()+"#"+endpoint.getEndpointName());

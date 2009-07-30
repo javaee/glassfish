@@ -54,6 +54,9 @@ public class WebServicesApplication implements ApplicationContainer {
 
     private Habitat habitat = null;
 
+    private ClassLoader cl;
+    private Application app;
+
 
     public WebServicesApplication(DeploymentContext context, ServerEnvironment env, RequestDispatcher dispatcherString, Config config, Habitat habitat){
         this.deploymentCtx = context;
@@ -70,8 +73,10 @@ public class WebServicesApplication implements ApplicationContainer {
 
     public boolean start(ApplicationContext startupContext) throws Exception {
 
+        cl = startupContext.getClassLoader();
+
         try {
-            Application app = deploymentCtx.getModuleMetaData(Application.class);
+            app = deploymentCtx.getModuleMetaData(Application.class);
            if (!isJAXWSbasedApp(app)) {
                 Iterator<String> iter = contextRoots.iterator();
                 String contextRoot = null;
@@ -136,7 +141,11 @@ public class WebServicesApplication implements ApplicationContainer {
     }
 
     public ClassLoader getClassLoader() {
-        return null;
+        return cl;
+    }
+
+    Application getApplication() {
+        return app;
     }
 
     private boolean isJAXWSbasedApp(Application app){

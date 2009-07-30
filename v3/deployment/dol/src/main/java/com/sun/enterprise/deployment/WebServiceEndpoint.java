@@ -586,9 +586,17 @@ public class WebServiceEndpoint extends Descriptor
      */
     public URL composeEndpointAddress(URL root) 
         throws MalformedURLException  {
-           
-        String uri = null;
 
+        String uri = getEndpointAddressPath();
+        return new URL(root.getProtocol(), root.getHost(), root.getPort(), uri);
+    }
+
+    /**
+     * return the endpoint address path (without http://<host>:<port>)
+     * used to make web service invocations on this endpoint .
+     */
+    public String getEndpointAddressPath() {
+        String uri = null;
         // Compose file portion of URL depending on endpoint type.
         // The file portion of the URL MUST have a single leading slash.
         // Note that the context root and the endpoint address uri strings
@@ -597,10 +605,10 @@ public class WebServiceEndpoint extends Descriptor
             if (endpointAddressUri == null) {
                 updateServletEndpointRuntime();
             }
-            
-            // for servlets, endpoint address uri is relative to 
+
+            // for servlets, endpoint address uri is relative to
             // web app context root.
-            WebBundleDescriptor webBundle = 
+            WebBundleDescriptor webBundle =
                 webComponentImpl.getWebBundleDescriptor();
             String contextRoot = webBundle.getContextRoot();
 
@@ -608,7 +616,7 @@ public class WebServiceEndpoint extends Descriptor
                 if( !contextRoot.startsWith("/") ) {
                     contextRoot = "/" + contextRoot;
                 }
-            
+
                 uri = contextRoot +
                     (endpointAddressUri.startsWith("/") ?
                      endpointAddressUri : ("/" + endpointAddressUri));
@@ -619,16 +627,12 @@ public class WebServiceEndpoint extends Descriptor
                     endpointAddressUri : ("/" + endpointAddressUri);
             } else {
                 // we need to define a standard endpoint address
-                uri = "/" + getWebService().getName() + "/" + 
+                uri = "/" + getWebService().getName() + "/" +
                         getEndpointName();
                 setEndpointAddressUri(uri);
             }
         }
-
-        URL endpointAddressURL = 
-            new URL(root.getProtocol(), root.getHost(), root.getPort(), uri);
-
-        return endpointAddressURL;
+        return uri;
     }
 
     /**
