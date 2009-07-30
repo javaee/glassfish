@@ -52,13 +52,11 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.BitSet;
+import java.util.logging.*;
 
 /**
  *
@@ -73,6 +71,10 @@ import java.util.BitSet;
  * @author Remy Maucherat
  */
 public class URLEncoder {
+
+    private static final Logger log = Logger.getLogger(
+        URLEncoder.class.getName());
+
     protected static final char[] hexadecimal =
     {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
      'A', 'B', 'C', 'D', 'E', 'F'};
@@ -104,8 +106,8 @@ public class URLEncoder {
         OutputStreamWriter writer = null;
         try {
             writer = new OutputStreamWriter(buf, "UTF8");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            log.log(Level.WARNING, "UTF8 not supported", e);
             writer = new OutputStreamWriter(buf);
         }
 

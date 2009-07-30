@@ -4324,7 +4324,7 @@ public class Request
     private void log(String message) {
         org.apache.catalina.Logger logger =
             connector.getContainer().getLogger();
-        String localName = "CoyoteRequest";
+        String localName = "Request";
         if (logger != null) {
             logger.log(localName + " " + message);
         } else {
@@ -4340,9 +4340,11 @@ public class Request
      * @param t Associated exception
      */
     private void log(String message, Throwable t) {
-        org.apache.catalina.Logger logger =
-            connector.getContainer().getLogger();
-        String localName = "CoyoteRequest";
+        org.apache.catalina.Logger logger = null;
+        if (connector != null && connector.getContainer() != null) {
+            logger = connector.getContainer().getLogger();
+        }
+        String localName = "Request";
         if (logger != null) {
             logger.log(localName + " " + message, t,
                 org.apache.catalina.Logger.WARNING);

@@ -52,11 +52,7 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.catalina.connector;
-
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -68,11 +64,10 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
+import java.util.logging.*;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.catalina.Connector;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
@@ -104,6 +99,10 @@ import com.sun.appserv.ProxyHandler;
 public class Response
     implements HttpResponse, HttpServletResponse {
 
+    // ------------------------------------------------------ Static variables
+
+    private static final Logger log = Logger.getLogger(
+        Response.class.getName());
 
     /**
      * Whether or not to enforce scope checking of this object.
@@ -112,6 +111,19 @@ public class Response
 
     public static final String HTTP_RESPONSE_DATE_HEADER =
         "EEE, dd MMM yyyy HH:mm:ss zzz";
+
+    /**
+     * Descriptive information about this Response implementation.
+     */
+    protected static final String info =
+        "org.apache.catalina.connector.Response/1.0";
+
+    /**
+     * The string manager for this package.
+     */
+    protected static final StringManager sm =
+        StringManager.getManager(Constants.Package);
+
 
     // ----------------------------------------------------------- Constructors
 
@@ -136,31 +148,14 @@ public class Response
 
     // ----------------------------------------------------- Instance Variables
 
-
     // BEGIN S1AS 4878272
     private String detailErrorMsg;
     // END S1AS 4878272
-
 
     /**
      * The date format we will use for creating date headers.
      */
     protected SimpleDateFormat format = null;
-
-
-    /**
-     * Descriptive information about this Response implementation.
-     */
-    protected static final String info =
-        "org.apache.catalina.connector.Response/1.0";
-
-
-    /**
-     * The string manager for this package.
-     */
-    protected static final StringManager sm =
-        StringManager.getManager(Constants.Package);
-
 
     /**
      * Associated context.
@@ -169,7 +164,6 @@ public class Response
 
 
     // ------------------------------------------------------------- Properties
-
 
     /**
      * Set whether or not to enforce scope checking of this object.
@@ -592,7 +586,7 @@ public class Response
         } catch(IOException e) {
 	    ;
         } catch(Throwable t) {
-	    t.printStackTrace();
+	    log("Error during finishResponse", t);
         }
     }
 
@@ -1853,6 +1847,21 @@ public class Response
         coyoteResponse.removeSessionCookies();        
     }
     // END GlassFish 896
+
+
+    private void log(String message, Throwable t) {
+        org.apache.catalina.Logger logger = null;
+        if (connector != null && connector.getContainer() != null) {
+            logger = connector.getContainer().getLogger();
+        }
+        String localName = "Response";
+        if (logger != null) {
+            logger.log(localName + " " + message, t,
+                org.apache.catalina.Logger.WARNING);
+        } else {
+            log.log(Level.WARNING, localName + " " + message, t);
+        }
+    }
 
 }
 
