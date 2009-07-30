@@ -5,9 +5,8 @@
 <!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 <!ENTITY run SYSTEM "file:./../../../config/run.xml">
-<!ENTITY eeSetup SYSTEM "file:./../config/ee-common.xml">
-<!ENTITY eeProperties SYSTEM "file:./../config/ee-properties.xml">
 <!ENTITY jdbcCommon SYSTEM "file:./../JdbcCommon.xml">
+<!ENTITY jdbcProperties SYSTEM "file:./../JdbcCommon.properties">
 ]>
 
 <project name="mix" default="usage" basedir=".">
@@ -16,10 +15,7 @@
     &commonBuild;
     &run;
     &jdbcCommon;
-    <!--
-    &eeSetup;
-    &eeProperties;
-    -->
+    &jdbcProperties;
     &testproperties;
 
     <target name="all" depends="build,deploy,run,undeploy"/>

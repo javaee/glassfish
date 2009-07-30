@@ -8,6 +8,7 @@
         <!ENTITY eeSetup SYSTEM "file:./../config/ee-common.xml">
         <!ENTITY eeProperties SYSTEM "file:./../config/ee-properties.xml">
         <!ENTITY jdbcCommon SYSTEM "file:./../JdbcCommon.xml">
+        <!ENTITY jdbcProperties SYSTEM "file:./../JdbcCommon.properties">
         ]>
 
 <project name="mix" default="usage" basedir=".">
@@ -21,6 +22,7 @@
     -->
     &testproperties;
     &jdbcCommon;
+    &jdbcProperties;
 
     <target name="all" depends="build,deploy,run,undeploy"/>
 
@@ -48,7 +50,7 @@
 
     <target name="deploy" depends="init-common">
 
-        <antcall target="deploy-jdbc-common">
+	<antcall target="deploy-jdbc-common">
             <param name="jdbc.resource.type" value="javax.sql.ConnectionPoolDataSource"/>
             <param name="jdbc.resource.name" value="jdbc/s1qeDB-cpds"/>
             <param name="jdbc.conpool.name" value="jdbc-cpds"/>
@@ -57,13 +59,13 @@
 
         <antcall target="setup-derby-for-authentication"/>
 
-        <antcall target="execute-sql-common">
+	<antcall target="execute-sql-common">
             <param name="sql.file" value="sql/drop_pointbase.sql"/>
         </antcall>
 
         <antcall target="deploy-common"/>
 
-        <antcall target="reconfig-common"/>
+	<antcall target="reconfig-common"/>
 
     </target>
 

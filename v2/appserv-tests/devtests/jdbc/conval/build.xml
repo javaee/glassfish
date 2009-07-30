@@ -7,6 +7,8 @@
         <!ENTITY run SYSTEM "file:./../../../config/run.xml">
         <!ENTITY eeSetup SYSTEM "file:./../config/ee-common.xml">
         <!ENTITY eeProperties SYSTEM "file:./../config/ee-properties.xml">
+        <!ENTITY jdbcCommon SYSTEM "file:./../JdbcCommon.xml">
+        <!ENTITY jdbcProperties SYSTEM "file:./../JdbcCommon.properties">
         ]>
 
 <project name="mix" default="usage" basedir=".">
@@ -16,6 +18,8 @@
     &commonBuild;
     &run;
     &testproperties;
+    &jdbcCommon;
+    &jdbcProperties;
 
     <!--&eeSetup;
     &eeProperties;
@@ -59,7 +63,8 @@
             <param name="appclient.application.args" value="1"/>
         </antcall>
 
-        <antcall target="restart-derby"/>
+	<antcall target="stop-derby"/>
+	<antcall target="start-derby"/>
 
         <antcall target="runclient-common">
             <param name="appclient.application.args" value="2"/>
@@ -89,7 +94,8 @@
             <param name="appclient.application.args" value="3"/>
         </antcall>
 
-        <antcall target="restart-derby"/>
+	<antcall target="stop-derby"/>
+	<antcall target="start-derby"/>
 
         <antcall target="runclient-common">
             <param name="appclient.application.args" value="4"/>
@@ -129,33 +135,5 @@
             <param name="jdbc.conpool.name" value="${poolname}"/>
         </antcall>
     </target>
-    <target name="restart-derby">
-        <antcall target="stop-derby"/>
-        <!--<sleep seconds="10"/>-->
-        <antcall target="start-derby"/>
-        <!--<sleep seconds="10"/>-->
-    </target>
-
-    <target name="start-derby">
-        <echo message="Starting Derby DB Server ..."/>
-        <parallel>
-            <java classname="org.apache.derby.drda.NetworkServerControl"
-                  classpath="${db.classpath}" fork="true" spawn="true">
-                <arg line="-h 0.0.0.0 -p 1527 start"/>
-                <jvmarg value="-Dderby.system.home=${env.S1AS_HOME}/databases"/>
-            </java>
-        </parallel>
-    </target>
-
-    <target name="stop-derby">
-        <echo message="Stopping Derby DB Server ..."/>
-        <parallel>
-            <java classname="org.apache.derby.drda.NetworkServerControl"
-                  classpath="${db.classpath}" failonerror="true" fork="true">
-                <arg line="-h 0.0.0.0 -p 1527 shutdown"/>
-            </java>
-        </parallel>
-    </target>
-
 
 </project>
