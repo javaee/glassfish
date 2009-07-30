@@ -273,6 +273,24 @@
         <record name="conncreationretry.output" action="stop"/>
     </target>
 
+    <target name="stmtCaching_hit_miss">
+	<record name="stmtCaching_hit_miss.output" action="start"/>
+	<ant dir="stmtCaching_hit_miss" target="all"/>
+	<record name="stmtCaching_hit_miss.output" action="stop"/>
+    </target>
+
+    <target name="pooling">
+	<record name="pooling.output" action="start"/>
+	<ant dir="pooling" target="all"/>
+	<record name="pooling.output" action="stop"/>
+    </target>
+
+    <target name="dmmcf">
+	<record name="dmmcf.output" action="start"/>
+	<ant dir="dmmcf" target="all"/>
+	<record name="dmmcf.output" action="stop"/>
+    </target>
+
     <target name="usage">
         <echo>
             Usage:
