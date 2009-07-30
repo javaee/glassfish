@@ -111,7 +111,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     // Late-binding system-level interceptors for this EJB.  These can be set
     // as late as initialization time, so they are not part of the interceptor
     // binding translation that happens for application-defined interceptors.
-    private List<EjbInterceptor> frameworkInterceptors = new LinkedList<EjbInterceptor>();
+    private List<InterceptorDescriptor> frameworkInterceptors = new LinkedList<InterceptorDescriptor>();
 
     private Set<EntityManagerFactoryReferenceDescriptor>
             entityManagerFactoryReferences =
@@ -506,9 +506,9 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     }
 
 
-    public void addFrameworkInterceptor(EjbInterceptor interceptor) {
+    public void addFrameworkInterceptor(InterceptorDescriptor interceptor) {
         boolean found = false;
-        for(EjbInterceptor next : frameworkInterceptors) {
+        for(InterceptorDescriptor next : frameworkInterceptors) {
             if( next.getInterceptorClassName().equals(interceptor.getInterceptorClassName())) {
                 found = true;
                 break;
@@ -521,7 +521,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     }
 
-    public List<EjbInterceptor> getFrameworkInterceptors() {
+    public List<InterceptorDescriptor> getFrameworkInterceptors() {
         return frameworkInterceptors;
     }
 

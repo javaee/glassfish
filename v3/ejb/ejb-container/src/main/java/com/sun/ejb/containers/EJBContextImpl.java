@@ -55,9 +55,7 @@ import javax.transaction.UserTransaction;
 import java.lang.reflect.Method;
 import java.security.Identity;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -405,6 +403,19 @@ public abstract class EJBContextImpl
         com.sun.enterprise.security.SecurityManager sm = container.getSecurityManager();
 
         return sm.getCallerPrincipal();
+    }
+
+     /**
+     * @return Returns the contextMetaData.
+     */
+    public Map<String, Object> getContextData() {
+        Map<String, Object> contextData = (Map<String, Object>) Collections.EMPTY_MAP;
+        ComponentInvocation inv = EjbContainerUtilImpl.getInstance().getCurrentInvocation();
+        if ( inv instanceof EjbInvocation ) {
+            EjbInvocation ejbInv = (EjbInvocation) inv;
+            contextData = ejbInv.getContextData();          
+        }
+        return contextData;
     }
     
     

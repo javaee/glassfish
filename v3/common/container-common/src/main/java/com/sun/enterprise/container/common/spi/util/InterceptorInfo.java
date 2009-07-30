@@ -36,6 +36,8 @@
 package com.sun.enterprise.container.common.spi.util;
 
 
+import com.sun.enterprise.deployment.InterceptorDescriptor;
+
 import java.util.*;
 
 import java.lang.reflect.Method;
@@ -51,6 +53,9 @@ public class InterceptorInfo {
     private Map<Method, List> aroundInvokeChains = new HashMap<Method, List>();
 
     private Set<String> interceptorClassNames = new HashSet<String>();
+
+    // True if a system interceptor needs to be added dynamically
+    private boolean supportRuntimeDelegate;
 
     private Object targetObjectInstance;
     private Class targetClass;
@@ -116,4 +121,11 @@ public class InterceptorInfo {
         return aroundInvokeChains.get(m);
     }
 
+    public boolean getSupportRuntimeDelegate() {
+        return supportRuntimeDelegate;
+    }
+
+    public void setSupportRuntimeDelegate(boolean flag) {
+        supportRuntimeDelegate = flag;
+    }
 }

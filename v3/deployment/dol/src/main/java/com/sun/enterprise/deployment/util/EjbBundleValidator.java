@@ -420,7 +420,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
             }
         }
 
-        // If the reference does not have an ejb-link or jndi-name associated
+        // If the reference does not have an ejb-link or jndi-name or lookup string associated
         // with it, attempt to resolve it by checking against all the ejbs
         // within the application.  If no match is found, just fall through
         // and let the existing error-checking logic kick in.
@@ -428,7 +428,8 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
               (ejbRef.getJndiName().length() == 0) )
             &&
             ( (ejbRef.getLinkName() == null) ||
-              (ejbRef.getLinkName().length() == 0) )) {
+              (ejbRef.getLinkName().length() == 0) )
+            && !ejbRef.hasLookup() ) {
 
             Map<String, EjbIntfInfo> ejbIntfInfoMap = getEjbIntfMap();
             if ( ejbIntfInfoMap.size() > 0 ) {
@@ -503,17 +504,19 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
         if (ejbRef.getLinkName()==null) {
 
 
-            // if no link name if present, and this is a local ref, this is always an 
-            // error because we must resolve all local refs and we cannot resolve it 
-            // throw either the jndi name or the link name
+            // if no link name if present, and this is a local ref, this is an
+            // error (unless there is a lookup string) because we must resolve all
+            // local refs within the app and we cannot resolve it 
             if (ejbRef.isLocal()) {
+                if( ejbRef.hasLookup() ) {
+                    return;
+                }
                 DOLUtils.getDefaultLogger().severe("Cannot resolve reference " + ejbRef);
                 throw new RuntimeException("Cannot resolve reference " + ejbRef);
             } else {
                 // this is a remote interface, jndi will eventually contain the referenced 
                 // ejb ref, apply default jndi name if there is none
-                if (ejbRef.getJndiName() == null ||
-                        ejbRef.getJndiName().length() == 0) {
+                if (!ejbRef.hasJndiName() && !ejbRef.hasLookup()) {
                     String jndiName = getDefaultEjbJndiName(
                         ejbRef.isEJB30ClientView() ?
                         ejbRef.getEjbInterface() : ejbRef.getEjbHomeInterface());

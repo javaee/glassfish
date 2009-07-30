@@ -273,6 +273,13 @@ public class EJBHandler extends AbstractResourceHandler {
         if (ejbAnBeanName != null && ejbAnBeanName.length() > 0) {
             ejbRef.setLinkName(ejbAnBeanName);
         }
+
+
+        String ejbAnLookup = annotation.lookup();
+        if (ejbAnLookup != null && ejbAnLookup.length() > 0) {
+            ejbRef.setLookup(ejbAnLookup);
+        }
+
         
         ejbRef.setType(targetBeanType);
         ejbRef.setMappedName(annotation.mappedName());

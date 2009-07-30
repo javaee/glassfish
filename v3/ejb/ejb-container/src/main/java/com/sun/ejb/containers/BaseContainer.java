@@ -40,6 +40,7 @@ import com.sun.ejb.codegen.ServiceInterfaceGenerator;
 import com.sun.ejb.codegen.AsmSerializableBeanGenerator;
 import com.sun.ejb.base.stats.MonitoringRegistryMediator;
 import com.sun.ejb.containers.interceptors.InterceptorManager;
+import com.sun.ejb.containers.interceptors.SystemInterceptorProxy;
 import com.sun.ejb.containers.util.MethodMap;
 import com.sun.ejb.portable.EJBMetaDataImpl;
 import com.sun.ejb.spi.io.IndirectlySerializable;
@@ -744,8 +745,11 @@ public abstract class BaseContainer
             
             initializeEjbInterfaceMethods();
 
-            initializeInterceptorManager();
+            if( needSystemInterceptorProxy() ) {
+                addSystemInterceptorProxy();
+            }
 
+            initializeInterceptorManager();
             
             initializeInvocationInfo();
 
@@ -3114,7 +3118,26 @@ public abstract class BaseContainer
     }
 
     void registerSystemInterceptor(Object o) {
-        interceptorManager.registerRuntimeInterceptor(o);
+
+        if (isSession) {
+            interceptorManager.registerRuntimeInterceptor(o);
+        }
+    }
+
+    private boolean needSystemInterceptorProxy() {
+
+        // TODO only really needed if JAX-RS needs to dynamically register an
+        // interceptor during web application init.  Can optimize this out
+        // by checking for the existence of any JAX-RS resources in module
+        return isSession;
+
+    }
+
+    private void addSystemInterceptorProxy() {
+
+        InterceptorDescriptor interceptorDesc = SystemInterceptorProxy.createInterceptorDesc();
+        ejbDescriptor.addFrameworkInterceptor(interceptorDesc);
+
     }
     
     /*
@@ -5065,6 +5088,8 @@ public abstract class BaseContainer
         */
         return type;
     }
+
+
     
     protected void createMonitoringRegistryMediator() {
 	String appName = null;

@@ -42,7 +42,7 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbInterceptor;
+import com.sun.enterprise.deployment.InterceptorDescriptor;
 import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
 import com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -115,14 +115,14 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
         // If the app contains any ejbs associate the web beans interceptor
         // with each of the ejbs so it's available during the ejb load phase
 
-        /**
+
         EjbBundleDescriptor ejbBundle = getEjbBundleFromContext(context);
 
         if( ejbBundle != null ) {
 
             Set<EjbDescriptor> ejbs = ejbBundle.getEjbs();
 
-            EjbInterceptor interceptor = createEjbInterceptor(ejbBundle);
+            InterceptorDescriptor interceptor = createEjbInterceptor(ejbBundle);
 
             for(EjbDescriptor next : ejbs) {
 
@@ -133,7 +133,7 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
             }
         }
-         **/
+        
 
         return true;
     }
@@ -149,9 +149,12 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
         WebBeansBootstrap bootstrap = new WebBeansBootstrap();
 
+        Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
+        
+        /**
         EjbBundleDescriptor ejbBundle = getEjbBundleFromContext(context);
 
-        Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
+
 
         if( ejbBundle != null ) {
 
@@ -161,6 +164,7 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
             bootstrap.getServices().add(EjbServices.class, ejbServices);
 
         }
+        **/
         
         bootstrap.setEnvironment(Environments.SERVLET);
         bootstrap.getServices().add(Deployment.class, new DeploymentImpl(archive, ejbs) {});
@@ -209,10 +213,9 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
     }
 
-    private EjbInterceptor createEjbInterceptor(EjbBundleDescriptor ejbBundle) {
+    private InterceptorDescriptor createEjbInterceptor(EjbBundleDescriptor ejbBundle) {
 
-        EjbInterceptor interceptor = new EjbInterceptor();
-        interceptor.setEjbBundleDescriptor(ejbBundle);
+        InterceptorDescriptor interceptor = new InterceptorDescriptor();
 
         Class wbInterceptor = org.jboss.webbeans.ejb.SessionBeanInterceptor.class;
         String wbInterceptorName = wbInterceptor.getName();

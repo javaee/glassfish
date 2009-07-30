@@ -222,6 +222,9 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, Post
 
                     interceptorInfo.setAroundInvokeInterceptorChains(interceptorChains);
 
+                    // TODO can optimize this out for the non-JAXRS, non-application specified interceptor case
+                    interceptorInfo.setSupportRuntimeDelegate(true);
+
                     JavaEEInterceptorBuilderFactory interceptorBuilderFactory =
                             habitat.getByContract(JavaEEInterceptorBuilderFactory.class);
 

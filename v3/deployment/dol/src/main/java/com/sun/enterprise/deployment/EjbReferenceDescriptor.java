@@ -71,6 +71,17 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
      */
     private String ejbLink=null;
 
+    /**
+     * Portable lookup name that resolves to this reference's target EJB.
+     * NOTE : This value is handled *independently* of the prior V2
+     * mappedName/jndi-name logic. It is not eligible as a possible return
+     * value from getJndiName() or getValue().  Ejb dependency processing
+     * is complicated due to the large number of ways a reference can be
+     * resolved, so this is the safest approach to avoiding backward
+     * compatibility issues.
+     */
+    private String lookup=null;
+
     /** 
      * copy constructor 
      *
@@ -83,6 +94,7 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
 	refHomeIntf = other.refHomeIntf; // String
 	refIntf = other.refIntf; // String
 	ejbLink = other.ejbLink; // String
+    lookup = other.lookup;
 	referringBundle = other.referringBundle; // copy as-is
 	ejbDescriptor = other.ejbDescriptor;
 	if (ejbDescriptor != null) { 
@@ -180,6 +192,11 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
     public void setJndiName(String jndiName) {
 	this.setValue(jndiName);
     }
+
+    public boolean hasJndiName() {
+        String name = getJndiName();
+        return ( (name != null) && !name.equals("") );
+    }
     
     /** return true if I know the name of the ejb to which I refer.
     */
@@ -240,6 +257,18 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
                 return ejbDescriptor.getJndiName();
             }
         }
+    }
+
+    public void setLookup(String l) {
+        lookup = l;
+    }
+
+    public String getLookup() {
+        return lookup;
+    }
+
+    public boolean hasLookup() {
+        return (lookup != null);
     }
         
     /** return the ejb to whoch I refer.
@@ -372,19 +401,21 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
         toStringBuffer.append("name="+getName());
 
         if( isEJB30ClientView() ) {
-            toStringBuffer.append("," + localVsRemote + " 3.x business interface="+getEjbInterface());
+            toStringBuffer.append("," + localVsRemote + " 3.x interface ="+getEjbInterface());
         } else {
-            toStringBuffer.append("," + localVsRemote + " 2.x home interface="+getEjbHomeInterface());
+            toStringBuffer.append("," + localVsRemote + " 2.x home ="+getEjbHomeInterface());
             toStringBuffer.append("," + localVsRemote + " 2.x component interface="+getEjbInterface());
         }
 
         if( ejbDescriptor != null ) {
-            toStringBuffer.append(" resolved to intra-app EJB with ejb-name="+ejbDescriptor.getName());
+            toStringBuffer.append(" resolved to intra-app EJB "+ejbDescriptor.getName() +
+            " in module " + ejbDescriptor.getEjbBundleDescriptor().getModuleName());
         }
 
         toStringBuffer.append(",ejb-link="+getLinkName());
-        toStringBuffer.append(",mappedName="+getJndiName());
-
+        toStringBuffer.append(",lookup="+getLookup());
+        toStringBuffer.append(",mappedName="+getMappedName());
+        toStringBuffer.append(",jndi-name=" + getValue());                    
 
         toStringBuffer.append(",refType="+getType());
     }

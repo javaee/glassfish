@@ -82,20 +82,22 @@ public class EjbNamingReferenceManagerImpl
         throws NamingException {
 
         Object jndiObj = null;
+        boolean resolved = false;
 
 
-        /* For remote ejb refs, first lookup the target remote object
-         * and pass it to the next stage of ejb ref resolution. 
-         * If the string is a "corbaname:...." URL
-         * the lookup happens thru the corbanameURL context,
-         * else it happens thru the context provided by the NamingManager.
-         *
-         * NOTE : we might need some additional logic to handle cross-server
-         * MEJB resolution for cluster support post V3 FCS.
-         */
-        if( !ejbRefDesc.isLocal() ) {
-
-
+        if( ejbRefDesc.isLocal() ) {
+            // local ejb dependencies if there's a lookup string, use that.
+            // Otherwise, the ejb will be resolved by EJBUtils.
+            if( ejbRefDesc.hasLookup()) {
+                jndiObj = context.lookup(ejbRefDesc.getLookup());
+                resolved = true;
+            }
+        } else if( !ejbRefDesc.hasJndiName() && ejbRefDesc.hasLookup() ) {
+            // For a remote reference, only do a context lookup if there is no
+            // jndi name. 
+            jndiObj = context.lookup(ejbRefDesc.getLookup());
+            resolved = true;
+        } else {
 
             // Get actual jndi-name from ejb module.
             String remoteJndiName = EJBUtils.getRemoteEjbJndiName(ejbRefDesc);
@@ -130,6 +132,15 @@ public class EjbNamingReferenceManagerImpl
 
                 }
 
+                /* For remote ejb refs, first lookup the target remote object
+                 * and pass it to the next stage of ejb ref resolution.
+                 * If the string is a "corbaname:...." URL
+                 * the lookup happens thru the corbanameURL context,
+                 * else it happens thru the context provided by the NamingManager.
+                 *
+                 * NOTE : we might need some additional logic to handle cross-server
+                 * MEJB resolution for cluster support post V3 FCS.
+                 */
                 if (remoteJndiName.startsWith(CORBANAME)) {
                     GlassFishORBHelper orbHelper = habitat.getComponent(GlassFishORBHelper.class);
 
@@ -153,7 +164,7 @@ public class EjbNamingReferenceManagerImpl
             }
         }
 
-        return EJBUtils.resolveEjbRefObject(ejbRefDesc, jndiObj);
+        return resolved ? jndiObj : EJBUtils.resolveEjbRefObject(ejbRefDesc, jndiObj);
     }
 
     public boolean isEjbReferenceCacheable(EjbReferenceDescriptor ejbRefDesc) {
