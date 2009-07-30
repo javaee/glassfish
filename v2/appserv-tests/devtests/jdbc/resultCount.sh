@@ -1,22 +1,19 @@
 #!/bin/sh
 
-total=101
-OUTPUT_FILE=jdbc.output
+FILE=$APS_HOME/test_resultsValid.xml
+echo "input file=$FILE"
 
-for each in `grep "Total PASS" ${OUTPUT_FILE} | awk '{print $4}'`
-do
-     pass=$(( $pass + $each ))
-done
-
-for each in `grep "Total FAIL" ${OUTPUT_FILE} | awk '{print $4}'`
-do
-     fail=$(( $fail + $each ))
-done
+TOTAL=84
+PASSED=`grep "pass" $FILE | wc -l`
+FAILED=`grep "fail" $FILE | wc -l`
+TOTAL_RUN=`expr $PASSED + $FAILED `
+DNR=`expr $TOTAL - $TOTAL_RUN `
 
 echo "------------------------"
-echo "TOTAL = ${total}"
+echo "TOTAL = ${TOTAL}"
 echo "------------------------"
-echo "PASSED = ${pass}"
-echo "FAILED = ${fail}"
+echo "PASSED = ${PASSED}"
+echo "FAILED = ${FAILED}"
+echo "DID NOT RUN = ${DNR}"
 echo "------------------------"
 

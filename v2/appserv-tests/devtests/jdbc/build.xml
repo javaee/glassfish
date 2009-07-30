@@ -21,6 +21,7 @@
     -->
     &eeCommon;
     &eeCommonProperties;
+    &reporting;
 
     <target name="all">
         <antcall target="${execution.mode}-all"/>
@@ -34,43 +35,37 @@
             <fileset dir="." includes="*.output"/>
         </delete>
         <record name="jdbc.output" action="start"/>
-        <ant dir="appauth" target="all"/>
-        <ant dir="appauthtx" target="all"/>
+	<ant dir="appauth" target="all"/>
+	<ant dir="appauthtx" target="all"/>
         <ant dir="contauth" target="all"/>
-        <ant dir="contauthtx" target="all"/>
-        <ant dir="contauth1" target="all"/>
-        <ant dir="contauth1tx" target="all"/>
-        <ant dir="simple" target="all"/>
-        <ant dir="reconfig" target="all"/>
-        <ant dir="autocommit" target="all"/>
-        <ant dir="cmpsimple" target="all"/>
-        <ant dir="jdbcjmsauth" target="all"/>
-        <ant dir="nopasswdfordb" target="all"/>
+	<ant dir="contauthtx" target="all"/>
+	<ant dir="contauth1" target="all"/>
+	<ant dir="contauth1tx" target="all"/>
+	<ant dir="autocommit" target="all"/>
+	<ant dir="jdbcjmsauth" target="all"/>
+	<ant dir="nopasswdfordb" target="all"/>
         <ant dir="txpassthrough" target="all"/>
         <ant dir="txafternontx" target="all"/>
         <ant dir="txafternontxjndi" target="all"/>
-        <ant dir="notxops" target="all"/>
-        <ant dir="nonacc" target="all"/>
-        <ant dir="lazyassoc" target="all"/>
-        <ant dir="markconnectionasbad.local" target="all"/>
-        <ant dir="markconnectionasbad.xa" target="all"/>
-        <ant dir="statementwrapper" target="all"/>
-        <ant dir="maxconnectionusage" target="all"/>
-        <ant dir="switchoffACCconnpooling" target="all"/>
-        <ant dir="multipleusercredentials" target="all"/>
+	<ant dir="notxops" target="all"/>
+	<ant dir="markconnectionasbad.local" target="all"/>
+	<ant dir="statementwrapper" target="all"/>
+	<ant dir="maxconnectionusage" target="all"/>
+	<ant dir="multipleusercredentials" target="all"/>
         <ant dir="multiplecloseconnection" target="all"/>
-        <ant dir="statementtimeout" target="all"/>
-        <ant dir="conval" target="all"/>
-        <ant dir="connleaktracing" target="all"/>
-        <ant dir="conncreationretry" target="all"/>
-        <ant dir="validateatmostonceperiod" target="all"/>
-        <ant dir="connsharing" target="nonxa"/>
-        <ant dir="cpds" target="all"/>
-	<ant dir="txisolation" target="all"/>
+	<ant dir="statementtimeout" target="all"/>
+	<ant dir="conval" target="all"/>
+	<ant dir="connleaktracing" target="all"/>
+	<ant dir="conncreationretry" target="all"/>
+	<ant dir="validateatmostonceperiod" target="all"/>
+	<ant dir="connsharing" target="nonxa"/>
+	<ant dir="cpds" target="all"/>
 	<ant dir="stmtCaching_hit_miss" target="all"/>
 	<ant dir="pooling" target="all"/>
 	<ant dir="dmmcf" target="all"/>
-        <record name="jdbc.output" action="stop"/>
+	<ant dir="dmmcf.markconnectionasbad.xa" target="all"/>
+	<antcall target="report"/>
+	<record name="jdbc.output" action="stop"/>
     </target>
 
     <target name="ee-all">
@@ -113,7 +108,6 @@
         <ant dir="txisolation" target="all"/>
 	<ant dir="stmtCaching_hit_miss" target="all"/>
 	<ant dir="pooling" target="all"/>
-	<ant dir="dmmcf" target="all"/>
         <record name="jdbc.output" action="stop"/>
     </target>
 
@@ -277,24 +271,6 @@
         <record name="conncreationretry.output" action="start"/>
         <ant dir="conncreationretry" target="all"/>
         <record name="conncreationretry.output" action="stop"/>
-    </target>
-
-    <target name="stmtCaching_hit_miss">
-	<record name="stmtCaching_hit_miss.output" action="start"/>
-	<ant dir="stmtCaching_hit_miss" target="all"/>
-	<record name="stmtCaching_hit_miss.output" action="stop"/>
-    </target>
-
-    <target name="pooling">
-	<record name="pooling.output" action="start"/>
-	<ant dir="pooling" target="all"/>
-	<record name="pooling.output" action="stop"/>
-    </target>
-
-    <target name="dmmcf">
-	<record name="dmmcf.output" action="start"/>
-	<ant dir="dmmcf" target="all"/>
-	<record name="dmmcf.output" action="stop"/>
     </target>
 
     <target name="usage">
