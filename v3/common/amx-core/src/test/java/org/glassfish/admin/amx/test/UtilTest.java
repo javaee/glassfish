@@ -35,42 +35,27 @@
  */
 package org.glassfish.admin.amx.test;
 
-import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
-
 import org.junit.Test;
 import org.junit.Before;
+import org.junit.After;
 
-import java.lang.management.ManagementFactory;
+import org.jvnet.hk2.config.Dom;
 
-
-public final class ObjectNamesTest extends TestBase
-{
-    
-    public ObjectNamesTest() {
+public final class UtilTest {
+    public UtilTest()
+    {
     }
 
-    private ObjectNameBuilder get() {
-        return new ObjectNameBuilder( ManagementFactory.getPlatformMBeanServer(), amxDomain());
-    }
-    
     @Before
     public void setUp() {
-        initBootUtil();
-    }
-    
-    @Test
-    public void testCreate() {
-        final ObjectNameBuilder objectNames = get();
     }
 
-    private String amxDomain()
-    {
-        return "test";
+    @After
+    public void tearDown() {
     }
     
     @Test
-    public void testMisc() {
-        get().getJMXDomain();
+    public void test1() {
     }
 }
 

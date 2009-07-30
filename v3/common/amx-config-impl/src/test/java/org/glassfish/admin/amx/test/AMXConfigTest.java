@@ -35,42 +35,41 @@
  */
 package org.glassfish.admin.amx.test;
 
-import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
-
 import org.junit.Test;
 import org.junit.Before;
+import org.junit.After;
 
-import java.lang.management.ManagementFactory;
+import org.glassfish.admin.amx.impl.config.AMXConfigImpl;
 
-
-public final class ObjectNamesTest extends TestBase
-{
-    
-    public ObjectNamesTest() {
+public final class AMXConfigTest {
+    public AMXConfigTest()
+    {
     }
 
-    private ObjectNameBuilder get() {
-        return new ObjectNameBuilder( ManagementFactory.getPlatformMBeanServer(), amxDomain());
-    }
-    
     @Before
     public void setUp() {
-        initBootUtil();
-    }
-    
-    @Test
-    public void testCreate() {
-        final ObjectNameBuilder objectNames = get();
     }
 
-    private String amxDomain()
+    @After
+    public void tearDown() {
+    }
+    
+    private void _testConvertName( final String str, final String out)
     {
-        return "test";
+        assert AMXConfigImpl.convertAttributeName(str).equals(out) :
+            "Expected " + out + " for " + str;
+
+        assert AMXConfigImpl.convertAttributeName(out).equals(out) :
+            "Expected " + out + " for " + out + " (no change), but got " + AMXConfigImpl.convertAttributeName(out);
     }
     
     @Test
-    public void testMisc() {
-        get().getJMXDomain();
+    public void testDomConvertName() {
+        _testConvertName( "Is", "is" );
+        
+        _testConvertName( "IsFooBar", "is-foo-bar" );
+        
+        _testConvertName( "IsConnectionValidationRequired", "is-connection-validation-required" );
     }
 }
 

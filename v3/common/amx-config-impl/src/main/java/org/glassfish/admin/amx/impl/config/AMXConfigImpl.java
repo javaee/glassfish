@@ -573,6 +573,9 @@ public class AMXConfigImpl extends AMXImplBase
         return objectNames[0];
     }
     
+    /**
+        Replace "Name" or "name" with the 
+     */
         Map<String,Object>
     replaceNameWithKey(
         final Map<String,Object>  attrs,
@@ -594,7 +597,9 @@ public class AMXConfigImpl extends AMXImplBase
         {
             // map "Name" or "name" to the actual key value (which could be "name')
             final String xmlKeyName = spt.getNameHint();
-            if ( xmlKeyName != null )
+            // rename to the appropriate key name, if it doesn't already exist
+            // eg there could be a non-key attribute "Name" and another key attribute; leave that alone
+            if ( xmlKeyName != null && ! attrs.keySet().contains(xmlKeyName) )
             {
                 m = new HashMap<String,Object>(attrs);
                 final Object value = m.remove(key);
@@ -608,18 +613,29 @@ public class AMXConfigImpl extends AMXImplBase
     /** exists so we can get the parameterized return type */
     public static List<String> listOfString() { return null; }
     
+    public static String convertAttributeName(final String s )
+    {
+        // do not alter any name that is already all lower-case or that contains a "-" */
+        if ( s.equals( s.toLowerCase() ) || s.indexOf("-") >= 0 )
+        {
+            return(s);
+        }
+        
+        // Dom.convertName() has a bug: IsFooBar => is-foo-bar, but is-foo-bar => -foo-bar.
+        
+        return Dom.convertName(s);
+    }
     
     private void setAttrs(
         final ConfigBeanProxy     target,
         final Map<String,Object>  attrs )
     {
        final WriteableView targetW = WriteableView.class.cast(Proxy.getInvocationHandler(Proxy.class.cast(target)));
-    
         
         for ( final String attrName : attrs.keySet() )
         {
             final Object attrValue = attrs.get(attrName);
-            final String xmlName = Dom.convertName(attrName);
+            final String xmlName = convertAttributeName(attrName);
             
             final ConfigBean targetCB = (ConfigBean)Dom.unwrap(target);
             final ConfigModel.Property modelProp = targetCB.model.findIgnoreCase( xmlName );

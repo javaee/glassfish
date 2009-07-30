@@ -62,19 +62,6 @@
         </developer>
     </developers>
 
-   <build>
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>org/glassfish/admin/amx/cmd/*.properties</include>
-                    <include>org/glassfish/admin/amx/dotted/*.properties</include>
-                </includes>
-            </resource>
-        </resources>
-    </build>
-
-
     <dependencies>
         
         
