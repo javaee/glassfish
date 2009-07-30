@@ -37,6 +37,8 @@
 package com.sun.enterprise.admin.cli.commands;
 
 import com.sun.enterprise.admin.cli.CLIConstants;
+//import com.sun.enterprise.util.Profiler;
+import com.sun.enterprise.util.net.NetUtils;
 import static com.sun.enterprise.admin.cli.CLIConstants.*;
 import com.sun.enterprise.admin.cli.Environment;
 import com.sun.enterprise.admin.cli.LocalDomainCommand;
@@ -49,19 +51,10 @@ import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.cli.framework.ValidOption;
-import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.security.KeyStore;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
 
 /**
  * The start-domain command.
@@ -71,10 +64,6 @@ import java.util.logging.Logger;
  */
 public class StartDomainCommand extends LocalDomainCommand {
 
-    private GFLauncherInfo info;
-
-    private static final LocalStringsImpl strings =
-            new LocalStringsImpl(StartDomainCommand.class);
 
     /** Creates the instance of this command in accordance with what {@link CLICommand} does for it.
      */
@@ -138,22 +127,27 @@ public class StartDomainCommand extends LocalDomainCommand {
                             programOpts.getClassPath(),
                             programOpts.getProgramArguments());
 
-            setMasterPassword(info);
             launcher.setup();
-            // CLI calls this method only to ensure that domain.xml is parsed
-            // once. This is a performance optimization.
-            // km@dev.java.net (Aug 2008)
-            if (isServerAlive(info.getAdminPorts())) {
-                int definitePort = info.getAdminPorts().iterator().next();
-                String msg = strings.get("ServerRunning",
-                        definitePort+"");
-                logger.printWarning(msg);
-                return;
+
+            // only continue if all (normally 1) admin port(s) are free
+            Set<Integer> adminPorts = info.getAdminPorts();
+            for(Integer port : adminPorts) {
+                if(!NetUtils.isPortFree(port)) {
+                    String msg = strings.get("ServerRunning", port.toString());
+                    logger.printWarning(msg);
+                    return;
+                }
             }
 
+            // this can be slow, 500 msec, with --passwordfile option it is ~~ 18 msec
+            setMasterPassword(info);
+
+            /*  bnevins -- I think this is garbage now.  7/29/2009
+             * Delete after 7/31/2009
             boolean isRestart = Boolean.getBoolean(RESTART_FLAG);
             if (isRestart)
                 waitForParentToDie();
+             */
 
             // launch returns very quickly if verbose is not set
             // if verbose is set then it returns after the domain dies
@@ -338,6 +332,7 @@ public class StartDomainCommand extends LocalDomainCommand {
         logger.printMessage(msg);
     }
 
+    /***
     private void waitForParentToDie() {
         try {
             // TODO timeout
@@ -351,4 +346,8 @@ public class StartDomainCommand extends LocalDomainCommand {
             lg.log(Level.SEVERE, null, ex);
         }
     }
+    */
+    private GFLauncherInfo info;
+    private static final LocalStringsImpl strings =
+            new LocalStringsImpl(StartDomainCommand.class);
 }
