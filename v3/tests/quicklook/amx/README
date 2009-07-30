@@ -1,8 +1,12 @@
 Author: Lloyd.Chambers@sun.com
-Last modified:  11 September 2008
+Last modified:  30 July 2009
 
-AMX unit tests.  They run fine through 'mvn test', which sets up the dependencies for compiling
-and running with the requisite jars.
+To run AMX tests standalone on glassfish distribution:
 
-Standalone 'ant build' does not work; the appropriate ant targets need to be set up.
+ant -Dglassfish.home=$V3_RUN/glassfish all
+
+I put my repo elsewhere:
+
+export V3_REPO=/v3/repo
+ant -Dmaven.repo.local=$V3_REPO -Dglassfish.home=$V3_RUN/glassfish all
 

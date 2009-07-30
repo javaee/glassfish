@@ -93,6 +93,8 @@ public final class AMXProxyTests extends AMXTestBase
     
     private <T extends AMXProxy> List<String> _testProxyInterface(final AMXProxy amxIn, Class<T> clazz)
     {
+        assert amxIn != null : "_testProxyInterface(): null proxy for class " + clazz.getName();
+        
         final List<String> problems = new ArrayList<String>();
         
         final T amx = amxIn.as(clazz);
@@ -342,6 +344,7 @@ public final class AMXProxyTests extends AMXTestBase
 
         for( final AMXProxy amx : getQueryMgr().queryAll() )
         {
+            assert amx != null : "testAllGenerically(): null proxy in query list";
             try
             {
                 final List<String> p = _testProxyInterface( amx, interfaces.get(amx.type()) );
