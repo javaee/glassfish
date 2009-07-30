@@ -75,6 +75,10 @@ public class FacadeLaunchable implements Launchable {
 
     /** name of a manifest entry in an app client facade listing the URI of the developer's original app client JAR */
     public static final Attributes.Name GLASSFISH_APPCLIENT = new Attributes.Name("GlassFish-AppClient");
+
+    /** name of manifest entry in facade conveying the app name */
+    public static final Attributes.Name GLASSFISH_APP_NAME = new Attributes.Name("GlassFish-App-Name");
+
     public static final ArchiveFactory archiveFactory = ACCModulesManager.getComponent(ArchiveFactory.class);
     private static final Logger logger = Logger.getLogger(FacadeLaunchable.class.getName());
     private static final LocalStringManager localStrings = new LocalStringManagerImpl(FacadeLaunchable.class);
@@ -236,6 +240,11 @@ public class FacadeLaunchable implements Launchable {
             acDesc = getFacadeArchivist().open(facadeClientRA);
             Application.createApplication(habitat, null, acDesc.getModuleDescriptor());
 
+            final Manifest facadeMF = facadeClientRA.getManifest();
+            final Attributes mainAttrs = facadeMF.getMainAttributes();
+            final String appName = mainAttrs.getValue(GLASSFISH_APP_NAME);
+            acDesc.getApplication().setAppName(appName);
+            
             getFacadeArchivist().setDescriptor(acDesc);
             /*
              * But save the class loader for later use.

@@ -177,6 +177,9 @@ public class AppClientDeployer
     public static final Attributes.Name SPLASH_SCREEN_IMAGE =
             new Attributes.Name("SplashScreen-Image");
 
+    public static final Attributes.Name GLASSFISH_APP_NAME =
+            new Attributes.Name("GlassFish-App-Name");
+
     private static final String GF_CLIENT_MODULE_NAME = "org.glassfish.appclient.gf-client-module";
 
     /** Save the helper across phases in the deployment context's appProps */

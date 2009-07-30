@@ -226,8 +226,21 @@ public class UndeployedLaunchable implements Launchable {
             final AppClientArchivist archivist = getArchivist(loader);
             acDesc = archivist.open(clientRA);
             Application.createApplication(habitat, null, acDesc.getModuleDescriptor());
+            acDesc.getApplication().setAppName(getDefaultApplicationName(clientRA));
         }
         return acDesc;
+    }
+
+    public String getDefaultApplicationName(ReadableArchive archive) {
+        String appName = archive.getName();
+        int lastDot = appName.lastIndexOf('.');
+        if (lastDot != -1) {
+            if (appName.substring(lastDot).equalsIgnoreCase(".ear") ||
+                appName.substring(lastDot).equalsIgnoreCase(".jar")) {
+                appName = appName.substring(0, lastDot);
+            }
+        }
+        return appName;
     }
 
     private AppClientArchivist completeInit(final AppClientArchivist arch) {

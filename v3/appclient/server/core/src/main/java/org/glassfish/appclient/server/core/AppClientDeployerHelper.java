@@ -87,6 +87,8 @@ public abstract class AppClientDeployerHelper {
 
     private final String defaultSigningAlias;
     private final String signingAlias;
+    private final Application application;
+
     /**
      * Returns the correct concrete implementation of Helper.
      * @param dc the DeploymentContext for this deployment
@@ -107,13 +109,15 @@ public abstract class AppClientDeployerHelper {
                                     bundleDesc,
                                     archivist,
                                     gfClientModuleLoader,
-                                    defaultAlias)
+                                    defaultAlias,
+                                    application)
                           : new StandaloneAppClientDeployerHelper(
                                     dc,
                                     bundleDesc,
                                     archivist,
                                     gfClientModuleLoader,
-                                    defaultAlias));
+                                    defaultAlias,
+                                    application));
     }
 
     protected AppClientDeployerHelper(
@@ -121,7 +125,8 @@ public abstract class AppClientDeployerHelper {
             final ApplicationClientDescriptor bundleDesc,
             final AppClientArchivist archivist,
             final ClassLoader gfClientModuleClassLoader,
-            final String defaultSigningAlias) throws IOException {
+            final String defaultSigningAlias,
+            final Application application) throws IOException {
         super();
         this.dc = dc;
         this.appClientDesc = bundleDesc;
@@ -132,6 +137,7 @@ public abstract class AppClientDeployerHelper {
 
         this.defaultSigningAlias = defaultSigningAlias;
         signingAlias = chooseAlias();
+        this.application = application;
     }
 
     /**
@@ -293,7 +299,8 @@ public abstract class AppClientDeployerHelper {
     private void initGeneratedManifest(
             final Manifest sourceManifest,
             final Manifest generatedManifest,
-            final String classPath) {
+            final String classPath,
+            final Application application) {
         Attributes sourceMainAttrs = sourceManifest.getMainAttributes();
         Attributes facadeMainAttrs = generatedManifest.getMainAttributes();
         facadeMainAttrs.put(Attributes.Name.MANIFEST_VERSION, "1.0");
@@ -308,6 +315,7 @@ public abstract class AppClientDeployerHelper {
             facadeMainAttrs.put(AppClientDeployer.SPLASH_SCREEN_IMAGE, splash);
         }
         facadeMainAttrs.put(Attributes.Name.CLASS_PATH, classPath);
+        facadeMainAttrs.put(AppClientDeployer.GLASSFISH_APP_NAME, application.getAppName());
     }
 
     private void writeUpdatedDescriptors(final OutputJarArchive facadeArchive, final ApplicationClientDescriptor acd) throws IOException {
@@ -336,7 +344,8 @@ public abstract class AppClientDeployerHelper {
         ReadableArchive source = dc.getSource();
         Manifest sourceManifest = source.getManifest();
         Manifest facadeManifest = facadeArchive.getManifest();
-        initGeneratedManifest(sourceManifest, facadeManifest, facadeClassPath());
+        initGeneratedManifest(sourceManifest, facadeManifest, 
+                facadeClassPath(), application);
         /*
          * If the developer's app client JAR contains a splash screen, copy
          * it from the original JAR to the facade so the Java launcher can

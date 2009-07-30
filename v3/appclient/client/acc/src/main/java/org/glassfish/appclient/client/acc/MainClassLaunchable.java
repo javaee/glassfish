@@ -95,11 +95,16 @@ public class MainClassLaunchable implements Launchable {
             archivist.setDescriptor(acDesc);
             acDesc = acArchivist.open(tempArchive);
             Application.createApplication(habitat, null, acDesc.getModuleDescriptor());
+            acDesc.getApplication().setAppName(appNameFromMainClass(mainClass));
             this.classLoader = loader;
         }
         return acDesc;
     }
 
+    private String appNameFromMainClass(final Class c) {
+        return c.getName();
+    }
+    
 //    private ReadableArchive createArchive(final ClassLoader loader,
 //            final Class mainClass) throws IOException, URISyntaxException {
 //        Manifest mf = new Manifest();

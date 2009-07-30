@@ -35,6 +35,7 @@
  */
 package org.glassfish.appclient.server.core;
 
+import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
@@ -90,8 +91,9 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             final ApplicationClientDescriptor bundleDesc,
             final AppClientArchivist archivist,
             final ClassLoader gfClientModuleClassLoader,
-            final String defaultAlias) throws IOException {
-        super(dc, bundleDesc, archivist, gfClientModuleClassLoader, defaultAlias);
+            final String defaultAlias,
+            final Application application) throws IOException {
+        super(dc, bundleDesc, archivist, gfClientModuleClassLoader, defaultAlias, application);
         earURI = dc.getSource().getParentArchive().getURI();
         processDependencies();
     }
