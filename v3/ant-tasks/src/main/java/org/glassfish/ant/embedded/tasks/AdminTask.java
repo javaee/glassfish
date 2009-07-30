@@ -61,6 +61,11 @@ public class AdminTask extends Task {
     }
 
 
+    public CommandProperty createCommandProperty() {
+        commandProperty = new CommandProperty();
+        commandProperties.add(commandProperty);
+        return commandProperty;
+    }
   
     public CommandProperty createCommandProperty(String name, String value) {
         CommandProperty property = new CommandProperty();

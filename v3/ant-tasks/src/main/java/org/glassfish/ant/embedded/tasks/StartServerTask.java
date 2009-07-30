@@ -36,12 +36,19 @@
 
 package org.glassfish.ant.embedded.tasks;
 
-import org.glassfish.api.embedded.ContainerBuilder;
+import java.util.*;
+import java.io.File;
 
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 
+import org.glassfish.web.embed.WebBuilder;
 import org.glassfish.api.embedded.Server;
+import org.glassfish.api.embedded.ContainerBuilder;
+import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.embedded.EmbeddedContainer;
+import org.glassfish.web.embed.EmbeddedWebContainer;
+
 
 public class StartServerTask extends Task {
 
@@ -55,13 +62,25 @@ public class StartServerTask extends Task {
 	public void setPort(int port) {
         this.port = port;
     }
-
-
+    
 	public void execute() throws BuildException {
         log ("Starting server - all containers");
         Server server = new Server.Builder(serverID).build();
         server.createPort(port);
-        server.addContainer(server.getConfig(ContainerBuilder.Type.all));
+        server.addContainer(ContainerBuilder.Type.all);
+
+        ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
+        for (EmbeddedContainer c : server.getContainers()) {
+            sniffers.addAll(c.getSniffers());
+        }
+
+        // FIXME - this should be improved..
+        File docroot = new File(server.getFileSystem().installRoot, "docroot");
+        ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
+        ((WebBuilder)b).setDocRootDir(docroot);
+        EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
+        embedded.setConfiguration((WebBuilder)b);
+
         try {
             server.start();
         } catch (Exception ex) {

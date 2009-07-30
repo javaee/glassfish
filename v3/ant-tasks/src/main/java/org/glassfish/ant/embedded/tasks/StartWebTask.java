@@ -52,6 +52,7 @@ public class StartWebTask extends Task {
 
     String serverID = Constants.DEFAULT_SERVER_ID;
     int port = Constants.DEFAULT_HTTP_PORT;
+    String installRoot = null;
 
     public void setServerID(String serverID) {
         this.serverID = serverID;
@@ -61,18 +62,45 @@ public class StartWebTask extends Task {
         this.port = port;
     }
 
+	public void setInstallRoot(String installRoot) {
+        this.installRoot = installRoot;
+    }
 
-	public void execute() throws BuildException {
+    public void execute() throws BuildException {
         log ("Starting server - web");
-        Server server = new Server.Builder(serverID).build();
-        EmbeddedFileSystem efs = server.getFileSystem();
-        File docroot = new File(efs.installRoot, "docroot");
+        Server server;
+        File docroot;
 
+        /* support inplanted?
+        if (installRoot != null) {
+            File f = new File(installRoot, "glassfishv3");
+            f = new File(f, "glassfish");
+            if (!f.exists()) {
+                log("Not found : " + f.getAbsolutePath());
+                return;
+            }
+
+            EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
+            efsb.setInstallRoot(f);
+            Server.Builder builder = new Server.Builder(serverID);
+            builder.setEmbeddedFileSystem(efsb.build());
+            server = builder.build();
+            f = new File(f, "domains");
+            f = new File(f, "domain1" );
+            docroot = new File(f, "docroot");
+        } else {
+            server = new Server.Builder(serverID).build();
+            docroot = new File(server.getFileSystem().installRoot, "docroot");
+        }
+        */
+        
+        server = new Server.Builder(serverID).build();
         server.createPort(port);
 
         ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
-        server.addContainer(b);
+           server.addContainer(b);
 
+        docroot = new File(server.getFileSystem().installRoot, "docroot");
         ((WebBuilder)b).setDocRootDir(docroot);
         EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
         embedded.setConfiguration((WebBuilder)b);
@@ -80,7 +108,7 @@ public class StartWebTask extends Task {
         try {
             embedded.start();
         } catch (Exception ex) {
-            log(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 }
