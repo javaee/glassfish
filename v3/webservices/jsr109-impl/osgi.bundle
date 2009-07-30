@@ -1,4 +1,5 @@
 -exportcontents: \
+                        com.sun.enterprise.webservice; \
                         org.glassfish.webservices; \
                         org.glassfish.webservices.monitoring; version=${project.osgi.version}
 Import-Package: \
