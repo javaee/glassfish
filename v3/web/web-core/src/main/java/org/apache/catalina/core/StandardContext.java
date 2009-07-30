@@ -2618,7 +2618,8 @@ public class StandardContext
                              "setSessionTrackingModes", getName()));
         }
 
-        this.sessionTrackingModes = sessionTrackingModes;
+        this.sessionTrackingModes =
+            Collections.unmodifiableSet(sessionTrackingModes);
 
         if (sessionTrackingModes.contains(SessionTrackingMode.COOKIE)) {
             setCookies(true);
