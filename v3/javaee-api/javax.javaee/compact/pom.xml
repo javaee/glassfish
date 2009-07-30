@@ -95,6 +95,7 @@
         <configuration>
           <classesDirectory>target/classes</classesDirectory>
           <outputDirectory>target</outputDirectory>
+          <finalName>${jar.name}</finalName>
         </configuration>
      </plugin>
 
