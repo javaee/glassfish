@@ -96,7 +96,8 @@ public class Catalina extends Embedded {
     private static final ClassLoader standardServerClassLoader =
         StandardServer.class.getClassLoader();
 
-    private static Logger log = Logger.getLogger(Catalina.class.getName());
+    private static final Logger log =
+        Logger.getLogger(Catalina.class.getName());
 
 
     // --------------------------------------------------- Instance Variables
@@ -193,7 +194,6 @@ public class Catalina extends Embedded {
      * @param args Command line arguments
      */
     public void process(String args[]) {
-
         setAwait(true);
         setCatalinaHome();
         setCatalinaBase();
@@ -207,7 +207,8 @@ public class Catalina extends Embedded {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            log.log(Level.WARNING, "Error processing command line arguments",
+                    e);
         }
     }
 
@@ -542,14 +543,13 @@ public class Catalina extends Embedded {
      * Load using arguments
      */
     public void load(String args[]) {
-
         setCatalinaHome();
         setCatalinaBase();
         try {
             if (arguments(args))
                 load();
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            log.log(Level.WARNING, "Error loading configuration", e);
         }
     }
 

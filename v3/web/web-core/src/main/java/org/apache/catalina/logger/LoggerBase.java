@@ -456,7 +456,7 @@ public class LoggerBase
                 mserver.invoke(cname, "setLogger", new Object[] {this},
                         new String[] {"org.apache.catalina.Logger"});
             } catch (Exception e) {
-                e.printStackTrace();  //To change body of catch statement use Options | File Templates.
+                log.log(Level.WARNING, "Unable to register Logger", e);
             }
         } 
                 
@@ -511,7 +511,8 @@ public class LoggerBase
                 log.severe("Null engine !! " + container);
             }
         } catch (Throwable e) {
-            e.printStackTrace();  //To change body of catch statement use Options | File Templates.
+            log.log(Level.WARNING,
+                "Unable to create javax.management.ObjectName for Logger", e);
         }
         return oname;
     }
