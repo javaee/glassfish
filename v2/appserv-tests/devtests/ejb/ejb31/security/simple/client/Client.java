@@ -18,7 +18,7 @@ public class Client {
     private static String appName;
     private static String principal;
 
-    @EJB static Hello hello;
+    @EJB(mappedName="java:app/ejb-ejb31-security-simple-ejb/SingletonBean!com.acme.Hello") static Hello hello;
 
     public static void main(String args[]) {
 
@@ -50,7 +50,11 @@ public class Client {
 	    
 	    if( hello == null ) {
 		hello = (Hello) new InitialContext().lookup("com.acme.Hello");
+	    } else {
+		System.out.println("in appclient");
+		hello = (Hello) new InitialContext().lookup("java:app/ejb-ejb31-security-simple-ejb/SingletonBean!com.acme.Hello");
 	    }
+
 
 	    boolean pass;
 

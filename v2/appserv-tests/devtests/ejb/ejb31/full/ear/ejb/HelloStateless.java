@@ -15,6 +15,14 @@ public class HelloStateless implements HelloRemote {
     @Resource(name="java:module/MORB1")
     private ORB orb;
     
+    @EJB(name="lookupref1", lookup="java:app/env/AS1")
+    private Hello lookupref1;
+
+    @EJB(name="lookupref2", lookup="java:global/GS1")
+    private Hello lookupref2;
+
+    @EJB(name="lookupref3", lookup="java:module/HelloStateless!com.acme.HelloRemote")
+    private HelloRemote lookupref3;
 
     // declare component-level dependency using fully-qualified
     // java:comp/env form.  

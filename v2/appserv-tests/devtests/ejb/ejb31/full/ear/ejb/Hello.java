@@ -1,6 +1,6 @@
 package com.acme;
 
-import javax.ejb.Remote;
+
 
 public interface Hello {
 

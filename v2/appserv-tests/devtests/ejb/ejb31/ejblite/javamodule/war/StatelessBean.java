@@ -8,7 +8,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
+import java.util.Map;
+
 @Stateless
+@Interceptors(InterceptorB.class)
 public class StatelessBean {
     
     @Resource 
@@ -30,6 +33,14 @@ public class StatelessBean {
 
     public void hello() {
 	System.out.println("In StatelessBean::hello()");
+
+	Map<String, Object> ctxData = sessionCtx.getContextData();
+	String fooctx = (String) ctxData.get("foo");
+	System.out.println("foo from context data = " + fooctx);
+	if( fooctx == null ) {
+	    throw new EJBException("invalid context data");
+	}
+	ctxData.put("foobar", "foobar");
 
 	FooManagedBean fmb = (FooManagedBean) 
 	    sessionCtx.lookup("java:module/foomanagedbean");

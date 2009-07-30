@@ -19,6 +19,9 @@ public class SingletonBean implements SingletonRemote {
     @EJB(name="helloref", mappedName="HH#com.acme.Hello") Hello hello;
     @EJB(name="hellohomeref", mappedName="HH") HelloHome helloHome;
 
+    @EJB(name="helloref2", lookup="HH#com.acme.Hello") Hello hello2;
+    @EJB(name="hellohomeref2", lookup="HH") HelloHome helloHome2; 
+
     @EJB RemoteAsync statefulBean;
 
     @Resource

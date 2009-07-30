@@ -13,6 +13,8 @@ import javax.ejb.EJBException;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 
+import javax.ejb.SessionContext;
+
 @Singleton
 // @@@ how to address init web jndi comp load dependency ? @Startup
 @LocalBean
@@ -22,6 +24,8 @@ public class SingletonBean implements java.util.Observer {
     @EJB private  SingletonBean me;
 
     @EJB private  StatefulBean sf;
+
+    @Resource private SessionContext sessionCtx;
 
     private SingletonBean sb2;
     private SingletonBean sb3;
@@ -40,6 +44,10 @@ public class SingletonBean implements java.util.Observer {
 
 	System.out.println("In SingletonBean:init() me = " + me);
 	
+	if( sessionCtx.getContextData() == null ) {
+	    throw new EJBException("null context data");
+	}
+
 	try {
 	    InitialContext ic = new InitialContext();
 
@@ -81,11 +89,19 @@ public class SingletonBean implements java.util.Observer {
 
     public void hello() {
 	System.out.println("In SingletonBean:hello()");
+	if( sessionCtx.getContextData() == null ) {
+	    throw new EJBException("null context data");
+	}
+
     }
 
     @PreDestroy
     private void destroy() {
 	System.out.println("In SingletonBean:destroy()");
+	if( sessionCtx.getContextData() == null ) {
+	    throw new EJBException("null context data");
+	}
+
     }
 
 
