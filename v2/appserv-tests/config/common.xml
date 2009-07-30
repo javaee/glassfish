@@ -550,7 +550,21 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
         <arg line="${as.props}"/>
         <arg line="${jdbc.conpool.name}"/>
     </exec>
-  <antcall target="set-${db.type}-connpool-props"/>
+    <antcall target="set-${db.type}-connpool-props"/>
+</target>
+
+<target name="create-jdbc-driver-connpool-common" depends="init-common">
+<echo message="created jdbc connection pool ${jdbc.conpool.name}" 
+    level="verbose"/>
+    <exec executable="${ASADMIN}" failonerror="false">
+        <arg line="create-jdbc-connection-pool"/>
+        <arg line="--datasourceclassname ${db.class}"/>
+        <arg line="--restype ${jdbc.resource.type}"/>
+        <arg line="--target ${appserver.instance.name}"/>
+        <arg line="${as.props}"/>
+        <arg line="${jdbc.conpool.name}"/>
+    </exec>
+    <antcall target="set-${db.type}-driver-connpool-props"/>
 </target>
 
 <target name="set-pointbase-connpool-props">
@@ -568,6 +582,14 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <param name="admin.command" value="set" />
     <param name="operand.props"
       value="${resources.dottedname.prefix}.jdbc-connection-pool.${jdbc.conpool.name}.property.Password=${db.pwd}" />
+  </antcall>
+</target>
+
+<target name="set-pointbase-driver-connpool-props">
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command" value="set" />
+    <param name="operand.props"
+	    value="${resources.dottedname.prefix}.jdbc-connection-pool.${jdbc.conpool.name}.property.URL=${db.url};user=${db.user};password=${db.pwd}"/>
   </antcall>
 </target>
 
@@ -612,6 +634,14 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
       <arg line="${as.props}"/>
       <arg line="domain.resources.jdbc-connection-pool.${jdbc.conpool.name}.property.serverName=${db.host}"/>
     </exec>
+</target>
+
+<target name="set-derby-driver-connpool-props">
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command" value="set" />
+    <param name="operand.props"
+	    value="${resources.dottedname.prefix}.jdbc-connection-pool.${jdbc.conpool.name}.property.URL=${db.url};user=${db.user};password=${db.pwd}"/>
+  </antcall>
 </target>
 
 <!-- ================================================================ -->
@@ -665,6 +695,11 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 <!-- ================================================================ -->
 <target name="deploy-jdbc-common" depends="init-common">
     <antcall target="create-jdbc-connpool-common" />
+    <antcall target="create-jdbc-resource-common" />
+</target>
+
+<target name="deploy-jdbc-driver-common" depends="init-common">
+    <antcall target="create-jdbc-driver-connpool-common" />
     <antcall target="create-jdbc-resource-common" />
 </target>
 
