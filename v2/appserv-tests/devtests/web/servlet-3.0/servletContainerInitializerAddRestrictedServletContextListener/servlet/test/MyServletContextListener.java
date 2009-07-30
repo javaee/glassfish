@@ -15,7 +15,7 @@ public class MyServletContextListener
             ctx.addServlet("abc", "def");
             throw new RuntimeException(
                 "Required IllegalStateException not thrown");
-        } catch (IllegalStateException ise) {
+        } catch (UnsupportedOperationException e) {
             // Do nothing
         }
     }
