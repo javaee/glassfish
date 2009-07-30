@@ -44,7 +44,7 @@
         <param name="ejbjar.classes" 
           value="**/*.class" />
         <param name="appclientjar.classes" 
-          value="**/SimpleBMP.class, **/SimpleBMPHome.class,**/*Client*.class" />
+  	  value="**/SimpleBMP.class, **/SimpleBMPHome.class,**/*Client*.class,**/JmsAuthHome.class,**/JmsAuth.class" />
       </antcall>
     </target> 
     
