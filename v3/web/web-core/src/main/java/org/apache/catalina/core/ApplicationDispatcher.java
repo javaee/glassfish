@@ -1034,7 +1034,7 @@ public final class ApplicationDispatcher
             if (!(current instanceof ServletRequestWrapper)) {
                 break;
             }
-            // If we are one of the container-generated wrappers, stop here
+            // If we find container-generated wrapper, break out
             if ((current instanceof ApplicationHttpRequest) ||
                     (current instanceof ApplicationRequest)) {
                 break;
@@ -1043,7 +1043,6 @@ public final class ApplicationDispatcher
             current = ((ServletRequestWrapper) current).getRequest();
         }
 
-        // Instantiate a new wrapper at this point and insert it in the chain
         if (!(current instanceof HttpServletRequest)) {
             throw new IllegalArgumentException("Request not of type HTTP");
         }
@@ -1055,6 +1054,8 @@ public final class ApplicationDispatcher
         //START OF 6364900
         crossContextFlag = Boolean.valueOf(crossContext);
         //END OF 6364900
+
+        // Instantiate a new wrapper and insert it in the chain
         ApplicationHttpRequest wrapper = new ApplicationHttpRequest(
             hcurrent, context, crossContext, state.dispatcherType);
 
