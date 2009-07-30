@@ -108,6 +108,29 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
     protected static final String info =
         "org.apache.catalina.core.ApplicationHttpRequest/1.0";
 
+    /**
+     * The set of attribute names that are special for request dispatchers.
+     */
+    private static final HashSet<String> specials = new HashSet(15);
+
+    static {
+        specials.add(RequestDispatcher.INCLUDE_REQUEST_URI);
+        specials.add(RequestDispatcher.INCLUDE_CONTEXT_PATH);
+        specials.add(RequestDispatcher.INCLUDE_SERVLET_PATH);
+        specials.add(RequestDispatcher.INCLUDE_PATH_INFO);
+        specials.add(RequestDispatcher.INCLUDE_QUERY_STRING);
+        specials.add(RequestDispatcher.FORWARD_REQUEST_URI);
+        specials.add(RequestDispatcher.FORWARD_CONTEXT_PATH);
+        specials.add(RequestDispatcher.FORWARD_SERVLET_PATH);
+        specials.add(RequestDispatcher.FORWARD_PATH_INFO);
+        specials.add(RequestDispatcher.FORWARD_QUERY_STRING);
+        specials.add(AsyncContext.ASYNC_REQUEST_URI);
+        specials.add(AsyncContext.ASYNC_CONTEXT_PATH);
+        specials.add(AsyncContext.ASYNC_SERVLET_PATH);
+        specials.add(AsyncContext.ASYNC_PATH_INFO);
+        specials.add(AsyncContext.ASYNC_QUERY_STRING);
+    }
+
 
     // ----------------------------------------------------------- Constructors
 
@@ -228,7 +251,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
 
     // ------------------------------------------------- ServletRequest Methods
 
-
     /**
      * Override the <code>getAttribute()</code> method of the wrapped request.
      *
@@ -244,7 +266,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             }
         }
 
-        if (!ApplicationRequest.isSpecial(name)) {
+        if (!isSpecial(name)) {
             return getRequest().getAttribute(name);
         } else {
             Object value = null;
@@ -290,7 +312,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      */
     public void removeAttribute(String name) {
 
-        if (ApplicationRequest.isSpecial(name)) {
+        if (isSpecial(name)) {
             if (specialAttributes != null) {
                 specialAttributes.remove(name);
             }
@@ -314,7 +336,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             return;
         }
 
-        if (ApplicationRequest.isSpecial(name)) {
+        if (isSpecial(name)) {
             if (specialAttributes != null) {
                 specialAttributes.put(name, value);
             }
@@ -844,6 +866,17 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
 
 
     /**
+     * Is this attribute name one of the special ones that is added only for
+     * included servlets?
+     *
+     * @param name Attribute name to be tested
+     */
+    protected boolean isSpecial(String name) {
+        return specials.contains(name);
+    }
+
+
+    /**
      * Initializes the special attributes of this request wrapper.
      *
      * @param requestUri The request URI
@@ -1035,7 +1068,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             String result = null;
             while ((result == null) && (parentEnumeration.hasMoreElements())) {
                 String current = parentEnumeration.nextElement();
-                if (!ApplicationRequest.isSpecial(current) ||
+                if (!isSpecial(current) ||
                         (!dispatcherType.equals(DispatcherType.FORWARD) &&
                         current.startsWith("javax.servlet.forward") &&
                         getAttribute(current) != null)) {

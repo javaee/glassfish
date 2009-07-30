@@ -1035,8 +1035,7 @@ public final class ApplicationDispatcher
                 break;
             }
             // If we find container-generated wrapper, break out
-            if ((current instanceof ApplicationHttpRequest) ||
-                    (current instanceof ApplicationRequest)) {
+            if (current instanceof ApplicationHttpRequest) {
                 break;
             }
             previous = current;
