@@ -12,7 +12,7 @@
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
                 deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType2}", selectedRows="${selectedRows}");
-                deleteResourceRef(resourceName="#{pageSession.valueMap['Name']");
+                deleteChildren(objectNameStr="amx:pp=/domain/servers,type=server,name=server", type="resource-ref", selectedRows="${selectedRows}");
                 setAttribute(key="selectedRows" value="${selectedRows}");
 
 
@@ -27,7 +27,7 @@
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
-                setAttribute(key="selectedRows" value="${selectedRows}");
+                deleteChildren(objectNameStr="amx:pp=/domain/servers,type=server,name=server", type="resource-ref", selectedRows="${selectedRows}");
                 redirect(page="#{pageSession.listLink}");
             />
         </sun:button>
