@@ -38,6 +38,7 @@ package org.glassfish.distributions.test;
 
 import java.util.*;
 import org.junit.Test;
+import org.junit.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import com.sun.grizzly.config.dom.NetworkConfig;
@@ -86,6 +87,7 @@ public class EmbeddedTest {
         http = server.createPort(8080);
         listeners = nc.getNetworkListeners().getNetworkListener();
         System.out.println("Network listener size after creation " + listeners.size());
+        Assert.assertTrue(listeners.size()==1);
         for (NetworkListener nl : listeners) {
             System.out.println("Network listener " + nl.getPort());
         }
@@ -139,7 +141,7 @@ public class EmbeddedTest {
         // ok now let's look up the EJB...
         try {
             InitialContext ic = new InitialContext();
-            SampleEjb ejb = (SampleEjb) ic.lookup("java:global/test-classes/SampleEjb");
+            SampleEjb ejb = (SampleEjb) ic.lookup("java:global/sample/SampleEjb");
             if (ejb!=null) {
                 try {
                     System.out.println(ejb.saySomething());

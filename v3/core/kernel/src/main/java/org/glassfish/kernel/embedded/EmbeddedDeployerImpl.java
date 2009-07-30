@@ -169,7 +169,7 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         Collection<Sniffer> sniffers = snifferMgr.getSniffers(archive, cl);
         List<Sniffer> finalSniffers = new ArrayList<Sniffer>();
 
-        // nowe we intersect with the conficgured sniffers.
+        // now we intersect with the conficgured sniffers.
         for (EmbeddedContainer container : server.getContainers()) {
             for (Sniffer sniffer : container.getSniffers()) {
                 if (sniffers.contains(sniffer)) {

@@ -468,7 +468,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      * Process annotations in a bundle descriptor, the annoation processing
      * is dependent on the type of descriptor being passed.
      */
-    private ProcessingResult processAnnotations(RootDeploymentDescriptor bundleDesc,
+    protected ProcessingResult processAnnotations(RootDeploymentDescriptor bundleDesc,
                                                ModuleScanner scanner,
                                                ReadableArchive archive)
             throws AnnotationProcessorException, IOException {

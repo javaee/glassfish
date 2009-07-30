@@ -45,7 +45,7 @@ public class ScatteredWarHandler  extends WarHandler implements ArchiveHandler {
             r.setDocBase(base.getAbsolutePath());
             File sunWeb = archive.getFile("WEB-INF/sun-web.xml");
             SunWebXmlParser sunWebXmlParser = null;
-            if (sunWeb.exists()) {
+            if (sunWeb!=null && sunWeb.exists()) {
                 sunWebXmlParser = new SunWebXmlParser(sunWeb.getParentFile().getParent());
             }
 

@@ -44,6 +44,7 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 import java.util.*;
 import java.util.jar.Manifest;
 import java.util.jar.JarFile;
@@ -129,6 +130,7 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
     final List<URL> urls = new ArrayList<URL>();
     final Map<String, File> metadata = new HashMap<String, File>();
     final Builder.type type;
+    final String prefix; 
 
     private ScatteredArchive(Builder builder, Builder.type type) {
         name = builder.name;
@@ -137,6 +139,7 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
         urls.addAll(builder.urls);
         metadata.putAll(builder.metadata);
         this.type = type;
+        prefix = type==Builder.type.war?"WEB-INF/classes":null;
     }
 
     /**
@@ -165,7 +168,7 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
 
     public InputStream getEntry(String name) throws IOException {
         File f = getFile(name);
-        if (f.exists()) return new FileInputStream(f);
+        if (f!=null && f.exists()) return new FileInputStream(f);
         return null;
     }
 
@@ -181,7 +184,8 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
         if ("WEB-INF".equals(name) && type == Builder.type.war) {
             return true;    
         }
-        return getFile(name).exists();
+        File f = getFile(name);
+        return f!=null && f.exists();
     }
 
     /**
@@ -197,9 +201,13 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
         // and then more structured abstraction.
 
         Vector<String> entries = new Vector<String>();
+        File localResources = resources;
 
         for (URL url : urls) {
             try {
+                if (localResources.toURI().toURL().sameFile(url)) {
+                    localResources=null;
+                }
                 File f = new File(url.toURI());
                 if (f.isFile()) {
                     JarFile jar = new JarFile(f);
@@ -208,14 +216,15 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
                         entries.add(jarEntries.nextElement().getName());
                     }
                 } else {
-                    getListOfFiles(f, null, entries);
+                    getListOfFiles(f, prefix, entries);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        if (resources!=null) {
-            getListOfFiles(resources, null, entries);
+        if (localResources!=null) {
+
+            getListOfFiles(localResources, null, entries);
         }
         return entries.elements();
     }
@@ -245,7 +254,7 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
                 is.close();
             }
         }
-        return null;
+        return new Manifest();
     }
 
     /**
@@ -322,7 +331,24 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
             return metadata.get(name);
         }
         if (resources != null) {
-            return new File(resources, name);
+            File f = new File(resources, name);
+            if (f.exists()) {
+                return new File(resources, name);
+            }
+        }
+        if (name.startsWith(prefix)) {
+            name = name.substring(prefix.length()+1);
+        }
+        for (URL url : urls) {
+            File f = null;
+            try {
+                f = new File(url.toURI());
+                f = new File(f, name);
+                if (f.exists()) {
+                    return f;
+                }
+            } catch (URISyntaxException e) {
+            }
         }
         return null;
     }
