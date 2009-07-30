@@ -30,7 +30,7 @@ own identifying information: Portions Copyright [yyyy]
 		<scope level="compile,runtime">
 			<subtract>
 			  <fullGraph/>
-			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jdbc-gui">	
+			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-gui">	
 	                           <scope level="compile,runtime"/>
 			     </subGraph>
 			 </subtract>

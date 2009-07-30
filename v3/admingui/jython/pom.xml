@@ -77,11 +77,11 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-common</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         
     </dependencies>

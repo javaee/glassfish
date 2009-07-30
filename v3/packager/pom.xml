@@ -69,21 +69,16 @@
 	<module>glassfish-common</module>
 	<module>glassfish-registration</module>
 	<module>glassfish-management</module>
-	<!--module>glassfish-amx</module-->
 	<module>glassfish-jca</module>
 	<module>glassfish-jpa</module>
 	<module>glassfish-codegen</module>
 	<module>glassfish-corba</module>
 	<module>glassfish-jta</module>
 	<module>glassfish-jsf</module>
-	<!--module>glassfish-web-management</module-->
 	<module>glassfish-web</module>
 	<!--module>glassfish-jcdi</module-->
-	<!--module>glassfish-jdbc-management</module-->
 	<module>glassfish-jdbc</module>
 	<module>glassfish-gui</module>
-	<module>glassfish-web-gui</module>
-	<module>glassfish-jdbc-gui</module>
 	<module>glassfish-ejb-lite</module>
 	<module>glassfish-common-full</module>
 	<module>glassfish-jts</module>

@@ -40,11 +40,11 @@ own identifying information: Portions Copyright [yyyy]
        
        <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" stripVersion="true">
            <graphRef refid="all-modules"/>
-	       <excludeArtifactsTransitively>
+	       <!--excludeArtifactsTransitively>
 	           <artifact groupID="com.sun.woodstock.dependlibs" artifactId="dataprovider" />
 		   <artifact groupID="com.sun.woodstock" artifactId="webui-jsf" />
 		   <artifact groupID="com.sun.woodstock" artifactId="webui-jsf-suntheme" />
-	   </excludeArtifactsTransitively>
+	   </excludeArtifactsTransitively-->
         </resolveAll>
 
                 <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
@@ -54,13 +54,6 @@ own identifying information: Portions Copyright [yyyy]
      
        <stage-distribution-fragments graphid="all-modules" />
 
- 
-	   <!-- Stage the war file  -->
-
-	 <resolveArtifact artifactId="war" groupId="org.glassfish.admingui" type="war" property="admingui.war"/>
-
-	 <copy file="${admingui.war}" tofile="target/stage/${install.dir.name}/glassfish/lib/install/applications/admingui.war"/>
-  
        <if test="${compression}">
 	       <antcall target="pack.compression" />
        </if>

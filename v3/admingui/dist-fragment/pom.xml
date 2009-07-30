@@ -81,7 +81,8 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>war</artifactId>
             <version>${project.version}</version>
-            <type>war</type>
+	    <type>war</type>
+	    <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

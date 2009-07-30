@@ -102,9 +102,9 @@
     	</dependency>
         <dependency>        
            <groupId>org.glassfish.admingui</groupId>
-           <artifactId>war</artifactId>
+           <artifactId>dist-fragment</artifactId>
            <version>${project.version}</version>
-           <type>war</type>
+           <type>distribution-fragment</type>
   	</dependency>
     	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	

@@ -125,7 +125,7 @@
             <groupId>com.sun.woodstock.dependlibs</groupId>
             <artifactId>dataprovider</artifactId>
             <version>1.0</version>
-	    <scope>compile</scope>
+	    <scope>optional</scope>
         </dependency>
     </dependencies>
 </project>

@@ -90,7 +90,7 @@
              can be excluded during staging -->	
        <dependency>        
            <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-jdbc-gui</artifactId>
+           <artifactId>glassfish-gui</artifactId>
            <version>${project.version}</version>
 	   <type>zip</type>
        </dependency>	

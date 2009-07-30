@@ -148,64 +148,6 @@
             <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>
-
-        <!-- Woodstock dependency -->
-        <dependency>
-            <groupId>com.sun.woodstock</groupId>
-            <artifactId>webui-jsf-suntheme</artifactId>
-            <version>4.3.0.8</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.woodstock</groupId>
-            <artifactId>webui-jsf</artifactId>
-            <version>4.3.0.8</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.sun.faces.extensions</groupId>
-                    <artifactId>jsf-extensions-common</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.faces.extensions</groupId>
-                    <artifactId>jsf-extensions-dynamic-faces</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.woodstock.dependlibs</groupId>
-                    <artifactId>jh</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.woodstock.dependlibs</groupId>
-                    <artifactId>jhall</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.woodstock.dependlibs</groupId>
-                    <artifactId>jhbasic</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.woodstock.dependlibs</groupId>
-                    <artifactId>portlet</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-beanutils</groupId>
-                    <artifactId>commons-beanutils</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-collections</groupId>
-                    <artifactId>commons-collections</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-digester</groupId>
-                    <artifactId>commons-digester</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.woodstock.dependlibs</groupId>
-                    <artifactId>dataprovider</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>dataprovider</artifactId>

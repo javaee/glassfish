@@ -76,12 +76,12 @@
 	<groupId>com.sun.mojarra</groupId>
 	<artifactId>mojarra-scales</artifactId>
 	<version>${scales.version}</version>
-    <exclusions>
-        <exclusion>
-            <groupId>com.sun.jsftemplating</groupId>
-            <artifactId>jsftemplating-base</artifactId>
-        </exclusion>
-    </exclusions>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sun.jsftemplating</groupId>
+                    <artifactId>jsftemplating-base</artifactId>
+                </exclusion>
+            </exclusions>
 	</dependency>
     <dependency>
 	<groupId>org.glassfish.docs</groupId>
