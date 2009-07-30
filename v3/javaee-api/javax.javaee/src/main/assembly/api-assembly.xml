@@ -10,13 +10,27 @@
             <unpack>true</unpack>
             <unpackOptions>
                 <excludes>
-                    <exclude>**/META-INF/**</exclude>
-                    <exclude>com/googlecode/jtype/**</exclude>
+                    <exclude>META-INF/maven/**</exclude>
+                    <exclude>META-INF/resources/**</exclude>
+                    <exclude>META-INF/services/**</exclude>
+                    <exclude>META-INF/*.xml</exclude>
+                    <exclude>META-INF/*.xhtml</exclude>
+                    <exclude>META-INF/*.html</exclude>
+                    <exclude>META-INF/*.map</exclude>
+                    <exclude>META-INF/*.providers</exclude>
+                    <exclude>META-INF/mailcap*</exclude>
+                    <exclude>META-INF/*.default</exclude>
+                    <exclude>com/googlecode/**</exclude>
                     <exclude>sample/**</exclude>
                     <exclude>com/sun/**</exclude>
                     <exclude>**/*.html</exclude>
                     <exclude>**/*.txt</exclude>
                     <exclude>**/*.xsd</exclude>
+                    <exclude>**/*.properties</exclude>
+                    <exclude>**/*.js</exclude>
+                    <exclude>**/*.xml</exclude>
+                    <exclude>**/*.map</exclude>
+                    <exclude>**/*.providers</exclude>
                     <exclude>org/**</exclude>
                 </excludes>
             </unpackOptions>
@@ -37,16 +51,18 @@
                 <include>org.glassfish:javax.xml.bind</include>
                 <include>org.glassfish:javax.xml.ws</include>
                 <include>com.sun.faces:jsf-api</include>
+                <include>com.sun.faces:jsf-impl</include>
                 <include>org.glassfish:javax.servlet.jsp</include>
                 <include>org.glassfish:javax.jws</include>
                 <include>javax.ws.rs:jsr311-api</include>
                 <include>org.glassfish:javax.servlet.jsp.jstl</include>
-                <include>org.glassfish:mq-distribution</include>
                 <include>org.eclipse.persistence:javax.persistence</include>
                 <include>org.glassfish:javax.xml.soap</include>
                 <include>org.glassfish:javax.jms</include>
                 <include>org.glassfish:bean-validator</include>
                 <include>org.jboss.webbeans:jsr299-api</include>
+                <include>com.sun.messaging.mq:jaxm-api</include>
+                <include>org.glassfish.web:jstl-impl</include>
             </includes>
         </dependencySet>
     </dependencySets>

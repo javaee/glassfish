@@ -52,7 +52,6 @@
     <packaging>jar</packaging>
     <name>Java(TM) EE Specification APIs Repackaged as HK2 module and OSGi bundle</name>
 
-
     <profiles>
         <profile>
             <id>api</id>
@@ -187,7 +186,11 @@
         <dependency>
             <groupId>com.sun.faces</groupId>
             <artifactId>jsf-api</artifactId>
-            <version>${jsf-api.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.faces</groupId>
+            <artifactId>jsf-impl</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -244,6 +247,16 @@
             <version>${webbeans.version}</version>
             <optional>true</optional>
         </dependency>
-
+        <dependency>
+            <groupId>com.sun.messaging.mq</groupId>
+            <artifactId>jaxm-api</artifactId>
+            <version>4.3</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jstl-impl</artifactId>
+            <version>${jstl-impl.version}</version>
+        </dependency>
     </dependencies>
 </project>
