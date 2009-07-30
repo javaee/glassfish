@@ -37,7 +37,10 @@
     <target name="build" depends="init-common,compile">
       <mkdir dir="${assemble.dir}"/>
       <antcall target="package-jar"/>
-      <antcall target="appclient-jar-common"/>
+      <antcall target="appclient-jar-common">
+        <param name="appclientjar.classes" 
+		value="**/BlobTest.class, **/BlobTestHome.class,**/*Client*.class" />
+      </antcall>
       <antcall target="package-ear"/>
     </target> 
 
@@ -70,7 +73,6 @@
      
       <antcall target="deploy-jdbc-common"/>
       <antcall target="create-persistence-resource-common"/>
-      <antcall target="reconfig-common"/>
 
     </target>
 
@@ -95,7 +97,6 @@
       </antcall>
       <antcall target="delete-persistence-resource-common"/>
       <antcall target="undeploy-jdbc-common"/>
-      <antcall target="reconfig-common"/>
     </target> 
    
     <target name="sql-create" depends="init-common">
