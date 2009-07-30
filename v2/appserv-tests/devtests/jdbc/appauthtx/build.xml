@@ -56,7 +56,6 @@
       </antcall>
      
       <antcall target="deploy-common"/>
-      <antcall target="reconfig-common" />
     </target>  
 
 

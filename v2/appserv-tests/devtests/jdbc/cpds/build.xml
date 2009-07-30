@@ -65,8 +65,6 @@
 
         <antcall target="deploy-common"/>
 
-	<antcall target="reconfig-common"/>
-
     </target>
 
     <target name="run" depends="init-common">
@@ -86,7 +84,6 @@
         </antcall>
 
         <antcall target="undeploy-common"/>
-        <antcall target="reconfig-common"/>
     </target>
 
     <target name="usage">

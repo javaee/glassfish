@@ -58,7 +58,6 @@
       </antcall>
      
       <antcall target="deploy-common"/>
-      <antcall target="reconfig-common"/>
     </target>  
 
    
@@ -84,7 +83,6 @@
           <param name="sql.file" value="sql/drop_pointbase.sql"/>
         </antcall>
 
-        <antcall target="reconfig-common"/>
 
     </target>   
 
