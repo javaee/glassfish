@@ -159,7 +159,7 @@ public final class ApplicationDispatcher
         ServletResponse outerResponse = null;
         
         // Request wrapper we have created and installed (if any).
-        ServletRequest wrapRequest = null;
+        ApplicationHttpRequest wrapRequest = null;
 
         // Response wrapper we have created and installed (if any).
         ServletResponse wrapResponse = null;
@@ -667,7 +667,7 @@ public final class ApplicationDispatcher
                 context.getManager().preRequestDispatcherProcess(request,
                                                                  response);
             }            
-            doInvoke(request, response, crossContext);
+            doInvoke(request, response, crossContext, state);
             if (crossContext) {
                 context.getManager().postRequestDispatcherProcess(request,
                                                                   response);
@@ -695,12 +695,13 @@ public final class ApplicationDispatcher
      * @param response The servlet response we are creating
      * @param crossContext true if the request dispatch is crossing context
      * boundaries, false otherwise
+     * @param state the state of this ApplicationDispatcher
      *
      * @throws IOException if an input/output error occurs
      * @throws ServletException if a servlet error occurs
      */
     private void doInvoke(ServletRequest request, ServletResponse response,
-                          boolean crossContext)
+                          boolean crossContext, State state)
             throws IOException, ServletException {
 
         // Checking to see if the context classloader is the current context
@@ -780,11 +781,9 @@ public final class ApplicationDispatcher
         ApplicationFilterChain filterChain = factory.createFilterChain(
             request, wrapper, servlet);
 
-        // START OF S1AS 4703023
-        Request origRequest = null;
-        // END OF S1AS 4703023
-
         InstanceSupport support = ((StandardWrapper) wrapper).getInstanceSupport();
+
+        RequestFacade requestFacade = state.wrapRequest.getRequestFacade();
 
         // Call the service() method for the allocated servlet instance
         try {
@@ -802,15 +801,13 @@ public final class ApplicationDispatcher
             // START IASRI 4665318
             if (servlet != null) {
             // END IASRI 4665318
-                // START OF S1AS 4703023
-                origRequest = getCoyoteRequest(request);
-                if (origRequest != null) {
-                    origRequest.incrementDispatchDepth();
-                    if (origRequest.isMaxDispatchDepthReached())
-                        throw new ServletException(sm.getString(
-                            "applicationDispatcher.maxDispatchDepthReached",
-                            new Object[] {
-                                Integer.valueOf(origRequest.getMaxDispatchDepth())}));
+                // START OF S1AS 4703023                
+                requestFacade.incrementDispatchDepth();
+                if (requestFacade.isMaxDispatchDepthReached()) {
+                    throw new ServletException(sm.getString(
+                        "applicationDispatcher.maxDispatchDepthReached",
+                        new Object[] { Integer.valueOf(
+                            Request.getMaxDispatchDepth())}));
                 }
                 // END OF S1AS 4703023 
                 /* IASRI 4665318
@@ -818,12 +815,12 @@ public final class ApplicationDispatcher
                 */
                 // START IASRI 4665318
                 if (filterChain != null) {
-                    filterChain.setRequest(origRequest);
+                    filterChain.setRequestFacade(requestFacade);
                     filterChain.setWrapper((StandardWrapper)wrapper);
                     filterChain.doFilter(request, response);
                 } else {
                     ((StandardWrapper)wrapper).service(
-                        request, response, servlet, origRequest);
+                        request, response, servlet, requestFacade);
                 }
                 // END IASRI 4665318
             }
@@ -864,9 +861,7 @@ public final class ApplicationDispatcher
             runtimeException = e;
         // START OF S1AS 4703023
         } finally {
-            if (origRequest != null) {
-                origRequest.decrementDispatchDepth();
-            }
+            requestFacade.decrementDispatchDepth();
         // END OF S1AS 4703023
         }
 
@@ -1033,41 +1028,42 @@ public final class ApplicationDispatcher
 
         while (current != null) {
             if ("org.apache.catalina.servlets.InvokerHttpRequest".
-                equals(current.getClass().getName()))
+                    equals(current.getClass().getName())) {
                 break; // KLUDGE - Make nested RD.forward() using invoker work
-            if (!(current instanceof ServletRequestWrapper))
+            }
+            if (!(current instanceof ServletRequestWrapper)) {
                 break;
-            if (current instanceof ApplicationHttpRequest)
+            }
+            // If we are one of the container-generated wrappers, stop here
+            if ((current instanceof ApplicationHttpRequest) ||
+                    (current instanceof ApplicationRequest)) {
                 break;
-            if (current instanceof ApplicationRequest)
-                break;
-            if (current instanceof org.apache.catalina.Request)
-                break;
+            }
             previous = current;
             current = ((ServletRequestWrapper) current).getRequest();
         }
 
         // Instantiate a new wrapper at this point and insert it in the chain
-        ServletRequest wrapper = null;
-        if ((current instanceof ApplicationHttpRequest) ||
-            (current instanceof HttpRequest) ||
-            (current instanceof HttpServletRequest)) {
-            // Compute a crossContext flag
-            HttpServletRequest hcurrent = (HttpServletRequest) current;
-            boolean crossContext = 
-                !(context.getPath().equals(hcurrent.getContextPath()));
-            //START OF 6364900
-            crossContextFlag = Boolean.valueOf(crossContext);
-            //END OF 6364900
-            wrapper = new ApplicationHttpRequest(hcurrent, context,
-                crossContext, state.dispatcherType);
-        } else {
-            wrapper = new ApplicationRequest(current, state.dispatcherType);
+        if (!(current instanceof HttpServletRequest)) {
+            throw new IllegalArgumentException("Request not of type HTTP");
         }
-        if (previous == null)
+
+        // Compute a crossContext flag
+        HttpServletRequest hcurrent = (HttpServletRequest) current;
+        boolean crossContext = 
+            !(context.getPath().equals(hcurrent.getContextPath()));
+        //START OF 6364900
+        crossContextFlag = Boolean.valueOf(crossContext);
+        //END OF 6364900
+        ApplicationHttpRequest wrapper = new ApplicationHttpRequest(
+            hcurrent, context, crossContext, state.dispatcherType);
+
+        if (previous == null) {
             state.outerRequest = wrapper;
-        else
+        } else {
             ((ServletRequestWrapper) previous).setRequest(wrapper);
+        }
+
         state.wrapRequest = wrapper;
 
         return (wrapper);
@@ -1116,33 +1112,5 @@ public final class ApplicationDispatcher
 
         return (wrapper);
     }
-
-
-    // START OF S1AS 4703023
-    /**
-     * Unwraps the given request object, and returns the original
-     * request object.
-     *
-     * (Doing instanceof in a loop will impact performance)
-     */
-    private Request getCoyoteRequest(ServletRequest request) {
-
-        Request coyoteRequest = null;
-        Object current = request;
-
-        while (current != null) {
-            // When we discover the original request object, return it
-            if (current instanceof RequestFacade) {
-                coyoteRequest = ((RequestFacade)current).getUnwrappedCoyoteRequest();
-                break;
-            } else if (current instanceof ServletRequestWrapper) {
-                current = ((ServletRequestWrapper) current).getRequest();
-            } else
-                break;
-        }
-
-        return coyoteRequest;
-    }
-    // END OF S1AS 4703023
 
 }

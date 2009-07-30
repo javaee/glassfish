@@ -4376,7 +4376,7 @@ public class Request
 
     // START GlassFish 896
     private void initSessionTracker() {
-        attributes.put(Globals.SESSION_TRACKER, sessionTracker);
+        notes.put(Globals.SESSION_TRACKER, sessionTracker);
     }
     // END GlassFish 896
 

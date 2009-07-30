@@ -1219,4 +1219,44 @@ public class RequestFacade
     }
     //END S1AS 4703023
 
+    /**
+     * Increment the depth of application dispatch
+     */
+    public int incrementDispatchDepth() {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        return request.incrementDispatchDepth();
+    }
+
+    /**
+     * Decrement the depth of application dispatch
+     */
+    public int decrementDispatchDepth() {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        return request.decrementDispatchDepth();
+    }
+
+    /**
+     * Check if the application dispatching has reached the maximum
+     */
+    public boolean isMaxDispatchDepthReached() {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        return request.isMaxDispatchDepthReached();
+    }
+
+    public Object getNote(String name) {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        return request.getNote(name);
+    }
 }
