@@ -156,6 +156,21 @@
       <antcall target="delete-jdbc-connpool-mysql-common"/>
     </target>
 
+    <target name="delete-jdbc-resource-mysql-xa-common" depends="init-common">
+        <antcall target="asadmin-common-ignore-fail">
+          <param name="admin.command" value="delete-jdbc-resource"/>
+          <param name="operand.props" value="${mysql.xa.resource.name}"/>
+        </antcall>
+    </target>
+    <target name="delete-jdbc-connpool-mysql-xa-common" depends="init-common">
+        <antcall target="asadmin-common-ignore-fail">
+          <param name="admin.command"
+            value="delete-jdbc-connection-pool"/>
+          <param name="operand.props" value="${mysql.xa.pool.name}"/>
+        </antcall>
+    </target>
+							      
+
     <target name="create-jdbc-connpool-mysql-common" depends="init-common">
       <antcall target="asadmin-common-ignore-fail">
         <param name="admin.command"
@@ -216,6 +231,61 @@
       </antcall>
     </target>
 
+    <target name="deploy-jdbc-mysql-xa-common" depends="init-common">
+      <antcall target="create-jdbc-connpool-mysql-xa-common"/>
+      <antcall target="create-jdbc-resource-mysql-xa-common"/>
+    </target>
+
+    <target name="undeploy-jdbc-mysql-xa-common" depends="init-common">
+      <antcall target="delete-jdbc-resource-mysql-xa-common"/>
+      <antcall target="delete-jdbc-connpool-mysql-xa-common"/>
+    </target>
+
+    <target name="create-jdbc-connpool-mysql-xa-common" depends="init-common">
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command"
+	  value="create-jdbc-connection-pool
+	    --datasourceclassname=${mysql.xa.datasource.class}
+	    --restype=javax.sql.XADataSource"/>
+	<param name="operand.props" value="${mysql.xa.pool.name}"/>    
+      </antcall>
+
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="set"/>
+	<param name="operand.props"
+	  value="${resources.dottedname.prefix}.jdbc-connection-pool.${mysql.xa.pool.name}.property.User=${mysql.user}"/>
+      </antcall>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="set"/>
+	<param name="operand.props"
+	  value="${resources.dottedname.prefix}.jdbc-connection-pool.${mysql.xa.pool.name}.property.Password=${mysql.password}"/>
+      </antcall>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="set"/>
+	<param name="operand.props"
+	  value="${resources.dottedname.prefix}.jdbc-connection-pool.${mysql.xa.pool.name}.property.serverName=${mysql.serverName}"/>
+      </antcall>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="set"/>
+	<param name="operand.props"
+	  value="${resources.dottedname.prefix}.jdbc-connection-pool.${mysql.xa.pool.name}.property.databaseName=${mysql.databaseName}"/>
+      </antcall>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="set"/>
+	<param name="operand.props"
+	  value="${resources.dottedname.prefix}.jdbc-connection-pool.${mysql.xa.pool.name}.property.port=${mysql.port}"/>
+      </antcall>
+    </target>
+
+    <target name="create-jdbc-resource-mysql-xa-common" depends="init-common">
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command"
+	  value="create-jdbc-resource
+	    --connectionpoolid ${mysql.xa.pool.name}"/>
+	<param name="operand.props" value="${mysql.xa.resource.name}"/>
+      </antcall>
+    </target>
+
     <target name="execute-sql-mysql-common" depends="init-common">
       <sql
         driver="${mysql.driver.name}"
@@ -226,46 +296,46 @@
         onerror="continue"
         print="yes"
         output="${build.classes.dir}/setupDBTables.out"
-        classpath="/export/mysql-connector-java-3.0.11-stable/mysql-connector-java-3.0.11-stable-bin.jar"
+	classpath="/export/mysql-connector-java-3.0.11-stable/mysql-connector-java-3.0.11-stable-bin.jar"
       />
     </target>
 
     <target name="setup-derby-for-authentication">
-       <antcall target="stop-derby"/>
+      <antcall target="stop-derby"/>
 
-       <copy file="${env.S1AS_HOME}/databases/derby.properties" tofile="${env.S1AS_HOME}/databases/derby.properties.bkp" overwrite="true"
+      <copy file="${env.S1AS_HOME}/databases/derby.properties" tofile="${env.S1AS_HOME}/databases/derby.properties.bkp" overwrite="true"
              failonerror="false"/>
-       <copy file="${env.APS_HOME}/devtests/jdbc/derby.auth.properties" tofile="${env.S1AS_HOME}/databases/derby.properties" overwrite="true"/>
-       <antcall target="start-derby"/>
+      <copy file="${env.APS_HOME}/devtests/jdbc/derby.auth.properties" tofile="${env.S1AS_HOME}/databases/derby.properties" overwrite="true"/>
+      <antcall target="start-derby"/>
    </target>
 
    <target name="start-derby">
-       <echo message="Starting Derby DB Server ..."/>
-       <parallel>
-           <java classname="org.apache.derby.drda.NetworkServerControl"
-                 classpath="${db.classpath}" fork="true" spawn="true">
-               <arg line="-h 0.0.0.0 -p 1527 start"/>
-               <jvmarg value="-Dderby.system.home=${env.S1AS_HOME}/databases"/>
-           </java>
-       </parallel>
-       <sleep seconds="5"/>
+      <echo message="Starting Derby DB Server ..."/>
+      <parallel>
+          <java classname="org.apache.derby.drda.NetworkServerControl"
+                classpath="${db.classpath}" fork="true" spawn="true">
+              <arg line="-h 0.0.0.0 -p 1527 start"/>
+              <jvmarg value="-Dderby.system.home=${env.S1AS_HOME}/databases"/>
+          </java>
+      </parallel>
+      <sleep seconds="5"/>
    </target>
 
    <target name="stop-derby">
-       <echo message="Stopping Derby DB Server ..."/>
-       <parallel>
+      <echo message="Stopping Derby DB Server ..."/>
+      <parallel>
            <java classname="org.apache.derby.drda.NetworkServerControl"
                  classpath="${db.classpath}" failonerror="true" fork="true">
-               <arg line="-h 0.0.0.0 -p 1527 shutdown"/>
+		 <arg line="-h 0.0.0.0 -p 1527 -user ${derby.user} -password ${derby.password} shutdown"/>
            </java>
-       </parallel>
+      </parallel>
    </target>
 
    <target name="reset-derby-for-no-authentication">
-       <antcall target="stop-derby"/>
-       <delete file="${env.S1AS_HOME}/databases/derby.properties" failonerror="false"/>
-       <copy file="${env.S1AS_HOME}/databases/derby.properties.bkp" tofile="${env.S1AS_HOME}/databases/derby.properties" overwrite="true"
+     <antcall target="stop-derby"/>
+     <delete file="${env.S1AS_HOME}/databases/derby.properties" failonerror="false"/>
+     <copy file="${env.S1AS_HOME}/databases/derby.properties.bkp" tofile="${env.S1AS_HOME}/databases/derby.properties" overwrite="true"
              failonerror="false"/>
-       <delete file="${env.S1AS_HOME}/databases/derby.properties.bkp" failonerror="false"/>
-       <antcall target="start-derby"/>
+     <delete file="${env.S1AS_HOME}/databases/derby.properties.bkp" failonerror="false"/>
+     <antcall target="start-derby"/>
    </target>
