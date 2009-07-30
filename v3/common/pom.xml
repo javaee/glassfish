@@ -60,7 +60,8 @@
     	<module>amx-j2ee</module>
     	<module>amx-j2ee-impl</module>
     	<module>amx-ext-impl</module>
-    	<module>mejb</module>
+	<module>mejb</module>
+	<module>mejb-frag</module>
     	
         <module>glassfish-ee-api</module>
     	<module>internal-api</module>

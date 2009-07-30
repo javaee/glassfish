@@ -88,8 +88,9 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
-            <artifactId>mejb</artifactId>
-            <version>${project.version}</version>
+            <artifactId>mejb-frag</artifactId>
+	    <version>${project.version}</version>
+	    <type>distribution-fragment</type>
        </dependency>
        <dependency>
            <groupId>org.glassfish.external</groupId>
