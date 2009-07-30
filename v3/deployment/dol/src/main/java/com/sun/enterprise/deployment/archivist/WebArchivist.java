@@ -297,18 +297,14 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
         if (getDefaultBundleDescriptor() != null) {
             descriptor.addWebBundleDescriptor(defaultBundleDescriptor);
         }
-    }
 
-    @Override
-    protected void postAnnotationProcess(WebBundleDescriptor descriptor,
-            ReadableArchive archive) throws IOException {
         // read web-fragment.xml
         List<WebFragmentDescriptor> wfList = readStandardFragments(descriptor, archive);
         // process annotations in web-fragment
-        // extension annotation processing is done in top level
-        Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions = new HashMap<ExtensionsArchivist, RootDeploymentDescriptor>();
+        // extension annotation processing will be done in top level
+        Map<ExtensionsArchivist, RootDeploymentDescriptor> localExtensions = new HashMap<ExtensionsArchivist, RootDeploymentDescriptor>();
         for (WebFragmentDescriptor wfDesc : wfList) {
-            readAnnotations(archive, wfDesc, extensions);
+            super.readAnnotations(archive, wfDesc, localExtensions);
         }
 
         WebFragmentDescriptor mergedWebFragment = null;
