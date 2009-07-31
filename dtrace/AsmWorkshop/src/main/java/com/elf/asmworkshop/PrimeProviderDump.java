@@ -78,9 +78,7 @@ public class PrimeProviderDump implements Opcodes {
 
     private static void writeClass(byte[] classData, String generatedClassName) {
         try {
-            File f  = new File("c:/work/generated");
-            f.mkdirs();
-            f = new File(f, generatedClassName + ".class");
+            File f = new File(generatedClassName + ".class");
 
             FileOutputStream fos = new FileOutputStream(f);
             fos.write(classData);
