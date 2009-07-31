@@ -38,7 +38,6 @@ package org.glassfish.appclient.client.acc;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -99,9 +98,7 @@ interface Launchable {
 
             Launchable result = FacadeLaunchable.newFacade(
                     habitat, ra, callerSuppliedMainClassName, callerSuppliedAppName);
-            if (result != null) {
-                ra.close();
-            } else {
+            if (result == null) {
                 /*
                  * If newFacade found a facade JAR but could not find a suitable
                  * client it will have thrown a UserError.  If we're here, then
@@ -137,39 +134,11 @@ interface Launchable {
                             archive.exists(classNameToArchivePath(callerSpecifiedMainClassName));
         }
 
-        static String moduleID(
-                final URI groupFacadeURI,
-                final URI clientURI,
-                final ApplicationClientDescriptor clientFacadeDescriptor) {
-            String moduleID = clientFacadeDescriptor.getModuleID();
-            /*
-             * If the moduleID was never set explicitly in the descriptor then
-             * it will fall back to  the URI of the archive...ending in .jar we
-             * presume.  In that case, change the module ID to be the path
-             * relative to the downloaded root directory.
-             */
-            if (moduleID.endsWith(".jar")) {
-                moduleID = deriveModuleID(groupFacadeURI, clientURI);
-            }
-            return moduleID;
-        }
-
         static boolean matchesName(
                 final String moduleID,
-                final URI groupFacadeURI,
-                final ApplicationClientDescriptor clientFacadeDescriptor,
                 final String appClientName) throws IOException, SAXParseException {
 
-            /*
-             * The ReadableArchive argument should be the facade archive and
-             * not the developer's original one, because when we try to open it
-             * the archivist needs to have the augmented descriptor (which is
-             * in the client facade) not the minimal or non-existent
-             * descriptor (which could be in the developer's original client).
-             */
-            final String displayName = clientFacadeDescriptor.getDisplayName();
-            return (   (moduleID != null && moduleID.equals(appClientName))
-                    || (displayName != null && displayName.equals(appClientName)));
+            return (moduleID != null && moduleID.equals(appClientName));
         }
 
         private static String classNameToArchivePath(final String className) {
