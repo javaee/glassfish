@@ -69,7 +69,7 @@
                         setAttribute(key="appVal" value="#{appVal}");
                         setAttribute(key="appList" value="#{appList}");    
                         setAttribute(key="appName" value="applications/#{appVal}/server");
-                        navigate(page="#{request.contextPath}/monitor/monitoringAppStatsPage.jsf");
+                        navigate(page="#{request.contextPath}/web/monitor/monitoringAppStatsPage.jsf");
                     />              
                     </sun:button>
                 </sun:panelGroup>
@@ -91,7 +91,7 @@
                         setAttribute(key="appVal" value="#{appVal}");
                         setAttribute(key="appList" value="#{appList}");     
                         setAttribute(key="appName" value="applications/#{appVal}/server");
-                        navigate(page="#{request.contextPath}/monitor/monitoringAppStatsPage.jsf");
+                        navigate(page="#{request.contextPath}/web/monitor/monitoringAppStatsPage.jsf");
                     />              
                     </sun:button>
                     "<br /><br />

@@ -72,7 +72,7 @@
                     <!command
                         setAttribute(key="vsVal" value="#{vsVal}");
                         setAttribute(key="vsList" value="#{vsList}"); 
-                        navigate(page="#{request.contextPath}/monitor/monitoringServerStatsPage.jsf");
+                        navigate(page="#{request.contextPath}/web/monitor/monitoringServerStatsPage.jsf");
                     />              
                     </sun:button>
                 </sun:panelGroup>
@@ -91,7 +91,7 @@
                     <!command
                         setAttribute(key="vsVal" value="#{vsVal}");
                         setAttribute(key="vsList" value="#{vsList}");      
-                        navigate(page="#{request.contextPath}/monitor/monitoringServerStatsPage.jsf");
+                        navigate(page="#{request.contextPath}/web/monitor/monitoringServerStatsPage.jsf");
                     />              
                     </sun:button>
                     "<br /><br />
