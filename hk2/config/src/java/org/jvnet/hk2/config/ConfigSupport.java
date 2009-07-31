@@ -95,7 +95,7 @@ public class ConfigSupport {
     Habitat habitat;
  
     /**
-     * Execute� some logic on one config bean of type T protected by a transaction
+     * Execute some logic on one config bean of type T protected by a transaction
      *
      * @param code code to execute
      * @param param config object participating in the transaction
@@ -705,6 +705,10 @@ public class ConfigSupport {
                 // first we need to find the element associated with this type
                 ConfigModel.Property element = null;
                 for (ConfigModel.Property e : parent.model.elements.values()) {
+                    if (!(e instanceof ConfigModel.Node)) {
+                        continue;
+                    }
+                        
                     ConfigModel elementModel = ((ConfigModel.Node) e).model;
                     try {
                         final Class<?> targetClass = parent.model.classLoaderHolder.get().loadClass(elementModel.targetTypeName);

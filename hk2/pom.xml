@@ -225,6 +225,7 @@
         <module>dependency-verifier</module>
         <module>osgiversion-maven-plugin</module>
         <module>osgi-main</module>
+        <module>config-types</module>
     </modules>
 
     <dependencies>
