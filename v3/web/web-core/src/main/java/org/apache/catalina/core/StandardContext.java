@@ -80,7 +80,6 @@ import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.mbeans.MBeanUtils;
 import org.apache.catalina.session.*;
 import org.apache.catalina.startup.ContextConfig;
-import org.apache.catalina.startup.TldConfig;
 import org.apache.catalina.util.*;
 import org.apache.naming.ContextBindings;
 import org.apache.naming.resources.BaseDirContext;
@@ -5277,31 +5276,7 @@ public class StandardContext
                 lifecycle.fireLifecycleEvent(START_EVENT, null);
                 // END SJSAS 8.1 5049111
 
-                // Read tldListeners. XXX  Option to disable
-                TldConfig tldConfig = new TldConfig();
-                tldConfig.setContext(this);
-
-                // (1)  check if the attribute has been defined
-                //      on the context element.
-                tldConfig.setTldValidation(tldValidation);
-                tldConfig.setTldNamespaceAware(tldNamespaceAware);
-
-                // (2) if the attribute wasn't defined on the context
-                //     try the host.
-                if (!tldValidation){
-                    tldConfig.setTldValidation
-                        (((StandardHost) getParent()).getXmlValidation());
-                }
-
-                try {
-                    tldConfig.execute();
-                } catch (Exception ex) {
-                    log.log(Level.SEVERE,
-                            sm.getString("standardContext.tldConfig"), ex);
-                    //ok=false;
-                }
-
-                 // START SJSAS 8.1 5049111
+                // START SJSAS 8.1 5049111
                 // Notify our interested LifecycleListeners
                 // lifecycle.fireLifecycleEvent(START_EVENT, null);
                 // END SJSAS 8.1 504911
