@@ -48,6 +48,7 @@
         <ant dir="txafternontx" target="all"/>
         <ant dir="txafternontxjndi" target="all"/>
 	<ant dir="notxops" target="all"/>
+	<ant dir="nonacc" target="all"/>
 	<ant dir="markconnectionasbad.local" target="all"/>
 	<ant dir="statementwrapper" target="all"/>
 	<ant dir="maxconnectionusage" target="all"/>
