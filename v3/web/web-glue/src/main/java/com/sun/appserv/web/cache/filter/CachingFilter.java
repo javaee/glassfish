@@ -98,15 +98,15 @@ public class CachingFilter implements Filter, CacheManagerListener {
      * @param filterConfig filter config
      * @throws ServletException
      */
-	public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) throws ServletException {
 
         filterName = filterConfig.getFilterName();
         servletName = filterConfig.getInitParameter("servletName");
         urlPattern = filterConfig.getInitParameter("URLPattern");
 
         ServletContext context = filterConfig.getServletContext();
-        manager = (CacheManager)
-                  context.getAttribute(CacheManager.CACHE_MANAGER_ATTR_NAME);
+        manager = (CacheManager) context.getAttribute(
+            CacheManager.CACHE_MANAGER_ATTR_NAME);
 
         if (manager != null && manager.isEnabled()) {
             this.cache = manager.getDefaultCache();
@@ -122,12 +122,13 @@ public class CachingFilter implements Filter, CacheManagerListener {
         }
     }
     
-	/**
-	 * The <code>doFilter</code> method of the Filter is called by the container
-	 * each time a request/response pair is passed through the chain due
-	 * to a client request for a resource at the end of the chain. The 
-     * FilterChain passed in to this method allows the Filter to pass on the 
-     * request and response to the next entity in the chain.<p>
+    /**
+     * The <code>doFilter</code> method of the Filter is called by the
+     * container each time a request/response pair is passed through the
+     * chain due to a client request for a resource at the end of the chain.
+     * The FilterChain passed in to this method allows the Filter to pass on
+     * the request and response to the next entity in the chain.
+     *
      * @param srequest the runtime request
      * @param sresponse the runtime response
      * @param chain the filter chain to in the request processing
@@ -137,13 +138,14 @@ public class CachingFilter implements Filter, CacheManagerListener {
      *   if not, call the downstream filter and return. 
      * - Otherwise, get the key based on the request (using helper). 
      * - Check if we have a response entry in the cache already. 
-     * - If there is entry and is valid, write out the response from that entry. 
+     * - If there is entry and is valid, write out the response from that
+     *   entry. 
      * - create a CachingResponse and CachingOutputStream wrappers and call 
      *   the downstream filter
      */
     public void doFilter (ServletRequest srequest, ServletResponse sresponse,
-                            FilterChain chain ) 
-                            throws IOException, ServletException {
+                          FilterChain chain ) 
+            throws IOException, ServletException {
         String key;
         HttpServletRequest request = (HttpServletRequest)srequest;
         HttpServletResponse response = (HttpServletResponse)sresponse;
@@ -279,7 +281,7 @@ public class CachingFilter implements Filter, CacheManagerListener {
         } else {
             if (_isTraceEnabled) {
                 _logger.fine("CachingFilter " + request.getServletPath() + 
-                                " pass thru; isEnabled = " + isEnabled);
+                             " pass thru; isEnabled = " + isEnabled);
             }
             request.removeAttribute(DefaultCacheHelper.ATTR_CACHING_FILTER_NAME);
             request.removeAttribute(CacheHelper.ATTR_CACHE_MAPPED_SERVLET_NAME);
@@ -298,7 +300,8 @@ public class CachingFilter implements Filter, CacheManagerListener {
      */
     private void sendCachedResponse(HttpCacheEntry entry, 
                                     HttpServletResponse response)
-                                    throws IOException {
+            throws IOException {
+
         // status code/message
         if (entry.statusCode != HttpCacheEntry.VALUE_NOT_SET) {
             response.setStatus(entry.statusCode);
@@ -364,7 +367,8 @@ public class CachingFilter implements Filter, CacheManagerListener {
      */
     public void cacheManagerEnabled() {
         if (_isTraceEnabled)
-            _logger.fine("CachingFilter " + filterName + " received cacheManager enabled event.");
+            _logger.fine("CachingFilter " + filterName +
+                " received cacheManager enabled event.");
 
         this.isEnabled = true;
     }
@@ -374,19 +378,20 @@ public class CachingFilter implements Filter, CacheManagerListener {
      */
     public void cacheManagerDisabled() {
         if (_isTraceEnabled)
-            _logger.fine("CachingFilter " + filterName + " received cacheManager disabled event.");
+            _logger.fine("CachingFilter " + filterName +
+                " received cacheManager disabled event.");
 
         this.isEnabled = false;
     }
 
-	/**
-	 * Called by the web container to indicate to a filter that it is being 
+    /**
+     * Called by the web container to indicate to a filter that it is being 
      * taken out of service. This method is only called once all threads 
      * within the filter's doFilter method have exited or after a timeout 
      * period has passed. 
-     * After the web container calls this method, it will not call the doFilter 
-     * method again on this instance of the filter.
-	 */
-	public void destroy() {
+     * After the web container calls this method, it will not call the
+     * doFilter method again on this instance of the filter.
+     */
+    public void destroy() {
     }
 }
