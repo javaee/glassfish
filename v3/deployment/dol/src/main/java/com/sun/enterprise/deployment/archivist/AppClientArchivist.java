@@ -176,6 +176,10 @@ public class AppClientArchivist extends Archivist<ApplicationClientDescriptor> {
 
         super.postOpen(descriptor, archive);
 
+        runValidations(archive);
+    }
+
+    protected void runValidations(final ReadableArchive archive) {
         ApplicationClientDescriptor appClient = descriptor;
         ModuleContentValidator mdv = new ModuleContentValidator(archive);
         appClient.visit(mdv);

@@ -38,6 +38,7 @@ package org.glassfish.appclient.client.acc;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.deployment.archivist.ACCAppClientArchivist;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.util.LocalStringManager;
@@ -147,7 +148,7 @@ public class FacadeLaunchable implements Launchable {
 
     protected AppClientArchivist getFacadeArchivist() {
         if (facadeArchivist == null) {
-            facadeArchivist = habitat.getComponent(AppClientArchivist.class);
+            facadeArchivist = habitat.getComponent(ACCAppClientArchivist.class);
         }
         return facadeArchivist;
     }
@@ -181,7 +182,11 @@ public class FacadeLaunchable implements Launchable {
      */
     static FacadeLaunchable newFacade(
             final Habitat habitat,
-            final ReadableArchive facadeRA, final String callerSuppliedMainClassName, final String callerSuppliedAppName) throws IOException, BootException, URISyntaxException, XMLStreamException, SAXParseException, UserError {
+            final ReadableArchive facadeRA, 
+            final String callerSuppliedMainClassName,
+            final String callerSuppliedAppName)
+                throws IOException, BootException, URISyntaxException,
+                XMLStreamException, SAXParseException, UserError {
         Manifest mf = facadeRA.getManifest();
         final Attributes mainAttrs = mf.getMainAttributes();
         FacadeLaunchable result = null;
