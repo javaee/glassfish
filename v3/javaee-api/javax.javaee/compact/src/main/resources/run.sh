@@ -1,6 +1,6 @@
 #!/bin/sh
 rm javax.javaee-api-compact.jar
-$1/bin/javac -XDprocess.packages -proc:only \
+$1 -XDprocess.packages -proc:only \
     -cp $2:. \
     -processor DIY \
     -Acom.sun.tools.javac.sym.Jar=$2 \
