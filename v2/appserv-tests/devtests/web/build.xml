@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="463"/>
+    <property name="TOTAL_EXPECTED" value="464"/>
 
     &commonSetup;
     &commonBuild;
@@ -228,6 +228,7 @@
         <ant dir="servlet-3.0/sessionCookieConfigProgrammatic" target="all"/>
         <ant dir="servlet-3.0/sessionCookieCustomNameProgrammatic" target="all"/>
         <ant dir="servlet-3.0/sessionCookieCustomNameSunWebXml" target="all"/>
+        <ant dir="servlet-3.0/sessionCookieCustomNameWebXmlSunWebXmlPrecedence" target="all"/>
         <ant dir="servlet-3.0/webServletAnnotation" target="all"/>
         <ant dir="servlet-3.0/webFilterAnnotation" target="all"/>
         <ant dir="servlet-3.0/webListenerAnnotation" target="all"/>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sun-web-app>
+  <session-config>
+    <cookie-properties>
+      <property name="cookieName" value="ABC" />
+    </cookie-properties>
+  </session-config>
+</sun-web-app>
