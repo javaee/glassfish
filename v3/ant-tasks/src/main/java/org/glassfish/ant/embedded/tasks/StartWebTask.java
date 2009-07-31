@@ -100,7 +100,7 @@ public class StartWebTask extends Task {
         ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
            server.addContainer(b);
 
-        docroot = new File(server.getFileSystem().installRoot, "docroot");
+        docroot = new File(server.getFileSystem().instanceRoot, "docroot");
         ((WebBuilder)b).setDocRootDir(docroot);
         EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
         embedded.setConfiguration((WebBuilder)b);

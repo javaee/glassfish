@@ -75,7 +75,7 @@ public class StartServerTask extends Task {
         }
 
         // FIXME - this should be improved..
-        File docroot = new File(server.getFileSystem().installRoot, "docroot");
+        File docroot = new File(server.getFileSystem().instanceRoot, "docroot");
         ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
         ((WebBuilder)b).setDocRootDir(docroot);
         EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
