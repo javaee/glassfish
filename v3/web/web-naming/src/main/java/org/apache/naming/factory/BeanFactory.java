@@ -163,12 +163,15 @@ public class BeanFactory
                     try {
                         beanClass = tcl.loadClass(beanClassName);
                     } catch(ClassNotFoundException e) {
+                        throw (NamingException)
+                            new NamingException().initCause(e);
                     }
                 } else {
                     try {
                         beanClass = Class.forName(beanClassName);
                     } catch(ClassNotFoundException e) {
-                        e.printStackTrace();
+                        throw (NamingException)
+                            new NamingException().initCause(e);
                     }
                 }
                 if (beanClass == null) {
