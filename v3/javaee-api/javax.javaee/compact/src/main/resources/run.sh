@@ -7,3 +7,11 @@ $1 -XDprocess.packages -proc:only \
     -Acom.sun.tools.javac.sym.Dest=$3 \
     `jar tf $2 | grep '^javax/..*/$' | sed -e 's;/$;;' -e 's;/;.;g'`
 
+# extract tld files
+cd $3
+for i in `jar tf $2 | grep "**/*.tld$"`
+do
+    echo $i
+    jar xvf $2 $i
+done
+

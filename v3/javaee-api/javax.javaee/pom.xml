@@ -84,9 +84,6 @@
 
         <profile>
             <id>web-api</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <build>
                 <plugins>
                     <plugin>
