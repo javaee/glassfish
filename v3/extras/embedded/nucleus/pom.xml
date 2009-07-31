@@ -65,8 +65,8 @@
                         <outputDirectory>${project.build.directory}/packager_zips</outputDirectory>
                         <overWriteReleases>false</overWriteReleases>
                         <overWriteSnapshots>true</overWriteSnapshots>
-                        <excludeTransitive>true</excludeTransitive>
-                        <includeScope>compile</includeScope>
+                        <excludeTransitive>true</excludeTransitive> 
+		        <includeScope>compile</includeScope>
                         <includeScope>runtime</includeScope>
                     </configuration>
                </execution>
@@ -101,6 +101,18 @@
 
       <dependencies>
         <dependency>
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-hk2</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+       </dependency>
+       <dependency>
+          <groupId>org.glassfish.packager</groupId>
+          <artifactId>glassfish-grizzly</artifactId>
+          <version>${project.version}</version>
+          <type>zip</type>
+      </dependency>
+      <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-nucleus</artifactId>
             <version>${project.version}</version>
