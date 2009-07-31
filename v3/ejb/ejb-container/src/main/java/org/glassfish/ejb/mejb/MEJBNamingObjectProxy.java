@@ -90,9 +90,10 @@ public class MEJBNamingObjectProxy implements NamingObjectProxy {
     }
 
     private void deployMEJB() throws IOException {
+        _logger.info("Loading MEJB app on JNDI look up");
         ServerContext serverContext = habitat.getComponent(ServerContext.class);
         File mejbArchive = new File(serverContext.getInstallRoot(),
-            "modules/mejb.jar");
+            "lib/install/applications/mejb.jar");
         DeployCommandParameters deployParams = 
             new DeployCommandParameters(mejbArchive);
         deployParams.name = "mejb";
