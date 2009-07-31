@@ -149,16 +149,8 @@ public class PwcCoyoteRequest extends Request {
         
         PwcWebModule wm = (PwcWebModule) getContext();
         SessionCookieConfig cookieConfig = wm.getSessionCookieConfigFromSunWebXml();
-
         if (cookieConfig != null) {
 
-            String name = cookieConfig.getName();
-            if (name != null && !name.equals(Globals.SESSION_COOKIE_NAME)) {
-                logger.log(Level.WARNING,
-                           "pe_coyote.request.illegal_cookie_name",
-                           new String[] { name, Globals.SESSION_COOKIE_NAME });
-            }
-     
             if (cookieConfig.getPath() != null) {
                 cookie.setPath(cookieConfig.getPath());
             }
