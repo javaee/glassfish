@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.sun.enterprise</groupId>
         <artifactId>hk2-parent</artifactId>
-        <version>0.3.79-SNAPSHOT</version>
+        <version>0.3.79</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
@@ -36,7 +35,7 @@
                 <configuration>
                     <!-- By default, we don't export anything.
                     -->
-                    <Export-Package></Export-Package>
+                    <Export-Package />
                     <!-- Since, we are in a top level pom and
                          we we don't want it to be active for plain jar type artifacts,
                          enable the plugin for hk2-jar and bundle packaging type only,
