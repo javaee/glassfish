@@ -58,6 +58,7 @@ import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.intf.config.AMXConfigHelper;
 import org.glassfish.admin.amx.intf.config.ConfigTools;
+import org.glassfish.admin.amx.intf.config.Server;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.GuiUtil;
 
@@ -734,11 +735,11 @@ public class ProxyHandlers {
         String resourceName = (String) handlerCtx.getInputValue("resourceName");
 
         try {
-            AMXConfigProxy amxConfig = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName("amx:pp=/domain/servers,type=server,name=server"));
+            Server server = V3AMX.getInstance().getDomain().getServers().getServer().get("server");
             Map<String, Object> attrs = new HashMap<String, Object>();
             attrs.put("Name", resourceName);
             attrs.put("Enabled", "true");
-            amxConfig.createChild("resource-ref", attrs);
+            server.createChild("resource-ref", attrs);
         } catch (Exception ex) {
             GuiUtil.getLogger().log(Level.SEVERE, null, ex);
         }
