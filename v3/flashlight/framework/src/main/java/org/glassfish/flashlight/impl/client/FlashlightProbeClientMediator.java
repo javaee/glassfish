@@ -71,7 +71,7 @@ public class FlashlightProbeClientMediator
 
     private static ProbeClientMediator _me = new FlashlightProbeClientMediator();
 
-    private AtomicBoolean agentInitialized =
+    private static AtomicBoolean agentInitialized =
             new AtomicBoolean(false);
 
     private AtomicInteger clientIdGenerator =
@@ -214,7 +214,9 @@ public class FlashlightProbeClientMediator
             // todo: agent does not throw exceptions which need to be fixed with btrace
 
             if (bArr != null) {
-                submit2BTrace(bArr);
+                if (isAgentAttached()) {
+                    submit2BTrace(bArr);
+                }
             }
         }
 
@@ -240,6 +242,33 @@ public class FlashlightProbeClientMediator
             //todo: handle exception
         }
         //System.out.println("MSR:FlashlightProbeClientMediator:submit2BTrace: after calling Main.handleFlashLightClient ...");
+    }
+
+    private static boolean btraceAgentAttached = false;
+    public static boolean isAgentAttached() {
+        //System.out.println("MSR:FlashlightProbeClientMediator:agentAttached: ...");
+        //System.out.println("MSR:System.getProperty for btrace.port = " + System.getProperty("btrace.port"));
+        if (agentInitialized.get()) {
+            return btraceAgentAttached;
+        }
+        synchronized (agentInitialized) {
+            if (agentInitialized.get()) {
+                return btraceAgentAttached;
+            }
+            String btp = System.getProperty("btrace.port");
+            if ((btp == null) || (btp.length() <= 0)) {
+                btraceAgentAttached = false;
+            } else {
+                try {
+                    Integer.parseInt(btp);
+                    btraceAgentAttached = true;
+                } catch (NumberFormatException nfe) {
+                    btraceAgentAttached = false;
+                }
+            }
+            agentInitialized.set(true);
+        }
+        return btraceAgentAttached;
     }
 
 }
