@@ -1,8 +1,7 @@
 /*
- *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,43 +33,75 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.module.single;
+package org.jvnet.hk2.config.types;
 
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import java.io.File;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.component.Injectable;
 
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Inhabitants;
+import java.beans.PropertyVetoException;
+
 
 /**
- * Implementation of the modules registry that use a single class loader to load
- * all available classes. There is one virtual module available in the modules
- * registry and that module's class loader is the single class loader used to
- * load all artifacts.
+ * Property type definition.
  *
  * @author Jerome Dochez
  */
-public class StaticModulesRegistry extends SingleModulesRegistry {
+@Configured
+public interface Property extends ConfigBeanProxy, Injectable  {
 
-    public StaticModulesRegistry(ClassLoader singleCL) {
-        super(singleCL);
-    }
+    /**
+     * Gets the value of the name property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute(required = true, key=true)
+    public String getName();
 
-    @Override
-    protected void populateConfig(Habitat habitat) {
-        // do nothing...
-    }
+    /**
+     * Sets the value of the name property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    public void setName(String value) throws PropertyVetoException;
 
-    @Override                         
-    public Habitat createHabitat(String name) throws ComponentException {
+    /**
+     * Gets the value of the value property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute(required = true)
+    public String getValue();
 
-        File dir = new File(System.getProperty("java.io.tmpdir"));
-        Habitat habitat = super.newHabitat();
-        StartupContext startupContext = new StartupContext(dir, new String[0]);
-        super.createHabitat("default", habitat);
-        habitat.add(Inhabitants.create(startupContext));
-        return habitat;
-    }
+    /**
+     * Sets the value of the value property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    public void setValue(String value) throws PropertyVetoException;
 
+    /**
+     * Gets the value of the description property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute
+    public String getDescription();
+
+    /**
+     * Sets the value of the description property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    public void setDescription(String value) throws PropertyVetoException;
 }
