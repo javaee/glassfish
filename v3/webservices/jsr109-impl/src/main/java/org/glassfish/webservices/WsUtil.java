@@ -435,7 +435,7 @@ public class WsUtil {
             if (spe.getException() != null) {
                 x = spe.getException();
             }
-            x.printStackTrace();
+            logger.log(Level.SEVERE,"Error occured", x);
         } catch (Exception sxe) {
             logger.log(Level.SEVERE, "Error parsing WSDL" + sxe.getMessage());
         } finally {
@@ -2431,8 +2431,8 @@ public class WsUtil {
                 handler = (Handler)handlerClass.newInstance();
             } catch (Throwable t) {
                 logger.log(Level.SEVERE, "Unable to load handler class " + 
-                        h.getHandlerClass());
-                t.printStackTrace();
+                        h.getHandlerClass(),t);
+                
                 continue;
             }
             

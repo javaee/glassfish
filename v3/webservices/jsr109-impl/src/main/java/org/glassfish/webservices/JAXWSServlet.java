@@ -247,7 +247,6 @@ public class JAXWSServlet extends HttpServlet {
         } catch(Throwable t) {
             logger.log(Level.WARNING, "Servlet web service endpoint '" +
                     servletName + "' failure", t);
-            t.printStackTrace();
             ServletException se = new ServletException();
             se.initCause(t);
             throw se;

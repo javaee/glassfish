@@ -51,6 +51,7 @@ import org.glassfish.webservices.SOAPMessageContext;
 import javax.enterprise.deploy.shared.ModuleType;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * This class acts as a factory to create TracingSystemHandler 
@@ -197,7 +198,7 @@ public final class WebServiceEngineImpl implements WebServiceEngine {
             return newEndpoint;
         
         } catch(Exception e) {
-            e.printStackTrace();
+            sLogger.log(Level.SEVERE,"Exception in creating endpoint", e);
         }                         
         return null;
     }    

@@ -444,7 +444,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             if (spe.getException() != null) {
                 x = spe.getException();
             }
-            x.printStackTrace();
+            logger.log(Level.SEVERE,"Error occured", x);
         } catch (Exception sxe) {
             logger.severe(format(rb.getString("wsdl.parsing.error"), sxe.getMessage()));
         } finally {

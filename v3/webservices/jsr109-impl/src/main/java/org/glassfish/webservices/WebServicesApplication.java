@@ -108,6 +108,8 @@ public class WebServicesApplication implements ApplicationContainer {
                 for (WebService ws : wsDesc.getWebServices()) {
 
                     for (WebServiceEndpoint endpoint:ws.getEndpoints() ){
+                        //Only add for ejb based endpoints
+                        if (endpoint.implementedByEjbComponent())
                         contextRoots.add(endpoint.getEndpointAddressUri())  ;
                     }
                 }

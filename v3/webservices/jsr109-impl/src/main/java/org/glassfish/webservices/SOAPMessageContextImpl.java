@@ -40,6 +40,8 @@ import java.util.Set;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 import javax.xml.bind.JAXBContext;
@@ -50,6 +52,7 @@ import com.sun.xml.ws.api.message.Messages;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.message.saaj.SAAJMessage;
+import com.sun.logging.LogDomains;
 
 import java.util.jar.Pack200;
 
@@ -62,47 +65,48 @@ public class SOAPMessageContextImpl implements SOAPMessageContext {
 
     private Packet packet = null;
     private SOAPMessage message = null;
+    private static Logger logger = LogDomains.getLogger(SOAPMessageContextImpl.class,LogDomains.WEBSERVICES_LOGGER);
 
     public SOAPMessageContextImpl(Packet pkt) {
         this.packet = pkt;
     }
-    
+
     public void setPacket(Packet packet) {
         this.packet = packet;
         this.message = null;
     }
 
     public SOAPMessage getMessage() {
-        
+
         if (message != null) {
             return message;
         }
-        
+
         SOAPMessage soapMsg = null;
         try {
             //before converting to SOAPMessage, make a copy.  We don't want to consume
             //the original message
             Message mutable = packet.getMessage().copy();
             soapMsg = mutable.readAsSOAPMessage();
-                       
+
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE,"Error occured", e);
         }
-       
- 	//store the message so we don't have to convert again
-	message = soapMsg; 
+
+        //store the message so we don't have to convert again
+        message = soapMsg;
 
         return soapMsg;
     }
 
     public void setMessage(SOAPMessage newMsg) {
         message = newMsg;
-        
+
         //keep the com.sun.xml.ws.api.message.Message in the packet consistent with the
         //SOAPMessage we are storing here.
         packet.setMessage(Messages.create(newMsg));
     }
-    
+
     public Object[] getHeaders(QName header, JAXBContext jaxbContext, boolean allRoles) {
         // this is a dummy impl; we do not use it at all
         return null;
@@ -128,7 +132,7 @@ public class SOAPMessageContextImpl implements SOAPMessageContext {
         // So always return true
         return true;
     }
-    
+
     /* java.util.Map methods below here */
 
     public void clear() {

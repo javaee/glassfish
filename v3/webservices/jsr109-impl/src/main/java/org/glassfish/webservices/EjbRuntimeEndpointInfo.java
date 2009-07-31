@@ -285,8 +285,7 @@ public class EjbRuntimeEndpointInfo {
                         adapter = adapterList.createAdapter(endpoint.getName(), urlPattern, wsep);
                         handlersConfigured=true;
                     } catch (Throwable t) {
-                        logger.severe("Cannot initialize endpoint " + endpoint.getName() + " : error is : " + t.getMessage());
-                        t.printStackTrace();
+                        logger.log(Level.SEVERE,"Cannot initialize endpoint " + endpoint.getName() + " : error is : " , t);
                         adapter = null;
                     }
                 }
