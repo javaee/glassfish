@@ -39,7 +39,8 @@ import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;
 
-import org.jvnet.hk2.config.Dom;
+import org.glassfish.admin.amx.base.DomainRoot;
+import org.glassfish.admin.amx.core.Util;
 
 public final class UtilTest {
     public UtilTest()
@@ -55,7 +56,8 @@ public final class UtilTest {
     }
     
     @Test
-    public void test1() {
+    public void testTypes() {
+        assert Util.deduceType(DomainRoot.class).equals( "domain-root" );
     }
 }
 
