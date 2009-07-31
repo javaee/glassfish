@@ -50,6 +50,7 @@ pkg = {
     "depends"       : { 
                         "pkg:/glassfish-registration" : {"type" : "require" },
                         "pkg:/glassfish-web" : {"type" : "require" },
+			"pkg:/glassfish-jsf" : {"type" : "require" },
                       },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
