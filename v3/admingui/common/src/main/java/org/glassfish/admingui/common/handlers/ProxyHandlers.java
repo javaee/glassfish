@@ -737,7 +737,6 @@ public class ProxyHandlers {
             AMXConfigProxy amxConfig = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName("amx:pp=/domain/servers,type=server,name=server"));
             Map<String, Object> attrs = new HashMap<String, Object>();
             attrs.put("Name", resourceName);
-            attrs.put("Ref", resourceName);
             attrs.put("Enabled", "true");
             amxConfig.createChild("resource-ref", attrs);
         } catch (Exception ex) {

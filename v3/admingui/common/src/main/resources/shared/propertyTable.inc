@@ -53,7 +53,7 @@
         <sun:button id="addSharedTableButton" disabled="#{false}" text="$resource{i18n.button.AddProperty}" >   
             <!command
                 getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"name", "value"});
+                addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"Name", "Value"});
             />                                 
         </sun:button>
         <sun:button id="button1" text="$resource{i18n.button.DeleteProperties}" disabled="#{true}" primary="#{false}">
@@ -78,10 +78,10 @@
             />
         </sun:tableColumn>                    
         <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="name" rowHeader="$boolean{false}" id="col2">
-            <sun:textField columns="$int{30}" id="col1St" value="#{td.value.name}" />
+            <sun:textField columns="$int{30}" id="col1St" value="#{td.value.Name}" />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="value" rowHeader="$boolean{false}" id="col3">
-            <sun:textField columns="$int{55}" id="col1St" value="#{td.value.value}" />
+            <sun:textField columns="$int{55}" id="col1St" value="#{td.value.Value}" />
         </sun:tableColumn>
         "<br/>
     </sun:tableRowGroup>
