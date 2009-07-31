@@ -84,8 +84,11 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
      * Supported access log entry tokens
      */
     private static final String ATTRIBUTE_BY_NAME_PREFIX = "attribute.";
-    private static final int ATTRIBUTE_BY_NAME_PREFIX_LEN
-        = ATTRIBUTE_BY_NAME_PREFIX.length();
+    private static final int ATTRIBUTE_BY_NAME_PREFIX_LEN =
+        ATTRIBUTE_BY_NAME_PREFIX.length();
+    private static final String SESSION_ATTRIBUTE_BY_NAME_PREFIX = "session.";
+    private static final int SESSION_ATTRIBUTE_BY_NAME_PREFIX_LEN =
+        SESSION_ATTRIBUTE_BY_NAME_PREFIX.length();
     private static final String AUTH_USER_NAME = "auth-user-name";
     private static final String CLIENT_DNS = "client.dns";
     private static final String CLIENT_NAME = "client.name";
@@ -198,9 +201,15 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         for (int i=0; i<patternComponents.size(); i++) {
             String pc = patternComponents.get(i);
             if (pc.startsWith(ATTRIBUTE_BY_NAME_PREFIX)) {
-                appendAttributeByName(charBuffer,
-                                      pc.substring(ATTRIBUTE_BY_NAME_PREFIX_LEN),
-                                      hreq);
+                appendAttributeByName(
+                    charBuffer,
+                    pc.substring(ATTRIBUTE_BY_NAME_PREFIX_LEN),
+                    hreq);
+            } else if (pc.startsWith(SESSION_ATTRIBUTE_BY_NAME_PREFIX)) {
+                appendSessionAttributeByName(
+                    charBuffer,
+                    pc.substring(SESSION_ATTRIBUTE_BY_NAME_PREFIX_LEN),
+                    hreq);
             } else if (AUTH_USER_NAME.equals(pc)) {
                 appendAuthUserName(charBuffer, hreq);
             } else if (CLIENT_DNS.equals(pc)) {
@@ -370,6 +379,37 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
             cb.put(attrValue.toString());
         } else {
             cb.put("NULL-ATTRIBUTE-" + attributeName.toUpperCase());
+        }
+        cb.put(QUOTE);
+    }
+
+
+    /*
+     * Appends the string representation of the value of the session
+     * attribute with the given name to the given char buffer, or
+     * NULL-SESSION-ATTRIBUTE-<attributeName> if no attribute with the
+     * given name is present in the session, or NULL-SESSION if
+     * no session exists.
+     */
+    private void appendSessionAttributeByName(CharBuffer cb,
+                                              String attributeName,
+                                              HttpServletRequest hreq) {
+        if (attributeName == null) {
+            throw new IllegalArgumentException("Null session attribute name");
+        }
+
+        cb.put(QUOTE);
+        HttpSession session = hreq.getSession(false);
+        if (session != null) {
+            Object attrValue = session.getAttribute(attributeName);
+            if (attrValue != null) {
+                cb.put(attrValue.toString());
+            } else {
+                cb.put("NULL-SESSION-ATTRIBUTE-" +
+                       attributeName.toUpperCase());
+            }
+        } else {
+            cb.put("NULL-SESSION");
         }
         cb.put(QUOTE);
     }
