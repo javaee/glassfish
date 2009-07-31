@@ -33,7 +33,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- monitor/monitoringStatsPage.jsf -->
+<!-- monitor/monitoringAppStatsPage.jsf -->
 
 <!initPage
     setResourceBundle(key="web" bundle="org.glassfish.web.admingui.Strings")
@@ -69,7 +69,7 @@
                         setAttribute(key="appVal" value="#{appVal}");
                         setAttribute(key="appList" value="#{appList}");    
                         setAttribute(key="appName" value="applications/#{appVal}/server");
-                        navigate(page="#{request.contextPath}/monitor/monitoringStatsPage.jsf");
+                        navigate(page="#{request.contextPath}/monitor/monitoringAppStatsPage.jsf");
                     />              
                     </sun:button>
                 </sun:panelGroup>
@@ -91,7 +91,7 @@
                         setAttribute(key="appVal" value="#{appVal}");
                         setAttribute(key="appList" value="#{appList}");     
                         setAttribute(key="appName" value="applications/#{appVal}/server");
-                        navigate(page="#{request.contextPath}/monitor/monitoringStatsPage.jsf");
+                        navigate(page="#{request.contextPath}/monitor/monitoringAppStatsPage.jsf");
                     />              
                     </sun:button>
                     "<br /><br />
