@@ -65,7 +65,7 @@ import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.impl.j2ee.loader.J2EEInjectedValues;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
-import org.glassfish.admin.amx.intf.config.AMXConfigUtil;
+import org.glassfish.admin.amx.intf.config.AMXConfigGetters;
 import org.glassfish.admin.amx.intf.config.ApplicationRef;
 import org.glassfish.admin.amx.intf.config.ResourceRef;
 import org.glassfish.admin.amx.intf.config.Server;
@@ -177,7 +177,7 @@ final class RegistrationSupport
 
     private Domain getDomainConfig()
     {
-        return AMXConfigUtil.getDomainConfig(mJ2EEServer);
+        return new AMXConfigGetters(mJ2EEServer).domainConfig();
     }
 
 
@@ -611,7 +611,7 @@ final class RegistrationSupport
         }
         final Application app = appInfo.getMetaData(Application.class);
         
-        final org.glassfish.admin.amx.intf.config.Application appConfig = AMXConfigUtil.getApplicationByName(ref, appName);
+        final org.glassfish.admin.amx.intf.config.Application appConfig = new AMXConfigGetters(ref).getApplication(appName);
         if ( appConfig == null )
         {
             ImplUtil.getLogger().warning("Unable to get Application config for: " + appName);
@@ -676,7 +676,7 @@ final class RegistrationSupport
         }
 
         // find the referenced resource
-        final AMXConfigProxy amxConfig = AMXConfigUtil.getResourceByName(getDomainConfig().getResources(), ref.getName());
+        final AMXConfigProxy amxConfig = new AMXConfigGetters(ref).getResource(ref.getName());
         if (amxConfig == null)
         {
             throw new IllegalArgumentException("ResourceRef refers to non-existent resource: " + ref);
