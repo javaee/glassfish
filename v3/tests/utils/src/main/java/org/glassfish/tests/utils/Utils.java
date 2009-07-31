@@ -109,19 +109,7 @@ public class Utils {
 
     public static Habitat getNewHabitat() {
 
-        File dir = new File(System.getProperty("java.io.tmpdir"));       
-        ModulesRegistry registry = new StaticModulesRegistry(Utils.class.getClassLoader()) {
-            @Override
-            protected void populateConfig(Habitat habitat) {
-                // we don't read configuration like this...
-            }
-        };
-
-        Habitat habitat = registry.newHabitat();
-        StartupContext startupContext = new StartupContext(dir, new String[0]);
-        registry.createHabitat("default", habitat);
-        habitat.add(new ExistingSingletonInhabitant(startupContext));
-
-        return  habitat;
+        ModulesRegistry registry = new StaticModulesRegistry(Utils.class.getClassLoader());
+        return registry.createHabitat("default");
     }
 }
