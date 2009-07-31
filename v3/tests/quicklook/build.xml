@@ -164,6 +164,7 @@
         <ant dir="ejb/cmp" target="build-deploy"/>
         <ant dir="ejb/mdb" target="build"/>
         <ant dir="wsit/JaxwsFromWsdl" target="build-deploy"/>
+        <ant dir="webbeans/numberguess" target="build-deploy"/>
     </target>
     
     <target name="undeploy">
@@ -186,7 +187,7 @@
         <ant dir="ejb/remoteview" target="undeploy"/>
         <ant dir="ejb/cmp" target="undeploy"/>
         <ant dir="wsit/JaxwsFromWsdl" target="undeploy"/>
-        <!-- ant dir="wsit" target="undeploy"/ -->
+        <ant dir="webbeans/numberguess" target="undeploy"/>
     </target>
     
     <!-- Target is re-definted here as didn't want to specify ws.root property -->
