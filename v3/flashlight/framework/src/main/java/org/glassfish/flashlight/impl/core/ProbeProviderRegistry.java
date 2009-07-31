@@ -71,6 +71,8 @@ public class ProbeProviderRegistry {
                 provider.getModuleName() + ":" + ((provider.getProbeProviderName()==null)?clz.getName():provider.getProbeProviderName());
         //System.out.println("**** Registering Probe Provider" + qname);
         FlashlightProbeProvider oldProvider = providerMap.get(qname);
+
+        // bnevins - this is a concurrency bug
         if (oldProvider == null) {
             providerMap.put(qname, provider);
         } else {
