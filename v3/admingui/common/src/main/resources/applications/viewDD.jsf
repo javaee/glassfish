@@ -39,9 +39,12 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="appName" value="#{pageSession.appName}");
-        getRequestValue(key="moduleName" value="#{pageSession.moduleName}");
-        getRequestValue(key="ddPath" value="#{pageSession.ddPath}");
+        getDeploymentDescriptor(appName="#{param.appName}", moduleName="#{param.moduleName}", descriptorName="#{param.ddPath}", content="#{descriptorContent}", encoding="#{encoding}");
+        setEncoding("#{encoding}");
+
+        //getRequestValue(key="appName" value="#{pageSession.appName}");
+        //getRequestValue(key="moduleName" value="#{pageSession.moduleName}");
+        //getRequestValue(key="ddPath" value="#{pageSession.ddPath}");
     />
     </event>
 #include "/common/shared/restart.inc"
@@ -52,7 +55,7 @@
             <sun:panelGroup id="topButtons">
                 <sun:button id="closeButton" text="$resource{i18n.button.Back}" primary="#{true}">
                     <!command
-                        setSessionAttribute(key="descriptorForDisplay" value="")
+                        //setSessionAttribute(key="descriptorForDisplay" value="")
                         redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{appName}");
                     />
                 </sun:button>
@@ -63,20 +66,20 @@
     <sun:propertySheet id="propertySheet">
         <sun:propertySheetSection id="propertSectionTextField">
             <sun:property id="name"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.application.appName}">
-                <sun:staticText id="name" text="#{pageSession.appName}"/>
+                <sun:staticText id="name" text="#{param.appName}"/>
             </sun:property>
             <sun:property id="module"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.application.moduleName}">
-                <sun:staticText id="module" text="#{pageSession.moduleName}"/>
+                <sun:staticText id="module" text="#{param.moduleName}"/>
             </sun:property>
             <sun:property id="path"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.application.modulePath}">
-                <sun:staticText id="path" text="#{pageSession.ddPath}"/>
+                <sun:staticText id="path" text="#{param.ddPath}"/>
             </sun:property>
         </sun:propertySheetSection>
 
         <sun:propertySheetSection id="ddSection">
             <sun:property id="ReportProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" readOnly="#{true)" >
             "<pre><font size="3" />
-                <sun:staticText id="descriptorText" value="#{sessionScope.descriptorForDisplay}" escape="#{true}" />
+                <sun:staticText id="descriptorText" value="#{descriptorContent}" escape="#{true}"/>
             "</pre>
             </sun:property>
         </sun:propertySheetSection>
@@ -87,7 +90,7 @@
         <sun:panelGroup id="bottomButtons">
             <sun:button id="closeButton2" text="$resource{i18n.button.Back}" primary="#{true}">
                 <!command
-                    setSessionAttribute(key="descriptorForDisplay" value="")
+                    //setSessionAttribute(key="descriptorForDisplay" value="")
                     redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{appName}");
                 />
             </sun:button>

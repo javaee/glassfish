@@ -38,13 +38,15 @@
  * DeploymentHandler.java
  *
  */
-
 package org.glassfish.admingui.common.handlers;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.ParserConfigurationException;
 import org.glassfish.admin.amx.base.Runtime;
 import org.glassfish.deployment.client.DFDeploymentStatus;
 import org.glassfish.deployment.client.DeploymentFacility;
@@ -57,15 +59,18 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admingui.common.handlers.ProxyHandlers;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
+import org.w3c.dom.Document;
 
 /**
  *
@@ -75,7 +80,7 @@ public class DeploymentHandler {
     //should be the same as in DeploymentProperties in deployment/common
     public static final String KEEP_SESSIONS = "keepSessions";
 
-        /**
+    /**
      *	<p> This method deploys the uploaded file </p>
      *      to a give directory</p>
      *	<p> Input value: "file" -- Type: <code>String</code></p>
@@ -94,7 +99,8 @@ public class DeploymentHandler {
      *	<p> Input value: "registryType" -- Type: <code>java.lang.String</code></p>
      *	@param	handlerCtx	The HandlerContext.
      */
-    @Handler(id = "deploy", input = {
+    @Handler(id = "deploy",
+    input = {
         @HandlerInput(name = "filePath", type = String.class),
         @HandlerInput(name = "origPath", type = String.class),
         @HandlerInput(name = "appName", type = String.class),
@@ -104,8 +110,8 @@ public class DeploymentHandler {
         @HandlerInput(name = "precompileJSP", type = String.class),
         @HandlerInput(name = "libraries", type = String.class),
         @HandlerInput(name = "description", type = String.class),
-        @HandlerInput(name="targets", type=String[].class )
-        })
+        @HandlerInput(name = "targets", type = String[].class)
+    })
     public static void deploy(HandlerContext handlerCtx) {
 
         Properties deploymentProps = new Properties();
@@ -115,7 +121,7 @@ public class DeploymentHandler {
         String ctxtRoot = (String) handlerCtx.getInputValue("ctxtRoot");
         String[] vs = (String[]) handlerCtx.getInputValue("VS");
         String enabled = (String) handlerCtx.getInputValue("enabled");
-        
+
         String libraries = (String) handlerCtx.getInputValue("libraries");
         String precompile = (String) handlerCtx.getInputValue("precompileJSP");
         String desc = (String) handlerCtx.getInputValue("description");
@@ -132,8 +138,9 @@ public class DeploymentHandler {
         deploymentProps.setProperty(DFDeploymentProperties.NAME, appName != null ? appName : "");
         //If user doesn't set the context root, do not pass anything to DF in the deploymentProperties.  
         //Otherwise, a "/" will be set as the context root instead of looking into sun-web.xml or using the filename.
-        if (!GuiUtil.isEmpty(ctxtRoot))
+        if (!GuiUtil.isEmpty(ctxtRoot)) {
             deploymentProps.setProperty(DFDeploymentProperties.CONTEXT_ROOT, ctxtRoot);
+        }
         deploymentProps.setProperty(DFDeploymentProperties.ENABLED, enabled != null ? enabled : "false");
         deploymentProps.setProperty(DFDeploymentProperties.DEPLOY_OPTION_LIBRARIES, libraries != null ? libraries : "");
         deploymentProps.setProperty(DFDeploymentProperties.DESCRIPTION, desc != null ? desc : "");
@@ -158,7 +165,8 @@ public class DeploymentHandler {
         @HandlerInput(name = "origPath", type = String.class),
         @HandlerInput(name = "allMaps", type = Map.class),
         @HandlerInput(name = "appType", type = String.class),
-        @HandlerInput(name="propertyList", type=List.class) })
+        @HandlerInput(name = "propertyList", type = List.class)
+    })
     public static void deploy2(HandlerContext handlerCtx) {
 
         String appType = (String) handlerCtx.getInputValue("appType");
@@ -178,7 +186,7 @@ public class DeploymentHandler {
         /* Take care some special properties, such as VS  */
 
         //do not send VS if user didn't specify, refer to bug#6542276
-        String[] vs = (String[])attrMap.get(DFDeploymentProperties.VIRTUAL_SERVERS);
+        String[] vs = (String[]) attrMap.get(DFDeploymentProperties.VIRTUAL_SERVERS);
         if (vs != null && vs.length > 0) {
             if (!GuiUtil.isEmpty(vs[0])) {
                 String vsTargets = GuiUtil.arrayToString(vs, ",");
@@ -189,9 +197,9 @@ public class DeploymentHandler {
 
         //Take care of checkBox
         List<String> convertToFalseList = (List) attrMap.get("convertToFalseList");
-        if (convertToFalseList != null){
-            for(String one : convertToFalseList ){
-                if (attrMap.get(one) == null){
+        if (convertToFalseList != null) {
+            for (String one : convertToFalseList) {
+                if (attrMap.get(one) == null) {
                     attrMap.put(one, "false");
                 }
             }
@@ -199,47 +207,48 @@ public class DeploymentHandler {
         }
 
         Properties props = new Properties();
-        for(Object attr : attrMap.keySet()){
-            String key = (String)attr;
+        for (Object attr : attrMap.keySet()) {
+            String key = (String) attr;
             String prefix = "PROPERTY-";
             String value = (String) attrMap.get(key);
-            if (value == null)
+            if (value == null) {
                 continue;
-            if (key.startsWith(prefix) ){
-                props.setProperty( key.substring( prefix.length()), value);
-                
-            }else{
+            }
+            if (key.startsWith(prefix)) {
+                props.setProperty(key.substring(prefix.length()), value);
+
+            } else {
                 deploymentProps.setProperty(key, value);
             }
         }
-        
+
 
 
         // include any  additional property that user enters
-        List<Map<String,String>> propertyList = (List)handlerCtx.getInputValue("propertyList");
-        if (propertyList != null){
+        List<Map<String, String>> propertyList = (List) handlerCtx.getInputValue("propertyList");
+        if (propertyList != null) {
             Set propertyNames = new HashSet();
-            for(Map<String, String> oneRow : propertyList){
-                final String  name = oneRow.get(ProxyHandlers.PROPERTY_NAME);
-                if (GuiUtil.isEmpty(name)){
+            for (Map<String, String> oneRow : propertyList) {
+                final String name = oneRow.get(ProxyHandlers.PROPERTY_NAME);
+                if (GuiUtil.isEmpty(name)) {
                     continue;
                 }
-                if (propertyNames.contains(name)){
+                if (propertyNames.contains(name)) {
                     GuiUtil.getLogger().warning("Ignored Duplicate Property Name : " + name);
                     continue;
-                }else{
+                } else {
                     propertyNames.add(name);
                 }
                 String value = oneRow.get(ProxyHandlers.PROPERTY_VALUE);
-                if (GuiUtil.isEmpty(value)){
+                if (GuiUtil.isEmpty(value)) {
                     continue;
                 }
-                props.setProperty( name, value);
-                
+                props.setProperty(name, value);
+
             }
         }
-        
-        if (props.size() > 0){
+
+        if (props.size() > 0) {
             deploymentProps.setProperties(props);
         }
 
@@ -248,65 +257,62 @@ public class DeploymentHandler {
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
-        
+
     }
-
-
 
     /**
      *  <p> This handler redeploy any application
      */
-     @Handler(id="redeploy",
-        input={
-        @HandlerInput(name="filePath", type=String.class, required=true),
-        @HandlerInput(name="origPath", type=String.class, required=true),
-        @HandlerInput(name="appName", type=String.class, required=true),
-        @HandlerInput(name="keepSessions", type=Boolean.class)})
-        
+    @Handler(id = "redeploy",
+    input = {
+        @HandlerInput(name = "filePath", type = String.class, required = true),
+        @HandlerInput(name = "origPath", type = String.class, required = true),
+        @HandlerInput(name = "appName", type = String.class, required = true),
+        @HandlerInput(name = "keepSessions", type = Boolean.class)
+    })
     public static void redeploy(HandlerContext handlerCtx) {
-         try{
-             String filePath = (String) handlerCtx.getInputValue("filePath");
-             String origPath = (String) handlerCtx.getInputValue("origPath");
-             String appName = (String) handlerCtx.getInputValue("appName");
-             Boolean keepSessions = (Boolean) handlerCtx.getInputValue("keepSessions");
-             DFDeploymentProperties deploymentProps = new DFDeploymentProperties();
+        try {
+            String filePath = (String) handlerCtx.getInputValue("filePath");
+            String origPath = (String) handlerCtx.getInputValue("origPath");
+            String appName = (String) handlerCtx.getInputValue("appName");
+            Boolean keepSessions = (Boolean) handlerCtx.getInputValue("keepSessions");
+            DFDeploymentProperties deploymentProps = new DFDeploymentProperties();
 
-             //If we are redeploying a web app, we want to preserve context root.
-             //can use Query instead of hard code object name
-             //AMXProxy app = V3AMX.getInstance().getApplication(appName);
-	     AMXProxy app = V3AMX.objectNameToProxy("amx:pp=/domain/applications,type=application,name="+appName);
-             String ctxRoot = (String) app.attributesMap().get("ContextRoot");
-             if (ctxRoot != null){
-                 deploymentProps.setContextRoot(ctxRoot);
-             }
-             deploymentProps.setForce(true);
-             deploymentProps.setUpload(false);
-             deploymentProps.setName(appName);
-             
-             Properties prop = new Properties();
-             String ks = (keepSessions==null) ? "false" : keepSessions.toString();
-             prop.setProperty(KEEP_SESSIONS, ks);
-             deploymentProps.setProperties(prop);
-             
-             DeployUtil.invokeDeploymentFacility(null, deploymentProps, filePath, handlerCtx);
+            //If we are redeploying a web app, we want to preserve context root.
+            //can use Query instead of hard code object name
+            //AMXProxy app = V3AMX.getInstance().getApplication(appName);
+            AMXProxy app = V3AMX.objectNameToProxy("amx:pp=/domain/applications,type=application,name=" + appName);
+            String ctxRoot = (String) app.attributesMap().get("ContextRoot");
+            if (ctxRoot != null) {
+                deploymentProps.setContextRoot(ctxRoot);
+            }
+            deploymentProps.setForce(true);
+            deploymentProps.setUpload(false);
+            deploymentProps.setName(appName);
+
+            Properties prop = new Properties();
+            String ks = (keepSessions == null) ? "false" : keepSessions.toString();
+            prop.setProperty(KEEP_SESSIONS, ks);
+            deploymentProps.setProperties(prop);
+
+            DeployUtil.invokeDeploymentFacility(null, deploymentProps, filePath, handlerCtx);
         } catch (Exception ex) {
-                GuiUtil.handleException(handlerCtx, ex);
+            GuiUtil.handleException(handlerCtx, ex);
         }
-     }
-        
-     
-     /**
+    }
+
+    /**
      *	<p> This handler takes in selected rows, and do the undeployment
      *  <p> Input  value: "selectedRows" -- Type: <code>java.util.List</code></p>
      *  <p> Input  value: "appType" -- Type: <code>String</code></p>
      *	@param	handlerCtx	The HandlerContext.
      */
-    @Handler(id="undeploy",
-    input={
-        @HandlerInput(name="selectedRows", type=List.class, required=true)})
-        
+    @Handler(id = "undeploy",
+    input = {
+        @HandlerInput(name = "selectedRows", type = List.class, required = true)
+    })
     public static void undeploy(HandlerContext handlerCtx) {
-        
+
         Object obj = handlerCtx.getInputValue("selectedRows");
 
         Properties dProps = new Properties();
@@ -315,14 +321,14 @@ public class DeploymentHandler {
 //                //bcz undeploy will fail anyway if cascade is false.
 //                dProps.put(DFDeploymentProperties.CASCADE, "true");
 //        }
-        
+
         List selectedRows = (List) obj;
         DFProgressObject progressObject = null;
-        DeploymentFacility df= GuiUtil.getDeploymentFacility();
+        DeploymentFacility df = GuiUtil.getDeploymentFacility();
         //Hard coding to server, fix me for actual targets in EE.
-        String[] targetNames = new String[] {"server"};
-        
-        for(int i=0; i< selectedRows.size(); i++){
+        String[] targetNames = new String[]{"server"};
+
+        for (int i = 0; i < selectedRows.size(); i++) {
             Map oneRow = (Map) selectedRows.get(i);
             String appName = (String) oneRow.get("name");
             //Undeploy the app here.
@@ -335,23 +341,21 @@ public class DeploymentHandler {
 //            }
 
             progressObject = df.undeploy(df.createTargets(targetNames), appName, dProps);
-            
+
             progressObject.waitFor();
             DFDeploymentStatus status = progressObject.getCompletedStatus();
             //we DO want it to continue and call the rest handlers, ie navigate(). This will
             //re-generate the table data because there may be some apps thats been undeployed 
             //successfully.  If we stopProcessing, the table data is stale and still shows the
             //app that has been gone.
-            if( DeployUtil.checkDeployStatus(status, handlerCtx, false)){
+            if (DeployUtil.checkDeployStatus(status, handlerCtx, false)) {
                 String mesg = GuiUtil.getMessage("msg.deploySuccess", new Object[]{appName, "undeployed"});
                 //we need to fix cases where more than 1 app is undeployed before putting this msg.                
                 //GuiUtil.prepareAlert(handlerCtx, "success", mesg, null); 
             }
         }
     }
-    
-    
-        
+
     /**
      *	<p> This handler takes in selected rows, and change the status of the app
      *  <p> Input  value: "selectedRows" -- Type: <code>java.util.List</code></p>
@@ -359,40 +363,41 @@ public class DeploymentHandler {
      *  <p> Input  value: "enabled" -- Type: <code>Boolean</code></p>
      *	@param	handlerCtx	The HandlerContext.
      */
-    @Handler(id="changeAppStatus",
-    input={
-        @HandlerInput(name="selectedRows", type=List.class, required=true),
-        @HandlerInput(name="enabled", type=Boolean.class, required=true)})
-        
+    @Handler(id = "changeAppStatus",
+    input = {
+        @HandlerInput(name = "selectedRows", type = List.class, required = true),
+        @HandlerInput(name = "enabled", type = Boolean.class, required = true)
+    })
     public static void changeAppStatus(HandlerContext handlerCtx) {
-        
+
         List obj = (List) handlerCtx.getInputValue("selectedRows");
-        boolean enabled = ((Boolean)handlerCtx.getInputValue("enabled")).booleanValue();
-       
-        DeploymentFacility df= GuiUtil.getDeploymentFacility();
+        boolean enabled = ((Boolean) handlerCtx.getInputValue("enabled")).booleanValue();
+
+        DeploymentFacility df = GuiUtil.getDeploymentFacility();
         //Hard coding to server, fix me for actual targets in EE.
-        String[] targetNames = new String[] {"server"};
+        String[] targetNames = new String[]{"server"};
         List selectedRows = (List) obj;
-        try{
-            for(int i=0; i< selectedRows.size(); i++){
+        try {
+            for (int i = 0; i < selectedRows.size(); i++) {
                 Map oneRow = (Map) selectedRows.get(i);
                 String appName = (String) oneRow.get("name");
-                
+
                 // In V3, use DF to do disable or enable
-                if (enabled)
+                if (enabled) {
                     df.enable(df.createTargets(targetNames), appName);
-                else
-                    df.disable(df.createTargets(targetNames), appName); 
-                
-                if (V3AMX.getInstance().isEE()){
-                    String msg = GuiUtil.getMessage((enabled)? "msg.enableSuccessful" : "msg.disableSuccessful");
+                } else {
+                    df.disable(df.createTargets(targetNames), appName);
+                }
+
+                if (V3AMX.getInstance().isEE()) {
+                    String msg = GuiUtil.getMessage((enabled) ? "msg.enableSuccessful" : "msg.disableSuccessful");
                     GuiUtil.prepareAlert(handlerCtx, "success", msg, null);
-                }else{
-                    String msg = GuiUtil.getMessage((enabled)? "msg.enableSuccessfulPE" : "msg.disableSuccessfulPE");
+                } else {
+                    String msg = GuiUtil.getMessage((enabled) ? "msg.enableSuccessfulPE" : "msg.disableSuccessfulPE");
                     GuiUtil.prepareAlert(handlerCtx, "success", msg, null);
                 }
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
@@ -403,27 +408,69 @@ public class DeploymentHandler {
      *  <p> Output value: "descriptors" -- Type: <code>java.util.List</code>/</p>
      *	@param	handlerCtx	The HandlerContext.
      */
-    @Handler(id="getDeploymentDescriptors",
-    input={
-        @HandlerInput(name="appName", type=String.class, required=true)},
-    output={
-        @HandlerOutput(name="descriptors", type=List.class)})
-        public static void getDeploymentDescriptors(HandlerContext handlerCtx) {
-            String appName = (String)handlerCtx.getInputValue("appName");
-            List result = new ArrayList();
-            Runtime runtimeMgr = V3AMX.getInstance().getRuntime();
-            List<Map<String,String>> ddList = runtimeMgr.getDeploymentConfigurations(appName);
-            if (ddList.size() >0 ){
-                for(Map<String, String> oneDD : ddList){
-                    HashMap oneRow = new HashMap();
-                    oneRow.put("moduleName", oneDD.get(Runtime.MODULE_NAME_KEY) );
-                    oneRow.put("ddPath", oneDD.get(Runtime.DD_PATH_KEY) );
-                    oneRow.put("ddContent", oneDD.get(Runtime.DD_CONTENT_KEY) );
-                    result.add(oneRow);
+    @Handler(id = "getDeploymentDescriptorList",
+    input = {
+        @HandlerInput(name = "appName", type = String.class, required = true)},
+    output = {
+        @HandlerOutput(name = "descriptors", type = List.class)
+    })
+    public static void getDeploymentDescriptorList(HandlerContext handlerCtx) {
+        String appName = (String) handlerCtx.getInputValue("appName");
+        List result = new ArrayList();
+        Runtime runtimeMgr = V3AMX.getInstance().getRuntime();
+        List<Map<String, String>> ddList = runtimeMgr.getDeploymentConfigurations(appName);
+        if (ddList.size() > 0) {
+            for (Map<String, String> oneDD : ddList) {
+                HashMap oneRow = new HashMap();
+                oneRow.put("moduleName", oneDD.get(Runtime.MODULE_NAME_KEY));
+                oneRow.put("ddPath", oneDD.get(Runtime.DD_PATH_KEY));
+//                    oneRow.put("ddContent", oneDD.get(Runtime.DD_CONTENT_KEY) );
+                result.add(oneRow);
+            }
+        }
+        handlerCtx.setOutputValue("descriptors", result);
+    }
+
+    @Handler(id = "getDeploymentDescriptor",
+    input = {
+        @HandlerInput(name = "appName", type = String.class, required = true),
+        @HandlerInput(name = "moduleName", type = String.class, required = true),
+        @HandlerInput(name = "descriptorName", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "content", type = String.class),
+        @HandlerOutput(name = "encoding", type = String.class)
+    })
+    public static void getDeploymentDesciptor(HandlerContext handlerCtx) {
+        String appName = (String) handlerCtx.getInputValue("appName");
+        String moduleName = (String) handlerCtx.getInputValue("moduleName");
+        String descriptorName = (String) handlerCtx.getInputValue("descriptorName");
+        Runtime runtimeMgr = V3AMX.getInstance().getRuntime();
+        List<Map<String, String>> ddList = runtimeMgr.getDeploymentConfigurations(appName);
+        if (ddList.size() > 0) {
+            for (Map<String, String> oneDD : ddList) {
+                if (oneDD.get(Runtime.MODULE_NAME_KEY).equals(moduleName) && oneDD.get(Runtime.DD_PATH_KEY).equals(descriptorName)) {
+                    String content = oneDD.get(Runtime.DD_CONTENT_KEY);
+
+                    handlerCtx.setOutputValue("content", content);
+                    handlerCtx.setOutputValue("encoding", getEncoding(content));
                 }
             }
-            handlerCtx.setOutputValue("descriptors", result);  
-    }   
+        }
+    }
 
-
+    protected static String getEncoding(String xmlDoc) {
+        String encoding = null;
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = builder.parse(new ByteArrayInputStream(xmlDoc.getBytes()));
+            encoding = doc.getXmlEncoding();
+        } catch (Exception ex) {
+            Logger.getLogger(DeploymentHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        if (encoding == null) {
+            encoding = "UTF-8";
+        }
+        return encoding;
+    }
 }

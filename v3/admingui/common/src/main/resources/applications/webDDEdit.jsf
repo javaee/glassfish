@@ -34,30 +34,26 @@
  holder.
 -->
 <!-- applications/webDDEdit.jsf -->
-<!namespace sc="http://java.sun.com/mojarra/scales" />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.enterpriseApplications.descriptorPageTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate
             setSessionAttribute(key="appGeneralTabs" value="descriptorTab");
             getRequestValue(key="appName" value="#{pageSession.appName}");
-            getDeploymentDescriptors(appName="#{pageSession.appName}"  descriptors="#{requestScope.descriptors}");
+            getDeploymentDescriptorList(appName="#{pageSession.appName}"  descriptors="#{requestScope.descriptors}");
         />
     </event>
 #include "/common/shared/restart.inc"    
-            <sun:form id="propertyForm">
+    <sun:form id="propertyForm">
 #include "/common/applications/appGeneralTabs.inc"
 #include "/common/shared/alertMsg.inc"                
-            <!-- Page Title -->
+    <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18n.enterpriseApplications.descriptorPageTitle}" helpText="$resource{i18n.enterpriseApplications.descriptorPageTitleHelp}" />
-       
-            "<br />
-            "<br />
+        "<br />
+        "<br />
 #include "/common/applications/descriptorsTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help.webApp.editDD}" />
+        <sun:hidden id="helpKey" value="$resource{help.webApp.editDD}" />
         </sun:form>
-
-
 //
 //            "<div id="panels"/>
 //            <sc:panel id="webDDPanel" header="View Web Deployment Descriptor" fixedCenter="true" visible="false" modal="true" width="800px" height="600px" closable="true">
@@ -108,6 +104,5 @@
 //            }
 //        </script>
 //    </f:verbatim>
-
- </define>
- </composition>
+</define>
+</composition>

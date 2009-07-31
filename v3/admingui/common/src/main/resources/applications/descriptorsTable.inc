@@ -33,27 +33,26 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- applications/descriptorsTable.jsf -->
+<!-- applications/descriptorsTable.inc -->
 
 <!-- Descriptos Table .... -->
                
-<sun:table id="basicTable" style="padding: 10pt" deselectMultipleButton="$boolean{false}" selectMultipleButton="$boolean{false}"
-    title="$resource{i18n.deploy.descriptors}">
+<sun:table id="basicTable" style="padding: 10pt" deselectMultipleButton="$boolean{false}" selectMultipleButton="$boolean{false}" title="$resource{i18n.deploy.descriptors}">
 
     <sun:tableRowGroup id="rowGroup1" data={"$attribute{descriptors}"} sourceVar="td">      
         <sun:tableColumn headerText="$resource{i18n.deploy.ApplicationName}" rowHeader="$boolean{false}" id="col1">
-        	<staticText id="name" value="#{pageSession.appName}" />
+            <staticText id="name" value="#{pageSession.appName}" />
         </sun:tableColumn>
         <sun:tableColumn  headerText="$resource{i18n.deploy.subCompName}" rowHeader="$boolean{false}" id="col2">
-        	<staticText id="name" value="#{td.value.moduleName}" />
+            <staticText id="name" value="#{td.value.moduleName}" />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{i18n.deploy.descriptorFileName}" rowHeader="$boolean{false}" id="col3">
-        	<sun:hyperlink id="link" text="#{td.value.ddPath}" >
-				<!command
-                    setSessionAttribute(key="descriptorForDisplay" value="#{td.value.ddContent}")
+            <sun:hyperlink id="link" text="#{td.value.ddPath}" >
+                <!command
+                    //setSessionAttribute(key="descriptorForDisplay" value="#{td.value.ddContent}")
                     redirect(page="#{request.contextPath}/common/applications/viewDD.jsf?appName=#{pageSession.appName}&moduleName=#{td.value.moduleName}&ddPath=#{td.value.ddPath}");
-				/>
-			</sun:hyperlink>
+                />
+            </sun:hyperlink>
         </sun:tableColumn>
     </sun:tableRowGroup>
 </sun:table>    
