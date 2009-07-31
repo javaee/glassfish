@@ -131,6 +131,24 @@ public class ResourceUtil {
 
 
     /**
+    * Executes the specified __asadmin command.
+    * @param commandName the command to execute
+    * @param parameters the command parameters
+    * @param habitat the habitat
+    * @param logger the logger to use
+    * @return ActionReport object with command execute status details.
+    */
+    public ActionReport runCommand(String commandName,
+           Properties parameters, Habitat habitat) {
+       CommandRunner cr = habitat.getComponent(CommandRunner.class);
+       ActionReport ar = habitat.getComponent(ActionReport.class);
+
+       cr.doCommand(commandName, parameters, ar);
+       return ar;
+    }
+
+
+    /**
      * Constructs and returns the resource method meta-data.
      * @param command the command assocaited with the resource method
      * @param habitat the habitat

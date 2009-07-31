@@ -680,7 +680,10 @@ public class GeneratorResource {
         out.write("import javax.ws.rs.core.UriInfo;\n\n");
         out.write("import org.glassfish.admin.rest.provider.OptionsResult;\n");
         out.write("import org.glassfish.admin.rest.provider.MethodMetaData;\n");
-        out.write("import org.glassfish.admin.rest.resources.ResourceUtil;\n");
+        if (commandMethod.equals("GET")) {
+            out.write("import org.glassfish.admin.rest.provider.StringResult;\n");
+        }
+        out.write("import org.glassfish.admin.rest.ResourceUtil;\n");
         out.write("import org.glassfish.admin.rest.RestService;\n");
         out.write("import org.glassfish.api.ActionReport;\n\n");
 
@@ -693,7 +696,13 @@ public class GeneratorResource {
         out.write("}\n");
 
         //create command method
-        createCommandMethod(commandMethod, out);
+        if (commandMethod.equals("GET")) {
+            //get method
+            createCommandGetMethod(commandName, commandMethod, out);
+        } else {
+            //post, put or delete method
+            createCommandMethod(commandMethod, out);
+        }
 
         //create options method
         createCommandOptionsMethod(out);
@@ -731,6 +740,65 @@ public class GeneratorResource {
         out.write("}\n\n");
         out.write("String errorMessage = actionReport.getMessage();\n");
         out.write("return Response.status(400).entity(errorMessage).build(); /*400 - bad request*/\n");
+        out.write("} catch (Exception e) {\n");
+        out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
+        out.write("}\n");
+        out.write("}\n");
+    }
+
+
+    private void createCommandGetMethod(String commandName,
+            String commandMethod, BufferedWriter out) throws IOException {
+        CommandRunner cr = RestService.getHabitat().getComponent(CommandRunner.class);
+        CommandModel cm = null;
+        try {
+            cm = cr.getModel(commandName, RestService.logger);
+        } catch (Exception e) {
+            System.out.println("Error - Command Unknown: " + commandName);
+            return;
+        }
+        if (cm == null) {
+            System.out.println("Error - Command Unknown: " + commandName);
+            return;
+        }
+        java.util.Collection<CommandModel.ParamModel> params = cm.getParameters();
+
+        out.write("@" + commandMethod + "\n");//commandMethod - GET
+        out.write("@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED})\n");
+        out.write("public StringResult executeCommand(\n");
+        boolean first = true;
+        for (CommandModel.ParamModel pm : params) {
+            if (first == false) {
+                out.write(" ,\n");
+            }
+            first = false;
+            out.write("\t @QueryParam(\"" + pm.getName() + "\") ");
+            out.write(" @DefaultValue(\"" + pm.getParam().defaultValue() + "\") ");
+            out.write(" String " + getBeanName(pm.getName()) + " \n");
+        }
+        out.write(" \t) {\n");
+
+        out.write("try {\n");
+        out.write("\tjava.util.Properties properties = new java.util.Properties();\n");
+        for (CommandModel.ParamModel pm : params) {
+            out.write("\tif (!" + getBeanName(pm.getName()) + ".isEmpty()) {\n");
+            out.write("\t\tproperties.put(\"" + pm.getName() + "\", " + getBeanName(pm.getName()) + ");\n");
+            out.write("\t}");
+        }
+
+        out.write("ActionReport actionReport = __resourceUtil.runCommand(commandName, properties, RestService.getHabitat());\n\n");
+        out.write("ActionReport.ExitCode exitCode = actionReport.getActionExitCode();\n\n");
+        out.write("StringResult results = new StringResult(commandName, actionReport.getMessage());\n");
+        out.write("if (exitCode == ActionReport.ExitCode.SUCCESS) {\n");
+        out.write("results.setStatusCode(200); /*200 - ok*/\n");
+        out.write("} else {\n");
+        out.write("results.setStatusCode(400); /*400 - bad request*/\n");
+        out.write("results.setIsError(true);\n");
+        out.write("results.setErrorMessage(actionReport.getMessage());\n");
+        out.write("}\n\n");
+
+        out.write("return results;\n\n");
+
         out.write("} catch (Exception e) {\n");
         out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
         out.write("}\n");

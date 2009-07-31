@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Wed Jul 29 15:19:02 PDT 2009
+* date=Thu Jul 30 19:16:47 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -21,6 +21,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
+import org.glassfish.admin.rest.provider.StringResult;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.api.ActionReport;
@@ -31,26 +32,41 @@ public DomainHostPortResource() {
 __resourceUtil = new ResourceUtil();
 }
 @GET
-@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-public Response executeCommand(HashMap<String, String> data) {
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED})
+public StringResult executeCommand(
+	 @QueryParam("target")  @DefaultValue("")  String Target 
+ ,
+	 @QueryParam("virtualServer")  @DefaultValue("")  String VirtualServer 
+ ,
+	 @QueryParam("securityEnabled")  @DefaultValue("false")  String SecurityEnabled 
+ ,
+	 @QueryParam("moduleId")  @DefaultValue("")  String ModuleId 
+ 	) {
 try {
-if (data.containsKey("error")) {
-return Response.status(415).entity(
-"Unable to parse the input entity. Please check the syntax.").build();}/*unsupported media*/
-
-__resourceUtil.adjustParameters(data);
-
-ActionReport actionReport = __resourceUtil.runCommand(commandName, data, RestService.getHabitat());
+	java.util.Properties properties = new java.util.Properties();
+	if (!Target.isEmpty()) {
+		properties.put("target", Target);
+	}	if (!VirtualServer.isEmpty()) {
+		properties.put("virtualServer", VirtualServer);
+	}	if (!SecurityEnabled.isEmpty()) {
+		properties.put("securityEnabled", SecurityEnabled);
+	}	if (!ModuleId.isEmpty()) {
+		properties.put("moduleId", ModuleId);
+	}ActionReport actionReport = __resourceUtil.runCommand(commandName, properties, RestService.getHabitat());
 
 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
 
+StringResult results = new StringResult(commandName, actionReport.getMessage());
 if (exitCode == ActionReport.ExitCode.SUCCESS) {
-return Response.status(200).entity("\"" + commandMethod + " of "
-+ uriInfo.getAbsolutePath() + " executed successfully.").build();  /*200 - ok*/
+results.setStatusCode(200); /*200 - ok*/
+} else {
+results.setStatusCode(400); /*400 - bad request*/
+results.setIsError(true);
+results.setErrorMessage(actionReport.getMessage());
 }
 
-String errorMessage = actionReport.getMessage();
-return Response.status(400).entity(errorMessage).build(); /*400 - bad request*/
+return results;
+
 } catch (Exception e) {
 throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 }
