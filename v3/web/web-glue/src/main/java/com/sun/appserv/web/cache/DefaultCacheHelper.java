@@ -37,20 +37,16 @@
 package com.sun.appserv.web.cache;
 
 import java.util.Map;
-
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.ResourceBundle;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-
-import com.sun.enterprise.web.logging.pwc.LogDomains;
-
 import com.sun.appserv.web.cache.mapping.Constants;
 import com.sun.appserv.web.cache.mapping.CacheMapping;
 import com.sun.appserv.web.cache.mapping.ConstraintField;
 import com.sun.appserv.web.cache.mapping.Field;
+import com.sun.logging.LogDomains;
 
 /** DefaultCacheHelper interface is the built-in implementation of the 
  *  <code>CacheHelper</code> interface to aide in:
@@ -67,13 +63,16 @@ public class DefaultCacheHelper implements CacheHelper {
     public static final String PROP_KEY_GENERATOR_ATTR_NAME = 
                                 "cacheKeyGeneratorAttrName";
     // PWC_LOGGER
-    private static Logger _logger;
-    private static boolean _isTraceEnabled = false;
+    private static final Logger _logger = LogDomains.getLogger(
+        DefaultCacheHelper.class, LogDomains.WEB_LOGGER);
+
+    private static final boolean _isTraceEnabled =
+        _logger.isLoggable(Level.FINE);
 
     /**
      * The resource bundle containing the localized message strings.
      */
-    private static ResourceBundle _rb = null;
+    private static final ResourceBundle _rb = _logger.getResourceBundle();
 
     ServletContext context;
 
@@ -102,11 +101,6 @@ public class DefaultCacheHelper implements CacheHelper {
     public void init(ServletContext context, Map props) {
         this.context = context;
         attrKeyGenerator = (String)props.get(PROP_KEY_GENERATOR_ATTR_NAME);
-
-        // web container logger
-        _logger = LogDomains.getLogger(DefaultCacheHelper.class, LogDomains.PWC_LOGGER);
-        _isTraceEnabled = _logger.isLoggable(Level.FINE);
-        _rb = _logger.getResourceBundle();
     }
 
     /**

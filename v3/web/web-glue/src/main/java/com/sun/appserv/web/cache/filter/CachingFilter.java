@@ -61,7 +61,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.Cookie;
 
-import com.sun.enterprise.web.logging.pwc.LogDomains;
+import com.sun.logging.LogDomains;
 
 import com.sun.appserv.web.cache.CacheHelper;
 import com.sun.appserv.web.cache.DefaultCacheHelper;
@@ -84,17 +84,20 @@ public class CachingFilter implements Filter, CacheManagerListener {
 
     boolean isEnabled = false;
 
-    private static Logger _logger = null;
-    private static boolean _isTraceEnabled = false;
+    private static final Logger _logger = LogDomains.getLogger(
+        CachingFilter.class, LogDomains.WEB_LOGGER);
 
-	/** 
-	 * Called by the web container to indicate to a filter that it is being 
+    private static final boolean _isTraceEnabled = _logger.isLoggable(
+        Level.FINE);
+
+    /** 
+     * Called by the web container to indicate to a filter that it is being 
      * placed into service. The servlet container calls the init method exactly
      * once after instantiating the filter. The init method must complete 
      * successfully before the filter is asked to do any filtering work.
      * @param filterConfig filter config
      * @throws ServletException
-	 */
+     */
 	public void init(FilterConfig filterConfig) throws ServletException {
 
         filterName = filterConfig.getFilterName();
@@ -112,11 +115,6 @@ public class CachingFilter implements Filter, CacheManagerListener {
             // add filter as a listener so caching can be disabled at runtime.
             manager.addCacheManagerListener(this);
             isEnabled = true;
-        }
-
-        if (_logger == null) {
-            _logger = LogDomains.getLogger(CachingFilter.class, LogDomains.PWC_LOGGER);
-            _isTraceEnabled = _logger.isLoggable(Level.FINE);
         }
 
         if (_isTraceEnabled) {

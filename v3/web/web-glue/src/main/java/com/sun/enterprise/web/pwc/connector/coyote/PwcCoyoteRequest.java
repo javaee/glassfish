@@ -43,6 +43,13 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
+import com.sun.grizzly.util.http.Parameters;
+// START GlassFish 898
+import com.sun.grizzly.util.http.ServerCookie;
+// END GlassFish 898
+import com.sun.enterprise.web.pwc.PwcWebModule;
+import com.sun.enterprise.web.session.SessionCookieConfig;
+import com.sun.logging.LogDomains;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
 import org.apache.catalina.connector.Request;
@@ -51,13 +58,6 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.connector.CoyoteInputStream;
 import org.apache.catalina.connector.CoyoteReader;
 import org.apache.catalina.connector.InputBuffer;
-import com.sun.grizzly.util.http.Parameters;
-// START GlassFish 898
-import com.sun.grizzly.util.http.ServerCookie;
-// END GlassFish 898
-import com.sun.enterprise.web.pwc.PwcWebModule;
-import com.sun.enterprise.web.session.SessionCookieConfig;
-import com.sun.enterprise.web.logging.pwc.LogDomains;
 
 /**
  * Customized version of the Tomcat 5 CoyoteRequest
@@ -69,7 +69,8 @@ import com.sun.enterprise.web.logging.pwc.LogDomains;
  */
 public class PwcCoyoteRequest extends Request {
 
-    private static Logger logger = LogDomains.getLogger(PwcCoyoteRequest.class, LogDomains.PWC_LOGGER);
+    private static final Logger logger = LogDomains.getLogger(
+        PwcCoyoteRequest.class, LogDomains.WEB_LOGGER);
 
     // Have we already determined request encoding from sun-web.xml?
     private boolean sunWebXmlChecked = false;

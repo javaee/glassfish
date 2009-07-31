@@ -39,13 +39,10 @@ package com.sun.appserv.web.taglibs.cache;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
-
-import com.sun.enterprise.web.logging.pwc.LogDomains; 
-
 import com.sun.appserv.util.cache.Cache;
+import com.sun.logging.LogDomains; 
 
 /**
  * FlushTag is a JSP tag that is used with the CacheTag. The FlushTag
@@ -56,8 +53,7 @@ import com.sun.appserv.util.cache.Cache;
  * <%@ taglib prefix="ias" uri="Sun ONE Application Server Tags" %> 
  * <ias:flush key="<%= cacheKey %>" />
  */
-public class FlushTag extends TagSupport
-{
+public class FlushTag extends TagSupport {
     /**
      * The key for the cache entry that needs to be flushed.
      */
@@ -71,33 +67,18 @@ public class FlushTag extends TagSupport
     /**
      * The logger to use for logging ALL web container related messages.
      */
-    private static Logger _logger = null;
+    private static final Logger _logger = LogDomains.getLogger(FlushTag.class,
+        LogDomains.WEB_LOGGER);
 
     /**
      * This indicates whether debug logging is on or not
      */
-    private static boolean _debugLog;
+    private static final boolean _debugLog = _logger.isLoggable(Level.FINE);
 
     /**
      * The resource bundle containing the localized message strings.
      */
-    private static ResourceBundle _rb = null;
-
-    // ---------------------------------------------------------------------
-    // Constructor and initialization
-
-    /**
-     * Default constructor that simply gets a handle to the web container
-     * subsystem's logger.
-     */
-    public FlushTag() {
-        super();
-         if (_logger == null) {
-             _logger = LogDomains.getLogger(FlushTag.class, LogDomains.PWC_LOGGER);
-             _rb = _logger.getResourceBundle();
-             _debugLog = _logger.isLoggable(Level.FINE);
-         }
-    }
+    private static final ResourceBundle _rb = _logger.getResourceBundle();
 
     // ---------------------------------------------------------------------
     // Tag logic

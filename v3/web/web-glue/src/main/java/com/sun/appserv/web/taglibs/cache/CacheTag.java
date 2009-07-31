@@ -42,10 +42,8 @@ import java.util.logging.Level;
 
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
-
-import com.sun.enterprise.web.logging.pwc.LogDomains;
-
 import com.sun.appserv.util.cache.Cache;
+import com.sun.logging.LogDomains;
 
 /**
  * CacheTag is a JSP tag that allows server-side caching of JSP page
@@ -112,33 +110,18 @@ public class CacheTag extends BodyTagSupport
     /**
      * The logger to use for logging ALL web container related messages.
      */
-    private static Logger _logger = null;
+    private static final Logger _logger = LogDomains.getLogger(
+        CacheTag.class, LogDomains.WEB_LOGGER);
 
     /**
      * This indicates whether debug logging is on or not
      */
-    private static boolean _debugLog;
+    private static final boolean _debugLog = _logger.isLoggable(Level.FINE);
 
     /**
      * The resource bundle containing the localized message strings.
      */
-    private static ResourceBundle _rb = null;
-
-    // ---------------------------------------------------------------------
-    // Constructor and initialization
-
-    /**
-     * Default constructor that simply gets a handle to the web container
-     * subsystem's logger.
-     */
-    public CacheTag() {
-        super();
-        if (_logger == null) {
-            _logger = LogDomains.getLogger(CacheTag.class, LogDomains.PWC_LOGGER);
-            _rb = _logger.getResourceBundle();
-            _debugLog = _logger.isLoggable(Level.FINE);
-        }
-    }
+    private static final ResourceBundle _rb = _logger.getResourceBundle();
 
     // ---------------------------------------------------------------------
     // Tag logic

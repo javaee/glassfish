@@ -44,11 +44,12 @@ package com.sun.enterprise.web.monitor.impl;
 import java.text.MessageFormat;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import com.sun.enterprise.web.logging.pwc.LogDomains;
+import com.sun.logging.LogDomains;
 
 class MonitorUtil {
 
-    private static Logger _logger = LogDomains.getLogger(MonitorUtil.class, LogDomains.PWC_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(
+        MonitorUtil.class, LogDomains.WEB_LOGGER);
 
     /*
      * Convenience method for logging messages that require parametric

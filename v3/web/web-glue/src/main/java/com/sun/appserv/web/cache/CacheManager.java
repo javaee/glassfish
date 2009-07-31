@@ -59,23 +59,28 @@ import org.apache.catalina.LifecycleException;
 import com.sun.appserv.util.cache.Cache;
 import com.sun.appserv.web.cache.mapping.CacheMapping;
 
-import com.sun.enterprise.web.logging.pwc.LogDomains;
+import com.sun.logging.LogDomains;
 
 public class CacheManager {
 
     public static final String CACHE_MANAGER_ATTR_NAME = 
-                            "com.sun.appserv.web.CacheManager";
+        "com.sun.appserv.web.CacheManager";
+
     public static final int DEFAULT_CACHE_MAX_ENTRIES = 4096;
+
     public static final int DEFAULT_CACHE_TIMEOUT = 30;
+
     public static final String DEFAULT_CACHE_CLASSNAME = 
-                                        "com.sun.appserv.util.cache.LruCache";
+        "com.sun.appserv.util.cache.LruCache";
 
     // PWC_LOGGER
-    private static Logger _logger;
+    private static final Logger _logger = LogDomains.getLogger(
+        CacheManager.class, LogDomains.WEB_LOGGER);
+
     /**
      * The resource bundle containing the localized message strings.
      */
-    private static ResourceBundle _rb = null;
+    private static final ResourceBundle _rb = _logger.getResourceBundle();
 
     // default max maximum number of entries in the cache
     int maxEntries = DEFAULT_CACHE_MAX_ENTRIES;
@@ -209,10 +214,6 @@ public class CacheManager {
 
         if (!enabled)
             return;
-
-        // web container logger
-        _logger = LogDomains.getLogger(CacheManager.class, LogDomains.PWC_LOGGER);
-        _rb = _logger.getResourceBundle();
 
         // create the default cache
         try {

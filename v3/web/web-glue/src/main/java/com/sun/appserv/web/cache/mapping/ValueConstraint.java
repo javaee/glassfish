@@ -41,7 +41,7 @@ import java.text.MessageFormat;
 import java.util.logging.Logger;
 import java.util.ResourceBundle;
 
-import com.sun.enterprise.web.logging.pwc.LogDomains;
+import com.sun.logging.LogDomains;
 
 /** ValueConstraint class represents a field's value constraint; 
  *  supports common matching expressions. 
@@ -52,12 +52,13 @@ public class ValueConstraint {
         "", "'equals'", "'greater'", "'lesser'", "'not-equals'", "'in-range'"
     };
 
-    // PWC_LOGGER
-    private static Logger _logger;
+    private static final Logger _logger = LogDomains.getLogger(
+        ValueConstraint.class, LogDomains.WEB_LOGGER);
+
     /**
      * The resource bundle containing the localized message strings.
      */
-    private static ResourceBundle _rb = null;
+    private static final ResourceBundle _rb = _logger.getResourceBundle();
 
     // field values to match 
     private String matchValue = null; 
@@ -82,10 +83,6 @@ public class ValueConstraint {
     public ValueConstraint(String value, String expr) 
                                 throws IllegalArgumentException {
         int match;
-
-        // web container logger
-        _logger = LogDomains.getLogger(ValueConstraint.class, LogDomains.PWC_LOGGER);
-        _rb = _logger.getResourceBundle();
 
         if (expr == null || expr.equals("equals")) {
             match = Constants.MATCH_EQUALS;

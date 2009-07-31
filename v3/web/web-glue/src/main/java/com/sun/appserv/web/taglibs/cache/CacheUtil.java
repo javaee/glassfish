@@ -37,14 +37,13 @@
 package com.sun.appserv.web.taglibs.cache;
 
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 import java.text.MessageFormat;
-
 import javax.servlet.jsp.PageContext;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-
 import com.sun.appserv.util.cache.Cache;
-import com.sun.enterprise.web.logging.pwc.LogDomains;
+import com.sun.logging.LogDomains;
 
 /**
  * CacheUtil has utility methods used by the cache tag library.
@@ -54,8 +53,10 @@ public class CacheUtil {
     /**
      * The resource bundle containing the localized message strings.
      */
-    private static ResourceBundle _rb =
-        LogDomains.getLogger(CacheUtil.class, LogDomains.PWC_LOGGER).getResourceBundle();
+    private static final Logger logger = LogDomains.getLogger(
+        CacheUtil.class, LogDomains.WEB_LOGGER);
+
+    private static final ResourceBundle _rb = logger.getResourceBundle();
 
     private static final String PAGE_SCOPE = "page";   
     private static final String REQUEST_SCOPE = "request";   

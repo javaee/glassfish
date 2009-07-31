@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -68,8 +69,7 @@ import org.apache.catalina.Realm;
 //6406580 START
 import org.apache.catalina.session.StandardSession;
 //6406580 END
-import com.sun.enterprise.web.logging.pwc.LogDomains;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.sun.logging.LogDomains;
 
 /**
  * A <strong>Valve</strong> that supports a "single sign on" user experience,
@@ -94,8 +94,8 @@ public class GlassFishSingleSignOn
     /**
      * The log used by this class.
      */
-    Logger logger = LogDomains.getLogger(GlassFishSingleSignOn.class,
-        LogDomains.PWC_LOGGER);
+    private static final Logger logger = LogDomains.getLogger(
+        GlassFishSingleSignOn.class, LogDomains.WEB_LOGGER);
 
     /**
      * The background thread.

@@ -38,11 +38,9 @@ package com.sun.appserv.web.cache.mapping;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-
-import com.sun.enterprise.web.logging.pwc.LogDomains;
+import com.sun.logging.LogDomains;
 
 /** ConstraintField class represents a single Field and constraints on its 
  *  values; Field name and its scope are inherited from the Field class. 
@@ -55,8 +53,11 @@ public class ConstraintField extends Field {
         "session.id"
     };
 
-    private static Logger _logger = null;
-    private static boolean _isTraceEnabled = false;
+    private static final Logger _logger = LogDomains.getLogger(
+        ConstraintField.class, LogDomains.WEB_LOGGER);
+
+    private static final boolean _isTraceEnabled =
+        _logger.isLoggable(Level.FINE);
 
     // whether to cache if there was a match
     boolean cacheOnMatch = true;
@@ -71,13 +72,9 @@ public class ConstraintField extends Field {
      * @param name name of this field
      * @param scope scope of this field
      */
-    public ConstraintField (String name, String scope) 
-                                throws IllegalArgumentException {
+    public ConstraintField(String name, String scope) 
+            throws IllegalArgumentException {
         super(name, scope);
-        if (_logger == null) {
-            _logger = LogDomains.getLogger(ConstraintField.class, LogDomains.PWC_LOGGER);
-            _isTraceEnabled = _logger.isLoggable(Level.FINE);
-        }
     }
 
     /** set whether to cache should the constraints check pass

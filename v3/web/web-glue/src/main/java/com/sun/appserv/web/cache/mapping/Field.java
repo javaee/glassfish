@@ -47,16 +47,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Cookie;
 
-import com.sun.enterprise.web.logging.pwc.LogDomains;
+import com.sun.logging.LogDomains;
 
 public class Field {
 
     // PWC_LOGGER
-    private static Logger _logger;
+    private static final Logger _logger = LogDomains.getLogger(
+        Field.class, LogDomains.WEB_LOGGER);
+
     /**
      * The resource bundle containing the localized message strings.
      */
-    private static ResourceBundle _rb = null;
+    private static final ResourceBundle _rb = _logger.getResourceBundle();
 
     // field name and scope 
     protected String name; 
@@ -70,10 +72,6 @@ public class Field {
      * @param scope scope of this field
      */
     public Field (String name, String scope) throws IllegalArgumentException {
-        // web container logger
-        _logger = LogDomains.getLogger(Field.class, LogDomains.PWC_LOGGER);
-        _rb = _logger.getResourceBundle();
-
         this.name = name;
         this.scope = parseScope(scope);
     }

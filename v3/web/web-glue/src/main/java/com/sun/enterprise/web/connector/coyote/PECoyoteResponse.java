@@ -42,14 +42,15 @@ import org.apache.catalina.connector.CoyoteWriter;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.connector.OutputBuffer;
 import com.sun.enterprise.web.pwc.PwcWebModule;
-import com.sun.enterprise.web.logging.pwc.LogDomains;
+import com.sun.logging.LogDomains;
 
 /**
  * Customized version of the Tomcat 5 CoyoteResponse
  */
 public class PECoyoteResponse extends Response {
 
-    private static final Logger logger = LogDomains.getLogger(PECoyoteResponse.class, LogDomains.PWC_LOGGER);
+    private static final Logger logger = LogDomains.getLogger(
+        PECoyoteResponse.class, LogDomains.WEB_LOGGER);
 
     /*
      * Constructor.
