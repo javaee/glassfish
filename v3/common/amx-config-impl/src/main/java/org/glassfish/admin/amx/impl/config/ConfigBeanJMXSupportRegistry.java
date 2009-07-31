@@ -36,6 +36,8 @@
 package org.glassfish.admin.amx.impl.config;
 
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -44,6 +46,7 @@ import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+
 
 /**
     A registry of ConfigBeanJMXSupport, for efficiency in execution time and scalability
@@ -104,6 +107,20 @@ final class ConfigBeanJMXSupportRegistry
         return helper;
     }
     
+    /** Find all  ConfigBeanProxy interfaces  reachable from specified item, including the item itself */
+        public static Set<Class<? extends ConfigBeanProxy>>
+    getAllConfigBeanProxyInterfaces( final ConfigBeanJMXSupport top) {
+        final Set<Class<? extends ConfigBeanProxy>> all = new HashSet<Class<? extends ConfigBeanProxy>>();
+        all.add( top.getIntf() );
+
+        for( final Class<? extends ConfigBeanProxy>  intf : top.childTypes().values() )
+        {
+            all.addAll( getAllConfigBeanProxyInterfaces(getInstance(intf)) );
+        }
+        return all;
+    }
+
+
     /** Recursively attempt to find default values for a descendant of specified type */
         public static Class<? extends ConfigBeanProxy>
     getConfigBeanProxyClassFor( final ConfigBeanJMXSupport start, final String type) {

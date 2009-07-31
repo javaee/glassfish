@@ -140,6 +140,9 @@ public class ConfigBeanJMXSupport
          */
     }
 
+    public Class<? extends ConfigBeanProxy> getIntf() { return mIntf; }
+    
+    
     private static Class<?> findDuck(final Class<?> intf)
     {
         final Class<?>[] candidates = intf.getClasses();
