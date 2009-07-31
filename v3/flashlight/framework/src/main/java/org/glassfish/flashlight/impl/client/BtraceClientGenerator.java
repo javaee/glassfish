@@ -26,53 +26,10 @@ import java.util.Collection;
 
 public class BtraceClientGenerator {
 
-	/*
-    public String defineClass(FlashlightProbeProvider provider, Class providerClazz) {
-
-        String generatedClassName = provider.getModuleProviderName() + "_Flashlight_" + provider.getModuleName() + "_"
-                + "Probe_" + ((provider.getProbeProviderName() == null) ? providerClazz.getName() : provider.getProbeProviderName());
-        generatedClassName = providerClazz.getName() + "_" + generatedClassName;
-
-        byte[] classData = generateBtraceClientClassData(provider, providerClazz, generatedClassName);
-
-        ProtectionDomain pd = providerClazz.getProtectionDomain();
-
-        java.lang.reflect.Method jm = null;
-        for (java.lang.reflect.Method jm2 : ClassLoader.class.getDeclaredMethods()) {
-            if (jm2.getName().equals("defineClass") && jm2.getParameterTypes().length == 5) {
-                jm = jm2;
-                break;
-            }
-        }
-
-        final java.lang.reflect.Method clM = jm;
-        try {
-            java.security.AccessController.doPrivileged(
-                    new java.security.PrivilegedExceptionAction() {
-                        public java.lang.Object run() throws Exception {
-                            if (!clM.isAccessible()) {
-                                clM.setAccessible(true);
-                            }
-                            return null;
-                        }
-                    });
-
-            clM.invoke(providerClazz.getClassLoader(), generatedClassName, classData, 0,
-                    classData.length, pd);
-
-            return generatedClassName;
-        } catch (PrivilegedActionException pEx) {
-            throw new RuntimeException(pEx);
-        } catch (IllegalAccessException
-                illegalAccessException) {
-            throw new RuntimeException(illegalAccessException);
-        } catch (InvocationTargetException
-                invtEx) {
-            throw new RuntimeException(invtEx);
-        }
-
+    private BtraceClientGenerator() {
+        // all static class
+        // no instances llowed
     }
-    */
 
     public static byte[] generateBtraceClientClassData(int clientID,
     		Collection<FlashlightProbe> probesRequiringTransformation,
@@ -143,10 +100,20 @@ public class BtraceClientGenerator {
         cw.visitEnd();
 
         byte[] classData = cw.toByteArray();
-        /*
-        //System.out.println("**** Generated BTRACE Client " + generatedClassName);
+        writeClass(classData, generatedClassName);
+        return classData;
+    }
+
+    private static void writeClass(byte[] classData, String generatedClassName) {
+        // only do this if we are in "debug" mode
+        String debug = System.getenv("AS_DEBUG");
+        if(debug == null || !debug.equals("true"))
+            return;
+
+        System.out.println("**** Generated BTRACE Client " + generatedClassName);
+
         try {
-        	int index = generatedClassName.lastIndexOf('/');
+            int index = generatedClassName.lastIndexOf('/');
             String rootPath = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) +
                                 File.separator + "lib" + File.separator;
 
@@ -158,11 +125,10 @@ public class BtraceClientGenerator {
             fos.write(classData);
             fos.flush();
             fos.close();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
            ex.printStackTrace();
         }
-        */
-        return classData;
     }
 
     private static void generateConstructor(ClassWriter cw) {
@@ -176,3 +142,52 @@ public class BtraceClientGenerator {
         gen.endMethod();
     }
 }
+
+/*  Happy Hunting Ground for Huge Comments
+
+    public String defineClass(FlashlightProbeProvider provider, Class providerClazz) {
+
+        String generatedClassName = provider.getModuleProviderName() + "_Flashlight_" + provider.getModuleName() + "_"
+                + "Probe_" + ((provider.getProbeProviderName() == null) ? providerClazz.getName() : provider.getProbeProviderName());
+        generatedClassName = providerClazz.getName() + "_" + generatedClassName;
+
+        byte[] classData = generateBtraceClientClassData(provider, providerClazz, generatedClassName);
+
+        ProtectionDomain pd = providerClazz.getProtectionDomain();
+
+        java.lang.reflect.Method jm = null;
+        for (java.lang.reflect.Method jm2 : ClassLoader.class.getDeclaredMethods()) {
+            if (jm2.getName().equals("defineClass") && jm2.getParameterTypes().length == 5) {
+                jm = jm2;
+                break;
+            }
+        }
+
+        final java.lang.reflect.Method clM = jm;
+        try {
+            java.security.AccessController.doPrivileged(
+                    new java.security.PrivilegedExceptionAction() {
+                        public java.lang.Object run() throws Exception {
+                            if (!clM.isAccessible()) {
+                                clM.setAccessible(true);
+                            }
+                            return null;
+                        }
+                    });
+
+            clM.invoke(providerClazz.getClassLoader(), generatedClassName, classData, 0,
+                    classData.length, pd);
+
+            return generatedClassName;
+        } catch (PrivilegedActionException pEx) {
+            throw new RuntimeException(pEx);
+        } catch (IllegalAccessException
+                illegalAccessException) {
+            throw new RuntimeException(illegalAccessException);
+        } catch (InvocationTargetException
+                invtEx) {
+            throw new RuntimeException(invtEx);
+        }
+
+    }
+    */
