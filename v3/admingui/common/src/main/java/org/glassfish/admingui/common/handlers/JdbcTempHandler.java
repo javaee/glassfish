@@ -221,14 +221,17 @@ public class JdbcTempHandler {
                         extra.put("dsClassname", Boolean.TRUE);
                     }
                     List<Map<String, String>> noprops = new ArrayList<Map<String, String>>();
-                    Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionPropertiesAndDefaults(classname, resType);
-                    if (result != null) {
-                        Map<String, String> props = (Map) result.get(PROPERTY_MAP_KEY);
-                        handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
+                    if (!GuiUtil.isEmpty(classname)) {
+                        Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionPropertiesAndDefaults(classname, resType);
+                        if (result != null) {
+                            Map<String, String> props = (Map) result.get(PROPERTY_MAP_KEY);
+                            handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
 
+                        } 
                     } else {
                         handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", noprops);
                     }
+                    
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
