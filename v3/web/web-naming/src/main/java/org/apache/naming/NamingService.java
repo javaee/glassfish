@@ -56,6 +56,7 @@
 
 package org.apache.naming;
 
+import java.util.logging.*;
 import javax.naming.Context;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
@@ -76,26 +77,25 @@ public final class NamingService
     implements NamingServiceMBean, MBeanRegistration {
     
     
+    private static final Logger log = Logger.getLogger(
+        NamingService.class.getName());
+
     // ----------------------------------------------------- Instance Variables
-    
-    
+        
     /**
      * Status of the Slide domain.
      */
     private int state = STOPPED;
-    
     
     /**
      * Notification sequence number.
      */
     private long sequenceNumber = 0;
     
-    
     /**
      * Old URL packages value.
      */
     private String oldUrlValue = "";
-    
     
     /**
      * Old initial context value.
@@ -104,7 +104,6 @@ public final class NamingService
     
     
     // ---------------------------------------------- MBeanRegistration Methods
-    
     
     public ObjectName preRegister(MBeanServer server, ObjectName name)
         throws Exception {
@@ -232,16 +231,12 @@ public final class NamingService
              Integer.valueOf(STARTED), Integer.valueOf(STOPPING));
         sendNotification(notification);
         
-        try {
-            
+        try {    
             System.setProperty(Context.URL_PKG_PREFIXES, oldUrlValue);
             System.setProperty(Context.INITIAL_CONTEXT_FACTORY, oldIcValue);
-            
         } catch (Throwable t) {
-            
-            // FIXME
-            t.printStackTrace();
-            
+            log.log(Level.WARNING,
+                "Unable to restore original system properties", t);
         }
         
         state = STOPPED;

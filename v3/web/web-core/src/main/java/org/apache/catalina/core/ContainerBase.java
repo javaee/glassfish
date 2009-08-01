@@ -855,7 +855,7 @@ public abstract class ContainerBase
      *
      * @param resources The newly associated DirContext
      */
-    public void setResources(DirContext resources) {
+    public void setResources(DirContext resources) throws Exception {
         // Called from StandardContext.setResources()
         //              <- StandardContext.start() 
         //              <- ContainerBase.addChildInternal() 

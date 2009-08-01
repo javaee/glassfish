@@ -101,7 +101,9 @@ public class ProxyDirContext implements DirContext {
     /**
      * Builds a proxy directory context using the given environment.
      */
-    public ProxyDirContext(Hashtable env, DirContext dirContext) {
+    public ProxyDirContext(Hashtable env, DirContext dirContext)
+            throws Exception {
+
         this.env = env;
         this.dirContext = dirContext;
         if (dirContext instanceof BaseDirContext) {
@@ -109,13 +111,8 @@ public class ProxyDirContext implements DirContext {
             // the caching policy.
             BaseDirContext baseDirContext = (BaseDirContext) dirContext;
             if (baseDirContext.isCached()) {
-                try {
-                    cache = (ResourceCache) 
-                        Class.forName(cacheClassName).newInstance();
-                } catch (Exception e) {
-                    //FIXME
-                    e.printStackTrace();
-                }
+                cache = (ResourceCache) 
+                    Class.forName(cacheClassName).newInstance();
                 cache.setCacheMaxSize(baseDirContext.getCacheMaxSize());
                 cacheTTL = baseDirContext.getCacheTTL();
                 cacheObjectMaxSize = baseDirContext.getCacheMaxSize() / 20;
