@@ -374,7 +374,7 @@ public class Main {
                     if ((serviceName==null && mainServiceName==null)) {
                         startupCode = startup;
                     } else {
-                        if (serviceName.equals(mainServiceName)) {
+                        if (serviceName!=null && serviceName.equals(mainServiceName)) {
                             startupCode = startup;
                         }
                     }

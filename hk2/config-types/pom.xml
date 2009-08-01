@@ -16,6 +16,7 @@
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
+               	<version>0.3.78</version>
                 <extensions>true</extensions>
                 <configuration>
                     <archive>
