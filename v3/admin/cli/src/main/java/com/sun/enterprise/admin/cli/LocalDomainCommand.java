@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.security.KeyStore;
 import java.util.Set;
 
-/**
+/**  A class that's supposed to capture all the behavior common to operation on a "local" domain.
+ *  It's supposed to act as the abstract base class that provides more functionality to the
+ *  commands that operate on a local domain.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
 public abstract class LocalDomainCommand extends CLICommand {
@@ -171,9 +173,11 @@ public abstract class LocalDomainCommand extends CLICommand {
      *  when you own the domain that is available on accessible file system.
      *
      * @return an integer that represents admin port
+     * @throws CommandException in case of parsing errors
+     * @throws CommandValidationException in case of parsing errors 
      */
     protected int getAdminPort() throws CommandValidationException, CommandException {
-        Integer[] ports = null;
+        Integer[] ports;
 
         try {
             MiniXmlParser parser = new MiniXmlParser(this.getDomainXml());
@@ -194,7 +198,7 @@ public abstract class LocalDomainCommand extends CLICommand {
      *  In such cases, we need to know if the domain is running and this method provides a way to do that.
      *
      *
-     * @return
+     * @return boolean indicating whether the server is running
      * @throws UnsupportedOperationException for now (Kedar - 24 Jul 2009) ...
      */
     protected boolean isRunning() throws UnsupportedOperationException {
