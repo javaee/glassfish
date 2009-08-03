@@ -58,13 +58,11 @@
 
     <target name="assemble" depends="compile">
         <jar destfile="${ejb.jar}" basedir="${build}"
-                excludes="**/Client.class,**/ClientSuper.class,**/Servlet.class"/>
+                excludes="**/Client.class,**/ClientSuper.class,**/Servlet.class, **/MyFilter.class"/>
 
         <war destfile="${web.war}" webxml="descriptor/web.xml">
-            <classes dir="${build}">
-                <exclude name="**/Client.class"/>
-                <exclude name="**/*EJB.class, **.jar"/>
-            </classes>
+            <classes dir="${build}" 
+                excludes="**/Client.class, **/*EJB.class, **/*.jar"/>
         </war>
 
         <jar destfile="${client.jar}" basedir="${build}"
