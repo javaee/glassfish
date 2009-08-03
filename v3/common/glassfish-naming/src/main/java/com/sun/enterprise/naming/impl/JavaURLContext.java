@@ -30,6 +30,12 @@ import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.internal.api.Globals;
+import org.glassfish.api.naming.ComponentNamingUtil;
+import org.jvnet.hk2.component.Habitat;
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+
 /**
  * This class is a context implementation for the java:comp namespace.
  * The context determines the component id from the invocation manager
@@ -157,6 +163,56 @@ public final class JavaURLContext implements Context, Cloneable {
 
             return obj;
         } catch (NamingException ex) {
+
+            Habitat habitat = Globals.getDefaultHabitat();
+            ProcessEnvironment processEnv = habitat.getComponent(ProcessEnvironment.class);
+            if( fullName.startsWith("java:app/") &&
+                processEnv.getProcessType() == ProcessType.ACC ) {
+
+                // This could either be an attempt by an app client to access a portable
+                // remote session bean JNDI name via the java:app namespace or a lookup of
+                // an application-defined java:app environment dependency.  Try them in
+                // that order.
+
+                Context ic = namingManager.getInitialContext();
+                String appName = (String) namingManager.getInitialContext().lookup("java:comp/AppName");
+
+                Object obj = null;
+
+                if( !fullName.startsWith("java:app/env/")) {
+                    try {
+
+                        // Translate the java:app name into the equivalent java:global name so that
+                        // the lookup will be resolved by the server.
+                        String newPrefix = "java:global/" + appName + "/";
+
+                        int javaAppLength = "java:app/".length();
+                        String globalLookup = newPrefix + fullName.substring(javaAppLength);
+
+                        obj = ic.lookup(globalLookup);
+
+                    } catch(NamingException javaappenvne) {
+                        _logger.log(Level.FINE, "Trying global version of java:app ejb lookup",
+                                javaappenvne);
+                    }
+                }
+
+                if( obj == null ) {
+                   ComponentNamingUtil compNamingUtil = habitat.getByContract(ComponentNamingUtil.class);
+                   String internalGlobalJavaAppName =
+                    compNamingUtil.composeInternalGlobalJavaAppName(appName, fullName);
+
+                    obj = ic.lookup(internalGlobalJavaAppName);
+                }
+
+                if( obj == null ) {
+                    throw new NamingException("No object found for " + name);
+                }
+
+                return obj;
+               
+            }
+
             throw ex;
         } catch (Exception ex) {
             throw (NamingException) (new NameNotFoundException(

@@ -151,10 +151,8 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
         Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
         
-        /**
+        
         EjbBundleDescriptor ejbBundle = getEjbBundleFromContext(context);
-
-
 
         if( ejbBundle != null ) {
 
@@ -164,7 +162,6 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
             bootstrap.getServices().add(EjbServices.class, ejbServices);
 
         }
-        **/
         
         bootstrap.setEnvironment(Environments.SERVLET);
         bootstrap.getServices().add(Deployment.class, new DeploymentImpl(archive, ejbs) {});

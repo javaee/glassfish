@@ -127,12 +127,7 @@ public class JavaModuleNamingProxy
 
                 Application app = bd.getApplication();
 
-                if ( (! app.isVirtual()) && (! app.isPackagedAsSingleModule()) ) {
-                    appName = app.getAppName();
-                } else {
-                    // For stand-alone module, EE module name is used as app name
-                    appName = bd.getModuleDescriptor().getModuleName();
-                }
+                appName = app.getAppName();               
             }
         }
 
@@ -202,7 +197,7 @@ public class JavaModuleNamingProxy
 
                     String appName = null;
 
-                    if ( (! app.isVirtual()) && (! app.isPackagedAsSingleModule()) ) {
+                    if ( !app.isVirtual() )  {
                         appName = app.getAppName();
                     }
 

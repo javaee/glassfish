@@ -1489,19 +1489,6 @@ public class Application extends BundleDescriptor
         return this.virtual;
     }
 
-    /**
-     * Returns if the application is packaged in a single module.
-     *
-     * @return true if this application obj is packaged in a single module
-     */
-    public boolean isPackagedAsSingleModule() {
-        return isPackagedAsSingleModule;
-    }
-
-    public void setPackagedAsSingleModule(boolean status) {
-        this.isPackagedAsSingleModule = status;
-    }
-
     public boolean isUniqueIdSet() {
         return uniqueIdSet;
     }

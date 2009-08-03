@@ -1501,7 +1501,7 @@ public abstract class BaseContainer
         String appName = null;
 
         Application app = ejbDescriptor.getApplication();
-        if ( (! app.isVirtual()) && (! app.isPackagedAsSingleModule()) ) {
+        if ( ! app.isVirtual() ) {
             appName = ejbDescriptor.getApplication().getAppName();
         }
 

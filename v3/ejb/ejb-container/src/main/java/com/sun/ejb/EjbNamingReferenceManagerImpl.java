@@ -97,6 +97,25 @@ public class EjbNamingReferenceManagerImpl
             // jndi name. 
             jndiObj = context.lookup(ejbRefDesc.getLookup());
             resolved = true;
+        } else if( ejbRefDesc.hasJndiName() &&
+                   ejbRefDesc.getJndiName().startsWith("java:app/") &&
+                   !ejbRefDesc.getJndiName().startsWith("java:app/env/")) {
+
+            // This could be an @EJB dependency in an appclient whose target name
+            // is a portable java:app ejb name.  Try the global version.  If that
+            // doesn't work, the javaURLContext logic should be able to figure it
+            // out.
+            String remoteJndiName = ejbRefDesc.getJndiName();
+
+            String appName = (String) context.lookup("java:comp/AppName");
+            String newPrefix = "java:global/" + appName + "/";
+
+            int javaAppLength = "java:app/".length();
+            String globalLookup = newPrefix + remoteJndiName.substring(javaAppLength);
+
+            jndiObj = context.lookup(globalLookup);
+            resolved = true;
+
         } else {
 
             // Get actual jndi-name from ejb module.

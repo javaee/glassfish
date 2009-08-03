@@ -53,6 +53,7 @@ import org.glassfish.javaee.services.DataSourceDefinitionProxy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.glassfish.api.naming.ComponentNamingUtil;
 
 import javax.naming.NamingException;
 import javax.naming.NameNotFoundException;
@@ -88,6 +89,9 @@ public class ComponentEnvManagerImpl
 
     @Inject
     GlassfishNamingManager namingManager;
+
+    @Inject
+    ComponentNamingUtil componentNamingUtil;
 
     // TODO: container-common shouldn't depend on EJB stuff, right?
     // this seems like the abstraction design failure.
@@ -160,6 +164,24 @@ public class ComponentEnvManagerImpl
             namingManager.publishObject(next.getName(), next.getValue(), true);
         }
 
+        // If the app contains any application client modules (and the given env isn't
+        // an application client)  register any java:app dependencies under a well-known
+        // internal portion of the global namespace based on the application name.  This
+        // will allow app client access to application-wide objects within the server.
+        Application app = getApplicationFromEnv(env);
+        if( !(env instanceof ApplicationClientDescriptor ) &&
+            (app.getBundleDescriptors(ApplicationClientDescriptor.class).size() > 0) ) {
+            for(JNDIBinding next : bindings) {
+                if( dependencyAppliesToScope(next.getName(), ScopeType.APP) ) {
+                    String internalGlobalJavaAppName =
+                            componentNamingUtil.composeInternalGlobalJavaAppName(app.getAppName(),
+                                    next.getName());
+                    namingManager.publishObject(internalGlobalJavaAppName, next.getValue(), true);
+                }
+            }
+        }
+
+
         if( compEnvId != null ) {
             this.register(compEnvId, env);
         }
@@ -225,6 +247,21 @@ public class ComponentEnvManagerImpl
 
         for(JNDIBinding next : globalBindings) {
             namingManager.unpublishObject(next.getName());
+        }
+
+        Application app = getApplicationFromEnv(env);
+        if( !(env instanceof ApplicationClientDescriptor ) &&
+            (app.getBundleDescriptors(ApplicationClientDescriptor.class).size() > 0) ) {
+            Collection<JNDIBinding> appBindings = new ArrayList<JNDIBinding>();
+            addJNDIBindings(env, ScopeType.APP, appBindings);
+            for(JNDIBinding next : appBindings) {
+
+                String internalGlobalJavaAppName =
+                        componentNamingUtil.composeInternalGlobalJavaAppName(app.getAppName(),
+                                next.getName());
+                namingManager.unpublishObject(internalGlobalJavaAppName);
+
+            }
         }
 
         if( env instanceof Application) {
@@ -489,9 +526,16 @@ public class ComponentEnvManagerImpl
     }
 
     private boolean dependencyAppliesToScope(Descriptor descriptor, ScopeType scope) {
+      
+        String name = descriptor.getName();
+
+        return dependencyAppliesToScope(name, scope);
+
+    }
+
+    private boolean dependencyAppliesToScope(String name, ScopeType scope) {
 
         boolean appliesToScope = false;
-        String name = descriptor.getName();
 
         switch(scope) {
 
@@ -595,27 +639,40 @@ public class ComponentEnvManagerImpl
         return id;
     }
 
-    private String getApplicationName(JndiNameEnvironment env) {
-        String appName = "";
+    private Application getApplicationFromEnv(JndiNameEnvironment env) {
+        Application app = null;
 
         if (env instanceof EjbDescriptor) {
             // EJB component
 	        EjbDescriptor ejbEnv = (EjbDescriptor) env;
-            appName = ejbEnv.getApplication().getAppName();
+            app = ejbEnv.getApplication();
         } else if ( env instanceof EjbBundleDescriptor ) {
-             EjbBundleDescriptor ejbBundle = (EjbBundleDescriptor) env;
-            appName = ejbBundle.getApplication().getAppName();
+            EjbBundleDescriptor ejbBundle = (EjbBundleDescriptor) env;
+            app  = ejbBundle.getApplication();
         } else if (env instanceof WebBundleDescriptor) {
             WebBundleDescriptor webEnv = (WebBundleDescriptor) env;
-	        appName = webEnv.getApplication().getAppName();
+	        app = webEnv.getApplication();
         } else if (env instanceof ApplicationClientDescriptor) {
             ApplicationClientDescriptor appEnv = (ApplicationClientDescriptor) env;
-	        appName =  appEnv.getApplication().getAppName();
+	        app=  appEnv.getApplication();
         } else if ( env instanceof ManagedBeanDescriptor ) {
             ManagedBeanDescriptor mb = (ManagedBeanDescriptor) env;
-            appName = mb.getBundle().getApplication().getAppName();
+            app = mb.getBundle().getApplication();
         } else if ( env instanceof Application ) {
-            appName = ((Application)env).getAppName();
+            app = ((Application)env);
+        } else {
+            throw new IllegalArgumentException("IllegalJndiNameEnvironment : env");
+        }
+
+        return app;
+    }
+
+    private String getApplicationName(JndiNameEnvironment env) {
+        String appName = "";
+
+        Application app = getApplicationFromEnv(env);
+        if( app != null) {
+            appName = app.getAppName();
         } else {
             throw new IllegalArgumentException("IllegalJndiNameEnvironment : env");
         }

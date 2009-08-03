@@ -648,7 +648,7 @@ public class EjbSessionDescriptor extends EjbDescriptor {
         String appName = null;
 
         Application app = getEjbBundleDescriptor().getApplication();
-        if ( (! app.isVirtual()) && (! app.isPackagedAsSingleModule()) ) {
+        if ( ! app.isVirtual() ) {
             appName = app.getAppName();
         }
 

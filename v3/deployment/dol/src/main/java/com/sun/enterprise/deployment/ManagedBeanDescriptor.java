@@ -305,7 +305,7 @@ public class ManagedBeanDescriptor extends JndiEnvironmentRefsGroupDescriptor {
         String appName = null;
 
         Application app = enclosingBundle.getApplication();
-        if ( (! app.isVirtual()) && (! app.isPackagedAsSingleModule()) ) {
+        if ( !app.isVirtual()  ) {
             appName = enclosingBundle.getApplication().getAppName();
         }
 
