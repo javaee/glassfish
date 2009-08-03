@@ -85,7 +85,7 @@ public class StartDomainCommand extends LocalDomainCommand {
         addOption(opts, "domaindir", '\0', "STRING", false, null);
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         addOption(opts, "upgrade", '\0', "BOOLEAN", false, "false");
-        addOption(opts, "verbose", '\0', "BOOLEAN", false, "false");
+        addOption(opts, "verbose", 'v', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandName = "domain_name";
         operandType = "STRING";
