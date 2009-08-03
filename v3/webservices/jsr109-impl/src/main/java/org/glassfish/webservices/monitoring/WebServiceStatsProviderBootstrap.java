@@ -14,7 +14,7 @@ import org.jvnet.hk2.component.Singleton;
  */
 @Service
 @Scoped(Singleton.class)
-public class Deployment109StatsProviderBootstrap implements TelemetryProvider, PostConstruct {
+public class WebServiceStatsProviderBootstrap implements TelemetryProvider, PostConstruct {
 
     public void onLevelChange(String newLevel) {
     }
@@ -24,6 +24,6 @@ public class Deployment109StatsProviderBootstrap implements TelemetryProvider, P
             "WebServiceContainer",
             PluginPoint.SERVER,
             "Web Services",
-            new Deployment109StatsProvider());
+            new WebServiceStatsProvider());
     }
 }

@@ -5,6 +5,8 @@ import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.Application;
+import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 
 import javax.xml.namespace.QName;
 
@@ -13,7 +15,7 @@ import javax.xml.namespace.QName;
  */
 @ManagedData
 @Description("109 deployed endpoint info")
-public class Deployment109EndpointData { // extends EndpointData {
+public class DeployedEndpointData { // extends EndpointData {
     @ManagedAttribute
     @Description("Application Name")
     public final String appName;
@@ -54,7 +56,12 @@ public class Deployment109EndpointData { // extends EndpointData {
     @Description("Implementation Type: EJB or SERVLET")
     public final String implType;
 
-    public Deployment109EndpointData(Application app, WebServiceEndpoint endpoint) {
+    @ManagedAttribute
+    @Description("Deployment Type: 109 or RI")
+    public final String deploymentType;
+
+    // 109 deployed endpoint
+    public DeployedEndpointData(Application app, WebServiceEndpoint endpoint) {
         this.appName = app.getAppName();
         this.endpointName = endpoint.getEndpointName();
         this.namespace = endpoint.getServiceName().getNamespaceURI();
@@ -66,6 +73,24 @@ public class Deployment109EndpointData { // extends EndpointData {
         this.wsdl = address+"?wsdl";
         this.tester = address+"?Tester";
         this.implType = endpoint.implementedByEjbComponent() ? "EJB" : "SERVLET";
+        this.deploymentType = "109";
+    }
+
+    // sun-jaxws.xml deployed endpoint
+    public DeployedEndpointData(ServletAdapter adapter) {
+        WSEndpoint endpoint = adapter.getEndpoint();
+
+        this.appName = "";
+        this.endpointName = "";
+        this.namespace = endpoint.getServiceName().getNamespaceURI();
+        this.serviceName = endpoint.getServiceName().getLocalPart();
+        this.portName = endpoint.getPortName().getLocalPart();
+        this.implClass = endpoint.getImplementationClass().getName();
+        this.address = adapter.getValidPath();  // TODO include contextPath
+        this.wsdl = address+"?wsdl";
+        this.tester = "";
+        this.implType = "SERVLET";
+        this.deploymentType = "RI";
     }
 
 }

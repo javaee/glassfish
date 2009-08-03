@@ -70,15 +70,8 @@ public class WebServicesSniffer extends GenericSniffer {
      * Returns true if the archive contains webservices.xml either in WEB-INF or META-INF directories
      */
     public boolean handles(ReadableArchive location, ClassLoader loader) {
-        boolean isWebService = false;
-        //Scan for the war case
-        if(isEntryPresent(location, "WEB-INF")) {
-            isWebService = isEntryPresent(location, "WEB-INF/webservices.xml");
-        } else if(isEntryPresent(location, "META-INF")){
-            //Check for ejb jar case
-            isWebService = isEntryPresent(location, "META-INF/webservices.xml");
-        }
-        return isWebService;
+        return isEntryPresent(location, "WEB-INF/webservices.xml") ||
+                isEntryPresent(location, "META-INF/webservices.xml");
     }
 
     private boolean isEntryPresent(ReadableArchive location, String entry) {
