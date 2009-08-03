@@ -128,7 +128,8 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(required=true)
+    @NotNull 
     String getObjectType();
 
     /**
