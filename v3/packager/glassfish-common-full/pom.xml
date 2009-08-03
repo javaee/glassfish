@@ -98,6 +98,11 @@
            <version>${project.version}</version>
            <type>distribution-fragment</type>
        </dependency>
+       <dependency>
+           <groupId>org.glassfish.admingui</groupId>
+	   <artifactId>console-common-full-plugin</artifactId>
+           <version>${project.version}</version>
+       </dependency> 
    	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
       

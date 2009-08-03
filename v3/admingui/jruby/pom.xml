@@ -42,7 +42,7 @@
         <artifactId>admingui</artifactId>
         <version>3.0-SNAPSHOT</version>
     </parent>
-    <artifactId>console-juby-plugin</artifactId>
+    <artifactId>console-jruby-plugin</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin Console Jruby Plugin</name>
     <description>Jruby bundle for Glassfish V3 Admin Console</description>
