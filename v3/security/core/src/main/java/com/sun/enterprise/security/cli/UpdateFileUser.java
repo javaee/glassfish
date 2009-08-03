@@ -36,6 +36,7 @@
 package com.sun.enterprise.security.cli;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -77,7 +78,7 @@ public class UpdateFileUser implements AdminCommand {
         new LocalStringManagerImpl(UpdateFileUser.class);    
 
     @Param(name="groups", optional=true)
-    List<String> groups;
+    List<String> groups = new ArrayList<String>(0); //by default, an empty list is better than a null
 
     // @Param(name="userpasswordfile", optional=true)
     // String passwordFile;
@@ -199,12 +200,8 @@ public class UpdateFileUser implements AdminCommand {
 
         //now updating user
         try {
-            String[] groups1 = null;
-            if (groups != null) {
-                groups1 = new String[groups.size()];            
-                for (int i = 0; i < groups.size(); i++) 
-                    groups1[i] = (String) groups.get(i);                
-            }
+            CreateFileUser.handleAdminRealm(authRealmName, groups);
+            String[] groups1 = groups.toArray(new String[groups.size()]); 
             fr.updateUser(userName, password, groups1);
             fr.writeKeyFile(keyFile);
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);

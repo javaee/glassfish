@@ -36,6 +36,7 @@
 package com.sun.enterprise.security.cli;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -78,7 +79,7 @@ public class CreateFileUser implements AdminCommand {
         new LocalStringManagerImpl(CreateFileUser.class);    
 
     @Param(name="groups", optional=true)
-    List<String> groups;
+    List<String> groups = new ArrayList<String>(0); //by default, an empty list is better than a null
 
     @Param(name="userpassword", password=true)
     String userpassword;
@@ -200,12 +201,8 @@ public class CreateFileUser implements AdminCommand {
         
         // now adding user
         try {
-            String[] groups1 = null;
-            if (groups != null) {
-                groups1 = new String[groups.size()];            
-                for (int i = 0; i < groups.size(); i++) 
-                    groups1[i] = (String) groups.get(i);                
-            }
+            CreateFileUser.handleAdminRealm(authRealmName, groups);
+            String[] groups1 = groups.toArray(new String[groups.size()]); 
             fr.addUser(userName, password, groups1);
             fr.writeKeyFile(keyFile);
             refreshRealm(authRealmName);
@@ -266,4 +263,12 @@ public class CreateFileUser implements AdminCommand {
 	 }
       }
   }
+    static void handleAdminRealm(String lr, List<String> lg) {
+        String fr = "admin-realm";   //this should be a constant defined at a central place -- the name of realm for admin
+        String fg = "asadmin";       //this should be a constant defined at a central place -- fixed name of admin group
+        if (fr.equals(lr)) {
+            if (!lg.contains(fg))
+                lg.add(fg);
+        }
+    }
 }
