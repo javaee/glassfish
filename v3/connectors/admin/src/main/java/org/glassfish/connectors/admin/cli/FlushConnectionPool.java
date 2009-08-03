@@ -36,10 +36,9 @@ public class FlushConnectionPool implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         if (!isPoolExist()) {
-            report.setMessage(localStrings.getLocalString("" +
+            report.setMessage(localStrings.getLocalString(
                     "flush.connection.pool.notexist",
-                    "Resource pool ") + " " +
-                    poolName + " does not exist.");
+                    "Resource pool {0} does not exist.", poolName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
 
@@ -49,11 +48,10 @@ public class FlushConnectionPool implements AdminCommand {
             _runtime.flushConnectionPool(poolName);
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (ConnectorRuntimeException e) {
-            report.setMessage(localStrings.getLocalString("" +
-                    "flush.connection.pool.fail",
-                    "Failed to flush connection pool") + " " +
-                    poolName + " " +e.getMessage());
+            report.setMessage(localStrings.getLocalString("flush.connection.pool.fail",
+                    "Failed to flush connection pool {0} due to {1}.", poolName, e.getMessage()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setFailureCause(e);
         }
     }
 
