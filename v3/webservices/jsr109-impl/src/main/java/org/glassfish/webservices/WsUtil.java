@@ -379,7 +379,7 @@ public class WsUtil {
                     }
                 });
 
-            ClientTransportFactory transportFactory = 
+          /*  ClientTransportFactory transportFactory =
                 rpcFactory.createClientTransportFactory(
                         ClientTransportFactoryTypes.HTTP, os);
 
@@ -388,7 +388,7 @@ public class WsUtil {
                 logger.info("Logging client transport for service-ref " +
                             serviceRef.getName() + " to file " + 
                             transportLogUrlStr);
-            }
+            }*/
 
         } catch(PrivilegedActionException pae) {
             logger.log(Level.INFO, "", pae.getCause());
