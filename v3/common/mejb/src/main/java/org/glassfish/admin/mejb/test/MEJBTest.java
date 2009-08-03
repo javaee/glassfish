@@ -21,7 +21,7 @@ import javax.naming.InitialContext;
 
 import javax.management.j2ee.ManagementHome;
 import org.glassfish.admin.mejb.MEJB;
-import org.glassfish.api.amx.AMXValues;
+import org.glassfish.external.amx.AMXGlassfish;
 
 //import com.sun.appserv.security.ProgrammaticLogin;
 
@@ -89,7 +89,7 @@ public class MEJBTest {
         final String defaultDomain = mejb.getDefaultDomain();
         println("MEJB default domain = " + defaultDomain + ", MBeanCount = " + mejb.getMBeanCount() );
         
-        final String domain = AMXValues.amxJMXDomain();
+        final String domain = AMXGlassfish.DEFAULT.amxJMXDomain();
         final ObjectName pattern = newObjectName( domain + ":*" );
         final Set<ObjectName> items = mejb.queryNames( pattern, null);
         println("Queried " + pattern + ", got mbeans: " + items.size() );

@@ -36,7 +36,8 @@
  */
 package org.glassfish.admin.amx.impl.config;
 
-import org.glassfish.api.amx.AMXValues;
+import org.glassfish.external.amx.AMX;
+import org.glassfish.external.amx.AMXGlassfish;
 
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
@@ -406,7 +407,7 @@ public final class AMXConfigLoader extends MBeanImplBase
             mLoaderThread.start();
         
             // Make the listener start listening
-            final ObjectName objectName = JMXUtil.newObjectName( AMXValues.amxSupportDomain(), "type=AMXConfigLoader" );
+            final ObjectName objectName = JMXUtil.newObjectName( AMXGlassfish.DEFAULT.amxSupportDomain(), "type=AMXConfigLoader" );
             try
             {
                 mServer.registerMBean( this, objectName );
@@ -616,13 +617,13 @@ public final class AMXConfigLoader extends MBeanImplBase
     {
         ObjectName  objectName = objectNameIn;
         
-        final String type = objectNameIn.getKeyProperty(AMXValues.TYPE_KEY);
+        final String type = objectNameIn.getKeyProperty(AMX.TYPE_KEY);
         
         ObjectName parentObjectName = getActualParentObjectName( cb );
         
         if ( parentObjectName == null  )
         {
-            parentObjectName = AMXValues.domainRoot();
+            parentObjectName = AMXGlassfish.DEFAULT.domainRoot();
         }
 
         final AMXConfigImpl impl = new AMXConfigImpl( parentObjectName, cb );
@@ -708,7 +709,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         
         if ( parent == null )
         {
-            parentObjectName = AMXValues.domainRoot();
+            parentObjectName = AMXGlassfish.DEFAULT.domainRoot();
         }
         else
         {

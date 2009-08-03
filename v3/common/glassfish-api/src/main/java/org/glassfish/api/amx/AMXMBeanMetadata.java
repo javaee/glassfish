@@ -49,6 +49,9 @@ import java.lang.annotation.Target;
     Depending on how the implementor generates MBeans, not all of this information is
     necessarily used; it could be ignored if there is a more authoritative source (eg
     internal @Configured interfaces that also have AMXConfig proxy interfaces).
+    <p>
+    In general, this annotation is used only by amx-core, amx-config and related built-in
+    AMX modules.
  
    @author Lloyd Chambers
  */

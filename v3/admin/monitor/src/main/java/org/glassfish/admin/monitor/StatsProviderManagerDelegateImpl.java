@@ -30,7 +30,9 @@ import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 
-import org.glassfish.api.amx.AMXValues;
+import org.glassfish.external.amx.AMXGlassfish;
+import static org.glassfish.external.amx.AMX.*;
+
 import org.glassfish.api.amx.AMXUtil;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
@@ -49,12 +51,12 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     private final Domain domain;
 
     private final TreeNode serverNode;
-    private static final ObjectName MONITORING_ROOT = AMXValues.monitoringRoot();
-    static final ObjectName MONITORING_SERVER = AMXValues.serverMon( AMXValues.dasName() );
+    private static final ObjectName MONITORING_ROOT = AMXGlassfish.DEFAULT.monitoringRoot();
+    static final ObjectName MONITORING_SERVER = AMXGlassfish.DEFAULT.serverMon( AMXGlassfish.DEFAULT.dasName() );
     private static final String DOMAIN = MONITORING_SERVER.getDomain();
-    private static final String PP = MONITORING_SERVER.getKeyProperty(AMXValues.PARENT_PATH_KEY);
-    private static final String TYPE = MONITORING_SERVER.getKeyProperty(AMXValues.TYPE_KEY);
-    private static final String NAME = MONITORING_SERVER.getKeyProperty(AMXValues.NAME_KEY);
+    private static final String PP = MONITORING_SERVER.getKeyProperty( PARENT_PATH_KEY);
+    private static final String TYPE = MONITORING_SERVER.getKeyProperty( TYPE_KEY);
+    private static final String NAME = MONITORING_SERVER.getKeyProperty( NAME_KEY);
     private static final String PARENT_PATH = PP + "/" + TYPE + "[" + NAME + "]" ;
     private static final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
     private boolean AMXReady = false;

@@ -35,7 +35,7 @@
  */
 package org.glassfish.admin.amx.j2ee;
 
-import org.glassfish.api.amx.AMXValues;
+import org.glassfish.external.amx.AMX;
 import org.glassfish.admin.amx.util.SetUtil;
 
 import java.util.Set;
@@ -55,7 +55,7 @@ public final class J2EETypes
 	/**
 		The ObjectName property key denoting the name of the MBean.
 	 */
-	public final static String	NAME_KEY			= AMXValues.NAME_KEY;
+	public final static String	NAME_KEY			= AMX.NAME_KEY;
 	
 	public final static String	J2EE_DOMAIN					= "J2EEDomain";
 	public final static String	J2EE_SERVER					= "J2EEServer";

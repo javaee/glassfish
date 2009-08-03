@@ -41,6 +41,12 @@ import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
+import org.glassfish.external.probe.provider.annotations.Probe;
+
+import org.glassfish.external.amx.AMXGlassfish;
+import org.glassfish.external.arc.Taxonomy;
+import org.glassfish.external.arc.Stability;
+
 /**
     A loader of AMX MBeans.  Any module that wants automatic support for loading AMX MBeans
     should implement this contract, choosing an appropriate name.  The loader will be found
@@ -48,10 +54,11 @@ import javax.management.ObjectName;
     @see AMXValues
  */
 @Contract
+//@Taxonomy(stability = Stability.UNCOMMITTED)
 public interface AMXLoader
 {
     /** property prefix used by AMXLoader MBeans, name to be suffixed to it */
-    public static String LOADER_PREFIX = AMXValues.amxSupportDomain() + ":type=amx-loader,name=";
+    public static String LOADER_PREFIX = AMXGlassfish.DEFAULT.amxSupportDomain() + ":type=amx-loader,name=";
     
     /**
     Loader a hierarchy of AMX MBeans, returning the ObjectName of the root

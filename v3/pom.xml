@@ -160,7 +160,7 @@
         <jbi.version>1.0</jbi.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <gmbal.version>3.0.0-b009</gmbal.version>
-        <glassfish-management-api.version>3.0.0-b003</glassfish-management-api.version>
+        <glassfish-management-api.version>3.0.0-b004</glassfish-management-api.version>
     </properties>
 
 

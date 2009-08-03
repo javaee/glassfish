@@ -32,7 +32,7 @@ import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.AMX_SPI;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.api.amx.AMXMBeanMetadata;
-import static org.glassfish.api.amx.AMXValues.*;
+import static org.glassfish.external.amx.AMX.*;
 
 /**
  *

@@ -42,7 +42,8 @@ import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.ClassUtil;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
-import static org.glassfish.api.amx.AMXValues.*;
+import static org.glassfish.external.amx.AMX.*;
+import org.glassfish.api.amx.AMXValues;
 
 import javax.management.Notification;
 import javax.management.ObjectName;
@@ -559,7 +560,7 @@ public final class Util
         String type = null;
         
         AMXMBeanMetadata meta = null;
-        final Object typeField = ClassUtil.getFieldValue( intf, TYPE_FIELD );
+        final Object typeField = ClassUtil.getFieldValue( intf, AMXValues.TYPE_FIELD );
         if ( typeField instanceof String )
         {
             type = (String)typeField;

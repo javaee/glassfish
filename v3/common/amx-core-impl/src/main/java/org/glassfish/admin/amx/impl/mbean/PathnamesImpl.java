@@ -52,7 +52,7 @@ import javax.management.MBeanInfo;
 import javax.management.MBeanServer;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.base.Pathnames;
-import static org.glassfish.api.amx.AMXValues.*;
+import static org.glassfish.external.amx.AMX.*;
 import org.glassfish.admin.amx.core.PathnameParser;
 import org.glassfish.admin.amx.core.proxy.AMXProxyHandler;
 import org.glassfish.admin.amx.util.CollectionUtil;

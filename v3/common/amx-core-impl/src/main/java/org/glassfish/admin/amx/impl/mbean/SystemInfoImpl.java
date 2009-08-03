@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import org.glassfish.api.amx.AMXValues;
+import org.glassfish.external.amx.AMXGlassfish;
 
 /**
 Loaded as MBean "amx:j2eeType=X-SystemInfo,name=na"
@@ -61,7 +61,7 @@ public final class SystemInfoImpl extends AMXImplBase
     public SystemInfoImpl(
             final MBeanServer server)
     {
-        super( AMXValues.domainRoot(), SystemInfo.class);
+        super( AMXGlassfish.DEFAULT.domainRoot(), SystemInfo.class);
 
         mServer = server;
 

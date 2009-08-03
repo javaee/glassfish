@@ -38,7 +38,8 @@ package org.glassfish.api.amx;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
-import static org.glassfish.api.amx.AMXValues.*;
+import static org.glassfish.external.amx.AMX.*;
+import org.glassfish.external.amx.AMXGlassfish;
 
 /**
     Small utilities for AMXBooter and related.
@@ -73,7 +74,7 @@ public final class AMXUtil
      */
     public static ObjectName invokeWaitAMXReady(final MBeanServerConnection conn)
     {
-        final ObjectName domainRoot = AMXValues.domainRoot();
+        final ObjectName domainRoot = AMXGlassfish.DEFAULT.domainRoot();
         try
         {
             conn.invoke( domainRoot, "waitAMXReady", null, null );
@@ -90,7 +91,7 @@ public final class AMXUtil
      */
     public static ObjectName findDomainRoot(final MBeanServerConnection conn)
     {
-        final ObjectName objectName = AMXValues.domainRoot();
+        final ObjectName objectName = AMXGlassfish.DEFAULT.domainRoot();
         try
         {
             if (!conn.isRegistered(objectName))
@@ -132,7 +133,7 @@ public final class AMXUtil
             props = props + "," + prop(NAME_KEY, name);
         }
 
-        return newObjectName( amxJMXDomain(), props);
+        return newObjectName( AMXGlassfish.DEFAULT.amxJMXDomain(), props);
     }
 
     /** Make a new ObjectName with unchecked exception */

@@ -41,13 +41,13 @@ import java.util.List;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.base.DomainRoot;
-import org.glassfish.api.amx.AMXValues;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
-import static org.glassfish.api.amx.AMXValues.*;
+
+import static org.glassfish.external.amx.AMX.*;
 
 /**
 Class used to build ObjectNameBuilder for AMX MBeans.

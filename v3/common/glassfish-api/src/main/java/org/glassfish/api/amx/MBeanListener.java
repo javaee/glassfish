@@ -13,7 +13,8 @@ import javax.management.NotificationListener;
 import javax.management.ObjectName;
 import java.util.concurrent.CountDownLatch;
 
-import static org.glassfish.api.amx.AMXValues.*;
+import static org.glassfish.external.amx.AMX.*;
+import org.glassfish.external.amx.AMXGlassfish;
 
 /**
  * Listens for registration of MBeans of various types.
@@ -188,7 +189,7 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
         final MBeanServerConnection server,
         final T callback)
     {
-        final MBeanListener<T> listener = new MBeanListener<T>( server, AMXValues.domainRoot(), callback);
+        final MBeanListener<T> listener = new MBeanListener<T>( server, AMXGlassfish.DEFAULT.domainRoot(), callback);
         listener.startListening();
         return listener;
     }
@@ -280,7 +281,7 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
                 props = props + "," + NAME_KEY + mName;
             }
 
-            final ObjectName pattern = AMXUtil.newObjectName(AMXValues.amxJMXDomain(), props);
+            final ObjectName pattern = AMXUtil.newObjectName(AMXGlassfish.DEFAULT.amxJMXDomain(), props);
             try
             {
                 final Set<ObjectName> matched = mMBeanServer.queryNames(pattern, null);
@@ -323,7 +324,7 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
             {
                 match = true;
             }
-            else if ( objectName.getDomain().equals( AMXValues.amxJMXDomain() ) )
+            else if ( objectName.getDomain().equals( AMXGlassfish.DEFAULT.amxJMXDomain() ) )
             {
                 if ( mType != null && mType.equals(objectName.getKeyProperty(TYPE_KEY)) )
                 {

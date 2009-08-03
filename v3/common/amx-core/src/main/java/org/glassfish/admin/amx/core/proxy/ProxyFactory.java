@@ -69,7 +69,7 @@ import javax.management.Descriptor;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
-import static org.glassfish.api.amx.AMXValues.*;
+import static org.glassfish.external.amx.AMX.*;
 
 import org.glassfish.api.amx.AMXUtil;
 

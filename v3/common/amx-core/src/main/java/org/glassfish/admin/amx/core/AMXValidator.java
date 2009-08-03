@@ -68,7 +68,7 @@ import org.glassfish.admin.amx.base.MBeanTrackerMBean;
 
 import static org.glassfish.admin.amx.core.PathnameConstants.*;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
-import static org.glassfish.api.amx.AMXValues.*;
+import static org.glassfish.external.amx.AMX.*;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;

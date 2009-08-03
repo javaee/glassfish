@@ -36,7 +36,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
-import static org.glassfish.api.amx.AMXValues.*;
+import static org.glassfish.external.amx.AMX.*;
 import org.glassfish.admin.amx.core.Util;
 import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
 import org.glassfish.admin.amx.config.AMXConfigProxy;

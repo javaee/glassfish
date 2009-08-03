@@ -71,7 +71,8 @@ import org.glassfish.api.event.Events;
 import org.glassfish.admin.amx.util.jmx.stringifier.StringifierRegistryIniter;
 import org.glassfish.admin.amx.util.stringifier.StringifierRegistryImpl;
 import org.glassfish.admin.amx.util.stringifier.StringifierRegistryIniterImpl;
-import org.glassfish.api.amx.AMXValues;
+
+import org.glassfish.external.amx.AMXGlassfish;
 
 /**
 An {@link AMXLoader} responsible for loading core amx MBeans
@@ -243,7 +244,7 @@ public final class AMXStartupService
         }
 
         final DomainRootImpl domainRoot = new DomainRootImpl();
-        DOMAIN_ROOT_OBJECTNAME = AMXValues.domainRoot();
+        DOMAIN_ROOT_OBJECTNAME = AMXGlassfish.DEFAULT.domainRoot();
         try
         {
             DOMAIN_ROOT_OBJECTNAME = mMBeanServer.registerMBean(domainRoot, DOMAIN_ROOT_OBJECTNAME).getObjectName();
