@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="464"/>
+    <property name="TOTAL_EXPECTED" value="463"/>
 
     &commonSetup;
     &commonBuild;
@@ -163,7 +163,6 @@
         <ant dir="multiByteGETQueryParamFormHintField" target="all"/>
         <ant dir="multiByteGETQueryParamLocaleCharsetMap" target="all"/>
         <ant dir="multiBytePOSTFormHintField" target="all"/>
-        <ant dir="serializableWebModuleAndServletStats" target="all"/>
         <ant dir="sessionSetMaxInactiveIntervalToZeroAndInvalidate" target="all"/>
         <ant dir="requestDispatcherMaxDepth" target="all"/>
         <ant dir="javaxServletErrorRequestUriDynamicResource" target="all"/>
