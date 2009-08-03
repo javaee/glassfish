@@ -44,9 +44,8 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
 import com.sun.enterprise.naming.impl.ClientNamingConfiguratorImpl;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
-import java.io.File;
-import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.naming.ClientNamingConfigurator;
 import org.glassfish.internal.api.Globals;
@@ -88,6 +87,12 @@ public class ACCModulesManager /*implements ModuleStartup*/ {
              */
             Globals.setDefaultHabitat(habitat);
 
+            /*
+             * Remove any already-loaded startup context so we can replace it
+             * with the ACC one.
+             */
+            habitat.removeAllByType(StartupContext.class);
+            
             StartupContext startupContext = new ACCStartupContext();
             habitat.add(new ExistingSingletonInhabitant(StartupContext.class, startupContext));
             /*
