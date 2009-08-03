@@ -5,7 +5,6 @@
 
 package org.glassfish.admingui.common.util;
 
-import com.sun.enterprise.config.serverbeans.JmsService;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,6 +42,7 @@ import org.glassfish.admin.amx.intf.config.PropertiesAccess;
 import org.glassfish.admin.amx.intf.config.Property;
 
 import org.glassfish.admin.amx.intf.config.Resources;
+import org.glassfish.admin.amx.intf.config.Server;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -142,6 +142,10 @@ public class V3AMX {
 
     public ApplicationRef getApplicationRef(String server, String appName){
         return getDomain().getServers().getServer().get(server).getApplicationRef().get(appName);
+    }
+
+    public Server getServer(String server) {
+        return domain.getServers().getServer().get(server);
     }
 
 
