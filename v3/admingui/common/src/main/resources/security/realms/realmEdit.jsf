@@ -52,7 +52,6 @@
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=auth-realm,name=#{pageSession.Name}")
         getRealmAttrForEdit(objectNameStr="#{objectNameStr}" attrMap=>$page{attrMap}, classnameOption=>$page{classnameOption}, realmClasses=>$page{realmClasses}, properties="#{requestScope.tableList}" );
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");
-        println("$attribute{tableList}")
         hasManageUserButton(realmName="#{pageSession.Name}" result="#{pageSession.showUserButton}")
     />
     </event>
