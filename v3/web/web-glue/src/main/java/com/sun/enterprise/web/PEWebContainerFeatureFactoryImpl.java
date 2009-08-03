@@ -37,8 +37,6 @@
 package com.sun.enterprise.web;
 
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
-import com.sun.enterprise.admin.monitor.stats.WebModuleStats;
-import com.sun.enterprise.web.stats.WebModuleStatsImpl;
 //import com.sun.enterprise.web.WebContainerAdminEventProcessor;
 //import com.sun.enterprise.web.PEWebContainerAdminEventProcessor;
 import com.sun.enterprise.web.WebContainerStartStopOperation;
@@ -55,22 +53,8 @@ import org.jvnet.hk2.component.PostConstruct;
  */
 @Service(name="com.sun.enterprise.web.PEWebContainerFeatureFactoryImpl")
 public class PEWebContainerFeatureFactoryImpl
-        implements WebContainerFeatureFactory, PostConstruct {
-
+        implements WebContainerFeatureFactory {
         
-    public void postConstruct() {
-    }
-    
-    public WebModuleStats getWebModuleStats() {
-        return new WebModuleStatsImpl();
-    }
-    
-    /*
-     public WebContainerAdminEventProcessor getWebContainerAdminEventProcessor() {
-        return new PEWebContainerAdminEventProcessor();
-    }
-     */   
-
     public WebContainerStartStopOperation getWebContainerStartStopOperation() {
         return new PEWebContainerStartStopOperation();
     }

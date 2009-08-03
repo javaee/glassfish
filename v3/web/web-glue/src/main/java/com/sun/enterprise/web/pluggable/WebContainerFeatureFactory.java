@@ -54,10 +54,6 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface WebContainerFeatureFactory {
 
-    public WebModuleStats getWebModuleStats();
-    
-    //public WebContainerAdminEventProcessor getWebContainerAdminEventProcessor();    
-    
     public WebContainerStartStopOperation getWebContainerStartStopOperation();
     
     public HealthChecker getHADBHealthChecker(WebContainer webContainer);

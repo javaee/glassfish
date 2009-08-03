@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,11 +36,13 @@
 
 package com.sun.enterprise.web.pwc.connector.coyote;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import com.sun.grizzly.util.http.Parameters;
@@ -71,6 +73,8 @@ public class PwcCoyoteRequest extends Request {
 
     private static final Logger logger = LogDomains.getLogger(
         PwcCoyoteRequest.class, LogDomains.WEB_LOGGER);
+
+    private static final ResourceBundle rb = logger.getResourceBundle();
 
     // Have we already determined request encoding from sun-web.xml?
     private boolean sunWebXmlChecked = false;
@@ -213,7 +217,10 @@ public class PwcCoyoteRequest extends Request {
             try {
                 setCharacterEncoding(encoding);
             } catch (UnsupportedEncodingException uee) {
-                logger.log(Level.WARNING, "pe_coyote.request.encoding", uee);
+                String msg = rb.getString(
+                    "request.unableToSetEncodingFromSunWebXml");
+                msg = MessageFormat.format(msg, encoding, wm.getName());
+                logger.log(Level.WARNING, msg, uee);
             }
         }
 
@@ -279,8 +286,8 @@ public class PwcCoyoteRequest extends Request {
         }
         int maxPostSize = ((Connector) connector).getMaxPostSize();
         if ((maxPostSize > 0) && (len > maxPostSize)) {
-            logger.log(Level.WARNING, "peCoyoteRequest.postTooLarge");
-            throw new IllegalStateException("Post too large");
+            throw new IllegalStateException(
+                rb.getString("request.postTooLarge"));
         }
 
         String encoding = null;

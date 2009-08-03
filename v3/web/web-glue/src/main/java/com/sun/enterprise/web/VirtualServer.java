@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,7 +60,6 @@ import com.sun.enterprise.security.web.GlassFishSingleSignOn;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.session.SessionCookieConfig;
-import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
 import org.glassfish.api.admin.config.Property;
 import com.sun.logging.LogDomains;
 import com.sun.web.security.RealmAdapter;
@@ -143,8 +142,8 @@ public class VirtualServer extends StandardHost {
     /**
      * The logger to use for logging ALL web container related messages.
      */
-    protected static final Logger _logger
-        = LogDomains.getLogger(VirtualServer.class, LogDomains.WEB_LOGGER);
+    protected static final Logger _logger =
+        LogDomains.getLogger(VirtualServer.class, LogDomains.WEB_LOGGER);
 
     /**
      * The resource bundle containing the message strings for _logger.
@@ -185,34 +184,22 @@ public class VirtualServer extends StandardHost {
      */
     private boolean allowLinking = false;
 
-
-     /*
+    /*
      * default context.xml location
      */
     private String defaultContextXmlLocation;
-
 
     /*
      * default-web.xml location
      */
     private String defaultWebXmlLocation;
 
-
     private String[] cacheControls;
-
 
     // Is this virtual server active?
     private boolean isActive;
 
-
-    /**
-     * The Stats holder used by this virtual-server.
-     */
-    private PWCRequestStatsImpl pwcRequestStatsImpl;
-
-
     private String authRealmName;
-
 
     /*
      * The accesslog valve of this VirtualServer.
@@ -224,10 +211,8 @@ public class VirtualServer extends StandardHost {
      */
     private PEAccessLogValve accessLogValve;
 
-
     // The value of the ssoCookieSecure property
     private String ssoCookieSecure = null;
-
 
     private String defaultContextPath = null;
 
@@ -896,22 +881,6 @@ public class VirtualServer extends StandardHost {
         } else {
             return null;
         }
-    }
-
-
-    /**
-     * Set the Stat holder.
-     */
-    public void setPWCRequestStatsImpl(PWCRequestStatsImpl pwcRequestStatsImpl){
-        this.pwcRequestStatsImpl = pwcRequestStatsImpl;
-    }
-
-
-    /**
-     * Get the Stat holder.
-     */
-    public PWCRequestStatsImpl getPWCRequestStatsImpl(){
-        return pwcRequestStatsImpl;
     }
 
 
