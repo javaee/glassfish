@@ -1114,7 +1114,7 @@ public class JavaEETransactionManagerSimplified
                     // Shouldn't happen
                     _logger.warning("enterprise_distributedtx.txbean_null" + tran);
                 } else {
-                    txnTable.put(tBean.getIdentifier(), tran);
+                    txnTable.put(tBean.getId(), tran);
                     tranBeans.add(tBean);
                 }
             }catch(Exception ex){
@@ -1127,10 +1127,14 @@ public class JavaEETransactionManagerSimplified
     /*
      *  Called by Admin Framework when transaction monitoring is enabled
      */
-    public void forceRollback(Transaction tran) throws IllegalStateException, SystemException{
-        if (tran != null){
-            tran.setRollbackOnly();
-        }
+    public void forceRollback(String txnId) throws IllegalStateException, SystemException{
+         if (txnTable == null || txnTable.get(txnId) == null) {
+            String result = sm.getString("transaction.monitor.rollback_invalid_id");
+            throw new  IllegalStateException(result);
+        } else {
+             ((Transaction) txnTable.get(txnId)).setRollbackOnly();
+         }
+
     }
 
     public void setMonitoringEnabled(boolean enabled){
