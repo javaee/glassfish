@@ -22,10 +22,10 @@
 		<ant dir="session3" target="private-all">
 			<property name="build" value="${build}/session3"/>
 		</ant>
+-->
 		<ant dir="security" target="private-all">
 			<property name="build" value="${build}/security"/>
 		</ant>
--->
 		<ant dir="xmloverride" target="private-all">
 			<property name="build" value="${build}/xmloverride"/>
 		</ant>
