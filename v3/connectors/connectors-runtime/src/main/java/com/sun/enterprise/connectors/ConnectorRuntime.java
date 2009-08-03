@@ -472,6 +472,15 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     /**
+     * Returns the system RAR names that allow pool creation
+     * @return String array representing list of system-rars
+     */
+    public String[] getSystemConnectorsAllowingPoolCreation(){
+       return (String[])systemRarsAllowingPoolCreation.toArray();
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     public String[] getConnectionDefinitionNames(String rarName)

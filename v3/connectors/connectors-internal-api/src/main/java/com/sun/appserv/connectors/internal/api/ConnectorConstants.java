@@ -99,6 +99,16 @@ public interface ConnectorConstants {
                 JDBCDRIVER_RA_NAME,
                 DEFAULT_JMS_ADAPTER
             ));
+
+    /**
+     * Indicates the list of system-rars for which connector connection pools can be created
+     */
+    public static final List<String> systemRarsAllowingPoolCreation = Collections.unmodifiableList(
+               Arrays.asList(
+                       DEFAULT_JMS_ADAPTER,
+                       JAXR_RA_NAME
+               ));
+
     
     /** 
      *  Reserver JNDI context under which sub contexts for default resources 

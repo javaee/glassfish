@@ -116,6 +116,10 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
     @Description("List of built in custom resource factory classes")
     public Map<String, Object> getBuiltInCustomResources();
 
+    @ManagedAttribute
+    @Description("List of system resource-adapters that allow connector-connection-pool creation")
+    public Map<String, Object> getSystemConnectorsAllowingPoolCreation();
+
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("List of connection definition names for the given resource-adapter")
     public Map<String, Object> getConnectionDefinitionNames(@Param(name = "rarName") String rarName);

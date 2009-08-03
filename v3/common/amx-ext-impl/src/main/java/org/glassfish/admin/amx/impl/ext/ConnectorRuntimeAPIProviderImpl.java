@@ -99,6 +99,22 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         return mHabitat.getComponent(ConnectorRuntime.class, null);
     }
 
+    public Map<String, Object> getSystemConnectorsAllowingPoolCreation(){
+        final Map<String, Object> result = new HashMap<String, Object>();
+
+        try
+        {
+            final String[] systemRars = getConnectorRuntime().getSystemConnectorsAllowingPoolCreation();
+            result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, systemRars);
+        }
+        catch (ComponentException e)
+        {
+            result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
+        }
+        return result;
+    }
+
     public Map<String, Object> getBuiltInCustomResources()
     {
         final Map<String, Object> result = new HashMap<String, Object>();

@@ -307,6 +307,13 @@ public interface ConnectorRuntime extends ConnectorConstants{
      */
     public Map<String,String> getBuiltInCustomResources();
 
+    /**
+     * Returns the system RAR names that allow pool creation
+     * @return String array representing list of system-rars
+     */
+    public String[] getSystemConnectorsAllowingPoolCreation();
+
+
     /** Obtains all the Connection definition names of a rar
      *  @param rarName rar moduleName
      *  @return Array of connection definition names.
