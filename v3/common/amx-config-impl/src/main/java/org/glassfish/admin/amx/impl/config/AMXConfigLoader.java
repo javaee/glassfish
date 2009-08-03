@@ -79,7 +79,6 @@ public final class AMXConfigLoader extends MBeanImplBase
 {
     private static void debug( final String s ) { System.out.println(s); }
     
-    private final MBeanServer mMBeanServer;
     private volatile AMXConfigLoaderThread mLoaderThread;
     
     private final Transactions  mTransactions;
@@ -95,11 +94,11 @@ public final class AMXConfigLoader extends MBeanImplBase
         final PendingConfigBeans pending,
         final Transactions transactions)
     {
-        if ( transactions == null ) throw new IllegalStateException();
+        super(mbeanServer);
+        if ( transactions == null ) throw new IllegalStateException( "AMXConfigLoader.AMXConfigLoader: null Transactions");
         
         mTransactions = transactions;
         mPendingConfigBeans = pending;
-        mMBeanServer = mbeanServer;
     }
     
     public void registerConfigured( final Class<? extends ConfigBeanProxy> intf )
@@ -129,7 +128,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         final ObjectName objectName = mRegistry.getObjectName(cb);
         if ( objectName != null)
         {
-            ImplUtil.unregisterAMXMBeans( mMBeanServer, objectName );
+            ImplUtil.unregisterAMXMBeans( mServer, objectName );
             mRegistry.remove(objectName);
         }
         else
@@ -167,7 +166,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         {
             //debug( "issueAttributeChange: " + xmlAttrName + ": {" + oldValue + " => " + newValue + "}");
             // FIXME
-            //final AMXConfigImpl amx = AMXConfigImpl.class.cast( AMXImplBase.__getObjectRef__(mMBeanServer, objectName) );
+            //final AMXConfigImpl amx = AMXConfigImpl.class.cast( AMXImplBase.__getObjectRef__(mServer, objectName) );
             //amx.issueAttributeChangeForXmlAttrName( xmlAttrName, oldValue, newValue, whenChanged );
         }
     }
@@ -410,7 +409,7 @@ public final class AMXConfigLoader extends MBeanImplBase
             final ObjectName objectName = JMXUtil.newObjectName( AMXValues.amxSupportDomain(), "type=AMXConfigLoader" );
             try
             {
-                mMBeanServer.registerMBean( this, objectName );
+                mServer.registerMBean( this, objectName );
                 //debug( "AMXConfigLoader.start(): registered self as " + objectName );
             }
             catch( Exception e )
@@ -425,8 +424,8 @@ public final class AMXConfigLoader extends MBeanImplBase
             {
                 final ObjectName parent = getDomainRootProxy().getExt().objectName();
                 final ConfigToolsImpl tools = new ConfigToolsImpl( parent );
-                final ObjectName configToolsObjectName = ObjectNameBuilder.buildChildObjectName(mMBeanServer, parent, ConfigTools.class);
-                mConfigToolsObjectName = mMBeanServer.registerMBean( tools, configToolsObjectName ).getObjectName();
+                final ObjectName configToolsObjectName = ObjectNameBuilder.buildChildObjectName(mServer, parent, ConfigTools.class);
+                mConfigToolsObjectName = mServer.registerMBean( tools, configToolsObjectName ).getObjectName();
             }
             catch( final JMException e )
             {
@@ -630,11 +629,11 @@ public final class AMXConfigLoader extends MBeanImplBase
         
         try
         {
-            final ObjectInstance instance = mMBeanServer.registerMBean( impl, objectNameIn );
+            final ObjectInstance instance = mServer.registerMBean( impl, objectNameIn );
             objectName = instance.getObjectName();
             mRegistry.add( cb, objectName );
 
-            //System.out.println( JMXUtil.toString( mMBeanServer.getMBeanInfo(objectName) ) );
+            //System.out.println( JMXUtil.toString( mServer.getMBeanInfo(objectName) ) );
         }
         catch( final JMException e )
         {
@@ -698,7 +697,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         
     private DomainRoot getDomainRootProxy()
     {
-        return ProxyFactory.getInstance(mMBeanServer).getDomainRootProxy(false);
+        return ProxyFactory.getInstance(mServer).getDomainRootProxy(false);
     }
     
         private ObjectName

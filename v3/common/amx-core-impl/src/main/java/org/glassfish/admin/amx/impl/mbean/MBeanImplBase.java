@@ -63,18 +63,18 @@ public abstract class MBeanImplBase
 	/**
 		The MBeanServer in which this object is registered (if any)
 	 */
-	protected MBeanServer	mServer;
+	protected volatile MBeanServer	mServer;
 	
 	/**
 		The ObjectName by which this object is registered (if registered).
 		Multiple registrations, which are possible, overwrite this; the last registration
 		wins.  If the MBean has not been registered, this name will be null.
 	 */
-	protected ObjectName	mSelfObjectName;
+	protected volatile ObjectName	mSelfObjectName;
 	
-	private NotificationEmitterSupport	mNotificationEmitter;
+	private volatile NotificationEmitterSupport	mNotificationEmitter;
 	
-	private Map<String,NotificationBuilder> mNotificationBuilders;
+	private volatile Map<String,NotificationBuilder> mNotificationBuilders;
 	
     /**
         We need debugging before the MBean is registered, so our
@@ -86,7 +86,15 @@ public abstract class MBeanImplBase
 		public
 	MBeanImplBase()
 	{
-		mNotificationEmitter	= null;
+	}
+    
+    /**
+        Some subclasses need the MBeanServer set in advance.
+     */
+        public
+	MBeanImplBase( final MBeanServer mbeanServer)
+	{
+		mServer	= mbeanServer;
 	}
 	
 	
@@ -479,10 +487,9 @@ public abstract class MBeanImplBase
 			mNotificationBuilders	= null;
 		}
 		
-		
-		mServer					= null;
-		mSelfObjectName			= null;
-		
+		// Leave these variables set, they may be desired after unregistration by some subclasses
+		//mServer					= null;
+		//mSelfObjectName			= null;
 	}
 	
         protected String
