@@ -42,8 +42,6 @@ import org.glassfish.flashlight.impl.core.*;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
-//REMOVE: Remove old probe.provider package when management-api integration complete with external modules
-import org.glassfish.probe.provider.annotations.*;
 import org.glassfish.external.probe.provider.annotations.*;
 
 import java.lang.annotation.Annotation;
@@ -87,22 +85,11 @@ public class FlashlightProbeProviderFactory
     public <T> T getProbeProvider(Class<T> providerClazz)
             throws InstantiationException, IllegalAccessException {
         //TODO: check for null and generate default names
-        org.glassfish.external.probe.provider.annotations.ProbeProvider provAnn = providerClazz.getAnnotation(org.glassfish.external.probe.provider.annotations.ProbeProvider.class);
-        if (provAnn != null) {
-            return getProbeProvider(provAnn.moduleProviderName(), provAnn.moduleName(),
+        ProbeProvider provAnn = providerClazz.getAnnotation(ProbeProvider.class);
+
+        return getProbeProvider(provAnn.moduleProviderName(), provAnn.moduleName(),
                                 provAnn.probeProviderName(),
                                 providerClazz);
-        } else {
-            //REMOVE: Remove old probe.provider package when management-api integration complete with external modules
-            org.glassfish.probe.provider.annotations.ProbeProvider provAnnOLD = providerClazz.getAnnotation(org.glassfish.probe.provider.annotations.ProbeProvider.class);
-            return getProbeProvider(provAnnOLD.moduleProviderName(), provAnnOLD.moduleName(),
-                                provAnnOLD.probeProviderName(),
-                                providerClazz);
-        }
-
-        //return getProbeProvider(provAnn.moduleProviderName(), provAnn.moduleName(),
-        //                        provAnn.probeProviderName(),
-        //                        providerClazz);
     }
 
     public <T> T getProbeProvider(String moduleProviderName, String moduleName,
@@ -117,34 +104,16 @@ public class FlashlightProbeProviderFactory
             //		+ "\tProbeProviderName= " + probeProviderName + "\tProviderClazz= " + providerClazz.toString());
             for (Method m : providerClazz.getDeclaredMethods()) {
                 int sz = m.getParameterTypes().length;
-                String probeName = null;
-                org.glassfish.external.probe.provider.annotations.Probe pnameAnn =
-                    m.getAnnotation(org.glassfish.external.probe.provider.annotations.Probe.class);
-                if (pnameAnn != null) {
-                    probeName = (pnameAnn != null)
+                Probe pnameAnn = m.getAnnotation(Probe.class);
+                String probeName = (pnameAnn != null)
                         ? pnameAnn.name() : m.getName();
-                } else {
-                    //REMOVE: Remove old probe.provider package when management-api integration complete with external modules
-                    org.glassfish.probe.provider.annotations.Probe pnameAnnOLD =
-                    m.getAnnotation(org.glassfish.probe.provider.annotations.Probe.class);
-                    probeName = (pnameAnnOLD != null)
-                        ? pnameAnnOLD.name() : m.getName();
-                }
-                //String probeName = (pnameAnn != null)
-                //        ? pnameAnn.name() : m.getName();
                 String[] probeParamNames = new String[sz];
                 int index = 0;
                 Annotation[][] anns2 = m.getParameterAnnotations();
                 for (Annotation[] ann1 : anns2) {
                     for (Annotation ann : ann1) {
-                        if (ann instanceof org.glassfish.external.probe.provider.annotations.ProbeParam) {
-                            org.glassfish.external.probe.provider.annotations.ProbeParam pParam = (org.glassfish.external.probe.provider.annotations.ProbeParam) ann;
-                            probeParamNames[index++] = pParam.value();
-                            break;
-                        }
-                        //REMOVE: Remove old probe.provider package when management-api integration complete with external modules
-                        if (ann instanceof org.glassfish.probe.provider.annotations.ProbeParam) {
-                            org.glassfish.probe.provider.annotations.ProbeParam pParam = (org.glassfish.probe.provider.annotations.ProbeParam) ann;
+                        if (ann instanceof ProbeParam) {
+                            ProbeParam pParam = (ProbeParam) ann;
                             probeParamNames[index++] = pParam.value();
                             break;
                         }

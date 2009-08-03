@@ -49,12 +49,6 @@
     <packaging>hk2-jar</packaging>
     <name>GlassFish Flashlight Agent</name>
         <dependencies>
-            <!-- Remove gfprobe-provider-client when all external modules are using management-api instead -->
-            <dependency>
-                <groupId>org.glassfish.provider</groupId>
-                <artifactId>gfprobe-provider-client</artifactId>
-                <version>3.0.0-b008</version>
-            </dependency>
             <dependency>
 	            <groupId>org.glassfish.external</groupId>
 	            <artifactId>management-api</artifactId>
