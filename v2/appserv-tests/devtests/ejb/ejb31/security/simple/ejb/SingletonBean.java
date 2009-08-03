@@ -10,6 +10,7 @@ import java.util.concurrent.*;
 @Remote(Hello.class)
 @LocalBean
     @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
+    @EJB(name="java:app/env/forappclient", beanInterface=Hello.class)
 public class SingletonBean {
 
     @Resource

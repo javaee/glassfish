@@ -20,6 +20,12 @@ public class Client {
 
     @EJB static Hello hello;
 
+    @EJB(lookup="java:app/env/forappclient") 
+    static Hello hello3;
+
+    @EJB(mappedName="java:app/ejb-ejb31-security-simple-ejb/SingletonBean!com.acme.Hello") 
+    static Hello hello4;
+
     public static void main(String args[]) {
 
 	appName = args[0];
@@ -50,7 +56,18 @@ public class Client {
 	    
 	    if( hello == null ) {
 		hello = (Hello) new InitialContext().lookup("com.acme.Hello");
-	    } 
+	    } else {
+		// In an appclient.  
+		Hello hello2 = (Hello) new InitialContext().lookup("java:app/env/forappclient");
+		System.out.println("java:app/env/forappclient lookup = " + hello2);
+		System.out.println("hello3 = " + hello3);
+
+		Hello hello5 = (Hello) new InitialContext().lookup("java:app/ejb-ejb31-security-simple-ejb/SingletonBean!com.acme.Hello");
+		System.out.println("hello4 = " + hello4);
+		System.out.println("hello5 = " + hello5);
+		String env = (String) new InitialContext().lookup("java:app/enventryforappclient");
+		System.out.println("java:app env entry = " + env);
+	    }
 
 	    boolean pass;
 
