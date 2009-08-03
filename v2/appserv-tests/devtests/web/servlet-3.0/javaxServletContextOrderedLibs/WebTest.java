@@ -8,9 +8,8 @@ import com.sun.ejte.ccl.reporter.*;
  *
  * This unit test creates and deploys a WAR file that bundles two web
  * fragments with names webFragment1 and webFragment2, respectively.
- *
- * Either fragment bundles a Tag Library Descriptor (TLD) resource
- * declaring a ServletContextListener.
+ * Either fragment declares a ServletContextListener in its
+ * web-fragment.xml descriptor file.
  *
  * The main web.xml declares an absolute ordering of the two web fragments,
  * with webFragment2 listed first, followed by webFragment1.
@@ -19,8 +18,8 @@ import com.sun.ejte.ccl.reporter.*;
  * javax.servlet.context.orderedLibs ServletContext attribute and, if
  * satisfied, registers a Servlet.
  *
- * The client then accesses each of the Servlets. If it fails to access any
- * of the Servlets, it reports an error, causing the test to fail.
+ * The client then accesses each of the Servlets. If it fails to access either
+ * Servlet, it reports an error, causing the test to fail.
  */
 public class WebTest {
 

@@ -38,18 +38,12 @@
         <copy file="${web-fragment.xml}1"
             tofile="${build.classes.dir}/META-INF/web-fragment.xml"
             failonerror="false" overwrite="true"/>
-        <copy file="${web-fragment.tld}1"
-            tofile="${build.classes.dir}/META-INF/web-fragment.tld"
-            failonerror="false" overwrite="true"/>
         <jar destfile="lib/webFragment1.jar" basedir="${build.classes.dir}"
             includes="**/webFragment1/*.class, META-INF/*"/>
         <delete dir="${build.classes.dir}/webFragment1"/>
 
         <copy file="${web-fragment.xml}2"
             tofile="${build.classes.dir}/META-INF/web-fragment.xml"
-            failonerror="false" overwrite="true"/>
-        <copy file="${web-fragment.tld}2"
-            tofile="${build.classes.dir}/META-INF/web-fragment.tld"
             failonerror="false" overwrite="true"/>
         <jar destfile="lib/webFragment2.jar" basedir="${build.classes.dir}"
             includes="**/webFragment2/*.class, META-INF/*"/>
