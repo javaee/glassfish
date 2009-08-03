@@ -248,7 +248,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * Objects of the following type(s) are allowed in the list
      * {@link Engine }
      */
-    @Element(required = true)
+    @Element
     List<Engine> getEngine();
 
     /**
