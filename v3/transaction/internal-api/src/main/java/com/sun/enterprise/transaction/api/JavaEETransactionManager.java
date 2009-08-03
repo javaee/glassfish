@@ -247,7 +247,7 @@ public interface JavaEETransactionManager extends TransactionManager {
     /*
      * Called by Admin Framework. Forces the given transaction to be rolled back
      */
-    public void forceRollback(Transaction tran) throws IllegalStateException, SystemException;
+    public void forceRollback(String txnId) throws IllegalStateException, SystemException;
 
     /*
      * Called by Admin Framework.
