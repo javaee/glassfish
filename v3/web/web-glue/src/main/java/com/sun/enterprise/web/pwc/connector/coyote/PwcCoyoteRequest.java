@@ -219,7 +219,7 @@ public class PwcCoyoteRequest extends Request {
             } catch (UnsupportedEncodingException uee) {
                 String msg = rb.getString(
                     "request.unableToSetEncodingFromSunWebXml");
-                msg = MessageFormat.format(msg, encoding, wm.getName());
+                msg = MessageFormat.format(msg, encoding, wm.getID());
                 logger.log(Level.WARNING, msg, uee);
             }
         }
