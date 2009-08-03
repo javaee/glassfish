@@ -48,8 +48,6 @@
     getRequestValue(key="timestamp" value=>$attribute{timestamp});
     getRequestValue(key="onlyLevel" value=>$attribute{reqOnlyLevel});
     getRequestValue(key="loglevel" value=>$attribute{reqLogLevel});
-    
-    println(value="test in before create log file: #{reqLogLevel}");
     getRequestValue(key="logger" value=>$attribute{reqCustomLogger});
     if($attribute{reqLogFile}) {
         setAttribute(key="logFile" value="$attribute{reqLogFile}" );
