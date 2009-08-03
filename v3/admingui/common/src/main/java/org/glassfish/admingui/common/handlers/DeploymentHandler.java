@@ -46,7 +46,6 @@ import java.util.Properties;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.parsers.ParserConfigurationException;
 import org.glassfish.admin.amx.base.Runtime;
 import org.glassfish.deployment.client.DFDeploymentStatus;
 import org.glassfish.deployment.client.DeploymentFacility;
@@ -80,86 +79,7 @@ public class DeploymentHandler {
     //should be the same as in DeploymentProperties in deployment/common
     public static final String KEEP_SESSIONS = "keepSessions";
 
-    /**
-     *	<p> This method deploys the uploaded file </p>
-     *      to a give directory</p>
-     *	<p> Input value: "file" -- Type: <code>String</code></p>
-     *	<p> Input value: "appName" -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "appType" -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "ctxtRoot" -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "VS" -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "enabled" -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "verifier" -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "jws" -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "precompileJSP" -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "libraries" -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "description" -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "rmistubs" -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "threadpool" -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "registryType" -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
     @Handler(id = "deploy",
-    input = {
-        @HandlerInput(name = "filePath", type = String.class),
-        @HandlerInput(name = "origPath", type = String.class),
-        @HandlerInput(name = "appName", type = String.class),
-        @HandlerInput(name = "ctxtRoot", type = String.class),
-        @HandlerInput(name = "VS", type = String.class),
-        @HandlerInput(name = "enabled", type = String.class),
-        @HandlerInput(name = "precompileJSP", type = String.class),
-        @HandlerInput(name = "libraries", type = String.class),
-        @HandlerInput(name = "description", type = String.class),
-        @HandlerInput(name = "targets", type = String[].class)
-    })
-    public static void deploy(HandlerContext handlerCtx) {
-
-        Properties deploymentProps = new Properties();
-        String appName = (String) handlerCtx.getInputValue("appName");
-        String origPath = (String) handlerCtx.getInputValue("origPath");
-        String filePath = (String) handlerCtx.getInputValue("filePath");
-        String ctxtRoot = (String) handlerCtx.getInputValue("ctxtRoot");
-        String[] vs = (String[]) handlerCtx.getInputValue("VS");
-        String enabled = (String) handlerCtx.getInputValue("enabled");
-
-        String libraries = (String) handlerCtx.getInputValue("libraries");
-        String precompile = (String) handlerCtx.getInputValue("precompileJSP");
-        String desc = (String) handlerCtx.getInputValue("description");
-        String[] targets = (String[]) handlerCtx.getInputValue("targets");
-        if (targets == null || targets.length == 0 || !V3AMX.getInstance().isEE()) {
-            targets = null;
-        }
-        if (GuiUtil.isEmpty(origPath)) {
-            String mesg = GuiUtil.getMessage("msg.deploy.nullArchiveError");
-            GuiUtil.handleError(handlerCtx, mesg);
-            return;
-        }
-
-        deploymentProps.setProperty(DFDeploymentProperties.NAME, appName != null ? appName : "");
-        //If user doesn't set the context root, do not pass anything to DF in the deploymentProperties.  
-        //Otherwise, a "/" will be set as the context root instead of looking into sun-web.xml or using the filename.
-        if (!GuiUtil.isEmpty(ctxtRoot)) {
-            deploymentProps.setProperty(DFDeploymentProperties.CONTEXT_ROOT, ctxtRoot);
-        }
-        deploymentProps.setProperty(DFDeploymentProperties.ENABLED, enabled != null ? enabled : "false");
-        deploymentProps.setProperty(DFDeploymentProperties.DEPLOY_OPTION_LIBRARIES, libraries != null ? libraries : "");
-        deploymentProps.setProperty(DFDeploymentProperties.DESCRIPTION, desc != null ? desc : "");
-        deploymentProps.setProperty(DFDeploymentProperties.PRECOMPILE_JSP, precompile != null ? precompile : "false");
-        //do not send VS if user didn't specify, refer to bug#6542276
-        if (vs != null && vs.length > 0) {
-            if (!GuiUtil.isEmpty(vs[0])) {
-                String vsTargets = GuiUtil.arrayToString(vs, ",");
-                deploymentProps.setProperty(DFDeploymentProperties.VIRTUAL_SERVERS, vsTargets);
-            }
-        }
-        try {
-            DeployUtil.deploy(targets, deploymentProps, filePath, handlerCtx);
-        } catch (Exception ex) {
-            GuiUtil.handleException(handlerCtx, ex);
-        }
-    }
-
-    @Handler(id = "deploy2",
     input = {
         @HandlerInput(name = "filePath", type = String.class),
         @HandlerInput(name = "origPath", type = String.class),
@@ -167,7 +87,7 @@ public class DeploymentHandler {
         @HandlerInput(name = "appType", type = String.class),
         @HandlerInput(name = "propertyList", type = List.class)
     })
-    public static void deploy2(HandlerContext handlerCtx) {
+    public static void deploy(HandlerContext handlerCtx) {
 
         String appType = (String) handlerCtx.getInputValue("appType");
         String origPath = (String) handlerCtx.getInputValue("origPath");
@@ -278,24 +198,22 @@ public class DeploymentHandler {
             Boolean keepSessions = (Boolean) handlerCtx.getInputValue("keepSessions");
             DFDeploymentProperties deploymentProps = new DFDeploymentProperties();
 
-            //If we are redeploying a web app, we want to preserve context root.
-            //can use Query instead of hard code object name
-            //AMXProxy app = V3AMX.getInstance().getApplication(appName);
-            AMXProxy app = V3AMX.objectNameToProxy("amx:pp=/domain/applications,type=application,name=" + appName);
-            String ctxRoot = (String) app.attributesMap().get("ContextRoot");
-            if (ctxRoot != null) {
-                deploymentProps.setContextRoot(ctxRoot);
-            }
-            deploymentProps.setForce(true);
-            deploymentProps.setUpload(false);
-            deploymentProps.setName(appName);
-
-            Properties prop = new Properties();
-            String ks = (keepSessions == null) ? "false" : keepSessions.toString();
-            prop.setProperty(KEEP_SESSIONS, ks);
-            deploymentProps.setProperties(prop);
-
-            DeployUtil.invokeDeploymentFacility(null, deploymentProps, filePath, handlerCtx);
+             //If we are redeploying a web app, we want to preserve context root.
+             AMXProxy app = V3AMX.getInstance().getApplication(appName);
+             String ctxRoot = (String) app.attributesMap().get("ContextRoot");
+             if (ctxRoot != null){
+                 deploymentProps.setContextRoot(ctxRoot);
+             }
+             deploymentProps.setForce(true);
+             deploymentProps.setUpload(false);
+             deploymentProps.setName(appName);
+             
+             Properties prop = new Properties();
+             String ks = (keepSessions==null) ? "false" : keepSessions.toString();
+             prop.setProperty(KEEP_SESSIONS, ks);
+             deploymentProps.setProperties(prop);
+             
+             DeployUtil.invokeDeploymentFacility(null, deploymentProps, filePath, handlerCtx);
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -307,10 +225,9 @@ public class DeploymentHandler {
      *  <p> Input  value: "appType" -- Type: <code>String</code></p>
      *	@param	handlerCtx	The HandlerContext.
      */
-    @Handler(id = "undeploy",
-    input = {
-        @HandlerInput(name = "selectedRows", type = List.class, required = true)
-    })
+    @Handler(id="undeploy",
+    input={
+        @HandlerInput(name="selectedRows", type=List.class, required=true)})
     public static void undeploy(HandlerContext handlerCtx) {
 
         Object obj = handlerCtx.getInputValue("selectedRows");
@@ -355,7 +272,7 @@ public class DeploymentHandler {
             }
         }
     }
-
+        
     /**
      *	<p> This handler takes in selected rows, and change the status of the app
      *  <p> Input  value: "selectedRows" -- Type: <code>java.util.List</code></p>

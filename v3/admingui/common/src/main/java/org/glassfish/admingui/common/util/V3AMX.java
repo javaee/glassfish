@@ -295,11 +295,8 @@ public class V3AMX {
     }
 
     public static void setProperties(String objectNameStr, List<Map<String,String>> propertyList, boolean sysProp){
-
         try{
             ObjectName objectName = new ObjectName(objectNameStr);
-            List newList = new ArrayList();
-            Set propertyNames = new HashSet();
             final ConfigTools configTools = V3AMX.getInstance().getDomainRoot().getExt().child(ConfigTools.class);
             if (propertyList.size()==0){
                 if (sysProp){
@@ -308,31 +305,7 @@ public class V3AMX {
                     configTools.clearProperties(objectName);
                 }
             }else{
-                for(Map<String, String> oneRow : propertyList){
-                    Map newRow = new HashMap();
-                    final String  name = oneRow.get(PROPERTY_NAME);
-                    if (GuiUtil.isEmpty(name)){
-                        continue;
-                    }
-                    if (propertyNames.contains(name)){
-                        throw new RuntimeException(GuiUtil.getMessage("msg.duplicatePropTableKey", new Object[]{name}));
-                        //GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.duplicatePropTableKey", new Object[]{name}));
-                    }else{
-                        propertyNames.add(name);
-                    }
-
-                    String value = oneRow.get(PROPERTY_VALUE);
-                    if (GuiUtil.isEmpty(value)){
-                        value = "";
-                    }
-                    newRow.put(PROPERTY_NAME,name);
-                    newRow.put(PROPERTY_VALUE,value);
-                    String desc = (String) oneRow.get(PROPERTY_DESC);
-                    if (! GuiUtil.isEmpty(desc)){
-                        newRow.put( PROPERTY_DESC,  desc);
-                    }
-                    newList.add(newRow);
-                }
+                List newList = verifyPropertyList(propertyList);
                 if (sysProp){
                     configTools.setSystemProperties(objectName, newList, true);
                 }else{
@@ -342,6 +315,38 @@ public class V3AMX {
         }catch(Exception ex){
             throw new RuntimeException (ex);
         }
+    }
+
+    static public List verifyPropertyList(List<Map<String, String>> propertyList){
+
+        List newList = new ArrayList();
+        Set propertyNames = new HashSet();
+        for(Map<String, String> oneRow : propertyList){
+            Map newRow = new HashMap();
+            final String  name = oneRow.get(PROPERTY_NAME);
+            if (GuiUtil.isEmpty(name)){
+                continue;
+            }
+            if (propertyNames.contains(name)){
+                throw new RuntimeException(GuiUtil.getMessage("msg.duplicatePropTableKey", new Object[]{name}));
+                //GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.duplicatePropTableKey", new Object[]{name}));
+            }else{
+                propertyNames.add(name);
+            }
+
+            String value = oneRow.get(PROPERTY_VALUE);
+            if (GuiUtil.isEmpty(value)){
+                value = "";
+            }
+            newRow.put(PROPERTY_NAME,name);
+            newRow.put(PROPERTY_VALUE,value);
+            String desc = (String) oneRow.get(PROPERTY_DESC);
+            if (! GuiUtil.isEmpty(desc)){
+                newRow.put( PROPERTY_DESC,  desc);
+            }
+            newList.add(newRow);
+        }
+        return newList;
     }
 
     /*

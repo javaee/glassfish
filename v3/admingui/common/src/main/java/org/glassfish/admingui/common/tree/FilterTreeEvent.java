@@ -62,7 +62,7 @@ public class FilterTreeEvent extends EventObjectBase implements UIComponentHolde
      *	<p> This method provides access to an array of Objects that are to
      *	    become child <code>TreeNode</code>s.  This allows you to manipluate
      *	    them (filter them) before they are processed.  You may return a new
-     *	    Object[] from your handler that processes this event.  Note that
+     *	    List from your handler that processes this event.  Note that
      *	    you NOT set the child object array using this event.</p>
      */
     public List getChildObjects() {

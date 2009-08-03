@@ -63,11 +63,17 @@ import java.util.Set;
 import java.util.TreeSet;
 import javax.enterprise.deploy.spi.Target;
 import javax.management.Attribute;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.core.Util;
+import org.glassfish.admin.amx.intf.config.Application;
+import org.glassfish.admin.amx.intf.config.Engine;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.AppUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.V3AMXUtil;
+import org.glassfish.admin.amx.intf.config.Property;
+import org.glassfish.deployment.client.DFDeploymentProperties;
 import org.glassfish.deployment.client.DeploymentFacility;
 
 public class WebAppHandlers {
@@ -149,8 +155,7 @@ public class WebAppHandlers {
     public static void getSubComponents(HandlerContext handlerCtx) {
         List result = new ArrayList();
         String appName = (String) handlerCtx.getInputValue("appName");
-        AMXProxy applications = V3AMX.getInstance().getApplications();
-        Map<String, AMXProxy> modules = applications.childrenMap("application").get(appName).childrenMap("module");
+        Map<String, AMXProxy> modules = V3AMX.getInstance().getApplication(appName).childrenMap("module");
         for(AMXProxy oneModule: modules.values()){
             Map oneRow = new HashMap();
             List<String> snifferList = AppUtil.getSnifferListOfModule(oneModule);
@@ -182,9 +187,11 @@ public class WebAppHandlers {
         if (GuiUtil.isEmpty(filterValue))
             filterValue = null;
         List result = new ArrayList();
-        AMXProxy applications = V3AMX.getInstance().getApplications();
-        Map<String, AMXProxy> application = applications.childrenMap("application");
-        eachApp:  for (AMXProxy oneApp : application.values()) {
+        Map<String, AMXProxy> application = V3AMX.getInstance().getApplications().childrenMap("application");
+        for (AMXProxy oneApp : application.values()) {
+            if(V3AMX.getPropValue(oneApp, DFDeploymentProperties.IS_LIFECYCLE) != null){
+                continue;   //we don't want to display lifecycle.
+            }
             HashMap oneRow = new HashMap();
             oneRow.put("name", oneApp.getName());
             oneRow.put("selected", false);
@@ -207,7 +214,182 @@ public class WebAppHandlers {
         handlerCtx.setOutputValue("filters", new ArrayList(filters));
     }
 
-    
+
+    /**
+     *	<p> This handler returns the list of lifecycles for populating the table.
+     *  <p> Input  value: "serverName" -- Type: <code> java.lang.String</code></p>
+     *	@param	handlerCtx	The HandlerContext.
+     */
+    @Handler(id = "getLifecyclesInfo",
+        input = {
+            @HandlerInput(name = "serverName", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "result", type = java.util.List.class)})
+    public static void getLifecyclesInfo(HandlerContext handlerCtx) {
+        List result = new ArrayList();
+        Map<String, AMXProxy> application = V3AMX.getInstance().getApplications().childrenMap("application");
+        for (AMXProxy oneApp : application.values()) {
+            if(V3AMX.getPropValue(oneApp, DFDeploymentProperties.IS_LIFECYCLE) == null){
+                continue;   //we only want lifecycle.
+            }
+            HashMap oneRow = new HashMap();
+            oneRow.put("Name", oneApp.getName());
+            oneRow.put("selected", false);
+            boolean enable = AppUtil.isApplicationEnabled(oneApp);
+            String enableURL= (enable)? "/resource/images/enabled.png" : "/resource/images/disabled.png";
+            oneRow.put("enableURL", enableURL);
+            final String className = V3AMX.getPropValue(oneApp, DFDeploymentProperties.CLASS_NAME);
+            oneRow.put("className", (className == null) ? "" : className);
+            final String order = V3AMX.getPropValue(oneApp, DFDeploymentProperties.LOAD_ORDER);
+            oneRow.put("loadOrder", (order == null) ? "" : order);
+            result.add(oneRow);
+        }
+        handlerCtx.setOutputValue("result", result);
+    }
+
+     /**
+     *	<p> This handler returns the list of lifecycles for populating the table.
+     *  <p> Input  value: "serverName" -- Type: <code> java.lang.String</code></p>
+     *	@param	handlerCtx	The HandlerContext.
+     */
+    @Handler(id = "getLifecycleAttrEdit",
+    input = {
+        @HandlerInput(name = "Name", type = String.class, required = true)},
+    output = {
+        @HandlerOutput(name = "attrMap", type = Map.class),
+        @HandlerOutput(name = "properties", type = List.class)})
+    public static void getLifecycleAttrEdit(HandlerContext handlerCtx) {
+
+        String appName = (String) handlerCtx.getInputValue("Name");
+        Application app = (Application) V3AMX.getInstance().getApplication(appName);
+        Map<String, Property> origProps = app.getProperty();
+
+        Map attrMap = new HashMap();
+        attrMap.put("Name", appName);
+        attrMap.put(DFDeploymentProperties.CLASS_NAME, getA(origProps, DFDeploymentProperties.CLASS_NAME));
+        attrMap.put(DFDeploymentProperties.CLASSPATH, getA(origProps, DFDeploymentProperties.CLASSPATH));
+        attrMap.put(DFDeploymentProperties.LOAD_ORDER, getA(origProps, DFDeploymentProperties.LOAD_ORDER));
+        String fatal = getA(origProps, DFDeploymentProperties.IS_FAILURE_FATAL);
+        attrMap.put(DFDeploymentProperties.IS_FAILURE_FATAL, (fatal.equals("") ? "false" : "true") );
+
+        List props = V3AMX.getChildrenMapForTableList(app, "property",  skipLifecyclePropsList);
+        handlerCtx.setOutputValue("attrMap", attrMap);
+        handlerCtx.setOutputValue("properties", props);
+    }
+
+    @Handler(id = "saveLifecycle",
+    input = {
+        @HandlerInput(name = "attrMap", type = Map.class, required = true),
+        @HandlerInput(name = "attrMap2", type = Map.class, required = true),
+        @HandlerInput(name = "propList", type = List.class, required = true),
+        @HandlerInput(name = "edit", type = String.class, required = true)},
+    output = {
+        @HandlerOutput(name = "attrMap", type = Map.class),
+        @HandlerOutput(name = "properties", type = List.class)})
+    public static void saveLifecycle(HandlerContext handlerCtx) {
+
+        String edit = (String) handlerCtx.getInputValue("edit");
+        Map attrMap = (Map) handlerCtx.getInputValue("attrMap");
+        Map attrMap2 = (Map) handlerCtx.getInputValue("attrMap2");
+        List propList = (List) handlerCtx.getInputValue("propList");
+        String name = (String) attrMap.get("Name");
+        Map aMap = new HashMap();
+        aMap.put("Name", name);
+        aMap.put("Enabled", (attrMap2.get("Enabled") == null)? "false" : "true");
+        aMap.put("Description", attrMap.get("Description"));
+
+        attrMap.put(DFDeploymentProperties.IS_LIFECYCLE, "true");
+        SecurityHandler.putOptional(attrMap, propList, DFDeploymentProperties.IS_LIFECYCLE, DFDeploymentProperties.IS_LIFECYCLE);
+        SecurityHandler.putOptional(attrMap, propList, DFDeploymentProperties.CLASS_NAME, DFDeploymentProperties.CLASS_NAME);
+        SecurityHandler.putOptional(attrMap, propList, DFDeploymentProperties.CLASSPATH, DFDeploymentProperties.CLASSPATH);
+        SecurityHandler.putOptional(attrMap, propList, DFDeploymentProperties.LOAD_ORDER, DFDeploymentProperties.LOAD_ORDER);
+        if (attrMap2.get(DFDeploymentProperties.IS_FAILURE_FATAL) != null){
+            SecurityHandler.putOptional(attrMap, propList, DFDeploymentProperties.IS_FAILURE_FATAL, DFDeploymentProperties.IS_FAILURE_FATAL);
+        }
+
+        Attribute vsAttr = null;
+        //do not send VS if user didn't specify, refer to bug#6542276
+        String[] vs = (String[]) attrMap2.get("selectedVS");
+        if (vs != null && vs.length > 0 && (!vs[0].equals(""))) {
+            if (!GuiUtil.isEmpty(vs[0])) {
+                String vsTargets = GuiUtil.arrayToString(vs, ",");
+                vsAttr = new Attribute("VirtualServers", vsTargets);
+            }
+        }else{
+            Set<AMXProxy> vsSet = V3AMX.getInstance().getDomainRoot().getQueryMgr().queryType("virtual-server");
+            List vsList = new ArrayList();
+            for(AMXProxy oneVs: vsSet){
+                vsList.add(oneVs.getName());
+            }
+            vsList.remove("__asadmin");
+            vsAttr = new Attribute("VirtualServers", GuiUtil.listToString(vsList, ","));
+        }
+
+
+        if (edit.equals("true")){
+            AMXConfigProxy app = V3AMX.getInstance().getApplication(name);
+            V3AMX.setAttributes(app.objectName(), aMap);
+            V3AMX.setProperties(app.objectName().toString(), propList, false);
+            AMXConfigProxy appRef = V3AMX.getInstance().getApplicationRef("server", name);
+            V3AMX.setAttribute(appRef.objectName(), vsAttr);
+            String enable = (String)attrMap2.get("Enabled");
+            V3AMX.setAttribute(appRef.objectName(), new Attribute("Enabled", (enable==null)? "false" : "true"));
+
+        }else{
+            AMXConfigProxy apps = (AMXConfigProxy) V3AMX.getInstance().getApplications();
+            List pList = V3AMX.verifyPropertyList(propList);
+            Map[] propMaps = (Map[])pList.toArray(new Map[pList.size()]);
+            aMap.put("object-type", "user");
+            aMap.put(Util.deduceType(Property.class), propMaps);
+            apps.createChild("application", aMap);
+            AMXConfigProxy server = V3AMX.getInstance().getDomain().getServers().getServer().get("server");
+            attrMap2.put("Name", name);
+            if (attrMap2.get("Enabled") == null){
+                attrMap2.put("Enabled", "false");
+            }
+            attrMap2.remove("selectedVS");
+            attrMap2.put("VirtualServers", vsAttr.getValue());
+            server.createChild("application-ref", attrMap2);
+            //don't want to change the attrMap2 value, in case there is error and the create page need to be refreshed.
+            attrMap2.put("selectedVS" , vs);
+        }
+    }
+
+
+    @Handler(id = "changeLifecycleStatus",
+    input = {
+        @HandlerInput(name = "selectedRows", type = List.class, required = true),
+        @HandlerInput(name = "enabled", type = Boolean.class, required = true)
+    })
+    public static void changeLifecycleStatus(HandlerContext handlerCtx) {
+
+        List obj = (List) handlerCtx.getInputValue("selectedRows");
+        boolean enabled = ((Boolean) handlerCtx.getInputValue("enabled")).booleanValue();
+        String status = (enabled) ? "true" : "false";
+        List selectedRows = (List) obj;
+        try {
+            for (int i = 0; i < selectedRows.size(); i++) {
+                Map oneRow = (Map) selectedRows.get(i);
+                String appName = (String) oneRow.get("Name");
+                V3AMX.getInstance().getApplicationRef("server", appName).setEnabled(status);
+                V3AMX.getInstance().getApplication(appName).setEnabled(status);
+                String msg = GuiUtil.getMessage((enabled) ? "msg.enableSuccessfulLifecyce" : "msg.disableSuccessfulLifecycle");
+                GuiUtil.prepareAlert(handlerCtx, "success", msg, null);
+            }
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+
+
+
+    private static String getA(Map<String, Property> attrs, String key) {
+        Property val = attrs.get(key);
+        return (val == null) ? "" :  val.getValue();
+    }
+
+
     private static void getLaunchInfo(String serverName, AMXProxy oneApp,  Map oneRow) {
         Map<String, Object> attrs = oneApp.attributesMap();
         String contextRoot = (String) attrs.get("ContextRoot");
@@ -278,5 +460,13 @@ public class WebAppHandlers {
         return ctxRoot;
     }
 
+   private static List skipLifecyclePropsList = new ArrayList();
+    static {
+        skipLifecyclePropsList.add(DFDeploymentProperties.CLASS_NAME);
+        skipLifecyclePropsList.add(DFDeploymentProperties.CLASSPATH);
+        skipLifecyclePropsList.add(DFDeploymentProperties.LOAD_ORDER);
+        skipLifecyclePropsList.add(DFDeploymentProperties.IS_FAILURE_FATAL);
+        skipLifecyclePropsList.add(DFDeploymentProperties.IS_LIFECYCLE);
+    }
   
 }

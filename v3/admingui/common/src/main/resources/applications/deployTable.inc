@@ -35,6 +35,8 @@
 -->
 <!-- applications/deployTable.inc -->
 
+
+
 <sun:table id="deployTable" title="$resource{i18n.deployTable.applications}" sortPanelToggleButton="#{false}"
        deselectMultipleButton="$boolean{true}"
         deselectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)"
@@ -44,71 +46,7 @@
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
 
-    <!facet actionsTop>
-         <sun:panelGroup id="topActionsGroup1">
-            <!afterCreate
-                getClientId(component="$this{component}" clientId=>$page{topActionGroup});
-            />
-            <sun:button id="deployButton" text="$resource{i18n.button.Deploy}" primary="#{true}">
-                    <!command redirect(page="#{request.contextPath}/common/applications/upload.jsf?cancelPage=#{listPageLink}&appType=#{appType}"); />
-            </sun:button>
-            <sun:button id="button1" text="$resource{i18n.button.Undeploy}" disabled="#{true}" primary="#{false}"
-                    onClick="javascript: return submitAndDisable(this, '$resource{i18n.button.Processing}');">
-                <!command 
-                    getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup}); 
-                    getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                    undeploy(selectedRows="${selectedRows}" );
-                    navigate(page="#{listPageLink}");
-                />
-             </sun:button>
-            <sun:button id="button2" text="$resource{i18n.button.Enable}" disabled="#{true}" primary="#{false}"
-                    onClick="javascript: submitAndDisable(this, '$resource{i18n.button.Processing}');" >
-            <!command 
-                    getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});      
-                    getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                    changeAppStatus(selectedRows="${selectedRows}"  enabled="#{true}")
-                    navigate(page="#{listPageLink}");
-                />
-                </sun:button>
-            <sun:button id="button3" text="$resource{i18n.button.Disable}" disabled="#{true}" primary="#{false}"
-                onClick="javascript: submitAndDisable(this, '$resource{i18n.button.Processing}');" >
-            <!command 
-                    getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});      
-                    getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                    changeAppStatus(selectedRows="${selectedRows}"  enabled="#{false}")
-                    navigate(page="#{listPageLink}");
-                />
-            </sun:button>
-
-            <sun:image id="actionTopSeparator1"
-               align="top"
-               height="$int{18}"
-               width="$int{18}"
-               url="#{request.contextPath}/theme/woodstock4_3/suntheme/images/table/actions_separator.gif"
-            />
-
-           <sun:dropDown id="filter" selected="#{filterValue}" label="$resource{i18n.common.filterDropDown}" submitForm="#{true}" immediate="#{true}"
-                    values="${filters}"  labels="${filters}">
-                <!command
-                    setAttribute(key="click" value="$this{component}");
-                    setAttribute(key="filterValue" value="#{click.selected}");
-                    redirect(page="#{request.contextPath}/common/applications/applications.jsf?serverName=#{serverName}&filterValue=${filterValue}" );
-                />
-            </sun:dropDown>
-
-            <!--
-            <sun:dropDown rendered="$session{supportCluster}" id="view" selected="$pageSession{viewValue}" label="$resource{i18n.common.viewDropDown}" submitForm="#{true}" immediate="#{true}" 
-                    labels={"$resource{i18n.common.Summary}", "$resource{i18n.common.Detailed}" }
-                    values={"summary", "detail"} >
-                <!command
-                    setAttribute(key="click" value="$this{component}");
-                    setAppViewKey(key="$pageSession{viewKey}" selectedValue="#{click.selected}");
-                    navigate(page="#{listPageLink}");
-                />
-            </sun:dropDown>
-            -->
-         </sun:panelGroup>
-     </facet>
+#include "/common/applications/listTableButtons.inc"
 
    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
     <!afterCreate
@@ -132,13 +70,9 @@
         <sun:hyperlink rendered="$session{supportCluster}" id="targetLink" text="#{td.value.enabled}" url="#{targetLink}?appName=#{td.value.name}" />
     </sun:tableColumn -->
 
-    <sun:tableColumn rendered="$session{notSupportCluster}" headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col22">
+    <sun:tableColumn  headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col22">
         <sun:image id="enCol" value="#{td.value.enableURL}" />
     </sun:tableColumn>
-
-    <!-- sun:tableColumn headerText="$resource{i18n.deployTable.colContextRoot}"  sort="contextRoot" rendered="#{hasContextRoot}" rowHeader="$boolean{true}" id="col3">
-        <staticText id="typeContextRoot" value="#{td.value.contextRoot}" />
-    </sun:tableColumn -->
 
 <!--
     <sun:tableColumn headerText="$resource{i18n.deployTable.colComposite}"  sort="composite"  rowHeader="$boolean{true}" id="col33">

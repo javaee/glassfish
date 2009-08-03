@@ -419,7 +419,7 @@ public class GuiUtil {
         }
         return arrList;
     }
-
+    
     /*
     FIXME: 7-31-08 -- FIX by importing woodstock api's.
     public static Option[] getSunOptions(Collection<String> c) {
@@ -553,7 +553,7 @@ public class GuiUtil {
         return retStr.toString();
     }
 
-    public static String ListToString(List<String> list , String delimiter) {
+    public static String listToString(List<String> list , String delimiter) {
         StringBuffer retStr = new StringBuffer();
         if(list == null || list.size() <=0 ) return "";
         for(String oneItem : list){
@@ -565,7 +565,10 @@ public class GuiUtil {
         return ret;
     }
 
-
+    public static <T> T[] asArray(final Object o)
+    {
+        return (T[]) Object[].class.cast(o);
+    }
 
 
     public static boolean isSelected(String name, List<Map> selectedList) {

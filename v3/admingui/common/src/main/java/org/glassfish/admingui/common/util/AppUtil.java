@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import javax.management.ObjectName;
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.deployment.client.DFDeploymentProperties;
 
 /**
  *
@@ -61,12 +63,17 @@ public class AppUtil {
         return isApplicationEnabled(V3AMX.objectNameToProxy(appObjectName));
     }
 
+    public static boolean isLifecycle(ObjectName objName){
+        AMXProxy amx = V3AMX.objectNameToProxy(objName.toString());
+        String isLife = (String) V3AMX.getPropValue(amx, DFDeploymentProperties.IS_LIFECYCLE);
+        return (isLife == null) ? false : true;
+    }
 
     static final public List sniffersHide = new ArrayList();
     static {
         sniffersHide.add("security");
     }
-    static public final String PROP_IS_COMPOSITE = "isComposite";
 
+    static public final String PROP_IS_COMPOSITE = "isComposite";
 
 }

@@ -60,7 +60,7 @@
         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
 -->
-        deploy2(filePath="$attribute{filePath}"
+        deploy(filePath="$attribute{filePath}"
               origPath="$attribute{origPath}"
               allMaps = "#{pageSession.deployMap}"
               appType = "#{pageSession.appType}"

@@ -376,7 +376,7 @@ public class UtilHandlers {
         List list = (List)handlerCtx.getInputValue("list");
         String commaString = "";
 		if( (list != null) && list.size() > 0 ) {
-			commaString = GuiUtil.ListToString(list, ",");
+			commaString = GuiUtil.listToString(list, ",");
 		}
         handlerCtx.setOutputValue("commaString", commaString);
     }

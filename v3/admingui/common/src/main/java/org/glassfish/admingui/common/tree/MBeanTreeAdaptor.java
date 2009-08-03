@@ -118,18 +118,16 @@ public class MBeanTreeAdaptor extends TreeAdaptorBase {
         _objectName = (String) val;
 
 	// Get the Method Name
-	val = desc.getEvaluatedOption(ctx, "methodName", parent);
+	/*
+     val = desc.getEvaluatedOption(ctx, "methodName", parent);
 	if (val == null) {
 	    throw new IllegalArgumentException(
 		    "'methodName' must be specified!");
 	}
 	_methodName = (String) val;
+     */
 
-    val = desc.getEvaluatedOption(ctx, "useV3AMX", parent);
-    if ((val != null ) && val.equals("true")){
-        _useV3AMX = true;
-        _amxChildType = (String) desc.getEvaluatedOption(ctx, "amxChildType", parent);
-    }
+    _amxChildType = (String) desc.getEvaluatedOption(ctx, "amxChildType", parent);
 
 	// Get Parameters
 	_paramsArray = null;
@@ -218,23 +216,19 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
 		return _children;	    }
             
             try{
-                if (_useV3AMX == true ){
-                        AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(_objectName));
-                        if (_amxChildType == null || _amxChildType.equals("")){
-                            ObjectName[] children = amx.getChildren();
-                            _children = new ArrayList();
-                            for(int i=0; i< children.length; i++){
-                                _children.add(children[i]);
-                            }
-                        }else {
-                            _children = new ArrayList();
-                            Map<String,AMXProxy> childrenMap = amx.childrenMap(_amxChildType);
-                            for(AMXProxy oneChild : childrenMap.values()){
-                                _children.add( ((AMXConfigProxy) oneChild).objectName());
-                            }
-                        }
+                AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(_objectName));
+                if (_amxChildType == null || _amxChildType.equals("")){
+                    ObjectName[] children = amx.getChildren();
+                    _children = new ArrayList();
+                    for(int i=0; i< children.length; i++){
+                        _children.add(children[i]);
+                    }
                 }else {
-                    System.out.println("!!!!!!!!!!! NOT USING V3AMX for MBeanTreeAdaptor : " + _objectName);
+                    _children = new ArrayList();
+                    Map<String,AMXProxy> childrenMap = amx.childrenMap(_amxChildType);
+                    for(AMXProxy oneChild : childrenMap.values()){
+                        _children.add( ((AMXConfigProxy) oneChild).objectName());
+                    }
                 }
 
             }catch (Exception ex3){
@@ -588,8 +582,6 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
      *	The name of the method which describes the TreeNode name.
      */
     private String	_nameMethod	=   null;
-
-    private boolean _useV3AMX = false;
 
     private String _amxChildType = null;
 

@@ -119,8 +119,6 @@
     <dynamicTreeNode id="applications"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
         objectName="amx:pp=/domain,type=applications"
-        useV3AMX="true"
-        methodName=""
         text="$resource{i18n.tree.applications}"
         url="/common/applications/applications.jsf"
         expanded="$boolean{false}"
@@ -132,6 +130,25 @@
     <!facet image>
         <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/applications.jsf"  border="$int{0}" immediate="$boolean{true}" />
     </facet>
+    <!filterTree filterOutLifecycle() />
+    </dynamicTreeNode>
+
+
+<dynamicTreeNode id="lifecycle"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:pp=/domain,type=applications"
+        text="$resource{i18n.tree.lifecycle}"
+        url="/common/applications/lifecycles.jsf"
+        expanded="$boolean{false}"
+        attributeName="name"
+        childImageURL="/resource/images/webModule.gif"
+        childExpanded="$boolean{false}"
+        childURL="/common/applications/lifecycleEdit.jsf?appName=#{$this{valueBinding}.text}"
+    >
+    <!facet image>
+        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/lifecycles.jsf"  border="$int{0}" immediate="$boolean{true}" />
+    </facet>
+    <!filterTree filterOutNonLifecycle() />
     </dynamicTreeNode>
 
 	    
@@ -185,9 +202,7 @@
         <dynamicTreeNode id="realms"
             treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
             objectName="amx:pp=/domain/configs/config[$pageSession{configName}],type=security-service"
-            useV3AMX="true"
             amxChildType="auth-realm"
-            methodName=""
             attributeName="name"
             childImageURL="/resource/common/security/images/security.gif"
             childExpanded="$boolean{false}"
@@ -204,9 +219,7 @@
         <dynamicTreeNode id="auditModules"
             treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
             objectName="amx:pp=/domain/configs/config[$pageSession{configName}],type=security-service"
-            useV3AMX="true"
             amxChildType="audit-module"
-            methodName=""
             attributeName="name"
             childImageURL="/resource/common/security/images/security.gif"
             childExpanded="$boolean{false}"
@@ -222,9 +235,7 @@
         <dynamicTreeNode id="jaccProviders"
             treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
             objectName="amx:pp=/domain/configs/config[$pageSession{configName}],type=security-service"
-            useV3AMX="true"
             amxChildType="jacc-provider"
-            methodName=""
             attributeName="name"
             childImageURL="/resource/common/security/images/security.gif"
             childExpanded="$boolean{false}"
