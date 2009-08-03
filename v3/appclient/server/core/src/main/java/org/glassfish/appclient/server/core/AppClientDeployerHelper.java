@@ -40,7 +40,9 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.deploy.shared.OutputJarArchive;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -56,6 +58,7 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
+import org.glassfish.deployment.common.ClientArtifactsManager;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 
 /**
@@ -378,7 +381,25 @@ public abstract class AppClientDeployerHelper {
 
         copyMainClass(facadeArchive);
 
+        copyArtifactsFromOtherDeployers(facadeArchive, dc);
+
         facadeArchive.close();
+    }
+
+    private void copyArtifactsFromOtherDeployers(
+            final WritableArchive facadeArchive,
+            final DeploymentContext dc) throws IOException {
+        final ClientArtifactsManager artifacts = ClientArtifactsManager.get(dc);
+        for (DownloadableArtifacts.FullAndPartURIs artifact : artifacts.artifacts()) {
+            OutputStream os = facadeArchive.putNextEntry(artifact.getPart().toASCIIString());
+            InputStream is = new BufferedInputStream(new FileInputStream(new File(artifact.getFull())));
+            copyStream(is, os);
+            try {
+                is.close();
+                facadeArchive.closeEntry();
+            } catch (IOException ignore) {
+            }
+        }
     }
 
     private void copyClass(final WritableArchive facadeArchive,
@@ -443,7 +464,7 @@ public abstract class AppClientDeployerHelper {
     Proxy proxy() {
         return new Proxy(this);
     }
-    
+
     /**
      * Wrapper around AppClientDeployer for storage in the deployment context's
      * meta data.

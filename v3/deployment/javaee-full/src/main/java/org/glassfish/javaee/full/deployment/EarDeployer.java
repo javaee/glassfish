@@ -304,15 +304,28 @@ public class EarDeployer implements Deployer, PostConstruct {
 
      }
 
-    
+
+    /**
+     * Performs the same runnable task on each specified bundle.
+     *
+     * @param bundles the bundles on which to perform the task
+     * @param runnable the task to perform
+     * @throws Exception
+     */
+    private void doOnBundles(
+            final Collection<ModuleDescriptor<BundleDescriptor>> bundles,
+            final BundleBlock runnable) throws Exception {
+        for (ModuleDescriptor module : bundles) {
+            runnable.doBundle(module);
+        }
+    }
+
     private Collection<ModuleDescriptor<BundleDescriptor>>
                 doOnAllTypedBundles(Application application, XModuleType type, BundleBlock runnable)
                     throws Exception {
 
         final Collection<ModuleDescriptor<BundleDescriptor>> typedBundles = application.getModuleDescriptorsByType(type);
-        for (ModuleDescriptor module : typedBundles) {
-            runnable.doBundle(module);
-        }
+        doOnBundles(typedBundles, runnable);
         return typedBundles;
     }
 
@@ -330,7 +343,9 @@ public class EarDeployer implements Deployer, PostConstruct {
             }
         }
         
-        // otherwise we load modules by default order: connector, ejb, web
+        // otherwise we load modules by default order: connector, ejb, web and
+        // saving app client for last (because other submodules might generated
+        // artifacts that should be included in the generated app client JAR
         else {
             // first we take care of the connectors
             bundles.removeAll(doOnAllTypedBundles(application, XModuleType.RAR, runnable));
@@ -341,10 +356,18 @@ public class EarDeployer implements Deployer, PostConstruct {
             // finally the war files.
             bundles.removeAll(doOnAllTypedBundles(application, XModuleType.WAR, runnable));
 
+            // extract the app client bundles to take care of later
+            Collection<ModuleDescriptor<BundleDescriptor>> appClientBundles = 
+                    application.getModuleDescriptorsByType(XModuleType.CAR);
+            bundles.removeAll(appClientBundles);
+            
             // now ther remaining bundles
             for (final ModuleDescriptor bundle : bundles) {
                 runnable.doBundle(bundle);
             }
+
+            // Last, deal with the app client bundles
+            doOnBundles(appClientBundles, runnable);
         } 
     }
 
