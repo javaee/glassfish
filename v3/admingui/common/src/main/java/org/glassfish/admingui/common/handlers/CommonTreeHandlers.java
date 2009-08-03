@@ -175,9 +175,11 @@ public class CommonTreeHandlers {
         FilterTreeEvent event = (FilterTreeEvent) context.getEventObject();
         List<ObjectName> apps = (List<ObjectName>)event.getChildObjects();
         List result = new ArrayList();
-        for(ObjectName oneApp :apps){
-            if (! AppUtil.isLifecycle(oneApp)){
-                result.add(oneApp);
+        if (apps != null){
+            for(ObjectName oneApp :apps){
+                if (! AppUtil.isLifecycle(oneApp)){
+                    result.add(oneApp);
+                }
             }
         }
         return result;
