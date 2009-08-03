@@ -38,8 +38,8 @@
 package org.glassfish.admin.amx.logging;
 
 import javax.management.openmbean.CompositeData;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 
 /**

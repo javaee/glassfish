@@ -26,12 +26,12 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 
 import org.glassfish.api.amx.AMXLoader;
-import org.glassfish.api.amx.AMXValues;
 import org.glassfish.external.amx.AMXGlassfish;
 
 /**
     MBean responsible for booting the AMX system.
  */
+@org.glassfish.external.arc.Taxonomy(stability = org.glassfish.external.arc.Stability.UNCOMMITTED)
 public interface BootAMXMBean 
 {
     /**

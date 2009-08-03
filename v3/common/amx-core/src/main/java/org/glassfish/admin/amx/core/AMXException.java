@@ -35,8 +35,8 @@
  */
 package org.glassfish.admin.amx.core;
 
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 /**
     Runtime exception used in proxying code and similar situations on the client side.

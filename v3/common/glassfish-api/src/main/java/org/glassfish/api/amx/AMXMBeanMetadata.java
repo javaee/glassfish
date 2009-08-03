@@ -58,6 +58,7 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target({TYPE, ANNOTATION_TYPE})
 @Documented
+@org.glassfish.external.arc.Taxonomy(stability = org.glassfish.external.arc.Stability.UNCOMMITTED)
 public @interface AMXMBeanMetadata {
     /**
        If true, states that the MBeanInfo is immutable; that once MBeanInfo is

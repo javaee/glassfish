@@ -41,6 +41,9 @@ import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
 
+import org.glassfish.external.arc.Taxonomy;
+import org.glassfish.external.arc.Stability;
+
 /**
     Annotation used to generate MBeanInfo using a Java interface.
    @author Lloyd Chambers

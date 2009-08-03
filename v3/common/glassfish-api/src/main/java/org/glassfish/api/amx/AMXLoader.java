@@ -44,8 +44,6 @@ import javax.management.ObjectName;
 import org.glassfish.external.probe.provider.annotations.Probe;
 
 import org.glassfish.external.amx.AMXGlassfish;
-import org.glassfish.external.arc.Taxonomy;
-import org.glassfish.external.arc.Stability;
 
 /**
     A loader of AMX MBeans.  Any module that wants automatic support for loading AMX MBeans
@@ -54,7 +52,7 @@ import org.glassfish.external.arc.Stability;
     @see AMXValues
  */
 @Contract
-//@Taxonomy(stability = Stability.UNCOMMITTED)
+@org.glassfish.external.arc.Taxonomy(stability = org.glassfish.external.arc.Stability.UNCOMMITTED)
 public interface AMXLoader
 {
     /** property prefix used by AMXLoader MBeans, name to be suffixed to it */

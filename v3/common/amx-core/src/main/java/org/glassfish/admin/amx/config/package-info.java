@@ -40,8 +40,8 @@
 @Taxonomy(stability = Stability.UNCOMMITTED)
 package org.glassfish.admin.amx.config;
 
-import org.glassfish.admin.amx.annotation.Taxonomy;
-import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.external.arc.Taxonomy;
+import org.glassfish.external.arc.Stability;
 
 
 

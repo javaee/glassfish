@@ -41,6 +41,11 @@ import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
 
+
+import org.glassfish.external.arc.Taxonomy;
+import org.glassfish.external.arc.Stability;
+
+
 /**
     Used on an AMXProxy sub-interface only.  Indicates that the method
     is a proxy-based method for getting a child or List/Set/Map of children; it doesn’t actually

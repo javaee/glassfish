@@ -35,8 +35,6 @@
  */
 package org.glassfish.admin.amx.base;
 
-import org.glassfish.admin.amx.annotation.ManagedOperation;
-import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 import java.util.Map;
@@ -44,6 +42,8 @@ import java.util.List;
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.*;
 import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 /**
 @since GlassFish V3

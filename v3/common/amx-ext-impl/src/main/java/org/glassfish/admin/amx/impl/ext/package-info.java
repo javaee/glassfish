@@ -38,8 +38,8 @@
 @Taxonomy(stability = Stability.PRIVATE)
 package org.glassfish.admin.amx.impl.ext;
 
-import org.glassfish.admin.amx.annotation.Taxonomy;
-import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.external.arc.Taxonomy;
+import org.glassfish.external.arc.Stability;
 
 
 

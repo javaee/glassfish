@@ -49,6 +49,8 @@ import org.glassfish.admin.amx.logging.Logging;
 
 
 import org.glassfish.external.amx.AMX;
+import org.glassfish.external.arc.Taxonomy;
+import org.glassfish.external.arc.Stability;
 
 
 /**

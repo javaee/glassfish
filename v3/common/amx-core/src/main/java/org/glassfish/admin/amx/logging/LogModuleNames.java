@@ -39,8 +39,8 @@ import org.glassfish.admin.amx.util.SetUtil;
 
 import java.util.Collections;
 import java.util.Set;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 /**
 	Names of log level modules.

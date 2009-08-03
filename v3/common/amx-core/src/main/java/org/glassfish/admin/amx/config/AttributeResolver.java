@@ -40,8 +40,8 @@ import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.Param;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 /**
 Interface implemented by MBeans which can resolve a variable to a value.

@@ -38,21 +38,17 @@ package org.glassfish.admin.amx.impl.config;
 
 import java.util.Map;
 
-import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.impl.mbean.AMXSupport;
 
 import javax.management.MBeanRegistration;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
-import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
-import org.glassfish.api.amx.AMXValues;
 import org.glassfish.api.amx.AMXLoader;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 
 /**
 	<b>INTERNAL USE ONLY</b>
@@ -61,15 +57,6 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 public interface AMXConfigLoaderMBean extends AMXSupport, MBeanRegistration, NotificationListener
 {
     public static final ObjectName OBJECT_NAME = JMXUtil.newObjectName( AMXLoader.LOADER_PREFIX + "config" );
-    /**
-        Make the AMX configuration infrastructure aware of new @Configured interfaces that
-        might otherwise be unknown or inaccessible.
-        <p>
-        <b>This method works in-process only, because in general clients will not have the
-        requisite classes (and by-name won't work).
-    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
-    public void registerConfigured( final Class<? extends ConfigBeanProxy> intf );
-     */
         
     /** return known @Configured classes, keyed by their element type */
     @ManagedAttribute

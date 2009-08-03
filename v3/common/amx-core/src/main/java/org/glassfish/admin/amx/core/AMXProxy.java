@@ -39,10 +39,9 @@ import java.util.Set;
 import java.util.Map;
 
 import javax.management.ObjectName;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.admin.amx.core.proxy.AMXProxyHandler;
-import org.glassfish.api.amx.AMXValues;
 
 /**
 An AMXProxy offers generic access to any AMX-compliant MBean, including the ability to navigate
@@ -112,7 +111,6 @@ operation by name.
 
 @see Extra
 @see MetaGetters
-@see AMXValues
 @see org.glassfish.admin.amx.config.AMXConfigProxy
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
@@ -127,10 +125,10 @@ public interface AMXProxy extends AMX_SPI
      */
     public String nameProp();
 
-    /** The value of the {@link AMXValues#PARENT_PATH_KEY} property in the ObjectName */
+    /** The value of the {@link PARENT_PATH_KEY} property in the ObjectName */
     public String parentPath();
 
-    /** The value of the {@link AMXValues#TYPE_KEY} property in the ObjectName */
+    /** The value of the {@link TYPE_KEY} property in the ObjectName */
     public String type();
 
     /**

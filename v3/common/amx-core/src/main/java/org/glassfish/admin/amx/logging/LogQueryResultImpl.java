@@ -40,8 +40,8 @@ import org.glassfish.admin.amx.util.ObjectUtil;
 
 import java.io.Serializable;
 import java.util.List;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 /**
     <b>INTERNAL USE ONLY--not part of the API</b>

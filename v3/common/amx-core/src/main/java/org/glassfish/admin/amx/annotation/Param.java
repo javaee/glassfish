@@ -41,6 +41,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.*;
 
+import org.glassfish.external.arc.Taxonomy;
+import org.glassfish.external.arc.Stability;
 
 /**
  * Annotates the paramete rof a method.

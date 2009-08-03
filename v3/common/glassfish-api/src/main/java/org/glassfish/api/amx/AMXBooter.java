@@ -43,6 +43,7 @@ import javax.management.ObjectName;
  AMX must be "booted" before use.  Use {@link #bootAMX} to start AMX either in-process
  or remotely.
  */
+@org.glassfish.external.arc.Taxonomy(stability = org.glassfish.external.arc.Stability.UNCOMMITTED)
 public final class AMXBooter
 {
     private AMXBooter()

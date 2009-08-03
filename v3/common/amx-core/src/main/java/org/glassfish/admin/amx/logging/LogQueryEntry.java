@@ -38,8 +38,8 @@ package org.glassfish.admin.amx.logging;
 
 import java.util.Date;
 import java.util.Map;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 /**
 	An individual result representing a log entry found

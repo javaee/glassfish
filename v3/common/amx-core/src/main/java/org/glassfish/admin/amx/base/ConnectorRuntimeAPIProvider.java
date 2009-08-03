@@ -43,8 +43,8 @@ import org.glassfish.admin.amx.core.AMXProxy;
 import java.util.Map;
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**

@@ -36,10 +36,15 @@
 package org.glassfish.admin.amx.logging;
 
 import javax.management.MBeanOperationInfo;
-import org.glassfish.admin.amx.annotation.*;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 import java.util.Map;
+import org.glassfish.admin.amx.annotation.Description;
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
+import org.glassfish.admin.amx.annotation.ManagedOperation;
+import org.glassfish.admin.amx.annotation.Param;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 /**
 	Supports accessing logging information in multiple ways.  The following are supported:

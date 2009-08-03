@@ -44,9 +44,8 @@ import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Param;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
-import org.glassfish.admin.amx.core.AMXConstants;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 /**
 Extending this proxy interface implies that the class is part of the MBean API for configuration,
@@ -54,7 +53,6 @@ that the interface is a dynamic proxy to a config MBean.
 <p>
 Note that considerable metadata is available for config MBeans, via MBeanInfo.getDescriptor().
 @see AMXProxy
-@see AMXConstants
 @see AMXConfigConstants
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)

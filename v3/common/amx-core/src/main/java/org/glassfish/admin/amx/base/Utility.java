@@ -35,8 +35,8 @@
  */
 package org.glassfish.admin.amx.base;
 
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 /**
 Marker interface which indicates that this MBean is a utility object.

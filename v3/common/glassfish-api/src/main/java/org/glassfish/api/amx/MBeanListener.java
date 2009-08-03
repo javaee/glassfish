@@ -21,6 +21,7 @@ import org.glassfish.external.amx.AMXGlassfish;
  * Intended usage is for subsystems to lazy-load only when the Parent
  * MBean is registered.
  */
+@org.glassfish.external.arc.Taxonomy(stability = org.glassfish.external.arc.Stability.UNCOMMITTED)
 public class MBeanListener<T extends MBeanListener.Callback> implements NotificationListener
 {
     private static void debug(final Object o) { System.out.println( "" + o ); }

@@ -43,7 +43,6 @@ import org.glassfish.admin.amx.util.ClassUtil;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 import static org.glassfish.external.amx.AMX.*;
-import org.glassfish.api.amx.AMXValues;
 
 import javax.management.Notification;
 import javax.management.ObjectName;
@@ -57,8 +56,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.management.MBeanServer;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 /**
 	Utility routines pertinent to the MBean API.
@@ -545,6 +544,22 @@ public final class Util
         return Dom.convertName(simpleName);
     }
 
+
+    /** Proxy interfaces may contain a type field denoting the type to be used in the ObjectName;
+     * this is an alternative to an annotation that may be desirable to avoid
+     * a dependency on the amx-core module.  Some proxy interfaces also represent
+     * MBeans whose type and other metadata is derived not from the proxy interface,
+     * but from another authoritative source; this allows an explicit
+     * linkage that allows the AMXProxyHandler to deduce the correct type, given
+     * the interface (and avoids any further complexity, the KISS principle).
+     * eg public static final String AMX_TYPE = "MyType";
+     * <p>
+     * A good example of this is the config MBeans which use lower case types with dashes. Other
+     * types may use classnames, or other variants; the proxy code can't assume any particular
+     * mapping from a proxy interface to the actual MBean type.
+     */
+    public static final String TYPE_FIELD = "AMX_TYPE";
+    
     /**
         Deduce the type to be used in the path.  Presence of a TYPE_FIELD field always
         take precedence, then the AMXMBeanMetadata.
@@ -560,7 +575,7 @@ public final class Util
         String type = null;
         
         AMXMBeanMetadata meta = null;
-        final Object typeField = ClassUtil.getFieldValue( intf, AMXValues.TYPE_FIELD );
+        final Object typeField = ClassUtil.getFieldValue( intf, TYPE_FIELD );
         if ( typeField instanceof String )
         {
             type = (String)typeField;

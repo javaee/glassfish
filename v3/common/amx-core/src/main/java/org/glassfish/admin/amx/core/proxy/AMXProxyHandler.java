@@ -65,11 +65,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.reflect.Array;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.admin.amx.annotation.ChildGetter;
 import org.glassfish.admin.amx.base.Tools;
-import static org.glassfish.api.amx.AMXValues.*;
 import org.glassfish.admin.amx.core.PathnameParser;
 import org.glassfish.admin.amx.util.TypeCast;
 

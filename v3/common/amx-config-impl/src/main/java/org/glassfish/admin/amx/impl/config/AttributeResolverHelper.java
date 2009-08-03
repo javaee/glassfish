@@ -44,8 +44,8 @@ import org.jvnet.hk2.config.TranslationException;
 import org.jvnet.hk2.config.VariableResolver;
 
 import java.util.Map;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 
 /**

@@ -42,6 +42,9 @@ import java.lang.annotation.Target;
 import javax.management.MBeanOperationInfo;
 import static java.lang.annotation.ElementType.METHOD;
 
+import org.glassfish.external.arc.Taxonomy;
+import org.glassfish.external.arc.Stability;
+
 /**
     Annotation used to generate MBeanInfo using a Java interface.
    @author Lloyd Chambers

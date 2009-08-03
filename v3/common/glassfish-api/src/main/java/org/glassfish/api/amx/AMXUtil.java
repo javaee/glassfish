@@ -44,6 +44,7 @@ import org.glassfish.external.amx.AMXGlassfish;
 /**
     Small utilities for AMXBooter and related.
  */
+@org.glassfish.external.arc.Taxonomy(stability = org.glassfish.external.arc.Stability.UNCOMMITTED)
 public final class AMXUtil
 {
     private AMXUtil()

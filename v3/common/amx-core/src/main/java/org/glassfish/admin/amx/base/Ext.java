@@ -39,6 +39,8 @@ import org.glassfish.admin.amx.annotation.*;
 
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 /**
 "Ex" = extensions: any additional MBeans, especially those that are derivative

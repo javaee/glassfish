@@ -37,8 +37,8 @@ package org.glassfish.admin.amx.base;
 
 import java.beans.PropertyChangeEvent;
 
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.ObjectUtil;
 

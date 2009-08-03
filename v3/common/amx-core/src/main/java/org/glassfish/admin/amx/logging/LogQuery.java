@@ -43,6 +43,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.*;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 /**
 	Provides access to log messages already present in the log file.

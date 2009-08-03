@@ -53,8 +53,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingDeque;
 import javax.management.*;
 
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 import static org.glassfish.external.amx.AMX.*;
 import org.glassfish.admin.amx.core.AMXProxy;
 import static org.glassfish.admin.amx.config.AMXConfigConstants.*;

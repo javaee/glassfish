@@ -39,8 +39,8 @@ import javax.management.Attribute;
 import javax.management.ObjectName;
 
 import org.glassfish.admin.amx.annotation.ManagedOperation;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
 

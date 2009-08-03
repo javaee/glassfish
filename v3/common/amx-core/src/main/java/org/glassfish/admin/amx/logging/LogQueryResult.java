@@ -37,8 +37,8 @@
 
 package org.glassfish.admin.amx.logging;
 
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 /**
 	Interface which can be applied over the CompositeData returned
