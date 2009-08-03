@@ -182,6 +182,20 @@ public class ConnectorsHandlers {
         rarList.add("jaxr-ra");
         handlerCtx.setOutputValue("result", rarList);
     }
+    
+    /**
+     *	<p> This returns the connection definitions based on resource adapter
+     */
+    @Handler(id = "getConnectionDefinitionsForRA",
+        input = {
+            @HandlerInput(name = "resourceAdapter", type = String.class)},
+        output = {
+            @HandlerOutput(name = "result", type = List.class)
+            })
+    public static void getConnectionDefinitionsForRA(HandlerContext handlerCtx) {
+        String ra = (String) handlerCtx.getInputValue("resourceAdapter");
+        handlerCtx.setOutputValue("result", getConnectionDefinitions(ra));
+    }    
 
 
     private static List getConnectionDefinitions(String resAdapter) {

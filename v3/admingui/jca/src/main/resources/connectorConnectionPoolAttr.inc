@@ -52,19 +52,17 @@
                         </sun:property>  
                         <sun:property id="resAdapterProp"  rendered="#{edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}"  >
                             <sun:dropDown id="db"  rendered="#{edit}" selected="#{valueMap.ResourceAdapterName}" submitForm="#{true}" immediate="#{true}"
-                                labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" required="#{true}" >
-                                <!beforeCreate
-                                    getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{pageSession.rarList}")
-                                    addSystemConnectors(rarList="#{requestScope.rarList}" result="#{pageSession.connectorList}")
-                                />
+                                labels="$pageSession{modList}"  values="$pageSession{modList}" required="#{true}" >
                             </sun:dropDown>
                         </sun:property>
                         <sun:property id="connectionDefNewProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorConnectionPool.connectionDefinitionName}" >
                             <sun:staticText id="connectionDef" text="#{wizardPoolExtra.ConnectionDefinitionName}" rendered="#{!edit}"  />
                         </sun:property>  
                          <sun:property id="connectionDefProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorConnectionPool.connectionDefinitionName}" >
-                            <sun:textField id="connectionDef" columns="$int{60}"  text="#{valueMap.ConnectionDefinitionName}" rendered="#{edit}"  />
-                        </sun:property>  
+                            <sun:dropDown id="connectionDef"  rendered="#{edit}" selected="#{valueMap.ConnectionDefinitionName}"
+                                labels="$pageSession{cdList}"  values="$pageSession{cdList}" required="#{true}" >
+                            </sun:dropDown>
+                       </sun:property>  
                         <sun:property id="descProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.description}" >
                             <sun:textField id="desc" columns="$int{60}" text="#{valueMap.Description}" />      
                         </sun:property>
