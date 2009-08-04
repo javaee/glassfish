@@ -1375,7 +1375,9 @@ public class VirtualServer extends StandardHost {
     /**
      * Configures the SSO valve of this VirtualServer.
      */
-    void configureSingleSignOn(boolean globalSSOEnabled, WebContainerFeatureFactory webContainerFeatureFactory) {
+    void configureSingleSignOn(boolean globalSSOEnabled,
+            WebContainerFeatureFactory webContainerFeatureFactory) {
+
         if (vsBean == null) {
             return;
         }
@@ -1385,8 +1387,8 @@ public class VirtualServer extends StandardHost {
              * Disable SSO
              */
             if (_logger.isLoggable(Level.FINE)) {
-                Object[] params = { getID() };
-                _logger.log(Level.FINE, "webcontainer.ssodisabled", params);
+                _logger.log(Level.FINE, "Single Sign On (SSO) disabled for " +
+                    "virtual server " + getID() + " as per domain.xml");
             }
 
             // Remove existing SSO valve (if any)
@@ -1402,48 +1404,44 @@ public class VirtualServer extends StandardHost {
             /*
              * Enable SSO
              */
-            try {
-                SSOFactory ssoFactory =
-                    webContainerFeatureFactory.getSSOFactory();
-                GlassFishSingleSignOn sso =
-                    ssoFactory.createSingleSignOnValve(getName());
+            SSOFactory ssoFactory =
+                webContainerFeatureFactory.getSSOFactory();
+            GlassFishSingleSignOn sso =
+                ssoFactory.createSingleSignOnValve(getName());
 
-                // set max idle time if given
-                Property idle = vsBean.getProperty(SSO_MAX_IDLE);
-                if (idle != null && idle.getValue() != null) {
+            // set max idle time if given
+            Property idle = vsBean.getProperty(SSO_MAX_IDLE);
+            if (idle != null && idle.getValue() != null) {
+                if (_logger.isLoggable(Level.FINE)) {
                     _logger.fine("SSO entry max idle time set to: " +
-                                 idle.getValue());
-                    int i = Integer.parseInt(idle.getValue());
-                    sso.setMaxInactive(i);
+                                 idle.getValue() + " for virtual server " +
+                                 getID());
                 }
-
-                // set expirer thread sleep time if given
-                Property expireTime = vsBean.getProperty(SSO_REAP_INTERVAL);
-                if (expireTime !=null && expireTime.getValue() != null) {
-                    _logger.fine("SSO expire thread interval set to : " +
-                                 expireTime.getValue());
-                    int i = Integer.parseInt(expireTime.getValue());
-                    sso.setReapInterval(i);
-                }
-
-                // Remove existing SSO valve (if any), in case of a reconfig
-                GlassFishValve[] valves = getValves();
-                for (int i=0; valves!=null && i<valves.length; i++) {
-                    if (valves[i] instanceof SingleSignOn) {
-                        removeValve(valves[i]);
-                        break;
-                    }
-                }
-
-                addValve((GlassFishValve) sso);
-
-                configureSingleSignOnCookieSecure();
-
-            } catch (Exception e) {
-                _logger.log(Level.WARNING, "webcontainer.ssobadconfig", e);
-                _logger.log(Level.WARNING, "webcontainer.ssodisabled",
-                            getID());
+                sso.setMaxInactive(Integer.parseInt(idle.getValue()));
             }
+
+            // set expirer thread sleep time if given
+            Property expireTime = vsBean.getProperty(SSO_REAP_INTERVAL);
+            if (expireTime !=null && expireTime.getValue() != null) {
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("SSO expire thread interval set to: " +
+                                 expireTime.getValue() +
+                                 " for virtual server " + getID());
+                }
+                sso.setReapInterval(Integer.parseInt(expireTime.getValue()));
+            }
+
+            // Remove existing SSO valve (if any), in case of a reconfig
+            GlassFishValve[] valves = getValves();
+            for (int i=0; valves!=null && i<valves.length; i++) {
+                if (valves[i] instanceof SingleSignOn) {
+                    removeValve(valves[i]);
+                    break;
+                }
+            }
+
+            addValve((GlassFishValve) sso);
+            configureSingleSignOnCookieSecure();
         }
     }
 
