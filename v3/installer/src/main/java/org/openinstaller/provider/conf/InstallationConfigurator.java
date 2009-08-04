@@ -452,24 +452,25 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
                 user = adminUser;
             }
 
-            String[] asadminCommandArray = { asadminCommand, "create-domain",
+            String[] asadminCommandArray = { asadminCommand,
+		"--user", user,
+                "--passwordfile", pwdFile.getAbsolutePath(),
+	        "create-domain",
                 "--savelogin",
 		"--checkports=false",
                 "--adminport", adminPort,
-                "--user", user,
-                "--passwordfile", pwdFile.getAbsolutePath(),
                 "--instanceport", httpPort,
                 "--domainproperties="+ getDomainProperties(adminPort, httpPort),
                 "domain1"};
 
 	    String[] asadminCommandArrayMac = { "java", "-jar",
 		installDir+"/glassfish/modules/admin-cli.jar",
+		"--user", user,
+                "--passwordfile", pwdFile.getAbsolutePath(),
 	        "create-domain",
                 "--savelogin",
 		"--checkports=false",
                 "--adminport", adminPort,
-                "--user", user,
-                "--passwordfile", pwdFile.getAbsolutePath(),
                 "--instanceport", httpPort,
                 "--domainproperties="+ getDomainProperties(adminPort, httpPort),
                 "domain1"};
