@@ -202,6 +202,21 @@ public class Parser {
                         throw new CommandValidationException(
                             "Missing value for option: " + name);
                     value = argv[si];
+                } else if (opt.getType().equals("BOOLEAN")) {
+                    /*
+                     * If it's a boolean option, the following parameter
+                     * might be the value for the option; peek ahead to
+                     * see if it looks like a boolean value.
+                     */
+                    if (si + 1 < argv.length) {
+                        String val = argv[si + 1];
+                        if (val.equalsIgnoreCase("true") ||
+                                val.equalsIgnoreCase("false")) {
+                            // yup, it's a boolean value, consume it
+                            si++;
+                            value = val;
+                        }
+                    }
                 }
             }
             setOption(opt, value);
