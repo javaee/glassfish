@@ -34,10 +34,10 @@ public class WebTest {
         try { 
             invoke("http://" + host + ":" + port + contextRoot + "/mytest",
                    EXPECTED_RESPONSE);
-            invoke("http://" + host + ":" + port + contextRoot + "/mytest2",
-                   EXPECTED_RESPONSE_2);
             invoke("http://" + host + ":" + port + contextRoot + "/wftest",
                    EXPECTED_RESPONSE);
+            invoke("http://" + host + ":" + port + contextRoot + "/wftest2",
+                   EXPECTED_RESPONSE_2);
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
