@@ -62,12 +62,12 @@ public class UnitTest {
 
         Map<String, Object> p = new HashMap<String, Object>();
         p.put(EJBContainer.MODULES, new File(dir));
-        String gf = System.getenv().get("S1AS_HOME");
+        String gf = System.getenv().get("GF_HOME");
         if (gf != null) {
             System.err.println("+++GF location: " + gf);
             p.put("glassfish.ejb.embedded.glassfish.installation", gf);
         } else {
-            System.err.println("+++GF location NOT specified via S1AS_HOME");
+            System.err.println("+++GF location NOT specified via GF_HOME");
         }
 
         EJBContainer c = EJBContainer.createEJBContainer(p);
