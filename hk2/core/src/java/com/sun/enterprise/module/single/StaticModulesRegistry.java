@@ -38,6 +38,7 @@ package com.sun.enterprise.module.single;
 
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import java.io.File;
+import java.util.List;
 
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.ComponentException;
@@ -53,8 +54,21 @@ import org.jvnet.hk2.component.Inhabitants;
  */
 public class StaticModulesRegistry extends SingleModulesRegistry {
 
+    final private StartupContext startupContext; 
+
     public StaticModulesRegistry(ClassLoader singleCL) {
         super(singleCL);
+        startupContext = null;
+    }
+
+    public StaticModulesRegistry(ClassLoader singleCL, StartupContext startupContext) {
+        super(singleCL);
+        this.startupContext = startupContext;
+    }
+
+    public StaticModulesRegistry(ClassLoader singleCL, List<ManifestProxy.SeparatorMappings> mappings, StartupContext startupContext) {
+        super(singleCL, mappings);
+        this.startupContext = startupContext;
     }
 
     @Override
@@ -65,11 +79,15 @@ public class StaticModulesRegistry extends SingleModulesRegistry {
     @Override                         
     public Habitat createHabitat(String name) throws ComponentException {
 
-        File dir = new File(System.getProperty("java.io.tmpdir"));
+        StartupContext sc = startupContext;
         Habitat habitat = super.newHabitat();
-        StartupContext startupContext = new StartupContext(dir, new String[0]);
+
+        if (startupContext==null) {
+            File dir = new File(System.getProperty("java.io.tmpdir"));
+            sc = new StartupContext(dir, new String[0]);
+        }
         super.createHabitat("default", habitat);
-        habitat.add(Inhabitants.create(startupContext));
+        habitat.add(Inhabitants.create(sc));
         return habitat;
     }
 

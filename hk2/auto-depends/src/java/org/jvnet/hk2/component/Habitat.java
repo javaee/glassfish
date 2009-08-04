@@ -59,6 +59,11 @@ import java.util.logging.Logger;
  */
 @SuppressWarnings("unchecked")
 public class Habitat {
+
+    /**
+     * Name to use to progammatically store default instances of a particular service.
+     */
+    public final String DEFAULT_NAME = "_HABITAT_DEFAULT";
     /**
      * Contract type FQCN to their corresponding inhabitants.
      *

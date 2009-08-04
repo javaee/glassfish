@@ -61,6 +61,7 @@ import com.sun.hk2.component.KeyValuePairParser;
 import com.sun.hk2.component.InhabitantsParser;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitants;
 import org.jvnet.hk2.annotations.Service;
 
 import java.io.File;
@@ -397,6 +398,8 @@ public class Main {
             mainModule = registry.find(startupCode.getClass());
         }
 
+        habitat.addIndex(Inhabitants.create(startupCode),
+                ModuleStartup.class.getName(), habitat.DEFAULT_NAME);
         mainModule.setSticky(true);
         launch(startupCode, context, mainModule);
         return startupCode;
