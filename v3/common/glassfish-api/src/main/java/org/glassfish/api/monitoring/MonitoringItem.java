@@ -26,9 +26,23 @@ public interface MonitoringItem extends ConfigBeanProxy {
     public String getLevel();
 
     /**
-     * The requested monitoring level has changed.
-     * @param the new monitoring level
+     * Set the level of this monitoring module
+     * @param new monitoring level
      */
 
     public void setLevel(String level) throws PropertyVetoException;
+
+    /**
+     * The name of the monitoring module that has this config
+     * @return String name
+     */
+    @Attribute(key=true)
+    @NotNull
+    public String getName();
+
+    /**
+     * Set the name of this monitoring module
+     * @param the monitoring name
+     */
+    public void setName(String name) throws PropertyVetoException;
 }
