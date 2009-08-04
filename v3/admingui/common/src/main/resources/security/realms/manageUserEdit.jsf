@@ -48,6 +48,7 @@
         getUserInfo(Realm="#{name}", User="#{user}", GroupList=>$attribute{groupList});
         if ("#{pageSession.name}=admin-realm"){
             setPageSessionAttribute(key="isAdminRealm", value="true")
+            setPageSessionAttribute(key="groupList", value="asadmin")
         }
         if ("!(#{pageSession.name}=admin-realm)"){
             setPageSessionAttribute(key="isAdminRealm", value="false")
@@ -94,10 +95,15 @@
                             <sun:property id="userIdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.Userid}">
                                 <sun:staticText id="UserId" text="#{user}"/> 
                             </sun:property>                       
-                            <sun:property id="groupListProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.GroupList}" helpText="$resource{i18nc.manageUsers.GroupListHelp}">                           
-                                <sun:textField id="GroupList" text="#{requestScope.groupList}" rendered="#{!isAdminRealm}" columns="$int{55}"/>
-                                <sun:staticText id="GroupList2" text="#{requestScope.groupList}" rendered="#{isAdminRealm}"/>
-                            </sun:property>                  
+
+                            <sun:property id="groupListProp2"  rendered="#{isAdminRealm}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.GroupList}" >
+                                <sun:staticText id="GroupList2" text="#{pageSession.groupList}" rendered="#{isAdminRealm}"/>
+                            </sun:property>
+
+                            <sun:property id="groupListProp" rendered="#{!isAdminRealm}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.GroupList}" helpText="$resource{i18nc.manageUsers.GroupListHelp}">
+                                <sun:textField id="GroupList" text="#{pageSession.groupList}" rendered="#{!isAdminRealm}" columns="$int{55}"/>
+                            </sun:property>
+
                             <sun:property id="newPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.NewPassword}">                           
                                 <sun:passwordField id="NewPassword" styleClass="required" columns="$int{25}" text="#{requestScope.password}" required="#{true}" >
                                     <!afterCreate

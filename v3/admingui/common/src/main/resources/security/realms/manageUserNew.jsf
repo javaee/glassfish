@@ -44,6 +44,13 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value=>$page{name});
+        if ("#{pageSession.name}=admin-realm"){
+            setPageSessionAttribute(key="isAdminRealm", value="true")
+            setPageSessionAttribute(key="groupList", value="asadmin")
+        }
+        if ("!(#{pageSession.name}=admin-realm)"){
+            setPageSessionAttribute(key="isAdminRealm", value="false")
+        }
     />
      </event>
 #include "/common/shared/restart.inc"    
@@ -62,7 +69,7 @@
                                 addUser(
                                     Realm="#{name}"
                                     UserId="#{userId}"
-                                    GroupList="#{groupList}"
+                                    GroupList="#{pageSession.groupList}"
                                     Password="#{password}"
                                 );
                                 redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{name}&configName=#{configName}")
@@ -86,9 +93,14 @@
                             <sun:property id="userIdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.Userid}" helpText="$resource{i18nc.manageUsers.UserIDHelp}">
                                 <sun:textField id="UserId" styleClass="required" text="#{requestScope.userId}" columns="$int{55}" required="#{true}"/> 
                             </sun:property>                       
-                            <sun:property id="groupListProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.GroupList}" helpText="$resource{i18nc.manageUsers.GroupListHelp}">                           
-                                <sun:textField id="GroupList" text="#{requestScope.groupList}" columns="$int{55}" />   
-                            </sun:property>                  
+                            <sun:property id="groupListProp2"  rendered="#{isAdminRealm}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.GroupList}" >
+                                <sun:staticText id="GroupList2" text="#{pageSession.groupList}" rendered="#{isAdminRealm}"/>
+                            </sun:property>
+
+                            <sun:property id="groupListProp" rendered="#{!isAdminRealm}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.GroupList}" helpText="$resource{i18nc.manageUsers.GroupListHelp}">
+                                <sun:textField id="GroupList" text="#{pageSession.groupList}" rendered="#{!isAdminRealm}" columns="$int{55}"/>
+                            </sun:property>
+
                             <sun:property id="newPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.NewPassword}">                           
                                 <sun:passwordField id="NewPassword" styleClass="required" columns="$int{25}" text="#{requestScope.password}" required="#{true}" >
                                     <!afterCreate

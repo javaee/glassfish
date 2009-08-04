@@ -377,13 +377,22 @@ public class SecurityHandler {
      )
      public static void removeUser(HandlerContext handlerCtx){
 
+        String error = null;
         String realmName = (String) handlerCtx.getInputValue("Realm");
         try{
             List obj = (List) handlerCtx.getInputValue("selectedRows");
             List<Map> selectedRows = (List) obj;
             for(Map oneRow : selectedRows){
                 String user = (String)oneRow.get("users");
-                V3AMX.getInstance().getRealmsMgr().removeUser(realmName,user);
+                if (realmName.equals("admin-realm") && user.equals(GuiUtil.getSessionValue("userName"))){
+                    error = GuiUtil.getMessage("org.glassfish.common.admingui.Strings", "msg.error.cannotDeleteCurrent");
+                    continue;
+                }else{
+                    V3AMX.getInstance().getRealmsMgr().removeUser(realmName, user);
+                }
+            }
+            if (error != null){
+                GuiUtil.prepareAlert(handlerCtx, "error", error, null);
             }
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
