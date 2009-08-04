@@ -260,32 +260,32 @@ public class VirtualServer extends StandardHost {
     }
 
     /**
-     * Gets the default-context.xml location of web modules deployed on this
-     * virtual server.
+     * Gets the default-context.xml location of any web modules deployed
+     * on this virtual server.
      *
-     * @return default-context.xml location of web modules deployed on this
-     * virtual server
+     * @return default-context.xml location of any web modules deployed on
+     * this virtual server
      */
     public String getDefaultContextXmlLocation() {
         return defaultContextXmlLocation;
     }
 
     /**
-     * Sets the default-context.xml location for web modules deployed on this
-     * virtual server.
+     * Sets the default-context.xml location for any web modules deployed
+     * on this virtual server.
      *
-     * @param defaultContextXmlLocation default-context.xml location for web modules
-     * deployed on this virtual server
+     * @param defaultContextXmlLocation default-context.xml location for any
+     * web modules deployed on this virtual server
      */
     public void setDefaultContextXmlLocation(String defaultContextXmlLocation) {
         this.defaultContextXmlLocation = defaultContextXmlLocation;
     }
 
     /**
-     * Gets the default-web.xml location of web modules deployed on this
+     * Gets the default-web.xml location of any web modules deployed on this
      * virtual server.
      *
-     * @return default-web.xml location of web modules deployed on this
+     * @return default-web.xml location of any web modules deployed on this
      * virtual server
      */
     public String getDefaultWebXmlLocation() {
@@ -293,11 +293,11 @@ public class VirtualServer extends StandardHost {
     }
 
     /**
-     * Sets the default-web.xml location for web modules deployed on this
-     * virtual server.
+     * Sets the default-web.xml location for any web modules deployed
+     * on this virtual server.
      *
-     * @param defaultWebXmlLocation default-web.xml location for web modules
-     * deployed on this virtual server
+     * @param defaultWebXmlLocation default-web.xml location for any
+     * web modules deployed on this virtual server
      */
     public void setDefaultWebXmlLocation(String defaultWebXmlLocation) {
         this.defaultWebXmlLocation = defaultWebXmlLocation;
@@ -338,9 +338,10 @@ public class VirtualServer extends StandardHost {
     /**
      * Sets the config bean for this VirtualServer
      */
-     public void setBean(com.sun.enterprise.config.serverbeans.VirtualServer vsBean){
+    public void setBean(
+            com.sun.enterprise.config.serverbeans.VirtualServer vsBean){
         this.vsBean = vsBean;
-     }
+    }
 
     /**
      * Gets the mime map associated with this VirtualServer.
@@ -376,21 +377,13 @@ public class VirtualServer extends StandardHost {
         this.cacheControls = cacheControls;
     }
 
-
-    /**
-     * Return descriptive information about this ContractProvider implementation and
-     * the corresponding version number, in the format
-     * <code>&lt;description&gt;/&lt;version&gt;</code>.
-     */
     public String getInfo() {
         return _info;
     }
 
-
     public void setDefaultContextPath(String defaultContextPath) {
         this.defaultContextPath = defaultContextPath;
     }
-
 
     @Override
     public Container findChild(String contextRoot) {
@@ -403,7 +396,6 @@ public class VirtualServer extends StandardHost {
 
 
     // --------------------------------------------------------- Public Methods
-
 
     /**
      * Configures the Secure attribute of the given SSO cookie.
@@ -423,31 +415,6 @@ public class VirtualServer extends StandardHost {
 
 
     // ------------------------------------------------------ Lifecycle Methods
-
-    /**
-     * Gracefully shut down active use of the public methods of this Component.
-     *
-     * @exception IllegalStateException if this component has not been started
-     * @exception LifecycleException if this component detects a fatal error
-     *  that needs to be reported
-     */
-    public synchronized void stop() throws LifecycleException {
-
-        super.stop();
-
-        // Remove the descriptor bindings for all the web applications
-        // in this virtual server
-        /*
-        Switch sw = Switch.getSwitch();
-        ContractProvider children[] = findChildren();
-        if (children != null) {
-            for (int i = 0; i < children.length; i++) {
-                sw.removeDescriptorFor(children[i]);
-            }
-        }
-        */
-    }
-
 
     /**
      * Adds the given valve to the currently active pipeline, keeping the
@@ -539,7 +506,6 @@ public class VirtualServer extends StandardHost {
         return contextRoot;
     }
 
-
     protected WebModuleConfig getDefaultWebModule(Domain domain,
             WebArchivist webArchivist, ApplicationRegistry appRegistry) {
 
@@ -568,9 +534,8 @@ public class VirtualServer extends StandardHost {
             }
 
             if (wmInfo == null) {
-                Object[] params = { wmID, getID() };
                 _logger.log(Level.SEVERE, "vs.defaultWebModuleNotFound",
-                            params);
+                            new Object[] {wmID, getID()});
             }
         }
 
@@ -589,7 +554,8 @@ public class VirtualServer extends StandardHost {
      * this virtual server's list of modules (only then will one know whether
      * the user has already configured a default web module or not).
      */
-    protected WebModuleConfig createSystemDefaultWebModuleIfNecessary(WebArchivist webArchivist) {
+    protected WebModuleConfig createSystemDefaultWebModuleIfNecessary(
+            WebArchivist webArchivist) {
 
         WebModuleConfig wmInfo = null;
 
@@ -619,7 +585,6 @@ public class VirtualServer extends StandardHost {
         return wmInfo;
 
     }
-
 
     /**
      * Creates and returns an object that contains information about
@@ -727,23 +692,15 @@ public class VirtualServer extends StandardHost {
      * Returns the id of the default web module for this virtual server
      * as specified in the 'default-web-module' attribute of the
      * 'virtual-server' element.
-     *
-     * This is an optional attribute.
      */
     protected String getDefaultWebModuleID() {
-        String wmID = null;
-
-        if (vsBean != null) {
-            wmID = vsBean.getDefaultWebModule();
-            if (wmID!=null && wmID.equals("")) {
-                wmID = null;
-            }
-            if (wmID != null && _debug) {
-                Object[] params = { wmID, _id };
-                _logger.log(Level.FINE, "vs.defaultWebModule", params);
-            }
-        } else {
-            _logger.log(Level.SEVERE, "vs.configError", _id);
+        String wmID = vsBean.getDefaultWebModule();
+        if (wmID != null && wmID.equals("")) {
+            wmID = null;
+        }
+        if (wmID != null && _debug) {
+            Object[] params = { wmID, _id };
+            _logger.log(Level.FINE, "vs.defaultWebModule", params);
         }
 
         return wmID;
@@ -851,7 +808,6 @@ public class VirtualServer extends StandardHost {
         aliases = new String[0];
     }
 
-
     private void setIsDisabled(boolean isDisabled) {
         vsPipeline.setIsDisabled(isDisabled);
         vsPipeline.setIsOff(false);
@@ -860,7 +816,6 @@ public class VirtualServer extends StandardHost {
             setPipeline(vsPipeline);
         }
     }
-
 
     private void setIsOff(boolean isOff) {
         vsPipeline.setIsOff(isOff);
@@ -871,18 +826,12 @@ public class VirtualServer extends StandardHost {
         }
     }
 
-
     /**
-     * @return The properties of this virtual server, or null
+     * @return The properties of this virtual server
      */
     List<Property> getProperties() {
-        if (vsBean != null) {
-            return vsBean.getProperty();
-        } else {
-            return null;
-        }
+        return vsBean.getProperty();
     }
-
 
     /**
      * Configures this virtual server.
@@ -896,7 +845,6 @@ public class VirtualServer extends StandardHost {
                     String logServiceFile,
                     String logLevel,
                     FileLoggerHandler logHandler) {
-
         setDebug(debug);
         setAppBase(vsDocroot);
         setName(vsID);
@@ -907,37 +855,30 @@ public class VirtualServer extends StandardHost {
         String defaultContextXmlLocation = Constants.DEFAULT_CONTEXT_XML;
         String defaultWebXmlLocation = Constants.DEFAULT_WEB_XML;
 
-        boolean allowLinking = false;
-        String state = null;
-
-        if (vsBean != null) {
-
-            state = vsBean.getState();
-
-            //Begin EE: 4920692 Make the default-web.xml be relocatable
-            Property prop = vsBean.getProperty("default-web-xml");
-            if (prop != null) {
-                defaultWebXmlLocation = prop.getValue();
-            }
-            //End EE: 4920692 Make the default-web.xml be relocatable
-
-            // allowLinking
-            prop = vsBean.getProperty("allowLinking");
-            if (prop != null) {
-                allowLinking = Boolean.parseBoolean(prop.getValue());
-            }
-
-            prop = vsBean.getProperty("contextXmlDefault");
-            if (prop != null) {
-                defaultContextXmlLocation = prop.getValue();
-            }
-
+        //Begin EE: 4920692 Make the default-web.xml be relocatable
+        Property prop = vsBean.getProperty("default-web-xml");
+        if (prop != null) {
+            defaultWebXmlLocation = prop.getValue();
         }
+        //End EE: 4920692 Make the default-web.xml be relocatable
 
+        // allowLinking
+        boolean allowLinking = false;
+        prop = vsBean.getProperty("allowLinking");
+        if (prop != null) {
+            allowLinking = Boolean.parseBoolean(prop.getValue());
+        }
+        setAllowLinking(allowLinking);
+
+        prop = vsBean.getProperty("contextXmlDefault");
+        if (prop != null) {
+            defaultContextXmlLocation = prop.getValue();
+        }
         setDefaultWebXmlLocation(defaultWebXmlLocation);
         setDefaultContextXmlLocation(defaultContextXmlLocation);
 
         // Set vs state
+        String state = vsBean.getState();
         if (state == null) {
             state = ON;
         }
@@ -946,8 +887,6 @@ public class VirtualServer extends StandardHost {
         } else {
             setIsActive(Boolean.parseBoolean(state));
         }
-
-        setAllowLinking(allowLinking);
 
         if (vsLogFile != null && !vsLogFile.equals(logServiceFile)) {
             /*
@@ -958,7 +897,6 @@ public class VirtualServer extends StandardHost {
             setLogFile(vsLogFile, logLevel, logHandler);
         }
     }
-
 
     /**
      * Configures the valve_ and listener_ properties of this VirtualServer.
@@ -1038,13 +976,10 @@ public class VirtualServer extends StandardHost {
         logHandler.setLevel(logLevel);
     }
 
-
     /**
-     * Configure virtual-server alias attribute.
+     * Adds each host name from the 'hosts' attribute as an alias
      */
     void configureAliases() {
-
-        // Add each host name from the 'hosts' attribute as an alias
         List hosts = StringUtils.parseStringList(vsBean.getHosts(), ",");
         for (int i=0; i < hosts.size(); i++ ){
             String alias = hosts.get(i).toString();
@@ -1054,7 +989,6 @@ public class VirtualServer extends StandardHost {
             }
         }
     }
-
 
     /**
      * Configures this virtual server with its authentication realm.
@@ -1085,7 +1019,7 @@ public class VirtualServer extends StandardHost {
 
                         if (realm == null) {
                             _logger.log(Level.SEVERE, "vs.invalidAuthRealm",
-                                new Object[] { getID(), authRealmName });
+                                new Object[] {getID(), authRealmName});
                         }
                     }
                     break;
@@ -1093,7 +1027,6 @@ public class VirtualServer extends StandardHost {
             }
         }
     }
-
 
     /**
      * Gets the value of the authRealm property of this virtual server.
@@ -1104,7 +1037,6 @@ public class VirtualServer extends StandardHost {
     String getAuthRealmName() {
         return authRealmName;
     }
-
 
     /**
      * Adds the <code>Valve</code> with the given class name to this
@@ -1125,12 +1057,11 @@ public class VirtualServer extends StandardHost {
         }
     }
 
-
     /**
      * Adds the Catalina listener with the given class name to this
      * VirtualServer.
      *
-     * @param listenerName The fully qualified class name of the listener.
+     * @param listenerName The fully qualified class name of the listener
      */
     protected void addListener(String listenerName) {
         Object listener = loadInstance(listenerName);
@@ -1142,11 +1073,10 @@ public class VirtualServer extends StandardHost {
         } else if (listener instanceof LifecycleListener){
             addLifecycleListener((LifecycleListener)listener);
         } else {
-            _logger.log(Level.SEVERE,"webcontainer.invalidListener"
-                    + listenerName);
+            _logger.log(Level.SEVERE, "vs.invalidListener",
+                new Object[] {listenerName, getID()});
         }
     }
-
 
     private Object loadInstance(String className){
         try{
@@ -1158,7 +1088,6 @@ public class VirtualServer extends StandardHost {
         return null;
     }
 
-
     /**
      * Configures this VirtualServer with its send-error properties.
      */
@@ -1166,17 +1095,12 @@ public class VirtualServer extends StandardHost {
 
         ErrorPage errorPage = null;
 
-        if (vsBean == null) {
-            return;
-        }
-
         List<Property> props = vsBean.getProperty();
         if (props == null) {
             return;
         }
 
         for (Property prop : props) {
-
             String propName = prop.getName();
             String propValue = prop.getValue();
             if (propName == null || propValue == null) {
@@ -1244,17 +1168,12 @@ public class VirtualServer extends StandardHost {
 
     }
 
-
     /**
      * Configures this VirtualServer with its redirect properties.
      */
     void configureRedirect() {
 
         vsPipeline.clearRedirects();
-
-        if (vsBean == null) {
-            return;
-        }
 
         List<Property> props = vsBean.getProperty();
         if (props == null) {
@@ -1371,24 +1290,20 @@ public class VirtualServer extends StandardHost {
         }
     }
 
-
     /**
      * Configures the SSO valve of this VirtualServer.
      */
     void configureSingleSignOn(boolean globalSSOEnabled,
             WebContainerFeatureFactory webContainerFeatureFactory) {
 
-        if (vsBean == null) {
-            return;
-        }
-
         if (!isSSOEnabled(globalSSOEnabled)) {
             /*
              * Disable SSO
              */
             if (_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "Single Sign On (SSO) disabled for " +
-                    "virtual server " + getID() + " as per domain.xml");
+                _logger.log(Level.FINE, "Disabling Single Sign On (SSO) " +
+                    "for virtual server " + getID() +
+                    ", as configured");
             }
 
             // Remove existing SSO valve (if any)
@@ -1404,6 +1319,12 @@ public class VirtualServer extends StandardHost {
             /*
              * Enable SSO
              */
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Enabling Single Sign On (SSO) " +
+                    "for virtual server " + getID() +
+                    ", as configured");
+            }
+
             SSOFactory ssoFactory =
                 webContainerFeatureFactory.getSSOFactory();
             GlassFishSingleSignOn sso =
@@ -1445,17 +1366,11 @@ public class VirtualServer extends StandardHost {
         }
     }
 
-
     /**
      * Configures this VirtualServer with its state (on | off | disabled).
      */
     void configureState(){
-
-        String stateValue = ON;
-        if (vsBean != null){
-            stateValue = vsBean.getState();
-        }
-
+        String stateValue = vsBean.getState();
         if (!stateValue.equalsIgnoreCase(ON) &&
                 getName().equalsIgnoreCase(
                     org.glassfish.api.web.Constants.ADMIN_VS)){
@@ -1475,7 +1390,6 @@ public class VirtualServer extends StandardHost {
         }
     }
 
-
     /**
      * Configures the Remote Address Filter valve of this VirtualServer.
      *
@@ -1483,13 +1397,7 @@ public class VirtualServer extends StandardHost {
      * representation of the remote client's IP address.
      */
     void configureRemoteAddressFilterValve() {
-
         RemoteAddrValve remoteAddrValve = null;
-
-        if (vsBean == null) {
-            return;
-        }
-
         Property allow = vsBean.getProperty("allowRemoteAddress");
         Property deny = vsBean.getProperty("denyRemoteAddress");
         if (allow != null && allow.getValue() != null
@@ -1522,7 +1430,6 @@ public class VirtualServer extends StandardHost {
         }
     }
 
-
     /**
      * Configures the Remote Host Filter valve of this VirtualServer.
      *
@@ -1530,13 +1437,7 @@ public class VirtualServer extends StandardHost {
      * remote host from where the request originated.
      */
     void configureRemoteHostFilterValve() {
-
         RemoteHostValve remoteHostValve = null;
-
-        if (vsBean == null) {
-            return;
-        }
-
         Property allow = vsBean.getProperty("allowRemoteHost");
         Property deny = vsBean.getProperty("denyRemoteHost");
         if (allow != null && allow.getValue() != null
@@ -1566,7 +1467,6 @@ public class VirtualServer extends StandardHost {
         }
     }
 
-
     /**
      * Reconfigures the access log of this VirtualServer with its
      * updated access log related properties.
@@ -1595,7 +1495,6 @@ public class VirtualServer extends StandardHost {
         }
     }
 
-
     /**
      * Reconfigures the access log of this VirtualServer with the
      * updated attributes of the access-log element from domain.xml.
@@ -1623,14 +1522,12 @@ public class VirtualServer extends StandardHost {
         }
     }
 
-
     /**
      * @return the accesslog valve of this virtual server
      */
     PEAccessLogValve getAccessLogValve() {
         return accessLogValve;
     }
-
 
     /**
      * Enables access logging for this virtual server, by adding its
@@ -1654,7 +1551,6 @@ public class VirtualServer extends StandardHost {
         }
     }
 
-
     /**
      * Disables access logging for this virtual server, by removing its
      * accesslog valve from its pipeline.
@@ -1662,7 +1558,6 @@ public class VirtualServer extends StandardHost {
     void disableAccessLogging() {
         removeValve(accessLogValve);
     }
-
 
     /**
      * @return true if the accesslog valve of this virtual server has been
@@ -1686,7 +1581,6 @@ public class VirtualServer extends StandardHost {
         return false;
     }
 
-
     /**
      * Configures the cache control of this VirtualServer
      */
@@ -1699,23 +1593,16 @@ public class VirtualServer extends StandardHost {
         }
     }
 
-
     /**
      * Checks if SSO is enabled for this VirtualServer.
      *
      * @return The value of the sso-enabled property for this VirtualServer
      */
     private boolean isSSOEnabled(boolean globalSSOEnabled) {
-
-        if (vsBean == null) {
-            return false;
-        }
-
         String ssoEnabled = vsBean.getSsoEnabled();
         return "inherit".equals(ssoEnabled) && globalSSOEnabled
             || ConfigBeansUtilities.toBoolean(ssoEnabled); 
     }
-
 
     /**
      * Determines whether access logging is enabled for this virtual server.
@@ -1727,16 +1614,10 @@ public class VirtualServer extends StandardHost {
      * false otherwise.
      */
     boolean isAccessLoggingEnabled(boolean globalAccessLoggingEnabled) {
-
-        if (vsBean == null) {
-            return false;
-        }
-
         String enabled = vsBean.getAccessLoggingEnabled();
-        return "inherit".equals(enabled) && globalAccessLoggingEnabled
-            || ConfigBeansUtilities.toBoolean(enabled);
+        return "inherit".equals(enabled) && globalAccessLoggingEnabled ||
+            ConfigBeansUtilities.toBoolean(enabled);
     }
-
 
     @Override
     public void setRealm(Realm realm) {
@@ -1751,59 +1632,22 @@ public class VirtualServer extends StandardHost {
         }
     }
 
-
     /**
-     * Starts the children (web contexts) of this virtual server
-     * concurrently.
-     *
-    protected void startChildren() {
-
-        ArrayList<LifecycleStarter> starters
-            = new ArrayList<LifecycleStarter>();
-
-        Container children[] = findChildren();
-        for (int i = 0; i < children.length; i++) {
-            if (children[i] instanceof Lifecycle) {
-                LifecycleStarter starter =
-                    new LifecycleStarter(((Lifecycle) children[i]));
-                starters.add(starter);
-                starter.submit();
-            }
-        }
-
-        for (LifecycleStarter starter : starters) {
-            Throwable t = starter.waitDone();
-            if (t != null) {
-                Lifecycle container = starter.getContainer();
-                ((Context) container).setAvailable(false);
-                String msg = rb.getString("vs.startContextError");
-                msg = MessageFormat.format(msg,
-                                           new Object[] { container,
-                                                          getID() });
-                _logger.log(Level.SEVERE, msg, t);
-            }
-        }
-    }*/
-
-
-    /**
-     * Evaluates the ssoCookieSecure property of this virtual server, if
-     * present.
+     * Configures the security level of the SSO cookie for this virtual
+     * server, based on the value of its sso-cookie-secure attribute
      */
     private void configureSingleSignOnCookieSecure() {
-        if (this.vsBean == null) {
-            return;
-        }
         String cookieSecure = vsBean.getSsoCookieSecure();
         if (!"true".equalsIgnoreCase(cookieSecure) &&
-            !"false".equalsIgnoreCase(cookieSecure) &&
-            !cookieSecure.equalsIgnoreCase(SessionCookieConfig.DYNAMIC_SECURE)) {
-            _logger.warning("Illegal value for " + SSO_COOKIE_SECURE + ": " + cookieSecure);
+                !"false".equalsIgnoreCase(cookieSecure) &&
+                !cookieSecure.equalsIgnoreCase(
+                    SessionCookieConfig.DYNAMIC_SECURE)) {
+            _logger.log(Level.WARNING, "vs.invalidSsoCookieSecure",
+                        new Object[] {cookieSecure, getID()});
         } else {
             ssoCookieSecure = cookieSecure;
         }
     }
-
 
     /**
      * Configures the error report valve of this VirtualServer.
@@ -1815,9 +1659,6 @@ public class VirtualServer extends StandardHost {
      * default error page mechanism for error responses.
      */
     void configureErrorReportValve() {
-        if (vsBean == null) {
-            return;
-        }
         Property prop = vsBean.getProperty(Constants.ERROR_REPORT_VALVE);
         if (prop != null) {
             setErrorReportValveClass(prop.getValue());

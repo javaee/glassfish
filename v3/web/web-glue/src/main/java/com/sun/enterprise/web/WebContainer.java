@@ -1526,10 +1526,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         String wmName = wmInfo.getName();
         String wmContextPath = wmInfo.getContextPath();
 
-        if (wmContextPath.length() == 0 && vs.getDefaultWebModuleID() != null) {
+        if (wmContextPath.length() == 0 &&
+                vs.getDefaultWebModuleID() != null) {
             String msg = rb.getString("webcontainer.defaultWebModuleConflict");
             msg = MessageFormat.format(msg,
-                    new Object[] { wmName, wmContextPath, vs.getID() });
+                    new Object[] { wmName, vs.getID() });
             throw new Exception(msg);
         }
 

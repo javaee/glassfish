@@ -270,7 +270,7 @@ public class WebModule extends PwcWebModule {
         if (lcinfo != null) {
             if (lcinfo.getAttributeValue(
                             LocaleCharsetInfo.DEFAULT_LOCALE) != null) {
-               logger.warning("webmodule.default_locale_deprecated");
+               logger.warning("webmodule.defaultLocaleDeprecated");
             }
             /*
              * <parameter-encoding> subelem of <sun-web-app> takes precedence
@@ -1063,11 +1063,11 @@ public class WebModule extends PwcWebModule {
         }
     }
 
-
-
     /**
-     * Add a Catalina listener to a <code>ContractProvider</code>
-     * @param listenerName the fully qualified class name of the listener.
+     * Adds the Catalina listener with the given class name to this
+     * WebModule.
+     *
+     * @param listenerName The fully qualified class name of the listener
      */
     protected void addCatalinaListener(String listenerName) {
         Object listener = loadInstance(listenerName);
@@ -1081,11 +1081,10 @@ public class WebModule extends PwcWebModule {
         } else if (listener instanceof InstanceListener){
             addInstanceListener(listenerName);
         } else {
-            logger.log(Level.SEVERE,"webcontainer.invalidListener"
-                       + listenerName);
+            logger.log(Level.SEVERE, "webmodule.invalidListener",
+                new Object[] {listenerName, getName()});
         }
     }
-
 
     private Object loadInstance(String className){
         try{
@@ -1099,7 +1098,6 @@ public class WebModule extends PwcWebModule {
         }
         return null;
     }
-
 
     private String getSetterName(String propName) {
         if (propName != null) {
