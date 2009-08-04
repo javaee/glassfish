@@ -67,6 +67,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.IOException;
 
 public class EmbeddedTest {
 
@@ -84,7 +85,11 @@ public class EmbeddedTest {
         for (NetworkListener nl : listeners) {
             System.out.println("Network listener " + nl.getPort());
         }
-        http = server.createPort(8080);
+        try {
+            http = server.createPort(8080);
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+        }
         listeners = nc.getNetworkListeners().getNetworkListener();
         System.out.println("Network listener size after creation " + listeners.size());
         Assert.assertTrue(listeners.size()==1);

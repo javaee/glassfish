@@ -23,10 +23,15 @@ public class PortImpl implements Port {
     @Inject(name="plain")
     ActionReport report=null;
 
+    @Inject
+    PortsImpl ports;
+
     String listenerName;
+    int number;
 
     public void bind(int portNumber) {
 
+        number = portNumber;
         Properties props = new Properties();
         props.put("listenerport", Integer.toString(portNumber));
         props.put("listeneraddress", "127.0.0.1");
@@ -57,5 +62,10 @@ public class PortImpl implements Port {
         Properties props = new Properties();
         props.put("listener_id", listenerName);
         runner.doCommand("delete-http-listener", props, report);
+        ports.remove(this);
+    }
+
+    public int getPortNumber() {
+        return number;
     }
 }

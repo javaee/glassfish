@@ -3,7 +3,7 @@ package org.glassfish.api.embedded;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Management interfaces for all embedded ports
@@ -27,7 +27,7 @@ public interface Ports {
      *
      * @return the allocated ports
      */
-    List<Port> getPorts();
+    Collection<Port> getPorts();
 
     /**
      * Unbinds a port implementation from a port number, and removes it

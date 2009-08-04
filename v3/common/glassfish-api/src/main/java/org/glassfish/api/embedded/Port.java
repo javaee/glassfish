@@ -52,6 +52,8 @@ public interface Port {
     
     public void bind(int portNumber);
 
+    public int getPortNumber();
+
     public void unbind();
 
 }

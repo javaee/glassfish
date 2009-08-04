@@ -377,10 +377,9 @@ public class Server {
      * @param portNumber port number for this port
      * @return a new port abstraction.
      */
-    public Port createPort(int portNumber) {
-        Port port = habitat.getComponent(Port.class);
-        port.bind(portNumber);
-        return port;
+    public Port createPort(int portNumber) throws IOException {
+        Ports ports = habitat.getComponent(Ports.class);
+        return ports.open(portNumber);
     }
 
     /**
@@ -438,7 +437,7 @@ public class Server {
                 c.started=false;
             }
         }
-        ModuleStartup ms = habitat.getComponent(ModuleStartup.class);
+        ModuleStartup ms = habitat.getComponent(ModuleStartup.class, habitat.DEFAULT_NAME);
         if (ms!=null) {
             ms.stop();
         }
