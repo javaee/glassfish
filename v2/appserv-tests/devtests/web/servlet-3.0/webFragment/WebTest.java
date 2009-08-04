@@ -49,6 +49,7 @@ public class WebTest {
         
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();
+        conn.connect();
 
         int code = conn.getResponseCode();
         if (code != 200) {
