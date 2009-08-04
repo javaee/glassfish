@@ -288,6 +288,16 @@ public class TomcatDeploymentConfig {
     protected static void configureJspConfig(WebModule webModule,
                                              WebBundleDescriptor wmd) {
         webModule.setJspConfigDescriptor(wmd.getJspConfigDescriptor());
+
+        JspConfigDescriptor jspConfig = wmd.getJspConfigDescriptor();
+        if (jspConfig != null) {
+            for (JspPropertyGroupDescriptor jspGroup :
+                    jspConfig.getJspPropertyGroups()) {
+                for (String urlPattern : jspGroup.getUrlPatterns()) {
+                    webModule.addJspMapping(urlPattern);
+                }
+            }
+        }
     }
 
         
