@@ -46,7 +46,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.security.store.PasswordAdapter;
-
+import com.sun.enterprise.security.store.IdentityManager;
 /**
  * Create Password Alias Command
  *
@@ -99,10 +99,12 @@ public class CreatePasswordAlias implements AdminCommand {
             if (mp == null) 
                 mp = System.getProperty(
                         SystemPropertyConstants.KEYSTORE_PASSWORD_PROPERTY);
-            
-            // TODO : remove the hardcoded masterpassword when the issue of 
-            // fetching the correct values of above system property is resolved
-            mp = "changeit";            
+
+            if (mp == null)
+                mp = IdentityManager.getMasterPassword();
+
+            if (mp == null) // nothing works. try with defaults
+                mp = "changeit";
             
             PasswordAdapter pa = new PasswordAdapter(mp.toCharArray());
             pa.setPasswordForAlias(aliasName,aliasPassword.getBytes());

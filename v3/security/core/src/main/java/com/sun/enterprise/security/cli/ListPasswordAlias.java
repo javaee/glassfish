@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.security.cli;
 
+import com.sun.enterprise.security.store.IdentityManager;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 import java.util.Enumeration;
@@ -96,8 +97,9 @@ public class ListPasswordAlias implements AdminCommand {
                 mp = System.getProperty(
                         SystemPropertyConstants.KEYSTORE_PASSWORD_PROPERTY);
 
-            // TODO : remove the hardcoded masterpassword when the issue of
-            // fetching the correct values of above system property is resolved
+            if (mp == null)
+                mp = IdentityManager.getMasterPassword();
+
             if (mp == null)
                 mp = "changeit";
 

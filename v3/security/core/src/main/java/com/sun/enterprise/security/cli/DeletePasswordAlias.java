@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.security.cli;
 
+import com.sun.enterprise.security.store.IdentityManager;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -94,8 +95,9 @@ public class DeletePasswordAlias implements AdminCommand {
                 mp = System.getProperty(
                         SystemPropertyConstants.KEYSTORE_PASSWORD_PROPERTY);
 
-            // TODO : remove the hardcoded masterpassword when the issue of
-            // fetching the correct values of above system property is resolved
+            if (mp == null)
+                mp = IdentityManager.getMasterPassword();
+
             if (mp == null)
                 mp = "changeit";
 
