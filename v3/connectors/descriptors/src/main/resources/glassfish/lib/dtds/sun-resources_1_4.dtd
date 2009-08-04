@@ -782,6 +782,7 @@
 
 <!ATTLIST work-security-map 
 name CDATA #REQUIRED
+resource-adapter-name CDATA #REQUIRED
 object-type %object-type; "user"
 enabled %boolean; "true">
 
