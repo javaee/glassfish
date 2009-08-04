@@ -678,7 +678,8 @@ public class ConnectorsUtil {
     public static Map<String,String> getBuiltInCustomResources(){
         Map<String, String> resourcesMap = new HashMap<String, String>();
 
-        resourcesMap.put("JavaBean", ConnectorConstants.JAVA_BEAN_FACTORY_CLASS );
+        // user will have to provide the JavaBean Implementation class and hence we cannot list this factory
+        // resourcesMap.put("JavaBean", ConnectorConstants.JAVA_BEAN_FACTORY_CLASS );
 
         resourcesMap.put("java.lang.Integer", ConnectorConstants.PRIMITIVES_AND_STRING_FACTORY_CLASS );
         resourcesMap.put("java.lang.Long", ConnectorConstants.PRIMITIVES_AND_STRING_FACTORY_CLASS );
