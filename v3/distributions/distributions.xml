@@ -292,7 +292,7 @@ origin-for-darwin-universal-sun-contrib]]>
     <echo message="Directory to run command from: ${exec.dir}"/>
     <echo message="Command to run: ${exec.executable}"/>
     <exec dir="${exec.dir}" executable="${exec.executable}" failonerror="true" >
-        <arg line= "create-domain --savelogin=true --checkports=false --adminport 4848 --user anonymous --instanceport 8080 --keytooloptions CN=localhost domain1"/>
+        <arg line= "--user anonymous create-domain --savelogin=true --checkports=false --adminport 4848 --instanceport 8080 --keytooloptions CN=localhost domain1"/>
     </exec>
 </target>
 
