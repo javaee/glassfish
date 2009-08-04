@@ -288,6 +288,7 @@
                <include name="**/glassfish-api.jar"/>
                <include name="**/amx-core.jar"/>
                <include name="**/amx-config.jar"/>
+               <include name="**/management-api.jar"/>
                <include name="**/gf-client.jar"/>
             </fileset>
 	    <pathelement path="${plugin_classpath}"/>

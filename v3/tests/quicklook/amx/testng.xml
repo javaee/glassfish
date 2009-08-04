@@ -45,6 +45,7 @@
       <class name="amxtest.AMXCoreTests"/>
       <class name="amxtest.AMXProxyTests"/>
       <class name="amxtest.AMXConfigProxyTests"/>
+      <class name="amxtest.AMXOtherTests"/>
     </classes>
   </test>
  
