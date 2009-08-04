@@ -142,7 +142,7 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
     class Duck {
         public static String getAdminRealmName(AdminService as) {
             String def            = "admin-realm";  //this is the default propertyName for an AuthRealm instance to be used for admin
-            String propertyName   = "administration-auth-realm-propertyName"; //propertyName of the property
+            String propertyName   = "administration-auth-realm-name"; //propertyName of the property
             String adminRealmName = def; //same as def, by default;
             List<Property> props = as.getProperty();
             for(Property p : props) {
