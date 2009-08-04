@@ -162,8 +162,11 @@ public class FlashlightProbe
         		+ ":" + probeProviderName + ":" + probeName);
         sbldr.append(" ").append(providerJavaMethodName).append("(");
         String delim = "";
-        for (Class c : paramTypes) {
-            sbldr.append(delim).append((c == null) ? " " : c.getName());
+        for (int index = 0; index < paramTypes.length; index++)
+        {
+            String type = (paramTypes[index] == null) ? " " : paramTypes[index].getName();
+            String name = (probeParamNames[index] == null) ? " " : probeParamNames[index];
+            sbldr.append(delim).append(type).append(" ").append(name);
             delim = ", ";
         }
         sbldr.append(")");
