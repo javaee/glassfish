@@ -37,7 +37,6 @@
 package com.sun.enterprise.admin.cli.commands;
 
 import com.sun.enterprise.admin.cli.CLIConstants;
-//import com.sun.enterprise.util.Profiler;
 import com.sun.enterprise.util.net.NetUtils;
 import static com.sun.enterprise.admin.cli.CLIConstants.*;
 import com.sun.enterprise.admin.cli.Environment;
@@ -64,8 +63,14 @@ import java.util.*;
  */
 public class StartDomainCommand extends LocalDomainCommand {
 
+    private GFLauncherInfo info;
 
-    /** Creates the instance of this command in accordance with what {@link CLICommand} does for it.
+    private static final LocalStringsImpl strings =
+            new LocalStringsImpl(StartDomainCommand.class);
+
+    /**
+     * Creates the instance of this command in accordance with what
+     * {@link CLICommand} does for it.
      */
     public StartDomainCommand(String name, ProgramOptions po, Environment env) {
         super(name, po, env);
@@ -131,23 +136,17 @@ public class StartDomainCommand extends LocalDomainCommand {
 
             // only continue if all (normally 1) admin port(s) are free
             Set<Integer> adminPorts = info.getAdminPorts();
-            for(Integer port : adminPorts) {
-                if(!NetUtils.isPortFree(port)) {
+            for (Integer port : adminPorts) {
+                if (!NetUtils.isPortFree(port)) {
                     String msg = strings.get("ServerRunning", port.toString());
                     logger.printWarning(msg);
                     return;
                 }
             }
 
-            // this can be slow, 500 msec, with --passwordfile option it is ~~ 18 msec
+            // this can be slow, 500 msec,
+            // with --passwordfile option it is ~~ 18 msec
             setMasterPassword(info);
-
-            /*  bnevins -- I think this is garbage now.  7/29/2009
-             * Delete after 7/31/2009
-            boolean isRestart = Boolean.getBoolean(RESTART_FLAG);
-            if (isRestart)
-                waitForParentToDie();
-             */
 
             // launch returns very quickly if verbose is not set
             // if verbose is set then it returns after the domain dies
@@ -174,8 +173,10 @@ public class StartDomainCommand extends LocalDomainCommand {
         }
     }
 
-    private void setMasterPassword(GFLauncherInfo info) throws CommandException {
-        //sets the password into the launcher info. Yes, setting master password into a string is not right ...
+    private void setMasterPassword(GFLauncherInfo info)
+                                throws CommandException {
+        // Sets the password into the launcher info.
+        // Yes, setting master password into a string is not right ...
         String mpn  = "AS_ADMIN_MASTERPASSWORD";
         String mpv  = passwords.get(mpn);
         if (mpv == null)
@@ -192,21 +193,23 @@ public class StartDomainCommand extends LocalDomainCommand {
     private String retry(int times) throws CommandException {
         String mpv;
         logger.printMessage("No valid master password found");
-        //prompt times times
+        // prompt times times
         for (int i = 0 ; i < times; i++) {
-            String prompt = "Enter master password (" + (times-i) + " attempt(s) remain)> ";
+            // XXX - I18N
+            String prompt =
+                "Enter master password (" + (times-i) + " attempt(s) remain)> ";
             mpv = super.readPassword(prompt);
             if (mpv == null)
-                throw new CommandException("No console, no prompting possible"); //ignore retries :)
-            if(verifyMasterPassword(mpv))
+                throw new CommandException("No console, no prompting possible");
+                // ignore retries :)
+            if (verifyMasterPassword(mpv))
                 return mpv;
-            else {
-                logger.printMessage("Sorry, incorrect master password, retry");
-                //Thread.currentThread().sleep((i+1)*10000); //make the pay for typos?
-                continue; //next attempt
-            }
+            logger.printMessage("Sorry, incorrect master password, retry");
+            // make them pay for typos?
+            //Thread.currentThread().sleep((i+1)*10000);
         }
-        throw new CommandException("Number of attempts (" + times + ") exhausted, giving up");
+        throw new CommandException(
+                    "Number of attempts (" + times + ") exhausted, giving up");
     }
 
 
@@ -331,23 +334,4 @@ public class StartDomainCommand extends LocalDomainCommand {
         msg = strings.get("DomainAdminPort", ""+ap);
         logger.printMessage(msg);
     }
-
-    /***
-    private void waitForParentToDie() {
-        try {
-            // TODO timeout
-            // When parent process is dead in.read returns -1 (EOF)
-            // as the pipe breaks.
-            while (System.in.read() >= 0)
-                ;
- 
-        } catch (IOException ex) {
-            Logger lg = Logger.getLogger(StartDomainCommand.class.getName());
-            lg.log(Level.SEVERE, null, ex);
-        }
-    }
-    */
-    private GFLauncherInfo info;
-    private static final LocalStringsImpl strings =
-            new LocalStringsImpl(StartDomainCommand.class);
 }
