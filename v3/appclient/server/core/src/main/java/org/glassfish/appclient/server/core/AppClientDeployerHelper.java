@@ -319,7 +319,6 @@ public abstract class AppClientDeployerHelper {
         }
         facadeMainAttrs.put(Attributes.Name.CLASS_PATH, classPath);
         facadeMainAttrs.put(AppClientDeployer.GLASSFISH_APP_NAME, application.getAppName());
-        facadeMainAttrs.put(AppClientDeployer.GLASSFISH_CLIENT_MODULE_ID, appClientDesc.getModuleID());
     }
 
     private void writeUpdatedDescriptors(final OutputJarArchive facadeArchive, final ApplicationClientDescriptor acd) throws IOException {

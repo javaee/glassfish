@@ -80,10 +80,6 @@ public class FacadeLaunchable implements Launchable {
     /** name of manifest entry in facade conveying the app name */
     public static final Attributes.Name GLASSFISH_APP_NAME = new Attributes.Name("GlassFish-App-Name");
 
-    /** manifest entry for the client's module ID as computed on the server*/
-    public static final Attributes.Name GLASSFISH_CLIENT_MODULE_ID =
-            new Attributes.Name("GlassFish-Client-Module-ID");
-
     public static final ArchiveFactory archiveFactory = ACCModulesManager.getComponent(ArchiveFactory.class);
     private static final Logger logger = Logger.getLogger(FacadeLaunchable.class.getName());
     private static final LocalStringManager localStrings = new LocalStringManagerImpl(FacadeLaunchable.class);
@@ -299,12 +295,16 @@ public class FacadeLaunchable implements Launchable {
             URI clientURI = clientFacadeURI.resolve(facadeMF.getMainAttributes().getValue(GLASSFISH_APPCLIENT));
             ReadableArchive clientRA = af.openArchive(clientURI);
             
-            Manifest clientMF = clientRA.getManifest();
+            AppClientArchivist facadeClientArchivist = new AppClientArchivist();
+            final ApplicationClientDescriptor facadeClientDescriptor = facadeClientArchivist.open(clientFacadeRA);
+            final String moduleID = Launchable.LaunchableUtil.moduleID(
+                    groupFacadeURI, clientURI, facadeClientDescriptor);
+
+            final Manifest clientMF = clientRA.getManifest();
             Attributes mainAttrs = clientMF.getMainAttributes();
             final String clientMainClassName = mainAttrs.getValue(Attributes.Name.MAIN_CLASS);
             knownMainClasses.add(clientMainClassName);
 
-            final String moduleID = mainAttrs.getValue(GLASSFISH_CLIENT_MODULE_ID);
             knownClientNames.add(moduleID);
 
             /*
@@ -330,8 +330,8 @@ public class FacadeLaunchable implements Launchable {
                          ! clientMainClassName.equals(callerSpecifiedMainClassName) )
                     ||
                     (callerSpecifiedAppClientName != null &&
-                        ! Launchable.LaunchableUtil.matchesName(
-                    moduleID, callerSpecifiedAppClientName))) {
+                        ! Launchable.LaunchableUtil.matchesName(moduleID,
+                            groupFacadeURI, facadeClientDescriptor, callerSpecifiedAppClientName))) {
                     final String msg = localStrings.getLocalString(FacadeLaunchable.class,
                             "appclient.singleNestedClientNoMatch", "Using the " +
                             "only client {1} with main class {2} in {0} even " +
@@ -348,7 +348,7 @@ public class FacadeLaunchable implements Launchable {
                         facadeMainAttrs, clientRA, callerSpecifiedMainClassName,
                         anchorDir);
             } else if (Launchable.LaunchableUtil.matchesName(
-                            moduleID, callerSpecifiedAppClientName)) {
+                            moduleID, groupFacadeURI, facadeClientDescriptor, callerSpecifiedAppClientName)) {
                 /*
                  * Get the main class name from the matching client JAR's manifest.
                  */

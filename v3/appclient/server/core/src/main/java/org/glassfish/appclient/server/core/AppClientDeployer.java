@@ -179,8 +179,6 @@ public class AppClientDeployer
 
     public static final Attributes.Name GLASSFISH_APP_NAME =
             new Attributes.Name("GlassFish-App-Name");
-    public static final Attributes.Name GLASSFISH_CLIENT_MODULE_ID =
-            new Attributes.Name("GlassFish-Client-Module-ID");
 
     private static final String GF_CLIENT_MODULE_NAME = "org.glassfish.appclient.gf-client-module";
 
