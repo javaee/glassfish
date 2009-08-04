@@ -38,13 +38,19 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
 	setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.manageUsers.TablePageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="#{pageSession.tableTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
     getRequestValue(key="configName" value=>$page{configName} default="server-config");
     getRequestValue(key="name" value=>$page{name});
     getFileUsers(Realm="#{name}" result=>$attribute{listOfRows} );
+    if ("#{pageSession.name}=admin-realm"){
+            setPageSessionAttribute(key="tableTitle", value="$resource{i18nc.manageAdminUsers.TableTitle}")
+        }
+        if ("!(#{pageSession.name}=admin-realm)"){
+            setPageSessionAttribute(key="tableTitle", value="$resource{i18nc.manageUsers.TableTitle}")
+        }
     />
     </event>
 #include "/common/shared/restart.inc"    
@@ -52,7 +58,7 @@
             <sun:form id="propertyForm">
    #include "/common/shared/treeBreadcrumbs.inc"
 #include "/common/shared/alertMsg.inc"
-                <sun:title id="propertyContentPage" title="$resource{i18nc.manageUsers.TablePageTitle}" 
+                <sun:title id="propertyContentPage" title="#{pageSession.tableTitle}"
                 helpText="$resource{i18nc.manageUsers.TablePageHelp}">
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
@@ -75,7 +81,7 @@
                 </sun:propertySheet>
                 "<br /><br />
 
-                <sun:table id="users" title="$resource{i18nc.manageUsers.TableTitle}">
+                <sun:table id="users" title="#{pageSession.tableTitle}">
                     deselectMultipleButton="$boolean{true}"
                     deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
                     selectMultipleButton="$boolean{true}"
