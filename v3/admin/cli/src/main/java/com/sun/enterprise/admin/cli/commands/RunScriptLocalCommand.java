@@ -127,14 +127,14 @@ public final class RunScriptLocalCommand extends RemoteCommand {
         boolean isContinue = true;
         CLILogger.getInstance().printDebugMessage("In the run-script command");
         try {
-            logger.printMessage("About to execute remote portion of the command");
+            //logger.printMessage("About to execute remote portion of the command");
             super.executeCommand();
-            logger.printMessage("Remote part is executed");
+            //logger.printMessage("Remote part is executed");
             // Post script name for creating handler
-            logger.printMessage(" Host = " + programOpts.getHost());
-            logger.printMessage(" HttpPort = " + httpPort);
-            logger.printMessage(" Upload = " + upload);
-            logger.printMessage(" ScriptName = " + scriptName);
+            //logger.printMessage(" Host = " + programOpts.getHost());
+            //logger.printMessage(" HttpPort = " + httpPort);
+            //logger.printMessage(" Upload = " + upload);
+            //logger.printMessage(" ScriptName = " + scriptName);
             String urlStr = "http://" + programOpts.getHost() + ":" +
                         httpPort + "/comet/cometServlet";
             CLILogger.getInstance().printDebugMessage("URL = " + urlStr);
@@ -211,7 +211,6 @@ public final class RunScriptLocalCommand extends RemoteCommand {
             //System.out.println("Caught CommandValidationException");
             return false;
         } catch (IOException ioex) {
-            // ignore it, will never happen
             //ioex.printStackTrace();
             //System.out.println(" Cannot find run-script command on the remote end");
             return false;
