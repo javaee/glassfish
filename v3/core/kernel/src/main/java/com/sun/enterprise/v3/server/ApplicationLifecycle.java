@@ -252,7 +252,7 @@ public class ApplicationLifecycle implements Deployment {
                         moduleInfo = prepareModule(sortedEngineInfos, appName, context, tracker);
 
                     } catch(Exception prepareException) {
-                        report.failure(logger, "Exception while preparing the app");
+                        report.failure(logger, "Exception while preparing the app", prepareException);
                         tracker.actOn(logger);
                         return null;
                     }

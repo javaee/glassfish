@@ -168,8 +168,12 @@ public class EarDeployer implements Deployer, PostConstruct {
                 }
 
             });
+        } catch(DeploymentException dde) {
+            throw dde;
         } catch(Exception e) {
-
+            DeploymentException de = new DeploymentException(e.getMessage());
+            de.initCause(e);
+            throw de;
         }
 
         context.addModuleMetaData(appInfo);
@@ -395,6 +399,7 @@ public class EarDeployer implements Deployer, PostConstruct {
             orderedContainers = deployment.setupContainerInfos(null, sniffers, bundleContext);
         } catch(Exception e) {
             logger.log(Level.WARNING, "Error occurred", e);  
+            throw e;
         }
         return deployment.prepareModule(orderedContainers, md.getArchiveUri(), bundleContext, tracker);
     }
