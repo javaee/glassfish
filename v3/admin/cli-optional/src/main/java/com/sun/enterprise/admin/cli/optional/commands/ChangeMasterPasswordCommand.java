@@ -102,7 +102,8 @@ public class ChangeMasterPasswordCommand extends LocalDomainCommand {
                 throw new CommandException("Not connected to console, giving up");
             if (!super.verifyMasterPassword(mp))
                 throw new CommandException("Incorrect master password, giving up");
-            String nmp = super.readPassword("Enter New Master Password> ");
+            ValidOption nmpo = new ValidOption("New_Master_Password", "PASSWORD", ValidOption.REQUIRED, null);
+            String nmp = super.getPassword(nmpo, null, true);
             if (nmp == null)
                 throw new CommandException("Not connected to console, giving up");
             domainConfig.put(DomainConfig.K_MASTER_PASSWORD, mp);
