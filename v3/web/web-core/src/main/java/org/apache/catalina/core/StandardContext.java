@@ -468,11 +468,6 @@ public class StandardContext
         new HashMap<Integer, ErrorPage>();
 
     /**
-     * The JSP tag libraries for this web application, keyed by URI
-     */
-    private final Map<String, String> taglibs = new HashMap<String, String>();
-
-    /**
      * The watched resources for this application.
      */
     private List<String> watchedResources =
@@ -3369,22 +3364,6 @@ public class StandardContext
     }
 
     /**
-     * Add a JSP tag library for the specified URI.
-     *
-     * @param uri URI, relative to the web.xml file, of this tag library
-     * @param location Location of the tag library descriptor
-     */
-    public void addTaglib(String uri, String location) {
-        synchronized (taglibs) {
-            taglibs.put(uri, location);
-        }
-
-        if (notifyContainerListeners) {
-            fireContainerEvent("addTaglib", uri);
-        }
-    }
-
-    /**
      * Add a new watched resource to the set recognized by this Context.
      *
      * @param name New watched resource file name
@@ -3935,30 +3914,6 @@ public class StandardContext
     }
 
     /**
-     * Return the tag library descriptor location for the specified taglib
-     * URI, if any; otherwise, return <code>null</code>.
-     *
-     * @param uri URI, relative to the web.xml file
-     */
-    public String findTaglib(String uri) {
-        synchronized (taglibs) {
-            return taglibs.get(uri);
-        }
-    }
-
-    /**
-     * Return the URIs of all tag libraries for which a tag library
-     * descriptor location has been specified.  If none are specified,
-     * a zero-length array is returned.
-     */
-    public String[] findTaglibs() {
-        synchronized (taglibs) {
-            String results[] = new String[taglibs.size()];
-            return taglibs.keySet().toArray(results);
-        }
-    }
-
-    /**
      * Return <code>true</code> if the specified welcome file is defined
      * for this Context; otherwise return <code>false</code>.
      *
@@ -4421,19 +4376,6 @@ public class StandardContext
 
         if (notifyContainerListeners) {
             fireContainerEvent("removeServletMapping", pattern);
-        }
-    }
-
-    @Override
-    public void removeTaglibs() {
-        synchronized (taglibs) {
-            // Inform interested listeners
-            if (notifyContainerListeners) {
-                for (String uri : taglibs.keySet()) {
-                    fireContainerEvent("removeTaglib", uri);
-                }
-            }
-            taglibs.clear();
         }
     }
 

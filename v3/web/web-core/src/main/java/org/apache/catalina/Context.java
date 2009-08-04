@@ -629,15 +629,6 @@ public interface Context extends Container {
 
 
     /**
-     * Add a JSP tag library for the specified URI.
-     *
-     * @param uri URI, relative to the web.xml file, of this tag library
-     * @param location Location of the tag library descriptor
-     */
-    void addTaglib(String uri, String location);
-
-
-    /**
      * Add a resource which will be watched for reloading by the host auto
      * deployer. Note: this will not be used in embedded mode.
      * 
@@ -1010,23 +1001,6 @@ public interface Context extends Container {
 
 
     /**
-     * Return the tag library descriptor location for the specified taglib
-     * URI, if any; otherwise, return <code>null</code>.
-     *
-     * @param uri URI, relative to the web.xml file
-     */
-    String findTaglib(String uri);
-
-
-    /**
-     * Return the URIs of all tag libraries for which a tag library
-     * descriptor location has been specified.  If none are specified,
-     * a zero-length array is returned.
-     */
-    String[] findTaglibs();
-
-
-    /**
      * Gets the watched resources defined for this web application.
      */
     List<String> getWatchedResources();
@@ -1222,9 +1196,6 @@ public interface Context extends Container {
      * Removes any Wrapper listeners from this Context
      */
     void removeWrapperListeners();
-
-
-    public void removeTaglibs();
 
 
     public void removeWelcomeFiles();
