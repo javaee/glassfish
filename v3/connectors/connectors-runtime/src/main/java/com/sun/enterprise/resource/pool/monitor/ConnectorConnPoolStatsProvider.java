@@ -84,7 +84,7 @@ public class ConnectorConnPoolStatsProvider {
             "used, as well as information about the maximum number of connections " +
             "that were used (the high water mark).");
     private RangeStatisticImpl connRequestWaitTime = new RangeStatisticImpl(
-            Long.MIN_VALUE, Long.MIN_VALUE, Long.MIN_VALUE, 
+            0, Long.MAX_VALUE, 0, 
             "connrequestwaittime", StatisticImpl.UNIT_MILLISECOND, 
             "The longest and shortest wait times of connection requests. The " +
             "current value indicates the wait time of the last request that was " +
