@@ -36,8 +36,8 @@ import com.sun.enterprise.universal.xml.MiniXmlParser;
 import java.util.logging.Level;
 import static com.sun.enterprise.util.SystemPropertyConstants.*;
 import static com.sun.enterprise.admin.launcher.GFLauncherConstants.*;
-import com.sun.enterprise.security.store.PasswordAdapter;
-import com.sun.enterprise.security.store.IdentityManager;
+//import com.sun.enterprise.security.store.PasswordAdapter;
+//import com.sun.enterprise.security.store.IdentityManager;
 
 /**
  * This is the main Launcher class designed for external and internal usage.
@@ -363,21 +363,24 @@ public abstract class GFLauncher {
         Map<String, String> sysProps =
                 CollectionUtils.propertiesToStringMap(System.getProperties());
 
-        Map<String, String> passwordAliases = new HashMap<String, String>();
-        try {
-            String masterPassword = "changeit";
-            if (IdentityManager.getMasterPassword() != null)
-                masterPassword = IdentityManager.getMasterPassword();
-            PasswordAdapter pa = new PasswordAdapter(masterPassword.toCharArray());
-            Enumeration e = pa.getAliases();
-            if (e.hasMoreElements()) {
-                String alias = (String) e.nextElement();
-                passwordAliases.put(alias, pa.getPasswordForAlias(alias));
-            }                        
-        } catch (Exception e) {
-            // TODO: ignore now. Defaults to not resolving password aliases
-        }
-        all.putAll(passwordAliases);
+        // TODO: Uncomment when admin password processing & aliasing is sorted out.
+
+        // Map<String, String> passwordAliases = new HashMap<String, String>();
+        // try {
+        //     String masterPassword = "changeit";
+        //     if (IdentityManager.getMasterPassword() != null)
+        //         masterPassword = IdentityManager.getMasterPassword();
+        //     PasswordAdapter pa = new PasswordAdapter(masterPassword.toCharArray());
+        //     Enumeration e = pa.getAliases();
+        //     if (e.hasMoreElements()) {
+        //         String alias = (String) e.nextElement();
+        //         passwordAliases.put(alias, pa.getPasswordForAlias(alias));
+        //     }
+        // } catch (Exception e) {
+        //     // TODO: ignore now. Defaults to not resolving password aliases
+        // }
+        // all.putAll(passwordAliases);
+
         all.putAll(envProps);
         all.putAll(asenvProps);
         all.putAll(sysProps);
