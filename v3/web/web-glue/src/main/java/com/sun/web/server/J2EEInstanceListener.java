@@ -275,14 +275,14 @@ public final class J2EEInstanceListener implements InstanceListener {
                 if( desc != null
                         && instance.getClass() != DefaultServlet.class
                         && instance.getClass() != JspServlet.class) {
-                    injectionMgr.injectInstance(instance, desc);
-
                     // Give a chance for other decorators to decorate.
-                    // Ideally we should even do the J2EE injection in a decorator
+                    // Ideally we should even do the J2EE injection in a
+                    // decorator
                     Collection<WebComponentDecorator> decorators =
                         wm.getServerContext().getDefaultHabitat().getAllByContract(WebComponentDecorator.class);
                     if (decorators == null || decorators.isEmpty()) {
-                        // Perform dependency injection and invoke post construct method
+                        // Perform dependency injection and invoke
+                        // PostConstruct-annotated method
                         injectionMgr.injectInstance(instance, desc);
                     } else {
                         // Perform dependency injection only
