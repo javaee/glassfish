@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="jts">
+        <integration-point 
+                id="jts_node"
+                type="org.glassfish.admingui:navNode" 
+                priority="500"
+                parentId="configuration" 
+                content="jtsTreeNode.jsf"
+        />
+</console-config>
