@@ -96,7 +96,7 @@ public interface SystemStatus extends AMXProxy, Utility, Singleton
         {
         }
 
-        public List<UnprocessedConfigChange> toUnprocessedConfigChange(final List<Object[]> items)
+        public static List<UnprocessedConfigChange> toUnprocessedConfigChange(final List<Object[]> items)
         {
             final List<UnprocessedConfigChange> l = new java.util.ArrayList<UnprocessedConfigChange>();
             for (final Object[] a : items)
