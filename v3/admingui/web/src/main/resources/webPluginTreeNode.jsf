@@ -46,12 +46,6 @@
     imageURL="/resource/web/images/container.gif"
 />
 
-<sun:treeNode
-    id="transactionService"
-    text="$resource{i18n.tree.transactionService}"
-    url="/web/configuration/transactionService.jsf?configName=server-config"
-    imageURL="/resource/web/images/transactionService.gif"
-/>
 
 <sun:treeNode
     id="httpService"
