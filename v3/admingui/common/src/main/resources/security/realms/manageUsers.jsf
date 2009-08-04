@@ -82,7 +82,7 @@
                         </sun:button>
 
                         <sun:button id="deleteButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}"
-                             onClick="if ( getConfirm(this,'$resource{i18nc.msg.JS.confirmDeleteUser}') )
+                             onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmDeleteUser}') )
                                 { return submitAndDisable(this, '$resource{i18n.button.Processing}');} 
                                 else {return false;}"
                             >
@@ -111,7 +111,7 @@
 
                         <sun:tableColumn headerText="$resource{i18nc.manageUsers.UserID}" rowHeader="$boolean{true}" id="col1">
                             <sun:hyperlink id="link" text="#{td.value.users}" 
-                            url="/security/realms/manageUserEdit.jsf?user=#{td.value.users}&name=#{name}&configName=#{configName}" />
+                            url="/common/security/realms/manageUserEdit.jsf?user=#{td.value.users}&name=#{name}&configName=#{configName}" />
                         </sun:tableColumn>
 
                         <sun:tableColumn headerText="$resource{i18nc.manageUsers.GroupList}" rowHeader="$boolean{true}" id="col11">
