@@ -67,7 +67,7 @@ public class CommandTable extends HashMap<String, Class> {
         put("login",                    null);
         put("run-script",               RunScriptLocalCommand.class);
         put("create-domain",            null);
-        put("create-service",           Object.class); // XXX - not yet impl
+        put("create-service",           null);
         put("delete-domain",            null);
         put("list-domains",             null);
         put("start-database",           null);

@@ -82,6 +82,7 @@ public final class DeleteDomainCommand extends CLICommand {
         addOption(opts, "echo", '\0', "BOOLEAN", false, "false");
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
+        operandName = "domain_name";
         operandType = "STRING";
         operandMin = 1;
         operandMax = 1;
