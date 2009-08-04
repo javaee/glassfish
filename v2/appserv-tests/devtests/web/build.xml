@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="463"/>
+    <property name="TOTAL_EXPECTED" value="473"/>
 
     &commonSetup;
     &commonBuild;
@@ -245,7 +245,6 @@
         <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
         <ant dir="servlet-3.0/defaultErrorPage" target="all"/>
         <ant dir="servlet-3.0/asyncContextComplete" target="all"/>
-<!-- XXX temporarily commented out, see IT 8315
         <ant dir="servlet-3.0/asyncContextDispatch" target="all"/>
         <ant dir="servlet-3.0/asyncCrossContextDispatch" target="all"/>
         <ant dir="servlet-3.0/asyncContextZeroArgDispatch" target="all"/>
@@ -256,7 +255,6 @@
         <ant dir="servlet-3.0/asyncSupportedFalse" target="all"/>
         <ant dir="servlet-3.0/asyncContextHasOriginalRequestAndResponse" target="all"/>
         <ant dir="servlet-3.0/asyncTimeoutNoListener" target="all"/>
--->
         <ant dir="errorPageHandlingForError" target="all"/>
     </target>
 
