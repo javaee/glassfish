@@ -115,7 +115,7 @@ public class AppClientServerApplication implements
 
     private static final String DOC_TEMPLATE_PREFIX = "/org/glassfish/appclient/server/core/jws/templates/";
 //    private static final String DOC_TEMPLATE_PREFIX = "jws/templates/";
-    private static final String MAIN_DOCUMENT_TEMPLATE = 
+    static final String MAIN_DOCUMENT_TEMPLATE = 
             DOC_TEMPLATE_PREFIX + "appclientMainDocumentTemplate.jnlp";
     private static final String CLIENT_DOCUMENT_TEMPLATE =
             DOC_TEMPLATE_PREFIX + "appclientClientDocumentTemplate.jnlp";
@@ -368,9 +368,10 @@ public class AppClientServerApplication implements
                 initClientDynamicContent();
 
         final JnlpDocDescriptor jnlpDoc = acDesc.getJavaWebStartAccessDescriptor().getJnlpDoc();
-        if (jnlpDoc != null) {
+        if (jnlpDoc != null && jnlpDoc.getHref() != null) {
             DeveloperContentHandler.addDeveloperContent(dc.getClassLoader(),
-                    jnlpDoc, staticContent, dynamicContent);
+                    jnlpDoc, tHelper,
+                    dc.getSourceDir(), staticContent, dynamicContent);
 
         }
         myContent = new HashSet<Content>(staticContent.values());
