@@ -11,11 +11,13 @@ import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 import javax.xml.namespace.QName;
 
 /**
+ * 109 and sun-jaxws.xml style deployed endpoint's info.
+ *
  * @author Jitendra Kotamraju
  */
 @ManagedData
 @Description("109 deployed endpoint info")
-public class DeployedEndpointData { // extends EndpointData {
+public class DeployedEndpointData {
     @ManagedAttribute
     @Description("Application Name")
     public final String appName;
@@ -68,7 +70,9 @@ public class DeployedEndpointData { // extends EndpointData {
         this.serviceName = endpoint.getServiceName().getLocalPart();
         QName pName = endpoint.getWsdlPort();
         this.portName = (pName != null) ? pName.getLocalPart() : "";
-        this.implClass = endpoint.getServletImplClass();
+        this.implClass = endpoint.implementedByEjbComponent()
+                ? endpoint.getEjbComponentImpl().getEjbImplClassName()
+                : endpoint.getServletImplClass();
         this.address = endpoint.getEndpointAddressPath();
         this.wsdl = address+"?wsdl";
         this.tester = address+"?Tester";
@@ -81,12 +85,12 @@ public class DeployedEndpointData { // extends EndpointData {
         WSEndpoint endpoint = adapter.getEndpoint();
 
         this.appName = "";
-        this.endpointName = "";
+        this.endpointName = adapter.getName();
         this.namespace = endpoint.getServiceName().getNamespaceURI();
         this.serviceName = endpoint.getServiceName().getLocalPart();
         this.portName = endpoint.getPortName().getLocalPart();
         this.implClass = endpoint.getImplementationClass().getName();
-        this.address = adapter.getValidPath();  // TODO include contextPath
+        this.address = adapter.getServletContext().getContextPath()+adapter.getValidPath();
         this.wsdl = address+"?wsdl";
         this.tester = "";
         this.implType = "SERVLET";

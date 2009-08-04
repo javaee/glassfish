@@ -659,7 +659,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         Application app = container.getApplication();
         for(WebService svc : app.getWebServiceDescriptors()) {
             for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
-                probe.undeploy(app.getName()+"#"+endpoint.getEndpointName());
+                probe.undeploy(endpoint.getEndpointAddressPath());
             }
         }
     }
@@ -673,8 +673,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         
         for(WebService svc : app.getWebServiceDescriptors()) {
             for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
-                // TODO app.getName()#endpoint.getEndpointName() is unique ?
-                probe.deploy(app.getName()+"#"+endpoint.getEndpointName(), app, endpoint);
+                probe.deploy(app, endpoint);
             }
         }
 

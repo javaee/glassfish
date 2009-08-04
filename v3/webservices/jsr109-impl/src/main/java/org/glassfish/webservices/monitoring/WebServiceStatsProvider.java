@@ -14,6 +14,8 @@ import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.Application;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 
+import javax.servlet.ServletContext;
+
 
 /**
  * Provides statistics for Web Service endpoints.
@@ -27,32 +29,35 @@ import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 @Description("Stats for Web Services deployed")
 public class WebServiceStatsProvider {
 
+    // path (context path+url-pattern) --> deployed data
     private final ConcurrentHashMap<String, DeployedEndpointData> endpoints =
             new ConcurrentHashMap<String, DeployedEndpointData>();
 
     // 109 endpoint deployment
     @ProbeListener("glassfish:webservices:109:deploy")
-    public void eeDeploy(@ProbeParam("name")String name,
-                       @ProbeParam("app")Application app,
+    public void eeDeploy(@ProbeParam("app")Application app,
                        @ProbeParam("endpoint")WebServiceEndpoint endpoint) {
-        if (!endpoints.containsKey(name)) {
+        String path = endpoint.getEndpointAddressPath();
+        if (!endpoints.containsKey(path)) {
             DeployedEndpointData data = new DeployedEndpointData(app, endpoint);
-            endpoints.put(name, data);
+            endpoints.put(path, data);
         }
     }
 
     // 109 enpoint undeployment
     @ProbeListener("glassfish:webservices:109:undeploy")
-    public void eeUndeploy(@ProbeParam("name")String name) {
-        endpoints.remove(name);
+    public void eeUndeploy(@ProbeParam("path")String path) {
+        endpoints.remove(path);
     }
 
-//    Add it after latest metro is integrated
+
+//    Uncomment after latest metro is integrated
 //
 //    // sun-jaxws.xml deployment
 //    @ProbeListener("glassfish:webservices:ri:deploy")
 //    public void riDeploy(@ProbeParam("adapter")ServletAdapter adapter) {
-//        String name = adapter.getName();        // TODO use context+urlpattern
+//        ServletContext ctxt = adapter.getServletContext();
+//        String name = ctxt.getContextPath()+adapter.getValidPath();
 //        if (!endpoints.containsKey(name)) {
 //            DeployedEndpointData data = new DeployedEndpointData(adapter);
 //            endpoints.put(name, data);
@@ -61,8 +66,9 @@ public class WebServiceStatsProvider {
 //
 //    // sun-jaxws.xml undeployment
 //    @ProbeListener("glassfish:webservices:ri:undeploy")
-//    public void riUndeploy(@ProbeParam("adapter") ServletAdapter adapter) {
-//        String name = adapter.getName();        // TODO use context+urlpattern
+//    public void riUndeploy(@ProbeParam("adapter")ServletAdapter adapter) {
+//        ServletContext ctxt = adapter.getServletContext();
+//        String name = ctxt.getContextPath()+adapter.getValidPath();
 //        endpoints.remove(name);
 //    }
 
