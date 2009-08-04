@@ -85,6 +85,7 @@
         <module>core</module>
         <module>community-theme</module>
         <module>web</module>
+        <module>jts</module>
         <module>jdbc</module>
         <module>jca</module>
         <module>jms-plugin</module>
