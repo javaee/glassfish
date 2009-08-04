@@ -34,10 +34,10 @@ public class WebTest {
     private static final String ON_RESPONSE = "Success!";
 
     private static final String DISABLED_RESPONSE
-        = "HTTP/1.1 403 The virtual-server myvs has been disabled";
+        = "HTTP/1.1 403 Virtual server myvs has been disabled";
 
     private static final String OFF_RESPONSE
-        = "HTTP/1.1 404 The virtual-server myvs has been turned off";
+        = "HTTP/1.1 404 Virtual server myvs has been turned off";
 
     private String host;
     private String port;
@@ -60,7 +60,7 @@ public class WebTest {
                 TEST_NAME = TEST_ROOT_NAME + "-on";
                 webTest.onRun();
             } else if ("disabled".equals(webTest.run)) {
-                TEST_NAME = TEST_ROOT_NAME + "-diabled";
+                TEST_NAME = TEST_ROOT_NAME + "-disabled";
                 webTest.disabledRun();
             } else if ("off".equals(webTest.run)) {
                 TEST_NAME = TEST_ROOT_NAME + "-off";
