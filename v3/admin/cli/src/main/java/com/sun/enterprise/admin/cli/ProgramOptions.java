@@ -38,6 +38,7 @@ package com.sun.enterprise.admin.cli;
 
 import java.util.*;
 import com.sun.enterprise.cli.framework.*;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
@@ -92,7 +93,8 @@ public class ProgramOptions {
                 CLIConstants.DEFAULT_HOSTNAME);
         addMetaOption(opts, PORT, 'p', "STRING", false,
                 "" + CLIConstants.DEFAULT_ADMIN_PORT);
-        addMetaOption(opts, USER, 'u', "STRING", false, "anonymous");
+        addMetaOption(opts, USER, 'u', "STRING", false,
+                SystemPropertyConstants.DEFAULT_ADMIN_USER);
         addMetaOption(opts, "password", 'w', "STRING", false, null);
         addMetaOption(opts, PASSWORDFILE, 'W', "FILE", false, null);
         addMetaOption(opts, SECURE, 's', "BOOLEAN", false, "false");
@@ -223,8 +225,7 @@ public class ProgramOptions {
         String host = options.get(HOST);
         if (!ok(host))
             host = env.getStringOption(HOST);
-
-        if (host == null || host.length() == 0)
+        if (!ok(host))
             host = CLIConstants.DEFAULT_HOSTNAME;
         return host;
     }
@@ -268,12 +269,11 @@ public class ProgramOptions {
      * @return the user
      */
     public String getUser() {
-        String user = null;
-        if (options.containsKey(USER)) {
-            String value = options.get(USER);
-            if (ok(value))
-                user = value;
-        }
+        String user = options.get(USER);
+        if (!ok(user))
+            user = env.getStringOption(USER);
+        if (!ok(user))
+            user = null; // distinguish between specify the default explicitly
         return user;
     }
 
@@ -302,12 +302,11 @@ public class ProgramOptions {
      * @return the passwordFile
      */
     public String getPasswordFile() {
-        String passwordFile = null;
-        if (options.containsKey(PASSWORDFILE)) {
-            String value = options.get(PASSWORDFILE);
-            if (ok(value))
-                passwordFile = value;
-        }
+        String passwordFile = options.get(PASSWORDFILE);
+        if (!ok(passwordFile))
+            passwordFile = env.getStringOption(PASSWORDFILE);
+	if (!ok(passwordFile))
+	    passwordFile = null;	// no default
         return passwordFile;
     }
 

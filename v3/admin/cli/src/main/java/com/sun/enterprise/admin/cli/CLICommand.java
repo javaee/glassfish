@@ -326,7 +326,10 @@ public abstract class CLICommand {
             usageText.append("--").append(optName);
 
             if (opt.getType().equals("BOOLEAN")) {
-                usageText.append("=").append("true|false");
+                if (ok(defValue) && Boolean.parseBoolean(defValue))
+                    usageText.append("=").append("true");
+                else
+                    usageText.append("=").append("false");
             } else {    // STRING or FILE
                 if (ok(defValue))
                     usageText.append(" ").append(defValue);
@@ -545,7 +548,7 @@ public abstract class CLICommand {
             // if option isn't set, prompt for it (if interactive)
             if (getOption(opt.getName()) == null && cons != null &&
                     !missingOption) {
-                cons.printf("%s ",
+                cons.printf("%s",
                     strings.get("optionPrompt", opt.getName()));
                 String val = cons.readLine();
                 if (ok(val))
@@ -563,7 +566,7 @@ public abstract class CLICommand {
                     strings.get("missingOptions", name));
 
         if (operands.size() < operandMin && cons != null) {
-            cons.printf("%s ",
+            cons.printf("%s",
                 strings.get("operandPrompt", operandName));
             String val = cons.readLine();
             if (ok(val)) {
@@ -764,7 +767,7 @@ public abstract class CLICommand {
         String password = null;
         Console cons = System.console();
         if (cons != null) {
-            char[] pc = cons.readPassword("%s ", prompt);
+            char[] pc = cons.readPassword("%s", prompt);
             // yes, yes, yes, it would be safer to not keep it in a String
             password = new String(pc);
         }

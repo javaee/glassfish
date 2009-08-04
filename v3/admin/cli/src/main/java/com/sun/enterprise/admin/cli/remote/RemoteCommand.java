@@ -53,6 +53,7 @@ import com.sun.enterprise.cli.framework.ValidOption;
 import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.InvalidCommandException;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.net.NetUtils;
 import org.glassfish.admin.payload.PayloadFilesManager;
 import org.glassfish.admin.payload.PayloadImpl;
@@ -757,15 +758,22 @@ public class RemoteCommand extends CLICommand {
     protected boolean updateAuthentication() {
         Console cons;
         if (programOpts.isInteractive() && (cons = System.console()) != null) {
-            cons.printf("%s ",
-                strings.get("AdminUserPrompt", programOpts.getUser()));
-            String user = cons.readLine();
-            if (user == null)
-                return false;
+            String user = null;
+            // only prompt for a user name if the user name is set to
+            // the default.  otherwise, assume the user specified the
+            // correct username to begin with and all we need is the password.
+            if (programOpts.getUser() == null || programOpts.getUser().
+                    equals(SystemPropertyConstants.DEFAULT_ADMIN_USER)) {
+                cons.printf("%s ",
+                    strings.get("AdminUserPrompt", programOpts.getUser()));
+                user = cons.readLine();
+                if (user == null)
+                    return false;
+            }
             String password = readPassword(strings.get("AdminPasswordPrompt"));
             if (password == null)
                 return false;
-            if (user.length() > 0)      // if none entered, don't change
+            if (ok(user))      // if none entered, don't change
                 programOpts.setUser(user);
             programOpts.setPassword(password);
             return true;

@@ -37,6 +37,7 @@
 package com.sun.enterprise.admin.cli.optional.commands;
 
 import java.io.File;
+import java.io.Console;
 import java.util.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.cli.framework.*;
@@ -78,6 +79,7 @@ public final class CreateDomainCommand extends CLICommand {
     private static final String DOMAINDIR = "domaindir";
     private static final String ADMIN_PORT = "adminport";
     private static final String ADMIN_PASSWORD = "AS_ADMIN_PASSWORD";
+    private static final String ADMIN_ADMINPASSWORD = "AS_ADMIN_ADMINPASSWORD";
     private static final String MASTER_PASSWORD = "AS_ADMIN_MASTERPASSWORD";
     private static final String DEFAULT_MASTER_PASSWORD =
                                     RepositoryManager.DEFAULT_MASTER_PASSWORD;
@@ -147,7 +149,8 @@ public final class CreateDomainCommand extends CLICommand {
         processProgramOptions();
 
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, ADMIN_PORT, '\0', "STRING", false, null);
+        addOption(opts, ADMIN_PORT, '\0', "STRING", false,
+                Integer.toString(CLIConstants.DEFAULT_ADMIN_PORT));
         addOption(opts, PORTBASE_OPTION, '\0', "STRING", false, null);
         addOption(opts, PROFILE_OPTION, '\0', "STRING", false, null);
         addOption(opts, TEMPLATE, '\0', "STRING", false, null);
@@ -177,6 +180,34 @@ public final class CreateDomainCommand extends CLICommand {
     @Override
     protected void validate()
             throws CommandException, CommandValidationException  {
+        /*
+         * If --user wasn't specified as a program option,
+         * we treat it as a required option and prompt for it
+         * if possible.
+         */
+        if (programOpts.getUser() == null) {
+            // prompt for it (if interactive)
+            Console cons = System.console();
+            if (cons != null) {
+                cons.printf("%s",
+                    strings.get("AdminUserRequiredPrompt"));
+                String val = cons.readLine();
+                if (ok(val))
+                    programOpts.setUser(val);
+            } else {
+                //logger.printMessage(strings.get("AdminUserRequired"));
+                throw new CommandValidationException(
+                    strings.get("AdminUserRequired"));
+            }
+        }
+
+        /*
+         * Validate the other options.  Since no other options are required,
+         * the next prompted-for value will be the admin password, unless
+         * the domain name wasn't specified.  In that case, the domain name
+         * prompt will come between the prompt for the user name and the
+         * password, which is a bit ugly but we'll ignore that for now.
+         */
         super.validate();
 
         checkPorts = getBooleanOption(CHECKPORTS_OPTION);
@@ -187,9 +218,8 @@ public final class CreateDomainCommand extends CLICommand {
             final int portbase = convertPortStr(getOption(PORTBASE_OPTION));
             setOptionsWithPortBase(portbase);
         } else if (getOption(ADMIN_PORT) == null) {
-            throw new CommandValidationException(
-                strings.get("RequireEitherOrOption",
-                    ADMIN_PORT, PORTBASE_OPTION));
+            options.put(ADMIN_PORT,
+                Integer.toString(CLIConstants.DEFAULT_ADMIN_PORT));
         }
     }
 
@@ -290,9 +320,19 @@ public final class CreateDomainCommand extends CLICommand {
                  * If the admin password was supplied in the password
                  * file, and no master password is suppied, we use the
                  * default master password without prompting.
+                 *
+                 * The admin password can be supplied using the deprecated
+                 * AS_ADMIN_ADMINPASSWORD option in the password file.
                  */
-                boolean haveAdminPwd = passwords.get(ADMIN_PASSWORD) != null;
-                adminPassword = getAdminPassword();
+                boolean haveAdminPwd = false;
+                adminPassword = passwords.get(ADMIN_ADMINPASSWORD);
+                if (adminPassword != null) {
+                    haveAdminPwd = true;
+                    logger.printWarning(strings.get("DeprecatedAdminPassword"));
+                } else {
+                    haveAdminPwd = passwords.get(ADMIN_PASSWORD) != null;
+                    adminPassword = getAdminPassword();
+                }
                 validatePassword(adminPassword, ADMIN_PASSWORD);
                 if (haveAdminPwd) {
                     masterPassword = passwords.get(MASTER_PASSWORD);
@@ -361,13 +401,14 @@ public final class CreateDomainCommand extends CLICommand {
             break;
 
         case noPermission:
-                if(checkPorts)
-                    throw new CommandException(strings.get("NoPermissionForPortError", 
-                        portNum, domainName));
-                else
-                    logger.printWarning(strings.get("NoPermissionForPortWarning", 
-                        portNum, domainName));
-                break;
+            if (checkPorts)
+                throw new CommandException(
+                    strings.get("NoPermissionForPortError", 
+                    portNum, domainName));
+            else
+                logger.printWarning(strings.get("NoPermissionForPortWarning", 
+                    portNum, domainName));
+            break;
 
         case unknown:
             throw new CommandException(strings.get("UnknownPortMsg", portNum));
@@ -559,6 +600,13 @@ public final class CreateDomainCommand extends CLICommand {
         manager.createDomain(domainConfig);
         //modifyInitialDomainXml();
         logger.printMessage(strings.get("DomainCreated", domainName));
+        logger.printMessage(
+            strings.get("DomainPort", domainName, Integer.toString(adminPort)));
+        if (adminUser.equals(SystemPropertyConstants.DEFAULT_ADMIN_USER))
+            logger.printMessage(strings.get("DomainAllowsAnon", domainName));
+        else
+            logger.printMessage(
+                strings.get("DomainAdminUser", domainName, adminUser));
         //checkAsadminPrefsFile();
         if (getBooleanOption(SAVELOGIN_OPTION)) {
             saveLogin(adminPort, adminUser, adminPassword, domainName);
