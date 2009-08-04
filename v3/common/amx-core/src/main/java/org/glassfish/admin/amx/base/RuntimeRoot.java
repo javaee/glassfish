@@ -49,8 +49,8 @@ import org.glassfish.external.arc.Taxonomy;
 @since GlassFish V3
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
-public interface Runtime extends AMXProxy, Utility, Singleton
+@AMXMBeanMetadata(type="runtime",singleton=true, globalSingleton=true)
+public interface RuntimeRoot extends AMXProxy, Utility, Singleton
 {
     /** 
      * The key to store the module name in the deployment descriptor map.
@@ -120,6 +120,9 @@ public interface Runtime extends AMXProxy, Utility, Singleton
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("Return a summary report of the specified type")
     public String getJVMReport( @Param(name = "which")String which);
+    
+    @ChildGetter
+    public Map<String,ServerRuntime>   getServerRuntime();
 }
 
 

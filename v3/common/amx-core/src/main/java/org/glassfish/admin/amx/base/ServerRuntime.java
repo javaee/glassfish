@@ -35,60 +35,13 @@
  */
 package org.glassfish.admin.amx.base;
 
-import org.glassfish.admin.amx.annotation.*;
-
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.api.amx.AMXMBeanMetadata;
-import org.glassfish.external.arc.Stability;
-import org.glassfish.external.arc.Taxonomy;
+
 
 /**
-"Ex" = extensions: any additional MBeans, especially those that are derivative
-and/or have other dependencies than amx-core.
+	MBean for a runtime MBeans (excluding monitoring and JSR 77) that are associated
+    with a particular server.  There is one of these MBeans for each server.
  */
-@Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(singleton = true, globalSingleton = true, leaf = true)
-public interface Ext extends AMXProxy, Singleton, Utility
+public interface ServerRuntime extends AMXProxy
 {
-    @ManagedAttribute
-    public Realms getRealms();
-
-    @ManagedAttribute
-    public ConnectorRuntimeAPIProvider getConnectorRuntimeAPIProvider();
-
-    /**
-    Contacts Update Center Server and get the updates status.
-     */
-    //@ManagedAttribute
-    //public UpdateStatus  getUpdateStatus();
-    /**
-    @return the singleton SystemInfo
-     */
-    @ManagedAttribute
-    public SystemStatus getSystemStatus();
-
-    /** 
-    Get ConfigTools, defined in the amx-config module.
-    Use proxy.as(ConfigTools.class) to narrow it to the right type.
-     */
-    @ManagedAttribute
-    public AMXProxy getConfigTools();
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

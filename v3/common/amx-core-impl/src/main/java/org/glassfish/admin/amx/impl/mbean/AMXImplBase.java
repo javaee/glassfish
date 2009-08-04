@@ -1220,7 +1220,11 @@ public class AMXImplBase extends MBeanImplBase
         return info;
     }
     
-		protected void
+    
+    /** Important:  must be synchronized so that preDeregisterHook cannot be called prior to 
+        existing postRegisterHook()
+     */
+		protected synchronized void
 	postRegisterHook( final Boolean registrationSucceeded )
 	{
 	    if ( registrationSucceeded.booleanValue() )
@@ -1236,8 +1240,9 @@ public class AMXImplBase extends MBeanImplBase
     {
     }
     
+    /** Important:  must be synchronized so that it cannot be called prior to exiting postRegisterHook() */
     @Override
-        protected void
+        protected synchronized void
 	preDeregisterHook()
 		throws Exception
 	{

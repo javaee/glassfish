@@ -197,6 +197,24 @@ public final class AMXProxyTests extends AMXTestBase
     }
 
     @Test
+    public void testRuntimeRoot()
+    {
+        testProxyInterface( getDomainRootProxy().getRuntime(), RuntimeRoot.class );
+    }
+
+    @Test
+    public void testServerRuntime()
+    {
+        final RuntimeRoot runtime = getDomainRootProxy().getRuntime();
+        final Map<String,ServerRuntime>  serverRuntimes = runtime.getServerRuntime();
+        assert serverRuntimes.keySet().size() != 0;
+        for( final ServerRuntime sr : serverRuntimes.values() )
+        {
+            testProxyInterface( sr, ServerRuntime.class );
+        }
+    }
+
+    @Test
     public void testSystemInfo()
     {
         testProxyInterface( getDomainRootProxy().getSystemInfo(), SystemInfo.class );

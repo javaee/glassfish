@@ -15,7 +15,7 @@
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
  * as provided by Sun in the GPL Version 2 section of the License file that
- * accompanied this code.  If applicable, add the following below the License
+ * accompanied this code.  If applicable, add the following below the Licensep
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
@@ -33,48 +33,44 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.base;
+package org.glassfish.admin.amx.impl.ext;
 
-import org.glassfish.admin.amx.annotation.*;
-
-import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.api.amx.AMXMBeanMetadata;
-import org.glassfish.external.arc.Stability;
-import org.glassfish.external.arc.Taxonomy;
+import javax.management.ObjectName;
+import org.glassfish.admin.amx.base.ServerRuntime;
+import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 
 /**
-"Ex" = extensions: any additional MBeans, especially those that are derivative
-and/or have other dependencies than amx-core.
+ * Parent for all runtime-related MBeans for a particular server
+ * @author llc
  */
-@Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(singleton = true, globalSingleton = true, leaf = true)
-public interface Ext extends AMXProxy, Singleton, Utility
+public class ServerRuntimeImpl extends AMXImplBase // implements ServerRuntime
 {
-    @ManagedAttribute
-    public Realms getRealms();
-
-    @ManagedAttribute
-    public ConnectorRuntimeAPIProvider getConnectorRuntimeAPIProvider();
-
-    /**
-    Contacts Update Center Server and get the updates status.
-     */
-    //@ManagedAttribute
-    //public UpdateStatus  getUpdateStatus();
-    /**
-    @return the singleton SystemInfo
-     */
-    @ManagedAttribute
-    public SystemStatus getSystemStatus();
-
-    /** 
-    Get ConfigTools, defined in the amx-config module.
-    Use proxy.as(ConfigTools.class) to narrow it to the right type.
-     */
-    @ManagedAttribute
-    public AMXProxy getConfigTools();
-
+    public ServerRuntimeImpl(final ObjectName parent) {
+        super(parent, ServerRuntime.class);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

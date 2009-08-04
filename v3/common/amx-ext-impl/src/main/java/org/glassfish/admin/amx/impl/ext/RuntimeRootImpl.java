@@ -52,7 +52,8 @@ import com.sun.enterprise.module.Module;
 import com.sun.enterprise.security.ssl.SSLUtils;
 import javax.management.JMException;
 import javax.management.remote.JMXServiceURL;
-import org.glassfish.admin.amx.base.Runtime;
+import org.glassfish.admin.amx.base.RuntimeRoot;
+import org.glassfish.admin.amx.base.ServerRuntime;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.intf.config.Domain;
@@ -78,28 +79,52 @@ import com.sun.enterprise.v3.admin.RestartDomainCommand;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import org.glassfish.api.admin.AdminCommand;
 import com.sun.enterprise.v3.admin.commands.JVMInformation;
+import javax.management.MBeanServer;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.util.StringUtil;
+import org.glassfish.external.amx.AMXGlassfish;
 
 /**
 AMX RealmsMgr implementation.
 Note that realms don't load until {@link #loadRealms} is called.
  */
-public final class RuntimeImpl extends AMXImplBase
-// implements Runtime
+public final class RuntimeRootImpl extends AMXImplBase
+// implements RuntimeRoot
 {
     private final ApplicationRegistry appRegistry;
 
     private final Habitat mHabitat;
 
-    public RuntimeImpl(final ObjectName parent)
+    public RuntimeRootImpl(final ObjectName parent)
     {
-        super(parent, Runtime.class);
+        super(parent, RuntimeRoot.class);
 
         mHabitat = InjectedValues.getInstance().getHabitat();
 
         appRegistry = mHabitat.getComponent(ApplicationRegistry.class);
 
     }
+
+    @Override
+        protected final void
+    registerChildren()
+    {
+        super.registerChildren();
+
+        final ObjectName    self = getObjectName();
+        final MBeanServer   server = getMBeanServer();
+        final ObjectNameBuilder	objectNames	= new ObjectNameBuilder( server, self );
+
+        ObjectName childObjectName = null;
+        Object mbean = null;
+
+        // when clustering comes along, some other party will need to register MBeans
+        // for each non-DAS instance
+        childObjectName	= objectNames.buildChildObjectName( ServerRuntime.class, AMXGlassfish.DEFAULT.dasName() );
+        mbean	= new ServerRuntimeImpl(self);
+        registerChild( mbean, childObjectName );
+    }
+
 
     /**
      * Return a list of deployment descriptor maps for the specified
@@ -166,9 +191,9 @@ public final class RuntimeImpl extends AMXImplBase
         {
             HashMap<String, String> resultMap =
                     new HashMap<String, String>();
-            resultMap.put(Runtime.MODULE_NAME_KEY, moduleName);
-            resultMap.put(Runtime.DD_PATH_KEY, pathKey);
-            resultMap.put(Runtime.DD_CONTENT_KEY, snifferConfigs.get(pathKey));
+            resultMap.put(RuntimeRoot.MODULE_NAME_KEY, moduleName);
+            resultMap.put(RuntimeRoot.DD_PATH_KEY, pathKey);
+            resultMap.put(RuntimeRoot.DD_CONTENT_KEY, snifferConfigs.get(pathKey));
             resultList.add(resultMap);
         }
     }

@@ -608,7 +608,7 @@ public final class AMXValidator
         {
             if (!proxy.parentPath().equals(proxy.parent().path()))
             {
-                fail(objectName, "Parent path of " + proxy.parentPath() + " does not match parent's path for " + proxy.parent().objectName());
+                fail(objectName, "Parent path of " + proxy.parentPath() + " does not match parent's path for  parent " + proxy.parent().objectName());
             }
         }
     }
@@ -1026,8 +1026,6 @@ public final class AMXValidator
                     
                     final String msg = "Cannot create AMXProxy for MBean \"" + objectName + "\" -- MBean is  non-compliant, unregistering it.";
                     problems.add(msg);
-                    
-                    unregisterNonCompliantMBean(objectName);
                 }
             }
             
@@ -1042,6 +1040,10 @@ public final class AMXValidator
                     problems = new ArrayList<String>();
                     addToProblems( "Validation failure for MBean " + objectName + ", ", problems, e);
                 }
+            }
+            if ( problems.size() != 0 )
+            {
+                unregisterNonCompliantMBean(objectName);
             }
 
             failures.result(objectName, problems);

@@ -162,11 +162,15 @@ public interface DomainRoot extends AMXProxy
     public AMXConfigProxy getDomain();
 
     /**
-    @return the singleton {@link MonitoringRoot}.  All MonitoringRoot MBeans should be
-    descendants of this MBean.
+    @return the singleton {@link MonitoringRoot}. 
      */
     @ManagedAttribute
+    @Description("Get the root MBean of all monitoring MBeans")
     public MonitoringRoot getMonitoringRoot();
+
+    @ManagedAttribute
+    @Description("Get the root MBean of all runtime MBeans")
+    public RuntimeRoot getRuntime();
 
     /**
     @return the singleton SystemInfo

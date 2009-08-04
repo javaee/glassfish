@@ -65,7 +65,7 @@ class Interfaces {
             Query.class,
             BulkAccess.class,
             Realms.class,
-            org.glassfish.admin.amx.base.Runtime.class,
+            RuntimeRoot.class,
             SystemInfo.class,
             Sample.class,
             Tools.class,

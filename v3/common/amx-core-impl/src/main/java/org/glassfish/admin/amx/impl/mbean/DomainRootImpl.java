@@ -37,7 +37,6 @@ package org.glassfish.admin.amx.impl.mbean;
 
 import org.glassfish.admin.amx.base.*;
 
-import org.glassfish.admin.amx.logging.Logging;
 
 import org.glassfish.admin.amx.util.FeatureAvailability;
 import com.sun.appserv.server.util.Version;
@@ -84,7 +83,7 @@ public class DomainRootImpl extends AMXImplBase
 
     public void stopDomain()
     {
-        getDomainRootProxy().getExt().getRuntime().stopDomain();
+        getDomainRootProxy().getRuntime().stopDomain();
     }
 
     public ObjectName getQueryMgr()
@@ -101,7 +100,7 @@ public class DomainRootImpl extends AMXImplBase
     {
         return child( MonitoringRoot.class );
     }
-
+    
     public ObjectName getPathnames()
     {
         return child(Pathnames.class);

@@ -34,7 +34,7 @@ import javax.management.StandardMBean;
 
 
 import org.glassfish.admin.amx.base.Realms;
-import org.glassfish.admin.amx.base.Runtime;
+import org.glassfish.admin.amx.base.RuntimeRoot;
 import org.glassfish.admin.amx.base.ConnectorRuntimeAPIProvider;
 import org.glassfish.admin.amx.base.SystemStatus;
 import org.glassfish.admin.amx.logging.Logging;
@@ -103,31 +103,36 @@ public final class AMXExtStartupService
             FeatureAvailability.getInstance().waitForFeature(FeatureAvailability.AMX_CORE_READY_FEATURE, "AMXExtStartupService.loadAMXMBeans");
             FeatureAvailability.getInstance().waitForFeature(AMXConfigConstants.AMX_CONFIG_READY_FEATURE, "AMXExtStartupService.loadAMXMBeans");
 
-            ObjectName child;
             AMXImplBase mbean;
             final MBeanServer s = mMBeanServer;
-            final ObjectName parent = getDomainRootProxy().getExt().objectName();
-            final ObjectName lParent = getDomainRootProxy().objectName();
-            final ObjectNameBuilder names = new ObjectNameBuilder(s, parent);
+            final ObjectName domainRoot = getDomainRootProxy().objectName();
             
-            final ObjectName loggingObjectName = ObjectNameBuilder.buildChildObjectName( s, lParent, Logging.class );
-            mbean = new LoggingImpl(lParent, "server");
+            // Register children of DomainRoot
+            final ObjectName loggingObjectName = ObjectNameBuilder.buildChildObjectName( s, domainRoot, Logging.class );
+            mbean = new LoggingImpl(domainRoot, "server");
             registerChild(mbean, loggingObjectName);
 
+            final ObjectName runtimeObjectname = ObjectNameBuilder.buildChildObjectName( s, domainRoot, RuntimeRoot.class );
+            mbean = new RuntimeRootImpl(domainRoot);
+            registerChild(mbean, runtimeObjectname);
+
+
+            // register all children of Ext
+
+            ObjectName child;
+            final ObjectName ext = getDomainRootProxy().getExt().objectName();
+            final ObjectNameBuilder names = new ObjectNameBuilder(s, ext);
+            
             child = names.buildChildObjectName(SystemStatus.class);
-            mbean = new SystemStatusImpl(parent);
+            mbean = new SystemStatusImpl(ext);
             registerChild(mbean, child);
 
             child = names.buildChildObjectName(Realms.class);
-            mbean = new RealmsImpl(parent);
-            registerChild(mbean, child);
-
-            child = names.buildChildObjectName(Runtime.class);
-            mbean = new RuntimeImpl(parent);
+            mbean = new RealmsImpl(ext);
             registerChild(mbean, child);
 
             child = names.buildChildObjectName(ConnectorRuntimeAPIProvider.class);
-            mbean = new ConnectorRuntimeAPIProviderImpl(parent, InjectedValues.getInstance().getHabitat());
+            mbean = new ConnectorRuntimeAPIProviderImpl(ext, InjectedValues.getInstance().getHabitat());
             registerChild(mbean, child);
 
             //final GmbalMOM mom = new GmbalMOM( s, getDomainRootProxy().objectName() );
