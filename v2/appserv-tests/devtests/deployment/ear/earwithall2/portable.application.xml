@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<application xmlns="http://java.sun.com/xml/ns/j2ee" version="1.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/application_1_4.xsd">
+<application xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee Http://java.sun.com/xml/ns/javaee/application_6.xsd">
+  <application-name>foo</application-name>
   <description>Application description</description>
   <display-name>WebNBean-DisplayName</display-name>
   <module>

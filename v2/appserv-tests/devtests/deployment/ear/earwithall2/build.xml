@@ -10,6 +10,7 @@
 
     <property name="contextRoot" value="webnbean"/>
     <property name="testName" value="WebNBean"/>
+    <property name="appName" value="foo"/>
 
     <target name="prepare" depends="init">
         <property name="portable.war" value="${build}/${testName}-portable.war"/>
@@ -69,35 +70,35 @@
     <target name="deploy.asadmin" depends="prepare">
         <antcall target="common.deploy.asadmin">
             <param name="arg.list" value="${all.ear}"/>
-            <param name="testName" value="${testName}"/>
+            <param name="testName" value="${appName}"/>
         </antcall>
     </target>
 
     <target name="redeploy.asadmin" depends="prepare">
         <antcall target="common.redeploy.asadmin">
             <param name="arg.list" value="${all.ear}"/>
-            <param name="testName" value="${testName}"/>
+            <param name="testName" value="${appName}"/>
         </antcall>
     </target>
 
     <target name="undeploy.asadmin">
         <antcall target="common.undeploy.asadmin">
-            <param name="arg.list" value="${testName}"/>
-            <param name="testName" value="${testName}"/>
+            <param name="arg.list" value="${appName}"/>
+            <param name="testName" value="${appName}"/>
         </antcall>
     </target>
     
     <target name="enable.asadmin"> 
         <antcall target="common.enable.asadmin">
             <param name="arg.list" 
-                   value="${testName}"/>
+                   value="${appName}"/>
         </antcall>
     </target>
 
     <target name="disable.asadmin">
         <antcall target="common.disable.asadmin">
             <param name="arg.list" 
-                   value="${testName}"/>
+                   value="${appName}"/>
         </antcall>
     </target>
 
