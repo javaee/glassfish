@@ -72,8 +72,10 @@ import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 
 import org.glassfish.admin.amx.logging.LogQueryResult;
+import org.glassfish.admin.amx.logging.LogQuery;
 import org.glassfish.admin.amx.logging.LogQueryEntry;
 import org.glassfish.admin.amx.logging.Logging;
+import org.glassfish.admin.amx.logging.LogFileAccess;
 
 public class LogViewHandlers {
     
@@ -191,10 +193,11 @@ public class LogViewHandlers {
 
             // Convert module array to List
             //List moduleList = null;
-            Set moduleList = new HashSet();
+            //Set moduleList = new HashSet();
+            Set moduleList = null;
             if (loggers != null) {
                 int len = ((Object[]) loggers).length;
-                //moduleList = new ArrayList(len);
+                moduleList = new HashSet();
                 Object val;
                 for (int count = 0; count < len; count++) {
                     val = (((Object[]) loggers)[count]);
@@ -212,9 +215,9 @@ public class LogViewHandlers {
                         customLoggers.toString(),
                         CUSTOM_LOGGER_DELIMITERS);
                 String token;
-                //if(moduleList == null) {
-                //    moduleList = new ArrayList();
-                //} 
+                if(moduleList == null) {
+                    moduleList = new HashSet();
+                } 
 
                 while (tok.hasMoreTokens()) {
                     token = tok.nextToken();
@@ -281,7 +284,7 @@ public class LogViewHandlers {
                 after = direction;
             }
             if (fromRecord == null) {
-                fromRecord = FROM_RECORD;
+                fromRecord = LogQuery.LAST_RECORD;
             } else {
                 fromRecord.intValue();
             }
@@ -289,7 +292,6 @@ public class LogViewHandlers {
 
             // Search for the log entries
             LogQueryResult results = null;
-            
             try {
                 Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
                 results = (LogQueryResult) logging.queryServerLog(
