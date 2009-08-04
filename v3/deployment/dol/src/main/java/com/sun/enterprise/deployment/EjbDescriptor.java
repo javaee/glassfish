@@ -1892,12 +1892,6 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
             }
 
         } catch (Throwable t) {
-            /*
-            t.printStackTrace();
-            _logger.log(Level.SEVERE,localStrings.getLocalString(
-                                   "enterprise.deployment.errorloadingclass",
-                                   "Error loading class {0}", new Object [] {"(EjbDescriptor.getMethods())"}));
-            */
             _logger.log(Level.SEVERE, "enterprise.deployment.backend.methodClassLoadFailure", new Object[]{"(EjbDescriptor.getMethods())"});
 
             throw new RuntimeException(t);

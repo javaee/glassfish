@@ -166,7 +166,6 @@ public class MailConfiguration implements Serializable {
             loadMailResources(mailRes);
         }
         catch (Exception ce) {
-            //ce.printStackTrace();
             _logger.log(Level.INFO,"enterprise.deployment_mail_cfgexcp",ce);
 
         }

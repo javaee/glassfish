@@ -515,7 +515,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             Class.forName("com.sun.enterprise.tools.verifier.Verifier");
             return true;
         } catch (ClassNotFoundException cnfe) {
-            cnfe.printStackTrace();
+            Logger.getAnonymousLogger().log(Level.FINE, 
+                "Verifier class not found: ", cnfe); 
             return false;
         }
     }

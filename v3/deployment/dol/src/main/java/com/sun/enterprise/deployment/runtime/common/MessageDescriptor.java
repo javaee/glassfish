@@ -44,6 +44,8 @@ import com.sun.enterprise.deployment.runtime.RuntimeDescriptor;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MessageDescriptor extends RuntimeDescriptor {
     public static final String JAVA_METHOD = "JavaMethod";
@@ -189,7 +191,7 @@ public class MessageDescriptor extends RuntimeDescriptor {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getAnonymousLogger().log(Level.WARNING, "Error occurred", e); 
             // if there is exception in the class loading
             // then we just return the empty list
         }

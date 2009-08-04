@@ -38,6 +38,7 @@ package com.sun.enterprise.deployment.node.ejb;
 import com.sun.enterprise.deployment.ScheduledTimerDescriptor;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.util.DOLUtils;
+import java.util.logging.Level;
 
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.MethodNode;
@@ -182,8 +183,7 @@ public class ScheduledTimerNode extends DeploymentDescriptorNode {
                 appendTextChild(timerNode, EjbTagNames.TIMER_END, xmlGreg.toXMLFormat());
             }
         } catch (Exception e) {
-e.printStackTrace();
-            DOLUtils.getDefaultLogger().warning(e.getMessage());
+            DOLUtils.getDefaultLogger().log(Level.WARNING, e.getMessage(), e);
         }
 
         MethodNode methodNode = new MethodNode();

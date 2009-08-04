@@ -736,7 +736,6 @@ public final class PersistenceDescriptor extends Descriptor {
 	try {
 	    return getEjbBundleDescriptor().getClassLoader().loadClass(className);
 	} catch ( Exception ex ) {
-	    //if ( debug ) ex.printStackTrace();
 	    throw new DeploymentException(ex);
 	}
     }

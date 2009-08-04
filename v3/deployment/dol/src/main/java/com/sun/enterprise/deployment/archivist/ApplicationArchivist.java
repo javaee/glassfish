@@ -808,8 +808,7 @@ public class ApplicationArchivist extends Archivist<Application>
             Application a = readStandardDeploymentDescriptor(source);
             copyInto(a, source, target);
         } catch(SAXParseException spe) {
-            spe.printStackTrace();
-            DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.fileCopyFailure");
+            DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.fileCopyFailure", spe);
         }
     }
     

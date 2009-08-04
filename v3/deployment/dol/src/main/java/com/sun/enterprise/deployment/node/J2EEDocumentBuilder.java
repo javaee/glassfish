@@ -96,7 +96,7 @@ public class J2EEDocumentBuilder {
         } catch (Exception e) {
             DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.saxParserError",
                     new Object[] {"JAXP configuration error"});
-            e.printStackTrace();
+            DOLUtils.getDefaultLogger().log(Level.WARNING, "Error occurred", e);
         } 
         return null;
     }    
@@ -113,7 +113,7 @@ public class J2EEDocumentBuilder {
             else 
                 return domNode.getOwnerDocument();
         } catch (Exception e) {
-            e.printStackTrace();
+            DOLUtils.getDefaultLogger().log(Level.WARNING, "Error occurred", e);  
         }
         return null;
     }    
@@ -153,7 +153,7 @@ public class J2EEDocumentBuilder {
             setTransformerProperties(node, transformer);
             transformer.transform(source, output);
         } catch(Exception e) {
-            e.printStackTrace();
+            DOLUtils.getDefaultLogger().log(Level.WARNING, "Error occurred", e);  
             throw e;
         }
     }        

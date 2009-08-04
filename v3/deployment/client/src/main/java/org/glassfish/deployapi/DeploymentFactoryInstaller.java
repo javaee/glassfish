@@ -172,7 +172,7 @@ public class DeploymentFactoryInstaller {
         } catch (Exception ie) {
             sLogger.log(Level.SEVERE, "enterprise.deployment.backend.deplyomentManagerLoadFailure",
                     new Object[]{className});
-            ie.printStackTrace();
+            sLogger.log(Level.SEVERE, "Error occurred", ie);
             throw new IllegalArgumentException("Cannot install " + installedDM.getName());
         }
         if (df instanceof DeploymentFactory) {
@@ -194,9 +194,9 @@ public class DeploymentFactoryInstaller {
             try {
                 installDeploymentFactory(elligibleFiles[i]);
             } catch(Exception ioe) {
-                ioe.printStackTrace();
                 sLogger.log(Level.SEVERE, "enterprise.deployment.backend.deplyomentManagerLoadFailure",
                     new Object[] {elligibleFiles[i].getName()});
+                sLogger.log(Level.SEVERE, "Error occurred", ioe);
             }
         }        
     }       

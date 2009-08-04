@@ -45,6 +45,8 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.deploy.shared.CommandType;
 import javax.enterprise.deploy.shared.ModuleType;
@@ -272,7 +274,7 @@ public class ProgressObjectImpl extends DFProgressObject {
 //                    ObjectName applicationsMBean = new ObjectName(APPS_CONFIGMBEAN_OBJNAME);                
 //                    webHost = (HostAndPort) mbsc.invoke(applicationsMBean, "getHostAndPort", params, signature);                        
 //                } catch(Exception e) {
-//                    Print.dprintStackTrace(e.getLocalizedMessage(), e);
+//                    Logger.getAnonymousLogger().log(Level.WARNING, e.getLocalizedMessage(), e);
 //                }
 //
 //                key = tmpModuleID + KEY_SEPARATOR + SUBMODULE_COUNT;
@@ -331,7 +333,7 @@ public class ProgressObjectImpl extends DFProgressObject {
 //            URL webURL = new URL("http", host, webHost.getPort(), contextRoot);
 //            tm.setWebURL(webURL.toExternalForm());
 //        } catch(Exception e) {
-//            Print.dprintStackTrace(e.getLocalizedMessage(),e);
+//            Logger.getAnonymousLogger().log(Level.WARNING, e.getLocalizedMessage(), e);
 //        }
 //    }
 //    

@@ -137,7 +137,7 @@ public class SaxParserHandlerBundled extends SaxParserHandler {
                 }
             }
         } catch (Exception exc) {
-            exc.printStackTrace();
+            DOLUtils.getDefaultLogger().log(Level.SEVERE, "Error occurred", exc);
             throw new SAXException(exc);
         }
         return result;

@@ -43,6 +43,8 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.jar.JarEntry;
 import java.util.zip.ZipEntry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -145,7 +147,8 @@ public class MemoryMappedArchive extends JarArchive implements ReadableArchive {
             }
             jis.close();
         } catch(IOException ioe) {
-            ioe.printStackTrace();
+            Logger.getAnonymousLogger().log(Level.WARNING, 
+                ioe.getMessage(), ioe);  
         }
         return entries;        
     }

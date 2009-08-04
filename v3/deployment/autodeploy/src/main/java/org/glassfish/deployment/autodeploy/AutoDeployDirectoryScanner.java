@@ -144,7 +144,6 @@ public class AutoDeployDirectoryScanner implements DirectoryScanner{
 
     protected void printException(Exception e) {
         sLogger.log(Level.SEVERE, e.getMessage(), e);
-        e.printStackTrace();
     }
     
     protected File[] getListOfFiles(File dir) {

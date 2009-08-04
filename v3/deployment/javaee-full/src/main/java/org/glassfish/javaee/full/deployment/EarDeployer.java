@@ -68,6 +68,7 @@ import com.sun.logging.LogDomains;
 
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.io.IOException;
 import java.io.File;
 import java.io.InputStream;
@@ -393,7 +394,7 @@ public class EarDeployer implements Deployer, PostConstruct {
             // let's get the list of containers interested in this module
             orderedContainers = deployment.setupContainerInfos(null, sniffers, bundleContext);
         } catch(Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Error occurred", e);  
         }
         return deployment.prepareModule(orderedContainers, md.getArchiveUri(), bundleContext, tracker);
     }
@@ -429,7 +430,7 @@ public class EarDeployer implements Deployer, PostConstruct {
                     subArchive = context.getSource().getSubArchive(moduleUri);
                     subArchive.setParentArchive(context.getSource());
                 } catch(IOException ioe) {
-                    ioe.printStackTrace();
+                    logger.log(Level.WARNING, "Error occurred", ioe);  
                     return null;
                 }
                 

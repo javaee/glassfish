@@ -133,7 +133,7 @@ public abstract class AutoOperation {
             /*
              * Log and continue.
              */
-            ex.printStackTrace();
+            sLogger.log(Level.SEVERE, "Error occurred: ", ex); 
             return AutodeploymentStatus.FAILURE;
         }
     }

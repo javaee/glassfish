@@ -84,7 +84,6 @@ public class EjbIORConfigurationDescriptor implements Serializable {
 		authenticationMethod = USERNAME_PASSWORD;
 	    }
 	} catch(Throwable ioe) {
-	    //ioe.printStackTrace();
          _logger.log(Level.WARNING,"enterprise.deployment_ioexcp",ioe);
             
 	    // ignore

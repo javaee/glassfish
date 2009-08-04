@@ -37,6 +37,8 @@
 package org.glassfish.deployapi.actions;
 
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.deploy.spi.exceptions.ClientExecuteException;
 import javax.enterprise.deploy.spi.status.ClientConfiguration;
@@ -106,7 +108,7 @@ public class ClientConfigurationImpl implements ClientConfiguration {
             InputStream is = p.getInputStream();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            Logger.getAnonymousLogger().log(Level.WARNING, "Error occurred", e); 
             throw new ClientExecuteException(localStrings.getLocalString(
                 "enterprise.deployapi.actions.clientconfigurationimpl.exception", 
                 "Exception while invoking application client : \n {0}", new Object[] { e.getMessage() }));

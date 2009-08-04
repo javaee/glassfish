@@ -223,7 +223,7 @@ public class ApplicationFactory implements ContractProvider {
                     Application application = (Application) node.read(jar.getInputStream(deploymentEntry));
                     return application.getDisplayName();
                 } catch (Exception pe) {
-                    pe.printStackTrace();
+                    logger.log(Level.WARNING, "Error occurred", pe);  
                 }
             }
         } finally {

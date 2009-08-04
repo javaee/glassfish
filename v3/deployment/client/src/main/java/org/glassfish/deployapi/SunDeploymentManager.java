@@ -77,6 +77,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.net.URI;
 
 import javax.enterprise.deploy.spi.DeploymentManager;
@@ -375,7 +377,7 @@ public class SunDeploymentManager implements DeploymentManager {
                 }
             }
             catch(Exception exp){
-                Print.dprintStackTrace(exp.getLocalizedMessage(), exp);
+                Logger.getAnonymousLogger().log(Level.WARNING, exp.getLocalizedMessage(), exp); 
             }            
         }
     }
@@ -414,7 +416,7 @@ public class SunDeploymentManager implements DeploymentManager {
             }
         }
         catch(Exception exp){
-            Print.dprintStackTrace(exp.getLocalizedMessage(), exp);
+            Logger.getAnonymousLogger().log(Level.WARNING, exp.getLocalizedMessage(), exp); 
         }
     }
     

@@ -188,8 +188,6 @@ public class Application extends BundleDescriptor
 
     private List<Resource> resourceList = null;
 
-    private boolean isPackagedAsSingleModule = false;
-
     private final Habitat habitat;
 
     private Set<DataSourceDefinitionDescriptor> datasourceDefinitionDescs =

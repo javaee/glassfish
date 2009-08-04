@@ -213,7 +213,7 @@ public class SaxParserHandler extends DefaultHandler {
                 return new InputSource(new BufferedInputStream(getDTDUrlFor((String) getMapping().get(publicID))));                
             } 
         } catch(Exception ioe) {
-	    ioe.printStackTrace();
+            DOLUtils.getDefaultLogger().log(Level.SEVERE, ioe.getMessage(), ioe);
 	    throw new SAXException(ioe);
         }
         return null;
@@ -368,7 +368,7 @@ public class SaxParserHandler extends DefaultHandler {
                     topNode = node;
                     node.getDescriptor();
                 } catch(Exception e) {
-                    e.printStackTrace();
+                    DOLUtils.getDefaultLogger().log(Level.WARNING, "Error occurred", e);
                     return;
                 }
             }
@@ -520,7 +520,7 @@ public class SaxParserHandler extends DefaultHandler {
                 }
                 
             } catch (Throwable t) {
-                t.printStackTrace();
+                DOLUtils.getDefaultLogger().log(Level.WARNING, "Error occurred", t);
             }
         }
     }

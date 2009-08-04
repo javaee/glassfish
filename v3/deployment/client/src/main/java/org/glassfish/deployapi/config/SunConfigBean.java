@@ -36,6 +36,8 @@
 package org.glassfish.deployapi.config;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
@@ -110,7 +112,7 @@ public abstract class SunConfigBean implements DConfigBean, XpathListener {
                     return child;
                 } 
             } catch(Exception e) {
-                e.printStackTrace();
+                Logger.getAnonymousLogger().log(Level.WARNING, "Error occurred", e);  
                 throw new ConfigurationException(e.getMessage());
             }
             

@@ -40,6 +40,8 @@ import com.sun.enterprise.deployment.xml.ConnectorTagNames;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Deployment Information for connector outbound-resourceadapter
@@ -151,7 +153,7 @@ public class OutboundResourceAdapter extends Descriptor
 
         this.transactionSupportSet = true;
         }catch(NumberFormatException nfe){
-            nfe.printStackTrace();
+            Logger.getAnonymousLogger().log(Level.WARNING, "Error occurred", nfe); 
         }
     }
       

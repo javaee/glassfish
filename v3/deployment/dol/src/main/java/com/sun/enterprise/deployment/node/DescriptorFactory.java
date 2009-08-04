@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.xml.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class is responsible for instanciating  Descriptor classes
@@ -246,7 +247,7 @@ public class DescriptorFactory {
                 return c.newInstance();
             }
         } catch (Throwable t) {
-            t.printStackTrace();
+            DOLUtils.getDefaultLogger().log(Level.WARNING, "Error occurred", t);
         }
         return null;
     }

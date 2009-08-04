@@ -536,10 +536,10 @@ public class IASEjbExtraDescriptors extends RuntimeDescriptor {
                 return null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
             // any parsing exception indicates it is not a well-formed
             // string, we will just print warning and return null
             DOLUtils.getDefaultLogger().log(Level.WARNING, "enterprise.deployment_badformat_checkpointedmethods", new Object[] {method});
+            DOLUtils.getDefaultLogger().log(Level.WARNING, e.getMessage(), e);
             return null;
         }     
     }        

@@ -55,6 +55,7 @@ import javax.xml.parsers.*;
 import java.io.*;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This abstract class defines common behaviour for classes responsibles 
@@ -162,9 +163,10 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
 
             }            
         } catch (Exception e) {
-            e.printStackTrace();
             DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.saxParserError",
                                 new Object[]{e.getMessage()});
+            DOLUtils.getDefaultLogger().log(Level.WARNING, "Error occurred", e);
+
         }
         return null;
     }
@@ -204,9 +206,9 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
 
             }            
         } catch (Exception e) {
-            e.printStackTrace();
             DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.saxParserError",
                                 new Object[]{e.getMessage()});
+            DOLUtils.getDefaultLogger().log(Level.WARNING, "Error occurred", e);
         }
         return null;
     }
@@ -308,11 +310,9 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
 
             throw spe;            
         } catch(SAXException e) {
-            if (e.getException()!=null) {
-                e.getException().printStackTrace();
-            }
             DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.saxParserError",
                                 new Object[]{e.getMessage()});            
+            DOLUtils.getDefaultLogger().log(Level.SEVERE, "Error occurred", e);
             return null;
         } catch (IOException e) {
             DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.saxParserError",

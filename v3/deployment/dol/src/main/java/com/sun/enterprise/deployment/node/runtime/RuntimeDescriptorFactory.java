@@ -52,6 +52,7 @@ import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class is responsible for instanciating  runtime Descriptor classes
@@ -161,7 +162,7 @@ public class RuntimeDescriptorFactory {
                 return c.newInstance();
             }
         } catch (Throwable t) {
-            t.printStackTrace();
+            Logger.getAnonymousLogger().log(Level.WARNING, "Error occurred", t);  
         }
         return null;
     }
