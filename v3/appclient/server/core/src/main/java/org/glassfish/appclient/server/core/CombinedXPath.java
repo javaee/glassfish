@@ -57,20 +57,33 @@ import org.w3c.dom.NodeList;
  * <li>merged - the generated content is merged in with the developer's content
  * <li>defaulted - the generated content is used only if no corresponding developer content exists
  * </ul>
+ * <p>
+ * This is the abstract superclass for the various types of combinations of
+ * generated and developer-provided elements.
  *
  * @author tjquinn
  */
 abstract class CombinedXPath {
 
-    private final XPath xPath;
+    /** xpath expression for the target node in the DOM for the developer's XML */
     private final XPathExpression targetExpr;
+    
+    /** if developer didn't provide the target, this is the parent where we'll
+     * create a new child.
+     */
     private final XPathExpression parentExpr;
 
+    /**
+     * Creates a new combined XPath.
+     * 
+     * @param xPath XPath available for searching
+     * @param parentPath path to parent for new child (if developer's document lacks the target)
+     * @param targetRelativePath path relative to the parent for the target node in the developer DOM
+     */
     CombinedXPath(
             final XPath xPath,
             final String parentPath,
             final String targetRelativePath) {
-        this.xPath = xPath;
         try {
             parentExpr = xPath.compile(parentPath);
             targetExpr = xPath.compile(parentPath + targetRelativePath);
@@ -87,8 +100,19 @@ abstract class CombinedXPath {
         return parentExpr;
     }
 
+    /**
+     * Processes the given combination: replaces, defaults, or merges.
+     *
+     * @param developerDOM
+     * @param generatedDOM
+     * @throws XPathExpressionException
+     */
     abstract void process(final Document developerDOM, final Document generatedDOM) throws XPathExpressionException;
 
+    /**
+     * Represents a node in the document which we completely determine,
+     * overriding any corresponding node from the developer's DOM.
+     */
     static class OwnedXPath extends CombinedXPath {
 
         OwnedXPath(
@@ -107,7 +131,7 @@ abstract class CombinedXPath {
              * Replace each original developer child (if any) with the counterpart
              * generated one.
              */
-            for (int i = 1; i <= generatedNodes.getLength(); i++) {
+            for (int i = 0; i < generatedNodes.getLength(); i++) {
                 final Node generatedNode = generatedNodes.item(i);
                 Node developerParent;
                 if (developerNodes.getLength() > 0) {
@@ -124,6 +148,10 @@ abstract class CombinedXPath {
         }
     }
 
+    /**
+     * Represents a combination of the two XML documents resulting from
+     * merging the two input documents.
+     */
     static class MergedXPath extends CombinedXPath {
 
         MergedXPath(
@@ -152,7 +180,7 @@ abstract class CombinedXPath {
              * Insert each generated node in front of the developer-provided
              * one(s).
              */
-            for (int i = 1; i <= generatedNodes.getLength(); i++) {
+            for (int i = 0; i < generatedNodes.getLength(); i++) {
                 final Node generatedNode = generatedNodes.item(i);
                 developerParent.insertBefore(developerDOM.adoptNode(generatedNode),
                         firstOriginalChild);
@@ -160,6 +188,10 @@ abstract class CombinedXPath {
         }
     }
 
+    /**
+     * Represents a combination in which the developer's setting is used if
+     * present; otherwise the generated document's setting is used.
+     */
     static class DefaultedXPath extends CombinedXPath {
 
         DefaultedXPath(
@@ -181,7 +213,7 @@ abstract class CombinedXPath {
 
             Node developerParent = (Node) parentExpr().evaluate(developerDOM, XPathConstants.NODE);
 
-            for (int i = 1; i <= generatedNodes.getLength(); i++) {
+            for (int i = 0; i < generatedNodes.getLength(); i++) {
                 developerParent.appendChild(developerDOM.adoptNode(generatedNodes.item(i)));
             }
         }
