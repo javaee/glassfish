@@ -91,7 +91,6 @@ public class ServletStatsProvider {
                     @ProbeParam("hostName") String hostName) {
 	// handle the servlet loaded probe events
         logger.finest("Servlet Loaded event received - servletName = " + 
-                             servlet.getServletConfig().getServletName() + 
                              ": appName = " + appName + ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {
             return;
@@ -111,7 +110,6 @@ public class ServletStatsProvider {
                     @ProbeParam("hostName") String hostName) {
 	// handle the servlet loaded probe events
         logger.finest("Servlet Destroyed event received - servletName = " + 
-                             servlet.getServletConfig().getServletName() + 
                              ": appName = " + appName + ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {
             return;

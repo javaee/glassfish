@@ -126,7 +126,10 @@ public class ReflectiveClientInvoker
                 }
             }
 
-            method.invoke(target, args);
+            if (method.isVarArgs())
+                method.invoke(target, (Object)args);
+            else
+                method.invoke(target, args);
         } catch (Exception ex) {
             System.out.println("Error while invoking client: " +
                     hasComputedParams + " ==> " + ex);
