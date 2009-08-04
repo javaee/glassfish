@@ -56,6 +56,7 @@ import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.CompositeHandler;
 import org.glassfish.deployment.common.DeploymentProperties;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.data.*;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.deployment.Deployment;
@@ -919,10 +920,11 @@ public class ApplicationLifecycle implements Deployment {
         // --name option explicitly, the EE6 app name will be different
         // from the application's registration name and we need a way
         // to retrieve the EE6 app name for server restart code path
+        File sourceFile = new File(source.getURI().getSchemeSpecificPart());
         context.getAppProps().put("default-EE6-app-name", 
-            archiveHandler.getDefaultApplicationName(source, context));
+            DeploymentUtils.getDefaultEEName(sourceFile.getName()));   
 
-        if (source != null && !(new File(source.getURI().getSchemeSpecificPart()).isDirectory())) {
+        if (source != null && !(sourceFile.isDirectory())) {
             // create a temporary deployment context
             File expansionDir = new File(domain.getApplicationRoot(), 
                 params.name());

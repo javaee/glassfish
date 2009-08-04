@@ -96,7 +96,7 @@ public class DeploymentUtils {
             return null;
         }
         if (pathName.endsWith(".jar") || pathName.endsWith(".war")
-            || pathName.endsWith(".rar")) {
+            || pathName.endsWith(".rar") || pathName.endsWith(".ear")) {
             return pathName.substring(0, pathName.length() - 4);
         } else {
             return pathName;

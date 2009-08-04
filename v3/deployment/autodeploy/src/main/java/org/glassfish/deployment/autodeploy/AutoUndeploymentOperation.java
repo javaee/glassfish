@@ -23,10 +23,13 @@
 package org.glassfish.deployment.autodeploy;
 
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.Application;
 import org.glassfish.deployment.admin.UndeployCommand;
 import java.io.File;
 import java.util.Properties;
 import java.util.logging.Level;
+import java.util.List;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.deployment.autodeploy.AutoDeployer.AutodeploymentStatus;
 import org.glassfish.deployment.common.DeploymentProperties;
@@ -48,6 +51,9 @@ import org.jvnet.hk2.component.PerLookup;
 @Service
 @Scoped(PerLookup.class)
 public class AutoUndeploymentOperation extends AutoOperation {
+
+    @Inject
+    Applications apps;
 
     /**
      * Creates a new, injected, and initialized AutoUndeploymentOperation object.
@@ -100,13 +106,28 @@ public class AutoUndeploymentOperation extends AutoOperation {
         return this;
     }
     
-    private static Properties prepareUndeployActionProperties(String name, String target) {
+    private Properties prepareUndeployActionProperties(String archiveName, String target) {
         DeploymentProperties dProps = new DeploymentProperties();
-        dProps.setName(name);
+
+        // we need to find the application registration name
+        // which is not always the same as archive name
+        // we do this by matching up the archive name with the 
+        // default-EE6-app-name property in domain.xml
+        String appName = archiveName;
+        List<Application> applications = apps.getApplications();
+        for (Application app : applications) {
+            if (app.getDeployProperties().getProperty
+                ("default-EE6-app-name").equals(archiveName)) {
+                appName = app.getName();
+            }
+        }
+
+        dProps.setName(appName);
 //        dProps.setResourceAction(DeploymentProperties.RES_UNDEPLOYMENT);
 //        dProps.setResourceTargetList(target);
         return (Properties)dProps;
     }
+
     
     /**
      * {@inheritDoc}
