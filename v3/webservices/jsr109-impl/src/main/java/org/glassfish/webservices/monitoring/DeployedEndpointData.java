@@ -90,7 +90,7 @@ public class DeployedEndpointData {
         this.serviceName = endpoint.getServiceName().getLocalPart();
         this.portName = endpoint.getPortName().getLocalPart();
         this.implClass = endpoint.getImplementationClass().getName();
-        this.address = adapter.getServletContext().getContextPath()+adapter.getValidPath();
+        this.address = adapter.getValidPath();  // TODO adapter.getServletContext().getContextPath()+adapter.getValidPath();
         this.wsdl = address+"?wsdl";
         this.tester = "";
         this.implType = "SERVLET";
