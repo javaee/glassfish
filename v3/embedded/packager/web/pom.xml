@@ -122,7 +122,12 @@
             <type>zip</type>
         </dependency>
 
-
+	<dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-grizzly-full</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-scripting</artifactId>
@@ -206,13 +211,6 @@
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jdbc</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-web-management</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>

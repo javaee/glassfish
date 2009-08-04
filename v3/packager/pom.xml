@@ -63,8 +63,8 @@
 	<module>felix</module>
 	<module>glassfish-hk2</module>
 	<module>glassfish-grizzly</module>
-	<!--module>glassfish-api</module-->
-	<module>glassfish-nucleus</module>
+        <module>glassfish-nucleus</module>
+        <module>glassfish-grizzly-full</module>
 	<module>glassfish-corba-omgapi</module>
 	<module>glassfish-common</module>
 	<module>glassfish-registration</module>

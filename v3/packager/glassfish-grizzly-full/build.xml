@@ -19,20 +19,26 @@ fields enclosed by brackets "[]" replaced with your
 own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
-<project name="glassfish-corba-omgapi package creation" default="create.package" basedir=".">
-       <import file="${basedir}/../common-targets.xml"/>
+<project name="glassfish-grizzly package creation" default="create.package" basedir=".">
+    <import file="${basedir}/../common-targets.xml"/>
 
-<target name="create.package">
-	  <property name="package.name" value="glassfish-corba-omgapi"/> 
+    <target name="create.package">
+        <property name="package.name" value="glassfish-grizzly-full"/>
 
-        
+
+
 	<graphDef id="all-modules" tolerateBrokenPOMs="true">
 		<scope level="compile,runtime">
 			<subtract>
-			    <fullGraph/>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-grizzly-full">	
+			    <subtract>
+				<fullGraph/>
+			         <subGraph groupID="org.glassfish.packager" artifactID="glassfish-nucleus">	
+	                             <scope level="compile,runtime"/>
+			         </subGraph>
+			     </subtract>
+			         <subGraph groupID="javax.servlet" artifactID="servlet-api">	
 	                                 <scope level="compile,runtime"/>
-			     </subGraph>
+				 </subGraph>
 			 </subtract>
 		</scope>					 
        </graphDef>
@@ -41,13 +47,12 @@ own identifying information: Portions Copyright [yyyy]
        <stage-module-jars graphid="all-modules" />
        <stage-distribution-fragments graphid="all-modules" />
 
-
        <if test="${compression}">
 	       <antcall target="pack.compression" />
        </if>
 
-       <antcall target="create-zip-artifact"/>		
-
-   </target>	
+       <antcall target="create-zip-artifact"/>	
+       
+   </target>
 </project>
 

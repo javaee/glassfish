@@ -3,7 +3,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+# Copyright 2009 Sun Microsystems, Inc. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -40,17 +40,15 @@ import imp
 conf = imp.load_source("pkg_conf", "../pkg_conf.py")
 
 pkg = {
-    "name"          : "glassfish-common",
-    "version"       : conf.glassfish_version,
+    "name"          : "glassfish-grizzly-full",
+    "version"       : conf.grizzly_version,
     "attributes"    : {
-                        "pkg.summary" : "GlassFish Common Components",
-                        "pkg.description" : "GlassFish common utilities and components.  "+conf.glassfish_description_long,
+                        "pkg.summary" : "More Grizzly NIO Framework",
+                        "pkg.description" : "Grizzly is an Java NIO framework for building scalable application. It also offers embeddable components supporting HTTP, Bayeux Protocol, Servlet (Partially) and Comet. For more information, see: https://grizzly.dev.java.net/.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 
-                        "pkg:/glassfish-nucleus" : {"type" : "require" },
-			"pkg:/glassfish-corba-omgapi" : {"type" : "require" },
-			"pkg:/glassfish-grizzly-full" : {"type" : "require" },
+			"pkg:/glassfish-grizzly" : {"type" : "require" },
                       },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
