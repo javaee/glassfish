@@ -44,10 +44,7 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.*;
 
 /* @XmlType(name = "", propOrder = {
     "jmxConnector",
@@ -138,4 +135,35 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
     @PropertiesDesc(props={})
     @Element
     List<Property> getProperty();
+
+    @DuckTyped
+    String getAdminRealmName();
+
+    class Duck {
+        public static String getAdminRealmName(AdminService as) {
+            String def            = "admin-realm";  //this is the default propertyName for an AuthRealm instance to be used for admin
+            String propertyName   = "administration-auth-realm-propertyName"; //propertyName of the property
+            String adminRealmName = def; //same as def, by default;
+            List<Property> props = as.getProperty();
+            for(Property p : props) {
+                if (propertyName.equals(p.getName())) {
+                    adminRealmName = p.getValue();     //someone has configured it
+                    break;
+                }
+            }
+            //ensure that this realm exists
+            List<AuthRealm> realms = ((Config)as.getParent()).getSecurityService().getAuthRealm(); //this assumes that <config> is parent of <admin-service>
+            boolean exists = false;
+            for (AuthRealm realm : realms) {
+                if (realm.getName().equals(adminRealmName)) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                throw new RuntimeException ("The realm for administration named: " + adminRealmName + " does not exist in the configuration. Create the Realm first");
+            }
+            return adminRealmName;
+        }
+    }
 }
