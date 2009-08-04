@@ -19,23 +19,23 @@ fields enclosed by brackets "[]" replaced with your
 own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
-<project name="glassfish jdbc package creation" default="create.package" basedir=".">
+<project name="glassfish osgi http service package creation" default="create.package" basedir=".">
     <import file="${basedir}/../common-targets.xml"/>
 
    <target name="create.package">
-	   <property name="package.name" value="glassfish-jdbc"/> 
+	   <property name="package.name" value="glassfish-osgi-http"/> 
 
         
-	<graphDef id="all-modules" tolerateBrokenPOMs="true">
+	    <graphDef id="all-modules" tolerateBrokenPOMs="true">
 		<scope level="compile,runtime">
 			<subtract>
 			    <fullGraph/>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-osgi-http">	
-	                                 <scope level="compile,runtime"/>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-web">	
+	                         <scope level="compile,runtime"/>
 			     </subGraph>
-			</subtract>
+			 </subtract>
 		</scope>					 
-       </graphDef>
+           </graphDef>
 
        
        <stage-module-jars graphid="all-modules" />
@@ -46,7 +46,7 @@ own identifying information: Portions Copyright [yyyy]
 	       <antcall target="pack.compression" />
        </if>
 
-       <antcall target="create-zip-artifact"/> 
+       <antcall target="create-zip-artifact"/>	  
    </target>
 </project>
 
