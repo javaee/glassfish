@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.external.probe.provider.StatsProviderManager;
+import org.glassfish.api.Startup;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 
@@ -33,23 +34,15 @@ import java.util.WeakHashMap;
 import java.util.Collections;
 import java.util.StringTokenizer;
 import org.glassfish.api.amx.MBeanListener;
-import org.glassfish.api.event.EventListener;
-import org.glassfish.api.event.EventTypes;
-import org.glassfish.api.event.Events;
-import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.flashlight.client.ProbeClientMediator;
-import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
-import org.glassfish.flashlight.provider.ProbeRegistry;
-import org.glassfish.internal.api.Init;
-
 /**
  *
  * @author abbagani
  */
 @Service
 @Scoped(Singleton.class)
-public class MonitoringBootstrap implements EventListener, Init, PostConstruct, ModuleLifecycleListener, ConfigListener {
+public class MonitoringBootstrap implements Startup, PostConstruct, ModuleLifecycleListener, ConfigListener {
 
     @Inject
     private MonitoringRuntimeDataRegistry mrdr;
@@ -61,8 +54,6 @@ public class MonitoringBootstrap implements EventListener, Init, PostConstruct, 
     protected ProbeProviderFactory probeProviderFactory;
     @Inject
     protected ProbeClientMediator pcm;
-    @Inject
-    Events events;
     @Inject(optional=true)
     ModuleMonitoringLevels config = null;
     @Inject(optional=true)
@@ -78,26 +69,22 @@ public class MonitoringBootstrap implements EventListener, Init, PostConstruct, 
     private final String PROBE_PROVIDER_XML_FILE_NAMES = "probe-provider-xml-file-names";
     private final String DELIMITER = ",";
     private StatsProviderManagerDelegateImpl spmd;
+    private boolean ddebug = false;
 
     public void postConstruct() {
-        //setStatsProviderManagerDelegate();
-        //mprint("addon init postConstruct() ...");
-        events.register(this);
         // Register as ModuleLifecycleListener
         registry.register(this);
         // Iterate thru existing modules
         for (Module m : registry.getModules()) {
             //mprint("***  State=" + m.getState().toString() + " - Module name = " + m.getName());
             //if (m.getState() == ModuleState.READY) {
+                printd(" In startup, calling moduleStarted");
                 moduleStarted(m);
             //}
         }
 
         //Set the StatsProviderManagerDelegate
-        //spmd = new StatsProviderManagerDelegateImpl(pcm, mrdr, domain, config);
-        //StatsProviderManager.setStatsProviderManagerDelegate(spmd);
-        //mprint(" StatsProviderManagerDelegate is assigned ********************");
-
+        setStatsProviderManagerDelegate();
     }
 
     public void setStatsProviderManagerDelegate() {
@@ -110,33 +97,21 @@ public class MonitoringBootstrap implements EventListener, Init, PostConstruct, 
         MBeanListener.listenForDomainRoot(ManagementFactory.getPlatformMBeanServer(), spmd);
     }
 
-    public void event(Event event) {
-        if (event.is(EventTypes.SERVER_READY)) {
-            mprint("***************************************");
-            mprint("**** SERVER_READY event received *****");
-            mprint("***************************************");
-            setStatsProviderManagerDelegate();
-
-            //Testing to see if the probes are already registered
-            /*
-            mprint("***************************************");
-            java.util.Collection<org.glassfish.flashlight.provider.FlashlightProbe> probes =
-                        probeRegistry.getAllProbes();
-            for (org.glassfish.flashlight.provider.FlashlightProbe probe : probes) {
-                mprint(probe.toString());
-            }
-            mprint("***************************************");
-            */
-        }
+    public Lifecycle getLifecycle() {
+        // This service stays running for the life of the app server, hence SERVER.
+        return Lifecycle.SERVER;
     }
 
     public void moduleResolved(Module module) {
+        printd(" In module resolved, but not registering, module = " + module.getName());
+        //TODO - Should we call moduleStarted()?
     }
 
     public synchronized void moduleStarted(Module module) {
         if (module == null) return;
         String str = module.getName();
         //mprint("moduleStarted: " + str);
+        printd(" moduleStarted : " + str);
         if (!map.containsKey(str)) {
             map.put(str, module);
             addProvider(module);
@@ -170,7 +145,7 @@ public class MonitoringBootstrap implements EventListener, Init, PostConstruct, 
             if (attrs != null) {
                 cnames = attrs.getValue(PROBE_PROVIDER_CLASS_NAMES);
                 if (cnames != null)
-                    mprint("**************cnames = " + cnames);
+                    printd("**************probe providers = " + cnames);
                 if (cnames != null) {
                     StringTokenizer st = new StringTokenizer(cnames, DELIMITER);
                     while (st.hasMoreTokens()) {
@@ -191,6 +166,11 @@ public class MonitoringBootstrap implements EventListener, Init, PostConstruct, 
                 }
             }
         }
+    }
+
+    private void printd(String pstring) {
+        if (ddebug == true)
+            System.out.println(" APK : " + pstring);
     }
 
     private void removeProvider(Module module) {

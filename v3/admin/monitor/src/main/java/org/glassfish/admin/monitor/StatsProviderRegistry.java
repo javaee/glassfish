@@ -13,6 +13,7 @@ import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.glassfish.gmbal.ManagedObjectManagerFactory;
+import org.glassfish.external.probe.provider.StatsProvider;
 
 public class StatsProviderRegistry {
     List<StatsProviderRegistryElement> regElements = new ArrayList();
@@ -112,6 +113,10 @@ public class StatsProviderRegistry {
             return; // should throw an exception
 
         for (StatsProviderRegistryElement spre : spreList) {
+            Object sp = spre.getStatsProvider();
+            if (sp instanceof StatsProvider) {
+                ((StatsProvider)sp).enable();
+            }
             //Enable the child TreeNodes
             String parentNodePath = spre.getParentTreeNodePath();
             List<String> childNodeNames = spre.getChildTreeNodeNames();
@@ -149,6 +154,10 @@ public class StatsProviderRegistry {
             return;
 
         for (StatsProviderRegistryElement spre : spreList) {
+            Object sp = spre.getStatsProvider();
+            if (sp instanceof StatsProvider) {
+                ((StatsProvider)sp).disable();
+            }
             //Disable the parent TreeNode
             String parentNodePath = spre.getParentTreeNodePath();
             List<String> childNodeNames = spre.getChildTreeNodeNames();
