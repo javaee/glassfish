@@ -101,7 +101,7 @@
       -->
    
 
-    <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}" embeddedActions="#{true}" rowHeader="$boolean{true}" id="col4">
+    <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}" embeddedActions="#{false}" rowHeader="$boolean{true}" id="col4">
         #<!if $session{notSupportCluster}>
             <sun:hyperlink id="link" rendered="#{td.value.hasLaunch}" text="$resource{i18n.deployTable.launch}" 
                 onClick="window.open('#{td.value.launchLink}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes');document.Form.target='_self';" />
@@ -114,8 +114,12 @@
         </!if>
         -->
 
-        <sun:hyperlink id="link2" text="$resource{i18n.deployTable.redeploy}" 
+        "&#160;|&#160;
+
+        <sun:hyperlink id="redeployLink" text="$resource{i18n.deployTable.redeploy}" 
             url="#{request.contextPath}/common/applications/redeploy.jsf?appName=#{td.value.name}&appType=$pageSession{appType}&nextPage=#{listPageLink}" />
+
+        "&#160;|&#160;
 
         <sun:hyperlink id="restartLink" text="$resource{i18n.deployTable.restart}">
             <!command
