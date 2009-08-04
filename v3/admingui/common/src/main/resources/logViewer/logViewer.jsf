@@ -95,7 +95,7 @@
 </sun:head>
 <sun:body onLoad="javascript: checkHiddenElements(); setFocusTableResults('#{hasResults}', '#{alertSummary}');" id="body3">
 <sun:form id="propertyForm">
-#include "alertMsg.inc"    
+#include "/common/shared/alertMsg.inc"    
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18n.logViewer.PageTitle}" helpText="$resource{i18n.logViewer.PageHelp}">
             <!-- Buttons  -->                    
