@@ -79,7 +79,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     
     private static WebSecurityDeployerProbeProvider probeProvider = new WebSecurityDeployerProbeProvider();
     
-    public static class AppDeployEventListener implements EventListener {
+    public  class AppDeployEventListener implements EventListener {
 
         public void event(Event event) {
             
@@ -170,6 +170,10 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
                         //trying to avoid an expensive call PCF.getPCF.inService()
                         for (WebBundleDescriptor wbd : webDesc) {
                             String name = SecurityUtil.getContextID(wbd);
+                            ArrayList<WebSecurityManager> managers = wsmf.getManagers(name, false);
+                            if( managers == null || managers.isEmpty()) {
+                                 wsmf.createManager(wbd,false,serverContext);
+                            }
                             SecurityUtil.generatePolicyFile(name);
                         }
                         for (EjbBundleDescriptor ejbd : ejbDesc) {
