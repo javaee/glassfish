@@ -157,6 +157,9 @@
             <ValidOption name="terse"/>
             <ValidOption name="echo"/>
 	</Command>
+        <Command name="verify-domain-xml" classname="com.sun.enterprise.admin.cli.optional.VerifyDomainXmlCommand" numberofoperands="0" usage-text="verify-domain-xml [--help] [--domaindir install_dir/domains]">
+            <ValidOption name="domaindir"/>
+		</Command>
         <Command name="list-commands" classname="com.sun.enterprise.admin.cli.ListCommandsCommand"
               numberofoperands="0"
               usage-text="list-commands [--terse=false] [--echo=false] [--localonly=false] [--remoteonly=false] [--host host (default: localhost)] [--port admin-port (default: 4848)] [--user admin-user (default: anonymous)] [--passwordfile filename]">
