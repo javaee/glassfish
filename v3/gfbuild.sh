@@ -24,15 +24,15 @@ if [ "$_status" -ne 0 ]; then
 fi
 
 #mvn is available in the path.  Now verify that it's the right version.
-mvn_ver=`mvn -version 2>&1 | awk '/Maven version:/ {print $3}'`
-java_ver=`mvn -version 2>&1 | awk '/Java version:/ {print substr($3,3,1)}'`
+mvn_ver=`mvn -version 2>&1 | awk '/^Maven version:/ {print $3}'`
+java_ver=`mvn -version 2>&1 | awk '/^Java version:/ {print substr($3,3,1)}'`
 #verify JDK 1.6
 if [ "$java_ver" -lt 6 ]; then
     echo "Please use JDK 1.6"
     exit 1
 fi
 #verify that maven version is 2.0.9
-if [ "$mvn_ver" -ne "2.0.9" ]; then
+if [ "$mvn_ver" != "2.0.9" ]; then
     echo "Please use Maven version 2.0.9."
     exit 1
 fi
