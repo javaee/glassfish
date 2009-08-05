@@ -136,17 +136,32 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
     @Element
     List<Property> getProperty();
 
+    /** Gets the name of the admin realm. This is the auth realm that all admin accesses should use. If there exists
+     *  a property named <code>administration-auth-realm-name</code> then its value denotes the admin realm. If such
+     *  a property does not exist, the name of the admin realm is fixed to be <code> admin-realm</code>. In any case,
+     *  such named &lt;auth-realm> must exist in the configuration under &lt;security-service>.
+     *
+     * @return name of the realm to used for admin access
+     */
     @DuckTyped
     String getAdminRealmName();
 
+    /** Sets the name of the realm for admin access to given name. The name may not be null.
+     *
+     * @param to
+     */
+    @DuckTyped
+    void setAdminRealmName(String to);
+
     class Duck {
+        static String DEF = "admin-realm";  //this is the default name for an AuthRealm instance to be used for admin
+        static String PROP_NAME = "administration-auth-realm-name"; //name of the property
+
         public static String getAdminRealmName(AdminService as) {
-            String def            = "admin-realm";  //this is the default propertyName for an AuthRealm instance to be used for admin
-            String propertyName   = "administration-auth-realm-name"; //propertyName of the property
-            String adminRealmName = def; //same as def, by default;
+            String adminRealmName = DEF; //same as DEF, by default;
             List<Property> props = as.getProperty();
             for(Property p : props) {
-                if (propertyName.equals(p.getName())) {
+                if (PROP_NAME.equals(p.getName())) {
                     adminRealmName = p.getValue();     //someone has configured it
                     break;
                 }
@@ -161,9 +176,23 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
                 }
             }
             if (!exists) {
-                throw new RuntimeException ("The realm for administration named: " + adminRealmName + " does not exist in the configuration. Create the Realm first");
+                throw new RuntimeException ("The realm for administration named: " + adminRealmName + " does not exist in the configuration. Create the Realm first.");
             }
             return adminRealmName;
+        }
+
+        public static void setAdminRealmName(AdminService as, String to) throws PropertyVetoException, TransactionFailure {
+            List<Property> props = as.getProperty();
+            for(Property p : props) {
+                if (PROP_NAME.equals(p.getName())) {
+                    p.setValue(to);
+                    return;
+                }
+            }
+            Property np = as.createChild(Property.class);
+            np.setName(PROP_NAME);
+            np.setValue(to);
+            props.add(np);
         }
     }
 }
