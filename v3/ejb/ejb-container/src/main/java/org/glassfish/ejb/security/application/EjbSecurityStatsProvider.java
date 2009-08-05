@@ -22,60 +22,57 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
 @ManagedObject
 @Description( "Ejb Security Deployment statistics" )
 public class EjbSecurityStatsProvider {
-    
-    TimeStatisticImpl deploymentTime = null;
-    CountStatisticImpl ejbSMCount = null;
-    CountStatisticImpl ejbPCCount = null;
-    
 
-    
+    TimeStatisticImpl deploymentTime = new TimeStatisticImpl(0, 0, 0, 0, "deploymentTime", "milliseconds", "Deployment Time", 0, 0);
+    CountStatisticImpl ejbSMCount = new CountStatisticImpl("SecurityManagerCount", "count", "Count of EJB Security managers");
+    CountStatisticImpl ejbPCCount = new CountStatisticImpl("PolicyConfigurationCount", "count", "Count of Policy Configuration");
+
+
+
     @ManagedAttribute(id="DepolymentTime")
     public TimeStatistic getDeploymentTime() {
-        deploymentTime = new TimeStatisticImpl(0, 0, 0, 0, "deploymentTime", "milliseconds", "Deployment Time", 0, 0);
         return deploymentTime.getStatistic();
     }
-    
+
     @ManagedAttribute(id="SecurityManagerCount")
     public CountStatistic getSecurityManagerCount() {
-        ejbSMCount = new CountStatisticImpl("SecurityManagerCount", "count", "Count of EJB Security managers");
         return ejbSMCount.getStatistic();
     }
-    
+
     @ManagedAttribute(id="PolicyConfigurationCount")
     public CountStatistic getPolicyConfigurationCount() {
-        ejbPCCount = new CountStatisticImpl("PolicyConfigurationCount", "count", "Count of Policy Configuration");
         return ejbPCCount.getStatistic();
     }
-    
-        
-  
-    
+
+
+
+
     @ProbeListener("glassfish:ejb-container:ejb:ejbSecDeploymentStartedEvent")
     public void ejbSecDeploymentStartedEvent(@ProbeParam("appName")String appName){
        deploymentTime.setStartTime(System.currentTimeMillis());
        ejbSMCount.increment();
     }
-    
+
     @ProbeListener("glassfish:ejb-container:ejb:ejbSecDeploymentEndedEvent")
     public void ejbSecDeploymentEndedEvent(@ProbeParam("appName")String appName){
       ejbSMCount.decrement();
     }
-    
 
-    
+
+
     @ProbeListener("glassfish:ejb-container:ejb:ejbPCCreationStartEvent")
     public void ejbPCCreationStartEvent(@ProbeParam("contextId")String contextId){
         ejbPCCount.increment();
-       
+
     }
-    
+
     @ProbeListener("glassfish:ejb-container:ejb:ejbPCDestructionStartEvent")
     public void ejbPCDestructionStartEvent(@ProbeParam("contextId")String contextId){
        ejbPCCount.decrement();
     }
-    
-        
-    
+
+
+
 
 
 }
