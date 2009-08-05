@@ -87,7 +87,7 @@ public class FacadeLaunchable implements Launchable {
     private final URI[] classPathURIs;
     private final ReadableArchive clientRA;
     private ReadableArchive facadeClientRA;
-    private AppClientArchivist facadeArchivist = null;
+    private static AppClientArchivist facadeArchivist = null;
     private ApplicationClientDescriptor acDesc = null;
     private ClassLoader classLoader = null;
     private final Habitat habitat;
@@ -143,6 +143,10 @@ public class FacadeLaunchable implements Launchable {
     }
 
     protected AppClientArchivist getFacadeArchivist() {
+        return getFacadeArchivist(habitat);
+    }
+
+    protected synchronized static AppClientArchivist getFacadeArchivist(final Habitat habitat) {
         if (facadeArchivist == null) {
             facadeArchivist = habitat.getComponent(ACCAppClientArchivist.class);
         }
@@ -295,7 +299,7 @@ public class FacadeLaunchable implements Launchable {
             URI clientURI = clientFacadeURI.resolve(facadeMF.getMainAttributes().getValue(GLASSFISH_APPCLIENT));
             ReadableArchive clientRA = af.openArchive(clientURI);
             
-            AppClientArchivist facadeClientArchivist = new AppClientArchivist();
+            AppClientArchivist facadeClientArchivist = getFacadeArchivist(habitat);
             final ApplicationClientDescriptor facadeClientDescriptor = facadeClientArchivist.open(clientFacadeRA);
             final String moduleID = Launchable.LaunchableUtil.moduleID(
                     groupFacadeURI, clientURI, facadeClientDescriptor);
