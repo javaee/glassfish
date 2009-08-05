@@ -40,6 +40,7 @@ import org.glassfish.external.amx.AMXGlassfish;
 import org.glassfish.admin.amx.core.Util;
 
 import org.glassfish.admin.amx.logging.Logging;
+import org.glassfish.admin.amx.logging.LogQueryResult;
 import static org.glassfish.admin.amx.logging.Logging.*;
 import com.sun.common.util.logging.LoggingConfigImpl;
 
@@ -402,7 +403,7 @@ public final class LoggingImpl extends AMXImplBase
 
     // code in LogBean.java code in v2
 
-        public List<Serializable[]>
+        public  List<Serializable[]>
     queryServerLog( 
     	String  name,
     	long     startIndex,
@@ -438,8 +439,10 @@ public final class LoggingImpl extends AMXImplBase
             throw new IllegalArgumentException( "use MOST_RECENT_NAME, not null" );
         }
         
-    	final boolean  sortAscending	= true;
-    	final List<String>     moduleList	= ListUtil.newListFromCollection( modules );
+    	boolean  sortAscending	= true;
+    	final List<String>     moduleList	= null;
+        if (modules != null )
+            ListUtil.newListFromCollection( modules );
     	final Properties  props	= attributesToProps( nameValuePairs );
     	
     	String  actualName;
@@ -451,7 +454,10 @@ public final class LoggingImpl extends AMXImplBase
     	{
     	    actualName  = name;
     	}
-        final AttributeList result	= getLogRecordsUsingQuery(actualName,
+        if (!searchForward)
+                sortAscending = false;
+
+        final AttributeList result=  logFilter.getLogRecordsUsingQuery(actualName,
                                               Long.valueOf(startIndex),
                                               searchForward, sortAscending,
                                               maximumNumberOfResults,
@@ -459,23 +465,10 @@ public final class LoggingImpl extends AMXImplBase
                                                                : new Date(fromTime),
                                               toTime == null ? null
                                                              : new Date(toTime),
-                                              logLevel, true, moduleList, props) ;                                             
+                                              logLevel, true, moduleList, props);
+
             
         return convertQueryResult( result );
-    }
-
-    public AttributeList getLogRecordsUsingQuery(
-        String logFilename, Long fromRecord, Boolean next, Boolean forward,
-        Integer requestedCount, Date fromDate, Date toDate,
-        String logLevel, Boolean onlyLevel, List listOfModules,
-        Properties nameValueMap)
-    {
-
-        return logFilter.getLogRecordsUsingQuery(logFilename, fromRecord, next,
-            forward, requestedCount, fromDate, toDate, logLevel, onlyLevel,
-            listOfModules, nameValueMap);
-
-//            return null;
     }
 
         public Map<String,Number>[]

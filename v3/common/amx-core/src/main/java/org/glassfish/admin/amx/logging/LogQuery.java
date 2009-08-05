@@ -41,6 +41,7 @@ import javax.management.Attribute;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import java.io.Serializable;
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.*;
 import org.glassfish.external.arc.Stability;
@@ -104,9 +105,15 @@ public interface LogQuery
 		                        a field within that log record.
 		@see LogRecordFields
 		@see LogModuleNames
-      */
+
+     Over the wire transmission of 'UnprocessedConfigChange' would require the client to have its class;
+    as delivered the Object[] contains only standard JDK types.
+    See the Javadoc for {@link LogQueryResult} for the order of values in the Object[].
+    Clients with access to the class can use {@link SystemStatus.Helper#toLogQueryResult}
+     */
+      
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-        public LogQueryResult
+        public List<Serializable[]>
     queryServerLog(
     	@Param(name="logFilename") String  logFilename,
     	@Param(name="startIndex") long     startIndex,
@@ -151,6 +158,22 @@ public interface LogQuery
      */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public String getDiagnosticURI(  @Param(name="messageID") String messageID );
+
+       /** helper class, in particular to convert results from {@link #queryServerLog} */
+    public final class Helper
+    {
+        private Helper()
+        {
+        }
+
+        public  static LogQueryResult toLogQueryResult(final  List<Serializable[]> items)
+        {
+            final LogQueryResult l =  new LogQueryResultImpl(items);
+
+            return l;
+        }
+
+    }
 	
 }
 

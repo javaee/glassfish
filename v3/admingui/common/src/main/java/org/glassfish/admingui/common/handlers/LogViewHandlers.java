@@ -68,6 +68,8 @@ import javax.management.Attribute;
 
 import java.util.Locale;
 import java.util.Map;
+import java.io.Serializable;
+
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 
@@ -291,10 +293,10 @@ public class LogViewHandlers {
 
 
             // Search for the log entries
-            LogQueryResult results = null;
+            List<Serializable[]> results = null;
+            Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
             try {
-                Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
-                results = (LogQueryResult) logging.queryServerLog(
+                results =  logging.queryServerLog(
                         archivedLogFile,
                         fromRecord,
                         direction,
@@ -308,11 +310,13 @@ public class LogViewHandlers {
                 GuiUtil.handleError(handlerCtx, "Error while querying Log File.");
             }
             String message;
+
             LogQueryEntry[] query = null;
             if (results != null) {
-                query = results.getEntries();
+                LogQueryResult r = LogQuery.Helper.toLogQueryResult(results);
+                query = r.getEntries();
                 // Add the results to the Model
-                for (int i = 0; i < query.length; i++) {
+                for (int i = 1; i < query.length; i++) {
                     HashMap oneRow = new HashMap();
                     LogQueryEntry row = (LogQueryEntry) query[i];
                     oneRow.put("recNumber", row.getRecordNumber());
@@ -363,6 +367,7 @@ public class LogViewHandlers {
         }
         handlerCtx.setOutputValue("result", result);
         handlerCtx.setOutputValue("HasResults", hasResults);
+
     }  
     
      

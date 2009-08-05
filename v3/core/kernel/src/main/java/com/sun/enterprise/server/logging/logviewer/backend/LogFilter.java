@@ -117,7 +117,7 @@ public class LogFilter {
         long reqCount = (requestedCount == null) ?
             logFile.getIndexSize() : requestedCount.intValue();
         long startingRecord;
-        if (fromRecord == null) {
+        if (fromRecord == -1) {
             // In this case next/previous (before/after) don't mean much since
             // we don't have a reference record number.  So set before/after
             // according to the direction.
@@ -406,15 +406,15 @@ public class LogFilter {
             Date fromDate, Date toDate, String queryLevel, boolean onlyLevel,
             List listOfModules, Properties nameValueMap) {
 
-        if ((!dateTimeCheck(entry.getLoggedDateTime(), fromDate, toDate)) 
-           || (!levelCheck(entry.getLoggedLevel(), queryLevel, onlyLevel)) 
-           || (!moduleCheck(entry.getLoggedLoggerName(), listOfModules)) 
-           || (!nameValueCheck(entry.getLoggedNameValuePairs(), nameValueMap)))
+        if ((dateTimeCheck(entry.getLoggedDateTime(), fromDate, toDate))
+           && (levelCheck(entry.getLoggedLevel(), queryLevel, onlyLevel))
+           && (moduleCheck(entry.getLoggedLoggerName(), listOfModules))
+           && (nameValueCheck(entry.getLoggedNameValuePairs(), nameValueMap)))
         {
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
 
@@ -484,7 +484,7 @@ public class LogFilter {
 
     protected static boolean nameValueCheck(String loggedNameValuePairs,
             Properties queriedNameValueMap) {
-        if (queriedNameValueMap == null) {
+        if ( (queriedNameValueMap == null) || ( queriedNameValueMap.size() == 0)) {
             return true;
         }
         if (loggedNameValuePairs == null) {
