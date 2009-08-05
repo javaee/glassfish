@@ -37,7 +37,7 @@
 
 <sun:treeNode
 id="transactionService"
-text="$resource{i18n.tree.transactionService}"
+text="$resource{i18n_jts.tree.transactionService}"
 url="/jts/transactionService.jsf?configName=server-config"
 imageURL="/resource/jts/images/transactionService.gif"
 />
