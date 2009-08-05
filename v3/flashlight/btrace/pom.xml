@@ -119,13 +119,13 @@
         <dependency>
             <groupId>com.sun.tools.btrace</groupId>
             <artifactId>btrace-agent</artifactId>
-	    <version>1.0.2</version>
+	    <version>1.0.3</version>
 	    <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.sun.tools.btrace</groupId>
             <artifactId>btrace-boot</artifactId>
-	    <version>1.0.2</version>
+	    <version>1.0.3</version>
 	    <optional>true</optional>
         </dependency>
     </dependencies>

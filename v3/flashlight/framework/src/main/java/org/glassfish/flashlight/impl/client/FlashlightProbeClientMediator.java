@@ -54,6 +54,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import com.sun.logging.LogDomains;
+import java.io.PrintWriter;
 
 /*
 import com.sun.tools.attach.spi.AttachProvider;
@@ -68,6 +72,12 @@ import com.sun.tools.attach.VirtualMachine;
 @Service
 public class FlashlightProbeClientMediator
         implements ProbeClientMediator, PostConstruct {
+
+    private static final Logger logger =
+        LogDomains.getLogger(FlashlightProbeClientMediator.class, LogDomains.MONITORING_LOGGER);
+
+    private static final PrintWriter fpw = 
+        new FlashLightBTracePrintWriter(new NullStream(), logger);
 
     private static ProbeClientMediator _me = new FlashlightProbeClientMediator();
 
@@ -228,10 +238,9 @@ public class FlashlightProbeClientMediator
         try {
             ClassLoader scl = this.getClass().getClassLoader().getSystemClassLoader();
             Class agentMainClass = scl.loadClass("com.sun.btrace.agent.Main");
-            Class[] params = new Class[1];
-            params[0] = (new byte[0]).getClass();
+            Class[] params = new Class[] {(new byte[0]).getClass(), PrintWriter.class};
             Method mthd = agentMainClass.getMethod("handleFlashLightClient", params);
-            mthd.invoke(null, bArr);
+            mthd.invoke(null, new Object[] {bArr, fpw});
         } catch (java.lang.ClassNotFoundException cnfe) {
             //todo: handle exception
         } catch (java.lang.NoSuchMethodException nme) {

@@ -213,6 +213,9 @@ public class LogDomains
     /**webservices logger */
     public static final String WEBSERVICES_LOGGER=DOMAIN_ROOT + "enterprise.webservices";
 
+    /**monitoring logger */
+    public static final String MONITORING_LOGGER=DOMAIN_ROOT + "enterprise.system.tools.monitor";
+
 
     // Lock to ensure the Logger creation is synchronized (JDK 6U10 and before can deadlock)
     static Lock lock = new ReentrantLock();
