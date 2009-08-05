@@ -124,9 +124,17 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         if (relativeURIString == null) {
             respondNotFound(gResp);
         } else if (dynamicContent.containsKey(relativeURIString)) {
-            processDynamicContent(tokens, relativeURIString, gReq, gResp);
-        } else if ( ! serviceContent(gReq, gResp) ) {
-            respondNotFound(gResp);
+            try {
+                processDynamicContent(tokens, relativeURIString, gReq, gResp);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        } else try {
+            if (!serviceContent(gReq, gResp)) {
+                respondNotFound(gResp);
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
@@ -150,7 +158,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
 
     private void processDynamicContent(final Properties tokens,
             final String relativeURIString,
-            final GrizzlyRequest gReq, final GrizzlyResponse gResp) {
+            final GrizzlyRequest gReq, final GrizzlyResponse gResp) throws IOException {
         final DynamicContent dc = dynamicContent.get(relativeURIString);
         if (dc == null) {
             respondNotFound(gResp);
