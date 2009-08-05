@@ -22,67 +22,61 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
 @ManagedObject
 @Description( "Web application Security Deployment statistics" )
 public class WebSecurityDeployerStatsProvider {
-    
-    TimeStatisticImpl deploymentTime = null;
-    
-    TimeStatisticImpl generationTime = null;
-        
-    TimeStatisticImpl undeploymentTime = null;
-    
-    TimeStatisticImpl removalTime = null;
-    
-    CountStatisticImpl secMgrCount = null;
-    
-    CountStatisticImpl policyConfCount = null;
-    
+
+    TimeStatisticImpl deploymentTime = new TimeStatisticImpl(0, 0, 0, 0, "deploymentTime", "milliseconds", "Deployment Time", 0, 0);
+
+    TimeStatisticImpl generationTime = new TimeStatisticImpl(0, 0, 0, 0, "generationTime", "milliseconds", "Generation Time", 0, 0);
+
+    TimeStatisticImpl undeploymentTime = new TimeStatisticImpl(0, 0, 0, 0, "undeploymentTime", "milliseconds", "Undeployment Time", 0, 0);
+
+    TimeStatisticImpl removalTime = new TimeStatisticImpl(0, 0, 0, 0, "removalTime", "milliseconds", "Removal Time", 0, 0);
+
+    CountStatisticImpl secMgrCount = new CountStatisticImpl("WebSecurityManagerCount", "count", "No of Web security managers");
+
+    CountStatisticImpl policyConfCount= new CountStatisticImpl("WebPolicyConfigurationCount", "count", "No of Policy Configuration Objects");
+
     @ManagedAttribute(id="DepolymentTime")
     public TimeStatistic getDeploymentTime() {
-        deploymentTime = new TimeStatisticImpl(0, 0, 0, 0, "deploymentTime", "milliseconds", "Deployment Time", 0, 0);
         return deploymentTime.getStatistic();
     }
-        
+
     @ManagedAttribute(id="GenerationTime")
     public TimeStatistic getGenerationTime() {
-        generationTime = new TimeStatisticImpl(0, 0, 0, 0, "generationTime", "milliseconds", "Generation Time", 0, 0);
         return generationTime.getStatistic();
     }
-    
+
     @ManagedAttribute(id="UndepolymentTime")
     public TimeStatistic getUndeploymentTime() {
-        undeploymentTime = new TimeStatisticImpl(0, 0, 0, 0, "undeploymentTime", "milliseconds", "Undeployment Time", 0, 0);
         return undeploymentTime.getStatistic();
     }
-    
-    
+
+
     @ManagedAttribute(id="RemovalTime")
     public TimeStatistic getRemovalTime() {
-        removalTime = new TimeStatisticImpl(0, 0, 0, 0, "removalTime", "milliseconds", "Removal Time", 0, 0);
         return removalTime.getStatistic();
     }
-    
+
     @ManagedAttribute(id="WebSecurityManagerCount")
     public CountStatistic getWebSMCount() {
-        secMgrCount = new CountStatisticImpl("WebSecurityManagerCount", "count", "No of Web security managers");
         return secMgrCount.getStatistic();
-       
+
     }
-    
+
     @ManagedAttribute(id="WebPolicyConfigurationCount")
     public CountStatistic getPCCount() {
-        policyConfCount= new CountStatisticImpl("WebPolicyConfigurationCount", "count", "No of Policy Configuration Objects");
         return policyConfCount.getStatistic();
-    }    
-    
+    }
+
     @ProbeListener("glassfish:core:web:webDeploymentStartedEvent")
     public void webDeploymentStartedEvent(@ProbeParam("appName")String appName){
        deploymentTime.setStartTime(System.currentTimeMillis());
     }
-    
+
     @ProbeListener("glassfish:core:web:webDeploymentEndedEvent")
     public void webDeploymentEndedEvent(@ProbeParam("appName")String appName){
-       
+
     }
-    
+
     @ProbeListener("glassfish:core:web:securityManagerCreationEvent")
     public void securityManagerCreationEvent(
             @ProbeParam("appName") String appName) {
@@ -106,9 +100,9 @@ public class WebSecurityDeployerStatsProvider {
             @ProbeParam("contextId") String contextId) {
         policyConfCount.decrement();
     }
-    
-    
-    
+
+
+
 
 
 }

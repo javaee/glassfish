@@ -19,7 +19,7 @@ public class RealmStatsProvider {
     
     
     public RealmStatsProvider() {
-        realmCount = new CountStatisticImpl("realmCount", "realm","No of Realms");
+        realmCount = new CountStatisticImpl("RealmCount", "realm","No of Realms");
     }
 
     @ManagedAttribute
