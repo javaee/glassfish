@@ -39,6 +39,8 @@
 
 package org.glassfish.appclient.server.core.jws.servedcontent;
 
+import java.io.IOException;
+
 /**
  *
  * @author tjquinn
@@ -53,7 +55,7 @@ public interface Content {
 
     public State state();
 
-    public boolean isAvailable();
+    public boolean isAvailable() throws IOException;
 
     public void suspend();
 
@@ -71,7 +73,7 @@ public interface Content {
             return state;
         }
 
-        public boolean isAvailable() {
+        public boolean isAvailable() throws IOException {
             return state == State.AVAILABLE;
         }
 

@@ -66,7 +66,26 @@ public class AutoSignedContent extends Content.Adapter implements StaticContent 
         this.jarSigner = jarSigner;
     }
 
+    /**
+     * Returns a File object for where the signed file will be once it is
+     * created.  Note that any use of the File returned by this method MUST
+     * be preceded by an invocation of isAvailable.
+     *
+     * @return File for where the signed copy of the file will reside
+     * @throws IOException
+     */
     public File file() throws IOException {
+        return signedFile;
+    }
+
+    /**
+     * Reports whether the signed content is available.  As a side-effect, this
+     * method will create the signed file if it does not exist or is obsolete.
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public boolean isAvailable() throws IOException {
         if ( ! isSignedFileReady()) {
             try {
                 createSignedFile();
@@ -74,8 +93,9 @@ public class AutoSignedContent extends Content.Adapter implements StaticContent 
                 throw new IOException(e);
             }
         }
-        return signedFile;
+        return super.isAvailable();
     }
+
 
     private boolean isSignedFileReady() {
         return signedFile.exists() &&

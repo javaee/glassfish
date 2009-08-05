@@ -121,8 +121,12 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
 
     @Override
     public void service(GrizzlyRequest gReq, GrizzlyResponse gResp) {
-        if ( ! serviceContent(gReq, gResp) ) {
-            respondNotFound(gResp);
+        try {
+            if (!serviceContent(gReq, gResp)) {
+                respondNotFound(gResp);
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
@@ -187,7 +191,7 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
         return uriString.substring(candidateContextRoot.length() + 1);
     }
 
-    protected boolean serviceContent(GrizzlyRequest gReq, GrizzlyResponse gResp) {
+    protected boolean serviceContent(GrizzlyRequest gReq, GrizzlyResponse gResp) throws IOException {
 
         String relativeURIString = relativizeURIString(gReq.getRequestURI());
 
@@ -293,7 +297,7 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
         return result;
     }
 
-    protected int contentStateToResponseStatus(Content content) {
+    protected int contentStateToResponseStatus(Content content) throws IOException {
         int status;
         if (content == null) {
             status = HttpServletResponse.SC_NOT_FOUND;
