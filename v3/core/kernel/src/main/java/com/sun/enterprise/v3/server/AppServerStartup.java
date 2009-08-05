@@ -52,6 +52,7 @@ import com.sun.enterprise.util.Result;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.logging.LogDomains;
+import com.sun.appserv.server.util.Version;
 import org.glassfish.api.Async;
 import org.glassfish.api.FutureProvider;
 import org.glassfish.api.Startup;
@@ -109,8 +110,8 @@ public class AppServerStartup implements ModuleStartup {
     Events events;
 
     @Inject
-    Branding branding;
-
+    Version version;
+    
     @Inject
     ClassLoaderHierarchy cch;
 
@@ -253,7 +254,7 @@ public class AppServerStartup implements ModuleStartup {
         // finally let's calculate our starting times
 
 
-        logger.info(branding.getVersion()
+        logger.info(version.getVersion()
                 + " startup time : " + platform + "(" + (platformInitTime - context.getCreationTime()) + "ms)" +
                 " startup services(" + (System.currentTimeMillis() - platformInitTime)  + "ms)" +
                 " total(" + (System.currentTimeMillis() - context.getCreationTime()) + "ms)");
