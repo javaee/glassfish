@@ -45,14 +45,9 @@ import java.util.logging.Logger;
 
 public final class RunScriptLocalCommand extends RemoteCommand {
 
-    public static String HOST = "host";
-    public static String PORT = "port";
-    public static String USER = "user";
-    public static String PASSWORDFILE = "passwordfile";
-    public static String SECURE = "secure";
-    public static String TERSE = "terse";
-    public static String HTTP_PORT = "httpport";
-    public static String UPLOAD = "upload";
+    public static final String TERSE = "terse";
+    public static final String HTTP_PORT = "httpport";
+    public static final String UPLOAD = "upload";
 
     //private String host = "localhost";
     private boolean upload = true;
@@ -80,7 +75,6 @@ public final class RunScriptLocalCommand extends RemoteCommand {
         if (!isValidCommand()) {
             throw new CommandException("Command " + this.name + " is not supported");
         }
-        //System.out.println("This is a valid command");
         try {
             processProgramOptions();
         } catch (Exception e) {
@@ -88,7 +82,6 @@ public final class RunScriptLocalCommand extends RemoteCommand {
         }
 
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        //addOption(opts, HOST, '\0', "STRING", false, "localhost");
         addOption(opts, TERSE, '\0', "BOOLEAN", false, "true");
         addOption(opts, UPLOAD, '\0', "BOOLEAN", false, "true");
         addOption(opts, HTTP_PORT, '\0', "STRING", false, "8080");
@@ -115,7 +108,6 @@ public final class RunScriptLocalCommand extends RemoteCommand {
         if (ok(shttpPort))
             httpPort = Integer.parseInt(shttpPort);
         upload = Boolean.getBoolean(getOption(UPLOAD));
-        //host = getOption(HOST);
         String scriptPath = operands.get(0);
         int i = scriptPath.lastIndexOf(File.separator);
         scriptName = scriptPath.substring(i+1, scriptPath.length());
@@ -127,14 +119,7 @@ public final class RunScriptLocalCommand extends RemoteCommand {
         boolean isContinue = true;
         CLILogger.getInstance().printDebugMessage("In the run-script command");
         try {
-            //logger.printMessage("About to execute remote portion of the command");
             super.executeCommand();
-            //logger.printMessage("Remote part is executed");
-            // Post script name for creating handler
-            //logger.printMessage(" Host = " + programOpts.getHost());
-            //logger.printMessage(" HttpPort = " + httpPort);
-            //logger.printMessage(" Upload = " + upload);
-            //logger.printMessage(" ScriptName = " + scriptName);
             String urlStr = "http://" + programOpts.getHost() + ":" +
                         httpPort + "/comet/cometServlet";
             CLILogger.getInstance().printDebugMessage("URL = " + urlStr);
