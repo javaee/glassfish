@@ -38,7 +38,7 @@
 <sun:propertySheet id="propertySheet">
 <sun:propertySheetSection>
     <!beforeCreate
-        getProxyAttribute(objectNameStr="amx:pp=/ext,type=runtime" attrName="SupportedCipherSuites" value="#{requestScope.supportedCiphers}")
+        getProxyAttribute(objectNameStr="amx:pp=/,type=runtime" attrName="SupportedCipherSuites" value="#{requestScope.supportedCiphers}")
         convertToDifferentCiphersGroup(ciphers="#{requestScope.supportedCiphers}"
                 CommonCiphersList="#{requestScope.availableCommon}"
                 EphemeralCiphersList="#{requestScope.availableEphemeral}"

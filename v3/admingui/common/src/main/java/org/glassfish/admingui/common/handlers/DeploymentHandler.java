@@ -46,7 +46,7 @@ import java.util.Properties;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.admin.amx.base.Runtime;
+import org.glassfish.admin.amx.base.RuntimeRoot;
 import org.glassfish.deployment.client.DFDeploymentStatus;
 import org.glassfish.deployment.client.DeploymentFacility;
 import org.glassfish.deployment.client.DFProgressObject;
@@ -334,14 +334,14 @@ public class DeploymentHandler {
     public static void getDeploymentDescriptorList(HandlerContext handlerCtx) {
         String appName = (String) handlerCtx.getInputValue("appName");
         List result = new ArrayList();
-        Runtime runtimeMgr = V3AMX.getInstance().getRuntime();
+        RuntimeRoot runtimeMgr = V3AMX.getInstance().getRuntime();
         List<Map<String, String>> ddList = runtimeMgr.getDeploymentConfigurations(appName);
         if (ddList.size() > 0) {
             for (Map<String, String> oneDD : ddList) {
                 HashMap oneRow = new HashMap();
-                oneRow.put("moduleName", oneDD.get(Runtime.MODULE_NAME_KEY));
-                oneRow.put("ddPath", oneDD.get(Runtime.DD_PATH_KEY));
-//                    oneRow.put("ddContent", oneDD.get(Runtime.DD_CONTENT_KEY) );
+                oneRow.put("moduleName", oneDD.get(RuntimeRoot.MODULE_NAME_KEY));
+                oneRow.put("ddPath", oneDD.get(RuntimeRoot.DD_PATH_KEY));
+//                    oneRow.put("ddContent", oneDD.get(RuntimeRoot.DD_CONTENT_KEY) );
                 result.add(oneRow);
             }
         }
@@ -361,12 +361,12 @@ public class DeploymentHandler {
         String appName = (String) handlerCtx.getInputValue("appName");
         String moduleName = (String) handlerCtx.getInputValue("moduleName");
         String descriptorName = (String) handlerCtx.getInputValue("descriptorName");
-        Runtime runtimeMgr = V3AMX.getInstance().getRuntime();
+        RuntimeRoot runtimeMgr = V3AMX.getInstance().getRuntime();
         List<Map<String, String>> ddList = runtimeMgr.getDeploymentConfigurations(appName);
         if (ddList.size() > 0) {
             for (Map<String, String> oneDD : ddList) {
-                if (oneDD.get(Runtime.MODULE_NAME_KEY).equals(moduleName) && oneDD.get(Runtime.DD_PATH_KEY).equals(descriptorName)) {
-                    String content = oneDD.get(Runtime.DD_CONTENT_KEY);
+                if (oneDD.get(RuntimeRoot.MODULE_NAME_KEY).equals(moduleName) && oneDD.get(RuntimeRoot.DD_PATH_KEY).equals(descriptorName)) {
+                    String content = oneDD.get(RuntimeRoot.DD_CONTENT_KEY);
 
                     handlerCtx.setOutputValue("content", content);
                     handlerCtx.setOutputValue("encoding", getEncoding(content));
