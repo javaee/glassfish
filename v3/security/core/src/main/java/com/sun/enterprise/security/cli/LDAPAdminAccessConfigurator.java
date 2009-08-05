@@ -116,10 +116,10 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
         }
         //if (asc == null) --> no admin server config, we are in biig trouble, it's almost an assertion that this is non-null
         if (realmExists(asc)) {
-            sb.append(lsm.getString("realm.exists", name)); //do nothig
+            sb.append(lsm.getString("realm.exists", name)); //do nothing
             return;
         }
-        //following things should happen transactionally ...
+        //following things should happen transactionally - TODO replace SingleConfigCode by ConfigCode ...
         createIt(asc.getSecurityService(), sb);
         List<JmxConnector> cs = asc.getAdminService().getJmxConnector();
         JmxConnector sys = null;
@@ -131,6 +131,16 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
         }
         if (sys != null)
             configureJmxConnector(sys);
+        configureAdminRealmProperty(asc.getAdminService());
+    }
+
+    private void configureAdminRealmProperty(AdminService as) throws PropertyVetoException, TransactionFailure {
+        SingleConfigCode<AdminService> scc = new SingleConfigCode<AdminService>() {
+            public Object run(AdminService as) {
+                as.setAdminRealmName(name); 
+                return true;
+            }
+        };
     }
 
     private void createIt(SecurityService ss, final StringBuilder sb) throws TransactionFailure {
@@ -138,7 +148,7 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
             public Object run(SecurityService ss) throws PropertyVetoException, TransactionFailure {
                 AuthRealm ldapr = createLDAPRealm(ss);
                 ss.getAuthRealm().add(ldapr);
-                sb.append(lsm.getString("ldap.realm.setup", name));
+                appendNL(sb,lsm.getString("ldap.realm.setup", name));
                 return true;
             }
         };
@@ -181,7 +191,7 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
 
     private void pingLDAP(StringBuilder sb) {
         if (!ping) {
-            sb.append(lsm.getString("ldap.noping", url));
+            appendNL(sb,lsm.getString("ldap.noping", url));
             return;
         }
         Properties env = new Properties();
@@ -189,9 +199,9 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
         env.put(Context.PROVIDER_URL, url);
         try {
             new InitialContext(env);
-            sb.append(lsm.getString("ldap.ok", url));
+            appendNL(sb,lsm.getString("ldap.ok", url));
         } catch(Exception e) {
-            sb.append(lsm.getString("ldap.na", url, e.getClass().getName(), e.getMessage()));
+            appendNL(sb,lsm.getString("ldap.na", url, e.getClass().getName(), e.getMessage()));
         }
     }
 
@@ -203,5 +213,9 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
             }
         }
         return false;
+    }
+
+    private static void appendNL(StringBuilder sb, String s) {
+        sb.append(s).append("%%%EOL%%%");
     }
 }
