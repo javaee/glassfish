@@ -68,7 +68,7 @@ fi
 
 if [ "$maven_repo" = "" ]; then
     mvn $mvn_env $update -Prelease-phase1 install | tee gfbuild.log
-    $_status=$?
+    _status=$?
     if [ "$_status" -ne 0 ]; then
 	echo "Build failed..."
 	exit "$_status"
