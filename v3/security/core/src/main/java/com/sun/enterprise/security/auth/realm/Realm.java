@@ -81,7 +81,8 @@ public abstract class Realm implements Comparable {
     private static final String PARAM_GROUPS = "assign-groups";
     private static final String GROUPS_SEP = ",";
     private List<String> assignGroups = null;
-
+    private static final String PARAM_GROUP_MAPPING="group-mapping";
+    protected GroupMapper groupMapper = null;
     
     /**
      * Returns the name of this realm.
@@ -114,6 +115,7 @@ public abstract class Realm implements Comparable {
      *
      * @return name of realm.
      */
+    @Override
     public String  toString() { 
 	return myName; 
     }
@@ -513,6 +515,11 @@ public abstract class Realm implements Comparable {
                 }
             }
         }
+        String groupMapping = props.getProperty(PARAM_GROUP_MAPPING);
+        if (groupMapping != null) {
+            groupMapper = new GroupMapper();
+            groupMapper.parse(groupMapping);
+        }
     }
 
     /**
@@ -552,6 +559,15 @@ public abstract class Realm implements Comparable {
             resultGroups = groupList.toArray(new String[groupList.size()]);
         }
         return resultGroups;
+    }
+    
+    protected ArrayList<String> getMappedGroupNames(String group) {
+        if (groupMapper != null) {
+            ArrayList<String> result = new ArrayList<String>();
+            groupMapper.getMappedGroups(group, result);
+            return result;
+        }
+        return null;
     }
     
     //---[ Abstract methods ]------------------------------------------------

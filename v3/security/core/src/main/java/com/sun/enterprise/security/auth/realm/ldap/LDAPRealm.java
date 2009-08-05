@@ -351,7 +351,20 @@ public final class LDAPRealm extends IASRealm
             // password before doing that and password is not available here
             return emptyVector.elements();
         } else {
-            return v.elements();
+            if (groupMapper != null) {
+                Vector ret = new Vector();
+                ret.addAll(v);
+                ArrayList<String> result = new ArrayList<String>();
+                for (Object o : v) {
+                    String grp = (String)o;
+                    ArrayList<String> tmp =this.getMappedGroupNames(grp);
+                    result.addAll(tmp);
+                }
+                ret.addAll(result);
+                return ret.elements();
+            } else {
+                return v.elements();
+            }
         }
     }
 
