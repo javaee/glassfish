@@ -137,7 +137,7 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
     private void configureAdminRealmProperty(AdminService as) throws PropertyVetoException, TransactionFailure {
         SingleConfigCode<AdminService> scc = new SingleConfigCode<AdminService>() {
             public Object run(AdminService as) {
-                as.setAdminRealmName(name); 
+                //as.setAdminRealmName(name); 
                 return true;
             }
         };
