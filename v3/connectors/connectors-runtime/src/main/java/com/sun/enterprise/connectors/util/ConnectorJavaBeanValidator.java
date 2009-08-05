@@ -42,6 +42,7 @@ import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.PostConstruct;
 
 import javax.validation.*;
+import javax.validation.metadata.BeanDescriptor;
 import javax.validation.bootstrap.GenericBootstrap;
 import java.util.Set;
 import java.util.Iterator;

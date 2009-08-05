@@ -42,7 +42,7 @@
     <parent>
         <groupId>org.glassfish</groupId>
         <artifactId>pom</artifactId>
-        <version>4</version>
+        <version>5</version>
     </parent>
     
     <groupId>org.glassfish</groupId>
@@ -120,8 +120,8 @@
         <commons.collections.version>2.1</commons.collections.version>
         <commons.digester.version>1.5</commons.digester.version>
         <commons.modeler.version>1.1</commons.modeler.version>
-        <hk2.version>0.3.81</hk2.version>
-        <hk2.plugin.version>0.3.81</hk2.plugin.version>
+        <hk2.version>0.3.82</hk2.version>
+        <hk2.plugin.version>0.3.82</hk2.plugin.version>
         <jsr223-api.version>1.0</jsr223-api.version>
         <phobos.version>0.5.10</phobos.version>
         <product.name>GlassFish</product.name>
@@ -388,52 +388,6 @@
                 <updatePolicy>never</updatePolicy>
             </snapshots>
         </repository>
-        <repository>
-            <!-- back up glassfish maven repository in case the 'glassfish-repository' goes down -->
-            <id>glassfish-repository-wsinterop</id>
-            <name>Java.net Repository for Glassfish</name>
-            <url>http://maven.dyndns.org/glassfish/</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>glassfish-repository</id>
-            <name>Java.net Repository for Glassfish</name>
-            <url>http://download.java.net/maven/glassfish</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-    </repository>
-        <repository>
-            <!-- EclipseLink repository used to pull in javax.persistence and EclipseLink jars -->
-            <id>EclipseLink Repo</id>
-            <name>EclipseLink maven repo</name>
-            <!-- <url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/technology/eclipselink/maven.repo</url> -->
-             <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <!-- Netbeans repository to pull schema2beans and dbschema -->
-            <id>Netbeans repo</id>
-            <name>Netbeans maven repo</name>
-            <url>http://deadlock.netbeans.org/maven2</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-        <!-- the following block is a dummy to cover a maven bug to maintain the repo  order, after checking for updates on snapshots, when local repo is empty -->
-        <repository>
-            <id>glassfish-repo-archive-dummy</id>
-            <name>Nexus repository collection for Glassfish</name>
-            <url>http://maven.glassfish.org/content/groups/glassfish</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-        <!-- all the other repositories are inherited -->
     </repositories>
 
     <build>
