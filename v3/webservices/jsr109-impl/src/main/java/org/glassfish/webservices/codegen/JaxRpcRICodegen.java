@@ -627,6 +627,11 @@ public class JaxRpcRICodegen extends ModuleContentLinker
             moduleClassPath = optionalDependencyClassPath +
                     File.pathSeparatorChar + moduleClassPath;
         }
+        
+        moduleClassPath = context.getSourceDir().getAbsolutePath()+
+                File.separatorChar +"WEB-INF" +File.separatorChar
+                +"classes"+ File.pathSeparatorChar +
+                moduleClassPath ;
 
         jaxrpcArgs[jaxrpcCnt++] = generateTies ? "-gen:server" : "-gen:client";
 
