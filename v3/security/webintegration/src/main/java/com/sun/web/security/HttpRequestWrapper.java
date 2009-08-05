@@ -113,14 +113,6 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
         httpRequest.setAuthType(type);
     }
 
-    public MessageBytes getContextPathMB() {
-        return httpRequest.getContextPathMB();
-    }
-
-    public void setContextPath(String path) {
-        httpRequest.setContextPath(path);
-    }
-
     public void setMethod(String method) {
         httpRequest.setMethod(method);
     }
@@ -131,10 +123,6 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
 
     public Session getSessionInternal(boolean create) {
 	return httpRequest.getSessionInternal(create);
-    }
-
-    public MessageBytes getPathInfoMB() {
-        return httpRequest.getPathInfoMB();
     }
 
     public void setPathInfo(String path) {
@@ -165,20 +153,8 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
         httpRequest.setRequestURI(uri);
     }
 
-    public void setDecodedRequestURI(String uri) {
-        httpRequest.setDecodedRequestURI(uri);
-    }
-
     public String getDecodedRequestURI() {
         return httpRequest.getDecodedRequestURI();
-    }
-
-    public MessageBytes getDecodedRequestURIMB() {
-        return httpRequest.getDecodedRequestURIMB();
-    }
-
-    public MessageBytes getServletPathMB() {
-        return httpRequest.getServletPathMB();
     }
 
     public void setServletPath(String path) {
@@ -193,10 +169,6 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
     public String getAuthorization() {
         return httpRequest.getAuthorization();
     }  
-
-    public void setAuthorization(String authorization) {
-        httpRequest.setAuthorization(authorization);
-    }
 
     public Connector getConnector() {
         return httpRequest.getConnector();
@@ -316,10 +288,6 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
 
     public void setRemoteAddr(String remote) {
         httpRequest.setRemoteAddr(remote);
-    }
-
-    public void setScheme(String scheme) {
-        httpRequest.setScheme(scheme);
     }
 
     public void setSecure(boolean secure) {
