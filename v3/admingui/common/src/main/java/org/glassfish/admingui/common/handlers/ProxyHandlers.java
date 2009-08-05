@@ -302,6 +302,7 @@ public class ProxyHandlers {
             @HandlerInput(name = "attrs", type = Map.class),
             @HandlerInput(name = "skipAttrs", type = List.class),
             @HandlerInput(name = "convertToFalse", type = List.class),
+            @HandlerInput(name = "onlyUseAttrs", type = List.class),
             @HandlerInput(name = "parentObjectNameStr", type = String.class),
             @HandlerInput(name = "forceCreate", type = Boolean.class),
             @HandlerInput(name = "childType", type = String.class)})
@@ -394,15 +395,16 @@ public class ProxyHandlers {
         output = {
             @HandlerOutput(name = "result", type = String.class)})
     public static void createProxy(HandlerContext handlerCtx) {
-        try {
+        
             final String childType = (String) handlerCtx.getInputValue("childType");
             Map<String, Object> attrs = (Map) handlerCtx.getInputValue("attrs");
             if (attrs == null){
                 attrs = new HashMap();
             }
             String parentObjectNameStr = (String) handlerCtx.getInputValue("parentObjectNameStr");
+        try {
             AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentObjectNameStr));
-
+        
             List<String> convertToFalse = (List) handlerCtx.getInputValue("convertToFalse");
             if (convertToFalse != null) {
                 for (String sk : convertToFalse) {
@@ -438,6 +440,7 @@ public class ProxyHandlers {
             AMXConfigProxy child = amx.createChild(childType, attrs);
             handlerCtx.setOutputValue("result", child.objectName().toString());
         } catch (Exception ex) {
+            GuiUtil.getLogger().severe("CreateProxy failed.  parent=" + parentObjectNameStr + "; childType=" + childType + "; attrs =" + attrs);
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
