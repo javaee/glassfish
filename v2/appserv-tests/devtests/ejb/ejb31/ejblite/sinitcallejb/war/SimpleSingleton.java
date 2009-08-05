@@ -7,13 +7,34 @@ import javax.annotation.*;
 @Startup
 public class SimpleSingleton {
 
-     @PostConstruct
-     private void init() {
+    @Resource 
+    private SessionContext sessionCtx;
+
+    @PostConstruct
+    private void init() {
 	 System.out.println("In SimpleSingleton:init()");
-     }
+
+	 /** NOTE : Uncomment to test issue 9035
+	 try {
+	     SimpleStateless ss = (SimpleStateless)
+		 sessionCtx.lookup("java:app/env/slref");
+	     ss.hello();
+	     System.out.println("Successfully looked up web-component defined environment dependency from @Startup Singleton @PostConstruct");
+	 } catch(Exception e) {
+	     throw new EJBException(e);
+	 }
+	 **/
+    }
 
     public void hello() {
 	 System.out.println("In SimpleSingleton:hello()");
+	 try {
+	     SimpleStateless ss = (SimpleStateless)
+		 sessionCtx.lookup("java:app/env/slref");
+	     ss.hello();
+	 } catch(Exception e) {
+	     throw new EJBException(e);
+	 }
     }
 
      @PreDestroy

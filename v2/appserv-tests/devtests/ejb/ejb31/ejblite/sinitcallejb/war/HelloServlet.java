@@ -21,13 +21,15 @@ public class HelloServlet extends HttpServlet {
 
     @EJB private SimpleSingleton simpleSingleton;
 
+    @EJB(name="java:app/env/slref") private SimpleStateless simpleStateless;
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
 
 	System.out.println("In HelloServlet::init");
 	simpleSingleton.hello();
-
+	simpleStateless.hello();
     }
 
     @Override
