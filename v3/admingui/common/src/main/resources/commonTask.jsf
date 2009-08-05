@@ -45,11 +45,6 @@
 />
 <!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}">
 <!define name="content">
-<event>
-    <!beforeCreate
-        initSessionAttributes();
-    />
-</event>
       <sun:script>
         <f:verbatim>
           function showWindow() {
