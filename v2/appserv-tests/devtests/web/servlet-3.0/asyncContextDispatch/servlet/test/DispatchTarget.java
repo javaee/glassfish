@@ -7,6 +7,15 @@ import javax.servlet.http.*;
 
 public class DispatchTarget extends HttpServlet {
 
+    private static final String EXPECTED_ASYNC_REQUEST_URI =
+        "/web-async-context-dispatch/TestServlet";
+
+    private static final String EXPECTED_ASYNC_SERVLET_PATH =
+        "/TestServlet";
+
+    private static final String EXPECTED_ASYNC_QUERY_STRING =
+        "target=DispatchTargetWithPath";
+
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
@@ -24,11 +33,13 @@ public class DispatchTarget extends HttpServlet {
         while (attrNames.hasMoreElements()){
             String attrName = attrNames.nextElement();
             if (AsyncContext.ASYNC_REQUEST_URI.equals(attrName)) {
-                if (!"/web-async-context-dispatch/TestServlet".equals(
+                if (!EXPECTED_ASYNC_REQUEST_URI.equals(
                         req.getAttribute(attrName))) {
                     throw new ServletException("Wrong value for " +
                         AsyncContext.ASYNC_REQUEST_URI +
-                        " request attribute");
+                        " request attribute. Found: " +
+                        req.getAttribute(attrName) + ", expected: " +
+                        EXPECTED_ASYNC_REQUEST_URI);
                 }
                 asyncRequestAttributeFound++;
             } else if (AsyncContext.ASYNC_CONTEXT_PATH.equals(attrName)) {
@@ -36,7 +47,9 @@ public class DispatchTarget extends HttpServlet {
                         req.getAttribute(attrName))) {
                     throw new ServletException("Wrong value for " +
                         AsyncContext.ASYNC_CONTEXT_PATH +
-                        " request attribute");
+                        " request attribute. Found: " +
+                        req.getAttribute(attrName) + ", expected: " +
+                        getServletContext().getContextPath());
                 }
                 asyncRequestAttributeFound++;
             } else if (AsyncContext.ASYNC_PATH_INFO.equals(attrName)) {
@@ -47,19 +60,23 @@ public class DispatchTarget extends HttpServlet {
                 }
                 asyncRequestAttributeFound++;
             } else if (AsyncContext.ASYNC_SERVLET_PATH.equals(attrName)) {
-                if (!"/TestServlet".equals(
+                if (!EXPECTED_ASYNC_SERVLET_PATH.equals(
                         req.getAttribute(attrName))) {
                     throw new ServletException("Wrong value for " +
                         AsyncContext.ASYNC_SERVLET_PATH +
-                        " request attribute");
+                        " request attribute. Found " +
+                        req.getAttribute(attrName) + ", expected: " +
+                        EXPECTED_ASYNC_SERVLET_PATH);
                 }
                 asyncRequestAttributeFound++;
             } else if (AsyncContext.ASYNC_QUERY_STRING.equals(attrName)) {
-                if (!"target=DispatchTargetWithPath".equals(
+                if (!EXPECTED_ASYNC_QUERY_STRING.equals(
                         req.getAttribute(attrName))) {
                     throw new ServletException("Wrong value for " +
                         AsyncContext.ASYNC_QUERY_STRING +
-                        " request attribute");
+                        " request attribute. Found: " +
+                        req.getAttribute(attrName) + ", expected: " +
+                        EXPECTED_ASYNC_QUERY_STRING);
                 }
                 asyncRequestAttributeFound++;
             }
