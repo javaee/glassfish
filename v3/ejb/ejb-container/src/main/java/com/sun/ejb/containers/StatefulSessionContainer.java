@@ -127,6 +127,9 @@ public final class StatefulSessionContainer
     // We do not want too many ORB task for passivation
     public static final int MIN_PASSIVATION_BATCH_COUNT = 8;
 
+    private final long CONCURRENCY_NOT_ALLOWED = 0;
+    private final long BLOCK_INDEFINITELY = -1;
+
     private long instanceCount = 1;
 
     protected ArrayList passivationCandidates = new ArrayList();
@@ -165,8 +168,6 @@ public final class StatefulSessionContainer
     private Method beforeCompletionMethod;
     private Method afterCompletionMethod;
 
-    private boolean allowSerializedAccess;
-
     /*
      * Cache for keeping ref count for shared extended entity manager.
      * The key in this map is the physical entity manager
@@ -196,7 +197,6 @@ public final class StatefulSessionContainer
         this.ejbName = desc.getName();
 
         EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) desc;
-        allowSerializedAccess = !sessionDesc.isConcurrencyProhibited();
 
         this.traceInfoPrefix = "sfsb-" + ejbName + ": ";
     }
@@ -1372,11 +1372,16 @@ public final class StatefulSessionContainer
                     + " session-key: " + sessionKey);
         }
 
+        MethodLockInfo lockInfo = inv.invocationInfo.methodLockInfo;
+        boolean allowSerializedAccess = (lockInfo == null) ||
+                ( (lockInfo != null) && ( lockInfo.getTimeout() != CONCURRENCY_NOT_ALLOWED ));
+
         if( allowSerializedAccess ) {
 
-            MethodLockInfo lockInfo = inv.invocationInfo.methodLockInfo;
+            boolean blockWithTimeout =
+                    (lockInfo != null) && (lockInfo.getTimeout() != BLOCK_INDEFINITELY);
 
-            if( (lockInfo != null) && lockInfo.hasTimeout() ) {
+            if( blockWithTimeout ) {
                 try {
                     boolean acquired = sc.getStatefulWriteLock().tryLock(lockInfo.getTimeout(),
                             lockInfo.getTimeUnit());
@@ -1391,7 +1396,9 @@ public final class StatefulSessionContainer
                     String msg = "Serialized access attempt on method " + inv.beanMethod +
                             " for ejb " + ejbDescriptor.getName() + " was interrupted within " +
                              + lockInfo.getTimeout() + " " + lockInfo.getTimeUnit();
-                    throw new ConcurrentAccessTimeoutException(msg);
+                    ConcurrentAccessException cae = new ConcurrentAccessTimeoutException(msg);
+                    cae.initCause(ie);
+                    throw cae;
                 }
             } else {
                 sc.getStatefulWriteLock().lock();
@@ -1438,7 +1445,7 @@ public final class StatefulSessionContainer
                         throw new NoSuchObjectLocalException
                                 ("The EJB does not exist. session-key: " + sessionKey);
                     } else if (newSC.getState() == BeanState.INVOKING) {
-                        handleConcurrentInvocation(inv, newSC, sessionKey);
+                        handleConcurrentInvocation(allowSerializedAccess, inv, newSC, sessionKey);
                     }
                     if (newSC.getState() == BeanState.READY) {
                         decrementMethodReadyStat();
@@ -1521,7 +1528,8 @@ public final class StatefulSessionContainer
         }
     }
 
-    private void handleConcurrentInvocation(EjbInvocation inv, SessionContextImpl sc, Object sessionKey) {
+    private void handleConcurrentInvocation(boolean allowSerializedAccess,
+                                            EjbInvocation inv, SessionContextImpl sc, Object sessionKey) {
         if (_logger.isLoggable(TRACE_LEVEL)) {
             logTraceInfo(inv, sessionKey, "Another invocation in progress");
         }
@@ -1708,10 +1716,6 @@ public final class StatefulSessionContainer
 
     private void releaseSFSBSerializedLock(EjbInvocation inv, SessionContextImpl sc) {
 
-        if( !this.allowSerializedAccess ) {
-            return;
-        }
-        
 
         if( inv.holdingSFSBSerializedLock() ) {
             inv.setHoldingSFSBSerializedLock(false);

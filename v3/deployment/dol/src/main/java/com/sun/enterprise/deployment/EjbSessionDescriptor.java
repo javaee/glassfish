@@ -547,10 +547,6 @@ public class EjbSessionDescriptor extends EjbDescriptor {
         return (getConcurrencyManagementType() == ConcurrencyManagementType.Bean);
     }
 
-    public boolean isConcurrencyProhibited() {
-        return (getConcurrencyManagementType() == ConcurrencyManagementType.NotAllowed);
-    }   
-
 
     public void setConcurrencyManagementType(ConcurrencyManagementType type) {
         concurrencyManagementType = type;
@@ -686,6 +682,5 @@ public class EjbSessionDescriptor extends EjbDescriptor {
     public enum ConcurrencyManagementType {
         Bean,
         Container,
-        NotAllowed
     }
 }

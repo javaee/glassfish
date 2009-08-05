@@ -89,6 +89,7 @@ public class EjbReferenceNode extends DeploymentDescriptorNode {
         table.put(EjbTagNames.LOCAL, "setEjbInterface");        
         table.put(EjbTagNames.EJB_LINK, "setLinkName");
         table.put(TagNames.MAPPED_NAME, "setMappedName");
+        table.put(TagNames.LOOKUP_NAME, "setLookupName");
         return table;
     }        
 
@@ -126,6 +127,10 @@ public class EjbReferenceNode extends DeploymentDescriptorNode {
             for (InjectionTarget target : descriptor.getInjectionTargets()) {
                 ijNode.writeDescriptor(ejbRefNode, TagNames.INJECTION_TARGET, target);
             }
+        }
+
+        if( descriptor.hasLookupName() ) {
+            appendTextChild(ejbRefNode, TagNames.LOOKUP_NAME, descriptor.getLookupName());
         }
 
         return ejbRefNode;

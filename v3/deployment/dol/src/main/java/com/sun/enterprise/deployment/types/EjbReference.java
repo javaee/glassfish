@@ -137,8 +137,8 @@ public interface EjbReference  extends NamedInformation, InjectionCapable {
 
     public boolean hasJndiName();
 
-    public boolean hasLookup();
-    public String getLookup();
+    public boolean hasLookupName();
+    public String getLookupName();
     
     public EjbDescriptor getEjbDescriptor();
     public void setEjbDescriptor(EjbDescriptor descriptor);

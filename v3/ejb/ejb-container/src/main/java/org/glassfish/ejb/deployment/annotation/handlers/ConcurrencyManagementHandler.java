@@ -53,7 +53,7 @@ import org.jvnet.hk2.annotations.Service;
 /**
  * This handler is responsible for handling the javax.ejb.ConcurrencyManagement.
  *
- * @author Shing Wai Chan
+ * @author Kenneth Saks
  */
 @Service
 public class ConcurrencyManagementHandler extends AbstractAttributeHandler {
@@ -87,9 +87,6 @@ public class ConcurrencyManagementHandler extends AbstractAttributeHandler {
                         break;
                     case BEAN :
                         descCMType = EjbSessionDescriptor.ConcurrencyManagementType.Bean;
-                        break;
-                    case CONCURRENCY_NOT_ALLOWED :
-                        descCMType = EjbSessionDescriptor.ConcurrencyManagementType.NotAllowed;
                         break;
                     default :
                         throw new AnnotationProcessorException("Unsupported concurrency management " +

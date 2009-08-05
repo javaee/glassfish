@@ -43,6 +43,7 @@ import com.sun.ejb.InvocationInfo;
 import com.sun.ejb.MethodLockInfo;
 
 import javax.ejb.ConcurrentAccessTimeoutException;
+import javax.ejb.ConcurrentAccessException;
 import javax.ejb.IllegalLoopbackException;
 import javax.ejb.LockType;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -61,6 +62,9 @@ public class CMCSingletonContainer
     private final ReentrantReadWriteLock.ReadLock readLock = rwLock.readLock();
 
     private final ReentrantReadWriteLock.WriteLock writeLock = rwLock.writeLock();
+
+    private final long NO_BLOCKING = 0;
+    private final long BLOCK_INDEFINITELY = -1;
 
     private final MethodLockInfo defaultMethodLockInfo;
 
@@ -93,7 +97,8 @@ public class CMCSingletonContainer
 
 
 
-        if (!lockInfo.hasTimeout()) {
+        if (!lockInfo.hasTimeout() ||
+            ( (lockInfo.hasTimeout() && (lockInfo.getTimeout() == BLOCK_INDEFINITELY) )) ) {
             theLock.lock();
         } else {
             try {
@@ -101,12 +106,19 @@ public class CMCSingletonContainer
                 if (! lockStatus) {
                     String msg = "Couldn't acquire a lock within " + lockInfo.getTimeout() +
                             " " + lockInfo.getTimeUnit();
-                    throw new ConcurrentAccessTimeoutException(msg);
+                    if( lockInfo.getTimeout() == NO_BLOCKING ) {
+                        throw new ConcurrentAccessException(msg);
+                    } else {
+                        throw new ConcurrentAccessTimeoutException(msg);
+                    }
                 }
             } catch (InterruptedException inEx) {
                 String msg = "Couldn't acquire a lock within " + lockInfo.getTimeout() +
                         " " + lockInfo.getTimeUnit();
-                throw new ConcurrentAccessTimeoutException(msg);
+                ConcurrentAccessException cae = (lockInfo.getTimeout() == NO_BLOCKING) ?
+                        new ConcurrentAccessException(msg) : new ConcurrentAccessTimeoutException(msg);
+                cae.initCause(inEx);
+                throw cae;
             }
         }
 

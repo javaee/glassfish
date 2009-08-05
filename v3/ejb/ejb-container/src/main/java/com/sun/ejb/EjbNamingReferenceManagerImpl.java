@@ -88,14 +88,14 @@ public class EjbNamingReferenceManagerImpl
         if( ejbRefDesc.isLocal() ) {
             // local ejb dependencies if there's a lookup string, use that.
             // Otherwise, the ejb will be resolved by EJBUtils.
-            if( ejbRefDesc.hasLookup()) {
-                jndiObj = context.lookup(ejbRefDesc.getLookup());
+            if( ejbRefDesc.hasLookupName()) {
+                jndiObj = context.lookup(ejbRefDesc.getLookupName());
                 resolved = true;
             }
-        } else if( !ejbRefDesc.hasJndiName() && ejbRefDesc.hasLookup() ) {
+        } else if( !ejbRefDesc.hasJndiName() && ejbRefDesc.hasLookupName() ) {
             // For a remote reference, only do a context lookup if there is no
             // jndi name. 
-            jndiObj = context.lookup(ejbRefDesc.getLookup());
+            jndiObj = context.lookup(ejbRefDesc.getLookupName());
             resolved = true;
         } else if( ejbRefDesc.hasJndiName() &&
                    ejbRefDesc.getJndiName().startsWith("java:app/") &&

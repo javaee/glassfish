@@ -64,6 +64,8 @@ public interface TagNames {
     public static final String EJB_LINK = "ejb-link";
     
     public static final String EJB_LOCAL_REFERENCE = "ejb-local-ref";
+
+    public static final String LOOKUP_NAME = "lookup-name";
     
     public static final String RESOURCE_REFERENCE = "resource-ref";
     public static final String RESOURCE_REFERENCE_NAME = "res-ref-name";

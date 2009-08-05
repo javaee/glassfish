@@ -186,11 +186,15 @@
         a concurrency lock before throwing a timeout exception to the
         client.
         
+        A timeout value of 0 means concurrent access is not permitted.
+        
+        A timeout value of -1 means wait indefinitely to acquire a lock.
+        
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="timeout"
-                   type="javaee:xsdPositiveIntegerType"/>
+                   type="javaee:xsdIntegerType"/>
       <xsd:element name="unit"
                    type="javaee:time-unit-typeType"/>
     </xsd:sequence>
@@ -585,7 +589,6 @@
         
         Bean
         Container
-        NotAllowed
         
         Bean managed concurrency can only be specified for a singleton bean.
         
@@ -595,7 +598,6 @@
       <xsd:restriction base="javaee:string">
         <xsd:enumeration value="Bean"/>
         <xsd:enumeration value="Container"/>
-        <xsd:enumeration value="NotAllowed"/>
       </xsd:restriction>
     </xsd:simpleContent>
   </xsd:complexType>
@@ -3041,11 +3043,15 @@
         a stateful session bean can be idle(not receive any client
         invocations) before it is eligible for removal by the container.
         
+        A timeout value of 0 means the bean is immediately eligible for removal.
+        
+        A timeout value of -1 means the bean will never be removed due to timeout.
+        
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="timeout"
-                   type="javaee:xsdPositiveIntegerType"/>
+                   type="javaee:xsdIntegerType"/>
       <xsd:element name="unit"
                    type="javaee:time-unit-typeType"/>
     </xsd:sequence>

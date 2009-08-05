@@ -80,7 +80,7 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
      * resolved, so this is the safest approach to avoiding backward
      * compatibility issues.
      */
-    private String lookup=null;
+    private String lookupName=null;
 
     /** 
      * copy constructor 
@@ -94,7 +94,7 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
 	refHomeIntf = other.refHomeIntf; // String
 	refIntf = other.refIntf; // String
 	ejbLink = other.ejbLink; // String
-    lookup = other.lookup;
+    lookupName = other.lookupName;
 	referringBundle = other.referringBundle; // copy as-is
 	ejbDescriptor = other.ejbDescriptor;
 	if (ejbDescriptor != null) { 
@@ -259,16 +259,16 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
         }
     }
 
-    public void setLookup(String l) {
-        lookup = l;
+    public void setLookupName(String l) {
+        lookupName = l;
     }
 
-    public String getLookup() {
-        return lookup;
+    public String getLookupName() {
+        return lookupName;
     }
 
-    public boolean hasLookup() {
-        return (lookup != null);
+    public boolean hasLookupName() {
+        return (lookupName != null);
     }
         
     /** return the ejb to whoch I refer.
@@ -413,7 +413,7 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
         }
 
         toStringBuffer.append(",ejb-link="+getLinkName());
-        toStringBuffer.append(",lookup="+getLookup());
+        toStringBuffer.append(",lookup="+getLookupName());
         toStringBuffer.append(",mappedName="+getMappedName());
         toStringBuffer.append(",jndi-name=" + getValue());                    
 

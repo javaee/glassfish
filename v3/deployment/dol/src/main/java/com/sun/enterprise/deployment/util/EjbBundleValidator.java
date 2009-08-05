@@ -429,7 +429,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
             &&
             ( (ejbRef.getLinkName() == null) ||
               (ejbRef.getLinkName().length() == 0) )
-            && !ejbRef.hasLookup() ) {
+            && !ejbRef.hasLookupName() ) {
 
             Map<String, EjbIntfInfo> ejbIntfInfoMap = getEjbIntfMap();
             if ( ejbIntfInfoMap.size() > 0 ) {
@@ -508,7 +508,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
             // error (unless there is a lookup string) because we must resolve all
             // local refs within the app and we cannot resolve it 
             if (ejbRef.isLocal()) {
-                if( ejbRef.hasLookup() ) {
+                if( ejbRef.hasLookupName() ) {
                     return;
                 }
                 DOLUtils.getDefaultLogger().severe("Cannot resolve reference " + ejbRef);
@@ -516,7 +516,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
             } else {
                 // this is a remote interface, jndi will eventually contain the referenced 
                 // ejb ref, apply default jndi name if there is none
-                if (!ejbRef.hasJndiName() && !ejbRef.hasLookup()) {
+                if (!ejbRef.hasJndiName() && !ejbRef.hasLookupName()) {
                     String jndiName = getDefaultEjbJndiName(
                         ejbRef.isEJB30ClientView() ?
                         ejbRef.getEjbInterface() : ejbRef.getEjbHomeInterface());
