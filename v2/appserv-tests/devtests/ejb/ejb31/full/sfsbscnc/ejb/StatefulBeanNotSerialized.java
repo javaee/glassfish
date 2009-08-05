@@ -5,7 +5,7 @@ import javax.annotation.*;
 
 @Stateful(mappedName="StatefulBeanNotSerialized")
 @LocalBean
-@ConcurrencyManagement(ConcurrencyManagementType.CONCURRENCY_NOT_ALLOWED)
+@AccessTimeout(0)
 public class StatefulBeanNotSerialized extends StatefulBeanSuper implements StatefulCncRemote, StatefulCncLocal {
 
  @Resource
@@ -19,6 +19,24 @@ public class StatefulBeanNotSerialized extends StatefulBeanSuper implements Stat
     @PreDestroy
     public void destroy() {
         System.out.println("In StatefulBeanNotSerialized::destroy()");
+    }
+
+    @Asynchronous
+    public void sleep(int seconds) {
+	System.out.println("In StatefulBeanNotSerialized::asyncSleep");
+	try {
+	    System.out.println("Sleeping for " + seconds + " seconds...");
+	    Thread.sleep(seconds * 1000);
+	    System.out.println("Woke up from sleep");
+	} catch(Exception e) {
+	    e.printStackTrace();
+	    throw new EJBException(e);
+	}
+    }
+
+     public String hello() {
+	System.out.println("In StatefulBeanNotSerialized::hello");
+	return "hello, world!\n";
     }
 
     public void attemptLoopback() {

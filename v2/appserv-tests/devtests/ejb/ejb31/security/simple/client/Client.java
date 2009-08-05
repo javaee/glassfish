@@ -20,7 +20,7 @@ public class Client {
 
     @EJB static Hello hello;
 
-    @EJB(lookup="java:app/env/forappclient") 
+    @EJB(lookupName="java:app/env/forappclient") 
     static Hello hello3;
 
     @EJB(mappedName="java:app/ejb-ejb31-security-simple-ejb/SingletonBean!com.acme.Hello") 

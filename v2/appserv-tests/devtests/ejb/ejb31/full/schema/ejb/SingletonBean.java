@@ -59,6 +59,14 @@ public class SingletonBean implements RemoteSingleton {
 	    System.out.println("Got expected timeout exception");
 	}
 
+	RemoteSingleton lookup1 = (RemoteSingleton)
+	    ctx.lookup("java:comp/env/ejb/lookup1");
+	System.out.println("lookup1 = " + lookup1);
+
+	SingletonBean2 lookup2 = (SingletonBean2)
+	    ctx.lookup("java:comp/env/ejb/lookup2");
+	System.out.println("lookup2 = " + lookup2);
+
 	// Now call a synchronous read-lock method.  This should just
 	// proceed.
 	sb2.foo2();

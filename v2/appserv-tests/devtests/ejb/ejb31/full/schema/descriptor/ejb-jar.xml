@@ -64,6 +64,18 @@
 	<async-method>
 	  <method-name>foo</method-name>
 	</async-method>
+        <ejb-ref>
+          <ejb-ref-name>ejb/lookup1</ejb-ref-name>
+          <ejb-ref-type>Session</ejb-ref-type>
+          <remote>com.acme.RemoteSingleton</remote>
+	  <lookup-name>java:module/SingletonBean!com.acme.RemoteSingleton</lookup-name>
+        </ejb-ref>
+        <ejb-local-ref>
+          <ejb-ref-name>ejb/lookup2</ejb-ref-name>
+          <ejb-ref-type>Session</ejb-ref-type>
+          <local>com.acme.SingletonBean2</local>
+	  <lookup-name>java:module/SingletonBean2</lookup-name>
+        </ejb-local-ref>
       </session>
       <session>
         <ejb-name>SingletonBean2</ejb-name>
@@ -129,7 +141,7 @@
 	   <timeout>1001</timeout>
            <unit>Minutes</unit>
 	</stateful-timeout>
-	<concurrency-management-type>NotAllowed</concurrency-management-type>
+	<concurrency-management-type>Container</concurrency-management-type>
 	<async-method>
 	  <method-name>foo</method-name>
 	</async-method>

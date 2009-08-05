@@ -6,10 +6,12 @@ import javax.annotation.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+
 public abstract class StatefulBeanSuper implements StatefulCncSuperIntf {
 
     private int count = 0;
 
+    @AccessTimeout(-1)
      public String hello() {
 	System.out.println("In StatefulBeanSuper::hello");
 	return "hello, world!\n";
@@ -34,7 +36,7 @@ public abstract class StatefulBeanSuper implements StatefulCncSuperIntf {
 
     @Asynchronous
     public void sleep(int seconds) {
-	System.out.println("In StatefulBeanSuper::syncSleep");
+	System.out.println("In StatefulBeanSuper::asyncSleep");
 	try {
 	    System.out.println("Sleeping for " + seconds + " seconds...");
 	    Thread.sleep(seconds * 1000);

@@ -80,6 +80,11 @@ public class HelloSingleton extends Super1  {
 	}
     }
 
+    @Asynchronous
+    public void asyncWait(int seconds) {
+	me.wait(seconds);
+    }
+
     @AccessTimeout(value=5, unit=TimeUnit.MILLISECONDS)
     public String hello() {
 	
@@ -128,6 +133,11 @@ public class HelloSingleton extends Super1  {
     public void reentrantWriteWrite() {
 	System.out.println("In HelloSingleton::ReentrantWriteWrite()");
 	me.write();
+    }
+
+    @AccessTimeout(0)
+    public void testNoWait() {
+	System.out.println("In HelloSingleton::testNoWait");
     }
 
     @PreDestroy

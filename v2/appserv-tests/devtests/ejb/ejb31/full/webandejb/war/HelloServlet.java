@@ -1,6 +1,8 @@
 package com.acme;
 
 import javax.ejb.EJB;
+import javax.ejb.ConcurrentAccessException;
+import javax.ejb.ConcurrentAccessTimeoutException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -52,6 +54,28 @@ public class HelloServlet extends HttpServlet {
 
 	System.out.println("Remote intf bean says " +
 			   helloRemote.hello());
+
+	System.out.println("Calling testNoWait. This one should work since it's not a concurrent invocation");
+	singleton.testNoWait();
+
+	System.out.println("Call async wait, then sleep a bit to make sure it takes affect");
+	singleton.asyncWait(1);
+	try {
+	    // Sleep a bit to make sure async call processes before we proceed
+	    Thread.sleep(100);
+	} catch(Exception e) {
+	    System.out.println(e);
+	}
+
+	try {
+	    System.out.println("Calling testNoWait");
+	    singleton.testNoWait();
+	    throw new RuntimeException("Expected ConcurrentAccessException");
+	} catch(ConcurrentAccessTimeoutException cate) {
+	    throw new RuntimeException("Expected ConcurrentAccessException");
+	} catch(ConcurrentAccessException cae) {
+	    System.out.println("Got expected exception for concurrent access on method with 0 wait");
+	}
 
 	singleton.wait(10);
 
