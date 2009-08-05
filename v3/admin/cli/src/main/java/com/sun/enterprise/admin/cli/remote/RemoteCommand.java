@@ -160,7 +160,8 @@ public class RemoteCommand extends CLICommand {
                     throw ex;
             }
             if (commandOpts == null)
-                throw new CommandException("Unknown command: " + name);
+                throw new CommandException(strings.get("InvalidCommand", name),
+                        new InvalidCommandException());
 
             // everyone gets a --help option until we have a help command
             // on the server

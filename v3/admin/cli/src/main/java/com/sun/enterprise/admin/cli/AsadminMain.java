@@ -36,27 +36,62 @@
 
 package com.sun.enterprise.admin.cli;
 
+import java.io.*;
+import java.text.*;
+import java.util.*;
+
 import com.sun.enterprise.admin.cli.remote.*;
-import com.sun.enterprise.cli.framework.*;
+import com.sun.enterprise.admin.cli.commands.ListCommandsCommand;
+import com.sun.enterprise.cli.framework.ValidOption;
+import com.sun.enterprise.cli.framework.CommandValidationException;
+import com.sun.enterprise.cli.framework.CommandException;
+import com.sun.enterprise.cli.framework.InvalidCommandException;
+import com.sun.enterprise.cli.framework.CLILogger;
+import com.sun.enterprise.cli.framework.StringEditDistance;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.util.JDK;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
-import java.io.*;
-import java.text.*;
-import java.util.*;
-
-
 /**
- * my v3 main, basically some throw away code
+ * The asadmin main program.
  */
 public class AsadminMain {
+
+    private       static String[] copyOfArgs;
+    private       static String classPath;
+    private       static String className;
+    private       static String command;
+    private       static Map<String, String> systemProps;
+    private       static ProgramOptions po;
+
+    private final static int ERROR = 1;
+    private final static int CONNECTION_ERROR = 2;
+    private final static int INVALID_COMMAND_ERROR = 3;
+    private final static int SUCCESS = 0;
+    private static final int MAX_COMMANDS_TO_DISPLAY = 75;
+    private static final LocalStringsImpl strings =
+                                new LocalStringsImpl(AsadminMain.class);
+
+    static {
+        systemProps = new ASenvPropertyReader().getProps();
+        final String ir = SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
+        final String cr = SystemPropertyConstants.CONFIG_ROOT_PROPERTY;
+        final String irVal = systemProps.get(ir);
+        final String crVal = systemProps.get(cr);
+
+        if (ok(irVal))
+            System.setProperty(ir, irVal);
+
+        if (ok(crVal))
+            System.setProperty(cr, crVal);
+    }
+
     public static void main(String[] args) {
         int minor = JDK.getMinor();
 
-        if(minor < 6) {
+        if (minor < 6) {
             CLILogger.getInstance().printError(
                 strings.get("OldJdk", "" + minor));
             System.exit(ERROR);
@@ -83,34 +118,7 @@ public class AsadminMain {
         className = main.getClass().getName();
 
         command = args[0];
-        // now the default is the new version
-        if (System.getenv("ASADMIN_NEW") == null ||
-                Boolean.parseBoolean(System.getenv("ASADMIN_NEW"))) {
-            exitCode = executeCommand(args);
-        } else {
-        CLILogger.getInstance().printMessage("Using OLD asadmin");
-        // old way
-        try {
-            try {
-                po = new ProgramOptions(new Environment());
-                exitCode = main.local(args);
-            } catch (CommandException ce) {
-                CLILogger.getInstance().printError(ce.getMessage());
-                exitCode = ERROR;
-            }
-        }
-        catch(InvalidCommandException e) {
-            // Transform 'asadmin help remote-command' to 'asadmin remote-command --help'.
-            // Otherwise, you'll get a CommandNotFoundException: Command help not found.
-            if (args[0].equals("help")) {
-                exitCode = main.remote(new String[] {args[1], "--help"});
-                command = args[1];
-            } else {
-                CLILogger.getInstance().printDebugMessage(e.getMessage());
-                exitCode = main.remote(args);
-            }
-        }
-        }
+        exitCode = executeCommand(args);
 
         switch (exitCode) {
         case SUCCESS:
@@ -125,24 +133,11 @@ public class AsadminMain {
             break;
 
         case INVALID_COMMAND_ERROR:
-            try {
-                CLIMain.displayClosestMatch(command, main.getRemoteCommands(),
-                    strings.get("ClosestMatchedLocalAndRemoteCommands"));
-            } catch (InvalidCommandException e) {
-                // not a big deal if we cannot help
-            }
             CLILogger.getInstance().printDetailMessage(
                 strings.get("CommandUnSuccessful", command));
             break;
 
         case CONNECTION_ERROR:
-            try {
-                CLIMain.displayClosestMatch(command, null,
-                    strings.get("ClosestMatchedLocalCommands"));
-            } catch (InvalidCommandException e) {
-                CLILogger.getInstance().printMessage(
-                        strings.get("InvalidRemoteCommand", command));
-            }
             CLILogger.getInstance().printDetailMessage(
                 strings.get("CommandUnSuccessful", command));
             break;
@@ -153,8 +148,8 @@ public class AsadminMain {
 
     public static int executeCommand(String[] argv) {
         CLICommand cmd = null;
+        Environment env = new Environment();
         try {
-            Environment env = new Environment();
 
             // if the first argument is an option, we're using the new form
             if (argv.length > 0 && argv[0].startsWith("-")) {
@@ -180,13 +175,26 @@ public class AsadminMain {
             cmd = CLICommand.getCommand(command, po, env);
             return cmd.execute(argv);
         } catch (CommandException ce) {
-            if (ce.getCause() instanceof InvalidCommandException)
-                // XXX - find closest match with remote commands
+            if (ce.getCause() instanceof InvalidCommandException) {
+                // find closest match with local or remote commands
                 CLILogger.getInstance().printError(ce.getMessage());
-            else if (ce.getCause() instanceof java.net.ConnectException)
-                // XXX - find closest match with local commands
+                try {
+                    displayClosestMatch(command, getAllCommands(po, env),
+                        strings.get("ClosestMatchedLocalAndRemoteCommands"));
+                } catch (InvalidCommandException e) {
+                    // not a big deal if we cannot help
+                }
+            } else if (ce.getCause() instanceof java.net.ConnectException) {
+                // find closest match with local commands
                 CLILogger.getInstance().printError(ce.getMessage());
-            else
+                try {
+                    displayClosestMatch(command, getLocalCommands(po, env),
+                        strings.get("ClosestMatchedLocalCommands"));
+                } catch (InvalidCommandException e) {
+                    CLILogger.getInstance().printMessage(
+                            strings.get("InvalidRemoteCommand", command));
+                }
+            } else
                 CLILogger.getInstance().printError(ce.getMessage());
             return ERROR;
         } catch (CommandValidationException cve) {
@@ -210,88 +218,118 @@ public class AsadminMain {
 "\t[--interactive=true/false] [--help] [command [options] [operands]]");
     }
 
-    public int local(String[] args) throws InvalidCommandException{
-        try {
-            CLIMain cli = new com.sun.enterprise.cli.framework.CLIMain();
-            cli.invokeCommand(args);
-            return SUCCESS;
-        }
-        catch(CommandException ce) {
-            CLILogger.getInstance().printError(ce.getMessage());
-            return ERROR;
-        }
-        catch(CommandValidationException cve) {
-            CLILogger.getInstance().printError(cve.getMessage());
-            return ERROR;
-        }
-        catch(NoClassDefFoundError ncdfe)
-        {
-            CLILogger.getInstance().printError(ncdfe.toString());
-            return ERROR;
-        }
-        catch(InvalidCommandException ice) {
-            throw ice;
-        }
-        catch (Throwable ex) {
-            CLILogger.getInstance().printExceptionStackTrace(ex);
-            CLILogger.getInstance().printError(ex.toString());
-            return ERROR;
-        }
+    /**
+     * We avoid using real System properties.  Instead we use our own Map
+     * @return a read-only Map of our system-wide properties
+     */
+    // XXX - not used?
+    /*
+    public static Map<String, String> getSystemProps() {
+        return Collections.unmodifiableMap(systemProps);
     }
+    */
 
-    public int remote(String[] args) {
+    /**
+     * Return all commands, local and remote.
+     */
+    private static String[] getAllCommands(ProgramOptions po,
+                                Environment env) {
         try {
-            CLIRemoteCommand orc = new CLIRemoteCommand(args);
-            orc.runCommand();
-            return SUCCESS;
-        }
-        catch (Throwable ex) {
-            CLILogger.getInstance().printExceptionStackTrace(ex);
-            CLILogger.getInstance().printMessage(ex.getMessage());
-            if (ex.getCause() instanceof java.net.ConnectException) {
-                return CONNECTION_ERROR;
-            }
-            if (ex.getCause() instanceof InvalidCommandException) {
-                return INVALID_COMMAND_ERROR;
-            }
-            return ERROR;
+            ListCommandsCommand lcc =
+                new ListCommandsCommand("list-commands", po, env);
+            String[] remoteCommands = lcc.getRemoteCommands();
+            String[] localCommands = lcc.getLocalCommands();
+            String[] allCommands =
+                    new String[localCommands.length + remoteCommands.length];
+            System.arraycopy(localCommands, 0,
+                allCommands, 0, localCommands.length);
+            System.arraycopy(remoteCommands, 0,
+                allCommands, localCommands.length, remoteCommands.length);
+            return allCommands;
+        } catch (CommandValidationException cve) {
+            return null;
+        } catch (CommandException ce) {
+            return null;
         }
     }
 
     /**
-     * We avoid using real System properties.  Instead we use our own Map
-     * @return a read-only Map of our system-wide properties                                                           
+     * Return all the known local commands.
      */
-    // XXX - not used?
-    public static Map<String, String> getSystemProps() {
-        return Collections.unmodifiableMap(systemProps);
-    }
-
-    /*pkg-priv*/ static String[] getArgs() {
-        return copyOfArgs;
-    }
-
-    /*pkg-priv*/ static String getClassPath() {
-        return classPath;
-    }
-
-    /*pkg-priv*/ static String getClassName() {
-        return className;
-    }
-
-    private Map<String, String> getRemoteCommands() {
+    private static String[] getLocalCommands(ProgramOptions po,
+                                Environment env) {
         try {
-            ListCommandsCommand lcc = new ListCommandsCommand();
-            String[] remoteCommands = lcc.getRemoteCommands();
-            Map<String, String> remoteCommandsMap = new HashMap<String, String>();
-            for (String rc : remoteCommands) {
-                remoteCommandsMap.put(rc, "remote command");
+            ListCommandsCommand lcc =
+                new ListCommandsCommand("list-commands", po, env);
+            return lcc.getLocalCommands();
+        } catch (CommandException ce) {
+            return new String[0];       // should never happen
+        }
+    }
+
+    /**
+     * Display the command from the list that are the closest match
+     * to the specified command.
+     */
+    private static void displayClosestMatch(final String commandName,
+                               final String[] commands, final String msg)
+                               throws InvalidCommandException {
+        try {
+            // remove leading "*" and ending "*" chars
+            int beginIndex = 0;
+            int endIndex = commandName.length();
+            if (commandName.startsWith("*"))
+                beginIndex = 1;
+            if (commandName.endsWith("*"))
+                endIndex = commandName.length() - 1;
+            final String trimmedCommandName =
+                    commandName.substring(beginIndex, endIndex);
+
+            // sort commands in alphabetical order
+            Arrays.sort(commands);
+
+            // add all matches to the search String since we want
+            // to search all the commands that match the string
+            final String[] matchedCommands =
+                    getMatchedCommands(trimmedCommandName, commands);
+                    //".*"+trimmedCommandName+".*", commands);
+            // don't want to display more than 50 commands
+            if (matchedCommands.length > 0 &&
+                    matchedCommands.length < MAX_COMMANDS_TO_DISPLAY) {
+                System.out.println(msg != null ? msg :
+                                   strings.get("ClosestMatchedCommands"));
+                for (String eachCommand : matchedCommands)
+                    System.out.println("    " + eachCommand);
+            } else {
+                // find the closest distance
+                final String nearestString = StringEditDistance.findNearest(
+                        commandName, commands);
+                // don't display the string if the edit distance is too large
+                if (StringEditDistance.editDistance(
+                        commandName, nearestString) < 5) {
+                    System.out.println(msg != null? msg :
+                                       strings.get("ClosestMatchedCommands"));
+                    System.out.println("    " + nearestString);
+                } else
+                    throw new InvalidCommandException(commandName);
             }
-            return remoteCommandsMap;
+        } catch (Exception e) {
+            throw new InvalidCommandException(commandName);
         }
-        catch (CommandException ce) {
-            return null;
+    }
+
+    /**
+     * Return all the commands that include pattern (just a literal
+     * string, not really a pattern) as a substring.
+     */
+    private static String[] getMatchedCommands(final String pattern,
+                                final String[] commands) {
+        List<String> matchedCommands = new ArrayList<String>();
+        for (int i = 0; i < commands.length; i++) {
+            if (commands[i].indexOf(pattern) >= 0)
+                matchedCommands.add(commands[i]);
         }
+        return matchedCommands.toArray(new String[matchedCommands.size()]);
     }
 
     public static void writeCommandToDebugLog(String[] args, int exit) {
@@ -357,32 +395,6 @@ public class AsadminMain {
             return s1;
         else
             return s2;
-    }
-
-    private final static int ERROR = 1;
-    private final static int CONNECTION_ERROR = 2;
-    private final static int INVALID_COMMAND_ERROR = 3;
-    private final static int SUCCESS = 0;
-    private final static LocalStringsImpl strings = new LocalStringsImpl(AsadminMain.class);
-    private       static String[] copyOfArgs;
-    private       static String classPath;
-    private       static String className;
-    private       static String command;
-    private       static Map<String, String> systemProps;
-    private       static ProgramOptions po;
-
-    static {
-        systemProps = new ASenvPropertyReader().getProps();
-        final String ir = SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
-        final String cr = SystemPropertyConstants.CONFIG_ROOT_PROPERTY;
-        final String irVal = systemProps.get(ir);
-        final String crVal = systemProps.get(cr);
-
-        if(ok(irVal))
-            System.setProperty(ir, irVal);
-
-        if(ok(crVal))
-            System.setProperty(cr, crVal);
     }
 
     private static boolean ok(String s) {
@@ -455,4 +467,3 @@ public class AsadminMain {
         System.out.println("Time to pre-load classes = " + (stop-start) + " msec");
     }
      */
-

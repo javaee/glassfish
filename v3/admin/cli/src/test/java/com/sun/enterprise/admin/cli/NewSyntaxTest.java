@@ -34,14 +34,16 @@
  * holder.
  */
 
-package org.glassfish.admin.ncli;
+package com.sun.enterprise.admin.cli;
 
-import static org.glassfish.admin.ncli.Constants.*;
-import static org.glassfish.admin.ncli.ProgramOptionBuilder.*;
+import java.util.*;
+
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import java.util.Set;
+import com.sun.enterprise.cli.framework.CommandValidationException;
+import com.sun.enterprise.cli.framework.CommandException;
+//import com.sun.enterprise.cli.framework.ValidOption;
 
 /**
  * Tests for commands with the new syntax.
@@ -50,71 +52,58 @@ import java.util.Set;
  * [asadmin-program-options] command-name [command-options-and-operands]
  * </code>
  * <p/>
- * All the tests should assert that CommandRunner#usesDeprecatedSyntax()
- * <b> is FALSE</b>.
  *
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
+ * @author Bill Shannon
  */
 public class NewSyntaxTest {
     @Test
-    public void testGetProgramOptionsForDefaults() throws ParserException {
+    public void testGetProgramOptionsForDefaults()
+                        throws CommandValidationException, CommandException {
         String cmd = "foo";
 
         // this is the command line with *just* the command name on it.
         // Everything should be defaulted in that case.
-        CommandRunner r = new CommandRunner(System.out, System.err);
-        r.parseMetaOptions(new String[]{cmd});
-        Set<Option> pos = r.getProgramOptions();
+        String[] argv = new String[] { cmd };
+        ProgramOptions po = parseCommand(argv);
 
-        Option op = getOptionNamed(pos, HOST);
-        assertEquals(DEFAULT_HOST, op.getEffectiveValue());
-
-        op = getOptionNamed(pos, PORT);
-        assertEquals(DEFAULT_PORT, Integer.parseInt(op.getEffectiveValue()));
-
-        op = getOptionNamed(pos, USER);
-        assertEquals(DEFAULT_USER, op.getEffectiveValue());
-
-        op = getOptionNamed(pos, PASSWORD);
-        assertNull(op.getEffectiveValue());
-
-        op = getOptionNamed(pos, PASSWORDFILE);
-        assertNull(op.getEffectiveValue());
-
-        op = getOptionNamed(pos, ECHO);
-        assertEquals("false", op.getEffectiveValue());
-
-        op = getOptionNamed(pos, TERSE);
-        assertEquals("false", op.getEffectiveValue());
-
-        op = getOptionNamed(pos, INTERACTIVE);
-        assertEquals("true", op.getEffectiveValue());
+        assertEquals(CLIConstants.DEFAULT_HOSTNAME, po.getHost());
+        assertEquals(CLIConstants.DEFAULT_ADMIN_PORT, po.getPort());
+        assertNull(po.getUser());
+        assertNull(po.getPassword());
+        assertNull(po.getPasswordFile());
+        assertFalse(po.isEcho());
+        assertFalse(po.isTerse());
+        // XXX - can't test, depends on how run
+        //assertFalse(po.isInteractive());
     }
 
     @Test
-    public void hostB4Cmd() throws ParserException {
+    public void hostB4Cmd()
+                        throws CommandValidationException, CommandException {
         String cmd = "new-command";
         String cmdArg1 = "--opt1";
         String cmdArg2 = "operand1";
         String GIVEN_HOST = "foo";
-        String GIVEN_PORT = "4544";
-        String[] cmdline = new String[]{"--host", GIVEN_HOST, "--port", GIVEN_PORT, "--secure", cmd, cmdArg1, cmdArg2};
-        CommandRunner r = new CommandRunner(System.out, System.err);
-        r.parseMetaOptions(cmdline);
+        int GIVEN_PORT = 4544;
+        String[] cmdline = new String[] {
+            "--host", GIVEN_HOST, "--port", "" + GIVEN_PORT,
+            "--secure", cmd, cmdArg1, cmdArg2
+        };
+        ProgramOptions po = parseCommand(cmdline);
+
+        /* XXX
         assertEquals(cmd, r.getCommandName());
-        assertFalse(r.usesDeprecatedSyntax());
         assertArrayEquals(new String[]{cmdArg1, cmdArg2}, r.getCommandArguments());
-        //now test program options
-        Option propt = getOptionNamed(r.getProgramOptions(), HOST);    //host
-        assertEquals(GIVEN_HOST, propt.getEffectiveValue());
-
-        propt = getOptionNamed(r.getProgramOptions(), PORT); //port
-        assertEquals(GIVEN_PORT, propt.getEffectiveValue());
-
-        propt = getOptionNamed(r.getProgramOptions(), SECURE);
-        assertEquals("true", propt.getEffectiveValue().toLowerCase());
+        */
+        // now test program options
+        assertEquals(GIVEN_HOST, po.getHost());
+        assertEquals(GIVEN_PORT, po.getPort());
+        assertTrue(po.isSecure());
     }
 
+    /*
+     * Commented out until I get a chance to convert this.
     @Test
     public void reuseOption() throws ParserException {
         String cmd = "some-cmd";
@@ -218,5 +207,16 @@ public class NewSyntaxTest {
             if (op.getName().equals(name))
                 return op;
         return null;
+    }
+    */
+
+    private ProgramOptions parseCommand(String[] argv)
+                        throws CommandValidationException, CommandException {
+        Parser rcp = new Parser(argv, 0,
+                        ProgramOptions.getValidOptions(), false);
+        Map<String, String> params = rcp.getOptions();
+        Environment env = new Environment(true);
+        //operands = rcp.getOperands();
+        return new ProgramOptions(params, env);
     }
 }

@@ -68,6 +68,13 @@ public final class Environment {
     }
 
     /**
+     * Package-private constructor that ignores the environment,
+     * to enable repeatable tests.
+     */
+    Environment(boolean ignoreEnvironment) {
+    }
+
+    /**
      * Return the value of the environment entry corresponding
      * to the named option.
      *

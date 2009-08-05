@@ -114,7 +114,8 @@ public class ListCommandsCommand extends CLICommand {
         return 0;
     }
 
-    String[] getLocalCommands() throws CommandException {
+    // XXX - public because AsadminMain uses it
+    public String[] getLocalCommands() throws CommandException {
         List<String> names = new ArrayList<String>();
 
         names.addAll(new CommandTable().keySet());
@@ -128,7 +129,8 @@ public class ListCommandsCommand extends CLICommand {
      *
      * @return the commands as a String array, sorted
      */
-    String[] getRemoteCommands()
+    // XXX - public because AsadminMain uses it
+    public String[] getRemoteCommands()
             throws CommandException, CommandValidationException {
         RemoteCommand cmd =
             new RemoteCommand("list-commands", programOpts, env);
