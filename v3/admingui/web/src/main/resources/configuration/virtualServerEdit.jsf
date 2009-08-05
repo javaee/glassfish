@@ -52,7 +52,7 @@
         setPageSessionAttribute(key="childType" value="virtual-server");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config]/http-service,type=virtual-server,name=#{pageSession.Name}");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        println("#{pageSession.valueMap}");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
