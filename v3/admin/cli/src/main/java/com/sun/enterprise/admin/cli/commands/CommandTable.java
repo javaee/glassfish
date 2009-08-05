@@ -72,5 +72,6 @@ public class CommandTable extends HashMap<String, Class> {
         put("list-domains",             null);
         put("start-database",           null);
         put("stop-database",            null);
+        put("verify-domain-xml",        null);
     }
 }
