@@ -43,7 +43,7 @@ public class WebTest {
     public void doTest() throws Exception {
      
         URL url = new URL("http://" + host  + ":" + port
-            + contextRoot + "/TestServlet?target=DispatchTargetWithPath");
+            + contextRoot + "/TestServlet?target=%2FDispatchTargetWithPath");
         System.out.println("Connecting to: " + url.toString());
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
