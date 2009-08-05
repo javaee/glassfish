@@ -48,7 +48,7 @@ import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import javax.validation.Validator;
 import javax.validation.ValidatorContext;
-import javax.validation.BeanDescriptor;
+import javax.validation.metadata.BeanDescriptor;
 
 /**
  * A WriteableView is a view of a ConfigBean object that allow access to the
