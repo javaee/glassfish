@@ -128,10 +128,6 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
         return null;
     }
 
-    public MessageBytes getContextPathMB() {
-        return null;
-    }
-
     public ServletRequest getRequest() {
         return this;
     }
@@ -141,10 +137,6 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     }
 
     public String getDecodedRequestURI() {
-        return null;
-    }
-
-    public MessageBytes getDecodedRequestURIMB() {
         return null;
     }
 
@@ -172,10 +164,6 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
         pathInfo = path;
     }
 
-    public MessageBytes getPathInfoMB() {
-        return null;
-    }
-
     public MessageBytes getRequestPathMB() {
         return null;
     }
@@ -186,10 +174,6 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
 
     public void setServletPath(String path) {
         servletPath = path;
-    }
-
-    public MessageBytes getServletPathMB() {
-        return null;
     }
 
     public Wrapper getWrapper() {
@@ -211,7 +195,6 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     // END PWC 4707989
 
     public String getAuthorization() { return null; }
-    public void setAuthorization(String authorization) {}
     public Connector getConnector() { return null; }
     public void setConnector(Connector connector) {}
     public Context getContext() { return null; }
@@ -238,7 +221,6 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     public void setProtocol(String protocol) {}
     public void setRemoteAddr(String remoteAddr) {}
     public void setRemoteHost(String remoteHost) {}
-    public void setScheme(String scheme) {}
     public void setServerName(String name) {}
     public void setServerPort(int port) {}
     public Object getAttribute(String name) { return null; }
@@ -274,7 +256,6 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     public void clearParameters() {}
     public void recycle() {}
     public void setAuthType(String authType) {}
-    public void setContextPath(String path) {}
     /* START PWC 4707989
     public void setMethod(String method) {}
     */
@@ -305,7 +286,6 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     public String getRemoteUser() { return null; }
     public String getRequestedSessionId() { return null; }
     public String getRequestURI() { return null; }
-    public void setDecodedRequestURI(String uri) {}
     public StringBuffer getRequestURL() { return null; }
     public HttpSession getSession() { return null; }
     public HttpSession getSession(boolean create) { return null; }

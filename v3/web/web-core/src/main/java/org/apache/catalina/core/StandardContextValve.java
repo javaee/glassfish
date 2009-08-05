@@ -347,15 +347,15 @@ final class StandardContextValve
         // START CR 6415120
         if (request.getCheckRestrictedResources()) {
         // END CR 6415120
-        MessageBytes requestPathMB = hreq.getRequestPathMB();
-        if ((requestPathMB.startsWithIgnoreCase("/META-INF/", 0))
-            || (requestPathMB.equalsIgnoreCase("/META-INF"))
-            || (requestPathMB.startsWithIgnoreCase("/WEB-INF/", 0))
-            || (requestPathMB.equalsIgnoreCase("/WEB-INF"))) {
-            String requestURI = hreq.getDecodedRequestURI();
-            notFound((HttpServletResponse) response.getResponse());
-            return null;
-        }
+            MessageBytes requestPathMB = hreq.getRequestPathMB();
+            if ((requestPathMB.startsWithIgnoreCase("/META-INF/", 0))
+                    || (requestPathMB.equalsIgnoreCase("/META-INF"))
+                    || (requestPathMB.startsWithIgnoreCase("/WEB-INF/", 0))
+                    || (requestPathMB.equalsIgnoreCase("/WEB-INF"))) {
+                String requestURI = hreq.getDecodedRequestURI();
+                notFound((HttpServletResponse) response.getResponse());
+                return null;
+            }
         // START CR 6415120
         }
         // END CR 6415120
