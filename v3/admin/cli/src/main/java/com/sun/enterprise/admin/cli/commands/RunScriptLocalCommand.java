@@ -137,9 +137,9 @@ public final class RunScriptLocalCommand extends RemoteCommand {
             wr.close();
 
             BufferedReader rd = new BufferedReader( new InputStreamReader(conn.getInputStream()));
-            do {
-                System.out.print((char)rd.read());
-            } while (isContinue);
+            int c;
+            while ((c = rd.read()) >= 0)
+                System.out.print((char)c);
             //rd.close();
             return 0;
         } catch(Exception e) {
