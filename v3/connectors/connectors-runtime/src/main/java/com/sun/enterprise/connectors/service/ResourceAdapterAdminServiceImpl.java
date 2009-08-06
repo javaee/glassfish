@@ -222,16 +222,16 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                     + " env =server ? " + (connectorRuntime.isServer()));
 
             if (connectorRuntime.isServer()) {
-                activeResourceAdapter.setup();
+                //Update RAConfig in Connector Descriptor and bind in JNDI
+                //so that ACC clients could use RAConfig
+                updateRAConfigInDescriptor(connectorDescriptor, moduleName);
                 String descriptorJNDIName = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForDescriptor(moduleName);
                 _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
                         + moduleName + " at " + moduleDir
                         + " publishing descriptor " + descriptorJNDIName);
-
-                //Update RAConfig in Connector Descriptor and bind in JNDI
-                //so that ACC clients could use RAConfig
-                updateRAConfigInDescriptor(connectorDescriptor, moduleName);
                 _runtime.getNamingManager().publishObject(descriptorJNDIName, connectorDescriptor, true);
+
+                activeResourceAdapter.setup();
 
                 String securityWarningMessage=
                     connectorRuntime.getSecurityPermissionSpec(moduleName);

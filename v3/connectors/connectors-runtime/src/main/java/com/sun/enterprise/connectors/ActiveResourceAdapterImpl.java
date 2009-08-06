@@ -203,6 +203,12 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
             _logger.log(Level.SEVERE, "rardeployment.defaultpoolresourcecreation.failed", cre);
             _logger.log(Level.FINE, "Error while trying to create the default connector" +
                     "connection pool and resource", cre);
+        } catch (Exception e) {
+            //Connector deployment should _not_ fail if default connector
+            //connector pool and resource creation fails.
+            _logger.log(Level.SEVERE, "rardeployment.defaultpoolresourcecreation.failed", e);
+            _logger.log(Level.FINE, "Error while trying to create the default connector" +
+                    "connection pool and resource", e);
         }
     }
 
