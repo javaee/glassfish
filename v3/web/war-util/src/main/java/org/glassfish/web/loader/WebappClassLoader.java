@@ -57,12 +57,7 @@
 
 package org.glassfish.web.loader;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FilePermission;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -71,16 +66,11 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.AccessControlException;
-import java.security.AccessController;
-import java.security.CodeSource;
-import java.security.Permission;
-import java.security.PermissionCollection;
-import java.security.Policy;
-import java.security.PrivilegedAction;
+import java.security.*;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -153,11 +143,238 @@ public class WebappClassLoader
     extends URLClassLoader
     implements Reloader, InstrumentableClassLoader, PreDestroy
 {
-    private static Logger logger = LogDomains.getLogger(
+    // ------------------------------------------------------- Static Variables
+
+    private static final Logger logger = LogDomains.getLogger(
         WebappClassLoader.class, LogDomains.WEB_LOGGER);
+
+    private static final ResourceBundle rb = logger.getResourceBundle();
+
+    /**
+     * Set of package names which are not allowed to be loaded from a webapp
+     * class loader without delegating first.
+     */
+    private static final String[] packageTriggers = {
+        "javax",                                     // Java extensions
+        // START PE 4985680
+        "sun",                                       // Sun classes
+        // END PE 4985680
+        "org.xml.sax",                               // SAX 1 & 2
+        "org.w3c.dom",                               // DOM 1 & 2
+        "org.apache.taglibs.standard",               // JSTL (Java EE 5)
+        "com.sun.faces",                             // JSF (Java EE 5)
+        "org.apache.commons.logging"                 // Commons logging
+    };
 
     public static final boolean ENABLE_CLEAR_REFERENCES = 
         Boolean.valueOf(System.getProperty("org.apache.catalina.loader.WebappClassLoader.ENABLE_CLEAR_REFERENCES", "true")).booleanValue();
+
+    /**
+     * All permission.
+     */
+    private static final Permission ALL_PERMISSION = new AllPermission();
+
+
+    // ----------------------------------------------------- Instance Variables
+
+    // START PE 4989455
+    /**
+     * Use this variable to invoke the security manager when a resource is
+     * loaded by this classloader.
+     */
+    private boolean packageDefinitionEnabled =
+         System.getProperty("package.definition") == null ? false : true;
+    // END OF PE 4989455
+
+    /**
+     * Associated directory context giving access to the resources in this
+     * webapp.
+     */
+    protected DirContext resources = null;
+
+    /**
+     * The cache of ResourceEntry for classes and resources we have loaded,
+     * keyed by resource name.
+     */
+    protected ConcurrentHashMap<String, ResourceEntry> resourceEntries =
+        new ConcurrentHashMap<String, ResourceEntry>();
+
+    /**
+     * The list of not found resources.
+     */
+    protected ConcurrentHashMap<String, String> notFoundResources =
+        new ConcurrentHashMap<String, String>();
+
+    /**
+     * The debugging detail level of this component.
+     */
+    protected int debug = 0;
+
+    /**
+     * Should this class loader delegate to the parent class loader
+     * <strong>before</strong> searching its own repositories (i.e. the
+     * usual Java2 delegation model)?  If set to <code>false</code>,
+     * this class loader will search its own repositories first, and
+     * delegate to the parent only if the class or resource is not
+     * found locally.
+     */
+    protected boolean delegate = false;
+
+    /**
+     * Last time a JAR was accessed.
+     */
+    protected long lastJarAccessed = 0L;
+
+    /**
+     * The list of local repositories, in the order they should be searched
+     * for locally loaded classes or resources.
+     */
+    protected String[] repositories = new String[0];
+
+    /**
+     * Repositories URLs, used to cache the result of getURLs.
+     */
+    protected URL[] repositoryURLs = null;
+
+    /**
+     * Repositories translated as path in the work directory (for Jasper
+     * originally), but which is used to generate fake URLs should getURLs be
+     * called.
+     */
+    protected File[] files = new File[0];
+
+    /**
+     * The list of JARs, in the order they should be searched
+     * for locally loaded classes or resources.
+     */
+    protected JarFile[] jarFiles = new JarFile[0];
+
+    /**
+     * The list of JARs, in the order they should be searched
+     * for locally loaded classes or resources.
+     */
+    protected File[] jarRealFiles = new File[0];
+
+    /**
+     * The path which will be monitored for added Jar files.
+     */
+    protected String jarPath = null;
+
+    /**
+     * The list of JARs, in the order they should be searched
+     * for locally loaded classes or resources.
+     */
+    protected List<String> jarNames = new ArrayList<String>();
+
+    /**
+     * The list of JARs last modified dates, in the order they should be
+     * searched for locally loaded classes or resources.
+     */
+    protected long[] lastModifiedDates = new long[0];
+
+    /**
+     * The list of resources which should be checked when checking for
+     * modifications.
+     */
+    protected String[] paths = new String[0];
+
+    /**
+     * A list of read File and Jndi Permission's required if this loader
+     * is for a web application context.
+     */
+    private ConcurrentLinkedQueue<Permission> permissionList =
+        new ConcurrentLinkedQueue<Permission>();
+
+    /**
+     * Path where resources loaded from JARs will be extracted.
+     */
+    private File loaderDir = null;
+
+    /**
+     * The PermissionCollection for each CodeSource for a web
+     * application context.
+     */
+    private ConcurrentHashMap<String, PermissionCollection> loaderPC =
+        new ConcurrentHashMap<String, PermissionCollection>();
+
+    /**
+     * Instance of the SecurityManager installed.
+     */
+    private SecurityManager securityManager = null;
+
+    /**
+     * The parent class loader.
+     */
+    private ClassLoader parent = null;
+
+    /**
+     * The system class loader.
+     */
+    private ClassLoader system = null;
+
+    /**
+     * Has this component been started?
+     */
+    protected boolean started = false;
+
+    /**
+     * Has external repositories.
+     */
+    protected boolean hasExternalRepositories = false;
+
+    // START SJSAS 6344989
+    /**
+     * List of byte code pre-processors per webapp class loader.
+     */
+    private ConcurrentLinkedQueue<BytecodePreprocessor> byteCodePreprocessors =
+            new ConcurrentLinkedQueue<BytecodePreprocessor>();
+    // END SJSAS 6344989
+
+    private boolean useMyFaces;
+
+    // START PE 4985680
+    /**
+     * List of packages that may always be overridden, regardless of whether
+     * they belong to a protected namespace (i.e., a namespace that may never
+     * be overridden by any webapp)
+     */
+    private ConcurrentLinkedQueue<String> overridablePackages;
+    // END PE 4985680
+
+
+    // ----------------------------------------------------------- Constructors
+
+    /**
+     * Construct a new ClassLoader with no defined repositories and no
+     * parent ClassLoader.
+     */
+    public WebappClassLoader() {
+        super(new URL[0]);
+        init();
+    }
+
+
+    /**
+     * Construct a new ClassLoader with the given parent ClassLoader,
+     * but no defined repositories.
+     */
+    public WebappClassLoader(ClassLoader parent) {
+        super(new URL[0], parent);
+        init();
+    }
+
+
+    /**
+     * Construct a new ClassLoader with the given parent ClassLoader
+     * and defined repositories.
+     */
+    public WebappClassLoader(URL[] urls, ClassLoader parent) {
+        super(urls, parent);
+        init();
+    }
+
+
+    // ------------------------------------------------------------- Properties
 
     protected class PrivilegedFindResource
         implements PrivilegedAction<ResourceEntry> {
@@ -189,259 +406,6 @@ public class WebappClassLoader
             return clazz.getClassLoader();
         }           
     }
-
-
-
-    // ------------------------------------------------------- Static Variables
-
-
-    /**
-     * Set of package names which are not allowed to be loaded from a webapp
-     * class loader without delegating first.
-     */
-    private static final String[] packageTriggers = {
-        "javax",                                     // Java extensions
-        // START PE 4985680
-        "sun",                                       // Sun classes
-        // END PE 4985680
-        "org.xml.sax",                               // SAX 1 & 2
-        "org.w3c.dom",                               // DOM 1 & 2
-        "org.apache.taglibs.standard",               // JSTL (Java EE 5)
-        "com.sun.faces",                             // JSF (Java EE 5)
-        "org.apache.commons.logging"                 // Commons logging
-    };
-
-    // START PE 4985680
-    /**
-     * List of packages that may always be overridden, regardless of whether
-     * they belong to a protected namespace (i.e., a namespace that may never
-     * be overridden by any webapp)
-     */
-    private ConcurrentLinkedQueue<String> overridablePackages;
-   // END PE 4985680
-
-
-    /**
-     * The string manager for this package.
-     */
-    protected static final StringManager sm =
-        StringManager.getManager(WebappClassLoader.class.getPackage().getName());
-
-
-    // ----------------------------------------------------------- Constructors
-
-
-    /**
-     * Construct a new ClassLoader with no defined repositories and no
-     * parent ClassLoader.
-     */
-    public WebappClassLoader() {
-        super(new URL[0]);
-        init();
-    }
-
-
-    /**
-     * Construct a new ClassLoader with the given parent ClassLoader,
-     * but no defined repositories.
-     */
-    public WebappClassLoader(ClassLoader parent) {
-        super(new URL[0], parent);
-        init();
-    }
-
-
-    /**
-     * Construct a new ClassLoader with the given parent ClassLoader
-     * and defined repositories.
-     */
-    public WebappClassLoader(URL[] urls, ClassLoader parent) {
-        super(urls, parent);
-        init();
-    }
-
-    // ----------------------------------------------------- Instance Variables
-
-    // START PE 4989455
-    /**
-     * Use this variable to invoke the security manager when a resource is
-     * loaded by this classloader.
-     */
-    private boolean packageDefinitionEnabled =
-         System.getProperty("package.definition") == null ? false : true;
-    // END OF PE 4989455
-
-    /**
-     * Associated directory context giving access to the resources in this
-     * webapp.
-     */
-    protected DirContext resources = null;
-
-
-    /**
-     * The cache of ResourceEntry for classes and resources we have loaded,
-     * keyed by resource name.
-     */
-    protected ConcurrentHashMap<String, ResourceEntry> resourceEntries = new ConcurrentHashMap<String, ResourceEntry>();
-
-
-    /**
-     * The list of not found resources.
-     */
-    protected ConcurrentHashMap<String, String> notFoundResources = new ConcurrentHashMap<String, String>();
-
-
-    /**
-     * The debugging detail level of this component.
-     */
-    protected int debug = 0;
-
-
-    /**
-     * Should this class loader delegate to the parent class loader
-     * <strong>before</strong> searching its own repositories (i.e. the
-     * usual Java2 delegation model)?  If set to <code>false</code>,
-     * this class loader will search its own repositories first, and
-     * delegate to the parent only if the class or resource is not
-     * found locally.
-     */
-    protected boolean delegate = false;
-
-
-    /**
-     * Last time a JAR was accessed.
-     */
-    protected long lastJarAccessed = 0L;
-
-
-    /**
-     * The list of local repositories, in the order they should be searched
-     * for locally loaded classes or resources.
-     */
-    protected String[] repositories = new String[0];
-
-
-     /**
-      * Repositories URLs, used to cache the result of getURLs.
-      */
-     protected URL[] repositoryURLs = null;
-
-
-    /**
-     * Repositories translated as path in the work directory (for Jasper
-     * originally), but which is used to generate fake URLs should getURLs be
-     * called.
-     */
-    protected File[] files = new File[0];
-
-
-    /**
-     * The list of JARs, in the order they should be searched
-     * for locally loaded classes or resources.
-     */
-    protected JarFile[] jarFiles = new JarFile[0];
-
-
-    /**
-     * The list of JARs, in the order they should be searched
-     * for locally loaded classes or resources.
-     */
-    protected File[] jarRealFiles = new File[0];
-
-
-    /**
-     * The path which will be monitored for added Jar files.
-     */
-    protected String jarPath = null;
-
-
-    /**
-     * The list of JARs, in the order they should be searched
-     * for locally loaded classes or resources.
-     */
-    protected List<String> jarNames = new ArrayList<String>();
-
-
-    /**
-     * The list of JARs last modified dates, in the order they should be
-     * searched for locally loaded classes or resources.
-     */
-    protected long[] lastModifiedDates = new long[0];
-
-
-    /**
-     * The list of resources which should be checked when checking for
-     * modifications.
-     */
-    protected String[] paths = new String[0];
-
-
-    /**
-     * A list of read File and Jndi Permission's required if this loader
-     * is for a web application context.
-     */
-    private ConcurrentLinkedQueue<Permission> permissionList = new ConcurrentLinkedQueue<Permission>();
-
-
-    /**
-     * Path where resources loaded from JARs will be extracted.
-     */
-    private File loaderDir = null;
-
-
-    /**
-     * The PermissionCollection for each CodeSource for a web
-     * application context.
-     */
-    private ConcurrentHashMap<String, PermissionCollection> loaderPC = new ConcurrentHashMap<String, PermissionCollection>();
-
-
-    /**
-     * Instance of the SecurityManager installed.
-     */
-    private SecurityManager securityManager = null;
-
-
-    /**
-     * The parent class loader.
-     */
-    private ClassLoader parent = null;
-
-
-    /**
-     * The system class loader.
-     */
-    private ClassLoader system = null;
-
-
-    /**
-     * Has this component been started?
-     */
-    protected boolean started = false;
-
-
-    /**
-     * Has external repositories.
-     */
-    protected boolean hasExternalRepositories = false;
-
-
-    /**
-     * All permission.
-     */
-    private Permission allPermission = new java.security.AllPermission();
-
-    // START SJSAS 6344989
-    /**
-     * List of byte code pre-processors per webapp class loader.
-     */
-    private ConcurrentLinkedQueue<BytecodePreprocessor> byteCodePreprocessors =
-            new ConcurrentLinkedQueue<BytecodePreprocessor>();
-    // END SJSAS 6344989
-
-    private boolean useMyFaces;
-
-    // ------------------------------------------------------------- Properties
 
     // START PE 4985680
     /**
@@ -966,9 +930,11 @@ public class WebappClassLoader
                     throw cnfe;
                 }
             } catch (UnsupportedClassVersionError ucve) {
-                throw new UnsupportedClassVersionError(
-                    sm.getString("webappClassLoader.unsupportedVersion", name,
-                                 getJavaVersion()));
+                String msg = rb.getString(
+                    "webappClassLoader.unsupportedVersion");
+                msg = MessageFormat.format(msg,
+                    new Object[] {name, getJavaVersion()});
+                throw new UnsupportedClassVersionError(msg);
             } catch(AccessControlException ace) {
                 throw new ClassNotFoundException(name, ace);
             } catch (RuntimeException e) {
@@ -1386,8 +1352,8 @@ public class WebappClassLoader
 
         // Don't load classes if class loader is stopped
         if (!started) {
-            logger.fine(sm.getString("webappClassLoader.stopped"));
-            throw new Error(this + " not yet started or already stopped");
+            logger.log(Level.SEVERE, "webappClassLoader.stopped", name);
+            return null;
         }
 
         // Check our previously loaded local class cache
@@ -2088,7 +2054,7 @@ public class WebappClassLoader
     protected ResourceEntry findResourceInternal(String name, String path) {
 
         if (!started) {
-            logger.info(sm.getString("webappClassLoader.stopped"));
+            logger.log(Level.SEVERE, "webappClassLoader.stopped", name);
             return null;
         }
 
@@ -2178,7 +2144,7 @@ public class WebappClassLoader
 
                     // Register the full path for modification checking
                     // Note: Only syncing on a 'constant' object is needed
-                    synchronized (allPermission) {
+                    synchronized (ALL_PERMISSION) {
 
                         int j;
 

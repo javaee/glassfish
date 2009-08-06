@@ -32,24 +32,6 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- *
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *
- * Copyright 2004 The Apache Software Foundation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.glassfish.web.loader;
@@ -61,50 +43,54 @@ import java.net.URLClassLoader;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.annotation.HandlesTypes;
 import com.sun.logging.LogDomains;
 import org.apache.naming.Util;
 
 /**
- *  Utility class - contains util methods used for implementation of pluggable Shared Library features
+ * Utility class - contains util methods used for implementation of
+ * pluggable Shared Library features
  *
  *  @author Vijay Ramachandran
  */
 public class ServletContainerInitializerUtil {
 
-    private static Logger log = LogDomains.getLogger(ServletContainerInitializerUtil.class, LogDomains.WEB_LOGGER);
-    private static final StringManager sm =
-        StringManager.getManager(ServletContainerInitializerUtil.class.getPackage().getName());
-
-    public ServletContainerInitializerUtil() {}
+    private static final Logger log = LogDomains.getLogger(
+        ServletContainerInitializerUtil.class, LogDomains.WEB_LOGGER);
 
     /**
-     * Given a class loader, check for ServletContainerInitializer implementations in any JAR file in the classpath,
-     * and build an interest list of which initializer is interested in what class implementations / annotations
+     * Given a class loader, check for ServletContainerInitializer
+     * implementations in any JAR file in the classpath, and build an
+     * interest list of which initializer is interested in what class
+     * implementations / annotations
      *
      * @param cl The ClassLoader to be used to find JAR files
-     * @return  Map<Class<?>,ArrayList<Class<? extends ServletContainerInitializer>>>
-     *                     A Map of classes with list of ServletContainerInitializers interested in them.
-      */
-
-
+     * @return Map of classes with list of ServletContainerInitializers
+     * interested in them
+     */
     public static Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> getInterestList(
             Map<String, String> webFragmentMap, List<String> absoluteOrderingList,
             boolean hasOthers, ClassLoader cl) {
-        // If there is an absoluteOrderingList specified, then ensure that the ServletContainerInitializers in the JARs
-        // that are part of fragment NOT in the absoluteOrderingList do not get included. For this, we remove unwanted
-        // fragment JARs from the class loaders URL
+        /*
+         * If there is an absoluteOrderingList specified, then make sure that
+         * any ServletContainerInitializers included in fragment JARs 
+         * NOT listed in the absoluteOrderingList will be ignored.
+         * For this, we remove any unwanted fragment JARs from the class
+         * loader's URL
+         */
         if((absoluteOrderingList != null) && !hasOthers) {
             if(!(cl instanceof WebappClassLoader)) {
-                log.warning(sm.getString("servletContainerInitializerUtil.wrongClassLoaderType",
-                        cl.getClass().getCanonicalName()));
+                log.log(Level.WARNING,
+                    "servletContainerInitializerUtil.wrongClassLoaderType",
+                    cl.getClass().getCanonicalName());
                 return null;
             }
             WebappClassLoader webAppCl = (WebappClassLoader) cl;
 
-            // Create a new List of URLs with missing fragments removed from the currentUrls
+            // Create a new List of URLs with missing fragments removed from
+            // the currentUrls
             URL[] currentUrlsInClassLoader = webAppCl.getURLs();
             ArrayList<URL> newClassLoaderUrlList = new ArrayList<URL>();
             for (int i=0; i<currentUrlsInClassLoader.length; i++) {
@@ -112,7 +98,8 @@ public class ServletContainerInitializerUtil {
                 if (!"file".equals(currentUrlsInClassLoader[i].getProtocol())) {
                     continue;
                 }
-                File file = new File(Util.URLDecode(currentUrlsInClassLoader[i].getFile()));
+                File file = new File(Util.URLDecode(
+                    currentUrlsInClassLoader[i].getFile()));
                 try {
                     file = file.getCanonicalFile();
                 } catch (IOException e) {
@@ -125,7 +112,8 @@ public class ServletContainerInitializerUtil {
                 if (!path.endsWith(".jar")) {
                     continue;
                 }
-                if (!isFragmentMissingFromAbsoluteOrdering(file.getName(), webFragmentMap, absoluteOrderingList)) {
+                if (!isFragmentMissingFromAbsoluteOrdering(file.getName(),
+                        webFragmentMap, absoluteOrderingList)) {
                     newClassLoaderUrlList.add(currentUrlsInClassLoader[i]);
                 }
             }
@@ -139,7 +127,8 @@ public class ServletContainerInitializerUtil {
         ServiceLoader<ServletContainerInitializer> frameworks =
                 ServiceLoader.load(ServletContainerInitializer.class, cl);
         Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList = null;
-        // Build a list of the classes / annotations in which the initializers are interested in
+        // Build a list of the classes / annotations in which the
+        // initializers are interested in
         for(ServletContainerInitializer sc : frameworks) {
             if(interestList == null) {
                 interestList = new HashMap<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>>();
@@ -196,10 +185,12 @@ public class ServletContainerInitializerUtil {
         if(interestList == null)
             return null;
 
-        // This contains the final list of initializers and the set of classes to be passed to them as arg
+        // This contains the final list of initializers and the set of
+        // classes to be passed to them as arg
         Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList = null;
 
-        //If an initializer was present without @HandleTypes, that initializer should always be called
+        //If an initializer was present without @HandleTypes, that initializer
+        // should always be called
         if(interestList.containsKey(ServletContainerInitializerUtil.class)) {
             initializerList = new HashMap<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>>();
             ArrayList<Class<? extends ServletContainerInitializer>> initializersWithoutHandleTypes =
@@ -209,9 +200,13 @@ public class ServletContainerInitializerUtil {
             }
         }
 
-        //Now scan every class in this app's WEB-INF/classes and WEB-INF/lib to see if any class
-        //uses the annotation or extends/implements a class in our interest list
-        //Do this scanning only if we have ServletContainerinitializers that have expressed specific interest
+        /*
+         * Now scan every class in this app's WEB-INF/classes and WEB-INF/lib
+         * to see if any class uses the annotation or extends/implements a
+         * class in our interest list.
+         * Do this scanning only if we have ServletContainerinitializers that
+         * have expressed specific interest
+         */
         if( (interestList.keySet().size() > 1) ||
             ((interestList.keySet().size() == 1) &&
                     (!interestList.containsKey(ServletContainerInitializerUtil.class)))) {
@@ -234,8 +229,9 @@ public class ServletContainerInitializerUtil {
                                     Class aClass = cl.loadClass(className);
                                     initializerList = checkAgainstInterestList(aClass, interestList, initializerList);
                                 } catch (ClassNotFoundException e) {
-                                    log.warning(sm.getString("servletContainerInitializerUtil.cnfWarning",
-                                            anEntry.getName()));
+                                    log.log(Level.WARNING,
+                                        "servletContainerInitializerUtil.cnfWarning",
+                                        anEntry.getName());
                                     continue;
                                 }
                             }
@@ -245,13 +241,18 @@ public class ServletContainerInitializerUtil {
                     } else {
                         File file = new File(path);
                         if(file.isDirectory()) {
-                            initializerList = scanDirectory(file, path, cl, interestList, initializerList);
+                            initializerList = scanDirectory(file, path, cl,
+                                interestList, initializerList);
                         } else {
-                            log.warning(sm.getString("servletContainerInitializerUtil.unkownFileWarning", path));
+                            log.log(Level.WARNING,
+                                "servletContainerInitializerUtil.unkownFileWarning",
+                                path);
                         }
                     }
                 } catch(IOException ioex) {
-                    log.severe(sm.getString("servletContainerInitializerUtil.ioError", ioex.getLocalizedMessage()));
+                    log.log(Level.SEVERE,
+                        "servletContainerInitializerUtil.ioError",
+                        ioex);
                     return null;
                 }
             }
@@ -297,7 +298,9 @@ public class ServletContainerInitializerUtil {
     }
 
     /**
-     * Given a directory, scan all sub directories looking for classes and build the interest list
+     * Given a directory, scan all sub directories looking for classes and
+     * build the interest list
+     *
      * @param dir the directory to be scanned
      * @param path topmost directory from which scanning started
      * @param cl the classloader to be used
@@ -318,7 +321,9 @@ public class ServletContainerInitializerUtil {
                         Class aClass = cl.loadClass(getClassNameFromPath(fileName, path));
                         initializerList = checkAgainstInterestList(aClass, interestList, initializerList);
                     } catch (ClassNotFoundException e) {
-                        log.warning(sm.getString("servletContainerInitializerUtil.cnfWarning", fileName));
+                        log.log(Level.WARNING,
+                            "servletContainerInitializerUtil.cnfWarning",
+                            fileName);
                         continue;
                     }
                 }
@@ -330,8 +335,9 @@ public class ServletContainerInitializerUtil {
     }
 
     /**
-     * Given the interestList, checks if a given class uses any of the annotations; If so, builds the initializer
-     * list
+     * Given the interestList, checks if a given class uses any of the
+     * annotations; If so, builds the initializer list
+     *
      * @param aClass the class to be examined
      * @param interestList the interestList built earlier
      * @param initializerList the initializerList built so far
