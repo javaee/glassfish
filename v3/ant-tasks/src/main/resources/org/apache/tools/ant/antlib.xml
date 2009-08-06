@@ -49,6 +49,7 @@
     <taskdef name="glassfish-deploy"   classname="org.glassfish.ant.tasks.DeployTask"/>
     <taskdef name="glassfish-undeploy"  classname="org.glassfish.ant.tasks.UndeployTask"/>
     <taskdef name="glassfish-redeploy"  classname="org.glassfish.ant.tasks.RedeployTask"/>
+    <taskdef name="glassfish-component"    classname="org.glassfish.ant.tasks.ComponentTask"/>
 
     <taskdef name="sun-appserv-admin"    classname="org.glassfish.ant.tasks.AdminTask"/>
     <taskdef name="sun-appserv-start"    classname="org.glassfish.ant.tasks.StartServerTask"/>
@@ -57,5 +58,6 @@
     <taskdef name="sun-appserv-undeploy"  classname="org.glassfish.ant.tasks.UndeployTask"/>
     <taskdef name="sun-appserv-redeploy"  classname="org.glassfish.ant.tasks.RedeployTask"/>
     <taskdef name="sun-appserv-update"  classname="org.glassfish.ant.tasks.RedeployTask"/>
+    <taskdef name="sun-appserv-component"    classname="org.glassfish.ant.tasks.ComponentTask"/>
 
 </antlib>
