@@ -96,9 +96,9 @@ public class IdmService implements Init, PostConstruct, IdentityManagement {
         }
         success = verify();
         if (!success)
-            logger.severe("THIS SHOULD BE FIXED, IN EMBEDDED CASE, THERE IS NO MASTER PASSWORD SET ...");
+            logger.warning("THIS SHOULD BE FIXED, IN EMBEDDED CASE, THERE IS NO MASTER PASSWORD SET OR KEYSTORE DOES NOT EXIST ...");
             //throw new RuntimeException("The master password is invalid and keystore/truststore could not be opened");
-        logger.info("OK, finally using a master passsword: " + masterPassword + " REMOVE -- debug statement ....");
+        //logger.info("OK, finally using a master passsword: " + masterPassword + " REMOVE -- debug statement ....");
         setJSSEProperties();
     }
 
