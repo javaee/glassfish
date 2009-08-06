@@ -82,7 +82,7 @@ public interface Profiler extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(key=true)
+    @Attribute(key=false)   // bizarre case of having a name, but it's not a key; it's a singleton
     @NotNull
     public String getName();
 
