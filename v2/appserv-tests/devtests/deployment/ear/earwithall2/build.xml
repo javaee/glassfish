@@ -117,20 +117,20 @@
     <target name="redeploy.jsr88" depends="prepare">
         <antcall target="common.run.jsr88">
             <param name="command" value="redeploy"/>
-            <param name="arg.list" value="${testName}-portable ${portable.ear} ${deployplan.jar}"/>
+            <param name="arg.list" value="${appName} ${portable.ear} ${deployplan.jar}"/>
         </antcall>
     </target>
 
     <target name="redeploy-stream.jsr88" depends="prepare">
         <antcall target="common.run.jsr88">
             <param name="command" value="redeploy-stream"/>
-            <param name="arg.list" value="${testName}-portable ${portable.ear} ${deployplan.jar}"/>
+            <param name="arg.list" value="${appName} ${portable.ear} ${deployplan.jar}"/>
         </antcall>
     </target>
 
     <target name="undeploy.jsr88">
         <antcall target="common.undeploy.jsr88">
-            <param name="arg.list" value="${testName}-portable"/>
+            <param name="arg.list" value="${appName}"/>
         </antcall>
     </target>
 
@@ -145,14 +145,14 @@
     <target name="start.jsr88">
         <antcall target="common.run.jsr88">
             <param name="command" value="start"/>
-            <param name="arg.list" value="${testName}-portable"/>
+            <param name="arg.list" value="${appName}"/>
         </antcall>
     </target>
 
     <target name="stop.jsr88">
         <antcall target="common.run.jsr88">
             <param name="command" value="stop"/>
-            <param name="arg.list" value="${testName}-portable"/>
+            <param name="arg.list" value="${appName}"/>
         </antcall>
     </target>
 
