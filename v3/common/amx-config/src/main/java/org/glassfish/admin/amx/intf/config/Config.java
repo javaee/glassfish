@@ -160,6 +160,8 @@ public interface Config
     @return ManagementRules (may be null );
      */
     public ManagementRules getManagementRules();
+    
+    public JavaConfig getJavaConfig();
 }
 
 
