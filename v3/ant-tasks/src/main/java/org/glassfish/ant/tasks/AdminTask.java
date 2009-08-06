@@ -97,8 +97,12 @@ public class AdminTask extends Task {
         return installDir;
     }
 
-	public void execute() throws BuildException {
-        log ("Running command " + command);
+    public void execute() throws BuildException {
+        execute(this.command);
+    }
+
+	public void execute(String commandExec) throws BuildException {
+        log ("Running command " + commandExec);
         String installDirectory = getInstallDir();
         if (installDirectory == null) {
             log("Install Directory of application server not known. Sepcify either the installDir attribute or the asinstall.dir property",
@@ -113,7 +117,7 @@ public class AdminTask extends Task {
         }
         try {
             Process pr = Runtime.getRuntime().exec(installDirectory + File.separator + "glassfish" +
-                    File.separator + "bin" + File.separator + "asadmin " + command);
+                    File.separator + "bin" + File.separator + "asadmin " + commandExec);
 
             BufferedReader error = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
             String errorLine=null;

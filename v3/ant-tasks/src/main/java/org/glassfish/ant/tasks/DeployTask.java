@@ -43,14 +43,18 @@ import java.util.*;
 
 public class DeployTask extends AdminTask {
 
+    private String action;
     private String file;
     private Component component;
     private List<Component> components = new ArrayList<Component>();
 
     public DeployTask() {
-        setCommand("deploy");
+        setAction("deploy");
     }
 
+    public void setAction(String action) {
+        this.action = action;
+    }
 
     public void setFile(String file) {
         this.file = file;
@@ -129,12 +133,36 @@ public class DeployTask extends AdminTask {
         addCommandParameter("type", type);
     }
 
+    public Component createComponent() {
+        component = new Component();
+        components.add(component);
+        return component;
+    }
+
     public void execute() throws BuildException {
-        if (file == null) {
-            log("File attribute must be specified", Project.MSG_WARN);
+        if (components.size() == 0 && file == null ) {
+            log("File attributes or component must be specified", Project.MSG_WARN);
             return;
         }
-        addCommandOperand(file);
-        super.execute();
+        if (components != null) {
+            processComponents();
+        }
+        if (file != null) {
+            addCommandOperand(file);
+            super.execute(action + " " + getCommand());
+        }
+    }
+
+    private void processComponents() throws BuildException {
+        for (Component comp : components) {
+            if (comp.name != null)
+                comp.addCommandParameter("name", comp.name);
+            if (comp.file == null) {
+                log("File attribute must be specified in component to deploy", Project.MSG_WARN);
+                continue;
+            }
+            comp.addCommandOperand(comp.file);
+            super.execute(action + " " + comp.getCommand());
+        }
     }
 }

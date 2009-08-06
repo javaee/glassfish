@@ -39,7 +39,7 @@ package org.glassfish.ant.tasks;
 public class RedeployTask extends DeployTask {
 
     public RedeployTask() {
-        setCommand("redeploy");
+        setAction("redeploy");
     }
 
     public void setForce(boolean force) {

@@ -36,7 +36,10 @@
 
 package org.glassfish.ant.tasks;
 
-public class Component  {
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.BuildException;
+
+public class Component extends AdminTask {
 
 
     String file, name, contextroot;
@@ -51,22 +54,23 @@ public class Component  {
     }
 
     public void setForce(boolean force) {
-        this.force = force;
+        addCommandParameter("force", Boolean.toString(force));
     }
 
     public void setPrecompilejsp(boolean precompilejsp) {
-        this.precompilejsp = precompilejsp;
+        addCommandParameter("precompilejsp", Boolean.toString(precompilejsp));
     }
 
     public void setContextroot(String contextroot) {
-        this.contextroot = contextroot;
+        addCommandParameter("contextroot", contextroot);
     }
 
-    public void setRetreivestubs(boolean retreivestubs) {
-        this.retreivestubs = retreivestubs;
+    public void setRetreivestubs(String retreive) {
+        addCommandParameter("retrieve", retreive);
     }
 
     public void setVerify(boolean verify) {
-        this.verify = verify;
+        addCommandParameter("verify", Boolean.toString(verify));
     }
+
 }

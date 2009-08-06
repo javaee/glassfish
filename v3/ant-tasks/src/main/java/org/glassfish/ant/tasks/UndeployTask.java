@@ -38,14 +38,19 @@ package org.glassfish.ant.tasks;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.BuildException;
+import java.util.*;
 
 
 public class UndeployTask extends AdminTask {
 
+    private String action = "undeploy";
     private String name;
+    private Component component;
+    private List<Component> components = new ArrayList<Component>();
+
 
     public UndeployTask() {
-        setCommand("undeploy");
+        setCommand(action);
     }
 
 	public void setName(String name) {
@@ -68,12 +73,36 @@ public class UndeployTask extends AdminTask {
         addCommandParameter("keepreposdir", Boolean.toString(keepreposdir));
     }
 
+    public Component createComponent() {
+        component = new Component();
+        components.add(component);
+        return component;
+    }
+
+
     public void execute() throws BuildException {
-        if (name == null) {
-            log("Name of application to be undeployed must be specified", Project.MSG_WARN);
+        if (components.size() == 0 && name == null ) {
+            log("name attribute or component must be specified", Project.MSG_WARN);
             return;
         }
-        addCommandOperand(name);
-        super.execute();
+        if (components != null) {
+            processComponents();
+        }
+        if (name != null) {
+            addCommandOperand(name);
+            super.execute();
+        }
+    }
+
+    private void processComponents() throws BuildException {
+        for (Component comp : components) {
+            if (comp.name == null) {
+                log("name attribute must be specified in component to deploy", Project.MSG_WARN);
+                return;
+            }
+
+            comp.addCommandOperand(comp.name);
+            super.execute(action + " " + comp.getCommand());
+        }
     }
 }
