@@ -271,13 +271,20 @@ public class CMPBeanHelper {
      * @throws IllegalStateException if the PersistenceManager is not null.
      */
     public static void assertPersistenceManagerIsNull(PersistenceManager pm, 
-        Object bean) {
+        Object bean, StringBuffer buf) {
         if (pm != null) {
             String msg = I18NHelper.getMessage(cmpMessages,
                 "JDO.beaninuse_exception", bean); // NOI18N
 
+            // Excption to use only short message
+            IllegalStateException e = new IllegalStateException(msg);
+
+            if (buf != null && buf.length() > 0) {
+                msg = (new StringBuffer(msg)).append(" ...Last Instance Usage: ").  // NOI18N
+                        append(buf).toString(); 
+            }
             cmpInternalLogger.log(Logger.SEVERE, msg);
-            throw new IllegalStateException(msg);
+            throw e;
         }
     }
 
