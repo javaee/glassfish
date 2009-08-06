@@ -16,6 +16,8 @@ public class MyServlet extends HttpServlet {
             ac = req.startAsync();
         } else if ("original".equals(mode)) {
             ac = req.startAsync(req, res);
+        } else if ("wrap".equals(mode)) {
+            ac = req.startAsync(req, res);
         } else {
             throw new ServletException("Invalid mode");
         }
