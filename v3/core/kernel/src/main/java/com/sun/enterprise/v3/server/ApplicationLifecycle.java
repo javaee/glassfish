@@ -181,6 +181,8 @@ public class ApplicationLifecycle implements Deployment {
 
         events.send(new Event<DeploymentContext>(Deployment.DEPLOYMENT_START, context));
         
+        final DeployCommandParameters commandParams = context.getCommandParameters(DeployCommandParameters.class);
+
         ProgressTracker tracker = new ProgressTracker() {
             public void actOn(Logger logger) {
                 for (EngineRef module : get("started", EngineRef.class)) {
@@ -197,9 +199,11 @@ public class ApplicationLifecycle implements Deployment {
                 for (EngineRef module : get("prepared", EngineRef.class)) {
                     module.clean(context);
                 }
+                if (!commandParams.keepfailedstubs) {
+                    context.clean();
+                }
             }
         };
-        DeployCommandParameters commandParams = context.getCommandParameters(DeployCommandParameters.class);
 
         context.setPhase(DeploymentContextImpl.Phase.PREPARE);
         ApplicationInfo appInfo = null;
