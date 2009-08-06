@@ -102,22 +102,6 @@ public final class AMXCoreTests extends AMXTestBase
             }
         }
     }
-
-    @Test(dependsOnMethods = "bootAMX")
-    public void testSystemStatus()
-    {
-        final SystemStatus ss = getDomainRootProxy().getExt().getSystemStatus();
-
-        final List<Object[]> changes = ss.getRestartRequiredChanges();
-
-        final Set<AMXProxy> pools = getQueryMgr().queryType( Util.deduceType(JDBCConnectionPool.class) );
-
-        for (final AMXProxy pool : pools)
-        {
-            final Map<String, Object> result = ss.pingJDBCConnectionPool(pool.getName());
-            assert result != null;
-        }
-    }
     
     @Test
     public void testAMXComplianceMonitorFailureCount()
