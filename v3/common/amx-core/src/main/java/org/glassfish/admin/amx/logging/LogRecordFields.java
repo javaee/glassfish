@@ -62,19 +62,19 @@ public final class LogRecordFields
     public final static int    PRODUCT_NAME_INDEX    = 3;
     
 	/** Value is of class java.lang.Integer */
-    public final static int    MESSAGE_INDEX         = 4;
+    public final static int    MESSAGE_INDEX         = 7;
     
 	/** Value is of class java.lang.String */
-    public final static int    MESSAGE_ID_INDEX      = 5;
+    public final static int    MESSAGE_ID_INDEX      = 6;  //need to extract from the message text
     
 	/** Value is of class java.lang.String */
-    public final static int    MODULE_INDEX          = 6;
+    public final static int    MODULE_INDEX          = 4;
     
 	/** Value is of class java.lang.String */
-    public final static int    NAME_VALUE_PAIRS_INDEX  = 7;
+    public final static int    NAME_VALUE_PAIRS_INDEX  = 5;
     
     /** Number of fields provided by {@link LogQuery#queryServerLog} */
-    public final static int    NUM_FIELDS   = NAME_VALUE_PAIRS_INDEX + 1;
+    public final static int    NUM_FIELDS   = MESSAGE_INDEX + 1;
     
     public final static String THREAD_ID_KEY   = "_ThreadID";
     public final static String OBJECTNAME_KEY   = "_ObjectName";

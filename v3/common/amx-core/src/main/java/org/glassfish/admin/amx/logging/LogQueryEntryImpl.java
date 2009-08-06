@@ -74,13 +74,13 @@ public final class LogQueryEntryImpl
         final Date      date,
         final String    level,
         final String    productName,
-        final String    message,
-        final String    messageID,
         final String    module,
-        final String    nameValuePairs)
+        final String    nameValuePairs,
+        final String    messageID,
+        final String    message)
     {
         if ( date == null || level == null || message == null ||
-            module == null || nameValuePairs == null )
+             nameValuePairs == null )
         {
             throw new IllegalArgumentException();
         }

@@ -186,8 +186,8 @@ public class UniformLogFormatter extends Formatter {
                     for (Object entry : ((Collection)obj)) {
                         buf.append(entry.toString()).append(NVPAIR_SEPARATOR);
                     }
-                } else {
-                    buf.append(obj.toString()).append(NVPAIR_SEPARATOR);
+//                } else {
+//                    buf.append(obj.toString()).append(NVPAIR_SEPARATOR);
                 }
             }
         } catch( Exception e ) {

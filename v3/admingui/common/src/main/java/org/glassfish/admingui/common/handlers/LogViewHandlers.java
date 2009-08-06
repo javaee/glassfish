@@ -354,9 +354,9 @@ public class LogViewHandlers {
             // Set the first / last record numbers as attributes
             if (query != null && query.length > 0) {
                 handlerCtx.setOutputValue("FirstLogRow",
-                        ((LogQueryEntry) query[0]).getRecordNumber());
+                        ((LogQueryEntry) query[1]).getRecordNumber());
                 handlerCtx.setOutputValue("LastLogRow",
-                        ((LogQueryEntry) query[query.length - 1]).getRecordNumber());
+                        ((LogQueryEntry) query[query.length -1]).getRecordNumber());
                 hasResults = new Boolean(true);
             } else {
                 handlerCtx.setOutputValue("FirstLogRow", "-1");
