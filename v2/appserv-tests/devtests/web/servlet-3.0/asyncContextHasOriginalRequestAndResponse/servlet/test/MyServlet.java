@@ -11,11 +11,13 @@ public class MyServlet extends HttpServlet {
     public void service(ServletRequest req, ServletResponse res)
             throws IOException, ServletException {
         AsyncContext ac = null;
-        boolean isWrap = Boolean.parseBoolean(req.getParameter("wrap"));
-        if (isWrap) {
+        String mode = req.getParameter("mode");
+        if ("noarg".equals(mode)) {
+            ac = req.startAsync();
+        } else if ("original".equals(mode)) {
             ac = req.startAsync(req, res);
         } else {
-            ac = req.startAsync();
+            throw new ServletException("Invalid mode");
         }
     }
 }

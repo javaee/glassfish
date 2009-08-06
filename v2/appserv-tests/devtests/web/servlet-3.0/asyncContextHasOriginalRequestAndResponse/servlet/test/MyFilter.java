@@ -16,12 +16,16 @@ public class MyFilter implements Filter {
                 throws IOException, ServletException {
         chain.doFilter(request, response);
         AsyncContext ac = request.getAsyncContext();
-        boolean isWrap = Boolean.parseBoolean(request.getParameter("wrap"));
-        if (isWrap && ac.hasOriginalRequestAndResponse()) {
+        String mode = request.getParameter("mode");
+        if (!"noarg".equals(mode) && !"original".equals(mode)) {
+            throw new ServletException("Invalid mode");
+        }
+        if ("noarg".equals(mode) && !ac.hasOriginalRequestAndResponse()) {
             throw new ServletException("AsyncContext supposed to have been " +
-                                       "initialized with " +
-                                       "request/response wrappers");
-        } else if (!isWrap && !ac.hasOriginalRequestAndResponse()) {
+                                       "initialized with original " +
+                                       "request/response");
+        } else if ("original".equals(mode) &&
+                !ac.hasOriginalRequestAndResponse()) {
             throw new ServletException("AsyncContext supposed to have been " +
                                        "initialized with original " +
                                        "request/response");

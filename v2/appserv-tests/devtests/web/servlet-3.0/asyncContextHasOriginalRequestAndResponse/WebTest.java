@@ -29,8 +29,8 @@ public class WebTest {
         WebTest webTest = new WebTest(args);
 
         try {
-            webTest.doTest("wrap=true");
-            webTest.doTest("wrap=false");
+            webTest.doTest("mode=noarg");
+            webTest.doTest("mode=original");
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
