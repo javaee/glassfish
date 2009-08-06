@@ -67,7 +67,17 @@ public class UnitTest {
             System.err.println("+++GF location: " + gf);
             p.put("glassfish.ejb.embedded.glassfish.installation", gf);
         } else {
-            System.err.println("+++GF location NOT specified via GF_HOME");
+            // Try from -D option
+            gf = System.getProperty("GF_HOME");
+            if (gf != null) {
+                System.err.println("+++GF location: " + gf);
+                p.put("glassfish.ejb.embedded.glassfish.installation", gf);
+            } 
+
+            if (gf == null) {
+                // Still null
+                System.err.println("+++GF location NOT specified via GF_HOME");
+            }
         }
 
         EJBContainer c = EJBContainer.createEJBContainer(p);
