@@ -78,8 +78,8 @@ public class UnitTest {
             SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/test-classes/SimpleEjb");
             if (ejb!=null) {
                 System.out.println("Invoking EJB...");
-                System.out.println(ejb.saySomething());
-                System.out.println(ejb.testJPA());
+                System.out.println("EJB said: " + ejb.saySomething());
+                System.out.println("JPA call returned: " + ejb.testJPA());
             }
         } catch (Exception e) {
             System.out.println("ERROR calling EJB:");
@@ -102,5 +102,10 @@ public class UnitTest {
         c.close();
 
         System.out.println("..........FINISHED UnitTest");
+    }
+
+    public static void main(String[] s) {
+        UnitTest t = new UnitTest();
+        t.test();
     }
 }
