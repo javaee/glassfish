@@ -194,6 +194,8 @@ public class ConnectorConnectionPool implements Serializable {
                 (getConCreationRetryInterval());
         clone.setConCreationRetryAttempts(getConCreationRetryAttempts());
         clone.setPreferValidateOverRecreate(isPreferValidateOverRecreate());
+        clone.setPooling(isPoolingOn());
+        clone.setPingDuringPoolCreation(getPingDuringPoolCreation());
         //TODO add all new attributes added.
         return clone;
     }
