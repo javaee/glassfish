@@ -76,7 +76,7 @@ public class TargetModuleIDImpl implements TargetModuleID {
      * @param moduleID the name of the module
      */
     public TargetModuleIDImpl(TargetImpl target, String moduleID) {
-        this(target, moduleID, null, null);
+        this(target, moduleID, null, new TargetModuleIDImpl[0]);
     }
     /**
      * Returns the Target on which the module is deployed.

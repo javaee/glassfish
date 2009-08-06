@@ -721,14 +721,9 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
 
             HostAndPort hap = null;
             if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
-                Iterator subIter = mainStatus.getSubStages(); 
-                if (subIter.hasNext()) {
-                    DFDeploymentStatus subStage =
-                        (DFDeploymentStatus) subIter.next();
-                    String hostPortStr = subStage.getStageStatusMessage();
-                    if (hostPortStr != null && !hostPortStr.trim().equals("")) {
-                        hap = new HostAndPort(hostPortStr);
-                    }
+                String hostPortStr = mainStatus.getStageStatusMessage();
+                if (hostPortStr != null && !hostPortStr.trim().equals("")) {
+                    hap = new HostAndPort(hostPortStr);
                 }
                 return hap;
             } else {
