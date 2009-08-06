@@ -95,17 +95,17 @@ public class StartWebTask extends Task {
         */
         
         server = new Server.Builder(serverID).build();
-        server.createPort(port);
-
-        ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
-           server.addContainer(b);
-
-        docroot = new File(server.getFileSystem().instanceRoot, "docroot");
-        ((WebBuilder)b).setDocRootDir(docroot);
-        EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
-        embedded.setConfiguration((WebBuilder)b);
-
         try {
+            server.createPort(port);
+
+            ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
+            server.addContainer(b);
+
+            docroot = new File(server.getFileSystem().instanceRoot, "docroot");
+            ((WebBuilder)b).setDocRootDir(docroot);
+            EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
+            embedded.setConfiguration((WebBuilder)b);
+
             embedded.start();
         } catch (Exception ex) {
             ex.printStackTrace();

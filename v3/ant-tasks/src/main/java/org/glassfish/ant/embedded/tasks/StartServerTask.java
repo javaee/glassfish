@@ -66,7 +66,6 @@ public class StartServerTask extends Task {
 	public void execute() throws BuildException {
         log ("Starting server - all containers");
         Server server = new Server.Builder(serverID).build();
-        server.createPort(port);
         server.addContainer(ContainerBuilder.Type.all);
 
         ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
@@ -82,9 +81,10 @@ public class StartServerTask extends Task {
         embedded.setConfiguration((WebBuilder)b);
 
         try {
+            server.createPort(port);
             server.start();
         } catch (Exception ex) {
-            log(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 }
