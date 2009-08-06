@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="471"/>
+    <property name="TOTAL_EXPECTED" value="472"/>
 
     &commonSetup;
     &commonBuild;
@@ -258,6 +258,7 @@
         <ant dir="servlet-3.0/asyncContextHasOriginalRequestAndResponse" target="all"/>
         <ant dir="servlet-3.0/asyncTimeoutNoListener" target="all"/>
         <ant dir="errorPageHandlingForError" target="all"/>
+        <ant dir="servlet-3.0/multipart" target="all"/>
     </target>
 
     <target name="web-container">
