@@ -82,20 +82,17 @@ public interface SystemStatus extends AMXProxy, Utility, Singleton
     of the list and/or merge related changes to the most recent.
     <p>
     Over the wire transmission of 'UnprocessedConfigChange' would require the client to have its class;
-    as delivered the Object[] contains only standard JDK types.
+    as delivered the Object[] contains only standard JDK types. Actual over-the-wire type is List<Object[].
     See the Javadoc for {@link UnprocessedConfigChange} for the order of values in the Object[].
-    Clients with access to the class can use {@link SystemStatus.Helper#toUnprocessedConfigChange}
      */
     @ManagedAttribute
+    @Taxonomy(stability = Stability.UNCOMMITTED)
     public List<Object[]> getRestartRequiredChanges();
 
     /** helper class, in particular to convert results from {@link #getRestartRequiredChanges} */
     public final class Helper
     {
-        private Helper()
-        {
-        }
-
+        private Helper() {}
         public static List<UnprocessedConfigChange> toUnprocessedConfigChange(final List<Object[]> items)
         {
             final List<UnprocessedConfigChange> l = new java.util.ArrayList<UnprocessedConfigChange>();
@@ -105,9 +102,9 @@ public interface SystemStatus extends AMXProxy, Utility, Singleton
             }
             return l;
         }
-
     }
 }
+
 
 
 
