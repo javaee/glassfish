@@ -527,9 +527,21 @@ public final class AMXValidator
         {
             return;
         }
-
-        // check default values support
         final AMXConfigProxy config = proxy.as(AMXConfigProxy.class);
+
+        // All AMXConfig must be descendants of Domain
+        if ( ! config.type().equals( "domain" ) )   // hard-coded type, we can't import Domain.class here
+        {
+            // verify that all its ancestors are also AMXConfig
+            // Do a quick check, ultimately if all AMXConfig have an AMXConfig as a parent,
+            // then they all have DomainConfig as a parent.
+            if ( ! AMXConfigProxy.class.isAssignableFrom(config.parent().extra().genericInterface() ) )
+            {
+                problems.add("AMXConfig MBean is not a descendant of Domain: " + config.objectName() );
+            }
+        }
+        
+        // check default values support
         final Map<String, String> defaultValues = config.getDefaultValues(false);
         final Map<String, String> defaultValuesAMX = config.getDefaultValues(true);
         if (defaultValues.keySet().size() != defaultValuesAMX.keySet().size())
