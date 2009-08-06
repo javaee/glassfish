@@ -315,6 +315,23 @@ public final class LDAPRealm extends IASRealm
     {
         return AUTH_TYPE;
     }
+
+    private String[] addMappedGroupNames(String[] grpList) {
+
+        if (groupMapper == null) {
+            return grpList;
+        }
+        ArrayList<String> finalresult = new ArrayList<String>();
+        for (String grp : grpList) {
+            ArrayList<String> result = new ArrayList<String>();
+            groupMapper.getMappedGroups(grp, result);
+            finalresult.add(grp);
+            if (!result.isEmpty()) {
+                finalresult.addAll(result);
+            }
+        }
+        return finalresult.toArray(new String[finalresult.size()]);
+    }
     
     /**
      * Get binding properties defined in server.xml for LDAP server.
@@ -454,6 +471,7 @@ public final class LDAPRealm extends IASRealm
             }
         }
         grpList = addAssignGroups(grpList);
+        grpList = this.addMappedGroupNames(grpList);
         setGroupNames(_username, grpList);
 
         if(_logger.isLoggable(Level.FINE)){
