@@ -342,7 +342,7 @@ public class ConfigBeanJMXSupport
         {
             if (hasNameAttribute())
             {
-                ImplUtil.getLogger().warning("ConfigBeanJMXSupport (AMX): @Configured interface " + mIntf.getName() +
+                ImplUtil.getLogger().fine("ConfigBeanJMXSupport (AMX): @Configured interface " + mIntf.getName() +
                                              " has getName() which is not a key value.  Remove getName() or use @Attribute(key=true)");
             }
         }
@@ -494,6 +494,10 @@ public class ConfigBeanJMXSupport
             if ((a = AttributeMethodInfo.get(m)) != null)
             {
                 attrs.add(a);
+                if ( a.returnType() != String.class )
+                {
+                    ImplUtil.getLogger().info("Illegal non-string type for " + intf.getName() + "." + m.getName() + "(): " + a.returnType().getName() );
+                }
                 continue;
             }
 
