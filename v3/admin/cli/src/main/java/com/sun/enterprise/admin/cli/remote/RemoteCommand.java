@@ -631,7 +631,9 @@ public class RemoteCommand extends CLICommand {
                         Boolean.parseBoolean(getAttr(attrs, "optional")) ?
                             ValidOption.OPTIONAL : ValidOption.REQUIRED,
                         getAttr(attrs, "default"));
-                opt.setShortName(getAttr(attrs, "short"));
+                String sn = getAttr(attrs, "short");
+                if (ok(sn))
+                    opt.setShortName(sn);
                 if (opt.getType().equals("PASSWORD") &&
                         getAttr(attrs, "description") != null)
                     // XXX - hack alert!  description is stored in default value

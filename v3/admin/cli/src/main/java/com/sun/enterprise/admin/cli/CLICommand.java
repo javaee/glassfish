@@ -359,9 +359,10 @@ public abstract class CLICommand {
             String defValue = opt.getDefaultValue();
             if (optional)
                 usageText.append("[");
-            Vector sn = opt.getShortNames();    // XXX - why Vector?
-            if (sn.size() > 0)                  // assume one
+            if (opt.hasShortName()) {
+                Vector<String> sn = opt.getShortNames(); // XXX - why Vector?
                 usageText.append('-').append(sn.get(0)).append('|');
+            }
             usageText.append("--").append(optName);
 
             if (opt.getType().equals("BOOLEAN")) {
@@ -454,12 +455,39 @@ public abstract class CLICommand {
                 programOpts.updateOptions(params);
                 initializeLogger();
                 initializePasswords();
-                // warn about deprecated use of program options
-                Set<String> names = params.keySet();
-                String[] na = names.toArray(new String[names.size()]);
-                System.out.println("Deprecated syntax: " + name +
-                        ", Options: " + Arrays.toString(na));
-                // XXX - recommend correct syntax
+                if (!programOpts.isTerse()) {
+                    // warn about deprecated use of program options
+                    // XXX - a lot of work for a nice message...
+                    Set<ValidOption> programOptions =
+                            ProgramOptions.getValidOptions();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("asadmin");
+                    for (Map.Entry<String, String> p : params.entrySet()) {
+                        // find the corresponding ValidOption
+                        ValidOption opt = null;
+                        for (ValidOption vo : programOptions) {
+                            if (vo.getName().equals(p.getKey())) {
+                                opt = vo;
+                                break;
+                            }
+                        }
+                        if (opt == null)        // should never happen
+                            continue;
+
+                        // format the option appropriately
+                        sb.append(" --").append(p.getKey());
+                        if (opt.getType().equals("BOOLEAN")) {
+                            if (!p.getValue().equalsIgnoreCase("true"))
+                                sb.append("=false");
+                        } else {
+                            if (ok(p.getValue()))
+                                sb.append(" ").append(p.getValue());
+                        }
+                    }
+                    sb.append(" ").append(name).append(" [options] ...");
+                    logger.printMessage(strings.get("DeprecatedSyntax"));
+                    logger.printMessage(sb.toString());
+                }
             }
         }
     }
