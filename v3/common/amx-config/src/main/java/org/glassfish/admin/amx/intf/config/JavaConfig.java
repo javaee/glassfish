@@ -116,5 +116,5 @@ public interface JavaConfig
 
     public void setServerClasspath(String value);
 
-
+    public Profiler getProfiler();
 }
