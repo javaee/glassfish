@@ -213,9 +213,9 @@ public class AsadminMain {
      */
     private static void printUsage() {
         CLILogger.getInstance().printError(
-"Usage: asadmin [--host localhost] [--port 4848] [--user anonymous]\n" +
-"\t[--passwordfile file] [--secure=true/false] [--echo=true/false]\n" +
-"\t[--interactive=true/false] [--help] [command [options] [operands]]");
+"Usage: asadmin [-H|--host localhost] [-p|--port 4848] [-u|--user anonymous]\n"+
+"\t[-W|--passwordfile file] [-s|--secure=false] [-e|--echo=false]\n" +
+"\t[-I|--interactive=true] [-?|--help] [command [options] [operands]]");
     }
 
     /**
@@ -232,7 +232,8 @@ public class AsadminMain {
     /**
      * Return all commands, local and remote.
      */
-    private static String[] getAllCommands(ProgramOptions po,
+    // XXX - public only because it's used by MultimodeCommand
+    public static String[] getAllCommands(ProgramOptions po,
                                 Environment env) {
         try {
             ListCommandsCommand lcc =
@@ -256,7 +257,8 @@ public class AsadminMain {
     /**
      * Return all the known local commands.
      */
-    private static String[] getLocalCommands(ProgramOptions po,
+    // XXX - public only because it's used by MultimodeCommand
+    public static String[] getLocalCommands(ProgramOptions po,
                                 Environment env) {
         try {
             ListCommandsCommand lcc =
@@ -271,7 +273,8 @@ public class AsadminMain {
      * Display the command from the list that are the closest match
      * to the specified command.
      */
-    private static void displayClosestMatch(final String commandName,
+    // XXX - public only because it's used by MultimodeCommand
+    public static void displayClosestMatch(final String commandName,
                                final String[] commands, final String msg)
                                throws InvalidCommandException {
         try {
@@ -332,6 +335,7 @@ public class AsadminMain {
         return matchedCommands.toArray(new String[matchedCommands.size()]);
     }
 
+    // XXX - public only because it's used by MultimodeCommand
     public static void writeCommandToDebugLog(String[] args, int exit) {
         File log = getDebugLogfile();
 

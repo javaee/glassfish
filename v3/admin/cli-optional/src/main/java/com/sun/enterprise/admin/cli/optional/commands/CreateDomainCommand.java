@@ -171,6 +171,17 @@ public final class CreateDomainCommand extends CLICommand {
     }
 
     /**
+     * Add --user as a required option in the usage message,
+     * since that's how we handle it below in validate().
+     */
+    protected Set<ValidOption> usageOptions() {
+        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
+        addOption(opts, "user", '\0', "STRING", true, null);
+        opts.addAll(commandOpts);
+        return opts;
+    }
+
+    /**
      * The validate method validates that the type and quantity of
      * parameters and operands matches the requirements for this
      * command.  The validate method supplies missing options from

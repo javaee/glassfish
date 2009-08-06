@@ -305,16 +305,52 @@ public abstract class CLICommand {
 
     /**
      * Get the usage text.
-     * XXX - need to handle program options.
      *
      * @return usage text
      */
     public String getUsage() {
-        StringBuffer usageText = new StringBuffer();
+        StringBuilder usageText = new StringBuilder();
         usageText.append("Usage: ");
+        usageText.append("asadmin [asadmin-program-options] ");
+        // could include all the asadmin options like this...
+        //addOptionUsage(ProgramOptions.getValidOptions(), usageText);
+        //usageText.append(" ");
         usageText.append(getName());
         usageText.append(" ");
-        for (ValidOption opt : commandOpts) {
+        addOptionUsage(usageOptions(), usageText);
+
+        String opname = operandName;
+        if (!ok(opname))
+            opname = "operand";
+        if (operandMax > 0) {
+            if (operandMin == 0) {
+                usageText.append("[").append(opname);
+                if (operandMax > 1)
+                    usageText.append(" ...");
+                usageText.append("] ");
+            } else {
+                usageText.append(opname);
+                if (operandMax > 1)
+                    usageText.append(" ...");
+                usageText.append(" ");
+            }
+        }
+        return usageText.toString();
+    }
+
+    /**
+     * Subclasses can override this method to supply additional
+     * or different options that should be part of the usage text.
+     * Most commands will never need to do this, but the create-domain
+     * command uses it to include the --user option as a required option.
+     */
+    protected Set<ValidOption> usageOptions() {
+        return commandOpts;
+    }
+
+    private void addOptionUsage(Set<ValidOption> options,
+                                StringBuilder usageText) {
+        for (ValidOption opt : options) {
             final String optName = opt.getName();
             // do not want to display password as an option
             if (opt.getType().equals("PASSWORD"))
@@ -323,6 +359,9 @@ public abstract class CLICommand {
             String defValue = opt.getDefaultValue();
             if (optional)
                 usageText.append("[");
+            Vector sn = opt.getShortNames();    // XXX - why Vector?
+            if (sn.size() > 0)                  // assume one
+                usageText.append('-').append(sn.get(0)).append('|');
             usageText.append("--").append(optName);
 
             if (opt.getType().equals("BOOLEAN")) {
@@ -341,25 +380,6 @@ public abstract class CLICommand {
             else
                 usageText.append(" ");
         }
-
-        String opname = operandName;
-        if (!ok(opname))
-            opname = "operand";
-        if (operandMax > 0) {
-            if (operandMin == 0) {
-                usageText.append("[").append(opname);
-                if (operandMax > 1)
-                    usageText.append(" ...");
-                usageText.append("] ");
-            } else {
-                usageText.append(opname);
-                if (operandMax > 1)
-                    usageText.append(" ...");
-                usageText.append(" ");
-            }
-        }
-
-        return usageText.toString();
     }
 
     /**

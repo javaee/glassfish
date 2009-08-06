@@ -41,6 +41,7 @@ import java.util.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.cli.framework.ValidOption;
 import com.sun.enterprise.cli.framework.CommandException;
+import com.sun.enterprise.cli.framework.InvalidCommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
@@ -181,6 +182,7 @@ public class MultimodeCommand extends CLICommand {
                 break;
 
             CLICommand cmd = null;
+            ProgramOptions po = null;
             try {
                 /*
                  * Every command gets its own copy of program options
@@ -188,7 +190,7 @@ public class MultimodeCommand extends CLICommand {
                  * command line options don't effect other commands.
                  * But all commands share the same environment.
                  */
-                ProgramOptions po = new ProgramOptions(env);
+                po = new ProgramOptions(env);
                 // copy over AsadminMain info
                 po.setProgramArguments(programOpts.getProgramArguments());
                 po.setClassPath(programOpts.getClassPath());
@@ -200,7 +202,29 @@ public class MultimodeCommand extends CLICommand {
                 logger.printError(cmd.getUsage());
                 rc = ERROR;
             } catch (CommandException ce) {
-                logger.printError(ce.getMessage());
+                if (ce.getCause() instanceof InvalidCommandException) {
+                    // find closest match with local or remote commands
+                    logger.printError(ce.getMessage());
+                    try {
+                        AsadminMain.displayClosestMatch(command,
+                            AsadminMain.getAllCommands(po, env),
+                           strings.get("ClosestMatchedLocalAndRemoteCommands"));
+                    } catch (InvalidCommandException e) {
+                        // not a big deal if we cannot help
+                    }
+                } else if (ce.getCause() instanceof java.net.ConnectException) {
+                    // find closest match with local commands
+                    logger.printError(ce.getMessage());
+                    try {
+                        AsadminMain.displayClosestMatch(command,
+                            AsadminMain.getLocalCommands(po, env),
+                            strings.get("ClosestMatchedLocalCommands"));
+                    } catch (InvalidCommandException e) {
+                        logger.printMessage(
+                                strings.get("InvalidRemoteCommand", command));
+                    }
+                } else
+                    logger.printError(ce.getMessage());
                 rc = ERROR;
             }
 
@@ -218,29 +242,11 @@ public class MultimodeCommand extends CLICommand {
                 break;
 
             case INVALID_COMMAND_ERROR:
-                /* XXX
-                try {
-                    CLIMain.displayClosestMatch(command,
-                        main.getRemoteCommands(),
-                        strings.get("ClosestMatchedLocalAndRemoteCommands"));
-                } catch (InvalidCommandException e) {
-                    // not a big deal if we cannot help
-                }
-                */
                 logger.printDetailMessage(
                     strings.get("CommandUnSuccessful", command));
                 break;
 
             case CONNECTION_ERROR:
-                /* XXX
-                try {
-                    CLIMain.displayClosestMatch(command, null,
-                        strings.get("ClosestMatchedLocalCommands"));
-                } catch (InvalidCommandException e) {
-                    logger.printMessage(
-                            strings.get("InvalidRemoteCommand", command));
-                }
-                */
                 logger.printDetailMessage(
                     strings.get("CommandUnSuccessful", command));
                 break;

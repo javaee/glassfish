@@ -95,7 +95,6 @@ public class ProgramOptions {
                 "" + CLIConstants.DEFAULT_ADMIN_PORT);
         addMetaOption(opts, USER, 'u', "STRING", false,
                 SystemPropertyConstants.DEFAULT_ADMIN_USER);
-        addMetaOption(opts, "password", 'w', "STRING", false, null);
         addMetaOption(opts, PASSWORDFILE, 'W', "FILE", false, null);
         addMetaOption(opts, SECURE, 's', "BOOLEAN", false, "false");
         addMetaOption(opts, TERSE, 't', "BOOLEAN", false, "false");
