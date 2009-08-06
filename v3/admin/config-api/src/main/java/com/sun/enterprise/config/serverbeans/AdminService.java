@@ -46,6 +46,8 @@ import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.*;
 
+import javax.validation.constraints.NotNull;
+
 /* @XmlType(name = "", propOrder = {
     "jmxConnector",
     "dasConfig",
@@ -136,63 +138,17 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
     @Element
     List<Property> getProperty();
 
-    /** Gets the name of the admin realm. This is the auth realm that all admin accesses should use. If there exists
-     *  a property named <code>administration-auth-realm-name</code> then its value denotes the admin realm. If such
-     *  a property does not exist, the name of the admin realm is fixed to be <code> admin-realm</code>. In any case,
-     *  such named &lt;auth-realm> must exist in the configuration under &lt;security-service>.
+
+    /** Gets the name of the auth realm to be used for administration. This obsoletes/deprecates the similarly named
+     *  attribute on JmxConnector. Note that this is of essence where admin access is done outside the containers.
+     *  Container managed security is still applicable and is handled via security annotations and deployment
+     *  descriptors of the admin applications (aka admin GUI application, MEjb application).
      *
-     * @return name of the realm to used for admin access
+     * @return name of the auth realm to be used for admin access
      */
-    @DuckTyped
-    String getAdminRealmName();
+    @Attribute //(defaultValue="admin-realm") //there's a reason this is commented out
+    @NotNull
+    String getAuthRealmName();
 
-    /** Sets the name of the realm for admin access to given name. The name may not be null.
-     *
-     * @param to
-     */
-    @DuckTyped
-    void setAdminRealmName(String to);
-
-    class Duck {
-        static String DEF = "admin-realm";  //this is the default name for an AuthRealm instance to be used for admin
-        static String PROP_NAME = "administration-auth-realm-name"; //name of the property
-
-        public static String getAdminRealmName(AdminService as) {
-            String adminRealmName = DEF; //same as DEF, by default;
-            List<Property> props = as.getProperty();
-            for(Property p : props) {
-                if (PROP_NAME.equals(p.getName())) {
-                    adminRealmName = p.getValue();     //someone has configured it
-                    break;
-                }
-            }
-            //ensure that this realm exists
-            List<AuthRealm> realms = ((Config)as.getParent()).getSecurityService().getAuthRealm(); //this assumes that <config> is parent of <admin-service>
-            boolean exists = false;
-            for (AuthRealm realm : realms) {
-                if (realm.getName().equals(adminRealmName)) {
-                    exists = true;
-                    break;
-                }
-            }
-            if (!exists) {
-                throw new RuntimeException ("The realm for administration named: " + adminRealmName + " does not exist in the configuration. Create the Realm first.");
-            }
-            return adminRealmName;
-        }
-
-        public static void setAdminRealmName(AdminService as, String to) throws PropertyVetoException, TransactionFailure {
-            List<Property> props = as.getProperty();
-            for(Property p : props) {
-                if (PROP_NAME.equals(p.getName())) {
-                    p.setValue(to);
-                    return;
-                }
-            }
-            Property np = as.createChild(Property.class);
-            np.setName(PROP_NAME);
-            np.setValue(to);
-            props.add(np);
-        }
-    }
+    void setAuthRealmName(String name);
 }

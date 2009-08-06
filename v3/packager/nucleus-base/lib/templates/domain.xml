@@ -40,7 +40,7 @@
           <ssl cert-nickname="s1as" client-auth-enabled="true" />
         </iiop-listener>
       </iiop-service>
-      <admin-service type="das-and-server" system-jmx-connector-name="system">
+      <admin-service auth-realm-name="admin-realm" type="das-and-server" system-jmx-connector-name="system">
         <jmx-connector auth-realm-name="admin-realm" security-enabled="false" address="0.0.0.0" port="%%%JMX_SYSTEM_CONNECTOR_PORT%%%" name="system" />
         <das-config autodeploy-enabled="true" dynamic-reload-enabled="true" deploy-xml-validation="full" autodeploy-dir="${com.sun.aas.instanceRoot}/autodeploy" />
         <property value="/admin" name="adminConsoleContextRoot" />

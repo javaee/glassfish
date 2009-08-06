@@ -46,6 +46,7 @@ import org.glassfish.api.ActionReport;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.security.auth.realm.ldap.LDAPRealm;
+import com.sun.enterprise.security.auth.realm.Realm;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -63,9 +64,6 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
 
     @Param (name="basedn", shortName="b", optional=false)
     public volatile String basedn;
-    
-    @Param(name="new admin realm name", optional=true, primary=true)
-    public volatile String name = "ldap-admin-realm";  // the default value is ldap-admin-realm
 
     @Param(name="url", shortName="u", optional=true)
     public volatile String url = "ldap://localhost:389"; // the default ports for LDAP on localhost
@@ -73,6 +71,9 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
     @Param(name="ping", shortName="p", optional=true, defaultValue="false")
     public volatile Boolean ping = Boolean.FALSE;
 
+    @Param(name="ldap-group", shortName="g", optional=false)
+    public volatile String ldapGroupName;         //required option, can't be null
+    
     @Inject
     Configs allConfigs;
 
@@ -82,7 +83,14 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
     private static final String BASEDN_P = "base-dn";
     private static final String JAAS_P   = "jaas-context";
     private static final String JAAS_V   = "ldapRealm";
-    
+
+    /** Field denoting the name of the realm used for administration. This is fixed in entire of v3. Note that
+     *  the same name is used in admin GUI's web.xml and sun-web.xml. The name of the realm is the key, the
+     *  underlying backend (LDAP, File, Database) can change.
+     */
+    public static final String FIXED_ADMIN_REALM_NAME = "admin-realm";
+    public static final String ORIG_ADMIN_REALM_NAME  = "admin-realm-original";
+
     public void execute(AdminCommandContext context) {
         ActionReport rep = context.getActionReport();
         StringBuilder sb = new StringBuilder();
@@ -114,61 +122,76 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
                 break;
             }
         }
-        //if (asc == null) --> no admin server config, we are in biig trouble, it's almost an assertion that this is non-null
-        if (realmExists(asc)) {
-            sb.append(lsm.getString("realm.exists", name)); //do nothing
-            return;
-        }
         //following things should happen transactionally - TODO replace SingleConfigCode by ConfigCode ...
-        createIt(asc.getSecurityService(), sb);
-        List<JmxConnector> cs = asc.getAdminService().getJmxConnector();
-        JmxConnector sys = null;
-        for (JmxConnector c : cs) {
-            if ("system".equals(c.getName())) {
-                sys = c;
-                break;
-            }
-        }
-        if (sys != null)
-            configureJmxConnector(sys);
-        configureAdminRealmProperty(asc.getAdminService());
+        renameRealm(sb, getAdminRealm(asc.getSecurityService()), getNewRealmName(asc.getSecurityService()));
+        createRealm(asc.getSecurityService(), sb);
+        configureAdminService(asc.getAdminService());
+        //configure(asc.getSecurityService(), asc.getAdminService(), sb);
     }
 
-    private void configureAdminRealmProperty(AdminService as) throws PropertyVetoException, TransactionFailure {
+    private String getNewRealmName(SecurityService ss) {
+        List<AuthRealm> realms = ss.getAuthRealm();
+        String pref = ORIG_ADMIN_REALM_NAME + "-";
+        int index = 0;  //last one
+        for (AuthRealm realm : realms) {
+            if (realm.getName().indexOf(pref) >= 0) {
+                index = Integer.parseInt(realm.getName().substring(pref.length()));
+            }
+        }
+        return pref + (index+1);
+    }
+
+    private AuthRealm getAdminRealm(SecurityService ss) {
+        List<AuthRealm> realms = ss.getAuthRealm();
+        for (AuthRealm realm : realms) {
+            if (FIXED_ADMIN_REALM_NAME.equals(realm.getName()))
+                return realm;
+        }
+        return null;  //unlikely - represents an assertion
+    }
+
+    private void configureAdminService(AdminService as) throws PropertyVetoException, TransactionFailure {
         SingleConfigCode<AdminService> scc = new SingleConfigCode<AdminService>() {
             public Object run(AdminService as) {
-                //as.setAdminRealmName(name); 
-                return true;
+                try {
+                    as.setAuthRealmName(FIXED_ADMIN_REALM_NAME);  //just in case ...
+                    return as;
+                } catch(Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
             }
         };
+        ConfigSupport.apply(scc, as);
     }
 
-    private void createIt(SecurityService ss, final StringBuilder sb) throws TransactionFailure {
+    private void createRealm(SecurityService ss, final StringBuilder sb) throws TransactionFailure {
         SingleConfigCode<SecurityService> scc = new SingleConfigCode<SecurityService>() {
             public Object run(SecurityService ss) throws PropertyVetoException, TransactionFailure {
                 AuthRealm ldapr = createLDAPRealm(ss);
                 ss.getAuthRealm().add(ldapr);
-                appendNL(sb,lsm.getString("ldap.realm.setup", name));
+                appendNL(sb,lsm.getString("ldap.realm.setup", FIXED_ADMIN_REALM_NAME));
                 return true;
             }
         };
         ConfigSupport.apply(scc, ss);
     }
 
-    private void configureJmxConnector(JmxConnector jc) throws PropertyVetoException, TransactionFailure {
-        SingleConfigCode<JmxConnector> scc = new SingleConfigCode<JmxConnector>() {
-            public Object run(JmxConnector jc) throws PropertyVetoException, TransactionFailure {
-                jc.setAuthRealmName(name);
-                return true;
+    private void renameRealm(final StringBuilder sb, AuthRealm realm, final String to) throws PropertyVetoException, TransactionFailure {
+        SingleConfigCode<AuthRealm> scc = new SingleConfigCode<AuthRealm>() {
+            public Object run(AuthRealm realm) throws PropertyVetoException, TransactionFailure {
+                appendNL(sb, lsm.getString("config.to.ldap", FIXED_ADMIN_REALM_NAME, to));
+                realm.setName(to);
+                return realm;
             }
         };
-        ConfigSupport.apply(scc, jc);
+        ConfigSupport.apply(scc, realm);
     }
 
     private AuthRealm createLDAPRealm(SecurityService ss) throws TransactionFailure, PropertyVetoException {
         AuthRealm ar = ss.createChild(AuthRealm.class);
         ar.setClassname(LDAPRealm.class.getName());
-        ar.setName(name);
+        ar.setName(FIXED_ADMIN_REALM_NAME);
         List<Property> props = ar.getProperty();
 
         Property p = ar.createChild(Property.class);
@@ -184,6 +207,11 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
         p = ar.createChild(Property.class);
         p.setName(JAAS_P);
         p.setValue(JAAS_V);
+        props.add(p);
+
+        p = ar.createChild(Property.class);
+        p.setName(Realm.PARAM_GROUP_MAPPING);
+        p.setValue(ldapGroupName +"->asadmin"); //appears as gfdomain1->asadmin in domain.xml
         props.add(p);
         
         return ar;
@@ -203,16 +231,6 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
         } catch(Exception e) {
             appendNL(sb,lsm.getString("ldap.na", url, e.getClass().getName(), e.getMessage()));
         }
-    }
-
-    private boolean realmExists(Config cfg) {
-        List<AuthRealm> realms = cfg.getSecurityService().getAuthRealm();
-        for (AuthRealm ar : realms) {
-            if (ar.getName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static void appendNL(StringBuilder sb, String s) {

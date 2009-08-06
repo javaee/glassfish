@@ -81,7 +81,7 @@ public abstract class Realm implements Comparable {
     private static final String PARAM_GROUPS = "assign-groups";
     private static final String GROUPS_SEP = ",";
     private List<String> assignGroups = null;
-    private static final String PARAM_GROUP_MAPPING="group-mapping";
+    public static final String PARAM_GROUP_MAPPING="group-mapping";
     protected GroupMapper groupMapper = null;
     
     /**

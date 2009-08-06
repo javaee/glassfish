@@ -49,10 +49,7 @@ import com.sun.grizzly.config.dom.Ssl;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.*;
 
 /**
  * The jmx-connector element defines the configuration of a JSR 160 compliant
@@ -192,15 +189,17 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
     void setAcceptAll(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the authRealmName property.
+     * Gets the value of the auth-realm-name property.
      *
      * The name of the auth-realm in this config element that represents the
      * special administrative realm. All authentication (from administraive GUI
      * and CLI) will be handled by this realm.
-     * 
-     * @return possible object is
-     *         {@link String }
+     *
+     * Note: This is deprecated since GlassFish v3 FCS. Use similarly named attribute on admin-service. This will
+     * be used only when the admin-service attribute in missing.
+     * @return String representing the name of auth realm
      */
+    @Deprecated
     @Attribute
     @NotNull
     @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
