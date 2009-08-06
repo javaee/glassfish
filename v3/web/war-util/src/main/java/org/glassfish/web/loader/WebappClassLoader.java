@@ -152,9 +152,9 @@ import com.sun.logging.LogDomains;
 public class WebappClassLoader
     extends URLClassLoader
     implements Reloader, InstrumentableClassLoader, PreDestroy
- {
-
-     private static Logger logger = LogDomains.getLogger(WebappClassLoader.class, LogDomains.WEB_LOGGER);
+{
+    private static Logger logger = LogDomains.getLogger(
+        WebappClassLoader.class, LogDomains.WEB_LOGGER);
 
     public static final boolean ENABLE_CLEAR_REFERENCES = 
         Boolean.valueOf(System.getProperty("org.apache.catalina.loader.WebappClassLoader.ENABLE_CLEAR_REFERENCES", "true")).booleanValue();
@@ -173,7 +173,6 @@ public class WebappClassLoader
         public ResourceEntry run() {
             return findResourceInternal(file, path);
         }
-
     }
 
 
@@ -863,23 +862,19 @@ public class WebappClassLoader
      * Render a String representation of this object.
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer("WebappClassLoader\r\n");
-        sb.append("  delegate: ");
+        StringBuffer sb = new StringBuffer();
+        sb.append("WebappClassLoader (delegate=");
         sb.append(delegate);
-        sb.append("\r\n");
-        sb.append("  repositories:\r\n");
         if (repositories != null) {
+            sb.append("; repositories=");
             for (int i = 0; i < repositories.length; i++) {
-                sb.append("    ");
                 sb.append(repositories[i]);
-                sb.append("\r\n");
+                if (i != (repositories.length-1)) {
+                    sb.append(",");
+                }
             }
         }
-        if (this.parent != null) {
-            sb.append("----------> Parent Classloader:\r\n");
-            sb.append(this.parent.toString());
-            sb.append("\r\n");
-        }
+        sb.append(")");
         return (sb.toString());
     }
 
@@ -1392,8 +1387,7 @@ public class WebappClassLoader
         // Don't load classes if class loader is stopped
         if (!started) {
             logger.fine(sm.getString("webappClassLoader.stopped"));
-            throw new Error("WebappClassLoader " + this +
-                            " not yet started or already stopped");
+            throw new Error(this + " not yet started or already stopped");
         }
 
         // Check our previously loaded local class cache
