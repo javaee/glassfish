@@ -1033,12 +1033,10 @@ public class SunDeploymentManager implements DeploymentManager {
                
         verifyConnected();
         
-        String moduleID = null;
         ProgressObject progressObj = null;
 
         try {
-            moduleID = computeModuleID(moduleArchive);
-            Properties options = getProperties(moduleID);
+            Properties options = getProperties();
 
             /*
              *If any preset options were specified by the caller, use them to 
@@ -1151,50 +1149,6 @@ public class SunDeploymentManager implements DeploymentManager {
     }
     
     /**
-     *Computes a module ID for use during deployment.  We use the file
-     *name as default.  If the archive is not available, i.e. using InputStream
-     *to deploy, we return null and delay the defining of moduleID (to server
-     *side).
-     *@param moduleArchive the archive of the module's archive
-     *@return the derived module ID
-     *@exception IOException
-     */
-    private String computeModuleID(ReadableArchive moduleArchive) throws Exception 
-    {
-        /*
-         *Prefer the archive's path.
-         */
-        String moduleID = null;
-            
-        URI Uri = moduleArchive.getURI();
-        if ((Uri != null) && (Uri.getPath().length() > 0)) {
-            /*
-             *Use the archive path.
-             */
-            moduleID = pathExcludingType(Uri.getPath());
-
-            //Additional processing of the moduleID
-            moduleID = moduleID.replace(' ','_');
-
-            // This moduleID will be later used to construct file path,
-            // replace the illegal characters in file name
-            //  \ / : * ? " < > | with _
-            moduleID = moduleID.replace('\\', '_').replace('/', '_');
-            moduleID = moduleID.replace(':', '_').replace('*', '_');
-            moduleID = moduleID.replace('?', '_').replace('"', '_');
-            moduleID = moduleID.replace('<', '_').replace('>', '_');
-            moduleID = moduleID.replace('|', '_');
-
-            // This moduleID will also be used to construct an ObjectName 
-            // to register the module, so replace additional special 
-            // characters , =  used in property parsing with -
-            moduleID = moduleID.replace(',', '_').replace('=', '_');
-        }
-
-        return moduleID;
-    }
-    
-    /**
      *Perform the selected command on the DeploymentFacility using the specified target module IDs.
      *<p>
      *Several of the deployment facility methods have the same signature except for the name.
@@ -1281,9 +1235,10 @@ public class SunDeploymentManager implements DeploymentManager {
         return progressObj;
     }
 
-    protected Properties getProperties(String moduleID) {
+    protected Properties getProperties() {
+        // we don't set name from client side and will let server side
+        // determine it 
         DFDeploymentProperties dProps = new DFDeploymentProperties();
-        dProps.setName(moduleID);
         dProps.setEnabled(false);
         return (Properties)dProps;
     }
