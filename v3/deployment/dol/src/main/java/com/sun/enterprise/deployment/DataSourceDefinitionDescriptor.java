@@ -74,6 +74,13 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
     private static final String JAVA_URL = "java:";
     private static final String JAVA_COMP_URL = "java:comp/";
 
+    //represents the valid values for isolation-level in Deployment Descriptors
+    private static final String TRANSACTION_NONE = "TRANSACTION_NONE";
+    private static final String TRANSACTION_READ_UNCOMMITTED = "TRANSACTION_READ_UNCOMMITTED";
+    private static final String TRANSACTION_READ_COMMITTED = "TRANSACTION_READ_COMMITTED";
+    private static final String TRANSACTION_REPEATABLE_READ = "TRANSACTION_REPEATABLE_READ";
+    private static final String TRANSACTION_SERIALIZABLE = "TRANSACTION_SERIALIZABLE";
+
     public DataSourceDefinitionDescriptor(){
     }
 
@@ -208,21 +215,51 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
         return isolationLevel;
     }
 
-    public void setIsolationLevel(int isolationLevel) {
-        if(isolationLevel == -1){
-            return ;
-        }
-        switch(isolationLevel){
-            case Connection.TRANSACTION_READ_COMMITTED :
-            case Connection.TRANSACTION_READ_UNCOMMITTED :
-            case Connection.TRANSACTION_REPEATABLE_READ :
-            case Connection.TRANSACTION_SERIALIZABLE :
-            this.isolationLevel = isolationLevel;
-                break;
-            default :
+    public void setIsolationLevel(String isolationLevelString) {
+        if (!isIntegerIsolationLevelSet(isolationLevelString)) {
+
+
+            if (isolationLevelString.equals(TRANSACTION_READ_COMMITTED)) {
+                this.isolationLevel = Connection.TRANSACTION_READ_COMMITTED;
+            } else if (isolationLevelString.equals(TRANSACTION_READ_UNCOMMITTED)) {
+                this.isolationLevel = Connection.TRANSACTION_READ_UNCOMMITTED;
+            } else if (isolationLevelString.equals(TRANSACTION_REPEATABLE_READ)) {
+                this.isolationLevel = Connection.TRANSACTION_REPEATABLE_READ;
+            } else if (isolationLevelString.equals(TRANSACTION_SERIALIZABLE)) {
+                this.isolationLevel = Connection.TRANSACTION_SERIALIZABLE;
+            } else {
                 throw new IllegalStateException
-                        ("Isolation level [ "+isolationLevel+" ] not of of standard isolation levels.");
+                        ("Isolation level [ " + isolationLevelString + " ] not of of standard isolation levels.");
+            }
         }
+    }
+
+    public boolean isIntegerIsolationLevelSet(String isolationLevelString) {
+
+        int isolationLevel;
+        try {
+            isolationLevel = Integer.parseInt(isolationLevelString);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+
+        if(isolationLevel == -1){
+            //do nothing as no value is specified.
+            return true;
+        }
+
+        switch (isolationLevel) {
+            case Connection.TRANSACTION_READ_COMMITTED:
+            case Connection.TRANSACTION_READ_UNCOMMITTED:
+            case Connection.TRANSACTION_REPEATABLE_READ:
+            case Connection.TRANSACTION_SERIALIZABLE:
+                this.isolationLevel = isolationLevel;
+                break;
+            default:
+                throw new IllegalStateException
+                        ("Isolation level [ " + isolationLevel + " ] not of of standard isolation levels.");
+        }
+        return true;
     }
 
     public int getInitialPoolSize() {

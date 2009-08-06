@@ -173,7 +173,7 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
 
                 if (desc.getIsolationLevel() == -1) {
                     if (defn.isolationLevel() != -1) {
-                        desc.setIsolationLevel(defn.isolationLevel());
+                        desc.setIsolationLevel(String.valueOf(defn.isolationLevel()));
                     }
                 }
 
@@ -286,7 +286,7 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
         }
 
         if (defn.isolationLevel() != -1) {
-            desc.setIsolationLevel(defn.isolationLevel());
+            desc.setIsolationLevel(String.valueOf(defn.isolationLevel()));
         }
 
         if (defn.transactional()) {
