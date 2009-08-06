@@ -105,17 +105,25 @@ public class AsadminMain {
                     "\nCommands: " + Arrays.toString(args));
         }
 
-        AsadminMain main = new AsadminMain();
         int exitCode;
 
+        /*
+         * Special case: no arguments is the same as "multimode".
+         */
         if (args.length <= 0)
              args = new String[] { "multimode" };
+
+        /*
+         * Special case: -V argument is the same as "version".
+         */
+        if (args[0].equals("-V"))
+             args = new String[] { "version" };
 
         copyOfArgs = new String[args.length];
         System.arraycopy(args, 0, copyOfArgs, 0, args.length);
         classPath =
             SmartFile.sanitizePaths(System.getProperty("java.class.path"));
-        className = main.getClass().getName();
+        className = AsadminMain.class.getName();
 
         command = args[0];
         exitCode = executeCommand(args);
