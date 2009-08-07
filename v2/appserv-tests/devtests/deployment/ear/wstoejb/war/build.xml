@@ -14,14 +14,14 @@
 		<property name="wsdl" value="${build}/WEB-INF/wsdl"/>
 		<mkdir dir="${binary}" />
 		<mkdir dir="${wsdl}"/>
+		<mkdir dir="${archivedir}" />
 	</target>
 	
 	<target name="compile" depends="prepare, import-dep">
 		<javac srcdir="wstoejb" destdir="${binary}">
 	    	<classpath>
-	    	  <pathelement location="${inst}/lib/j2ee.jar"/>
-	    	  <pathelement location="${inst}/lib/appserv-rt.jar"/>	    	  
-    		  <pathelement location="${build}/WEB-INF/lib/library.jar"/>
+	    	  <path refid="gfv3.classpath"/>
+    		  <path location="${build}/WEB-INF/lib/library.jar"/>
 		    </classpath>		
 		 </javac>
 		<echo message="invoking wscompile to generate wsdl file"/>

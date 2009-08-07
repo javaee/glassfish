@@ -11,12 +11,14 @@
 
 	<target name="prepare" depends="init">
 		<mkdir dir="${build}" />
+		<mkdir dir="${archivedir}" />
 	</target>
 	
 	<target name="compile" depends="prepare">
-		<javac srcdir="wstoejb" destdir="${build}"
-			classpath="${inst}/lib/j2ee.jar"
-		/>		
+		<javac srcdir="wstoejb" destdir="${build}">
+                 <classpath refid="gfv3.classpath"/>
+                </javac>
+
 	</target>
 	
 	<target name="assemble" depends="compile">
