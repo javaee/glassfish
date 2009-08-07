@@ -39,12 +39,12 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        getDeploymentDescriptor(appName="#{param.appName}", moduleName="#{param.moduleName}", descriptorName="#{param.ddPath}", content="#{descriptorContent}", encoding="#{encoding}");
+        getRequestValue(key="appName" value="#{pageSession.appName}");
+        getRequestValue(key="moduleName" value="#{pageSession.moduleName}");
+        getRequestValue(key="ddPath" value="#{pageSession.ddPath}");
+        getDeploymentDescriptor(appName="#{pageSession.appName}", moduleName="#{pageSession.moduleName}", descriptorName="#{pageSession.ddPath}",
+        content="#{descriptorContent}", encoding="#{encoding}");
         setEncoding("#{encoding}");
-
-        //getRequestValue(key="appName" value="#{pageSession.appName}");
-        //getRequestValue(key="moduleName" value="#{pageSession.moduleName}");
-        //getRequestValue(key="ddPath" value="#{pageSession.ddPath}");
     />
     </event>
 #include "/common/shared/restart.inc"
