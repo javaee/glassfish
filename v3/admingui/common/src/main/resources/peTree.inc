@@ -247,6 +247,22 @@
                 <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="#{request.contextPath}/common/security/jacc/jaccProviders.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
             </facet>
         </dynamicTreeNode>
+
+        <dynamicTreeNode id="messageSecurity"
+            treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+            objectName="amx:pp=/domain/configs/config[$pageSession{configName}],type=security-service"
+            amxChildType="message-security-config"
+            attributeName="name"
+            childImageURL="/resource/common/security/images/jms.gif"
+            childExpanded="$boolean{false}"
+            childURL="#{request.contextPath}/common/security/msgSecurity/msgSecurityEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
+            text="$resource{i18n.tree.msgSecurityConfigs}"
+            url="#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf?configName=#{configName}"
+            >
+            <!facet image>
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+            </facet>
+        </dynamicTreeNode>
     </sun:treeNode>
 
     </sun:treeNode>
