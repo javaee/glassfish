@@ -65,8 +65,11 @@
         }
         if (! #{pageSession.containerExist}){
             setPageSessionAttribute(key="edit" value="#{false}" )
+            setPageSessionAttribute(key="showSuccessfulMsg" value="#{true}" )
             getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
             getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType2}"  valueMap="#{pageSession.valueMap2}")
+            setPageSessionAttribute(key="showSuccessfulMsg" value="#{true}" )
+            setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jruby/jrubyContainer.jsf");
         }
 
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
@@ -92,15 +95,15 @@
             </sun:property>
 
             <sun:property id="jruntime" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.runtime}" helpText="$resource{i18n_jruby.runtimeHelp}">
-                <sun:textField id="jruntime" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap2['JrubyRuntime']}" />
+                <sun:textField id="jruntime" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap2['InitialPoolSize']}" />
             </sun:property>
 
             <sun:property id="jruntime-mim" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.runtimeMin}" helpText="$resource{i18n_jruby.runtimeMinHelp}">
-                <sun:textField id="jruntime-mim" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap2['JrubyRuntimeMin']}" />
+                <sun:textField id="jruntime-mim" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap2['MinPoolSize']}" />
             </sun:property>
 
             <sun:property id="jruntime-max" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.runtimeMax}" helpText="$resource{i18n_jruby.runtimeMaxHelp}">
-                <sun:textField id="jruntime-max" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap2['JrubyRuntimeMax']}" />
+                <sun:textField id="jruntime-max" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap2['MaxPoolSize']}" />
             </sun:property>
 
          </sun:propertySheetSection>
