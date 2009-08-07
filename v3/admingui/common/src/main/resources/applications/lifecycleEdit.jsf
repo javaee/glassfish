@@ -35,7 +35,11 @@
 -->
 <!-- lifecycleEdit.jsf -->
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.lifecycleModule.editPageTitle}" >
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+/>
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.lifecycleModule.editPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
@@ -57,7 +61,7 @@
 #include "/common/shared/alertMsg.inc"
 
         <!-- Page Title -->
-<sun:title id="propertyContentPage" title="$resource{i18n.lifecycleModule.editPageTitle}" helpText="$resource{$resource{i18n.lifecycleModule.editPageTitleHelp}}">
+<sun:title id="propertyContentPage" title="$resource{i18nc.lifecycleModule.editPageTitle}" helpText="$resource{$resource{i18nc.lifecycleModule.editPageTitleHelp}}">
 #include "/common/applications/lifecycleButtons.inc"
 </sun:title>
         "<br><br>

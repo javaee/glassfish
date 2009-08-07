@@ -36,6 +36,10 @@
 -->
 
 <!-- appServer/serverInstGeneralPe.jsf -->
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+/>
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.instance.GeneralTitle}" >
 <!define name="content">
     <event>
@@ -114,7 +118,7 @@
             <sun:property id="jvmProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.JVMLabel}">
                 <sun:hyperlink id="jvmlink" text="$resource{i18n.inst.jvmReport}"
                     onClick="javascript:
-                    var jvmWin = window.open('jvmReport.jsf?pageTitle=$resource{i18n.jvm.jvmReportPageName}','JVMReport','width='+(screen.width-300)+',height='+(screen.height-100)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');
+                    var jvmWin = window.open('jvmReport.jsf?pageTitle=$resource{i18nc.jvm.jvmReportPageName}','JVMReport','width='+(screen.width-300)+',height='+(screen.height-100)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');
                     jvmWin.focus(); return false;" />
             </sun:property> 
 

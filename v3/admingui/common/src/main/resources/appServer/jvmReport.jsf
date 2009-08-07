@@ -40,7 +40,8 @@
     <!beforeCreate
         getRequestValue(key="pageTitle" value="#{pageSession.pageTitle}");
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+        setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+        setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings");
     />
     <sun:html id="html2"> 
         <sun:head id="propertyhead" title="#{pageTitle}" >
@@ -73,9 +74,9 @@
                         </event>
 
                         <sun:propertySheetSection id="viewPropertySection">
-                            <sun:property id="ViewProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvmReport.viewLabel}" >
+                            <sun:property id="ViewProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvmReport.viewLabel}" >
                                 <sun:dropDown id="View" selected="#{viewVal}" submitForm="#{true}" immediate="#{true}"
-                                        labels={ "$resource{i18n.jvmReport.Summary}","$resource{i18n.jvmReport.Memory}", "$resource{i18n.jvmReport.ClLoading}","$resource{i18n.jvmReport.ThDump}"}
+                                        labels={ "$resource{i18nc.jvmReport.Summary}","$resource{i18nc.jvmReport.Memory}", "$resource{i18nc.jvmReport.ClLoading}","$resource{i18nc.jvmReport.ThDump}"}
                                         values={"summary", "memory", "class", "thread"}  >
                                     <!command
                                         setAttribute(key="click" value="$this{component}");
@@ -96,7 +97,7 @@
                         </sun:propertySheetSection>
                     </sun:propertySheet>
                 </sun:title>
-	<sun:hidden id="helpKey" value="$resource{help.jvmReport}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.jvmReport}" />
             </sun:form>
         </sun:body>
     </sun:html>

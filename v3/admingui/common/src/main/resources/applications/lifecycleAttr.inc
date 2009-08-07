@@ -46,15 +46,15 @@
         <sun:textField id="IdText" styleClass="required" text="#{pageSession.valueMap['Name']}" columns="$int{55}" required="#{true}" />
     </sun:property>
 
-    <sun:property id="classNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.lifecycleModule.classname}" helpText="$resource{i18n.lifecycleModule.classnameHelp}" >
+    <sun:property id="classNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.lifecycleModule.classname}" helpText="$resource{i18nc.lifecycleModule.classnameHelp}" >
         <sun:textField id="classname" styleClass="required" columns="$int{70}" text="#{pageSession.valueMap['class-name']}"  required="#{true}" />
     </sun:property> 
 
-    <sun:property id="pathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"  label="$resource{i18n.lifecycleModule.classPath}" helpText="$resource{i18n.lifecycleModule.classPathHelp}" >
+    <sun:property id="pathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"  label="$resource{i18nc.lifecycleModule.classPath}" helpText="$resource{i18nc.lifecycleModule.classPathHelp}" >
         <sun:textField id="classPath" columns="$int{70}" text="#{pageSession.valueMap['classpath']}" />
     </sun:property> 
 
-    <sun:property id="loadOrderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.lifecycleModule.loadOrder}"  helpText="$resource{i18n.lifecycleModule.loadOrderHelp}" >
+    <sun:property id="loadOrderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.lifecycleModule.loadOrder}"  helpText="$resource{i18nc.lifecycleModule.loadOrderHelp}" >
         <sun:textField id="loadOrder" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['load-order']}" />
     </sun:property> 
 
@@ -64,8 +64,8 @@
         <sun:checkbox label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap2['Enabled']}" selectedValue="true" />
    </sun:property>
 
-    <sun:property id="failProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.lifecycleModule.onLoadFailure}" helpText="$resource{i18n.lifecycleModule.onLoadFailureHelp}" >
-        <sun:checkbox label="$resource{i18n.lifecycleModule.preventStart}" text="#{pageSession.valueMap['is-failure-fatal']}"  selectedValue="true" />
+    <sun:property id="failProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.lifecycleModule.onLoadFailure}" helpText="$resource{i18nc.lifecycleModule.onLoadFailureHelp}" >
+        <sun:checkbox label="$resource{i18nc.lifecycleModule.preventStart}" text="#{pageSession.valueMap['is-failure-fatal']}"  selectedValue="true" />
    </sun:property>
 
    <sun:property id="vsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}">

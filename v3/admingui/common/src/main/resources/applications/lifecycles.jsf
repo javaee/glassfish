@@ -36,7 +36,12 @@
 <!-- applications/lifecycles.jsf -->
 
 //<sun:page id="page1">
-<!composition template="/templates/default.layout" guiTitle="$resource{i18n.lifecycleModules.title}">
+
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+/>
+<!composition template="/templates/default.layout" guiTitle="$resource{i18nc.lifecycleModules.title}">
 <!define name="content">
     <event>
         <!beforeCreate
@@ -50,14 +55,14 @@
             setPageSessionAttribute(key="childType" value="application");
             setPageSessionAttribute(key="objectNameStr2" value="amx:pp=/domain/servers,type=server,name=server");
             setPageSessionAttribute(key="childType2" value="application-ref");
-            setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteLifecycle}");
+            setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteLifecycle}");
         />
     </event>
 #include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
                 <!-- Page Title -->
-                 <sun:title id="propertyContentPage" title="$resource{i18n.lifecycleModules.title}" helpText="$resource{i18n.lifecycleModules.titleHelp}"/>
+                 <sun:title id="propertyContentPage" title="$resource{i18nc.lifecycleModules.title}" helpText="$resource{i18nc.lifecycleModules.titleHelp}"/>
                  "<br />
 #include "/common/applications/lifecyclesTable.inc"
 
