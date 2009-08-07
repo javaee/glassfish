@@ -34,6 +34,8 @@ import javax.annotation.sql.*;
         value = {
 
                 @DataSourceDefinition(name = "java:global/env/Servlet_DataSource",
+                        minPoolSize = 0,
+                        initialPoolSize = 0,
                         className = "org.apache.derby.jdbc.EmbeddedXADataSource",
                         user = "APP",
                         password = "APP",
@@ -42,6 +44,8 @@ import javax.annotation.sql.*;
                 ),
 
                 @DataSourceDefinition(name = "java:comp/env/Servlet_DataSource",
+                        minPoolSize = 0,
+                        initialPoolSize = 0,
                         className = "org.apache.derby.jdbc.EmbeddedXADataSource",
                         user = "APP",
                         password = "APP",
@@ -49,6 +53,8 @@ import javax.annotation.sql.*;
                         properties = {"connectionAttributes=;create=true"}
                 ),
                 @DataSourceDefinition(name = "java:app/env/Servlet_DataSource",
+                        minPoolSize = 0,
+                        initialPoolSize = 0,
                         className = "org.apache.derby.jdbc.EmbeddedXADataSource",
                         user = "APP",
                         password = "APP",
@@ -56,15 +62,14 @@ import javax.annotation.sql.*;
                         properties = {"connectionAttributes=;create=true"}
                 ),
                 @DataSourceDefinition(name = "java:module/env/Servlet_DataSource",
+                        minPoolSize = 0,
+                        initialPoolSize = 0,
                         className = "org.apache.derby.jdbc.EmbeddedXADataSource",
                         user = "APP",
                         password = "APP",
                         databaseName = "hello-servlet-module",
                         properties = {"connectionAttributes=;create=true"}
                 )
-
-
-
         }
 )
 @WebServlet(name = "Servlet",

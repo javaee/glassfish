@@ -20,24 +20,26 @@ import javax.annotation.sql.*;
         value = {
 
 
-/*               @DataSourceDefinition(name = "java:global/env/Appclient_DataSource",
-                        className = "org.apache.derby.jdbc.ClientDataSource",
+               @DataSourceDefinition(name = "java:global/env/Appclient_DataSource",
+                        className = "org.apache.derby.jdbc.ClientXADataSource",
                         portNumber = 1527,
                         serverName = "localhost",
                         user = "APP",
                         password = "APP",
-                        databaseName = "hello-client",
+                        databaseName = "hello-client-annotation-global",
                         properties = {"connectionAttributes=;create=true"}
                 ),
-*/
+
 
                 @DataSourceDefinition(name = "java:comp/env/Appclient_DataSource",
-                        className = "org.apache.derby.jdbc.ClientDataSource",
+                        minPoolSize = 0,
+                        initialPoolSize = 0,
+                        className = "org.apache.derby.jdbc.ClientXADataSource",
                         portNumber = 1527,
                         serverName = "localhost",
                         user = "APP",
                         password = "APP",
-                        databaseName = "hello-client",
+                        databaseName = "hello-client-annotation-comp",
                         properties = {"connectionAttributes=;create=true"}
                 )
         }
@@ -85,14 +87,14 @@ public class Client {
 
 
             InitialContext ic = new InitialContext();
-
+            
 
             boolean globalServlet_DataSource = lookupDataSource("java:global/env/Servlet_DataSource", true);
             boolean compServlet_DataSource = lookupDataSource("java:comp/env/Servlet_DataSource", false);
 
             boolean globalHelloSfulEJB = lookupDataSource("java:global/env/HelloStatefulEJB_DataSource", true);
             boolean compHelloSfulEJB = lookupDataSource("java:comp/env/HelloStatefulEJB_DataSource", false);
-            boolean appHelloStatefulEjb = lookupDataSource("java:app/env/HelloStatefulEJB_DataSource", false);
+            boolean appHelloStatefulEjb = lookupDataSource("java:app/env/HelloStatefulEJB_DataSource", true);
 
             boolean globalHelloEJB = lookupDataSource("java:global/env/HelloEJB_DataSource", true);
             boolean compHelloEJB = lookupDataSource("java:comp/env/HelloEJB_DataSource", false);
@@ -106,26 +108,25 @@ public class Client {
             boolean globalHello_DD_DataSource = lookupDataSource("java:global/env/HelloEJB_DD_DataSource", true);
             boolean compHello_DD_DataSource = lookupDataSource("java:comp/env/HelloEJB_DD_DataSource", false);
 
+
             boolean comp = lookupDataSource("java:comp/env/Appclient_DataSource",true);
             boolean comp_dd = lookupDataSource("java:comp/env/Appclient_DD_DataSource",true);
-            
+            boolean globalAppclient = lookupDataSource("java:global/env/Appclient_DataSource", true);
 
-            if (comp && comp_dd && globalServlet_DataSource && !compServlet_DataSource && globalHelloSfulEJB &&
+            if (comp && comp_dd &&  globalAppclient && globalServlet_DataSource && !compServlet_DataSource && globalHelloSfulEJB &&
                     globalServlet_DD_DataSource && !compServlet_DD_DataSource
                     && !compHelloSfulEJB && globalHelloEJB
                     && !compHelloEJB && globalHelloStateful_DD_DataSource
                     && !compHelloStateful_DD_DataSource && globalHello_DD_DataSource
-                    && !compHello_DD_DataSource && !appHelloStatefulEjb)
+                    && !compHello_DD_DataSource && appHelloStatefulEjb)
+/*if (comp && comp_dd &&  globalAppclient )*/
  {
                 System.out.println("AppClient successful lookup of datasource definitions !");
+                stat.addStatus("webclient main", stat.PASS);
             } else {
+//                System.out.println("AppClient lookup not successful" );
                 throw new RuntimeException("Appclient failure during lookup of datasource definitions");
             }
-
-
-
-
-
 
             String url = "http://" + host + ":" + port +
                     "/datasource-definition/servlet";
@@ -161,6 +162,7 @@ public class Client {
             if(expectSuccess){
             	e.printStackTrace();
             }
+  //          System.out.println("returning false for : " + dataSourceName);
             return false;
         } finally {
             try {

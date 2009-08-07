@@ -14,7 +14,7 @@
         <name>connectionAttributes</name>
         <value>;create=true</value>
       </property>
+      <isolation-level>TRANSACTION_READ_COMMITTED</isolation-level>
     </data-source>
-
 </application-client>
 

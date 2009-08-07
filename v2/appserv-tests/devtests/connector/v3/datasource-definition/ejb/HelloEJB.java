@@ -19,13 +19,18 @@ import java.sql.Connection;
 
                 @DataSourceDefinition(name = "java:global/env/HelloEJB_DataSource",
                         className = "org.apache.derby.jdbc.EmbeddedXADataSource",
+                        minPoolSize = 0,
+                        initialPoolSize = 0,
                         user = "APP",
                         password = "APP",
                         databaseName = "hello-ejb-global",
                         properties = {"connectionAttributes=;create=true"}
+
                 ),
 
                 @DataSourceDefinition(name = "java:comp/env/HelloEJB_DataSource",
+                        minPoolSize = 0,
+                        initialPoolSize = 0,
                         className = "org.apache.derby.jdbc.EmbeddedXADataSource",
                         user = "APP",
                         password = "APP",
@@ -33,6 +38,8 @@ import java.sql.Connection;
                         properties = {"connectionAttributes=;create=true"}
                 ),
                 @DataSourceDefinition(name = "java:module/env/HelloEJB_DataSource",
+                        minPoolSize = 0,
+                        initialPoolSize = 0,
                         className = "org.apache.derby.jdbc.EmbeddedXADataSource",
                         user = "APP",
                         password = "APP",

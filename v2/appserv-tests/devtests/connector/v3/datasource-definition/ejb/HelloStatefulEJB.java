@@ -11,6 +11,8 @@ import javax.naming.*;
         value = {
 
                 @DataSourceDefinition(name = "java:global/env/HelloStatefulEJB_DataSource",
+                        minPoolSize = 0,
+                        initialPoolSize = 0,
                         className = "org.apache.derby.jdbc.ClientXADataSource",
                         portNumber = 1527,
                         serverName = "localhost",
@@ -21,6 +23,8 @@ import javax.naming.*;
                 ),
 
                 @DataSourceDefinition(name = "java:comp/env/HelloStatefulEJB_DataSource",
+                        minPoolSize = 0,
+                        initialPoolSize = 0,
                         className = "org.apache.derby.jdbc.ClientXADataSource",
                         portNumber = 1527,
                         serverName = "localhost",
@@ -30,6 +34,8 @@ import javax.naming.*;
                         properties = {"connectionAttributes=;create=true"}
                 ),
                 @DataSourceDefinition(name = "java:app/env/HelloStatefulEJB_DataSource",
+                        minPoolSize = 0,
+                        initialPoolSize = 0,
                         className = "org.apache.derby.jdbc.ClientXADataSource",
                         portNumber = 1527,
                         serverName = "localhost",
@@ -42,6 +48,8 @@ import javax.naming.*;
                 // only user should be considered.
                 // incorrect values for : className, portNumber, url, properties which should be ignored 
                 @DataSourceDefinition(name = "java:global/env/HelloStatefulEJB_DD_DataSource",
+                        minPoolSize = 0,
+                        initialPoolSize = 0,
                         className = "UnknownDataSource",
                         portNumber = 9527,
                         serverName = "localhost",
