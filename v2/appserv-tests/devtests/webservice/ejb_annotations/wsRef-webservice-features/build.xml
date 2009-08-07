@@ -29,6 +29,11 @@
         </fileset>
     </path>
 
+    <path id="bootclasspath">
+        <fileset dir="${env.AS_HOME}/modules/endorsed">
+                      <include name="*.jar"/>
+        </fileset>
+    </path>
     <target name="all" depends="clean, setup, undeploy"/>
 
     <target name="clean" depends="init-common">
@@ -75,7 +80,9 @@
       <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
             includes="webclient/**">
          <classpath refid="classpath"/>
+         <compilerarg value="-Djava.endorsed.dirs=${env.AS_HOME}/modules/endorsed"/>
       </javac>
+
       <copy file="client-web.xml" tofile="${build.classes.dir}/webclient/WEB-INF/web.xml"/>
       <jar destfile="${assemble.dir}/wsejbclient.war" basedir="${build.classes.dir}/webclient" includes="**"/>
     </target>

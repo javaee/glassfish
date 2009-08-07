@@ -17,6 +17,7 @@
         <delete file="${env.APS_HOME}/test_results.html"/>
         <delete file="${env.APS_HOME}/test_resultsValid.xml"/>
         <delete file="${env.APS_HOME}/test_results.xml"/>
+        <delete dir="${env.APS_HOME}/build/module"/>
         <record name="webservice.output" action="start" />
         <ant dir="jaxrpc-hello-ejb" target="all"/>
         <ant dir="jaxrpc-hello-web" target="all"/>
