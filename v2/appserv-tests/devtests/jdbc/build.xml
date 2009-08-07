@@ -49,6 +49,7 @@
         <ant dir="txafternontxjndi" target="all"/>
 	<ant dir="notxops" target="all"/>
 	<ant dir="nonacc" target="all"/>
+	<ant dir="lazyassoc" target="all"/>
 	<ant dir="markconnectionasbad.local" target="all"/>
 	<ant dir="statementwrapper" target="all"/>
 	<ant dir="maxconnectionusage" target="all"/>
@@ -61,6 +62,7 @@
 	<ant dir="validateatmostonceperiod" target="all"/>
 	<ant dir="connsharing" target="nonxa"/>
 	<ant dir="cpds" target="all"/>
+	<!--<ant dir="txisolation" target="all"/>-->
 	<ant dir="stmtCaching_hit_miss" target="all"/>
 	<ant dir="pooling" target="all"/>
 	<ant dir="dmmcf" target="all"/>
@@ -274,6 +276,18 @@
         <record name="conncreationretry.output" action="stop"/>
     </target>
 
+    <target name="cpds">
+        <record name="cpds.output" action="start"/>
+        <ant dir="cpds" target="all"/>
+        <record name="cpds.output" action="stop"/>
+    </target>
+
+    <target name="txisolation">
+        <record name="txisolation.output" action="start"/>
+        <ant dir="txisolation" target="all"/>
+        <record name="txisolation.output" action="stop"/>
+    </target>
+
     <target name="stmtCaching_hit_miss">
 	<record name="stmtCaching_hit_miss.output" action="start"/>
 	<ant dir="stmtCaching_hit_miss" target="all"/>
@@ -283,7 +297,6 @@
     <target name="pooling">
 	<record name="pooling.output" action="start"/>
 	<ant dir="pooling" target="all"/>
-	<record name="pooling.output" action="stop"/>
     </target>
 
     <target name="dmmcf">
