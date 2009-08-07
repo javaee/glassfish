@@ -11,7 +11,8 @@ public class WebTest {
         = new SimpleReporterAdapter("appserv-tests");
     private static final String TEST_NAME = "web-fragment";
     private static final String EXPECTED_RESPONSE = "filterMessage=WFTestFilterMesg, mesg=hello t, mesg2=hello2 f, mesg3=hello3 a";
-    private static final String EXPECTED_RESPONSE_2 = "min=2";
+    private static final String EXPECTED_RESPONSE_2 = "min=2, mid=10, max=20";
+    private static final String EXPECTED_RESPONSE_3 = "min=2, max=20";
 
     private String host;
     private String port;
@@ -31,43 +32,40 @@ public class WebTest {
     }
 
     public void doTest() {
-        try { 
-            invoke("http://" + host + ":" + port + contextRoot + "/mytest",
-                   EXPECTED_RESPONSE);
-            stat.addStatus(TEST_NAME + "_urlPatternfromWeb", stat.PASS);
-        } catch (Exception ex) {
-            stat.addStatus(TEST_NAME + "_urlPatternfromWeb", stat.FAIL);
-            ex.printStackTrace();
-        }
 
-        try {
-            invoke("http://" + host + ":" + port + contextRoot + "/wftest",
-                   EXPECTED_RESPONSE);
-            stat.addStatus(TEST_NAME + "_envEntryFromWebFragment", stat.PASS);
-        } catch (Exception ex) {
-            stat.addStatus(TEST_NAME + "_envEntryFromWebFragment", stat.FAIL);
-            ex.printStackTrace();
-        }
+        runTest(TEST_NAME + "_urlPatternFromWeb", "/mytest", 200, EXPECTED_RESPONSE);
 
+        runTest(TEST_NAME + "_urlPatternFromWebFragment", "/wftest", 404, null);
+
+        runTest(TEST_NAME + "_envEntryFromWebFragment", "/wftest2", 200, EXPECTED_RESPONSE_2);
+
+        runTest(TEST_NAME + "_envEntryFromWeb", "/mytest2", 200, EXPECTED_RESPONSE_3);
+    }
+
+    private void runTest(String testName, String urlPattern, int statusCode, String expectedResponse) {
         try {
-            invoke("http://" + host + ":" + port + contextRoot + "/wftest2",
-                   EXPECTED_RESPONSE_2);
-            stat.addStatus(TEST_NAME + "_urlPatternfomWebFragment", stat.PASS);
+            invoke(urlPattern, statusCode, expectedResponse);
+            stat.addStatus(testName, stat.PASS);
         } catch (Exception ex) {
-            stat.addStatus(TEST_NAME + "_urlPatternfomWebFragment", stat.FAIL);
+            stat.addStatus(testName, stat.FAIL);
             ex.printStackTrace();
         }
     }
 
-    private void invoke(String url, String expectedResponse) throws Exception {
+    private void invoke(String urlPattern, int statusCode, String expectedResponse) throws Exception {
         
+        String url = "http://" + host + ":" + port + contextRoot + urlPattern;
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();
         conn.connect();
 
         int code = conn.getResponseCode();
-        if (code != 200) {
+        if (code != statusCode) {
             throw new Exception("Unexpected return code: " + code);
+        }
+
+        if (expectedResponse == null) {
+            return;
         }
 
         InputStream is = null;

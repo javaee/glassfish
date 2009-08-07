@@ -14,4 +14,14 @@
     <servlet-name>wftestServlet</servlet-name>
     <url-pattern>/test2</url-pattern>
   </servlet-mapping>
+  <env-entry>
+    <env-entry-name>wfmid</env-entry-name>
+    <env-entry-type>java.lang.Integer</env-entry-type>
+    <env-entry-value>10</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <env-entry-name>wfmax</env-entry-name>
+    <env-entry-type>java.lang.Integer</env-entry-type>
+    <env-entry-value>20</env-entry-value>
+  </env-entry>
 </web-app>
