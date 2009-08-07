@@ -85,7 +85,7 @@
         setPageSessionAttribute(key="logFile" value="#{pageSession.valueMap['file']}");
                    
     }
-    getLogResultsTable(InstanceName="#{instanceName}", LogDateSortDirection="#{false}", FromRecord="0", AfterRecord="#{afterRecord}", LogFileName="#{logFile}", LogLevel="#{logLevel}", OnlyLevel="#{requestScope.onlyLevel}", DateEnabled="#{requestScope.dateEnabled}", FromDate="#{requestScope.fromDate}", FromTime="#{requestScope.fromTime}", ToDate="#{requestScope.toDate}", ToTime="#{requestScope.toTime}", Loggers="#{logentries}", CustomLoggers="#{requestScope.customLogger}", Nvp="#{requestScope.nvp}", NumToDisplay="#{requestScope.numToDisplay}",  TruncateMessage="#{requestScope.truncate}", result=>$attribute{tableList}, FirstLogRow=>$page{firstRecord}, LastLogRow=>$page{lastRecord}, HasResults=>$page{hasResults});
+    getLogResultsTable(InstanceName="#{instanceName}", LogDateSortDirection="#{false}", FromRecord="#{fromRecord}", AfterRecord="#{afterRecord}", LogFileName="#{logFile}", LogLevel="#{logLevel}", OnlyLevel="#{requestScope.onlyLevel}", DateEnabled="#{requestScope.dateEnabled}", FromDate="#{requestScope.fromDate}", FromTime="#{requestScope.fromTime}", ToDate="#{requestScope.toDate}", ToTime="#{requestScope.toTime}", Loggers="#{logentries}", CustomLoggers="#{requestScope.customLogger}", Nvp="#{requestScope.nvp}", NumToDisplay="#{requestScope.numToDisplay}",  TruncateMessage="#{requestScope.truncate}",  result=>$attribute{tableList}, FirstLogRow=>$page{firstRecord}, LastLogRow=>$page{lastRecord}, HasResults=>$page{hasResults});
     getFirstLastRecord(FirstRecord="#{firstRecord}", LastRecord="#{lastRecord}", First=>$page{first}, Last=>$page{last})
         />   
     </event>
@@ -93,7 +93,7 @@
 <sun:head id="propertyhead" title="$resource{i18n.logViewer.PageTitle}" debug="false" parseOnLoad="false">
     <sun:script url="/resource/common/js/adminjsf.js" />
 </sun:head>
-<sun:body onLoad="javascript: checkHiddenElements(); setFocusTableResults('#{hasResults}', '#{alertSummary}');" id="body3">
+<sun:body onLoad="javascript: checkHiddenElements(); setFocusTableResults('#{hasResults}');" id="body3">
 <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"    
     <!-- Page Title -->
@@ -370,8 +370,8 @@
 "		document.getElementById('dates').style.display = 'none';
 "	}
 "}
-"function setFocusTableResults(results, alertSummary) {
-"    if(results == 'true' && alertSummary == 0) {
+"function setFocusTableResults(results) {
+"    if(results == 'true') {
 "    document.location.href = "#options";
 "    }
 "}

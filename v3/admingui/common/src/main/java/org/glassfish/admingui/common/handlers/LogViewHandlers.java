@@ -137,6 +137,7 @@ public class LogViewHandlers {
                 (Boolean) handlerCtx.getInputValue("LogDateSortDirection");
         Boolean truncMsg =
                 (Boolean) handlerCtx.getInputValue("TruncateMessage");
+       
         Integer truncLenInteger =
                 (Integer) handlerCtx.getInputValue("TruncateLength");
         List result = new ArrayList();
@@ -291,7 +292,6 @@ public class LogViewHandlers {
                 fromRecord.intValue();
             }
 
-
             // Search for the log entries
             List<Serializable[]> results = null;
             Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
@@ -310,12 +310,12 @@ public class LogViewHandlers {
                 GuiUtil.handleError(handlerCtx, "Error while querying Log File.");
             }
             String message;
-
             LogQueryEntry[] query = null;
+            
             if (results != null) {
                 LogQueryResult r = LogQuery.Helper.toLogQueryResult(results);
                 query = r.getEntries();
-                // Add the results to the Model
+               // Add the results to the Model
                 for (int i = 1; i < query.length; i++) {
                     HashMap oneRow = new HashMap();
                     LogQueryEntry row = (LogQueryEntry) query[i];
@@ -339,20 +339,25 @@ public class LogViewHandlers {
                     oneRow.put("level", level);
                     oneRow.put("productName", row.getProductName());
                     oneRow.put("logger", row.getModule());
-                    oneRow.put("nvp", row.getNameValuePairsMap());
+                    try {
+                        oneRow.put("nvp", row.getNameValuePairsMap());
+                    } catch (Exception ex) {
+                        // ignore
+                        oneRow.put("nvp", "");
+                        
+                    }                    
                     oneRow.put("messageID", msgId);
                     message = ((String) row.getMessage().trim());
                     if (truncateMessage && (message.length() > truncLen)) {
                         message = message.substring(0, truncLen).concat("...\n");
                     }
-                    message = Util.htmlEscape(message);
-                    oneRow.put("message", message);
+                    oneRow.put("message", (message == null) ? " " : Util.htmlEscape(message));
                     result.add(oneRow);
                 }
             }
-
+            
             // Set the first / last record numbers as attributes
-            if (query != null && query.length > 0) {
+            if (query != null && query.length > 1) {
                 handlerCtx.setOutputValue("FirstLogRow",
                         ((LogQueryEntry) query[1]).getRecordNumber());
                 handlerCtx.setOutputValue("LastLogRow",

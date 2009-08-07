@@ -46,7 +46,7 @@
     getRequestValue(key="logFile" value=>$attribute{logFile});        
     getRequestValue(key="recNumber" value=>$attribute{recNumber});
     longAdd(Long1="#{recNumber}", Long2="$int{1}", LongResult=>$attribute{recNumberPlus});
-    getLogResultsTable(InstanceName="#{instanceName}", LogFileName="#{logFile}", LogLevel="#{logLevel}", FromRecord="#{recNumberPlus}", AfterRecord="#{false}", TruncateMessage="#{false}", NumToDisplay="$int{1}", result=>$page{listOfInstances});        
+    getLogResultsTable(InstanceName="#{instanceName}", LogFileName="#{logFile}", LogLevel="#{logLevel}", FromRecord="#{recNumberPlus}", AfterRecord="#{false}", TruncateMessage="#{false}",  NumToDisplay="$int{1}", result=>$page{listOfInstances});        
     />   
     </event>
 <sun:html id="html2">    
@@ -55,7 +55,7 @@
 </sun:head>
 <sun:body id="body3">
 <sun:form id="propertyForm">
-#include "alertMsg.inc"    
+#include "/common/shared/alertMsg.inc"    
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18n.logDetail.PageTitle}">
             <!-- Buttons  -->                    
