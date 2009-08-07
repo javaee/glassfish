@@ -111,7 +111,9 @@ public class CommonHandlers {
         Object initialized = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("_SESSION_INITIALIZED");
         if (initialized == null){
             GuiUtil.initSessionAttributes();
-            HtmlAdaptor.registerHTMLAdaptor(V3AMX.getInstance().getMbeanServerConnection());
+            if (System.getProperty("html.adaptor.port") != null){
+                HtmlAdaptor.registerHTMLAdaptor(V3AMX.getInstance().getMbeanServerConnection());
+            }
         }
         return;
     }
