@@ -36,9 +36,6 @@
 
 package org.glassfish.ant.tasks;
 
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.BuildException;
-
 public class Component extends AdminTask {
 
 
