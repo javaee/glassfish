@@ -104,7 +104,7 @@ public class WebTest
                 failCount += check(partCount, 3, line);
             }
         }
-        if (expectedCount == 8 && failCount > 0) {
+        if (expectedCount != 8 && failCount > 0) {
             stat.addStatus("multiPartTest", stat.FAIL);
         } else { 
             stat.addStatus("multiPartTest", stat.PASS);
