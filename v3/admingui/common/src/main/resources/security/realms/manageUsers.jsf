@@ -99,7 +99,7 @@
                         </sun:button>
 
                         <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
-                            onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmDeleteUser}') )
+                            onClick="if ( getConfirm(this,'$resource{i18nc.msg.JS.confirmDeleteUser}') )
                             { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
                             else {return false;} "
                         >
