@@ -41,7 +41,9 @@
 
 package org.glassfish.deployment.client;
 
-import com.sun.enterprise.admin.cli.remote.CLIRemoteCommand;
+import com.sun.enterprise.admin.cli.ProgramOptions;
+import com.sun.enterprise.admin.cli.Environment;
+import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.cli.framework.CommandException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -54,10 +56,10 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Implements DeploymentFacility, currently using the CLIRemoteCommand to work with the
+ * Implements DeploymentFacility, currently using the RemoteCommand to work with the
  * admin back-end.
  * <p>
- * Because CLIRemoteCommand uses the http interface with the admin back-end it
+ * Because RemoteCommand uses the http interface with the admin back-end it
  * is connectionless.  Clients of RemoteDeploymentFacility must still invoke
  * {@link #connect} before attempting to use the DF.
  * 
@@ -125,8 +127,11 @@ public class RemoteDeploymentFacility extends AbstractDeploymentFacility impleme
                     commandOptions, 
                     operands
                     );
-                CLIRemoteCommand rc = new CLIRemoteCommand(commandArgs, "/xml", baos);
-                rc.runCommand();
+                Environment env = new Environment();
+                ProgramOptions po = prepareRemoteCommandProgramOptions(env);
+                RemoteCommand rc =
+                    new RemoteCommand(commandName, po, env, "jsr-88/xml", baos);
+                rc.execute(commandArgs);
                 DFDeploymentStatus status = CommandXMLResultParser.parse(new ByteArrayInputStream(baos.toByteArray()));
                 return status;
             } catch (Exception ex) {
@@ -156,26 +161,6 @@ public class RemoteDeploymentFacility extends AbstractDeploymentFacility impleme
         for (Map.Entry<String,Object> entry : options.entrySet()) {
             result.add("--" + entry.getKey() + "=" + convertValue(entry.getValue()));
         }
-        /*
-         * Add the authentication information from the
-         * caller-provided connection identifier.
-         */
-        ServerConnectionIdentifier targetDAS = getTargetDAS();
-        if (targetDAS.isSecure()) {
-            result.add("--secure");
-        }
-        result.add("--host=" + targetDAS.getHostName());
-        result.add("--port=" + targetDAS.getHostPort());
-        result.add("--user=" + targetDAS.getUserName());
-        /*
-         * If we were typing the passwordfile option we would need to enclose
-         * the name in quote marks in case it had embedded spaces.  Because
-         * we are essentially doing the shell's command-line parsing ourselves
-         * by placing options and their values into the argument list we do not
-         * need to do the quoting.  If we did then the quote marks would be
-         * treated as part of the file spec and the file would not be found.
-         */
-        result.add("--passwordfile=" + passwordFile.getAbsolutePath());
 
         if (operands != null) {
             for (String o : operands) {
@@ -183,6 +168,23 @@ public class RemoteDeploymentFacility extends AbstractDeploymentFacility impleme
             }
         }
         return result.toArray(new String[result.size()]);
+    }
+
+    protected ProgramOptions prepareRemoteCommandProgramOptions(
+            Environment env) throws CommandException {
+        /*
+         * Add the authentication information from the
+         * caller-provided connection identifier.
+         */
+        ServerConnectionIdentifier targetDAS = getTargetDAS();
+        ProgramOptions po = new ProgramOptions(env);
+        po.setHost(targetDAS.getHostName());
+        po.setPort(targetDAS.getHostPort());
+        po.setUser(targetDAS.getUserName());
+        po.setSecure(targetDAS.isSecure());
+        po.setPasswordFile(passwordFile.getAbsolutePath());
+        po.setOptionsSet(true);
+        return po;
     }
 
     private Object convertValue(Object value) {

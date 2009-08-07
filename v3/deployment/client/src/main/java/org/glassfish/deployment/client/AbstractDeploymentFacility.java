@@ -410,12 +410,11 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     public List<String> getSubModuleInfoForJ2EEApplication(String appName) throws IOException {
         ensureConnected();
         String commandName = LIST_SUB_COMPONENTS_COMMAND;
-        Map commandParams = new HashMap();
-        commandParams.put("modulename", appName);
+        String[] operands = new String[] { appName };
         DFDeploymentStatus mainStatus = null;
         Throwable commandExecutionException = null;
         try {
-            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, null);
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, null, operands);
             DFDeploymentStatus ds = commandRunner.run();
             mainStatus = ds.getMainStatus();
             List<String> subModuleInfoList = new ArrayList<String>();
@@ -457,14 +456,13 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     private String getAppRefEnabledAttr(String target, String moduleName) throws IOException {
         ensureConnected();
         String commandName = GET_COMMAND;
-        Map commandParams = new HashMap();
         String patternParam = "servers.server." + target + ".application-ref." 
             + moduleName + ".enabled";
-        commandParams.put("pattern", patternParam);
+        String[] operands = new String[] { patternParam };
         DFDeploymentStatus mainStatus = null;
         Throwable commandExecutionException = null;
         try {
-            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, null);
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, null, operands);
             DFDeploymentStatus ds = commandRunner.run();
             mainStatus = ds.getMainStatus();
             String enabledAttr = null;
@@ -505,14 +503,13 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     public String getContextRoot(String moduleName) throws IOException {
         ensureConnected();
         String commandName = GET_COMMAND;
-        Map commandParams = new HashMap();
         String patternParam = "applications.application." + moduleName + 
             ".context-root";
-        commandParams.put("pattern", patternParam);
+        String[] operands = new String[] { patternParam };
         DFDeploymentStatus mainStatus = null;
         Throwable commandExecutionException = null;
         try {
-            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, null);
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, null, operands);
             DFDeploymentStatus ds = commandRunner.run();
             mainStatus = ds.getMainStatus();
             String contextRoot = null;
@@ -553,13 +550,12 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     public ModuleType getModuleType(String moduleName) throws IOException {
         ensureConnected();
         String commandName = GET_COMMAND;
-        Map commandParams = new HashMap();
         String patternParam = "applications.application." + moduleName + ".*";
-        commandParams.put("pattern", patternParam);
+        String[] operands = new String[] { patternParam };
         DFDeploymentStatus mainStatus = null;
         Throwable commandExecutionException = null;
         try {
-            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, null);
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, null, operands);
             DFDeploymentStatus ds = commandRunner.run();
             mainStatus = ds.getMainStatus();
             List<String> resultList = new ArrayList<String>();
@@ -598,12 +594,11 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     public Target[] listTargets() throws IOException {
         ensureConnected();
         String commandName = LIST_COMMAND;
-        Map commandParams = new HashMap();
-        commandParams.put("pattern", "servers.server");
+        String[] operands = new String[] { "servers.server" };
         DFDeploymentStatus mainStatus = null;
         Throwable commandExecutionException = null;
         try {
-            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, null);
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, null, operands);
             DFDeploymentStatus ds = commandRunner.run();
             mainStatus = ds.getMainStatus();
             List<Target> targets = new ArrayList<Target>();
@@ -650,11 +645,11 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         String commandName = GET_CLIENT_STUBS_COMMAND;
         Map commandParams = new HashMap();
         commandParams.put("appname", moduleID);
-        commandParams.put("localDir", location);
+        String[] operands = new String[] { location };
         DFDeploymentStatus mainStatus = null;
         Throwable commandExecutionException = null;
         try {
-            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, null);
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, operands);
             DFDeploymentStatus ds = commandRunner.run();
             mainStatus = ds.getMainStatus();
 
