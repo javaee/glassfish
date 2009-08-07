@@ -1623,10 +1623,8 @@ public class WebappClassLoader
 
     /**
      * Start the class loader.
-     *
-     * @exception LifecycleException if a lifecycle error occurs
      */
-    public void start() throws Exception {
+    public void start() {
         started = true;
     }
 

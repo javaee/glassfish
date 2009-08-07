@@ -566,14 +566,19 @@ public class VirtualServer extends StandardHost {
         if (getDefaultWebModuleID() == null && findChild("") == null
                 && docroot != null) {
 
-            WebBundleDescriptor wbd = webArchivist.getValidatedDefaultBundleDescriptor();
+            WebBundleDescriptor wbd =
+                webArchivist.getValidatedDefaultBundleDescriptor();
             wmInfo = new WebModuleConfig();
             wbd.setModuleID(Constants.DEFAULT_WEB_MODULE_NAME);
             wbd.setContextRoot("");
             wmInfo.setLocation(new File(docroot));
             wmInfo.setDescriptor(wbd);
-            wmInfo.setParentLoader(EmbeddedWebContainer.class.getClassLoader());
-            wmInfo.setAppClassLoader(new WebappClassLoader(wmInfo.getParentLoader()));
+            wmInfo.setParentLoader(
+                EmbeddedWebContainer.class.getClassLoader());
+            WebappClassLoader loader = new WebappClassLoader(
+                wmInfo.getParentLoader());
+            loader.start();            
+            wmInfo.setAppClassLoader(loader);
             if ( wbd.getApplication() == null ) {
                 Application application = new Application(Globals.getDefaultHabitat());
                 application.setVirtual(true);

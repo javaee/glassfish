@@ -131,11 +131,9 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             logger.log(Level.SEVERE, fnfe.getMessage());
             logger.log(Level.FINE, fnfe.getMessage(), fnfe);
         }
-        try {
-            cloader.start();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
+        cloader.start();
+
         return cloader;
     }
 

@@ -737,12 +737,6 @@ public class WebappLoader
 
             setPermissions();
 
-            try {
-                classLoader.start();
-            } catch (Exception e) {
-                throw new LifecycleException(e);
-            }
-
             // Binding the Webapp class loader to the directory context
             DirContextURLStreamHandler.bind(classLoader,
                     this.container.getResources());
