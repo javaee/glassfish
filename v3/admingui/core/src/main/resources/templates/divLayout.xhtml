@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:sun="http://www.sun.com/webui/webuijsf"
+      xmlns:jsfExt="http://java.sun.com/jsf/extensions/dynafaces">
+
+    <!-- initPage must exist outside all UIComponents (for now) -->
+    <ui:event type="initPage">
+        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+        getProxyAttribute( objectNameStr="amx:pp=/ext,type=realms" attrName="AnonymousLogin" value="#{pageSession.anonLogin}" )
+    </ui:event>
+
+    <!-- Composition for trimming -->
+    <ui:composition>
+        <sun:page>
+            <sun:html>
+                <ui:event type="beforeCreate">
+                    initSessionAttributes();
+                    checkSupport(supportCluster=>$session{supportCluster});
+                    if( $session{supportCluster}){
+                        initClusterSessionAttribute();
+                        setSessionAttribute(key="notSupportCluster" value="$boolean{false}");
+                    }
+                    if(! $session{supportCluster}){
+                        setSessionAttribute(key="notSupportCluster" value="$boolean{true}");
+                    }
+
+                    showRegistration(value=>$session{showRegistration});
+
+                    if ($session{showRegistration}){
+                        setRegistrationNodeText();
+                    }
+
+                    if(! $session{supportCluster}){
+                        checkRestart(RestartRequired=>$session{restartRequired},
+                        unprocessedChanges=>$session{unprocessedChanges});
+                    }
+                    if($session{supportCluster}){
+                        setSessionAttribute(key="restartRequired" value="$boolean{false}");
+                    }
+
+                    // Set expand / collapse preferences...
+                    if ("#{sessionScope.hideLeft}=#{null}") {
+                        getPreference(default="#{false}", root="glassfish/layout", key="hideLeft", value="#{sessionScope.hideLeft}");
+                    }
+                    if ("#{sessionScope.hideRight}=#{null}") {
+                        getPreference(default="#{false}", root="glassfish/layout", key="hideRight", value="#{sessionScope.hideRight}");
+                    }
+                </ui:event>
+                <sun:head title="#{guiTitle}" debug="false" parseOnLoad="false">
+                    <!-- comment out for now since the file style.css doesn't exist.
+                     <link rel="stylesheet" type="text/css" href="#{request.contextPath}/style.css" />
+                    -->
+                    <sun:script url="/resource/common/js/adminjsf.js" />
+                    <jsfExt:scripts/>
+                    <ui:insert name="guiTemplateExtraHead" />
+                    <ui:insert name="guiExtraHead" />
+                    <style type="text/css">
+                        .yui-skin-sam .yui-layout .yui-layout-unit-center div.yui-layout-bd {background-color: #FFF;}
+                        .yui-layout-unit-top .yui-layout-bd { background-color: #5b87a4; }
+                        .yui-skin-sam .yui-layout .yui-layout-unit-top div.yui-layout-bd { background-color: #5b87a4; }
+                        .yui-layout-hd h2 {background: #7595AB url(#{request.contextPath}/theme/woodstock4_3/suntheme/images/masthead/masthead_button.gif) repeat-x scroll center bottom;}
+                        .tagDiv {padding: 10px;}
+                        .tagDiv .tagList {padding: 10px;}
+                        .tagDiv .tagList li {padding: 3px;}
+                        .tagDiv .tagList a.tagLink:visited, .tagDiv .tagList a.tagLink:link, .tagDiv .tagList a.removeTag:visited, .tagDiv .tagList a.removeTag:link {color: #000099}
+                        .tagDiv .tagList a.tagLink:hover {color: #0000CC}
+                        .tagDiv .tagList a.removeTag {margin-left: 6px;padding: 1px 2px 1px 2px; text-decoration:none; background:#EEEEEE;border:1px solid #AAA;}
+                        .tagDiv .tagList a.removeTag:hover {color:red; font-weight:bold; text-decoration:none;}
+                        #yui-gen1 .yui-layout-hd { display: none; }
+                        /* regReminder CSS */
+                        .bulletList {font-weight: bold; font-size: 1.2em; font-style: italic; color: #FFFFFF;}
+                        .bulletList a {font-weight: normal;}
+                        .bulletList a:link, .bulletList a:visited {color: #b9d2e9;}
+                        .bulletList ul {padding-left: 0px; padding-bottom: 15px; margin-left: 90px;}
+                        .bulletList li {font-style: normal; font-size: .9em; letter-spacing: -1px; list-style: url('#{request.contextPath}/resource/images/regReminderBullets.png'); padding-bottom: 8px;}
+                        .please {color: #FFFFFF; font-size: 1.6em; font-weight: bold; padding-bottom: 10px;}
+                        .why {color: #b9d2e9; font-size: 1.3em; font-weight: bold; font-style: italic; padding-bottom: 8px;}
+                        .why a:link, .why a:visited {color: #b9d2e9;}
+                    </style>
+
+                </sun:head>
+
+                <sun:body onLoad="#{guiOnLoad}#{guiTemplateOnLoad}">
+                    <div id="gfLayout" fullPage="true">
+                        <div id="gfLayoutTop" position="top" height="115" scroll="false" gutter="5px" resize="false" collapse="false">
+                            <div class="header_main">
+                                <sun:form id="headerForm">
+                                    <h:commandButton id="setPref" style="display: none;">
+                                        <ui:event type="afterCreate">
+                                            setPageSessionAttribute(key="setPrefId" value="$this{clientId}");
+                                        </ui:event>
+                                        <ui:event type="command">
+                                            // FIXME: may want to escape param values here
+                                            setPreference(root="glassfish/#{param.root}", key="#{param.key}", value="#{param.value}");
+                                            if ("#{param.sessionKey}") {
+                                                setSessionAttribute(key="#{param.sessionKey}", value="#{param.value}");
+                                            }
+                                        </ui:event>
+                                    </h:commandButton>
+                                    <!-- Customizing the masthead -->
+                                    <ui:event type="afterCreate">
+                                        getClientId(component="$this{component}" clientId=>$attribute{formId})
+                                        getUIComponent(clientId="#{formId}"  component=>$attribute{component})
+                                        includeFirstIntegrationPoint(type="org.glassfish.admingui:masthead" root="#{requestScope.component}");
+                                    </ui:event>
+                                </sun:form>
+                            </div>
+                        </div>
+
+                        <div id="gfLayoutLeft" style="width: 15%; float: left;" position="left" width="250" gutter="5px" resize="true" header="Tree" collapse="true">
+                            <ui:insert name="guiLeftNav" />
+                        </div>
+
+                        <div id="gfLayoutCenter" style="width: 85%; float: left;" position="center" scroll="true" gutter="5px">
+                            <ui:insert name="guiTopNav" />
+                            <!-- Content -->
+                            <div id="content" style="padding-left: 5px; padding-right: 5px;">
+                                <h:messages />
+                                <ui:insert name="guiTemplateContent">
+                                    <ui:insert name="content">
+                                        Content Missing!
+                                    </ui:insert>
+                                </ui:insert>
+                            </div>
+
+
+                        </div>
+                        <!--
+
+                          I am commenting out the tags panel for now... this functionality should go back into the UI at some point...
+                        //<ui:include src="/templates/tagsPanel.jsf" />
+                        -->
+
+                        <div rendered="#{pageSession.rightContent[0] != null}" id="gfLayoutRight" position="right" width="250" gutter="5px" resize="true" header="#{pageSession.rightContent[0].content}" collapse="true">
+                            <event>
+                                <ui:event type="afterCreate">
+                                    // FIXME: Consider using a widget which allows multiple content types to share the right panel (i.e. accordian)
+                                    includeFirstIntegrationPoint(type="org.glassfish.admingui:rightPanel" root="$this{component}");
+                                    getIntegrationPoints(type="org.glassfish.admingui:rightPanelTitle" points="#{pageSession.rightContent}");
+                                </ui:event>
+                            </event>
+                        </div>
+                    </div>
+                </sun:body>
+            </sun:html>
+
+            <!-- FIXME: this should be in adminjsf.js -->
+            <script type="text/javascript">
+                function submitTagForm(el) {
+                    YAHOO.util.Dom.get('tagForm:url').value = window.location;
+                    DynaFaces.fireAjaxTransaction(el,
+                    {
+                        execute: 'tagForm:tag,tagForm:name,tagForm:url,'+el.id,
+                        inputs: 'tagForm:tag,tagForm:name,tagForm:url,'+el.id,
+                        render: 'tagForm:tag,tagForm:name,tagForm:url,'+el.id,
+                        postReplace: function() {
+                            YAHOO.util.Dom.get('tagForm:tag').value = '';
+                            YAHOO.util.Dom.get('tagForm:name').value = '';
+                            hidePanel('addTagPanel');
+                        }
+                    } );
+                }
+                function submitTagSearchForm(el) {
+                    DynaFaces.fireAjaxTransaction(el,
+                    {
+                        execute: 'hits,tagSearch:tag,'+el.id,
+                        inputs: 'hits,tagSearch:tag,'+el.id,
+                        render: 'hits',
+                        postReplace: function(zone, html) {
+                            YAHOO.util.Dom.get('tagSearch:tag').value = '';
+                        }
+                    } );
+                }
+
+                /*
+                <!--
+                FIXME: I think this would be better implemented using Y!'s KeyListener:
+                http://developer.yahoo.com/yui/examples/container/keylistener.html
+                function showSearchPanel(e) {
+                    var result = true;
+                    if ((e.charCode == 102) &amp;&amp; (e.ctrlKey == true)) {
+                        showPanel('searchTagsPanel');
+                        if (e.preventDefault) {
+                            e.preventDefault();
+                        }
+                        result = false;
+                    }
+                    return result;
+                }
+                YAHOO.util.Event.addListener(document, "keypress", showSearchPanel);
+                -->
+                */
+
+                // Save the prefs button so it is accessible via our JS
+                if (typeof(admingui) === "undefined") {
+                    admingui = {};
+                }
+                admingui.setPrefButton = document.getElementById("#{pageSession.setPrefId}");
+
+                // Collapse panels if necessary
+                YAHOO.util.Event.onDOMReady(function (ev) {
+                    var layout = scales.getLayout('gfLayout');
+                    var lu = layout.getUnitByPosition('left');
+                    lu.on('collapse', function(ev) {
+                        admingui.util.setPreference("layout", "hideLeft", "true", "hideLeft");
+                    });
+                    lu.on('expand', function(ev) {
+                        admingui.util.setPreference("layout", "hideLeft", "false", "hideLeft");
+                    });
+                    if (#{sessionScope.hideLeft}) {
+                        lu.collapse();
+                    }
+
+                    // Deal w/ the right frame
+                    lu = layout.getUnitByPosition('right');
+                    lu.on('collapse', function(ev) {
+                        admingui.util.setPreference("layout", "hideRight", "true", "hideRight");
+                    });
+                    lu.on('expand', function(ev) {
+                        admingui.util.setPreference("layout", "hideRight", "false", "hideRight");
+                    });
+                    if (#{sessionScope.hideRight}) {
+                        lu.collapse();
+                    }
+                });
+            </script>
+        </sun:page>
+    </ui:composition>
+</html>
