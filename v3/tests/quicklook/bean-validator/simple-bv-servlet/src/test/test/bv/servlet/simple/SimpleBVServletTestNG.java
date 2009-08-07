@@ -88,9 +88,12 @@ public class SimpleBVServletTestNG {
             String testLine = null;
             String[] regexesToFind = {
                 "(?s)(?m).*Obtained ValidatorFactory: org.hibernate.validation.engine.ValidatorFactoryImpl.*",
-                "(?s)(?m).*ConstraintViolation: message: may not be null propertyPath: firstName.*",
-                "(?s)(?m).*ConstraintViolation: message: may not be null propertyPath: lastName.*",
-                "(?s)(?m).*No ConstraintViolations found.*"                        
+                "(?s)(?m).*case1: No ConstraintViolations found.*",
+                "(?s)(?m).*case2: caught IllegalArgumentException.*",
+                "(?s)(?m).*case3: ConstraintViolation: message: may not be null propertyPath: listOfString.*",
+                "(?s)(?m).*case3: ConstraintViolation: message: may not be null propertyPath: lastName.*",
+                "(?s)(?m).*case3: ConstraintViolation: message: may not be null propertyPath: firstName.*",
+                "(?s)(?m).*case4: No ConstraintViolations found.*"
             };
             final int len = regexesToFind.length;
             int i;

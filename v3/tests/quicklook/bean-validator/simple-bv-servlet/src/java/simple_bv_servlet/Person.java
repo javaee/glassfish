@@ -36,6 +36,7 @@
 
 package simple_bv_servlet;
 
+import java.util.List;
 import javax.validation.constraints.NotNull;
 
 public class Person {
@@ -62,6 +63,18 @@ public class Person {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
+    private List<String> listOfString;
+
+    @NotNull
+    public List<String> getListOfString() {
+        return listOfString;
+    }
+
+    public void setListOfString(List<String> listOfString) {
+        this.listOfString = listOfString;
+    }
+
 
     
 

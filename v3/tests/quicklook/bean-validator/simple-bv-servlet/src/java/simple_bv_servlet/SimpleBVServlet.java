@@ -38,6 +38,8 @@ package simple_bv_servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -66,28 +68,43 @@ public class SimpleBVServlet extends HttpServlet {
         
         ValidatorContext validatorContext = validatorFactory.usingContext();
         javax.validation.Validator beanValidator = validatorContext.getValidator();
+
+        out.print("<h1>");
+        out.print("Validating person class using validateValue with valid property");
+        out.print("</h1>");
+	
+        List<String> listOfString = new ArrayList<String>();
+        listOfString.add("one");
+        listOfString.add("two");
+        listOfString.add("three");
+
+        Set<ConstraintViolation<Person>> violations =
+                beanValidator.validateValue(Person.class, "listOfString", listOfString);
         
+        printConstraintViolations(out, violations, "case1");
+
+        out.print("<h1>");
+        out.print("Validating person class using validateValue with invalid property");
+        out.print("</h1>");
+
+        try {
+            violations =
+                    beanValidator.validateValue(Person.class, "nonExistentProperty", listOfString);
+        } catch (IllegalArgumentException iae) {
+            out.print("<p>");
+            out.print("case2: caught IllegalArgumentException.  Message: " +
+                    iae.getMessage());
+            out.print("</p>");
+        }
         Person person = new Person();
         
         out.print("<h1>");
-        out.print("Validating invalid person.");
+        out.print("Validating invalid person instance using validate.");
         out.print("</h1>");
         
-        Set<ConstraintViolation<Person>> violations = 
-            beanValidator.validate(person);
+        violations = beanValidator.validate(person);
         
-        if (violations.isEmpty()) {
-            out.print("<p>");
-            out.print("No ConstraintViolations found.");
-            out.print("</p>");
-        } else {
-            for (ConstraintViolation<Person> curViolation : violations) {
-                out.print("<p>");
-                out.print("ConstraintViolation: message: " + curViolation.getMessage() +
-                        " propertyPath: " + curViolation.getPropertyPath());
-                out.print("</p>");
-            }
-        }
+        printConstraintViolations(out, violations, "case3");
         
         out.print("<h1>");
         out.print("Validating valid person.");
@@ -95,24 +112,30 @@ public class SimpleBVServlet extends HttpServlet {
         
         person.setFirstName("John");
         person.setLastName("Yaya");
+        person.setListOfString(listOfString);
         
         violations = beanValidator.validate(person);
+        printConstraintViolations(out, violations, "case4");
         
+        out.print("</body></html>");
+        
+    }
+
+    private void printConstraintViolations(PrintWriter out,
+            Set<ConstraintViolation<Person>> violations, String caseId) {
         if (violations.isEmpty()) {
             out.print("<p>");
-            out.print("No ConstraintViolations found.");
+            out.print(caseId + ": No ConstraintViolations found.");
             out.print("</p>");
         } else {
             for (ConstraintViolation<Person> curViolation : violations) {
                 out.print("<p>");
-                out.print("ConstraintViolation: message: " + curViolation.getMessage() +
+                out.print(caseId + ": ConstraintViolation: message: " + curViolation.getMessage() +
                         " propertyPath: " + curViolation.getPropertyPath());
                 out.print("</p>");
             }
         }
-        
-        out.print("</body></html>");
-        
+
     }
     
     
