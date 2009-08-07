@@ -76,6 +76,8 @@ public class EJBContainerImpl extends EJBContainer {
 
     private Set<String> deployedApps = new HashSet<String>();
 
+    private boolean open = true;
+
     /**
      * Construct new EJBContainerImpl instance 
      */                                               
@@ -142,6 +144,8 @@ public class EJBContainerImpl extends EJBContainer {
             server.stop();
         } catch (LifecycleException e) {
             System.err.println("Cannot stop embedded container " + e.getMessage());
+        } finally {
+            open = false;
         }
     }
 
@@ -149,7 +153,7 @@ public class EJBContainerImpl extends EJBContainer {
      * Returns true if there are deployed modules associated with this container.
      */
     boolean isOpen() {
-        return !deployedApps.isEmpty();
+        return open;
     }
 
     /**

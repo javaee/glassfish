@@ -100,12 +100,12 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         if (properties == null || properties.get(EJBContainer.PROVIDER) == null || 
                 properties.get(EJBContainer.PROVIDER).equals(GF_PROVIDER_NAME)) {
 
-            init(properties);
-            if (container.isOpen()) {
+            if (container != null && container.isOpen()) {
                 throw new EJBException(localStrings.getString(
                         "ejb.embedded.exception_exists_container"));
             }
 
+            init(properties);
             try {
                 Set<File> modules = new HashSet<File>();
                 Set<String> moduleNames = addEJBModules(modules, properties);
@@ -132,7 +132,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
     private void init(Map<?, ?> properties) throws EJBException {
         synchronized(lock) {
-            if (container == null) {
+            // if (container == null || !container.isOpen()) {
                 Server.Builder builder = new Server.Builder("GFEJBContainerProviderImpl");
 
                 File installed_root = null;
@@ -192,7 +192,7 @@ System.err.println("+++ domain_file: " + domain_file);
                 ejbAnnotations = sniffer.getAnnotationTypes();
 
                 container = new EJBContainerImpl(server, ejbContainer, deployer);
-            }
+            // }
         }
     }
 

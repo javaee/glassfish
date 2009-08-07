@@ -109,10 +109,23 @@ public class UnitTest {
             System.out.println("Caught expected: " + e.getMessage());
         }
 
-        c.close();
+        System.out.println("Closing container ...");
+        try {
+            c.close();
+        } catch (Exception e) {
+            System.out.println("ERROR Closing container:");
+            e.printStackTrace();
+        }
+        System.out.println("Done Closing container");
+
         System.out.println("Creating container after closing the previous...");
-        c = EJBContainer.createEJBContainer(p);
-        c.close();
+        try {
+            c = EJBContainer.createEJBContainer(p);
+            c.close();
+        } catch (Exception e) {
+            System.out.println("ERROR in the 2nd container:");
+            e.printStackTrace();
+        }
 
         System.out.println("..........FINISHED UnitTest");
     }
