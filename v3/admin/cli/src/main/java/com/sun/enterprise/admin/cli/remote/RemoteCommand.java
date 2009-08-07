@@ -102,7 +102,7 @@ public class RemoteCommand extends CLICommand {
 
     /**
      * Construct a new remote command object.  The command and arguments
-     * are supplied later using the parse method.
+     * are supplied later using the execute method in the superclass.
      */
     public RemoteCommand(String name, ProgramOptions po, Environment env)
             throws CommandException {
@@ -114,6 +114,20 @@ public class RemoteCommand extends CLICommand {
          */
         if (!name.matches(COMMAND_NAME_REGEXP))
             throw new CommandException("Illegal command name: " + name);
+    }
+
+    /**
+     * Construct a new remote command object.  The command and arguments
+     * are supplied later using the execute method in the superclass.
+     * This variant is used by the RemoteDeploymentFacility class to
+     * control and capture the output.
+     */
+    public RemoteCommand(String name, ProgramOptions po, Environment env,
+            String responseFormatType, OutputStream userOut)
+            throws CommandException {
+        this(name, po, env);
+        this.responseFormatType = responseFormatType;
+        this.userOut = userOut;
     }
 
     @Override
