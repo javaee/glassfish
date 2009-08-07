@@ -59,19 +59,22 @@ public final class Environment {
      * Initialize the enviroment with all relevant system environment entries.
      */
     public Environment() {
+        this(false);
+    }
+
+    /**
+     * Constructor that ignores the system environment,
+     * mostly used to enable repeatable tests.
+     */
+    public Environment(boolean ignoreEnvironment) {
+        if (ignoreEnvironment)
+            return;
         // initialize it with all relevant system environment entries
         for (Map.Entry<String, String> e : System.getenv().entrySet()) {
             if (e.getKey().startsWith(AS_ADMIN_ENV_PREFIX)) {
                 env.put(e.getKey().toUpperCase(Locale.ENGLISH), e.getValue());
             }
         }
-    }
-
-    /**
-     * Package-private constructor that ignores the environment,
-     * to enable repeatable tests.
-     */
-    Environment(boolean ignoreEnvironment) {
     }
 
     /**

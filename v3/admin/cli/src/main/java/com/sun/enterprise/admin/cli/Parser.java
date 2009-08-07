@@ -47,9 +47,6 @@ import com.sun.enterprise.cli.framework.ValidOption;
  * command line and verify that the command line is CLIP compliant.
  */
 public class Parser {
-    // Name of Command
-    private String commandName = null;
-
     // Map of options and values from command-line
     // XXX - Map doesn't allow for options that repeat
     private Map<String,String> optionsMap = new HashMap<String,String>();
@@ -69,10 +66,14 @@ public class Parser {
      */
 
     /**
-     * Creates new CLIRemoteCommand with the given argument.
+     * Parse the given command line arguments
      *
      * @param args  command line arguments
-     * @throws CommandValidationException if command name is invalid
+     * @param start index in args to start parsing
+     * @param options the valid options to consider while parsing
+     * @param ignoreUnknown if true, unknown options are considered operands
+     *        instead of generating an exception
+     * @throws CommandValidationException if command line parsing fails
      */
     public Parser(String[] args, int start,
             Set<ValidOption> options, boolean ignoreUnknown)
@@ -243,9 +244,8 @@ public class Parser {
     }
 
     public String toString() {
-        return "\n**********\nname = " + commandName +
-        "\nOptions = " + optionsMap +
-        "\nOperands = " + operands + "\n**********\n";
+        return "CLI parser: Options = " + optionsMap +
+		"; Operands = " + operands;
     }
     
     /**
