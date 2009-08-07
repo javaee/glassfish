@@ -736,7 +736,16 @@ public class WsUtil {
                                             ServerEnvironment se = wscImpl.getHabitat().getByContract(ServerEnvironment.class);
 
                                             File appFile = new File(se.getApplicationRepositoryPath(),serviceRef.getBundleDescriptor().getApplication().getAppName());
-                                            retVal = new File(appFile,serviceRef.getWsdlFileUri()).toURL();
+                                            if (appFile.exists()) {
+                                               retVal = new File(appFile,serviceRef.getWsdlFileUri()).toURL();
+                                            } else {
+                                               //Fix for 6853656
+                                               //In case of appclients the wsdl will be in the classpath
+                                               //This will work for launches using the appclient command and
+                                               // for Java Web Start launches
+                                                
+                                               retVal = Thread.currentThread().getContextClassLoader().getResource(serviceRef.getWsdlFileUri()) ;
+                                            }
                                         }else {
                                             retVal = new File(serviceRef.getWsdlFileUri()).toURL();
                                         }
