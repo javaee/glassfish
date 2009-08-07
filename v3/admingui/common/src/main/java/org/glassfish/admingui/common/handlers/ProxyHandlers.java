@@ -50,6 +50,7 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.StringTokenizer;
 import javax.management.ObjectName;
 
 
@@ -487,9 +488,11 @@ public class ProxyHandlers {
             Set data = (Set) query.queryType(type);
             Iterator iter = data.iterator();
             String firstItem = "";
+            String name = "";
             while (iter.hasNext()) {
                 Map attr = ((AMXProxy) iter.next()).attributesMap();
-                String name = (String) attr.get("Name");
+                String obj = (String) attr.get("Name");
+                name = obj.substring(obj.indexOf("/")+1, (obj.lastIndexOf("/") == obj.indexOf("/")) ? obj.length() : obj.lastIndexOf("/"));
                 if (GuiUtil.isEmpty(firstItem)) {
                     firstItem = name;
                 }
