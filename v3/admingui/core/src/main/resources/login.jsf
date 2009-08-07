@@ -61,7 +61,6 @@
 </f:verbatim>
             <event>
                 <!afterCreate
-                    initSessionAttributes();
                     getClientId(component="$this{component}" clientId=>$attribute{loginId})
                     getUIComponent(clientId="#{loginId}"  component=>$attribute{component})
                     includeFirstIntegrationPoint(type="org.glassfish.admingui:loginform" root="#{component}");

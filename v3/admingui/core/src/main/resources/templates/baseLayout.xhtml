@@ -21,6 +21,7 @@
 <sun:page>
 <sun:html>
     <ui:event type="beforeCreate">
+        initSessionAttributes();
         checkSupport(supportCluster=>$session{supportCluster});
         if( $session{supportCluster}){
             initClusterSessionAttribute();
