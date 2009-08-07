@@ -51,7 +51,16 @@
             setAttribute(key="appVal" value="#{pageSession.firstApp}");
             setAttribute(key="appName" value="applications/#{appVal}/server");
         }
-        
+        getProxyNamesByType(type="WorkManagementStatsProvider" result="#{pageSession.connList}" firstItem="#{pageSession.firstConn}");
+        if(!#{connVal}) {
+            setAttribute(key="connVal" value="#{pageSession.firstConn}");
+            setAttribute(key="connName" value="connector-service/#{connVal}/work-management");
+        }
+        getProxyNamesByType(type="LoginStatsProvider" result="#{pageSession.loginList}" firstItem="#{pageSession.firstLogin}");
+        if(!#{loginVal}) {
+            setAttribute(key="loginVal" value="#{pageSession.firstLogin}");
+            setAttribute(key="loginName" value="webintegration/#{loginVal}");
+        }
     />
 </event>    
 #include "/common/shared/restart.inc"        
@@ -69,7 +78,14 @@
                         setAttribute(key="appVal" value="#{appVal}");
                         setAttribute(key="appList" value="#{appList}");    
                         setAttribute(key="appName" value="applications/#{appVal}/server");
-                        navigate(page="#{request.contextPath}/web/monitor/monitoringAppStatsPage.jsf");
+                        setAttribute(key="connVal" value="#{connVal}");
+                        setAttribute(key="connList" value="#{connList}");    
+                        setAttribute(key="connName" value="connector-service/#{connVal}/work-management");
+                        setAttribute(key="loginVal" value="#{loginVal}");
+                        setAttribute(key="loginList" value="#{loginList}");    
+                        setAttribute(key="loginName" value="webintegration/#{loginVal}");
+                       
+                       navigate(page="#{request.contextPath}/web/monitor/monitoringAppStatsPage.jsf");
                     />              
                     </sun:button>
                 </sun:panelGroup>
@@ -80,17 +96,31 @@
                     <sun:propertySheetSection id="viewPropertySection">
             <sun:property id="ApplicationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
                 
-                <sun:dropDown id="Application" label="$resource{i18n.common.Application}:" selected="#{appVal}" labels="$pageSession{appList}" >
+                <sun:dropDown id="Application" label="$resource{i18n.common.Application} : " selected="#{appVal}" labels="$pageSession{appList}" >
                     
                 </sun:dropDown>
                 "&nbsp;&nbsp;&nbsp;
+                <sun:dropDown id="ConnectorApplication" label="$resource{web.monitoring.Connector} : " selected="#{connVal}" labels="$pageSession{connList}" >
+                    
+                </sun:dropDown>
                 
+                "&nbsp;&nbsp;&nbsp;
+                <sun:dropDown id="LoginApplication" label="$resource{web.monitoring.Login} : " selected="#{loginVal}" labels="$pageSession{loginList}" >
+                    
+                </sun:dropDown>
+                "&nbsp;&nbsp;&nbsp;
                 <sun:button id="getStatsButton" 
                                 text="$resource{web.button.GetStatistics}">
                     <!command
                         setAttribute(key="appVal" value="#{appVal}");
-                        setAttribute(key="appList" value="#{appList}");     
+                        setAttribute(key="appList" value="#{appList}");    
                         setAttribute(key="appName" value="applications/#{appVal}/server");
+                        setAttribute(key="connVal" value="#{connVal}");
+                        setAttribute(key="connList" value="#{connList}");    
+                        setAttribute(key="connName" value="connector-service/#{connVal}/work-management");
+                        setAttribute(key="loginVal" value="#{loginVal}");
+                        setAttribute(key="loginList" value="#{loginList}");    
+                        setAttribute(key="loginName" value="webintegration/#{loginVal}");
                         navigate(page="#{request.contextPath}/web/monitor/monitoringAppStatsPage.jsf");
                     />              
                     </sun:button>
@@ -136,7 +166,7 @@
 #include "/web/monitor/monitoringTableRows.inc"  
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="jspStats" data={"$attribute{jspStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jspStatisticsWeb} : #{appVal}" 
+    <sun:tableRowGroup id="jspStats" data={"$attribute{jspStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jspStatisticsWeb} : #{appVal} " 
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
             getStatsbyTypeName(type="JspStatsProvider" name="#{appName}", result=>$attribute{jspStatsList});
@@ -146,7 +176,68 @@
 #include "/web/monitor/monitoringTableRows.inc"  
         "<br/>
     </sun:tableRowGroup>
-        <sun:tableRowGroup id="webSecurity" data={"$attribute{webSecurityStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.webSecurity}" 
+    
+    <sun:tableRowGroup id="servletsWeb" data={"$attribute{servletWebList}"}  sourceVar="td" headerText="$resource{web.monitoring.servletStatisticsWeb} " 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="ServletStatsProvider" name="web/servlet", result=>$attribute{servletWebList});
+        
+         />        
+#include "/web/monitor/monitoringTableRows.inc"  
+        "<br/>
+    </sun:tableRowGroup>
+    
+    <sun:tableRowGroup id="sessionWeb" data={"$attribute{sessionWebList}"}  sourceVar="td" headerText="$resource{web.monitoring.sessionStatisticsWeb} " 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="SessionStatsProvider" name="web/session", result=>$attribute{sessionWebList});
+        
+         />  
+                        
+#include "/web/monitor/monitoringTableRows.inc"  
+        "<br/>
+    </sun:tableRowGroup>
+    <sun:tableRowGroup id="requestWebStats" data={"$attribute{requestWebStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.requestStatisticsWeb}" 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="WebRequestStatsProvider" name="web/request", result=>$attribute{requestWebStatsList});
+        
+         />  
+                        
+#include "/web/monitor/monitoringTableRows.inc"  
+        "<br/>
+    </sun:tableRowGroup>
+    <sun:tableRowGroup id="jspWebStats" data={"$attribute{jspWebStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jspStatisticsWeb}" 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="JspStatsProvider" name="web/jsp", result=>$attribute{jspWebStatsList});
+        
+         />  
+                        
+#include "/web/monitor/monitoringTableRows.inc"  
+        "<br/>
+    </sun:tableRowGroup>    
+    <sun:tableRowGroup id="wmStats" data={"$attribute{wmStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.WorkManagementStats} : #{connVal}" 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="WorkManagementStatsProvider" name="#{connName}", result=>$attribute{wmStatsList});
+        
+         />  
+                        
+#include "/web/monitor/monitoringTableRows.inc"  
+        "<br/>
+    </sun:tableRowGroup>       
+        <sun:tableRowGroup id="loginStats" data={"$attribute{loginStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.LoginStats} : #{loginVal}" 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="LoginStatsProvider" name="#{loginName}", result=>$attribute{loginStatsList});
+        
+         />  
+                        
+#include "/web/monitor/monitoringTableRows.inc"  
+        "<br/>
+    </sun:tableRowGroup>       
+        <sun:tableRowGroup id="webSecurity" data={"$attribute{webSecurityStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.webSecurityStats}" 
             groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
             getStatsbyTypeName(type="WebSecurityDeployerStatsProvider" name="web", result=>$attribute{webSecurityStatsList});

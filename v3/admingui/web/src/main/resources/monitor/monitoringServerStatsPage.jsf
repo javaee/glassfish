@@ -83,7 +83,7 @@
                     <sun:propertySheetSection id="viewPropertySection">
             <sun:property id="VsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
                
-                <sun:dropDown id="Component" label="$resource{web.monitoring.VirtualServer}:" selected="#{vsVal}" labels="$pageSession{vsList}" >
+                <sun:dropDown id="Component" label="$resource{web.monitoring.VirtualServer} : " selected="#{vsVal}" labels="$pageSession{vsList}" >
                   
                 </sun:dropDown>
                 <sun:button id="getStatsButton" 
@@ -125,6 +125,16 @@
 #include "/web/monitor/monitoringTableRows.inc"  
         "<br/>
     </sun:tableRowGroup>    
+        <sun:tableRowGroup id="ejbContainerStats" data={"$attribute{ejbStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.ejb}" 
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="EjbSecurityStatsProvider" name="ejb-security", result=>$attribute{ejbStatsList});
+        
+         />  
+                        
+#include "/web/monitor/monitoringTableRows.inc"  
+        "<br/>
+    </sun:tableRowGroup>        
         <sun:tableRowGroup id="securityRealm" data={"$attribute{realmStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.realm}" 
             groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
