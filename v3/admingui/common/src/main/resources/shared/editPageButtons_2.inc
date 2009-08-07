@@ -120,7 +120,11 @@
                             attrs="#{pageSession.valueMap2}"
                             convertToFalse={"Enabled"} );
                     }
-                    redirect(page="#{parentPage}?configName=#{configName}")
+                    if (#{pageSession.showSuccessfulMsg}){
+                        prepareSuccessfulMsg();
+                        redirect(page="#{pageSession.parentPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                    }
+                    redirect(page="#{pageSession.parentPage}?configName=#{configName}")
                 />
             </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
