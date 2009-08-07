@@ -61,7 +61,10 @@ public class UnitTest {
         System.out.println("Files in dir/META-INF: " + java.util.Arrays.toString(list));
 
         Map<String, Object> p = new HashMap<String, Object>();
-        p.put(EJBContainer.MODULES, new File(dir));
+        if (!Boolean.getBoolean("use-modules-from-classpath")) {
+            p.put(EJBContainer.MODULES, new File(dir));
+        }
+
         String gf = System.getenv().get("GF_HOME");
         if (gf != null) {
             System.err.println("+++GF location: " + gf);

@@ -43,20 +43,28 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+import java.util.jar.Attributes;
 
 import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import javax.ejb.spi.EJBContainerProvider;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 
-
+import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.embedded.ContainerBuilder;
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.embedded.EmbeddedFileSystem;
 import org.glassfish.api.embedded.Server;
 
-import com.sun.logging.LogDomains;
+import org.glassfish.deployment.common.GenericAnnotationDetector;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.logging.LogDomains;
+
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * GlassFish implementation of the EJBContainerProvider.
@@ -66,6 +74,12 @@ import com.sun.enterprise.util.i18n.StringManager;
 public class EJBContainerProviderImpl implements EJBContainerProvider {
 
     private static final String GF_PROVIDER_NAME = EJBContainerProviderImpl.class.getName();
+    private static final String JAR_FILE_EXT = ".jar";
+    private static final Attributes.Name ATTRIBUTE_NAME_SKIP = new Attributes.Name("Bundle-SymbolicName");
+    private static final String[] ATTRIBUTE_VALUES_SKIP = 
+            {"org.glassfish.", "com.sun.enterprise.", "org.eclipse."};
+    private static final String[] ATTRIBUTE_VALUES_OK = {"sample", "test"};
+
 
     // Use Bundle from another package
     private static final Logger _logger = 
@@ -76,6 +90,9 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
     private static EJBContainerImpl container;
     private static Server server;
+    private static Habitat habitat;
+    private static ArchiveFactory archiveFactory;
+    private static Class[] ejbAnnotations = null;
 
     public EJBContainerProviderImpl() {}
 
@@ -91,12 +108,17 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
             try {
                 Set<File> modules = new HashSet<File>();
-                addEJBModules(modules, properties);
+                Set<String> moduleNames = addEJBModules(modules, properties);
                 if (modules.isEmpty()) {
                     _logger.log(Level.SEVERE, "No EJB modules found");
                 }
 
-                container.deploy(properties, modules);
+                container.deploy(properties, modules, moduleNames);
+                // Check again - expected module names list might not have matched the found modules
+                if (modules.isEmpty()) {
+                    _logger.log(Level.SEVERE, "No EJB modules found");
+                }
+
 
                 return container;
             } catch (Throwable t) {
@@ -154,13 +176,20 @@ System.err.println("+++ domain_file: " + domain_file);
 
                     builder.setEmbeddedFileSystem(efsb.build());
                     server = builder.build();
+
                 }
 
-
                 EjbBuilder ejb = server.createConfig(EjbBuilder.class);
+                habitat = ejb.habitat;
+
+                archiveFactory = habitat.getComponent(ArchiveFactory.class);
+
                 EmbeddedEjbContainer ejbContainer = server.addContainer(ejb);
                 server.addContainer(ContainerBuilder.Type.jpa);
                 EmbeddedDeployer deployer = server.getDeployer();
+
+                Sniffer sniffer = habitat.getComponent(Sniffer.class, "Ejb");
+                ejbAnnotations = sniffer.getAnnotationTypes();
 
                 container = new EJBContainerImpl(server, ejbContainer, deployer);
             }
@@ -171,53 +200,104 @@ System.err.println("+++ domain_file: " + domain_file);
      * Adds EJB modules for the property in the properties Map and in the future
      * from the System classpath
      */
-    private void addEJBModules(Set<File> modules, Map<?, ?> properties) {
+    private Set<String> addEJBModules(Set<File> modules, Map<?, ?> properties) {
         Object obj = (properties == null)? null : properties.get(EJBContainer.MODULES);
-        Set<File> expected = new HashSet<File>();
+        Set<String> moduleNames = new HashSet<String>();
+
+        // Check EJBContainer.MODULES setting first - it can have an explicit set of files
         if (obj != null) {
+            // Process File objects directly
             if (obj instanceof File) {
-                expected.add((File)obj);
+                addEJBModule(modules, (File)obj);
             } else if (obj instanceof File[]) {
                 File[] arr = (File[])obj;
                 for (File f : arr) {
-                    expected.add(f);
+                    addEJBModule(modules, f);
                 }
-/** TODO: these are module names to be used, not neccessarily file names
+            // Check module names separately
             } else if (obj instanceof String) {
-                expected.add(new File((String)obj));
+                moduleNames.add((String)obj);
             } else if (obj instanceof String[]) {
                 String[] arr = (String[])obj;
                 for (String s : arr) {
-                    expected.add(new File(s));
+                    moduleNames.add(s);
                 }
-**/
+            }
+        } 
+
+        if (modules.isEmpty()) {
+            // No file is specified - load from the classpath
+            String path = System.getProperty("java.class.path");
+            String[] entries = path.split(File.pathSeparator);
+            for (String s0 : entries) {
+                addEJBModule(modules, new File(s0));
             }
         }
 
-        Set<File> files = getFromClassPath();
-        boolean fromClassPath = true;
-        if (files.isEmpty()) {
-            files = expected;
-            fromClassPath = false;
-        }
+        return moduleNames;
+    }
 
-        for (File f : files) {
-            if (f.exists() /** && isEJBModule(f) **/) {
-                System.err.println("Found.... " + f.getName());
-                if (!fromClassPath || expected.isEmpty() || expected.contains(f)) {
-                    modules.add(f);
-                    System.err.println("...Added.... ");
-                }
-            }
+    /**
+     * @returns true if this file represents EJB module.
+     */
+    private boolean isEJBModule(File file) throws IOException {
+        System.err.println("... Testing ... " + file.getName());
+        ReadableArchive archive = archiveFactory.openArchive(file);
+
+        boolean handles =  archive.exists("META-INF/ejb-jar.xml");
+        if (!handles) {
+            GenericAnnotationDetector detector =
+                new GenericAnnotationDetector(ejbAnnotations);
+            handles = detector.hasAnnotationInArchive(archive);
+        }
+        return handles;
+    }
+
+    /**
+     * Adds an a File to the Set of EJB modules if it represents an EJB module.
+     */
+    private void addEJBModule(Set<File> modules, File f) {
+        try {
+            if (f.exists() && isEJBModule(f) && !skipJar(f)) {
+                modules.add(f);
+                _logger.info("... Added EJB Module .... " + f.getName());
+            } // skip the rest
+        } catch (IOException ioe) {
+            _logger.log(Level.INFO, "ejb.embedded.io_exception", ioe);
+            // skip it
         }
     }
 
     /**
-     * TODO
+     * @returns true if this jar is either a GlassFish module jar or one
+     * of the other known implementation modules.
      */
-    private Set<File> getFromClassPath() {
-        Set<File> result = new HashSet<File>();
-        // TODO
-        return result;
+    private boolean skipJar(File file) throws IOException {
+        if (!file.isFile()) {
+            return false; // probably a directory
+        }
+
+        JarFile jf = new JarFile(file);
+        Manifest m = jf.getManifest();
+        if (m != null) {
+            java.util.jar.Attributes attributes = m.getMainAttributes();
+            String value = attributes.getValue(ATTRIBUTE_NAME_SKIP);
+            if (value != null) {
+                for (String skipValue : ATTRIBUTE_VALUES_SKIP) {
+                    if (value.startsWith(skipValue)) {
+                        for (String okValue : ATTRIBUTE_VALUES_OK) {
+                            if (value.indexOf(okValue) > 0) {
+                                // Still OK
+                                return false;
+                            }
+                        }
+                        // Not OK - skip it
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }

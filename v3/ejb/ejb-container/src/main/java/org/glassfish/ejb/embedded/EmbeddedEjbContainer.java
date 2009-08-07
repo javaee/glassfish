@@ -38,7 +38,7 @@ public class EmbeddedEjbContainer implements EmbeddedContainer {
         List<Sniffer> sniffers = new ArrayList<Sniffer>();
         addSniffer(sniffers, "Ejb");
         addSniffer(sniffers, "Security");
-        addSniffer(sniffers, "jpaSniffer");
+        addSniffer(sniffers, "jpa");
         addSniffer(sniffers, "jpaCompositeSniffer");
         return sniffers;
 
