@@ -141,12 +141,12 @@ public class RemoteDeploymentFacility extends AbstractDeploymentFacility impleme
     }
 
     /**
-     * Assembles an argument list suitable for use by CLIRemoteCommand from the
+     * Assembles an argument list suitable for use by RemoteCommand from the
      * command, options, and operand.
      * @param commandName the command to execute
      * @param options Map, with each key an option name and each value (optionally) the corresponding option value
      * @param operands the operands to the command
-     * @return argument list for CLIRemoteCommand
+     * @return argument list for RemoteCommand
      */
     protected String[] prepareRemoteCommandArguments(
             String commandName,

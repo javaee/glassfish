@@ -46,13 +46,13 @@ import java.util.Iterator;
 /**
  * Implements the Payload API for a message containing only a single text part.
  * <p>
- * This class is mainly useful so the CLIRemoteCommand logic can treat the return
+ * This class is mainly useful so the RemoteCommand logic can treat the return
  * payload from a command the same, regardless of whether it is actually
  * a text-only payload (containing only the command report text itself) or
  * a multi-part payload with different Parts.
  * <p>
  * This class is here primarily to make the plain text in a response look like
- * the more general multi-part responses so the CLIRemoteCommand class is free
+ * the more general multi-part responses so the RemoteCommand class is free
  * from dealing with the details of payload formatting - in particular, free
  * from knowing how to tell if the payload contains just the text report or
  * contains other parts as well.
