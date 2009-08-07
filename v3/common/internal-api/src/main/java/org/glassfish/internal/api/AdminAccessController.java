@@ -36,28 +36,24 @@
 package org.glassfish.internal.api;
 
 import org.jvnet.hk2.annotations.Contract;
-import com.sun.grizzly.tcp.Request;
-import java.io.File;
 
-/**
- * Interface implementing administrative requests authentication.
- * 
- * @author Jerome Dochez
- * @since GlassFish Prelude
- * @since GlassFish v3 FCS
+import javax.security.auth.login.LoginException;
+
+/** Determines the behavior of administrative access to GlassFish v3. It should be enhanced to take into account
+ *  Role-based Access Control. As of GlassFish v3, this takes care of authentication alone.
+ * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net) 
  */
-@Deprecated
 @Contract
-public interface AdminAuthenticator {
+public interface AdminAccessController {
 
-    /**
-     * authenticate incoming request
-     * @param request incoming request
-     * @param f file realm location
-     * 
-     * @return true if authentication is successful.
-     * @throws Exception if there are any errors
+    /** Authenticates the admin user by delegating to the underlying realm. The implementing classes
+     *  should use the GlassFish security infrastructure constructs like LoginContextDriver. This method assumes that
+     *  the realm infrastructure is available in both the configuration and runtime of the server.
+     *
+     * @param user String representing the user name of the user doing an admin opearation
+     * @param password String representing clear-text password of the user doing an admin operation
+     * @param realm String representing the name of the admin realm for given server
+     * @throws LoginException if there is any error in underlying implementation
      */
-    @Deprecated
-    public boolean authenticate(Request request, File f) throws Exception;
+    void login(String user, String password, String realm) throws LoginException;
 }
