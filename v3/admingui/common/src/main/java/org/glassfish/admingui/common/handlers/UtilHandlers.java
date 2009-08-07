@@ -312,7 +312,12 @@ public class UtilHandlers {
     })
     public static void addEmptyFirstElement(HandlerContext handlerCtx) {
         List<String> in = (List) handlerCtx.getInputValue("in");
-        ArrayList ar = new ArrayList(in);
+        ArrayList ar = null;
+        if (in == null){
+             ar = new ArrayList();
+        }else{
+             ar = new ArrayList(in);
+        }
         ar.add(0, "");
         handlerCtx.setOutputValue("out", ar);
     }
