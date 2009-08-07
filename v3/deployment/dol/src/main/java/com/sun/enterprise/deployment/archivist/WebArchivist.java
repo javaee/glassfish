@@ -91,9 +91,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
      */
     DeploymentDescriptorFile standardDD = new WebDeploymentDescriptorFile();
 
-    private WebBundleDescriptor defaultBundleDescriptor = null;
-
-    private WebBundleDescriptor validatedDefaultBundleDescriptor = null;
+    private WebBundleDescriptor defaultWebXmlBundleDescriptor = null;
 
     /**
      * @return the  module type handled by this archivist
@@ -153,24 +151,27 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
      * @return a default BundleDescriptor for this archivist
      */
     @Override
-    public synchronized WebBundleDescriptor getDefaultBundleDescriptor() {
-
-        if (defaultBundleDescriptor==null) {
-            defaultBundleDescriptor = getDefaultWebBundleDescriptor();
-        }
-        return defaultBundleDescriptor;
+    public WebBundleDescriptor getDefaultBundleDescriptor() {
+        return new WebBundleDescriptor();
     }
 
-    public synchronized WebBundleDescriptor getValidatedDefaultBundleDescriptor() {
-        if (validatedDefaultBundleDescriptor == null) {
-            validatedDefaultBundleDescriptor = getDefaultWebBundleDescriptor();
+    /**
+     * @return a validated WebBundleDescriptor corresponding to default-web.xml
+     *         that can be used in webtier.
+     */
+    public synchronized WebBundleDescriptor getDefaultWebXmlBundleDescriptor() {
+        if (defaultWebXmlBundleDescriptor == null) {
+            defaultWebXmlBundleDescriptor = getPlainDefaultWebXmlBundleDescriptor();
             ApplicationValidator validator = new ApplicationValidator();
-            validator.accept(validatedDefaultBundleDescriptor);
+            validator.accept(defaultWebXmlBundleDescriptor );
         }
-        return validatedDefaultBundleDescriptor;
+        return defaultWebXmlBundleDescriptor ;
     }
 
-    private WebBundleDescriptor getDefaultWebBundleDescriptor() {
+    /**
+     * @return a non-validated WebBundleDescriptor corresponding to default-web.xml
+     */
+    private WebBundleDescriptor getPlainDefaultWebXmlBundleDescriptor() {
         WebBundleDescriptor defaultWebBundleDesc = new WebBundleDescriptor();
         InputStream fis = null;
 
@@ -293,13 +294,14 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
     protected void postStandardDDsRead(WebBundleDescriptor descriptor,
             ReadableArchive archive) throws IOException {
         super.postStandardDDsRead(descriptor, archive);
-        // apply default from default-web.xml
-        if (getDefaultBundleDescriptor() != null) {
-            descriptor.addWebBundleDescriptor(defaultBundleDescriptor);
-        }
 
         // read web-fragment.xml
         List<WebFragmentDescriptor> wfList = readStandardFragments(descriptor, archive);
+
+        // combine naming environment into each WebFragmentDescriptor
+        // this is need for annotation processing of @Resource
+        WebFragmentDescriptor.repopulateAllInjectionReferences(descriptor, wfList);
+
         // process annotations in web-fragment
         // extension annotation processing will be done in top level
         Map<ExtensionsArchivist, RootDeploymentDescriptor> localExtensions = new HashMap<ExtensionsArchivist, RootDeploymentDescriptor>();
@@ -318,6 +320,17 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
 
         if (mergedWebFragment != null) {
             descriptor.addWebBundleDescriptor(mergedWebFragment);
+        }
+    }
+
+    @Override
+    protected void postAnnotationProcess(WebBundleDescriptor descriptor,
+            ReadableArchive archive) throws IOException {
+        super.postAnnotationProcess(descriptor, archive);
+        // apply default from default-web.xml to web.xml
+        WebBundleDescriptor defaultWebBundleDescriptor = getPlainDefaultWebXmlBundleDescriptor();
+        if (defaultWebBundleDescriptor != null) {
+            descriptor.addWebBundleDescriptor(defaultWebBundleDescriptor);
         }
     }
 

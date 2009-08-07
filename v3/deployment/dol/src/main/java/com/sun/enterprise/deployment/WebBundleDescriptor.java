@@ -175,6 +175,11 @@ public class WebBundleDescriptor extends BundleDescriptor
             addWebComponentDescriptor(webComponentDescriptor);
         }
 
+        // combine Injection Environments
+        combineInjectionReferences(webBundleDescriptor);
+
+        getContextParametersSet().addAll(webBundleDescriptor.getContextParametersSet());
+
         // do not call getMimeMappingsSet().addAll() as there is special overriding rule
         for (MimeMapping mimeMap : webBundleDescriptor.getMimeMappingsSet()) {
             addMimeMapping(mimeMap);
@@ -187,29 +192,6 @@ public class WebBundleDescriptor extends BundleDescriptor
             addErrorPageDescriptor(errPageDesc);
         }
         getAppListeners().addAll(webBundleDescriptor.getAppListeners());
-        // ok as EnvironmentProperty.equals() only compare name
-        getContextParametersSet().addAll(webBundleDescriptor.getContextParametersSet());
-        for (EjbReference ejbRef: webBundleDescriptor.getEjbReferenceDescriptors()) {
-            addEjbReferenceDescriptor((EjbReferenceDescriptor)ejbRef);
-        }
-        getResourceReferenceDescriptors().addAll(webBundleDescriptor.getResourceReferenceDescriptors());
-
-        for (MessageDestinationReferenceDescriptor mdRef:
-                webBundleDescriptor.getMessageDestinationReferenceDescriptors()) {
-            addMessageDestinationReferenceDescriptor(mdRef);
-        }
-        for (ServiceReferenceDescriptor serviceRef: webBundleDescriptor.getServiceReferenceDescriptors()) {
-            addServiceReferenceDescriptor(serviceRef);
-        }
-        for (EntityManagerFactoryReferenceDescriptor emfRef:
-                webBundleDescriptor.getEntityManagerFactoryReferenceDescriptors()) {
-            addEntityManagerFactoryReferenceDescriptor(emfRef);
-        }
-        for (EntityManagerReferenceDescriptor emRef:
-                webBundleDescriptor.getEntityManagerReferenceDescriptors()) {
-            addEntityManagerReferenceDescriptor(emRef);
-        }
-        getEnvironmentProperties().addAll(webBundleDescriptor.getEnvironmentProperties());
         getSecurityConstraintsSet().addAll(webBundleDescriptor.getSecurityConstraintsSet());
 
         // ServletFilters
@@ -262,6 +244,70 @@ public class WebBundleDescriptor extends BundleDescriptor
                 this.addDataSourceDefinitionDescriptor(desc);
             }
         }
+    }
+
+    /**
+     * This method combines injection references with the current references taking
+     * priority so that annotation for process can be handled correctly.
+     *
+     * @param webBundleDescriptor
+     */
+    // if you add any references in the following method, 
+    // then you may like to add them to setInjectionReferences method
+    protected void combineInjectionReferences(WebBundleDescriptor webBundleDescriptor) {
+
+        for (EjbReference ejbRef: webBundleDescriptor.getEjbReferenceDescriptors()) {
+            addEjbReferenceDescriptor((EjbReferenceDescriptor)ejbRef);
+        }
+        getResourceReferenceDescriptors().addAll(webBundleDescriptor.getResourceReferenceDescriptors());
+
+        for (MessageDestinationReferenceDescriptor mdRef:
+                webBundleDescriptor.getMessageDestinationReferenceDescriptors()) {
+            addMessageDestinationReferenceDescriptor(mdRef);
+        }
+        for (ServiceReferenceDescriptor serviceRef: webBundleDescriptor.getServiceReferenceDescriptors()) {
+            addServiceReferenceDescriptor(serviceRef);
+        }
+        for (EntityManagerFactoryReferenceDescriptor emfRef:
+                webBundleDescriptor.getEntityManagerFactoryReferenceDescriptors()) {
+            addEntityManagerFactoryReferenceDescriptor(emfRef);
+        }
+        for (EntityManagerReferenceDescriptor emRef:
+                webBundleDescriptor.getEntityManagerReferenceDescriptors()) {
+            addEntityManagerReferenceDescriptor(emRef);
+        }
+        // ok as EnvironmentProperty.equals() only compare name
+        getEnvironmentProperties().addAll(webBundleDescriptor.getEnvironmentProperties());
+    }
+
+    /**
+     * Note that this private API set the injection references to that of the
+     * given webBundleDescriptor. Note that it does not reset the references
+     * inside the reference descriptor.
+     * 
+     * @param webBundleDescriptor
+     */
+    protected void setInjectionReferences(WebBundleDescriptor webBundleDescriptor) {
+        getEjbReferenceDescriptors().clear();
+        getEjbReferenceDescriptors().addAll(webBundleDescriptor.getEjbReferenceDescriptors());
+
+        getResourceReferenceDescriptors().clear();
+        getResourceReferenceDescriptors().addAll(webBundleDescriptor.getResourceReferenceDescriptors());
+
+        getMessageDestinationReferenceDescriptors().clear();
+        getMessageDestinationReferenceDescriptors().addAll(webBundleDescriptor.getMessageDestinationReferenceDescriptors());
+
+        getServiceReferenceDescriptors().clear();
+        getServiceReferenceDescriptors().addAll(webBundleDescriptor.getServiceReferenceDescriptors());
+
+        getEntityManagerFactoryReferenceDescriptors().clear();
+        getEntityManagerFactoryReferenceDescriptors().addAll(webBundleDescriptor.getEntityManagerFactoryReferenceDescriptors());
+
+        getEntityManagerReferenceDescriptors().clear();
+        getEntityManagerReferenceDescriptors().addAll(webBundleDescriptor.getEntityManagerReferenceDescriptors());
+
+        getEnvironmentProperties().clear();
+        getEnvironmentProperties().addAll(webBundleDescriptor.getEnvironmentProperties());
     }
 
     public boolean isEmpty() {
@@ -328,18 +374,6 @@ public class WebBundleDescriptor extends BundleDescriptor
      * @param webComponentDescriptor
      */
     public void addWebComponentDescriptor(WebComponentDescriptor webComponentDescriptor) {
-        addWebComponentDescriptor(webComponentDescriptor, false);
-    }
-
-    /**
-     * Adds a new Web Component Descriptor to me.
-     * This API is used by annotation processing to override the web.xml.
-     * @param webComponentDescriptor
-     * @param overrideServletMapping
-     */
-    public void addWebComponentDescriptor(WebComponentDescriptor webComponentDescriptor,
-            boolean overrideServletMapping) {
-
         WebComponentDescriptor resultDesc = webComponentDescriptor;
         String name = webComponentDescriptor.getCanonicalName();
         webComponentDescriptor.setWebBundleDescriptor(this);
@@ -356,11 +390,11 @@ public class WebBundleDescriptor extends BundleDescriptor
         // sync up urlPattern2ServletName map
         for (String up : resultDesc.getUrlPatternsSet()) {
             String oldName = getUrlPatternToServletNameMap().put(up, name);
-            if (!overrideServletMapping && oldName != null && (!oldName.equals(name))) {
+            if (oldName != null && (!oldName.equals(name))) {
                 throw new RuntimeException(localStrings.getLocalString(
                     "enterprise.deployment.exceptionsameurlpattern",
-                    "There are more than one serlvet with the same url pattern: [{0}]",
-                    new Object[] { up }));
+                    "Servlet [{0}] and Servlet [{1}] have the same url pattern: [{2}]",
+                    new Object[] { oldName, name, up }));
             }
         }
     }

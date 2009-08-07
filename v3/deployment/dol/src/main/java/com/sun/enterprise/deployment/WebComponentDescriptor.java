@@ -191,8 +191,8 @@ public class WebComponentDescriptor extends Descriptor {
                         if (oldName != null && (!oldName.equals(name))) {
                             throw new RuntimeException(localStrings.getLocalString(
                                 "enterprise.deployment.exceptionsameurlpattern",
-                                "There are more than one serlvet with the same url pattern: [{0}]",
-                                new Object[] { s }));
+                                "Servlet [{0}] and Servlet [{1}] have the same url pattern: [{2}]",
+                                new Object[] { oldName, name, s }));
                         }
                     }
                     return super.add(s);
@@ -561,7 +561,10 @@ public class WebComponentDescriptor extends Descriptor {
         }
 
         // for simple String types, we can rely on Set API
-        getUrlPatternsSet().addAll(other.getUrlPatternsSet());
+        // the first one take priority, otherwise take the secone one.
+        if (getUrlPatternsSet().size() == 0) {
+            getUrlPatternsSet().addAll(other.getUrlPatternsSet());
+        }
 
         // for complex types, only added it if the complex type with same 
         // name is not in the set yet 

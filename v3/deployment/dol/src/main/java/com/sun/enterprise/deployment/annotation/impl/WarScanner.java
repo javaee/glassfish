@@ -102,32 +102,6 @@ public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
                 addScanDirectory(classes);   
             }
         }
-
-        // always add servlet, filter, listener that are defined in web.xml
-        // regardless of they have annotation or not
-       
-        for (Iterator webComponents = 
-            webBundleDesc.getWebComponentDescriptors().iterator();
-            webComponents.hasNext();) {
-            WebComponentDescriptor webCompDesc = 
-                (WebComponentDescriptor)webComponents.next();
-            if (webCompDesc.isServlet()) {
-                addScanClassName(webCompDesc.getWebComponentImplementation());
-            }
-        }
-
-        Vector servletFilters = webBundleDesc.getServletFilters();
-        for (int i = 0; i < servletFilters.size(); i++) {
-            ServletFilter filter = (ServletFilter)servletFilters.elementAt(i);
-            addScanClassName(filter.getClassName());
-        }
-
-        Vector listeners = webBundleDesc.getAppListenerDescriptors();
-        for (int j = 0; j < listeners.size(); j++) {
-            AppListenerDescriptor listenerDesc =
-                (AppListenerDescriptor) listeners.elementAt(j);
-            addScanClassName(listenerDesc.getListener());
-        }
     }
 }
  

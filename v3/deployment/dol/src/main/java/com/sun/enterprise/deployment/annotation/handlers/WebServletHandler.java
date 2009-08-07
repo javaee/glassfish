@@ -108,7 +108,7 @@ public class WebServletHandler extends AbstractWebHandler {
         
         HandlerProcessingResult result = processAnnotation(ainfo, webCompDesc);
         if (result.getOverallResult() == ResultType.PROCESSED) {
-            webBundleContext.getDescriptor().addWebComponentDescriptor(webCompDesc, true);
+            webBundleContext.getDescriptor().addWebComponentDescriptor(webCompDesc);
             WebComponentContext webCompContext = new WebComponentContext(webCompDesc);
             // we push the new context on the stack...
             webBundleContext.getProcessingContext().pushHandler(webCompContext);

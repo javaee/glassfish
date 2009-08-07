@@ -123,7 +123,7 @@ class WebFragmentArchivist extends Archivist<WebFragmentDescriptor> {
      */
     @Override
     public WebFragmentDescriptor getDefaultBundleDescriptor() {
-        return null;
+        return new WebFragmentDescriptor();
     }
 
     /**

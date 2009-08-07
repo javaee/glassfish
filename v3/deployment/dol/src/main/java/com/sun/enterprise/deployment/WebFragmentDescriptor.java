@@ -35,6 +35,8 @@
  */
 package com.sun.enterprise.deployment;
 
+import java.util.List;
+
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 
 /**
@@ -86,5 +88,26 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
             toStringBuffer.append("\nordering " + ordering);
         }
     }
+
+    /**
+     * This API combines all injection references and set it into
+     * webBundleDescriptor and all WebFragmentDescriptor in the list.
+     * All resulting WebFragmentDescriptor will have references pointing to
+     * given webBundleDescriptor.
+     * This is intended to be used for WebArchivist only.
+     *
+     * @param webBundleDescriptor
+     * @param wfList
+     */
+    public static void repopulateAllInjectionReferences(
+            WebBundleDescriptor webBundleDescriptor, List<WebFragmentDescriptor> wfList) {
+
+        for (WebFragmentDescriptor wf : wfList) {
+            webBundleDescriptor.combineInjectionReferences(wf);
+        }
+
+        for (WebFragmentDescriptor wf : wfList) {
+            wf.setInjectionReferences(webBundleDescriptor);
+        }
+    }
 }
-    
