@@ -146,8 +146,6 @@ public final class CreateDomainCommand extends CLICommand {
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
-        processProgramOptions();
-
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, ADMIN_PORT, '\0', "STRING", false,
                 Integer.toString(CLIConstants.DEFAULT_ADMIN_PORT));
@@ -168,6 +166,8 @@ public final class CreateDomainCommand extends CLICommand {
         operandType = "STRING";
         operandMin = 1;
         operandMax = 1;
+
+        processProgramOptions();
     }
 
     /**

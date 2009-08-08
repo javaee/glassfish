@@ -86,8 +86,6 @@ public final class CreateServiceCommand extends CLICommand {
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
-        processProgramOptions();
-
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, NAME, '\0', "STRING", false, null);
         addOption(opts, SERVICE_PROPERTIES, '\0', "STRING", false, null);
@@ -99,6 +97,8 @@ public final class CreateServiceCommand extends CLICommand {
         operandType = "STRING";
         operandMin = 0;
         operandMax = 1;
+
+        processProgramOptions();
     }
 
     /**

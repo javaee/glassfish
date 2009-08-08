@@ -84,13 +84,13 @@ public class RestartDomainCommand extends CLICommand {
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
-        processProgramOptions();
-
         commandOpts = new HashSet<ValidOption>();
         addOption(commandOpts, "help", '?', "BOOLEAN", false, "false");
         operandType = "STRING";
         operandMin = 0;
         operandMax = 0;
+
+        processProgramOptions();
     }
 
     @Override

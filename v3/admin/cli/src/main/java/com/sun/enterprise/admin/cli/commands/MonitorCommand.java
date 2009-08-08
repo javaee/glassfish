@@ -84,8 +84,6 @@ public class MonitorCommand extends CLICommand {
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
-        processProgramOptions();
-
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, TYPE, '\0', "STRING", true, null);
         addOption(opts, FILENAME, '\0', "STRING", false, null);
@@ -97,6 +95,8 @@ public class MonitorCommand extends CLICommand {
         operandType = "STRING";
         operandMin = 1;
         operandMax = 1;
+
+        processProgramOptions();
     }
 
     /**

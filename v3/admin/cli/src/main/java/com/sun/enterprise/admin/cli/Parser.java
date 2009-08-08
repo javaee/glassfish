@@ -40,6 +40,7 @@ import java.io.*;
 import java.util.*;
 import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.cli.framework.ValidOption;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 
 /**
@@ -59,6 +60,9 @@ public class Parser {
 
     // Ignore unknown options when parsing?
     private boolean ignoreUnknown;
+
+    private static final LocalStringsImpl strings =
+            new LocalStringsImpl(Parser.class);
 
     /*
      * TODO:
@@ -135,15 +139,14 @@ public class Parser {
                 else {
                     if (value != null)
                         throw new CommandValidationException(
-                            "Option may not have value: " + arg);
+                            strings.get("parser.noValueAllowed", arg));
                     name = arg.substring(ns, ne);
                     value = arg.substring(ne + 1);
                 }
                 opt = lookupLongOption(name);
                 if (sawno && optionRequiresOperand(opt))
                     throw new CommandValidationException(
-                        "\"--no\" illegal with non-boolean option: " +
-                        opt.getName());
+                        strings.get("parser.illegalNo", opt.getName()));
             } else {                            // short option
                 /*
                  * possibilities are:
@@ -166,13 +169,18 @@ public class Parser {
                             if (opt == null) {
                                 if (!ignoreUnknown)
                                     throw new CommandValidationException(
-                                        "Invalid option: " +
-                                        Character.toString(arg.charAt(i)));
+                                        strings.get("parser.invalidOption",
+                                        Character.toString(arg.charAt(i))));
                                 // unknown option, skip all the rest
                                 operands.add(arg);
                                 break;
                             }
-                            setOption(opt, "true");
+                            if (opt.getType().equals("BOOLEAN"))
+                                setOption(opt, "true");
+                            else
+                                throw new CommandValidationException(
+                                    strings.get("parser.nonbooleanNotAllowed",
+                                    Character.toString(arg.charAt(i)), arg));
                         }
                         continue;
                     }
@@ -183,7 +191,7 @@ public class Parser {
             if (opt == null) {
                 if (!ignoreUnknown)
                     throw new CommandValidationException(
-                        "Invalid option: " + arg);
+                        strings.get("parser.invalidOption", arg));
                 // unknown option, skip it
                 operands.add(arg);
                 continue;
@@ -201,7 +209,7 @@ public class Parser {
                 } else if (optionRequiresOperand(opt)) {
                     if (++si >= argv.length)
                         throw new CommandValidationException(
-                            "Missing value for option: " + name);
+                            strings.get("parser.missingValue", name));
                     value = argv[si];
                 } else if (opt.getType().equals("BOOLEAN")) {
                     /*
@@ -307,8 +315,8 @@ public class Parser {
                     is = new FileInputStream(f);
                 } catch (IOException ioex) {
                     throw new CommandValidationException(
-                        "Invalid file for option: --" + name +
-                        ": " + ioex);
+                        strings.get("parser.invalidFileEx",
+                                    name, ioex.toString()));
                 } finally {
                     if (is != null)
                         try {
@@ -316,7 +324,7 @@ public class Parser {
                         } catch (IOException cex) { }
                 }
                 throw new CommandValidationException(
-                    "Invalid file for option: " + name + ", File: " + value);
+                    strings.get("parser.invalidFile", name, value));
             }
         } else if (opt.getType().equals("BOOLEAN")) {
             if (value == null)
@@ -324,17 +332,16 @@ public class Parser {
             else if (!(value.toLowerCase(Locale.ENGLISH).equals("true") ||
                     value.toLowerCase(Locale.ENGLISH).equals("false")))
                 throw new CommandValidationException(
-                    "Invalid boolean value for option: " + name +
-                    ", Value: " + value);
+                    strings.get("parser.invalidBoolean", name, value));
         } else if (opt.getType().equals("PASSWORD"))
             throw new CommandValidationException(
-                "Password not allowed on command line: " + opt.getName());
+                strings.get("parser.passwordNotAllowed", opt.getName()));
 
         if (true /* !Boolean.valueOf(opt.getRepeats().toLowerCase()) */) {
             // repeats not allowed
             if (optionsMap.containsKey(name)) {
                 throw new CommandValidationException(
-                        "Repeats not allowed for option: " + name);
+                        strings.get("parser.noRepeats", name));
             }
             // XXX - repeat is going to replace previous value...
         }

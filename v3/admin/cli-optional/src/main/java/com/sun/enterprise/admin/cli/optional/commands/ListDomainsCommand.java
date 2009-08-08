@@ -75,8 +75,6 @@ public final class ListDomainsCommand extends CLICommand {
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
-        processProgramOptions();
-
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, DOMAINDIR, '\0', "STRING", false, null);
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
@@ -84,6 +82,8 @@ public final class ListDomainsCommand extends CLICommand {
         operandType = "STRING";
         operandMin = 0;
         operandMax = 0;
+
+        processProgramOptions();
     }
  
     /**

@@ -70,8 +70,6 @@ public class ListCommandsCommand extends CLICommand {
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
-        processProgramOptions();
-
         /*
          * Don't fetch information from server.
          * We need to work even if server is down.
@@ -85,6 +83,8 @@ public class ListCommandsCommand extends CLICommand {
         operandType = "STRING";
         operandMin = 0;
         operandMax = 0;
+
+        processProgramOptions();
     }
 
     @Override

@@ -76,8 +76,6 @@ public final class StopDatabaseCommand extends DatabaseCommand {
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
-        processProgramOptions();
-
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, DB_HOST, '\0', "STRING", false, DB_HOST_DEFAULT);
         addOption(opts, DB_PORT, '\0', "STRING", false, DB_PORT_DEFAULT);
@@ -86,6 +84,8 @@ public final class StopDatabaseCommand extends DatabaseCommand {
         operandType = "STRING";
         operandMin = 0;
         operandMax = 0;
+
+        processProgramOptions();
     }
 
     /**

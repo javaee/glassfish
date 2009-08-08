@@ -432,6 +432,7 @@ public abstract class CLICommand {
      * If the program options haven't already been set, parse them
      * on the command line and remove them from the command line.
      * Subclasses should call this method in their prepare method
+     * after initializing commandOpts (so usage is available on failure)
      * if they want to allow program options after the command name.
      * Currently RemoteCommand does this, as well as the local commands
      * that also need to talk to the server.

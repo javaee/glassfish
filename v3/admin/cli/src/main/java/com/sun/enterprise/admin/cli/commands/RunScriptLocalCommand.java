@@ -72,15 +72,6 @@ public final class RunScriptLocalCommand extends RemoteCommand {
     
     @Override
     protected void prepare() throws CommandException {
-        if (!isValidCommand()) {
-            throw new CommandException("Command " + this.name + " is not supported");
-        }
-        try {
-            processProgramOptions();
-        } catch (Exception e) {
-            throw new CommandException(e.getMessage());
-        }
-
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, TERSE, '\0', "BOOLEAN", false, "true");
         addOption(opts, UPLOAD, '\0', "BOOLEAN", false, "true");
@@ -90,6 +81,15 @@ public final class RunScriptLocalCommand extends RemoteCommand {
         operandType = "FILE";
         operandMin = 1;
         operandMax = 1;
+
+        if (!isValidCommand()) {
+            throw new CommandException("Command " + this.name + " is not supported");
+        }
+        try {
+            processProgramOptions();
+        } catch (Exception e) {
+            throw new CommandException(e.getMessage());
+        }
     }
     
 

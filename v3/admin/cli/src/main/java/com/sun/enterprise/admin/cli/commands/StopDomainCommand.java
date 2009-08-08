@@ -87,8 +87,6 @@ public class StopDomainCommand extends CLICommand {
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
-        processProgramOptions();
-
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, "domaindir", '\0', "STRING", false, null);
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
@@ -97,6 +95,8 @@ public class StopDomainCommand extends CLICommand {
         operandType = "STRING";
         operandMin = 0;
         operandMax = 1;
+
+        processProgramOptions();
     }
 
     /**

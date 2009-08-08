@@ -83,8 +83,6 @@ public class StartDomainCommand extends LocalDomainCommand {
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
-        processProgramOptions();
-
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, "debug", '\0', "BOOLEAN", false, "false");
         addOption(opts, "domaindir", '\0', "STRING", false, null);
@@ -96,6 +94,8 @@ public class StartDomainCommand extends LocalDomainCommand {
         operandType = "STRING";
         operandMin = 0;
         operandMax = 1;
+
+        processProgramOptions();
     }
 
     @Override

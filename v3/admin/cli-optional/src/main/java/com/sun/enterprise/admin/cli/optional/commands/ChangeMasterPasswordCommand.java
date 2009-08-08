@@ -68,7 +68,6 @@ public class ChangeMasterPasswordCommand extends LocalDomainCommand {
 
     @Override
     protected void prepare() throws CommandException, CommandValidationException {
-        super.processProgramOptions();
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, savemp, '\0', "BOOLEAN", false, "false");
         addOption(opts, "domaindir", '\0', "STRING", false, null);
@@ -77,6 +76,8 @@ public class ChangeMasterPasswordCommand extends LocalDomainCommand {
         operandType = "STRING";
         operandMin = 0;
         operandMax = 1;
+
+        super.processProgramOptions();
     }
 
     @Override

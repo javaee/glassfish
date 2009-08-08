@@ -77,14 +77,14 @@ public class LoginCommand extends CLICommand {
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
-        processProgramOptions();
-
         Set<ValidOption> opts = new HashSet<ValidOption>();
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandType = "STRING";
         operandMin = 0;
         operandMax = 0;
+
+        processProgramOptions();
     }
 
     @Override

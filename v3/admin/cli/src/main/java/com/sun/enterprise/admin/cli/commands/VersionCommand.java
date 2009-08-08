@@ -69,8 +69,6 @@ public class VersionCommand extends CLICommand {
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
-        processProgramOptions();
-
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, "verbose", '\0', "BOOLEAN", false, "false");
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
@@ -78,6 +76,8 @@ public class VersionCommand extends CLICommand {
         operandType = "STRING";
         operandMin = 0;
         operandMax = 0;
+
+        processProgramOptions();
     }
 
     @Override
