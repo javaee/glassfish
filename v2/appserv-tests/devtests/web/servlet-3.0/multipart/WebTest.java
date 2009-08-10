@@ -62,6 +62,7 @@ public class WebTest
         try {
             goPost(host, port, contextRoot + "/ServletTest" );
         } catch (Throwable t) {
+            stat.addStatus("multiPartTest", stat.FAIL);
             System.out.println("Exception: " + t);
         }
 
@@ -103,51 +104,82 @@ public class WebTest
         StringBuilder header = new StringBuilder();
         header.append("POST " + contextPath + " HTTP/1.1\r\n");
         header.append("Host: localhost\r\n");
+        header.append("Connection: close\r\n");
         header.append("Content-Type: multipart/form-data, boundary=AaB03x\r\n");
         header.append("Content-Length: " + data.length + "\r\n\r\n");
 
         // Now the actual request
-        Socket sock = new Socket(host, port);
-        OutputStream os = sock.getOutputStream();
-        System.out.println(header);
-        os.write(header.toString().getBytes());
-        os.write(data);
+        Socket sock = null;
+        OutputStream os = null;
+        BufferedReader bis = null;
 
-        int i = 0;
-        int partCount = -1;
-        int failCount = 0;
-        int expectedCount = 0;
+        try {
+            sock = new Socket(host, port);
+            os = sock.getOutputStream();
+            System.out.println(header);
+            os.write(header.toString().getBytes());
+            os.write(data);
 
-        is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-        String line = null;
-        while ((line = bis.readLine()) != null) {
-            System.out.println(i++ + ": " + line);
-            if (line.startsWith("Part name:")) {
-                partCount++;
-                expectedCount++;
-                failCount += check(partCount, 0, line);
-            } else if (line.startsWith("Size:")) {
-                expectedCount++;
-                failCount += check(partCount, 1, line);
-            } else if (line.startsWith("Content Type:")){
-                expectedCount++;
-                failCount += check(partCount, 2, line);
-            } else if (line.startsWith("Header Names:")) {
-                expectedCount++;
-                failCount += check(partCount, 3, line);
+            int i = 0;
+            int partCount = -1;
+            int failCount = 0;
+            int expectedCount = 0;
+
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            while ((line = bis.readLine()) != null) {
+                System.out.println(i++ + ": " + line);
+                if (line.startsWith("Part name:")) {
+                    partCount++;
+                    expectedCount++;
+                    failCount += check(partCount, 0, line);
+                } else if (line.startsWith("Size:")) {
+                    expectedCount++;
+                    failCount += check(partCount, 1, line);
+                } else if (line.startsWith("Content Type:")){
+                    expectedCount++;
+                    failCount += check(partCount, 2, line);
+                } else if (line.startsWith("Header Names:")) {
+                    expectedCount++;
+                    failCount += check(partCount, 3, line);
+                }
+            }
+            if (expectedCount != 8 || failCount > 0) {
+                stat.addStatus("multiPartTest", stat.FAIL);
+            } else { 
+                stat.addStatus("multiPartTest", stat.PASS);
+            }
+        } finally {
+            try {
+                if (bis != null) {
+                    bis.close(); 
+                }
+            } catch(IOException ex) {
+                // ignore
+            }
+            try {
+                if (is != null) {
+                    is.close(); 
+                }
+            } catch(IOException ex) {
+                // ignore
+            }
+            try {
+                if (os != null) {
+                    os.close(); 
+                }
+            } catch(IOException ex) {
+                // ignore
+            }
+            try {
+                if (sock != null) {
+                    sock.close(); 
+                }
+            } catch(IOException ex) {
+                // ignore
             }
         }
-        if (expectedCount != 8 || failCount > 0) {
-            stat.addStatus("multiPartTest", stat.FAIL);
-        } else { 
-            stat.addStatus("multiPartTest", stat.PASS);
-        }
-
-        bis.close();
-        is.close();
-        os.close();
-        sock.close();
    }
 
    static String[][] expected = {
