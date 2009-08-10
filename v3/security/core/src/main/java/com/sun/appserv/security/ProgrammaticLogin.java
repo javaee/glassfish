@@ -61,6 +61,7 @@ import org.jvnet.hk2.component.PerLookup;
 
 import com.sun.appserv.security.ProgrammaticLoginPermission;
 import com.sun.enterprise.security.common.SecurityConstants;
+import com.sun.enterprise.security.common.Util;
 
 /**
  * Implement programmatic login.
@@ -155,7 +156,8 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
                 AccessController.doPrivileged(new PrivilegedAction() {
                     public java.lang.Object run() {
                     // if realm is null, LCD will log into the default realm
-                        if ((SecurityServicesUtil.getInstance() != null) && SecurityServicesUtil.getInstance().isServer()) {
+                        if (((SecurityServicesUtil.getInstance() != null) && SecurityServicesUtil.getInstance().isServer()) 
+                                || Util.isEmbeddedServer()){
                             LoginContextDriver.login(user, password, realm);
                         } else {
                             int type = SecurityConstants.USERNAME_PASSWORD;

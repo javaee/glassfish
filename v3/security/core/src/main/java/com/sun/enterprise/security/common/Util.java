@@ -121,7 +121,7 @@ public class Util {
     public static File writeConfigFileToTempDir(String fileName) throws IOException {
         String userHome = System.getProperty("user.home");
        
-        InputStream iStream = Util.class.getClassLoader().getResourceAsStream("config"+File.separator + fileName);
+        
       
         String embeddedServerName = getCurrentEmbeddedServerName();
         File tempDir = new File(userHome + File.separator + ".glassfishv3-"+embeddedServerName+File.separator + "config");
@@ -131,11 +131,17 @@ public class Util {
         }
         
         File localFile = new File(tempDir.getAbsoluteFile()+File.separator + fileName);
+        
+        if(localFile.exists()) {
+            //file already written to tmp dir, so return
+            return localFile;
+        }
      
         if (mkDirSuccess && !localFile.exists()) {
             localFile.createNewFile();
         }
         FileOutputStream oStream = new FileOutputStream(localFile);
+        InputStream iStream = Util.class.getClassLoader().getResourceAsStream("config"+File.separator + fileName);
 
         while (iStream.available() > 0) {
             oStream.write(iStream.read());
