@@ -283,17 +283,37 @@ public final class AMXConfigProxyTests extends AMXTestBase
     }
     
 
-    private void removeChild( final AMXConfigProxy amx, final String type, final String name )
-    {
-        if ( amx.childrenMap(type).get(name) != null )
+    private void removeChildSilently( final AMXConfigProxy amx, final String type, final String name )
+    {   
+        if ( name == null )
+        {
+            if ( amx.child(type) != null )
+            {
+                try
+                {
+                    final ObjectName removed = amx.removeChild( type );
+                    assert removed == null : "failed (null for ObjectName) to remove child of type \"" + type + "\" from " + amx.objectName();
+                    assert amx.child(type) == null : "failed to remove child of type \"" + type + "\" from " + amx.objectName();
+                    System.out.println( "Removed stale test config of type " + type );
+                }
+                catch( final Exception e )
+                {
+                    e.printStackTrace();
+                   assert false : "Unable to remove config of type " + type + ": " + e;
+                }
+            }
+        }
+        else if ( amx.childrenMap(type).get(name) != null )
         {
             try
             {
                 amx.removeChild( type, name );
+                assert amx.childrenMap(type).get(name) == null : "failed to remove child " + type + "," + name + "  from " + amx.objectName();
                 System.out.println( "Removed stale test config " + name );
             }
             catch( final Exception e )
             {
+                e.printStackTrace();
                assert false : "Unable to remove config " + name + ": " + e;
             }
         }
@@ -309,7 +329,7 @@ public final class AMXConfigProxyTests extends AMXTestBase
         
         final String name = "AMXConfigProxyTests.test-resource";
         final String type = Util.deduceType(CustomResource.class);
-        removeChild( parent, type, name );
+        removeChildSilently( parent, type, name );
         
         final Map<String,Object> attrs = MapUtil.newMap();
         attrs.put( "Name", name );  // IMPORTANT: this verifies that Name is mapped to jndi-name
@@ -429,7 +449,7 @@ public final class AMXConfigProxyTests extends AMXTestBase
         
         final String configName = "AMXConfigProxyTests.TEST";
         final String type = Util.deduceType(Config.class);
-        removeChild( configs, type, configName );
+        removeChildSilently( configs, type, configName );
         
         final Map<String,Object>  configParams = MapUtil.newMap();
         configParams.put( "Name", configName );
@@ -461,6 +481,32 @@ public final class AMXConfigProxyTests extends AMXTestBase
        //final AMXConfigProxy result = configs.createChild( Util.deduceType(Config.class), configMap);
         
        // return result.objectName();
+    }
+    
+    
+    @Test
+    public void createProfilerTest()
+    {
+        final JavaConfig javaConfig = getDomainConfig().getConfigs().getConfig().get("server-config").getJavaConfig();
+        
+        final String profilerName = "AMXConfigProxyTests.TEST";
+        final String type = Util.deduceType(Profiler.class);
+        removeChildSilently( javaConfig, type, null);
+        assert javaConfig.child(type)  == null : "Failed to remove profiler!";
+        
+        final Map<String,Object>  params = MapUtil.newMap();
+        params.put( "Name", profilerName );
+        params.put( "Classpath", "/foo/bar" );
+        params.put( "NativeLibraryPath", "/foo/bar" );
+        params.put( "Enabled", false );
+        params.put( "JvmOptions", new String[] { "-Dfoo=bar" } );
+                
+        final AMXProxy child = javaConfig.createChild( type, params );
+        assert child != null : "Can't create profiler, got null back!";
+        final Profiler profiler = child.as(Profiler.class);
+        final String[] jvmOptions = profiler.getJvmOptions();
+        
+        javaConfig.removeChild(type);
     }
 
 }
