@@ -107,6 +107,7 @@
         <jsf-api.version>2.0.0-b14</jsf-api.version>
         <jsf-impl.version>2.0.0-b14</jsf-impl.version>
         <jsf-ext.version>0.2</jsf-ext.version>
+        <woodstock.version>4.4.0.1</woodstock.version>
         <deployment-api.version>1.2-rev-1</deployment-api.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
         <grizzly.version>1.9.17-RC2</grizzly.version>
@@ -919,6 +920,16 @@
                 <groupId>com.sun.faces.extensions</groupId>
                 <artifactId>jsf-extensions-common</artifactId>
                 <version>${jsf-ext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.woodstock</groupId>
+                <artifactId>webui-jsf</artifactId>
+                <version>${woodstock.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.woodstock</groupId>
+                <artifactId>webui-jsf-suntheme</artifactId>
+                <version>${woodstock.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
