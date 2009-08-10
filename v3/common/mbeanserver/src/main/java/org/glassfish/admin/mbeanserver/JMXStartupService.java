@@ -73,6 +73,7 @@ import java.io.IOException;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
+import org.glassfish.internal.api.AdminAccessController;
 
 /**
     Responsible for creating the {@link BootAMXMBean}, and starting JMXConnectors,
@@ -98,6 +99,9 @@ public final class JMXStartupService implements Startup, PostConstruct
 
     @Inject Events mEvents;
 
+    @Inject
+    volatile static AdminAccessController authenticator;
+    
     private volatile BootAMX mBootAMX;
     
     private volatile JMXConnectorsStarterThread mConnectorsStarterThread;
@@ -331,7 +335,8 @@ public final class JMXStartupService implements Startup, PostConstruct
                 final Map<String, Object> env = new HashMap<String, Object>();
                 //env.put( "jmx.remote.jndi.rebind", "true" );
                 //env.put( "jmx.remote.credentials", null );
-                //env.put( "jmx.remote.authenticator", null );
+                if (authenticator != null)
+                    env.put( "jmx.remote.authenticator", authenticator );
                 // env.put("jmx.remote.protocol.provider.pkgs", "com.sun.jmx.remote.protocol");
                 //env.put("jmx.remote.protocol.provider.class.loader", this.getClass().getClassLoader());
 

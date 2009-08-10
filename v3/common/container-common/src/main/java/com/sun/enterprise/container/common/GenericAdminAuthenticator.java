@@ -35,90 +35,135 @@
  */
 package com.sun.enterprise.container.common;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.glassfish.internal.api.AdminAccessController;
-import org.glassfish.api.admin.ServerEnvironment;
-
-import javax.security.auth.login.LoginException;
-
-import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
-import com.sun.enterprise.security.auth.realm.RealmConfig;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.AdminService;
+import org.glassfish.internal.api.AdminAccessController;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 
+import javax.security.auth.login.LoginException;
+import javax.security.auth.Subject;
+import javax.management.remote.JMXAuthenticator;
+import java.util.logging.Logger;
 import java.util.List;
 import java.util.Enumeration;
 import java.io.File;
 
 /** Implementation of {@link AdminAccessController} that delegates to LoginContextDriver.
+ *  @author Kedar Mhaswade (km@dev.java.net)
  */
 @Service
-public class GenericAdminAuthenticator implements AdminAccessController {
-    @Inject
-    volatile SecurityService ss = null;
+public class GenericAdminAuthenticator implements AdminAccessController, JMXAuthenticator {
+//    @Inject
+//    Habitat habitat;
+//    @Inject
+//    SecuritySniffer snif;
 
     @Inject
-    volatile ServerEnvironment env = null;
+    volatile SecurityService ss;
+    private final String defaultAdminUser = SystemPropertyConstants.DEFAULT_ADMIN_USER;
 
     @Inject
-    volatile AdminService as = null;
-    
-    public void login(String user, String password, String realm) throws LoginException {
-        AuthRealm fr = getFileRealm(realm);
-        if (fr != null) { //this is rather ugly, but that's life
-            handleFileRealm(user, password, fr); //you know for sure that the given realm is File Realm
-        }
-        else {
-            RealmConfig.createRealms(as.getAuthRealmName(), ss.getAuthRealm());
-            LoginContextDriver.login(user, password, realm);
-        }
+    volatile AdminService as;
+    private final Logger logger = Logger.getAnonymousLogger();
+
+    public boolean login(String user, String password, String realm) throws LoginException {
+        return handleFileRealm(user, password, realm); //as of now
+//        try {
+        //Inhabitant<SecurityLifecycle> sl = habitat.getInhabitantByType(SecurityLifecycle.class);
+        //sl.get();            snif.setup(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/modules/security", Logger.getAnonymousLogger());
+//            LoginContextDriver.login(user, password, realm);
+//        } catch(Exception e) {
+//            LoginException le = new LoginException("login failed!");
+//            le.initCause(e);
+//            throw le;
+//        }
     }
 
-    private void handleFileRealm(String user, String password, AuthRealm fr) throws LoginException {
-        //finally!
-        //if the realm allows anonymous login -> i.e. if there is ONE user named "anonymous" in keyfile, all bets are off
-        //if the realm file is missing, then too, we allow access!
+    /* This is a temporary measure. */
+    private boolean handleFileRealm(String user, String password, String realm) throws LoginException {
+        /* I decided to handle FileRealm  as a special case. Maybe it is not such a good idea, but
+           loading the security subsystem for FileRealm is really not required.
+         */
+        boolean anonok = serverAllowsAnonymousFileRealmLogin();
+        if (anonok) {
+            return anonok;
+        }
         try {
-            if (anonLoginOrFileMissing(fr)) {
-                return;
+            AuthRealm ar = as.getAssociatedAuthRealm();
+            if (FileRealm.class.getName().equals(ar.getClassname())) {
+                String adminKeyFilePath = ar.getPropertyValue("file");
+                FileRealm fr = new FileRealm(adminKeyFilePath);
+                return fr.authenticate(user, password) != null;
             }
         } catch(Exception e) {
-            LoginException le = new LoginException();
+            LoginException le =  new LoginException (e.getMessage());
             le.initCause(e);
             throw le;
         }
-        RealmConfig.createRealms(as.getAuthRealmName(), ss.getAuthRealm());
-        LoginContextDriver.login(user, password, fr.getName());
+        return false;
     }
 
-    private boolean anonLoginOrFileMissing(AuthRealm fr) throws Exception {
-        String value    = fr.getPropertyValue("file"); //file -> actual keyfile!
-        File f = new File(value);
-        if (!f.exists())
-            return true;  //all accesses allowed!
-        FileRealm realm = new FileRealm(f.getAbsolutePath());
-        Enumeration users = realm.getUserNames();
-        int size = 0;
-        while (users.hasMoreElements())
-            size++;
-        if (size > 1)
-            return false; //there are more than one users - no anon login allowed
-        //re-fetch the enum -- pain!
-        users = realm.getUserNames();
-        return "anonymous".equals(users.nextElement()); //we already know it has exactly one
-    }
-
-    private AuthRealm getFileRealm(String name) {
-        //returns an AuthRealm only if its name is same as given name and it's a FileRealm, null otherwise
-        List<AuthRealm> realms = ss.getAuthRealm();
-        for (AuthRealm realm : realms) {
-            if (realm.getName().equals(name) && FileRealm.class.getName().equals(realm.getClassname())) {
-                return realm;
-            }
+    /* All bets are off when this method returns true, so implement it carefully. */
+    private boolean serverAllowsAnonymousFileRealmLogin() {
+        AuthRealm realm = as.getAssociatedAuthRealm();
+        if (realm == null) {
+            //this is really an assertion -- admin service's auth-realm-name points to a non-existent realm
+            throw new RuntimeException("Warning: Configuration is bad, realm: " + as.getAuthRealmName() + " does not exist!");
         }
-        return null;
+        if (! FileRealm.class.getName().equals(realm.getClassname())) {
+            logger.fine("NOT ALLOWING ANONYMOUS ADMIN LOGIN, SINCE IT's NOT A FILE");
+            return false;  //only file realm allows anonymous login
+        }
+        String pv = realm.getPropertyValue("file");  //the property named "file"
+        File   rf = null;
+        if (pv == null || !(rf=new File(pv)).exists()) {
+            //an incompletely formed file property or the file property points to a non-existent file, allow access
+            logger.fine("ALLOWING ANONYMOUS ADMIN LOGIN AS THE KEYFILE DOES NOT EXIST");
+            return true;
+        }
+        try {
+            FileRealm fr = new FileRealm(rf.getAbsolutePath());
+            Enumeration users = fr.getUserNames();
+            if (users.hasMoreElements()) {
+                String au = (String) users.nextElement();
+                if (defaultAdminUser.equals(au) && !users.hasMoreElements()) {
+                    //there is only one user and that is anonymous
+                    logger.fine("Allowing anonymous access");
+                    return true;
+                }
+            }
+        } catch(Exception e) {
+            return false;
+        }
+        return false;
+    }
+    public Subject authenticate(Object credentials) {
+        if (this.serverAllowsAnonymousFileRealmLogin()) {
+            logger.fine("Allowing anonymous login for JMX Access");
+            return null;
+        }
+        if (!(credentials instanceof String[])) {
+            throw new SecurityException("The JMX Connector should access with a two-element string array containing user name and password");
+        }
+            //this is supposed to be 2-string array with user name and password
+            String[] up = (String[])credentials;
+        if (up.length < 2) {
+            throw new SecurityException("The JMX Connector should access with a two-element string array containing user name and password");
+        }
+        String u = up[0], p = up[1];
+        String realm = as.getSystemJmxConnector().getAuthRealmName(); //yes, for backward compatibility;
+        if (realm == null)
+            realm = as.getAuthRealmName();
+
+        try {
+            this.login(u, p, realm);
+            return null; //for now;
+        } catch (LoginException e) {
+            throw new SecurityException(e);
+        }
     }
 }

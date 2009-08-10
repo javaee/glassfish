@@ -59,7 +59,7 @@ import java.beans.PropertyVetoException;
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  * @since GlassFish V3
  */
-@Service(name="setup-ldap-for-admin")
+@Service(name="configure-ldap-for-admin")
 public class LDAPAdminAccessConfigurator implements AdminCommand {
 
     @Param (name="basedn", shortName="b", optional=false)

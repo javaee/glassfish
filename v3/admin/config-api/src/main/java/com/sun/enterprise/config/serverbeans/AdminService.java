@@ -151,4 +151,40 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
     String getAuthRealmName();
 
     void setAuthRealmName(String name);
+
+    @DuckTyped
+    JmxConnector getSystemJmxConnector();
+
+    @DuckTyped
+    AuthRealm getAssociatedAuthRealm();
+
+    public class Duck {
+        public static JmxConnector getSystemJmxConnector(AdminService as) {
+            List<JmxConnector> connectors = as.getJmxConnector();
+            for (JmxConnector connector : connectors) {
+                if (as.getSystemJmxConnectorName().equals(connector.getName())) {
+                    return connector;
+                }
+            }
+            return null;
+        }
+
+        /** This is the place where the iteration for the {@link AuthRealm} for administration should be carried out
+         *  in server. A convenience method for the same. 
+         *
+         * @param as AdminService implemented by those who implement the interface (outer interface).
+         * @return AuthRealm instance for which the name is same as as.getAuthRealmName(), null otherwise.
+         */
+        public static AuthRealm getAssociatedAuthRealm(AdminService as) {
+            String rn                = as.getAuthRealmName();  //this is the name of admin-service@auth-realm-name
+            Config cfg               = as.getParent(Config.class); //assumes the structure where <admin-service> resides directly under <config>
+            SecurityService ss       = cfg.getSecurityService();
+            List<AuthRealm> realms   = ss.getAuthRealm();
+            for (AuthRealm realm : realms) {
+                if (rn.equals(realm.getName()))
+                    return realm;
+            }
+            return null;
+        }
+    }
 }

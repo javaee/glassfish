@@ -54,6 +54,7 @@ public interface AdminAccessController {
      * @param password String representing clear-text password of the user doing an admin operation
      * @param realm String representing the name of the admin realm for given server
      * @throws LoginException if there is any error in underlying implementation
+     * @return true if authentication succeeds, false otherwise
      */
-    void login(String user, String password, String realm) throws LoginException;
+    boolean login(String user, String password, String realm) throws LoginException;
 }

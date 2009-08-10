@@ -24,6 +24,7 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -98,7 +99,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
     ServerEnvironmentImpl env;
 
     @Inject(optional=true)
-    AdminAuthenticator authenticator=null;
+    volatile AdminAccessController authenticator = null;
 
     @Inject
     Events events;
@@ -113,6 +114,9 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
     @Inject
     Habitat habitat;
+
+    @Inject
+    volatile AdminService as = null;
 
     final Class<? extends Privacy> privacyClass;
 
@@ -213,21 +217,34 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         }
     }
 
-    public boolean authenticate(Request req, ServerEnvironmentImpl serverEnviron)
+    public boolean authenticate(Request req)
             throws Exception {
-
-        File realmFile = new File(serverEnviron.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
-        if (authenticator!=null && realmFile.exists()) {
-           return authenticator.authenticate(req, realmFile);
+        String[] up = getUserPassword(req);
+        if (authenticator != null) {
+            return authenticator.login(up[0], up[1], as.getAuthRealmName());
         }
-        // no authenticator, this is fine.
-        return true;
+        return true;   //if the authenticator is not available, allow all access - per Jerome
+    }
 
+    private String[] getUserPassword(Request req) throws Exception {
+        String authHeader = req.getHeader("Authorization");
+        String du = SystemPropertyConstants.DEFAULT_ADMIN_USER;
+        String dp = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
+        if (authHeader == null) {
+            return new String[]{du, dp};
+        }
+        String enc = authHeader.substring(BASIC.length());
+        String dec = new String(decoder.decodeBuffer(enc));
+        String[] up = dec.split(":");        
+        if (up == null || up.length == 0 || (up.length == 1 && du.equals(up[0]))) {
+            return new String[]{du, dp};
+        }
+        return up;  
     }
 
     private boolean authenticate(GrizzlyRequest req, ActionReport report, GrizzlyResponse res)
             throws Exception {
-        boolean authenticated = authenticate(req.getRequest(), env);
+        boolean authenticated = authenticate(req.getRequest());
         if (!authenticated) {
             String msg = adminStrings.getLocalString("adapter.auth.userpassword",
                     "Invalid user name or password");
