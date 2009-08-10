@@ -30,7 +30,7 @@
     </path>
 
     <path id="bootclasspath">
-        <fileset dir="${env.AS_HOME}/modules/endorsed">
+        <fileset dir="${env.S1AS_HOME}/modules/endorsed">
                       <include name="*.jar"/>
         </fileset>
     </path>
@@ -80,7 +80,7 @@
       <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
             includes="webclient/**">
          <classpath refid="classpath"/>
-         <compilerarg value="-Djava.endorsed.dirs=${env.AS_HOME}/modules/endorsed"/>
+         <compilerarg value="-Djava.endorsed.dirs=${env.S1AS_HOME}/modules/endorsed"/>
       </javac>
 
       <copy file="client-web.xml" tofile="${build.classes.dir}/webclient/WEB-INF/web.xml"/>
