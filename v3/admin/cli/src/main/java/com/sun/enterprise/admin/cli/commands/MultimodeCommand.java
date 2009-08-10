@@ -133,7 +133,7 @@ public class MultimodeCommand extends CLICommand {
             throw new CommandException(e);
         } finally {
             try {
-                if (reader != null)
+                if (file != null && reader != null)
                     reader.close();
             } catch (IOException e) {
                 // ignore it
@@ -168,6 +168,11 @@ public class MultimodeCommand extends CLICommand {
                     System.out.println();
                 break;
             }
+            line = line.trim();
+
+            if (line.startsWith("#"))   // ignore comment lines
+                continue;
+
             String[] args = getArgs(line);
             if (args.length == 0)
                 continue;
