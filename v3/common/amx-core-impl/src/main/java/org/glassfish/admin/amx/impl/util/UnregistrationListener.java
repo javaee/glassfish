@@ -101,10 +101,13 @@ public final class UnregistrationListener implements NotificationListener
                     if (mMBeanServer.isRegistered(mObjectName))
                     {
                         // block
-                        mLatch.await(timeoutMillis, TimeUnit.MILLISECONDS);
+                        final boolean unlatched = mLatch.await(timeoutMillis, TimeUnit.MILLISECONDS);
+                        unregisteredOK = unlatched; // otherwise it timed-out
                     }
-
-                    unregisteredOK = true;
+                    else
+                    {
+                        unregisteredOK = true;
+                    }
                 }
                 catch (final java.lang.InterruptedException e)
                 {
