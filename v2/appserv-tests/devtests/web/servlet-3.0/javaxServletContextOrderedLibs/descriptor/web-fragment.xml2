@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<web-fragment>
-  <name>webFragment2</name>
-  <listener>
-    <listener-class>webFragment2.WebFragmentServletContextListener</listener-class>
-  </listener>
-</web-fragment>
