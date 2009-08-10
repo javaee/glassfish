@@ -20,10 +20,10 @@
   &testproperties;
 
   <path id="class.path">
-        <fileset dir="${env.AS_HOME}/modules">
+        <fileset dir="${env.S1AS_HOME}/modules">
             <include name="**/*.jar"/>
         </fileset>
-        <fileset dir="${env.AS_HOME}/modules/endorsed">
+        <fileset dir="${env.S1AS_HOME}/modules/endorsed">
             <include name="**/*.jar"/>
         </fileset>
         <fileset dir="${env.APS_HOME}/lib">

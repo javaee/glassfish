@@ -1,9 +1,9 @@
   
    <path id="class.path">
-        <fileset dir="${env.AS_HOME}/modules">
+        <fileset dir="${env.S1AS_HOME}/modules">
             <include name="**/*.jar"/>
         </fileset>
-        <fileset dir="${env.AS_HOME}/modules/endorsed">
+        <fileset dir="${env.S1AS_HOME}/modules/endorsed">
             <include name="**/*.jar"/>
         </fileset>
         <fileset dir="${env.APS_HOME}/lib">
@@ -16,10 +16,10 @@
         <fileset dir="${dist}">
           <include name="*.jar"/>
         </fileset>
-        <fileset dir="${env.AS_HOME}/modules">
+        <fileset dir="${env.S1AS_HOME}/modules">
          <include name="**/*.jar"/>
         </fileset>
-        <fileset dir="${env.AS_HOME}/modules/endorsed">
+        <fileset dir="${env.S1AS_HOME}/modules/endorsed">
           <include name="**/*.jar"/>
         </fileset>
         <fileset dir="${env.APS_HOME}/lib">
@@ -100,20 +100,20 @@
   </target>
 
   <target name="set-wscompile" >
-     <condition property="wscompile" value="${env.AS_HOME}/bin/wscompile.bat">
+     <condition property="wscompile" value="${env.S1AS_HOME}/bin/wscompile.bat">
         <os family="windows"/>
      </condition>
-     <condition property="wscompile" value="${env.AS_HOME}/bin/wscompile">
+     <condition property="wscompile" value="${env.S1AS_HOME}/bin/wscompile">
         <not>
            <os family="windows"/>
         </not>
      </condition>
   </target>
   <target name="set-asadmin" >
-     <condition property="ASADMIN" value="${env.AS_HOME}/bin/asadmin.bat">
+     <condition property="ASADMIN" value="${env.S1AS_HOME}/bin/asadmin.bat">
         <os family="windows"/>
      </condition>
-     <condition property="ASADMIN" value="${env.AS_HOME}/bin/asadmin">
+     <condition property="ASADMIN" value="${env.S1AS_HOME}/bin/asadmin">
         <not>
            <os family="windows"/>
         </not>
