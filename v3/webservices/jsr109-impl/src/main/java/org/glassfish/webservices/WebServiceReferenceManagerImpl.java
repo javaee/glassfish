@@ -95,7 +95,7 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
                     // initiateInstance should not be called if the user has given javax.xml.ws.Service itself
                     // as the interface through DD
                     if(javax.xml.ws.Service.class.isAssignableFrom(serviceInterfaceClass) &&
-                            !javax.xml.ws.Service.class.equals(serviceInterfaceClass)) {
+                            !javax.xml.ws.Service.class.equals(serviceInterfaceClass) ) {
                         // OK - the interface class is indeed the generated service class; get an instance
                         injValue = initiateInstance(serviceInterfaceClass, desc);
                     } else {
@@ -268,21 +268,14 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
 
         ArrayList<WebServiceFeature> wsFeatures = getWebServiceFeatures(desc);
 
-        Object obj ;
-        if (wsFeatures.size()>0) {
+        Object obj = null ;
+
         java.lang.reflect.Constructor cons = svcClass.getConstructor
                 (new Class[]{java.net.URL.class,
-                        javax.xml.namespace.QName.class, WebServiceFeature[].class});
-
-        obj =
-                cons.newInstance(wsdlFile, desc.getServiceName(),wsFeatures.toArray());
-        } else {
-            java.lang.reflect.Constructor cons = svcClass.getConstructor
-                (new Class[]{java.net.URL.class,
                         javax.xml.namespace.QName.class});
-            obj =
+        obj =
                 cons.newInstance(wsdlFile, desc.getServiceName());
-        }
+
 
         /*TODO BM if jbi needs this reenable it
         descUtil.postServiceCreate();

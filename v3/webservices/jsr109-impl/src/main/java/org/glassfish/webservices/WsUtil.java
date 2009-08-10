@@ -739,7 +739,7 @@ public class WsUtil {
                                             if (appFile.exists()) {
                                                retVal = new File(appFile,serviceRef.getWsdlFileUri()).toURL();
                                             } else {
-                                               //Fix for 6853656
+                                               //Fix for 6853656 and 6868695
                                                //In case of appclients the wsdl will be in the classpath
                                                //This will work for launches using the appclient command and
                                                // for Java Web Start launches
