@@ -201,8 +201,8 @@ public final class WsCompile extends CompileToolDelegate {
             // This is needed to perform method authorization checks.
             HandlerInfo preHandler = rpcFactory.createHandlerInfo();
             String handlerClassName = nextEndpoint.implementedByEjbComponent() ?
-                "com.sun.enterprise.webservice.EjbContainerPreHandler" :
-                "com.sun.enterprise.webservice.ServletPreHandler";
+                "org.glassfish.webservices.EjbContainerPreHandler" :
+                "org.glassfish.webservices.ServletPreHandler";
             preHandler.setHandlerClassName(handlerClassName);
             handlerInfoList.add(preHandler);
 
@@ -223,8 +223,8 @@ public final class WsCompile extends CompileToolDelegate {
             // Insert a container handler as the last element in the chain.
             HandlerInfo postHandler = rpcFactory.createHandlerInfo();
             handlerClassName = nextEndpoint.implementedByEjbComponent() ?
-                "com.sun.enterprise.webservice.EjbContainerPostHandler" :
-                "com.sun.enterprise.webservice.ServletPostHandler";
+                "org.glassfish.webservices.EjbContainerPostHandler" :
+                "org.glassfish.webservices.ServletPostHandler";
             postHandler.setHandlerClassName(handlerClassName);
             handlerInfoList.add(postHandler);
 
