@@ -773,8 +773,13 @@ public class AMXConfigImpl extends AMXImplBase
     public ObjectName removeChild(final String type)
     {
         final ObjectName child = child(type);
-        if (child == null) return null;
+        if (child == null)
+        {
+        System.out.println( "Can't find child of type: " + type );
+            return null;
+        }
 
+//why is it failing?
         return remove(child);
     }
 

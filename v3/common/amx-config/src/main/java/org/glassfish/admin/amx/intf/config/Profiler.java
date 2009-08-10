@@ -49,7 +49,7 @@ public interface Profiler extends NamedConfigElement, PropertiesAccess, Enabled,
 
     public void setNativeLibraryPath(String nativeLibraryPath);
 
-    public String[] getJVMOptions();
+    public String[] getJvmOptions();
 
     /**
      * Overwrites existing jvm options with the new options.
@@ -57,5 +57,5 @@ public interface Profiler extends NamedConfigElement, PropertiesAccess, Enabled,
      * the existing jvm options using <a>#getJVMOptions</a>, append new
      * options and set the resulting whole using this method.
      */
-    public void setJVMOptions(String[] jvmOptions);
+    public void setJvmOptions(String[] jvmOptions);
 }

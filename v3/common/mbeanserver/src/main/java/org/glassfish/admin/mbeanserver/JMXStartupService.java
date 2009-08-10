@@ -100,7 +100,7 @@ public final class JMXStartupService implements Startup, PostConstruct
     @Inject Events mEvents;
 
     @Inject
-    volatile static AdminAccessController authenticator;
+    volatile static AdminAccessController sAuthenticator;
     
     private volatile BootAMX mBootAMX;
     
@@ -213,6 +213,10 @@ public final class JMXStartupService implements Startup, PostConstruct
 
     private static Registry startRegistry(final int port)
     {
+        // Ensure cryptographically strong random number generator used
+        // to choose the object number - see java.rmi.server.ObjID
+        System.setProperty("java.rmi.server.randomIDs", "true");
+        
         try
         {
             return LocateRegistry.createRegistry(port);
@@ -332,16 +336,34 @@ public final class JMXStartupService implements Startup, PostConstruct
 
             public JMXConnectorServer startRMIConnector(final String name) throws IOException
             {
+                final String hostname = Util.localhost();
                 final Map<String, Object> env = new HashMap<String, Object>();
+                
                 //env.put( "jmx.remote.jndi.rebind", "true" );
                 //env.put( "jmx.remote.credentials", null );
-                if (authenticator != null)
-                    env.put( "jmx.remote.authenticator", authenticator );
+                if (sAuthenticator != null)
+                {
+                    env.put( "jmx.remote.authenticator", sAuthenticator );
+                }
                 // env.put("jmx.remote.protocol.provider.pkgs", "com.sun.jmx.remote.protocol");
                 //env.put("jmx.remote.protocol.provider.class.loader", this.getClass().getClassLoader());
+                
+                final boolean useSamePortForClients = false;
+                String jmxServiceURL = null;
+                if ( useSamePortForClients )
+                {
+                    // extended variant uses the same port for both the RMIRegistry and the client port
+                    // see: http://blogs.sun.com/jmxetc/entry/connecting_through_firewall_using_jmx
+                    jmxServiceURL = "service:jmx:rmi:///jndi/rmi://" + hostname + ":" + mPort + "/" + 
+                        "/jndi/rmi://" + hostname + ":" + mPort + "/" + name;
 
-                final String s = "service:jmx:rmi:///jndi/rmi://" + Util.localhost() + ":" + mPort + "/" + name;
-                final JMXServiceURL url = new JMXServiceURL(s);
+                }
+                else
+                {
+                    jmxServiceURL = "service:jmx:rmi:///jndi/rmi://" + hostname + ":" + mPort + "/" + name;
+                }
+                        
+                final JMXServiceURL url = new JMXServiceURL(jmxServiceURL);
 
                 final JMXConnectorServer cs = JMXConnectorServerFactory.newJMXConnectorServer(url, env, mMBeanServer);
                 final BootAMXListener listener = new BootAMXListener(cs, mAMXBooterNew);
