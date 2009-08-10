@@ -36,5 +36,6 @@
         <ant dir="portdependencynoinjection" target="all"/>
 	<ant dir="portfieldinjection" target="all"/>
 	<ant dir="portmethodinjection" target="all"/>
+        <ant dir="wsRef-webservice-features" target="all"/>
     </target>
 </project>

@@ -25,6 +25,7 @@ public class Client extends HttpServlet {
        public void doPost(HttpServletRequest req, HttpServletResponse resp)
               throws javax.servlet.ServletException {
             try {
+                com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump=true;
                 String ret = hiport.sayHello("All");
                 PrintWriter out = resp.getWriter();
                 resp.setContentType("text/html");
