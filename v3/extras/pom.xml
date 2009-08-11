@@ -54,6 +54,6 @@
         <module>osgi-container</module>
         <module>embedded-shell</module>
         <!--module>php</module-->
-        <!--module>upgrade</module-->
+        <module>upgrade</module>
     </modules>
 </project>
