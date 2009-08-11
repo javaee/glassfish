@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.admin.cli.remote;
 
-import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.io.FileUtils;
 import java.io.*;

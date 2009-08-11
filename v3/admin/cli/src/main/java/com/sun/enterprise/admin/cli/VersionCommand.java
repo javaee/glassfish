@@ -40,9 +40,6 @@ import java.util.*;
 import com.sun.appserv.server.util.Version;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.*;
-import com.sun.enterprise.cli.framework.ValidOption;
-import com.sun.enterprise.cli.framework.CommandException;
-import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**

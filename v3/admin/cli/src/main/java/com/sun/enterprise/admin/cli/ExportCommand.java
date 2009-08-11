@@ -38,9 +38,6 @@ package com.sun.enterprise.admin.cli;
 
 import java.util.*;
 import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.cli.framework.ValidOption;
-import com.sun.enterprise.cli.framework.CommandException;
-import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**

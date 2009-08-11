@@ -47,9 +47,6 @@ import com.sun.enterprise.admin.launcher.GFLauncher;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
-import com.sun.enterprise.cli.framework.CommandException;
-import com.sun.enterprise.cli.framework.CommandValidationException;
-import com.sun.enterprise.cli.framework.ValidOption;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 

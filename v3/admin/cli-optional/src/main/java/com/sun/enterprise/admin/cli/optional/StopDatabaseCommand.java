@@ -39,12 +39,6 @@ package com.sun.enterprise.admin.cli.optional;
 import java.io.File;
 import java.util.*;
 import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.admin.cli.optional.*;
-import com.sun.enterprise.admin.cli.CLIProcessExecutor;
-import com.sun.enterprise.cli.framework.CLILogger;
-import com.sun.enterprise.cli.framework.ValidOption;
-import com.sun.enterprise.cli.framework.CommandException;
-import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.OS;
 

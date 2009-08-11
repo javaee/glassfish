@@ -42,7 +42,7 @@ import java.io.PrintStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.cli.framework.CommandException;
+import com.sun.enterprise.admin.cli.CommandException;
 
 /**
  *  This class uses Java reflection to invoke Derby

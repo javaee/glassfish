@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.admin.cli.remote;
 
-import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.NameValue;
 import com.sun.enterprise.universal.glassfish.AdminCommandResponse;
 import java.util.*;

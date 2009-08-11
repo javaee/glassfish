@@ -42,7 +42,7 @@ import java.util.HashMap;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import com.sun.enterprise.cli.framework.*;
+import com.sun.enterprise.admin.cli.CommandException;
 
 /**
  *  CLI Utility class

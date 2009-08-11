@@ -44,10 +44,6 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.cli.remote.DASUtils;
-import com.sun.enterprise.cli.framework.CLILogger;
-import com.sun.enterprise.cli.framework.ValidOption;
-import com.sun.enterprise.cli.framework.CommandException;
-import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 import com.sun.enterprise.util.SystemPropertyConstants;

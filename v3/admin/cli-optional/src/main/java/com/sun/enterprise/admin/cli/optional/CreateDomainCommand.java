@@ -40,7 +40,6 @@ import java.io.File;
 import java.io.Console;
 import java.util.*;
 import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.DomainsManager;
 import com.sun.enterprise.admin.servermgmt.DomainException;

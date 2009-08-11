@@ -40,9 +40,9 @@ import com.sun.enterprise.admin.cli.LocalDomainCommand;
 import com.sun.enterprise.admin.cli.ProgramOptions;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
-import com.sun.enterprise.cli.framework.CommandException;
-import com.sun.enterprise.cli.framework.CommandValidationException;
-import com.sun.enterprise.cli.framework.ValidOption;
+import com.sun.enterprise.admin.cli.CommandException;
+import com.sun.enterprise.admin.cli.CommandValidationException;
+import com.sun.enterprise.admin.cli.ValidOption;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;

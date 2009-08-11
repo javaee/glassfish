@@ -39,11 +39,6 @@ package com.sun.enterprise.admin.cli;
 import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
-import com.sun.enterprise.cli.framework.ValidOption;
-import com.sun.enterprise.cli.framework.CommandException;
-import com.sun.enterprise.cli.framework.CommandValidationException;
-import com.sun.enterprise.cli.framework.CLIDescriptorsReader;
-import com.sun.enterprise.cli.framework.CLILogger;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
@@ -73,8 +68,6 @@ public abstract class CLICommand {
     public static final int CONNECTION_ERROR = 2;
     public static final int INVALID_COMMAND_ERROR = 3;
     public static final int SUCCESS = 0;
-
-    private static final CLIDescriptorsReader cliDescriptorsReader;
 
     private static final Set<String> unsupported;
     private static final String UNSUPPORTED_CMD_FILE_NAME =
@@ -144,11 +137,6 @@ public abstract class CLICommand {
     protected Map<String, String> passwords;
 
     static {
-        cliDescriptorsReader = CLIDescriptorsReader.getInstance();
-        // XXX - does this matter?
-        cliDescriptorsReader.setSerializeDescriptorsProperty(
-                CLIDescriptorsReader.SERIALIZE_COMMANDS_TO_FILES);
-
         Set<String> unsup = new HashSet<String>();
         file2Set(UNSUPPORTED_CMD_FILE_NAME, unsup);
         unsupported = Collections.unmodifiableSet(unsup);
@@ -167,16 +155,6 @@ public abstract class CLICommand {
         CLICommand cmd = getCommandClass(name, programOpts, env);
         if (cmd != null)
             return cmd;
-
-        // see if it's a local command
-        try {
-            if (cliDescriptorsReader.getCommand(name) != null) {
-                logger.printMessage("WARNING: Using old command: " + name);
-                return new LocalCommand(name, programOpts, env);
-            }
-        } catch (CommandValidationException ex) {
-            // ignore it
-        }
 
         // nope, must be a remote command
         return new RemoteCommand(name, programOpts, env);

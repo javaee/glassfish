@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
+ * 
  * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -36,53 +36,56 @@
 
 package com.sun.enterprise.admin.cli;
 
-import com.sun.enterprise.cli.framework.*;
+import java.io.Writer;
+import java.io.Reader;
+import java.io.OutputStreamWriter;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
+import java.io.BufferedWriter;
+import java.io.BufferedReader;
+
 
 /**
- * A local command.  This is just a proxy for local commands implemented
- * by the old CLI framework.  This will be removed when we remove our
- * dependency on the old CLI framework and convert all the local commands
- * to use the new framework.
+ * More.java
  *
- * @author Bill Shannon
+ * @author <a href="mailto:toby.h.ferguson@sun.com">Toby H Ferguson</a>
+ *
+ * This class provides a primitive more(1) functionality, paging
+ * through the given file, with an optional pagelength.
  */
-public class LocalCommand extends CLICommand {
-    private CLIMain cli;
 
-    public LocalCommand(String name, ProgramOptions programOpts,
-            Environment env) {
-        super(name, programOpts, env);
-        cli = new CLIMain();
+public class More {
+    private BufferedReader in;
+    private BufferedWriter out;
+    private String quit;
+    private String prompt;
+
+    public More(int linesPerPage, Reader src, Writer dest,
+            Reader fromUser, Writer toUser, String quitPrefix, String prompt)
+            throws IOException {
+        in = new BufferedReader(fromUser);
+        out = new BufferedWriter(toUser);
+        quit = quitPrefix;
+        this.prompt = prompt;
+
+        Pager pager = new Pager(linesPerPage, src, dest);
+	do {
+            pager.nextPage();
+	} while (pager.hasNext() && wantsToContinue());
     }
 
-    public int execute(String[] argv) throws CommandException {
-        try {
-            cli.invokeCommand(argv);
-            return SUCCESS;
-        } catch (CommandException ce) {
-            logger.printError(ce.getMessage());
-            return ERROR;
-        } catch (CommandValidationException cve) {
-            logger.printError(cve.getMessage());
-            return ERROR;
-        } catch (NoClassDefFoundError ncdfe) {
-            logger.printError(ncdfe.toString());
-            return ERROR;
-        } catch (InvalidCommandException ice) {
-            return INVALID_COMMAND_ERROR;
-        } catch (Throwable ex) {
-            logger.printExceptionStackTrace(ex);
-            logger.printError(ex.toString());
-            return ERROR;
-        }
-    }
-
-    protected void prepare() {
-        // never called because we override execute
-    }
-
-    protected int executeCommand() {
-        // never called because we override execute
-        return -1;
+    /**
+     * Return false iff the line read from the user starts with the
+     * quit character. This is a blocking call, waiting on input
+     * from the user
+     */
+    boolean wantsToContinue() throws IOException {
+        out.write(prompt);
+        out.newLine();
+        out.flush();
+        String line = in.readLine();
+        return line != null && !line.startsWith(quit);
     }
 }

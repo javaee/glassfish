@@ -25,10 +25,6 @@ package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.*;
-import com.sun.enterprise.cli.framework.CLILogger;
-import com.sun.enterprise.cli.framework.CommandException;
-import com.sun.enterprise.cli.framework.CommandValidationException;
-import com.sun.enterprise.cli.framework.ValidOption;
 import java.net.*;
 import java.io.*;
 import java.util.Collections;

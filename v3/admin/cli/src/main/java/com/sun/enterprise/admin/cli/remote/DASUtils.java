@@ -41,7 +41,6 @@ import java.net.*;
 import java.util.logging.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.util.*;
-import com.sun.enterprise.cli.framework.*;
 
 /**
  * Domain Admin Server utility method.

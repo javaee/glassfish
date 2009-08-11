@@ -41,12 +41,7 @@ import java.util.*;
 import java.net.URL;
 
 import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.admin.cli.optional.DomainXmlVerifier;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.cli.framework.ValidOption;
-import com.sun.enterprise.cli.framework.CommandValidationException;
-import com.sun.enterprise.cli.framework.CommandException;
-import com.sun.enterprise.cli.framework.CLILogger;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 import org.glassfish.api.embedded.Server;

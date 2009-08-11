@@ -39,15 +39,11 @@ package com.sun.enterprise.admin.cli;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
-import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
-import com.sun.enterprise.cli.framework.ValidOption;
-import com.sun.enterprise.cli.framework.CommandException;
-import com.sun.enterprise.cli.framework.CommandValidationException;
 
 /**
  * THe restart-domain command.

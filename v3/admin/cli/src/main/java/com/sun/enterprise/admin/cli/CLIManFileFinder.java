@@ -46,7 +46,6 @@ import java.util.NoSuchElementException;
 import java.util.List;
 import java.util.Collections;
 import java.util.ArrayList;
-import com.sun.enterprise.cli.framework.CLILogger;
 
 /**
  *  A utility class which gets the I18N xml help file name for the

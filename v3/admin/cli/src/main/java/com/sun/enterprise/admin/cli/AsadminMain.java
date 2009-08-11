@@ -41,12 +41,6 @@ import java.text.*;
 import java.util.*;
 
 import com.sun.enterprise.admin.cli.remote.*;
-import com.sun.enterprise.cli.framework.ValidOption;
-import com.sun.enterprise.cli.framework.CommandValidationException;
-import com.sun.enterprise.cli.framework.CommandException;
-import com.sun.enterprise.cli.framework.InvalidCommandException;
-import com.sun.enterprise.cli.framework.CLILogger;
-import com.sun.enterprise.cli.framework.StringEditDistance;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;

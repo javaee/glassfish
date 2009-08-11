@@ -37,7 +37,6 @@
 package com.sun.enterprise.admin.cli;
 
 import java.util.*;
-import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
