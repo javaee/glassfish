@@ -793,6 +793,7 @@ public class AMXConfigImpl extends AMXImplBase
 
     private final ObjectName remove(final ObjectName childObjectName)
     {
+        ObjectName removed = null;
         try
         {
             final ConfigBean childConfigBean = ConfigBeanRegistry.getInstance().getConfigBean(childObjectName);
@@ -802,6 +803,7 @@ public class AMXConfigImpl extends AMXImplBase
                 //cdebug("REMOVING config of class " + childConfigBean.getProxyType().getName() + " from  parent of type " +
                        //getConfigBean().getProxyType().getName() + ", ObjectName = " + JMXUtil.toString(childObjectName));
                 ConfigSupport.deleteChild(this.getConfigBean(), childConfigBean);
+                removed = childObjectName;
             }
             catch (final TransactionFailure tf)
             {
@@ -823,7 +825,7 @@ public class AMXConfigImpl extends AMXImplBase
         {
             throw new RuntimeException("Problem deleting " + childObjectName, e);
         }
-        return childObjectName;
+        return removed;
     }
 
     private Object invokeDuckMethod(
