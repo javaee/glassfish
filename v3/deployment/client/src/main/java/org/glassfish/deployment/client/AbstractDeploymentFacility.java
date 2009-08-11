@@ -36,7 +36,7 @@
 
 package org.glassfish.deployment.client;
 
-import com.sun.enterprise.cli.framework.CommandException;
+import com.sun.enterprise.admin.cli.CommandException;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 import java.io.File;
