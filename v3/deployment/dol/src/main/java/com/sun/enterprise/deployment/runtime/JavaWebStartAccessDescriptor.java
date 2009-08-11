@@ -130,16 +130,13 @@ public class JavaWebStartAccessDescriptor extends Descriptor {
     /**
      * Declaration and methods for jnlp-doc subelement.
      */
-    private JnlpDocDescriptor jnlpDoc = null;
+    private String jnlpDoc = null;
 
-    public JnlpDocDescriptor getJnlpDoc() {
-        if (jnlpDoc == null) {
-            jnlpDoc = new JnlpDocDescriptor();
-        }
+    public String getJnlpDocument() {
         return jnlpDoc;
     }
 
-    public void setJnlpDoc(JnlpDocDescriptor jnlpDoc) {
+    public void setJnlpDocument(String jnlpDoc) {
         this.jnlpDoc = jnlpDoc;
     }
     

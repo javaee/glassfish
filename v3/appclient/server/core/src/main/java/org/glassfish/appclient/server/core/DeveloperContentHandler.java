@@ -74,7 +74,7 @@ import org.xml.sax.InputSource;
 public class DeveloperContentHandler {
 
     private final ClassLoader loader;
-    private final JnlpDocDescriptor jnlpDoc;
+    private final String jnlpDoc;
     private final Map<String,StaticContent> staticContent;
     private final Map<String,DynamicContent> dynamicContent;
     private final TokenHelper tHelper;
@@ -207,7 +207,7 @@ public class DeveloperContentHandler {
 
     public static DeveloperContentHandler addDeveloperContent(
             final ClassLoader loader,
-            final JnlpDocDescriptor jnlpDoc,
+            final String jnlpDoc,
             final TokenHelper tHelper,
             final File appRootDir,
             final Map<String,StaticContent> staticContent,
@@ -219,7 +219,7 @@ public class DeveloperContentHandler {
         return h;
     }
 
-    private DeveloperContentHandler(ClassLoader loader, JnlpDocDescriptor jnlpDoc,
+    private DeveloperContentHandler(ClassLoader loader, String jnlpDoc,
             final TokenHelper tHelper, 
             final File appRootDir,
             final Map<String,StaticContent> staticContent,
@@ -238,15 +238,14 @@ public class DeveloperContentHandler {
          * There is no work to do unless the developer specified a JNLP
          * document.
          */
-        String href;
-        if (jnlpDoc == null || (href = jnlpDoc.getHref()) == null) {
+        if (jnlpDoc == null || (jnlpDoc.length() == 0)) {
             return;
         }
 
         /*
          * Find the developer's JNLP.
          */
-        final InputStream devJNLPStream = loader.getResourceAsStream(href);
+        final InputStream devJNLPStream = loader.getResourceAsStream(jnlpDoc);
         if (devJNLPStream == null) {
             return;
         }
@@ -289,15 +288,14 @@ public class DeveloperContentHandler {
          * There is no work to do unless the developer specified a JNLP
          * document.
          */
-        String jnlpDocHref;
-        if (jnlpDoc == null || (jnlpDocHref = jnlpDoc.getHref()) == null) {
+        if (jnlpDoc == null || (jnlpDoc.length() == 0)) {
             return;
         }
 
         /*
          * Find the developer's JNLP.
          */
-        final InputStream devJNLPStream = loader.getResourceAsStream(jnlpDocHref);
+        final InputStream devJNLPStream = loader.getResourceAsStream(jnlpDoc);
         if (devJNLPStream == null) {
             return;
         }

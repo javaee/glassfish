@@ -367,8 +367,8 @@ public class AppClientServerApplication implements
         final Map<String,DynamicContent> dynamicContent =
                 initClientDynamicContent();
 
-        final JnlpDocDescriptor jnlpDoc = acDesc.getJavaWebStartAccessDescriptor().getJnlpDoc();
-        if (jnlpDoc != null && jnlpDoc.getHref() != null) {
+        final String jnlpDoc = acDesc.getJavaWebStartAccessDescriptor().getJnlpDocument();
+        if (jnlpDoc != null && jnlpDoc.length() > 0) {
             DeveloperContentHandler.addDeveloperContent(dc.getClassLoader(),
                     jnlpDoc, tHelper,
                     dc.getSourceDir(), staticContent, dynamicContent);

@@ -38,10 +38,8 @@ package com.sun.enterprise.deployment.node.runtime;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.XMLNode;
 import com.sun.enterprise.deployment.runtime.JavaWebStartAccessDescriptor;
-import com.sun.enterprise.deployment.runtime.JnlpDocDescriptor;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import org.w3c.dom.Node;
 
@@ -57,20 +55,12 @@ public class JavaWebStartAccessNode extends DeploymentDescriptorNode<JavaWebStar
     
     /** Creates a new instance of JavaWebStartAccessNode */
     public JavaWebStartAccessNode() {
-        register();
         }
 
 //    public JavaWebStartAccessNode(XMLElement element) {
 //        register();
 //        setXMLRootTag(element);
 //    }
-
-    private void register(){
-        registerElementHandler(new XMLElement(RuntimeTagNames.JNLP_DOC),
-                                   JnlpDocNode.class);
-    }
-
-
 
    /**
     * @return the descriptor instance to associate with this XMLNode
@@ -104,19 +94,9 @@ public class JavaWebStartAccessNode extends DeploymentDescriptorNode<JavaWebStar
         table.put(RuntimeTagNames.CONTEXT_ROOT, "setContextRoot");
         table.put(RuntimeTagNames.ELIGIBLE, "setEligible");
         table.put(RuntimeTagNames.VENDOR, "setVendor");
+        table.put(RuntimeTagNames.JNLP_DOC, "setJnlpDocument");
         return table;
     }
-
-    @Override
-    public void addDescriptor(Object newDescriptor) {
-        getDescriptor();
-        if (newDescriptor instanceof JnlpDocDescriptor) {
-            descriptor.setJnlpDoc((JnlpDocDescriptor) newDescriptor);
-        } else {
-            super.addDescriptor(newDescriptor);
-        }
-    }
-
 
     /**
      * write the descriptor class to a DOM tree and return it
@@ -131,7 +111,7 @@ public class JavaWebStartAccessNode extends DeploymentDescriptorNode<JavaWebStar
         appendTextChild(accessNode, RuntimeTagNames.CONTEXT_ROOT, descr.getContextRoot());
         appendTextChild(accessNode, RuntimeTagNames.ELIGIBLE, Boolean.toString(descr.isEligible()));
         appendTextChild(accessNode, RuntimeTagNames.VENDOR, descr.getVendor());
-        JnlpDocNode.writeJnlpDocInfo(accessNode, descr.getJnlpDoc());
+        appendTextChild(accessNode, RuntimeTagNames.JNLP_DOC, descr.getJnlpDocument());
 	return accessNode;
     }    
     
