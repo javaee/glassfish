@@ -220,7 +220,12 @@ public class VirtualServerPipeline extends StandardPipeline {
         int size = redirects.size();
         for (int i=0; i<size; i++) {
             RedirectParameters elem = redirects.get(i);
-            if (requestURI.startsWith(elem.from)) {
+            String elemFromWithTrailingSlash = elem.from;
+            if (!elemFromWithTrailingSlash.endsWith("/")) {
+                elemFromWithTrailingSlash += "/";
+            }
+            if (requestURI.equals(elem.from) ||
+                    requestURI.startsWith(elemFromWithTrailingSlash)) {
                 if (redirectMatch != null) {
                     if (elem.from.length() > redirectMatch.from.length()) {
                         redirectMatch = elem;
