@@ -41,9 +41,6 @@ import java.util.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import com.sun.enterprise.cli.framework.CommandValidationException;
-import com.sun.enterprise.cli.framework.CommandException;
-//import com.sun.enterprise.cli.framework.ValidOption;
 
 /**
  * Tests for commands with the new syntax.

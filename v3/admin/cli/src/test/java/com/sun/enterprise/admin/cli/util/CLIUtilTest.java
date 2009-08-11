@@ -45,7 +45,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Map;
 import com.sun.enterprise.admin.cli.util.CLIUtil;
-import com.sun.enterprise.cli.framework.CommandException;
+import com.sun.enterprise.admin.cli.CommandException;
 
 
 /**
