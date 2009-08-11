@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,7 +42,7 @@ import java.util.Properties;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.deployment.client.*;
-import com.sun.enterprise.cli.framework.CommandException;
+import com.sun.enterprise.admin.cli.CommandException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
