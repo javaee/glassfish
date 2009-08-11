@@ -408,14 +408,18 @@ Variables Used:
 <target name="asadmin-batch-common">
   <echo message="Doing admin batch task ${admin.command} --file" 
       level="verbose"/>
+<property name="user.password.file" value="asadminuserpassword.txt"/>
+<echo file="${user.password.file}" append="false">
+AS_ADMIN_USERPASSWORD=${password}
+AS_ADMIN_PASSWORD=${admin.password}
+AS_ADMIN_ADMINPASSWORD=${admin.password}
+AS_ADMIN_MASTERPASSWORD=${master.password}
+</echo>
   <exec executable="${ASADMIN}" failonerror="true">
-     <env key="AS_ADMIN_PORT" value="${admin.port}"/>
-     <env key="AS_ADMIN_USER" value="${admin.user}"/>
-     <env key="AS_ADMIN_PASSWORD" value="${admin.password}"/>
-     <env key="AS_ADMIN_HOST" value="${admin.host}"/>
-     <env key="AS_ADMIN_INSTANCE" value="${appserver.instance.name}"/>
+     <arg line="--user ${admin.user} --passwordfile ${user.password.file} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
      <arg line="multimode --file ${asadmin.file}" />        
   </exec>
+  <delete file="${user.password.file}" failonerror="false"/>
 </target>
  
 <!-- ================================================================ -->
