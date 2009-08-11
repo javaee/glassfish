@@ -45,6 +45,7 @@ import javax.validation.constraints.Pattern;
 
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.config.Named;
 import com.sun.grizzly.config.dom.Ssl;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.quality.ToDo;
@@ -62,28 +63,7 @@ import org.jvnet.hk2.config.*;
 }) */
 
 @Configured
-public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
-
-    /**
-     * Gets the value of the name property.
-     *
-     * Name of jmx connector used for identification
-     * 
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(key=true)
-    @NotNull
-    String getName();
-
-    /**
-     * Sets the value of the name property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    void setName(String value) throws PropertyVetoException;
-
+public interface JmxConnector extends ConfigBeanProxy, Injectable, Named, PropertyBag {
     /**
      * Gets the value of the enabled property.
      *
