@@ -41,11 +41,10 @@ import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.security.webservices.ClientPipeCloser;
-import com.sun.enterprise.util.LocalStringManager;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
+import com.sun.logging.LogDomains;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.InvocationTargetException;
@@ -53,7 +52,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLClassLoader;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -192,9 +191,8 @@ public class AppClientContainer {
     /** Prop name for keeping temporary files */
     public static final String APPCLIENT_RETAIN_TEMP_FILES_PROPERTYNAME = "com.sun.aas.jws.retainTempFiles";
 
-    private static final LocalStringManager localStrings = new LocalStringManagerImpl(AppClientContainer.class);
-
-    private static Logger logger = Logger.getLogger(AppClientContainer.class.getName());
+    private static Logger logger = LogDomains.getLogger(AppClientContainer.class,
+            LogDomains.ACC_LOGGER);
 
     /**
      * Creates a new ACC builder object, preset with the specified
@@ -484,20 +482,16 @@ public class AppClientContainer {
 	    int modifiers = result.getModifiers ();
 	    if (!Modifier.isPublic (modifiers) ||
 		!Modifier.isStatic (modifiers))  {
-		    String err = localStrings.getLocalString(
-                    getClass(),
-                    "appclient.notPublicOrNotStatic",
-                    "The main method is either not public or not static");
+		    final String err = MessageFormat.format(logger.getResourceBundle().
+                            getString("appclient.notPublicOrNotStatic"), (Object[]) null);
 	    	    throw new NoSuchMethodException(err);
 	    }
 
 	    // check return type and exceptions
 	    if (!result.getReturnType().equals (Void.TYPE)) {
-            String err = localStrings.getLocalString(
-                getClass(),
-                "appclient.notVoid",
-                "The main method's return type is not void");
-            throw new NoSuchMethodException(err);
+                final String err = MessageFormat.format(logger.getResourceBundle().
+                        getString("appclient.notVoid"), (Object[]) null);
+                throw new NoSuchMethodException(err);
 	    }
         return result;
     }
