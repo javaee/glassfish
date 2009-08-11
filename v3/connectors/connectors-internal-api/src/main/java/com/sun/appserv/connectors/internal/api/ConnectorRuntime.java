@@ -133,7 +133,7 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * For embedded rars, parent is necessary<br>
      * @return classloader created for the module
      */
-    public ClassLoader createConnectorClassLoader(String moduleDirectory, ClassLoader parent);
+    public ClassLoader createConnectorClassLoader(String moduleDirectory, ClassLoader parent) throws ConnectorRuntimeException;
 
     /**
      * Does lookup of non-tx-datasource. If found, it will be returned.<br><br>

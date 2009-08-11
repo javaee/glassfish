@@ -46,7 +46,14 @@ import org.jvnet.hk2.component.Singleton;
 import java.io.File;
 import java.net.MalformedURLException;
 
+import java.security.AccessController;
+import java.security.PrivilegedExceptionAction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.sun.enterprise.loader.EJBClassLoader;
+import com.sun.logging.LogDomains;
+
 
 /**
  * Classloader util to create a new classloader for the provided .rar deploy directory.
@@ -60,7 +67,10 @@ public class ConnectorsClassLoaderUtil {
     @Inject
     private ClassLoaderHierarchy clh;
 
-    public ConnectorClassFinder createRARClassLoader(String moduleDir, ClassLoader deploymentParent) {
+    private Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
+
+    public ConnectorClassFinder createRARClassLoader(String moduleDir, ClassLoader deploymentParent) 
+        throws ConnectorRuntimeException {
 
         ClassLoader parent = null;
 
@@ -78,8 +88,25 @@ public class ConnectorsClassLoaderUtil {
         return createRARClassLoader(parent, moduleDir);
     }
 
-    private ConnectorClassFinder createRARClassLoader(ClassLoader parent, String moduleDir) {
-        ConnectorClassFinder cl = new ConnectorClassFinder(parent);
+    private ConnectorClassFinder createRARClassLoader(final ClassLoader parent, String moduleDir) 
+        throws ConnectorRuntimeException{
+        ConnectorClassFinder cl = null;
+
+        try{
+        cl = (ConnectorClassFinder)AccessController.doPrivileged(new PrivilegedExceptionAction() {
+            public Object run() throws Exception {
+                    return new ConnectorClassFinder(parent);
+
+            }
+        });
+        } catch (Exception ex) {
+            _logger.log(Level.SEVERE, "failed to create connector classloader", ex);
+            ConnectorRuntimeException cre = new ConnectorRuntimeException(ex.getMessage());
+            cre.initCause(ex);
+            throw cre;
+        }
+
+
         File file = new File(moduleDir);
         try {
             cl.appendURL(file.toURI().toURL());

@@ -962,7 +962,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * For embedded rars, parent is necessary<br>
      * @return classloader created for the module
      */
-    public ClassLoader createConnectorClassLoader(String moduleDirectory, ClassLoader parent){
+    public ClassLoader createConnectorClassLoader(String moduleDirectory, ClassLoader parent)
+        throws ConnectorRuntimeException{
         return cclUtil.createRARClassLoader(moduleDirectory, parent);
     }
 
