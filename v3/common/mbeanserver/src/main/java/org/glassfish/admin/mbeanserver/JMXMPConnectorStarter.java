@@ -28,15 +28,20 @@ import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
 import javax.management.NotCompliantMBeanException;
 
+import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
+import javax.management.remote.jmxmp.JMXMPConnectorServer;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.glassfish.api.amx.AMXUtil;
+
 
 /**
 Start and stop JMX connectors.
@@ -48,38 +53,48 @@ final class JMXMPConnectorStarter
         System.out.println(s);
     }
 
+    public static final String JMXMP = "jmxmp";
+    
     private final MBeanServer mMBeanServer;
 
     private volatile JMXConnectorServer mJMXMP = null;
 
     private volatile JMXServiceURL mJMXMPServiceURL = null;
 
-    private volatile ObjectName mJMXMPObjectName = null;
-
-    public static final int JMXMP_PORT = 8888;
+    private final String mAddress;
+    private final int mPort;
+    private final String mAuthRealmName;
+    private final boolean mSecurityEnabled;
 
     public JMXServiceURL getJMXServiceURL()
     {
         return mJMXMPServiceURL;
     }
 
-    private static volatile boolean STARTED = false;
-
-    JMXMPConnectorStarter(final MBeanServer mbs)
+    JMXMPConnectorStarter(
+        final MBeanServer mbeanServer,
+        final String address,
+        final int port,
+        final String authRealmName,
+        final boolean securityEnabled)
     {
-        mMBeanServer = mbs;
+        mMBeanServer = mbeanServer;
+        mAddress = address;
+        mPort = port;
+        mAuthRealmName = authRealmName;
+        mSecurityEnabled = securityEnabled;
     }
 
-    public synchronized JMXConnectorServer start()
+    public synchronized JMXConnectorServer start(final boolean tryOtherPorts)
     {
-        if (STARTED)
+        if (mJMXMP != null)
         {
             return mJMXMP;
         }
 
-        final int TRY_COUNT = 100;
+        final int TRY_COUNT = tryOtherPorts ? 100 : 1;
 
-        int port = JMXMP_PORT;
+        int port = mPort;
         int tryCount = 0;
         while (tryCount < TRY_COUNT)
         {
@@ -122,68 +137,60 @@ final class JMXMPConnectorStarter
 
     static void ignore(Throwable t)
     {
+        // ignore
     }
 
-    private JMXConnectorServer startJMXMPConnectorServer(int port)
+    private JMXConnectorServer startJMXMPConnectorServer(final int port)
             throws MalformedURLException, IOException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException
     {
-        if (mJMXMPObjectName == null)
+        final Map<String, Object> env = new HashMap<String, Object>();
+        env.put("jmx.remote.protocol.provider.pkgs", "com.sun.jmx.remote.protocol");
+        env.put("jmx.remote.protocol.provider.class.loader", this.getClass().getClassLoader());
+
+        final JMXServiceURL serviceURL = new JMXServiceURL("service:jmx:" + JMXMP + "://" + Util.localhost() + ":" + port);
+        JMXConnectorServer jmxmp = null;
+
+        boolean startedOK = false;
+        try
         {
-            final Map<String, Object> env = new HashMap<String, Object>();
-            env.put("jmx.remote.protocol.provider.pkgs", "com.sun.jmx.remote.protocol");
-            env.put("jmx.remote.protocol.provider.class.loader", this.getClass().getClassLoader());
-
-            final JMXServiceURL serviceURL = new JMXServiceURL("service:jmx:jmxmp://localhost:" + port);
-            final JMXConnectorServer jmxmp = JMXConnectorServerFactory.newJMXConnectorServer(serviceURL, env, mMBeanServer);
-
-            ObjectName objectName = AMXUtil.newObjectName("jmxremote:type=jmx-connector,name=jmxmp,port=" + port);
-            objectName = mMBeanServer.registerMBean(jmxmp, objectName).getObjectName();
-
-            boolean startedOK = false;
-            try
+            jmxmp = new JMXMPConnectorServer(serviceURL, env, mMBeanServer);
+            
+            jmxmp.start();
+            startedOK = true;
+        }
+        catch( final Exception e )
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            // we do it this way so that the original exeption will be thrown out
+            if (!startedOK)
             {
-                // start it only if we can register it successsfully
-                jmxmp.start();
-                startedOK = true;
-            }
-            finally
-            {
-                // we do it this way so that the original exeption will be thrown out
-                if (!startedOK)
+                try
                 {
-                    try
-                    {
-                        jmxmp.stop();
-                    }
-                    catch (Exception e)
-                    {
-                        ignore(e);
-                    }
-                    try
-                    {
-                        mMBeanServer.unregisterMBean(objectName);
-                        objectName = null;
-                    }
-                    catch (Exception e)
-                    {
-                        ignore(e);
-                    }
+                    if ( jmxmp != null ) jmxmp.stop();
+                }
+                catch (Exception e)
+                {
+                    ignore(e);
                 }
             }
-
-            mJMXMPServiceURL = serviceURL;
-            mJMXMP = jmxmp;
-            mJMXMPObjectName = objectName;
-            System.out.println("JMXMP connector server URL = " + mJMXMPServiceURL);
-
-            // test
-            // JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
-            // MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
         }
+
+        mJMXMPServiceURL = serviceURL;
+        mJMXMP = jmxmp;
+
+        // verify
+        final JMXConnector jmxc = JMXConnectorFactory.connect(serviceURL, null);
+        jmxc.getMBeanServerConnection().getMBeanCount();
+        
         return mJMXMP;
     }
-
 }
+
+
+
 
 
 

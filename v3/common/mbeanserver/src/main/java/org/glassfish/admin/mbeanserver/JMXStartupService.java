@@ -381,26 +381,30 @@ public final class JMXStartupService implements Startup, PostConstruct
             Util.getLogger().fine("Starting JMXConnector: " + toString(connConfig));
 
             final String protocol = connConfig.getProtocol();
-            if (!protocol.equals("rmi_jrmp"))
-            {
-                throw new IllegalArgumentException("The only protocol supported is rmi_jrmp");
-            }
 
             final String address = connConfig.getAddress();
             final int port = Integer.parseInt(connConfig.getPort());
             final String authRealmName = connConfig.getAuthRealmName();
             final boolean securityEnabled = Boolean.parseBoolean(connConfig.getSecurityEnabled());
 
-            final RMIConnectorStarter starter = new RMIConnectorStarter(mMBeanServer, address, port, protocol, authRealmName, securityEnabled);
+            JMXConnectorServer server = null;
+            if ( protocol.equals("rmi_jrmp") )
+            {
+                final RMIConnectorStarter starter = new RMIConnectorStarter(mMBeanServer, address, port, protocol, authRealmName, securityEnabled);
+                server = starter.startRMIConnector("jmxrmi");
+            }
+            else if ( protocol.equals("jmxmp") )
+            {
+                final JMXMPConnectorStarter starter = new JMXMPConnectorStarter(mMBeanServer, address, port, authRealmName, securityEnabled);
+                server = starter.start(true);
+            }
 
-            final JMXConnectorServer server = starter.startRMIConnector("jmxrmi");
             final JMXServiceURL url = server.getAddress();
-
             Util.getLogger().info("Started JMXConnector, JMXService URL = " + url);
-
+            
             try
             {
-                ObjectName objectName = new ObjectName("jmxremote:type=jmx-connector,name=jmxrmi");
+                ObjectName objectName = new ObjectName("jmxremote:type=jmx-connector-server,protocol=" + protocol + ",name=" + connConfig.getName());
                 objectName = mMBeanServer.registerMBean(server, objectName).getObjectName();
             }
             catch (final Exception e)
@@ -447,30 +451,13 @@ public final class JMXStartupService implements Startup, PostConstruct
                 }
             }
 
+            /*
             if (Boolean.valueOf(System.getProperty("START_JMXMP")))
             {
                 startJMXMPConnector();
             }
+            */
         }
-
-        /**
-        Retain this code, it is used for testing/verification.
-         */
-        private void startJMXMPConnector()
-        {
-            // this is for JMXMP, remove soon, use the config mechanism above
-            final JMXMPConnectorStarter jmxmpStarter = new JMXMPConnectorStarter(mMBeanServer);
-            try
-            {
-                final JMXConnectorServer server = jmxmpStarter.start();
-                mConnectorServers.add( server );
-            }
-            catch (Throwable t)
-            {
-                t.printStackTrace();
-            }
-        }
-
     }
 
     public Startup.Lifecycle getLifecycle()

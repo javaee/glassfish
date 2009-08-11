@@ -73,18 +73,18 @@
             <artifactId>internal-api</artifactId>
             <version>${project.version}</version>
         </dependency>              
-		
+        
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
         </dependency>  
-		
-		<dependency>
+        
+        <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>jmxremote_optional-repackaged</artifactId>
             <version>${project.version}</version>
         </dependency> 
-		
+        
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>management-api</artifactId>
