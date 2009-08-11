@@ -14,8 +14,8 @@ package com.sun.cli.jmxcmd.cmd;
 
 import com.sun.cli.jmxcmd.support.ResultsForGetSet;
 import com.sun.cli.jmxcmd.support.CLISupportMBeanProxy;
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 
 import com.sun.cli.jcmd.framework.CmdEnv;
 import com.sun.cli.jcmd.framework.CmdHelp;

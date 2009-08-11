@@ -15,8 +15,8 @@ import java.util.Arrays;
 import java.util.ListIterator;
 
 import junit.framework.TestCase;
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 
 /**
 	Unit tests for ArgHelper.

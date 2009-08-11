@@ -54,7 +54,7 @@
  * own identifying information: Portions Copyright [yyyy] 
  * [name of copyright owner]
  */
-package com.sun.appserv.management.util.stringifier;
+package org.glassfish.admin.amx.util.stringifier;
 
 /**
 	Stringifies an object based on specified interfaces.

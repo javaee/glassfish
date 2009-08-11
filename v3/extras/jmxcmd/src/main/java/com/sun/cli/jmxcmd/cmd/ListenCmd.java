@@ -25,9 +25,9 @@ import javax.management.NotificationListener;
 import javax.management.monitor.MonitorNotification;
 import javax.management.Notification;
 
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
-import com.sun.appserv.management.util.stringifier.StringifierRegistry;
-import com.sun.appserv.management.util.stringifier.StringifierRegistryImpl;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.StringifierRegistry;
+import org.glassfish.admin.amx.util.stringifier.StringifierRegistryImpl;
 import com.sun.cli.jcmd.util.cmd.ArgHelper;
 import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
 import com.sun.cli.jcmd.util.cmd.OptionsInfo;
@@ -47,13 +47,13 @@ import com.sun.cli.jcmd.framework.CmdOutputImpl;
 import com.sun.cli.jcmd.framework.CmdOutputToFile;
 import com.sun.cli.jcmd.framework.IllegalUsageException;
 
-import com.sun.appserv.management.util.jmx.stringifier.NotificationStringifier;
-import com.sun.appserv.management.util.jmx.stringifier.AttributeChangeNotificationStringifier;
-import com.sun.appserv.management.util.jmx.stringifier.MBeanServerNotificationStringifier;
-import com.sun.appserv.management.util.jmx.stringifier.MonitorNotificationStringifier;
+import org.glassfish.admin.amx.util.jmx.stringifier.NotificationStringifier;
+import org.glassfish.admin.amx.util.jmx.stringifier.AttributeChangeNotificationStringifier;
+import org.glassfish.admin.amx.util.jmx.stringifier.MBeanServerNotificationStringifier;
+import org.glassfish.admin.amx.util.jmx.stringifier.MonitorNotificationStringifier;
 
 import com.sun.cli.jcmd.util.misc.ArrayConversion;
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 
 
 import com.sun.cli.jcmd.util.cmd.CmdInfos;

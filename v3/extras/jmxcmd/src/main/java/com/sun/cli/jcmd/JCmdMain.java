@@ -22,8 +22,8 @@ import java.util.ListIterator;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
-import com.sun.appserv.management.util.stringifier.StringifierRegistryImpl;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.stringifier.StringifierRegistryImpl;
 
 import com.sun.cli.jcmd.util.cmd.ArgHelper;
 import com.sun.cli.jcmd.util.cmd.ArgHelperImpl;

@@ -18,14 +18,14 @@ import java.util.Arrays;
 import java.lang.reflect.Array;
 import javax.management.*;
 
-import com.sun.appserv.management.util.stringifier.*;
-import com.sun.appserv.management.util.jmx.stringifier.MBeanFeatureInfoStringifierOptions;
-import com.sun.appserv.management.util.jmx.stringifier.MBeanAttributeInfoStringifier;
-import com.sun.appserv.management.util.jmx.stringifier.MBeanOperationInfoStringifier;
-import com.sun.appserv.management.util.jmx.stringifier.MBeanConstructorInfoStringifier;
-import com.sun.appserv.management.util.jmx.stringifier.MBeanNotificationInfoStringifier;
-import com.sun.appserv.management.util.jmx.MBeanAttributeInfoComparator;
-import com.sun.appserv.management.util.jmx.MBeanOperationInfoComparator;
+import org.glassfish.admin.amx.util.stringifier.*;
+import org.glassfish.admin.amx.util.jmx.stringifier.MBeanFeatureInfoStringifierOptions;
+import org.glassfish.admin.amx.util.jmx.stringifier.MBeanAttributeInfoStringifier;
+import org.glassfish.admin.amx.util.jmx.stringifier.MBeanOperationInfoStringifier;
+import org.glassfish.admin.amx.util.jmx.stringifier.MBeanConstructorInfoStringifier;
+import org.glassfish.admin.amx.util.jmx.stringifier.MBeanNotificationInfoStringifier;
+import org.glassfish.admin.amx.util.jmx.MBeanAttributeInfoComparator;
+import org.glassfish.admin.amx.util.jmx.MBeanOperationInfoComparator;
 
 /**
  */

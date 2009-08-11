@@ -17,15 +17,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.net.MalformedURLException;
 
-import javax.management.remote.JMXServiceURL;
 import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.management.JMException;
-import javax.management.NotCompliantMBeanException;
 import javax.management.MBeanServerFactory;
 import javax.management.MBeanServerConnection;
 
@@ -34,42 +29,35 @@ import com.sun.cli.jcmd.framework.CmdEnv;
 import com.sun.cli.jcmd.framework.FileNames;
 import com.sun.cli.jcmd.framework.CmdException;
 
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
-import com.sun.appserv.management.util.stringifier.Stringifier;
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
-import com.sun.appserv.management.util.misc.Output;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.Output;
 import com.sun.cli.jcmd.util.misc.ClassUtil;
-import com.sun.appserv.management.util.misc.DebugState;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
-import com.sun.cli.jcmd.util.cmd.OptionInfo;
-import com.sun.cli.jcmd.util.cmd.ImmutableOptionInfo;
+
+import org.glassfish.admin.amx.util.DebugState;
+import org.glassfish.admin.amx.util.ExceptionUtil;
+
 import com.sun.cli.jcmd.util.cmd.OptionInfoImpl;
-import com.sun.cli.jcmd.util.cmd.LineReaderImpl;
 
 import com.sun.cli.jmxcmd.support.AliasMgr;
 import com.sun.cli.jmxcmd.support.AliasMgrImpl;
 import com.sun.cli.jmxcmd.support.AliasMgrHashMapImpl;
-import com.sun.cli.jmxcmd.support.AliasMgrMBean;
 import com.sun.cli.jmxcmd.support.StandardAliasesIniter;
 import com.sun.cli.jmxcmd.support.CLISupport;
 import com.sun.cli.jmxcmd.support.CLISupportMBean;
 import com.sun.cli.jmxcmd.support.ConnectionMgr;
 import com.sun.cli.jmxcmd.support.ConnectionMgrImpl;
 import com.sun.cli.jmxcmd.support.ConnectInfo;
-import com.sun.cli.jmxcmd.support.ArgParserException;
 
 import com.sun.cli.jmxcmd.support.CLISupportMBeanProxy;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.jmx.MBeanServerConnection_Debug;
+import com.sun.cli.jmxcmd.util.MBeanServerConnection_Debug;
+
+import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
 import com.sun.cli.jmxcmd.spi.JMXConnectorProvider;
 import com.sun.cli.jmxcmd.spi.InProcessConnectorProvider;
 
-import com.sun.appserv.management.client.ConnectionSource;
+import com.sun.cli.jmxcmd.util.ConnectionSource;
 
-import com.sun.cli.jcmd.util.cmd.CmdInfos;
-import com.sun.cli.jcmd.util.cmd.CmdInfo;
-import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
 import com.sun.cli.jcmd.util.cmd.OperandsInfo;
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 
@@ -181,7 +169,7 @@ public abstract class JMXCmd extends CmdBase implements Output
 				
 				// wrap the connection with our hooked version
                 final DebugState ds = new DebugState.Impl(false);
-				final MBeanServerConnection_Debug		hookedConn = new MBeanServerConnection_Debug( conn, ds, JMXCmd.this );
+				final MBeanServerConnection_Debug hookedConn = new MBeanServerConnection_Debug( conn, ds, JMXCmd.this );
 
 				if ( "true".equalsIgnoreCase( connectInfo.getParam( connectInfo.CACHE_MBEAN_INFO ) ) )
 				{
@@ -443,7 +431,7 @@ public abstract class JMXCmd extends CmdBase implements Output
 		final ConnectionSource			connSource	= createConnectionSource( name );
 		final MBeanServerConnection		conn		= connSource.getMBeanServerConnection( false );
 		//final MBeanServerConnection conn	=
-			//new com.sun.appserv.management.util.jmx.MBeanServerConnection_Perf( connX, getOutput() );
+			//new org.glassfish.admin.amx.util.jmx.MBeanServerConnection_Perf( connX, getOutput() );
 		
 
 		final CLISupportMBean		cliSupport		= new CLISupport( conn, getAliasMgr());

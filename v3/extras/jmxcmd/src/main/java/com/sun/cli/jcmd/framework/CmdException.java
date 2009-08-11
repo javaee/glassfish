@@ -10,7 +10,7 @@
  */
 package com.sun.cli.jcmd.framework;
 
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 public class CmdException extends Exception
 {

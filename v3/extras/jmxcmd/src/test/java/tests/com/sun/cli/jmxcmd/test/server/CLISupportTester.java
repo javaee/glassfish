@@ -22,7 +22,7 @@ import javax.management.remote.JMXServiceURL;
 
 import com.sun.jmx.trace.Trace;
 
-import com.sun.appserv.management.util.stringifier.*;
+import org.glassfish.admin.amx.util.stringifier.*;
 import com.sun.cli.jcmd.util.misc.ClassUtil;
 
 import com.sun.cli.jmxcmd.support.CLISupportStrings;

@@ -19,11 +19,11 @@ import javax.management.AttributeList;
 
 import com.sun.cli.jmxcmd.support.ResultsForGetSet;
 
-import com.sun.appserv.management.util.stringifier.Stringifier;
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
-import com.sun.appserv.management.util.stringifier.IteratorStringifier;
-import com.sun.appserv.management.util.jmx.stringifier.AttributeStringifier;
-import com.sun.appserv.management.util.jmx.AttributeComparator;
+import org.glassfish.admin.amx.util.stringifier.Stringifier;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.stringifier.IteratorStringifier;
+import org.glassfish.admin.amx.util.jmx.stringifier.AttributeStringifier;
+import org.glassfish.admin.amx.util.jmx.AttributeComparator;
 
 
 /**

@@ -27,16 +27,16 @@ import java.util.regex.Matcher;
 
 import com.sun.cli.jcmd.JCmdKeys;
 
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
-import com.sun.appserv.management.util.stringifier.Stringifier;
-import com.sun.appserv.management.util.stringifier.StringifierRegistry;
-import com.sun.appserv.management.util.stringifier.StringifierRegistryImpl;
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.Stringifier;
+import org.glassfish.admin.amx.util.stringifier.StringifierRegistry;
+import org.glassfish.admin.amx.util.stringifier.StringifierRegistryImpl;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 import com.sun.cli.jcmd.util.misc.DebugState;
 import com.sun.cli.jcmd.util.misc.ClassUtil;
 import com.sun.cli.jcmd.util.misc.TokenizerException;
 import com.sun.cli.jcmd.util.misc.StringUtil;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
+import org.glassfish.admin.amx.util.ExceptionUtil;
 
 import com.sun.cli.jcmd.util.cmd.ArgHelper;
 import com.sun.cli.jcmd.util.cmd.ParsedOption;

@@ -12,7 +12,7 @@
 
 package com.sun.cli.jcmd.framework;
 
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 
 public final class CmdHistoryItem
 {

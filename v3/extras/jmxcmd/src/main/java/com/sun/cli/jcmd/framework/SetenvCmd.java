@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
 
-import com.sun.appserv.management.util.stringifier.IteratorStringifier;
+import org.glassfish.admin.amx.util.stringifier.IteratorStringifier;
 
 import com.sun.cli.jcmd.util.cmd.ArgHelper;
 import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
@@ -25,7 +25,7 @@ import com.sun.cli.jcmd.util.cmd.OptionInfo;
 import com.sun.cli.jcmd.util.cmd.OptionInfoImpl;
 import com.sun.cli.jcmd.util.cmd.OptionsInfo;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 import com.sun.cli.jcmd.framework.CmdEnv;
 import com.sun.cli.jcmd.framework.CmdBase;

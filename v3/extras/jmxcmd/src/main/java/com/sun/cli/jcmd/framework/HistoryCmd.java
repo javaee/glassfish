@@ -20,7 +20,7 @@ import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 import com.sun.cli.jcmd.util.cmd.OptionsInfo;
 import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
 
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 
 import com.sun.cli.jcmd.util.misc.ArrayConversion;
 import com.sun.cli.jcmd.util.misc.StringEscaper;

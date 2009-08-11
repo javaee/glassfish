@@ -33,7 +33,7 @@ import javax.management.remote.JMXServiceURL;
 import javax.management.remote.JMXConnectorFactory;
 
 import com.sun.cli.jcmd.util.misc.GSetUtil;
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 import com.sun.cli.jmxcmd.security.rmi.RMISSLClientSocketFactoryEnvImpl;
 import com.sun.cli.jcmd.util.security.TrustAnyTrustManager;

@@ -40,8 +40,8 @@ import java.security.KeyStoreException;
 import com.sun.cli.jcmd.util.cmd.OptionInfo;
 import com.sun.cli.jcmd.util.cmd.OptionInfoImpl;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
-import com.sun.appserv.management.util.stringifier.X509CertificateStringifier;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.stringifier.X509CertificateStringifier;
 
 
 import com.sun.cli.jcmd.framework.CmdEnv;

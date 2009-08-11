@@ -32,7 +32,7 @@ import com.sun.cli.jcmd.util.misc.ClassUtil;
 import com.sun.cli.jmxcmd.support.ArgParserTest;
 import com.sun.cli.jmxcmd.support.AliasMgrTest;
 import com.sun.cli.jmxcmd.support.CLISupportMBeanImplTest;
-import com.sun.appserv.management.util.stringifier.IteratorStringifierTest;
+import org.glassfish.admin.amx.util.stringifier.IteratorStringifierTest;
 
 import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;
@@ -40,7 +40,7 @@ import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 
 
-import com.sun.appserv.management.util.jmx.ObjectNameQueryImplTest;
+import org.glassfish.admin.amx.util.jmx.ObjectNameQueryImplTest;
 
 import junit.extensions.ActiveTestSuite;
 import junit.framework.TestCase;

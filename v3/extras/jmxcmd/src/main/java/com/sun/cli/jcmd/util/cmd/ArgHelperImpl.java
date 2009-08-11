@@ -21,9 +21,9 @@ import java.util.ListIterator;
 import com.sun.cli.jcmd.util.misc.TokenizerImpl;
 import com.sun.cli.jcmd.util.misc.TokenizerParams;
 import com.sun.cli.jcmd.util.misc.TokenizerException;
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
-import com.sun.appserv.management.util.stringifier.Stringifier;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.Stringifier;
 
 
 /**

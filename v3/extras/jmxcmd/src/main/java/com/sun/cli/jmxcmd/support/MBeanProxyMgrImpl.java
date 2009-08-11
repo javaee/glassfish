@@ -44,13 +44,13 @@ import javax.management.IntrospectionException;
 import javax.management.ReflectionException;
 import javax.management.MalformedObjectNameException;
 
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.client.ConnectionSource;
+import org.glassfish.admin.amx.util.jmx.JMXUtil;
+import com.sun.cli.jmxcmd.util.ConnectionSource;
 import com.sun.cli.jcmd.util.misc.SetUtil;
 import com.sun.cli.jcmd.util.misc.RegexUtil;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
+import org.glassfish.admin.amx.util.ExceptionUtil;
 
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 
 /**

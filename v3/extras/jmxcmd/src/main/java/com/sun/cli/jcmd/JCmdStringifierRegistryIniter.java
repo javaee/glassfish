@@ -11,9 +11,9 @@
  
 package com.sun.cli.jcmd;
 
-import com.sun.appserv.management.util.stringifier.StringifierRegistryIniter;
-import com.sun.appserv.management.util.stringifier.StringifierRegistryIniterImpl;
-import com.sun.appserv.management.util.stringifier.StringifierRegistry;
+import org.glassfish.admin.amx.util.stringifier.StringifierRegistryIniter;
+import org.glassfish.admin.amx.util.stringifier.StringifierRegistryIniterImpl;
+import org.glassfish.admin.amx.util.stringifier.StringifierRegistry;
 
 /**
 	Registers all JCmd-specific Stringifiers.

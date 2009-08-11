@@ -15,10 +15,8 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
-import java.util.TreeSet;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.util.Collections;
 
 import javax.management.ObjectName;
@@ -32,23 +30,17 @@ import javax.management.IntrospectionException;
 import javax.management.InstanceNotFoundException;
 
 
-import com.sun.cli.jmxcmd.support.ResultsForGetSet;
 import com.sun.cli.jmxcmd.support.CLISupportMBeanProxy;
-import com.sun.appserv.management.util.jmx.JMXUtil;
 
 import com.sun.cli.jcmd.framework.IllegalUsageException;
-import com.sun.appserv.management.util.stringifier.IteratorStringifier;
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
-import com.sun.cli.jcmd.util.misc.TokenizerImpl;
+import org.glassfish.admin.amx.util.stringifier.IteratorStringifier;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 import com.sun.cli.jcmd.util.misc.ArrayConversion;
 import com.sun.cli.jcmd.util.misc.RegexUtil;
 
-import com.sun.cli.jcmd.util.cmd.ArgHelper;
 import com.sun.cli.jcmd.util.cmd.OptionInfo;
 import com.sun.cli.jcmd.util.cmd.OptionInfoImpl;
-import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
-import com.sun.cli.jcmd.util.cmd.OptionsInfo;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
 import com.sun.cli.jcmd.util.cmd.DisallowedOptionDependency;
 
@@ -59,8 +51,7 @@ import com.sun.cli.jcmd.framework.CmdHelpImpl;
 import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;
 import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
-import com.sun.cli.jcmd.util.cmd.OperandsInfo;
-import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
+import java.util.Collection;
 
 
 
@@ -365,7 +356,23 @@ public class FindCmd extends JMXCmd
 		
 		return( all );
 	}
-	
+    
+    
+		public static List<String>
+	objectNamesToStrings( final Collection<ObjectName> objectNames )
+	{
+		// sorting doesn't work on returned array, so convert to Strings first,then sort
+		final List<String>	result	= new ArrayList<String>();
+		
+		for( final ObjectName objectName : objectNames )
+		{
+			result.add( "" + objectName );
+		}
+		
+		return( result );
+	}
+
+
 		protected void
 	executeInternal()
 		throws Exception
@@ -423,7 +430,7 @@ public class FindCmd extends JMXCmd
 			establishProxy();
 			
 			final Set<ObjectName> objectNames = resolveQualifiedTargets( targets );
-			final List<String> objectNameStrings	= JMXUtil.objectNamesToStrings( objectNames );
+			final List<String> objectNameStrings	= objectNamesToStrings( objectNames );
 			final String[]	nameStrings			= (String[])
 								objectNameStrings.toArray( new String[ objectNameStrings.size() ] );
 			
@@ -457,7 +464,7 @@ public class FindCmd extends JMXCmd
 				filteredSet	= initialSet;
 			}
 			
-			Set<String>	resultSet	= new HashSet<String>( JMXUtil.objectNamesToStrings( filteredSet ) );
+			Set<String>	resultSet	= new HashSet<String>( objectNamesToStrings( filteredSet ) );
 			
 			if ( add )
 			{

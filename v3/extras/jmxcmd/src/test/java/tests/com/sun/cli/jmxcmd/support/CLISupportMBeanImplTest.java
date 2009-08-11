@@ -24,8 +24,8 @@ import java.net.URI;
 import javax.management.*;
 
 import com.sun.cli.jcmd.util.misc.ClassUtil;
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 import com.sun.cli.jmxcmd.support.CLISupportMBeanProxy;
 import com.sun.cli.jmxcmd.support.InspectRequest;

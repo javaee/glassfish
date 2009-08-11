@@ -8,7 +8,7 @@
  * $Revision: 1.2 $
  * $Date: 2003/11/21 22:15:45 $
  */
-package com.sun.appserv.management.util.jmx;
+package org.glassfish.admin.amx.util.jmx;
 
 import java.util.Set;
 import java.util.HashSet;

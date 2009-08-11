@@ -63,7 +63,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Properties;
 
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 
 public final class MapUtil

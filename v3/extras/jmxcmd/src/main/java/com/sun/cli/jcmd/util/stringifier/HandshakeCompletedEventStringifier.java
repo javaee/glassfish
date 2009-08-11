@@ -10,7 +10,7 @@
  * $Date: 2005/11/08 22:39:26 $
  */
  
-package com.sun.appserv.management.util.stringifier;
+package org.glassfish.admin.amx.util.stringifier;
 
 import javax.net.ssl.HandshakeCompletedEvent;
 import java.security.cert.Certificate;

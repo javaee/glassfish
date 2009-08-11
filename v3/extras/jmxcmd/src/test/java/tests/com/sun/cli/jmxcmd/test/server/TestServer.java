@@ -47,8 +47,8 @@ import com.sun.cli.jmxcmd.test.mbeans.CLISupportTestee;
 import com.sun.cli.jmxcmd.test.mbeans.CLISupportSimpleTestee;
 import com.sun.cli.jmxcmd.support.StringifierRegistryIniter;
 import com.sun.cli.jmxcmd.support.StandardAliasesIniter;
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
-import com.sun.appserv.management.util.stringifier.StringifierRegistryImpl;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.StringifierRegistryImpl;
 
 
 import com.sun.cli.jcmd.util.cmd.ArgHelperImpl;

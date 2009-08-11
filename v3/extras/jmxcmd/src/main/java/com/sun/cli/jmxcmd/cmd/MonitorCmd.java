@@ -12,7 +12,6 @@
 package com.sun.cli.jmxcmd.cmd;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Set;
@@ -28,33 +27,25 @@ import javax.management.InstanceNotFoundException;
 import javax.management.IntrospectionException;
 import javax.management.RuntimeOperationsException;
 
-import javax.management.AttributeChangeNotification;
 import javax.management.AttributeList;
 import javax.management.Attribute;
 import javax.management.MBeanServerConnection;
 import javax.management.MBeanAttributeInfo;
 
-import com.sun.appserv.management.util.stringifier.*;
-import com.sun.cli.jcmd.util.cmd.ArgHelper;
-import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
+import org.glassfish.admin.amx.util.stringifier.*;
 import com.sun.cli.jcmd.util.cmd.OptionsInfo;
 import com.sun.cli.jcmd.util.cmd.OptionInfo;
 import com.sun.cli.jcmd.util.cmd.OptionInfoImpl;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
-import com.sun.cli.jcmd.util.cmd.DisallowedOptionDependency;
-import com.sun.cli.jcmd.util.cmd.OperandsOptionDependency;
-import com.sun.cli.jcmd.util.cmd.OptionDependency;
 
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.jmx.AttributeFilter;
-import com.sun.appserv.management.util.jmx.ReadWriteAttributeFilter;
+
+import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import com.sun.cli.jcmd.util.misc.CompareUtil;
 import com.sun.cli.jcmd.util.misc.ArrayConversion;
 import com.sun.cli.jcmd.util.misc.StringifiedList;
 import com.sun.cli.jcmd.util.misc.RegexUtil;
 import com.sun.cli.jcmd.util.misc.SetUtil;
 
-import com.sun.cli.jmxcmd.support.ArgParser;
 import com.sun.cli.jmxcmd.support.ArgParserImpl;
 import com.sun.cli.jmxcmd.support.ArgParserException;
 
@@ -69,15 +60,14 @@ import com.sun.cli.jcmd.framework.CmdHelpImpl;
 import com.sun.cli.jcmd.framework.CmdOutput;
 import com.sun.cli.jcmd.framework.CmdOutputNull;
 import com.sun.cli.jcmd.framework.CmdOutputN;
-import com.sun.cli.jcmd.framework.CmdOutputImpl;
 import com.sun.cli.jcmd.framework.CmdOutputToFile;
 
 import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;
 import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
 
-import com.sun.cli.jcmd.util.cmd.OperandsInfo;
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
+import org.glassfish.admin.amx.util.jmx.ReadWriteAttributeFilter;
 
 
 class MonitorInfo

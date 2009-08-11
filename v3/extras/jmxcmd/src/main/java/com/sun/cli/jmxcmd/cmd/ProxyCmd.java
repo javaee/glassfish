@@ -30,17 +30,16 @@ import com.sun.cli.jcmd.util.cmd.OptionInfoImpl;
 import com.sun.cli.jcmd.util.cmd.OptionsInfo;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
 import com.sun.cli.jcmd.util.misc.StringifiedList;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;
 import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 import com.sun.cli.jmxcmd.support.MBeanProxyMgrImpl;
 import com.sun.cli.jmxcmd.support.MBeanProxyMgr;
 import com.sun.cli.jmxcmd.support.AliasMgr;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.client.ConnectionSource;
+import org.glassfish.admin.amx.util.jmx.JMXUtil;
+import com.sun.cli.jmxcmd.util.ConnectionSource;
 
 	
 /**

@@ -26,10 +26,10 @@ import com.sun.cli.jcmd.framework.CmdEnvKeys;
 // to get the Cmd classes we need to register
 import com.sun.cli.jmxcmd.cmd.*;
 
-import com.sun.appserv.management.util.stringifier.StringifierRegistryImpl;
+import org.glassfish.admin.amx.util.stringifier.StringifierRegistryImpl;
 import com.sun.cli.jmxcmd.support.StringifierRegistryIniter;
 
-import com.sun.appserv.management.util.misc.ExceptionUtil;
+import org.glassfish.admin.amx.util.ExceptionUtil;
 import com.sun.cli.jcmd.util.misc.ClassUtil;
 
 
@@ -64,12 +64,12 @@ public final class JMXCmdCmdMgr extends CmdMgrImpl
         
         try
         {
-            Class.forName( "com.sun.appserv.management.util.stringifier.Stringifier" );
+            Class.forName( "org.glassfish.admin.amx.util.stringifier.Stringifier" );
         }
         catch( Exception e )
         {
             mCmdOutput.println(
-                "ERROR: com.sun.appserv.management.util.stringifier package missing; " +
+                "ERROR: org.glassfish.admin.amx.util.stringifier package missing; " +
                     "add glassfish amx-api.jar to classpath or jars dir" );
         }
     }

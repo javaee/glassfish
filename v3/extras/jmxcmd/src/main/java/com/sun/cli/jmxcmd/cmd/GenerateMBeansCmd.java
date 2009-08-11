@@ -54,13 +54,13 @@ import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
 import com.sun.cli.jcmd.util.cmd.OperandsInfo;
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.jmx.MBeanGenerator;
+import org.glassfish.admin.amx.util.jmx.JMXUtil;
+import com.sun.cli.jmxcmd.util.MBeanGenerator;
 
-import com.sun.appserv.management.util.misc.ExceptionUtil;
+import org.glassfish.admin.amx.util.ExceptionUtil;
 import com.sun.cli.jcmd.util.misc.ArrayConversion;
 import com.sun.cli.jcmd.util.misc.ArrayUtil;
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 
 
 

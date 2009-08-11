@@ -12,7 +12,7 @@
 
 package com.sun.cli.jmxcmd.support;
 
-import com.sun.appserv.management.util.stringifier.*;
+import org.glassfish.admin.amx.util.stringifier.*;
 
 
 /**

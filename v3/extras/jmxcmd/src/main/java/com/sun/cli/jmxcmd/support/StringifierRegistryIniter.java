@@ -11,13 +11,13 @@
 package com.sun.cli.jmxcmd.support;
 
 
-import com.sun.appserv.management.util.stringifier.StringifierRegistry;
+import org.glassfish.admin.amx.util.stringifier.StringifierRegistry;
 
 /**
 	Registers all jmxcmd Stringifiers
  */
 public class StringifierRegistryIniter
-	extends com.sun.appserv.management.util.stringifier.StringifierRegistryIniterImpl
+	extends org.glassfish.admin.amx.util.stringifier.StringifierRegistryIniterImpl
 	
 {
 		public
@@ -26,7 +26,7 @@ public class StringifierRegistryIniter
 		super( registry );
 		
 		new com.sun.cli.jcmd.JCmdStringifierRegistryIniter( registry );
-		new com.sun.appserv.management.util.jmx.stringifier.StringifierRegistryIniter( registry );
+		new org.glassfish.admin.amx.util.jmx.stringifier.StringifierRegistryIniter( registry );
 		
 		add( ResultsForGetSet.class, new ResultsForGetSetStringifier( ) );
 		add( InspectResult.class, new InspectResultStringifier( ) );

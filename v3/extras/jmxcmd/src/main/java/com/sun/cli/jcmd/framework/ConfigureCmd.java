@@ -18,7 +18,7 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.File;
 
-import com.sun.appserv.management.util.stringifier.IteratorStringifier;
+import org.glassfish.admin.amx.util.stringifier.IteratorStringifier;
 
 import com.sun.cli.jcmd.util.misc.ClassUtil;
 import com.sun.cli.jcmd.util.misc.StringifiedList;
@@ -31,7 +31,7 @@ import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;
 import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 import com.sun.cli.jcmd.framework.CmdBase;
 import com.sun.cli.jcmd.framework.CmdEnv;
 import com.sun.cli.jcmd.framework.CmdHelp;

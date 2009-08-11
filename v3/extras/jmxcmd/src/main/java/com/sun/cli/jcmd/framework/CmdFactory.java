@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.sun.cli.jcmd.util.misc.ClassUtil;
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 /**
 	Factory for registering Cmd classes and creating instances of them.

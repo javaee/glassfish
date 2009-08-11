@@ -14,7 +14,7 @@ import java.io.IOException;
 
 import javax.net.ssl.X509TrustManager;
 
-//import com.sun.appserv.management.util.stringifier.SmartStringifier;
+//import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 /**
 	This TrustManager applies no logic as to whether its peer

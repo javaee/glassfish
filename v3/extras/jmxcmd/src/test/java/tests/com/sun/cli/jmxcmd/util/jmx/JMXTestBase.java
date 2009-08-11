@@ -9,7 +9,7 @@
  * $Date: 2004/02/14 01:39:36 $
  */
  
-package com.sun.appserv.management.util.jmx;
+package org.glassfish.admin.amx.util.jmx;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;

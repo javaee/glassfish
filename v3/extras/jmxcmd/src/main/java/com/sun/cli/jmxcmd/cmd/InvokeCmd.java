@@ -15,7 +15,7 @@ package com.sun.cli.jmxcmd.cmd;
 import com.sun.cli.jmxcmd.support.ResultsForGetSet;
 import com.sun.cli.jmxcmd.support.CLISupportMBeanProxy;
 import com.sun.cli.jmxcmd.support.InvokeResult;
-import com.sun.appserv.management.util.stringifier.*;
+import org.glassfish.admin.amx.util.stringifier.*;
 
 import com.sun.cli.jcmd.framework.CmdEnv;
 import com.sun.cli.jcmd.framework.CmdHelp;
@@ -36,7 +36,7 @@ import com.sun.cli.jcmd.util.cmd.OptionsInfo;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
 import com.sun.cli.jcmd.util.cmd.OperandsInfo;
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
+import org.glassfish.admin.amx.util.ExceptionUtil;
 
 import com.sun.cli.jmxcmd.support.SupportUtil;
 

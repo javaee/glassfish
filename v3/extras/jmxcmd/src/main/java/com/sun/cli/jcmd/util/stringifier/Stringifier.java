@@ -62,7 +62,7 @@
  */
  
  
-package com.sun.appserv.management.util.stringifier;
+package org.glassfish.admin.amx.util.stringifier;
 
 /**
 	Convert an object to a String.  The intent of this is to provide a flexible means

@@ -15,7 +15,7 @@ import com.sun.cli.jmxcmd.support.CLISupportMBeanProxy;
 import com.sun.cli.jmxcmd.support.InspectRequest;
 import com.sun.cli.jmxcmd.support.InspectResult;
  
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 
 import com.sun.cli.jcmd.framework.CmdEnv;
 import com.sun.cli.jcmd.framework.CmdEnvKeys;

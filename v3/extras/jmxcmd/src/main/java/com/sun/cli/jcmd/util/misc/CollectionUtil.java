@@ -62,7 +62,7 @@ import java.util.Iterator;
 import java.util.Arrays;
 import java.lang.reflect.Array;
 
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 /**
 	Various helper utilities for Collections.

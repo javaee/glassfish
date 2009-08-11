@@ -61,7 +61,7 @@
  * $Date: 2005/11/08 22:39:27 $
  */
  
-package com.sun.appserv.management.util.stringifier;
+package org.glassfish.admin.amx.util.stringifier;
 
 
 

@@ -5,78 +5,76 @@
 package com.sun.cli.jmxcmd.support;
  
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.lang.ClassNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.regex.Pattern;
 import java.io.IOException;
 import javax.management.*;
 
-import com.sun.appserv.management.util.stringifier.*;
+import org.glassfish.admin.amx.util.stringifier.*;
 import com.sun.cli.jcmd.util.misc.ClassUtil;
 import com.sun.cli.jcmd.util.misc.ArrayConversion;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
+import org.glassfish.admin.amx.util.ExceptionUtil;
 import com.sun.cli.jcmd.util.misc.RegexUtil;
-import com.sun.appserv.management.util.jmx.ObjectNameQueryImpl;
-import com.sun.appserv.management.util.jmx.stringifier.MBeanOperationInfoStringifier;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.jmx.AttributeFilter;
-import com.sun.appserv.management.util.jmx.ReadWriteAttributeFilter;
-
-	 
-interface ClassQuery
-{
-	public Class<?>	getClassForName( String argName )
-		throws ClassNotFoundException;
-}
-
-
-final class AttributeClassQuery implements ClassQuery
-{
-	final MBeanAttributeInfo []	mAttributeInfo;
-	final int					mNumInfos;
-    
-	
-		
-	AttributeClassQuery( final MBeanAttributeInfo [] attributeInfo )
-	{
-		mAttributeInfo	= attributeInfo;
-		mNumInfos		= Array.getLength( attributeInfo );
-	}
-	
-		public Class<?>
-	getClassForName( final String attributeName )
-		throws ClassNotFoundException
-	{
-		Class<?>	theClass	= Object.class;
-		
-		for( int i = 0; i < mNumInfos; ++i )
-		{
-			final MBeanAttributeInfo	info	= mAttributeInfo[ i ];
-			
-			// System.out.println( "attr info: " + SmartStringifier.toString( info ) );
-			
-			if ( attributeName.equals( info.getName() ) )
-			{
-				theClass	= ClassUtil.getClassFromName( info.getType() );
-				break;
-			}
-		}
-		return( theClass );
-	}
-}
-
-
+import org.glassfish.admin.amx.util.jmx.ObjectNameQueryImpl;
+import org.glassfish.admin.amx.util.jmx.stringifier.MBeanOperationInfoStringifier;
+import org.glassfish.admin.amx.util.jmx.JMXUtil;
+import org.glassfish.admin.amx.util.jmx.ReadWriteAttributeFilter;
 
 
 final class CLISupportMBeanImpl implements CLISupportMBean
 {
+
+    interface ClassQuery
+    {
+        public Class<?>	getClassForName( String argName )
+            throws ClassNotFoundException;
+    }
+
+    final class AttributeClassQuery implements ClassQuery
+    {
+
+        final MBeanAttributeInfo []	mAttributeInfo;
+        final int					mNumInfos;
+            
+        AttributeClassQuery( final MBeanAttributeInfo [] attributeInfo )
+        {
+            mAttributeInfo	= attributeInfo;
+            mNumInfos		= Array.getLength( attributeInfo );
+        }
+        
+            public Class<?>
+        getClassForName( final String attributeName )
+            throws ClassNotFoundException
+        {
+            Class<?>	theClass	= Object.class;
+            
+            for( int i = 0; i < mNumInfos; ++i )
+            {
+                final MBeanAttributeInfo	info	= mAttributeInfo[ i ];
+                
+                // System.out.println( "attr info: " + SmartStringifier.toString( info ) );
+                
+                if ( attributeName.equals( info.getName() ) )
+                {
+                    theClass	= ClassUtil.getClassFromName( info.getType() );
+                    break;
+                }
+            }
+            return( theClass );
+        }
+    }
+
+
+
+
+
+
     private static void debug( final Object o ) { System.out.println( SmartStringifier.toString(o) ); }
     
 	static private final String		WILDCARD_PATTERN=",*";
@@ -996,14 +994,14 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 		}
 		else if ( wildcardType == WILDCARD_READABLE )
 		{
-			final AttributeFilter	filter	= ReadWriteAttributeFilter.READABLE_FILTER;
+			final ReadWriteAttributeFilter	filter	= ReadWriteAttributeFilter.READABLE_FILTER;
 			
 			final MBeanAttributeInfo[]	filtered	= JMXUtil.filterAttributeInfos( infos, filter );
 			result	= ArrayConversion.arrayToSet( JMXUtil.getAttributeNames( filtered  ) );
 		}
 		else if ( wildcardType == WILDCARD_WRITEABLE )
 		{
-			final AttributeFilter	filter	= ReadWriteAttributeFilter.WRITEABLE_FILTER;
+			final ReadWriteAttributeFilter	filter	= ReadWriteAttributeFilter.WRITEABLE_FILTER;
 			
 			final MBeanAttributeInfo[]	filtered	= JMXUtil.filterAttributeInfos( infos, filter );
 			result	= ArrayConversion.arrayToSet( JMXUtil.getAttributeNames( filtered  ) );
