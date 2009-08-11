@@ -35,19 +35,12 @@
  */
 
 package org.glassfish.flashlight.client;
+import org.glassfish.api.monitoring.ProbeInfo;
 
-public interface ProbeHandle {
-
-    public int getId();
-    
-    public String getModuleName();
-
-    public String getModuleProviderName();
-
-    public String getProbeProviderName();
-
-    public String getProbeName();
-
-    public String[] getProbeParamNames();
-
+/** bnevins August 10, 2009 I moved the interface to a public area.  The info is
+ *  needed for another module...
+ *
+ * @author bnevins
+ */
+public interface ProbeHandle extends ProbeInfo{
 }

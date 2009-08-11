@@ -36,7 +36,9 @@
 
 package org.glassfish.flashlight.impl.provider;
 
+import com.sun.enterprise.util.ObjectAnalyzer;
 import java.io.InputStream;
+import org.glassfish.api.monitoring.DTraceContract;
 import org.glassfish.flashlight.provider.*;
 import org.glassfish.flashlight.impl.core.*;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
@@ -54,6 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * @author Mahesh Kannan
@@ -65,6 +68,9 @@ public class FlashlightProbeProviderFactory
     @Inject
     ProbeProviderEventManager ppem;
     
+    @Inject
+    Habitat habitat;
+
     private ConcurrentHashMap<String, Object> providerInfo = new ConcurrentHashMap<String, Object>();
     private boolean debug = false;
 
@@ -127,6 +133,32 @@ public class FlashlightProbeProviderFactory
                 //System.out.println("\tProbe: " + probe);
                 provider.addProbe(probe);
             }
+
+
+
+
+
+
+
+
+
+
+
+
+			// TODO -- need to figure out how to go from byte[] --> java.lang.Class
+            //DTraceContract dt = habitat.getByContract(DTraceContract.class);
+            //dt.getProvider23(provider);
+
+
+
+
+
+
+
+
+
+
+
 
             Class<T> tClazz = providerClazz;
 
@@ -199,6 +231,9 @@ public class FlashlightProbeProviderFactory
 
     }
 
+	public String toString() {
+		return ObjectAnalyzer.toString(this);
+	}
     private void registerProvider(ClassLoader cl, ProbeProviderXMLParser.Provider provider) {
 
         String moduleProviderName = provider.getModuleProviderName();

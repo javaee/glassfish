@@ -36,6 +36,9 @@
 
 package org.glassfish.flashlight.impl.core;
 
+import com.sun.enterprise.util.ObjectAnalyzer;
+import org.glassfish.api.monitoring.ProbeInfo;
+import org.glassfish.api.monitoring.ProbeProviderInfo;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,7 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Mahesh Kannan
  */
-public class FlashlightProbeProvider {
+public class FlashlightProbeProvider implements ProbeProviderInfo{
 
     private String moduleProviderName;
 
@@ -64,6 +67,12 @@ public class FlashlightProbeProvider {
         this.providerClazz = providerClazz;
     }
 
+	public String toString() {
+		return ObjectAnalyzer.toString(this);
+	}
+    public Class getProviderClass() {
+        return providerClazz;
+    }
     public String getModuleProviderName() {
         return moduleProviderName;
     }
@@ -84,4 +93,15 @@ public class FlashlightProbeProvider {
         return probes.values();
     }
 
+    public ProbeInfo[] getProbesInfo() {
+        // confusing -- the *map* of the probes is named "probes"
+        Collection<FlashlightProbe> fprobes = getProbes();
+        ProbeInfo[] infos = new ProbeInfo[fprobes.size()];
+
+        int i = 0;
+        for(FlashlightProbe fprobe : fprobes) {
+            infos[i++] = (ProbeInfo) fprobe;
+        }
+        return infos;
+    }
 }
