@@ -38,8 +38,8 @@ package org.glassfish.jspcaching.integration;
 
 import java.net.*;
 import java.util.*;
+import java.util.logging.*;
 import java.util.regex.Pattern;
-
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.web.TldProvider;
 import org.glassfish.internal.api.ServerContext;
@@ -48,12 +48,12 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
-
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.WebContainer;
 import com.sun.enterprise.util.net.JarURIPattern;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.logging.LogDomains;
 
 /**
  * Implementation of TldProvider for JSP caching taglib.
@@ -63,6 +63,10 @@ import com.sun.enterprise.module.ModulesRegistry;
 @Scoped(Singleton.class)
 public class GlassFishTldProvider
         implements TldProvider, PostConstruct {
+
+    private static final Logger logger =
+        LogDomains.getLogger(GlassFishTldProvider.class,
+            LogDomains.WEB_LOGGER);
 
     @Inject
     ServerContext serverContext;
@@ -122,7 +126,7 @@ public class GlassFishTldProvider
         if (jspCachingImplClass != null) {
             m = registry.find(jspCachingImplClass);
         }
-        if (m!=null) {
+        if (m != null) {
             uris = m.getModuleDefinition().getLocations();
         } else {
             ClassLoader classLoader = getClass().getClassLoader();
@@ -134,15 +138,16 @@ public class GlassFishTldProvider
                         try {
                             uris[i] = urls[i].toURI();
                         } catch(URISyntaxException e) {
-                            // TODO(Sahoo): Use logger
-                            System.out.println("Ignoring " + uris[i] + " because of " + e);
+                            logger.log(Level.WARNING, "Ignoring " + urls[i],
+                                e);
                         }
                     }
                 }
             } else {
-                // TODO(Sahoo): Use logger
-                System.out.println("ClassLoader [" + classLoader +
-                        "] is not of type URLClassLoader");
+                logger.log(Level.WARNING,
+                    "taglibs.unableToDetermineTldResources",
+                    new Object[] {"JSP Caching", classLoader,
+                        GlassFishTldProvider.class.getName()});
             }
         }
 

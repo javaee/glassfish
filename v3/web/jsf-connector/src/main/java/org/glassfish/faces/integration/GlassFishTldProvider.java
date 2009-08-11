@@ -36,24 +36,20 @@
 
 package org.glassfish.faces.integration;
 
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.*;
 import java.util.*;
+import java.util.logging.*;
 import java.util.regex.Pattern;
-
 import org.glassfish.api.web.TldProvider;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
-
 import com.sun.enterprise.util.net.JarURIPattern;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
-
+import com.sun.logging.LogDomains;
 
 /**
  * Implementation of TldProvider for JSF.
@@ -64,6 +60,11 @@ import com.sun.enterprise.module.ModulesRegistry;
 @Service(name="jsfTld")
 @Scoped(Singleton.class)
 public class GlassFishTldProvider implements TldProvider, PostConstruct {
+
+    private static final Logger logger =
+        LogDomains.getLogger(GlassFishTldProvider.class,
+            LogDomains.WEB_LOGGER);
+
     @Inject
     ModulesRegistry registry;
 
@@ -123,7 +124,7 @@ public class GlassFishTldProvider implements TldProvider, PostConstruct {
         if (jsfImplClass != null) {
             m = registry.find(jsfImplClass);
         }
-        if (m!=null) {
+        if (m != null) {
             uris = m.getModuleDefinition().getLocations();
         } else {
             ClassLoader classLoader = getClass().getClassLoader();
@@ -135,15 +136,16 @@ public class GlassFishTldProvider implements TldProvider, PostConstruct {
                         try {
                             uris[i] = urls[i].toURI();
                         } catch(URISyntaxException e) {
-                            // TODO(Sahoo): Use logger
-                            System.out.println("Ignoring " + uris[i] + " because of " + e);
+                            logger.log(Level.WARNING, "Ignoring " + urls[i],
+                            e);
                         }
                     }
                 }
             } else {
-                // TODO(Sahoo): Use logger
-                System.out.println("ClassLoader [" + classLoader +
-                        "] is not of type URLClassLoader");
+                logger.log(Level.WARNING,
+                    "taglibs.unableToDetermineTldResources",
+                    new Object[] {"JSF", classLoader,
+                        GlassFishTldProvider.class.getName()});
             }
         }
 
