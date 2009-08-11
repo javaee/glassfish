@@ -10,11 +10,9 @@
  */
 package com.sun.cli.jcmd.framework;
 
-import com.sun.cli.jcmd.framework.CmdOutput;
-import com.sun.cli.jcmd.framework.CmdOutputImpl;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
-import com.sun.cli.jcmd.util.misc.DebugState;
+import org.glassfish.admin.amx.util.DebugState;
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
  
 public class CmdRunnerImpl implements CmdRunner, CmdRunner.Hook

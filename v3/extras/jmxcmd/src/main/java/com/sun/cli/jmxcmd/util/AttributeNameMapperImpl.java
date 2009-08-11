@@ -23,12 +23,9 @@ package com.sun.cli.jmxcmd.util;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.Iterator;
 import java.util.HashSet;
-import java.util.Arrays;
-import java.util.Collections;
 
-import com.sun.cli.jcmd.util.misc.Output;
+import org.glassfish.admin.amx.util.Output;
 
 /**
 	Maps Attribute names to legal Java identifiers, so that they can

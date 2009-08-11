@@ -12,8 +12,8 @@
 
 package com.sun.cli.jcmd.framework;
 
-import com.sun.cli.jcmd.util.misc.Output;
-import com.sun.cli.jcmd.util.misc.DebugState;
+import org.glassfish.admin.amx.util.DebugState;
+import org.glassfish.admin.amx.util.Output;
 
 /**
 	The API that should be used to output from a Cmd running within the framework.

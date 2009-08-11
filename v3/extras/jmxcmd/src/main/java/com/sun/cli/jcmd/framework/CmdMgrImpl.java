@@ -12,7 +12,6 @@
 package com.sun.cli.jcmd.framework;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Map;
 
@@ -21,9 +20,8 @@ import com.sun.cli.jcmd.util.cmd.LineReaderImpl;
 import com.sun.cli.jcmd.util.misc.ClassUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import com.sun.cli.jcmd.util.misc.StringifiedList;
-import com.sun.cli.jcmd.util.misc.DebugState;
 import com.sun.cli.jcmd.util.misc.StringUtil;
-import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.DebugState;
 
 /**
 	A complete implementation of CmdMgr.  Assumptions of this implementation:

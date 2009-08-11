@@ -12,7 +12,7 @@
 package org.glassfish.admin.amx.util.stringifier;
 
 import java.util.Map;
-import com.sun.cli.jcmd.util.misc.MapUtil;
+import org.glassfish.admin.amx.util.MapUtil;
 
 /**
 	Stringifies an Iterator, using an optional element Stringifier

@@ -13,7 +13,7 @@
 package com.sun.cli.jcmd.framework;
 
 import java.io.PrintStream;
-import com.sun.cli.jcmd.util.misc.DebugState;
+import org.glassfish.admin.amx.util.DebugState;
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 

@@ -24,7 +24,7 @@ import java.util.HashMap;
 import javax.management.*;
 import java.io.IOException;
 
-import com.sun.cli.jcmd.util.misc.SetUtil;
+import org.glassfish.admin.amx.util.SetUtil;
 
 
 public final class MBeanProxyMBean implements DynamicMBean, MBeanRegistration

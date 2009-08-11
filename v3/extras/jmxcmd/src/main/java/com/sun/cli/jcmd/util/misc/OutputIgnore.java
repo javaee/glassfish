@@ -63,6 +63,8 @@
  
 package com.sun.cli.jcmd.util.misc;
 
+import org.glassfish.admin.amx.util.Output;
+
 /**
 	Directs output to the "bit bucket".
  */

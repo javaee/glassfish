@@ -65,8 +65,6 @@ package com.sun.cli.jcmd.util.misc;
 
 import java.util.Set;
 
-import com.sun.cli.jcmd.util.misc.SetUtil;
-import com.sun.cli.jcmd.util.misc.GSetUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 
 

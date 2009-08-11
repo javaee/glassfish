@@ -11,8 +11,6 @@
  
 package com.sun.cli.jmxcmd.test.main;
 
-import java.util.Iterator;
-import java.util.Arrays;
 import java.util.List;
 
 import junit.extensions.ActiveTestSuite;
@@ -22,11 +20,12 @@ import com.sun.cli.jcmd.util.cmd.ArgHelperTest;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoTest;
 import com.sun.cli.jcmd.util.misc.TokenizerTest;
 import com.sun.cli.jcmd.util.misc.CompareUtilTest;
-import com.sun.cli.jcmd.util.misc.ListUtil;
 import com.sun.cli.jcmd.util.misc.StringEscaperTest;
 import com.sun.cli.jmxcmd.support.ArgParserTest;
 import com.sun.cli.jmxcmd.support.AliasMgrTest;
 import com.sun.cli.jmxcmd.support.CLISupportMBeanImplTest;
+import org.glassfish.admin.amx.util.ListUtil;
+import org.glassfish.admin.amx.util.TypeCast;
 import org.glassfish.admin.amx.util.jmx.ObjectNameQueryImplTest;
 import org.glassfish.admin.amx.util.stringifier.IteratorStringifierTest;
 
@@ -36,7 +35,7 @@ import org.glassfish.admin.amx.util.stringifier.IteratorStringifierTest;
 public class TestsMain
 {
     @SuppressWarnings("unchecked")
-	final static List<Class<? extends TestCase>>  TEST_CLASSES = ListUtil.newList(
+	final static List<Class<? extends TestCase>>  TEST_CLASSES = TypeCast.asList(ListUtil.newList( new Class[] {
 		StringEscaperTest.class,
 		CompareUtilTest.class,
 		
@@ -51,8 +50,8 @@ public class TestsMain
 		
 		AliasMgrTest.class,
 		ObjectNameQueryImplTest.class,
-		CLISupportMBeanImplTest.class
-	);
+		CLISupportMBeanImplTest.class}
+	));
 	
 		static void
 	testClass( Class<? extends TestCase> theClass )

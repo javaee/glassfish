@@ -14,10 +14,8 @@ package com.sun.cli.jcmd.framework;
 
 import java.io.IOException;
 
-import java.util.HashMap;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
@@ -29,10 +27,8 @@ import com.sun.cli.jcmd.JCmdKeys;
 
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 import org.glassfish.admin.amx.util.stringifier.Stringifier;
-import org.glassfish.admin.amx.util.stringifier.StringifierRegistry;
 import org.glassfish.admin.amx.util.stringifier.StringifierRegistryImpl;
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
-import com.sun.cli.jcmd.util.misc.DebugState;
 import com.sun.cli.jcmd.util.misc.ClassUtil;
 import com.sun.cli.jcmd.util.misc.TokenizerException;
 import com.sun.cli.jcmd.util.misc.StringUtil;
@@ -40,7 +36,6 @@ import org.glassfish.admin.amx.util.ExceptionUtil;
 
 import com.sun.cli.jcmd.util.cmd.ArgHelper;
 import com.sun.cli.jcmd.util.cmd.ParsedOption;
-import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
 import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
 import com.sun.cli.jcmd.util.cmd.ArgHelperImpl;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
@@ -53,9 +48,6 @@ import com.sun.cli.jcmd.util.cmd.OptionInfoImpl;
 import com.sun.cli.jcmd.util.cmd.OptionInfoCLIPValidator;
 import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;
-import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
-import com.sun.cli.jcmd.util.cmd.OperandsInfo;
-import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 import com.sun.cli.jcmd.util.cmd.LineReaderImpl;
 import com.sun.cli.jcmd.util.misc.StringSource;
 import com.sun.cli.jcmd.util.misc.PackageStringSources;

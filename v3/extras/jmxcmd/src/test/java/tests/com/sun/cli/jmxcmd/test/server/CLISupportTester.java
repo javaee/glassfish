@@ -18,9 +18,7 @@ import java.lang.reflect.Array;
 // RI imports
 //
 import javax.management.*;
-import javax.management.remote.JMXServiceURL;
 
-import com.sun.jmx.trace.Trace;
 
 import org.glassfish.admin.amx.util.stringifier.*;
 import com.sun.cli.jcmd.util.misc.ClassUtil;

@@ -20,12 +20,8 @@
  */
 package com.sun.cli.jmxcmd.util;
 
-import java.util.Set;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
 
-import com.sun.cli.jcmd.util.misc.SetUtil;
 
 /**
 	Implements the mapping by removing illegal characters and

@@ -33,7 +33,6 @@ import javax.management.ListenerNotFoundException;
 import javax.management.NotificationListener;
 import javax.management.MBeanServer;
 
-import javax.management.remote.JMXConnector;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.JMException;
@@ -46,10 +45,9 @@ import javax.management.MalformedObjectNameException;
 
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import com.sun.cli.jmxcmd.util.ConnectionSource;
-import com.sun.cli.jcmd.util.misc.SetUtil;
 import com.sun.cli.jcmd.util.misc.RegexUtil;
-import org.glassfish.admin.amx.util.ExceptionUtil;
 
+import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 

@@ -16,11 +16,9 @@ import java.io.Serializable;
 import java.net.URL;
 import java.net.URI;
 
-import java.util.Properties;
 
 import javax.management.AttributeChangeNotification;
 import javax.management.NotificationBroadcasterSupport;
-import javax.management.Notification;
 
 
 public class CLISupportSimpleTestee 

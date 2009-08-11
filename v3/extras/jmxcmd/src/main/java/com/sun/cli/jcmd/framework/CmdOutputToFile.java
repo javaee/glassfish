@@ -16,7 +16,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-import com.sun.cli.jcmd.util.misc.DebugState;
+import org.glassfish.admin.amx.util.DebugState;
 
 /**
 	Sends all output to a file.

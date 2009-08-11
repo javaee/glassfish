@@ -11,27 +11,17 @@
  
 package com.sun.cli.jmxcmd.support;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.lang.Number;
 
-import java.net.URL;
-import java.net.URI;
 
 import javax.management.*;
 
-import com.sun.cli.jcmd.util.misc.ClassUtil;
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
-import com.sun.cli.jmxcmd.support.CLISupportMBeanProxy;
-import com.sun.cli.jmxcmd.support.InspectRequest;
-import com.sun.cli.jmxcmd.support.InspectResult;
-import com.sun.cli.jmxcmd.support.InvokeResult;
-import com.sun.cli.jmxcmd.support.ResultsForGetSet;
 import com.sun.cli.jcmd.util.misc.ClassUtil;
 import com.sun.cli.jcmd.util.misc.ArrayConversion;
 

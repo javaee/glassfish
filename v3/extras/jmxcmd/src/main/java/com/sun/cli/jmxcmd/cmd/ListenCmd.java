@@ -15,8 +15,6 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
 
 import javax.management.ObjectName;
 import javax.management.AttributeChangeNotification;
@@ -28,13 +26,9 @@ import javax.management.Notification;
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 import org.glassfish.admin.amx.util.stringifier.StringifierRegistry;
 import org.glassfish.admin.amx.util.stringifier.StringifierRegistryImpl;
-import com.sun.cli.jcmd.util.cmd.ArgHelper;
-import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
-import com.sun.cli.jcmd.util.cmd.OptionsInfo;
 import com.sun.cli.jcmd.util.cmd.OptionInfo;
 import com.sun.cli.jcmd.util.cmd.OptionInfoImpl;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
-import com.sun.cli.jcmd.util.cmd.DisallowedOptionDependency;
 
 
 import com.sun.cli.jcmd.framework.CmdEnv;
@@ -43,7 +37,6 @@ import com.sun.cli.jcmd.framework.CmdHelpImpl;
 import com.sun.cli.jcmd.framework.CmdOutput;
 import com.sun.cli.jcmd.framework.CmdOutputNull;
 import com.sun.cli.jcmd.framework.CmdOutputN;
-import com.sun.cli.jcmd.framework.CmdOutputImpl;
 import com.sun.cli.jcmd.framework.CmdOutputToFile;
 import com.sun.cli.jcmd.framework.IllegalUsageException;
 
@@ -60,7 +53,6 @@ import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;
 import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
 
-import com.sun.cli.jcmd.util.cmd.OperandsInfo;
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 
 

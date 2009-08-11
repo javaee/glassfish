@@ -63,12 +63,9 @@ import java.util.HashSet;
 
 import java.io.File;
 
-import com.sun.cli.jcmd.util.misc.Output;
-import com.sun.cli.jcmd.util.misc.FileOutput;
-import com.sun.cli.jcmd.util.misc.OutputIgnore;
-import com.sun.cli.jcmd.util.misc.StringUtil;
-import com.sun.cli.jcmd.util.misc.SetUtil;
-import com.sun.cli.jcmd.util.misc.DebugOutImpl;
+import org.glassfish.admin.amx.util.FileOutput;
+import org.glassfish.admin.amx.util.Output;
+import org.glassfish.admin.amx.util.SetUtil;
 
 
 /**

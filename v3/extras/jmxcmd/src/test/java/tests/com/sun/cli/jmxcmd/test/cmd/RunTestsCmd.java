@@ -4,27 +4,20 @@
  */
 package com.sun.cli.jmxcmd.test.cmd;
 
-import java.util.Iterator;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.sun.cli.jcmd.framework.CmdBase;
 import com.sun.cli.jcmd.framework.CmdHelp;
 import com.sun.cli.jcmd.framework.CmdEnv;
 import com.sun.cli.jcmd.framework.CmdHelpImpl;
 import com.sun.cli.jcmd.framework.CmdException;
 import com.sun.cli.jcmd.framework.IllegalUsageException;
-import com.sun.cli.jcmd.util.cmd.OptionsInfo;
-import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
-import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
 
 
 
 import com.sun.cli.jcmd.util.cmd.ArgHelperTest;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoTest;
 import com.sun.cli.jcmd.util.misc.TokenizerTest;
-import com.sun.cli.jcmd.util.misc.ListUtil;
 import com.sun.cli.jcmd.util.misc.CompareUtilTest;
 import com.sun.cli.jcmd.util.misc.StringEscaperTest;
 import com.sun.cli.jcmd.util.misc.StringUtil;
@@ -44,6 +37,8 @@ import org.glassfish.admin.amx.util.jmx.ObjectNameQueryImplTest;
 
 import junit.extensions.ActiveTestSuite;
 import junit.framework.TestCase;
+import org.glassfish.admin.amx.util.ListUtil;
+import org.glassfish.admin.amx.util.TypeCast;
 
 
 /**
@@ -58,7 +53,8 @@ public class RunTestsCmd extends com.sun.cli.jcmd.framework.CmdBase
 	}
 	
 	@SuppressWarnings("unchecked")
-	private final static List<Class<? extends TestCase>> TEST_CLASSES = ListUtil.newList(
+	private final static List<Class<? extends TestCase>> TEST_CLASSES = TypeCast.asList(ListUtil.newList(
+                new Class[] {
 		StringEscaperTest.class,
 		CompareUtilTest.class,
 		
@@ -74,7 +70,8 @@ public class RunTestsCmd extends com.sun.cli.jcmd.framework.CmdBase
 		AliasMgrTest.class,
 		ObjectNameQueryImplTest.class,
 		CLISupportMBeanImplTest.class
-	);
+        }
+	));
 	
 	
 	static final class RunTestsCmdHelp extends CmdHelpImpl
