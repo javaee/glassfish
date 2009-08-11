@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.commands;
+package com.sun.enterprise.admin.cli;
 
 import java.io.*;
 import java.util.*;
@@ -168,9 +168,5 @@ public class MonitorCommand extends CLICommand {
             list.add(filter);
         }
         return list.toArray(new String[list.size()]);
-    }
-
-    private static boolean ok(String s) {
-        return s != null && s.length() > 0;
     }
 }

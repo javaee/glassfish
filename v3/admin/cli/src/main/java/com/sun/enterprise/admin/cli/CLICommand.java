@@ -45,7 +45,6 @@ import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.cli.framework.CLIDescriptorsReader;
 import com.sun.enterprise.cli.framework.CLILogger;
 import com.sun.enterprise.admin.cli.util.*;
-import com.sun.enterprise.admin.cli.commands.CommandTable; // XXX - temporary
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
@@ -209,7 +208,7 @@ public abstract class CLICommand {
 
     private static String nameToClass(String name) {
         StringBuilder sb = new StringBuilder(
-                            "com.sun.enterprise.admin.cli.optional.commands.");
+                            "com.sun.enterprise.admin.cli.optional.");
         boolean makeUpper = true;
         for (int i = 0; i < name.length(); i++) {
             char c = name.charAt(i);
@@ -892,7 +891,7 @@ public abstract class CLICommand {
         // it is a supported command; do nothing
     }
 
-    static boolean ok(String s) {
+    protected static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
 

@@ -34,26 +34,34 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.commands;
+package com.sun.enterprise.admin.cli;
 
 import java.util.*;
+import com.sun.appserv.server.util.Version;
 import com.sun.enterprise.admin.cli.*;
+import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.cli.framework.ValidOption;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
- * A local export command.
- *  
+ * A local version command.
+ * Prints the version of the server, if running. Prints the version from locally
+ * available Version class if server is not running or if the version could not
+ * be obtained from a server for some reason. The idea is to get the version
+ * of server software, the server process need not be running. This command
+ * does not return the version of local server installation if its
+ * options (host, port, user, passwordfile) identify a running server.
+ * 
+ * @author km@dev.java.net
  * @author Bill Shannon
  */
-public class ExportCommand extends CLICommand {
-
+public class VersionCommand extends CLICommand {
     private static final LocalStringsImpl strings =
-            new LocalStringsImpl(ExportCommand.class);
+            new LocalStringsImpl(VersionCommand.class);
 
-    public ExportCommand(String name, ProgramOptions programOpts,
+    public VersionCommand(String name, ProgramOptions programOpts,
             Environment env) throws CommandException {
         super(name, programOpts, env);
     }
@@ -61,52 +69,45 @@ public class ExportCommand extends CLICommand {
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new HashSet<ValidOption>();
+        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
+        addOption(opts, "verbose", '\0', "BOOLEAN", false, "false");
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
-        operandName = "environment-variable";
         operandType = "STRING";
         operandMin = 0;
-        operandMax = Integer.MAX_VALUE;
+        operandMax = 0;
+
+        processProgramOptions();
     }
 
     @Override
-    public int executeCommand()
-            throws CommandException, CommandValidationException {
-        int ret = 0;    // by default, success
-
-        // if no operands, print out everything
-        if (operands.size() == 0) {
-            for (Map.Entry<String, String> e : env.entrySet())
-                logger.printMessage(e.getKey() + " = " + e.getValue());
-        } else {
-            // otherwise, process each operand
-            for (String arg : operands) {
-                // separate into name and value
-                String name, value;
-                int eq = arg.indexOf('=');
-                if (eq < 0) {   // no value
-                    name = arg;
-                    value = null;
-                } else {
-                    name = arg.substring(0, eq);
-                    value = arg.substring(eq + 1);
-                }
-
-                // check that name is legitimate
-                if (!name.startsWith(Environment.AS_ADMIN_ENV_PREFIX)) {
-                    logger.printMessage(strings.get("badEnvVarSet", name));
-                    ret = -1;
-                    continue;
-                }
-
-                // if no value, print it, otherwise set it
-                if (value == null)
-                    logger.printMessage(name + " = " + env.get(name));
-                else
-                    env.put(name, value);
-            }
+    protected int executeCommand() throws CommandException {
+        try {
+            CLICommand cmd = new RemoteCommand("version", programOpts, env);
+            if (getBooleanOption("verbose"))
+                cmd.execute("version", "--verbose");
+            else
+                cmd.execute("version");
+        } catch (Exception e) {
+            // suppress all output and infer that the server is not running
+            printRemoteException(e);
+            invokeLocal();
         }
-        return ret;
+        return 0;       // always succeeds
+    }
+
+    private void invokeLocal() {
+        String fv = Version.getFullVersion();
+        String cn = Version.class.getName();
+        String msg = strings.get("version.local", cn, fv);
+        logger.printMessage(msg);
+    }
+
+    private void printRemoteException(Exception e) {
+        String host = programOpts.getHost();
+        String port = programOpts.getPort() + "";
+        String msg = strings.get("remote.version.failed", host, port);
+        logger.printMessage(msg);
+        logger.printDebugMessage(e.getMessage());        
     }
 }

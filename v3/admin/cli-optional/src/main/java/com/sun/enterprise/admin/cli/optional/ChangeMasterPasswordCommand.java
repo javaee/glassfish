@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.admin.cli.optional.commands;
+package com.sun.enterprise.admin.cli.optional;
 
 import com.sun.enterprise.admin.cli.Environment;
 import com.sun.enterprise.admin.cli.LocalDomainCommand;

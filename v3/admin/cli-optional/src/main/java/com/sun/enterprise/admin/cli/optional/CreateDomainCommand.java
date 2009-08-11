@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.optional.commands;
+package com.sun.enterprise.admin.cli.optional;
 
 import java.io.File;
 import java.io.Console;
@@ -889,9 +889,5 @@ public final class CreateDomainCommand extends CLICommand {
                             strings.get("InvalidDomainPath", domainDir));
         }
         return domainDir;
-    }
-
-    private static boolean ok(String s) {
-        return s != null && s.length() > 0;
     }
 }

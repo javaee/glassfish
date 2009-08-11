@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.commands;
+package com.sun.enterprise.admin.cli;
 
 import java.io.*;
 import java.util.*;
@@ -217,7 +217,7 @@ public class StopDomainCommand extends CLICommand {
 
         if (files == null || files.length == 0) {
             throw new CommandValidationException(
-                    strings.get("noDomainDirs", parent));
+                    strings.get("StopDomain.noDomainDirs", parent));
         }
 
         if (files.length > 1) {
@@ -276,16 +276,12 @@ public class StopDomainCommand extends CLICommand {
             return true;
         } catch (Exception ex) {
             logger.printDebugMessage(
-                strings.get("pingPort got Exception: " + ex));  // XXX
+                strings.get("StopDomain.pingPortEx", ex));
             return false;
         }
     }
 
     private boolean timedOut(long startTime) {
         return (System.currentTimeMillis() - startTime) > WAIT_FOR_DAS_TIME_MS;
-    }
-
-    private static boolean ok(String s) {
-        return s != null && s.length() > 0;
     }
 }

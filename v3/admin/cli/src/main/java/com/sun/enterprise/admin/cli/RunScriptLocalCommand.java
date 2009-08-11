@@ -21,7 +21,7 @@
  * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  */
 
-package com.sun.enterprise.admin.cli.commands;
+package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.*;
@@ -148,10 +148,6 @@ public final class RunScriptLocalCommand extends RemoteCommand {
             printRemoteException(e);
             return 1;
         }
-    }
-
-    private static boolean ok(String s) {
-        return s != null && s.length() > 0;
     }
 
     /**

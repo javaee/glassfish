@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.optional.commands;
+package com.sun.enterprise.admin.cli.optional;
 
 import java.io.*;
 import java.util.*;
@@ -269,9 +269,5 @@ public final class CreateServiceCommand extends CLICommand {
             throw new CommandValidationException(
                 strings.get("create.service.noAsadminScript", asadminScript));
         }
-    }
-
-    private static boolean ok(String s) {
-        return s != null && s.length() > 0;
     }
 }

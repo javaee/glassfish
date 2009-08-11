@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.optional.commands;
+package com.sun.enterprise.admin.cli.optional;
 
 import java.util.*;
 import com.sun.enterprise.admin.cli.*;
@@ -52,18 +52,18 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 /**
- *  This is a local command that deletes a domain.
+ *  This is a local command that lists the domains.
  */
-public final class DeleteDomainCommand extends CLICommand {
+public final class ListDomainsCommand extends CLICommand {
 
     private static final String DOMAINDIR = "domaindir";
 
     private static final LocalStringsImpl strings =
-            new LocalStringsImpl(DeleteDomainCommand.class);
+            new LocalStringsImpl(ListDomainsCommand.class);
 
     /**
      */
-    public DeleteDomainCommand(String name, ProgramOptions programOpts,
+    public ListDomainsCommand(String name, ProgramOptions programOpts,
             Environment env) {
         super(name, programOpts, env);
     }
@@ -77,33 +77,13 @@ public final class DeleteDomainCommand extends CLICommand {
             throws CommandException, CommandValidationException {
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, DOMAINDIR, '\0', "STRING", false, null);
-        // not a remote command so have to process --terse and --echo ourselves
-        addOption(opts, "terse", '\0', "BOOLEAN", false, "false");
-        addOption(opts, "echo", '\0', "BOOLEAN", false, "false");
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
-        operandName = "domain_name";
         operandType = "STRING";
-        operandMin = 1;
-        operandMax = 1;
-    }
+        operandMin = 0;
+        operandMax = 0;
 
-    /**
-     * The validate method validates that the type and quantity of
-     * parameters and operands matches the requirements for this
-     * command.  The validate method supplies missing options from
-     * the environment.  It also supplies passwords from the password
-     * file or prompts for them if interactive.
-     */
-    protected void validate()
-            throws CommandException, CommandValidationException  {
-        super.validate();
-
-        // if --terse or -echo are supplied, copy them over to program options
-        if (options.containsKey("echo"))
-            programOpts.setEcho(getBooleanOption("echo"));
-        if (options.containsKey("terse"))
-            programOpts.setTerse(getBooleanOption("terse"));
+        processProgramOptions();
     }
  
     /**
@@ -111,23 +91,26 @@ public final class DeleteDomainCommand extends CLICommand {
     @Override
     protected int executeCommand()
             throws CommandException, CommandValidationException {
-
-	String domainName = null;
-        try {            
-            // XXX - could allow more than one domain name operand
-	    domainName = operands.get(0);
-            DomainConfig domainConfig =
-                new DomainConfig(domainName, getDomainsRoot());
+        try {
+            DomainConfig domainConfig = new DomainConfig(null, 
+                getDomainsRoot());
             DomainsManager manager = new PEDomainsManager();
-            manager.deleteDomain(domainConfig);
-            deleteLoginInfo();
-        } catch (Exception e) {
-	    logger.printDetailMessage(e.getLocalizedMessage());
-	    throw new CommandException(
-                    strings.get("CouldNotDeleteDomain", domainName));
+            String[] domainsList = manager.listDomains(domainConfig);
+            if (domainsList.length > 0) {
+                for (int i = 0; i < domainsList.length; i++) {
+                    String dn = domainsList[i];
+                    String status = getStatus(dn);
+                    String name = strings.get("list.domains.Name");
+                    logger.printMessage(name + " " + dn + " " + status);
+                }
+            } else {
+                logger.printDetailMessage(strings.get("NoDomainsToList"));
+            }
+        } catch (Exception ex) {
+            logger.printDetailMessage(ex.getLocalizedMessage());
+            throw new CommandException(
+                            strings.get("CommandUnSuccessful", name), ex);
         }
-
-	logger.printDetailMessage(strings.get("DomainDeleted", domainName));
         return 0;
     }
 
@@ -135,20 +118,41 @@ public final class DeleteDomainCommand extends CLICommand {
         String domainDir = getOption(DOMAINDIR);
         if (domainDir == null) {
             domainDir = getSystemProperty(
-                SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
+                            SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
         }
         if (domainDir == null) {
             throw new CommandException(
-                        strings.get("InvalidDomainPath", domainDir));
+                            strings.get("InvalidDomainPath", domainDir));
         }
         return domainDir;
     }
 
-    /**
-     * This method will delete the entry in the .asadminpass file if exists
-     */
-    private void deleteLoginInfo() throws CommandValidationException {
-        // XXX - not yet implemented
-        return;
+    // Implementation note: This has to be redone - km@dev.java.net (Aug 2008)
+    private String getStatus(String dn) {
+        try {
+            GFLauncher launcher = GFLauncherFactory.getInstance(
+                GFLauncherFactory.ServerType.domain);
+            GFLauncherInfo li = launcher.getInfo();
+            String parent = getOption(DOMAINDIR);
+            if (parent != null)
+                li.setDomainParentDir(parent);            
+            launcher.getInfo().setDomainName(dn);
+            launcher.setup(); //admin ports are not available otherwise
+            Set<Integer> adminPorts = launcher.getInfo().getAdminPorts();
+            boolean status = isServerAlive(adminPorts.iterator().next());
+            if (status)
+                return strings.get("list.domains.StatusRunning");
+            else
+                return strings.get("list.domains.StatusNotRunning");
+        } catch (GFLauncherException gf) {
+            return strings.get("list.domains.StatusUnknown");
+        } catch (MiniXmlParserException me) {
+            return strings.get("list.domains.StatusUnknown");
+        }
+    }
+
+    private boolean isServerAlive(int port) {
+        programOpts.setPort(port);
+        return DASUtils.pingDASQuietly(programOpts, env);
     }
 }

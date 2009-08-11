@@ -559,10 +559,6 @@ public class RemoteCommand extends CLICommand {
         }
     }
 
-    private static boolean ok(String s) {
-        return s != null && s.length() > 0;
-    }
-
     /**
      * Get the metadata for the command from the server.
      *

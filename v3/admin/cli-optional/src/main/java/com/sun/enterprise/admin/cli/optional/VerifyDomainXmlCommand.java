@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,80 +34,91 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.commands;
+package com.sun.enterprise.admin.cli.optional;
 
+import java.io.File;
 import java.util.*;
-import com.sun.appserv.server.util.Version;
+import java.net.URL;
+
 import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.admin.cli.remote.*;
+import com.sun.enterprise.admin.cli.optional.DomainXmlVerifier;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.cli.framework.ValidOption;
-import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
+import com.sun.enterprise.cli.framework.CommandException;
+import com.sun.enterprise.cli.framework.CLILogger;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
-/**
- * A local version command.
- * Prints the version of the server, if running. Prints the version from locally
- * available Version class if server is not running or if the version could not
- * be obtained from a server for some reason. The idea is to get the version
- * of server software, the server process need not be running. This command
- * does not return the version of local server installation if its
- * options (host, port, user, passwordfile) identify a running server.
- * 
- * @author km@dev.java.net
- * @author Bill Shannon
- */
-public class VersionCommand extends CLICommand {
-    private static final LocalStringsImpl strings =
-            new LocalStringsImpl(VersionCommand.class);
+import org.glassfish.api.embedded.Server;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigParser;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.DomDocument;
 
-    public VersionCommand(String name, ProgramOptions programOpts,
-            Environment env) throws CommandException {
+/**
+ * Implementation for the CLI command verify-domain-xml
+ * Verifies the content of the domain.xml file
+ *
+ * verify-domain-xml [--domaindir install_dir/domains] [domain_name]
+ * 
+ * @author Nandini Ektare
+ */
+public final class VerifyDomainXmlCommand extends LocalDomainCommand {
+
+    private static final String DOMAINDIR = "domaindir";
+
+    private static final LocalStringsImpl strings =
+            new LocalStringsImpl(VerifyDomainXmlCommand.class);
+
+    /**
+     */
+    public VerifyDomainXmlCommand(String name, ProgramOptions programOpts,
+            Environment env) {
         super(name, programOpts, env);
     }
 
+    /**
+     * The prepare method must ensure that the commandOpts,
+     * operandType, operandMin, and operandMax fields are set.
+     */
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, "verbose", '\0', "BOOLEAN", false, "false");
+        addOption(opts, DOMAINDIR, '\0', "STRING", false, null);
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
+        operandName = "domain_name";
         operandType = "STRING";
         operandMin = 0;
-        operandMax = 0;
+        operandMax = 1;
 
-        processProgramOptions();
+        //processProgramOptions();
     }
 
+    /**
+     */
     @Override
-    protected int executeCommand() throws CommandException {
+    protected int executeCommand()
+            throws CommandException, CommandValidationException {
+
+        File domainXMLFile = getDomainXml();
+        logger.printDebugMessage("Domain XML file = " + domainXMLFile);
         try {
-            CLICommand cmd = new RemoteCommand("version", programOpts, env);
-            if (getBooleanOption("verbose"))
-                cmd.execute("version", "--verbose");
-            else
-                cmd.execute("version");
+            Server server = new Server.Builder("dummylaunch").build();
+            server.start();
+            Habitat habitat = server.getHabitat();
+            ConfigParser parser = new ConfigParser(habitat);
+            URL domainURL = domainXMLFile.toURI().toURL();
+            DomDocument doc = parser.parse(domainURL);
+            Dom domDomain = doc.getRoot();
+            Domain domain = domDomain.createProxy(Domain.class);            
+            DomainXmlVerifier validator = new DomainXmlVerifier(domain);
+
+            validator.invokeConfigValidator();
         } catch (Exception e) {
-            // suppress all output and infer that the server is not running
-            printRemoteException(e);
-            invokeLocal();
+            throw new CommandException(e.getMessage());
         }
-        return 0;       // always succeeds
-    }
-
-    private void invokeLocal() {
-        String fv = Version.getFullVersion();
-        String cn = Version.class.getName();
-        String msg = strings.get("version.local", cn, fv);
-        logger.printMessage(msg);
-    }
-
-    private void printRemoteException(Exception e) {
-        String host = programOpts.getHost();
-        String port = programOpts.getPort() + "";
-        String msg = strings.get("remote.version.failed", host, port);
-        logger.printMessage(msg);
-        logger.printDebugMessage(e.getMessage());        
+        return 0;
     }
 }

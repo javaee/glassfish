@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.commands;
+package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.admin.cli.CLIConstants;
 import com.sun.enterprise.util.net.NetUtils;

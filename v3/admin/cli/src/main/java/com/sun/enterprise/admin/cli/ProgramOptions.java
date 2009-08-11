@@ -170,7 +170,7 @@ public class ProgramOptions {
         // have to verify port value now
         String sport = options.get(PORT);
         if (ok(sport)) {
-            String badPortMsg = strings.get("badport", sport);
+            String badPortMsg = strings.get("InvalidPortNumber", sport);
             try {
                 int port = Integer.parseInt(sport);
                 if (port < 1 || port > 65535)
