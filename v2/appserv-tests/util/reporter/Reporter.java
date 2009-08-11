@@ -530,6 +530,8 @@ ong with expected and actual result. This is optional as in some case
  {
 
 //     System.out.println("REPORTER\t Inside generateValidReport");
+     FileInputStream fin = null;
+     FileOutputStream fout = null;
      try
      {
 
@@ -547,7 +549,7 @@ ong with expected and actual result. This is optional as in some case
 	{
 		oFileName = resultFile + "Valid.xml";
 	}
-	FileOutputStream fout = new FileOutputStream( oFileName ) ;
+	fout = new FileOutputStream( oFileName ) ;
 
 	String osName = System.getProperty("os.name");
 	String osVersion = System.getProperty("os.version");
@@ -558,15 +560,18 @@ ong with expected and actual result. This is optional as in some case
 	extraXML += "<jdkVersion>" + System.getProperty("java.version") + "</jdkVersion>";
 
 	String machineName = "unavailable";
+        InputStream in = null;
 	try {
 
-	    InputStream in  = Runtime.getRuntime().exec("uname -n").getInputStream();
+	    in  = Runtime.getRuntime().exec("uname -n").getInputStream();
 	    byte[] myBytes = new byte[200];
 	    in.read(myBytes);
 	    machineName = new String( myBytes ).trim();
 	}
 	catch ( Exception me ) {
-	}
+	} finally {
+            close(in);
+        }
 	
 	extraXML += "<machineName>" + machineName + "</machineName>";
 	extraXML += "</configuration> <testsuites>";	
@@ -574,7 +579,7 @@ ong with expected and actual result. This is optional as in some case
 	fout.write( extraXML.getBytes() );
 
 
-	FileInputStream fin = new FileInputStream( resultFile );
+	fin = new FileInputStream( resultFile );
 
 	StringBuffer sb = new StringBuffer();
         while (true) {
@@ -592,26 +597,30 @@ ong with expected and actual result. This is optional as in some case
 	fout.write( sb.toString().getBytes() );
 	fout.write("</testsuites>\n</report>\n".getBytes());
 	fout.flush();
-	fout.close();
         //System.out.println("REPORTER\t File validation complete");
 
 	}
 	catch ( Exception e )
 	{
 		System.out.println("ERROR : " + e );
-	}
+	} finally {
+            close(fin);
+            close(fout);
+        }
    }
 
    public void flushAll ( )
    {
 //	System.out.println("REPORTER\t inside flushAll") ;
+       InputStream in = null;
+       FileOutputStream foutput = null;
        try
 	{
 		Enumeration testSuiteEnum = testSuiteHash.keys();
 
 		if ( resultFile.equals("default.xml") )
 		{
-			InputStream in  = Runtime.getRuntime().exec("uname -n").getInputStream();
+			in  = Runtime.getRuntime().exec("uname -n").getInputStream();
 			byte[] myBytes = new byte[200];
 			in.read(myBytes);
 			String myResultFile = "result_";
@@ -627,13 +636,12 @@ ong with expected and actual result. This is optional as in some case
 
 		}
 
-		FileOutputStream foutput = new FileOutputStream( resultFile, true );
+		foutput = new FileOutputStream( resultFile, true );
 		while ( testSuiteEnum.hasMoreElements( ) )
 		{
 			String testSuiteId = (String) testSuiteEnum.nextElement();
 			flush( testSuiteId, foutput );
 		}
-		foutput.close();
 
 		System.out.println("in flushAll , creating new testSuiteHash");
 		// Now take out the TestSuite info from memory
@@ -642,7 +650,10 @@ ong with expected and actual result. This is optional as in some case
 	catch ( Exception e )
 	{
 		System.err.println("ERROR: " + e );
-	}
+	} finally {
+            close(in);
+            close(foutput);
+        }
 
 
    }
@@ -658,12 +669,14 @@ ong with expected and actual result. This is optional as in some case
     {
         //System.out.println("REPORTER\t flush(testsuiteID");
 	boolean returnVal=false;
+        InputStream in = null;
+        FileOutputStream foutput = null;
     	try
         {
 
 		 if ( resultFile.equals("default.xml") )
                 {
-                        InputStream in  = Runtime.getRuntime().exec("uname -n").getInputStream();
+                        in  = Runtime.getRuntime().exec("uname -n").getInputStream();
                         byte[] myBytes = new byte[200];
                         in.read(myBytes);
                         String myResultFile = "result_";
@@ -679,14 +692,16 @@ ong with expected and actual result. This is optional as in some case
 
                 }
 
-		FileOutputStream foutput = new FileOutputStream( resultFile, true );
-		 returnVal= flush( testSuiteId, foutput);
-		foutput.close();
+		foutput = new FileOutputStream( resultFile, true );
+		returnVal= flush( testSuiteId, foutput);
       	}
       	catch ( Exception e )
 	{
 		System.err.println("ERROR : " + e );
-	}
+	} finally {
+            close(in);
+            close(foutput);
+        }
 	return returnVal;
     }
 
@@ -850,14 +865,16 @@ ong with expected and actual result. This is optional as in some case
     }
     
     private boolean writeXMLFile(StringBuffer xmlStringBuffer){
+        PrintWriter writer = null;
         try{
-            PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(resultFile)));
+            writer = new PrintWriter(new BufferedWriter(new FileWriter(resultFile)));
             writer.println( xmlStringBuffer.toString() );
             writer.flush();
-            writer.close();
         } catch(java.io.IOException ex){
             ex.printStackTrace();
             return false;
+        } finally {
+            close(writer);
         }    
         return true;        
     }
@@ -878,4 +895,33 @@ ong with expected and actual result. This is optional as in some case
         generateValidReport();
     }
 
+    private void close(InputStream in) {
+        if (in != null) {
+            try {
+                in.close();
+            } catch(IOException ioe) {
+                // ignore
+            }
+        }
+    }
+
+    private void close(OutputStream out) {
+        if (out != null) {
+            try {
+                out.close();
+            } catch(IOException ioe) {
+                // ignore
+            }
+        }
+    }
+
+    private void close(Writer writer) {
+        if (writer != null) {
+            try {
+                writer.close();
+            } catch(IOException ioe) {
+                // ignore
+            }
+        }
+    }
 } // end class Reporter
