@@ -42,6 +42,7 @@ import com.sun.enterprise.resource.pool.ResourceHandler;
 import com.sun.enterprise.resource.pool.datastructure.strategy.ResourceSelectionStrategy;
 
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 /**
  * List based datastructure that can be used by connection pool <br>
@@ -54,6 +55,7 @@ public class ListDataStructure implements DataStructure {
     private int maxSize;
     private ResourceHandler handler;
     private ResourceSelectionStrategy strategy;
+    private Semaphore semaphore;
 
     public ListDataStructure(String parameters, int maxSize, ResourceHandler handler, String strategyClass) {
         resources = new ArrayList<ResourceHandle>((maxSize > 1000) ? 1000 : maxSize);
@@ -61,6 +63,7 @@ public class ListDataStructure implements DataStructure {
         this.maxSize = maxSize;
         this.handler = handler;
         initializeStrategy(strategyClass);
+        semaphore = new Semaphore(this.maxSize);
     }
 
     private void initializeStrategy(String strategyClass) {
@@ -74,21 +77,24 @@ public class ListDataStructure implements DataStructure {
      * @param count     Number (units) of resources to create
      */
     public void addResource(ResourceAllocator allocator, int count) throws PoolingException {
-        try {
-            for (int i = 0; i < count && resources.size() < maxSize; i++) {
-
-                ResourceHandle handle = handler.createResource(allocator);
-                synchronized (resources) {
-                    synchronized (free) {
-                        free.add(handle);
-                        resources.add(handle);
+        for (int i = 0; i < count && resources.size() < maxSize; i++) {
+            boolean lockAcquired = semaphore.tryAcquire();
+            if(lockAcquired) {
+                try {
+                    ResourceHandle handle = handler.createResource(allocator);
+                    synchronized (resources) {
+                        synchronized (free) {
+                            free.add(handle);
+                            resources.add(handle);
+                        }
                     }
+                } catch (Exception e) {
+                    semaphore.release();
+                    PoolingException pe = new PoolingException(e.getMessage());
+                    pe.initCause(e);
+                    throw pe;
                 }
             }
-        } catch (Exception e) {
-            PoolingException pe = new PoolingException(e.getMessage());
-            pe.initCause(e);
-            throw pe;
         }
     }
 
@@ -123,6 +129,7 @@ public class ListDataStructure implements DataStructure {
                 resources.remove(resource);
             }
         }
+        semaphore.release();
         handler.deleteResource(resource);
     }
 
@@ -155,6 +162,7 @@ public class ListDataStructure implements DataStructure {
                 while (resources.size() > 0) {
                     ResourceHandle handle = resources.remove(0);
                     free.remove(handle);
+                    semaphore.release();
                     handler.deleteResource(handle);
                 }
             }

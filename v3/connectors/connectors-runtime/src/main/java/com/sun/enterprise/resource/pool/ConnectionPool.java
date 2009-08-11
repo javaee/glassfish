@@ -1088,8 +1088,10 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     protected void notifyWaitingThreads() {
         // notify the first thread in the waitqueue
         Object waitMonitor = null;
-        if (waitQueue.getQueueLength() > 0) {
-            waitMonitor = waitQueue.peek();
+        synchronized (waitQueue) {
+            if (waitQueue.getQueueLength() > 0) {
+                waitMonitor = waitQueue.remove();
+            }
         }
         if (waitMonitor != null) {
             synchronized (waitMonitor) {
