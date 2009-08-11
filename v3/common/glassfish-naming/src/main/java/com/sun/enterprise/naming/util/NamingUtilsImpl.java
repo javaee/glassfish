@@ -32,6 +32,9 @@ import org.jvnet.hk2.component.Singleton;
 import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedExceptionAction;
 
 /**
  * This is a utils class for refactoring the following method.
@@ -87,8 +90,13 @@ public class NamingUtilsImpl
 
                 // now deserialize it
                 ByteArrayInputStream bis = new ByteArrayInputStream(data);
-                ObjectInputStream ois = getFactory().createObjectInputStream(bis);
-                return ois.readObject();
+                final ObjectInputStream ois = getFactory().createObjectInputStream(bis);
+                obj = AccessController.doPrivileged(new PrivilegedExceptionAction() {
+                    public Object run() throws IOException, ClassNotFoundException {
+                        return ois.readObject();
+                    }
+                });
+                return obj;
             } catch (Exception ex) {
 
                 _logger.log(Level.SEVERE,
