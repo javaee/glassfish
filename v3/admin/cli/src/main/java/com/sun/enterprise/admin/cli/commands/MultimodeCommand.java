@@ -168,12 +168,18 @@ public class MultimodeCommand extends CLICommand {
                     System.out.println();
                 break;
             }
-            line = line.trim();
 
-            if (line.startsWith("#"))   // ignore comment lines
+            if (line.trim().startsWith("#"))   // ignore comment lines
                 continue;
 
-            String[] args = getArgs(line);
+            String[] args = null;
+            try {
+                args = getArgs(line);
+            } catch (ArgumentTokenizer.ArgumentException ex) {
+                logger.printMessage(ex.getMessage());
+                continue;
+            }
+
             if (args.length == 0)
                 continue;
 
@@ -261,11 +267,12 @@ public class MultimodeCommand extends CLICommand {
         return rc;
     }
 
-    private String[] getArgs(String line) {
-        // for now, just split on white-space character,
-        // this is not enough for args (quoted) with white spaces in them
-        String regex = "\\s+";
-        String[] parts = line.trim().split(regex);
-        return parts;
+    private String[] getArgs(String line)
+                                throws ArgumentTokenizer.ArgumentException {
+        List<String> args = new ArrayList<String>();
+        ArgumentTokenizer t = new ArgumentTokenizer(line);
+        while (t.hasMoreTokens())
+            args.add(t.nextToken());
+        return args.toArray(new String[args.size()]);
     }
 }
