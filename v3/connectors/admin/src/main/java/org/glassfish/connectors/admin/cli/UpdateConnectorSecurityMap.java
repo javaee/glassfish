@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,8 +53,6 @@ import com.sun.enterprise.config.serverbeans.BackendPrincipal;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 
-import com.sun.enterprise.cli.framework.OptionsMap;
-
 import java.util.*;
 import java.beans.PropertyVetoException;
 
@@ -98,7 +96,6 @@ public class UpdateConnectorSecurityMap extends ConnectorSecurityMap implements 
     @Inject
     ConnectorConnectionPool[] ccPools;
 
-    protected OptionsMap optionsMap = new OptionsMap();
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
