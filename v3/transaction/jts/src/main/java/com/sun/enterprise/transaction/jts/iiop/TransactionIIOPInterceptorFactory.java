@@ -121,7 +121,7 @@ public class TransactionIIOPInterceptorFactory implements IIOPInterceptorFactory
     }
 
     private void createInterceptor(ORBInitInfo info, Codec codec) {
-        if( processEnv.getProcessType() == ProcessType.Server) {
+        if( processEnv.getProcessType().isServer()) {
             try {
                 System.setProperty(
                         InterceptorImpl.CLIENT_POLICY_CHECKING, String.valueOf(false));

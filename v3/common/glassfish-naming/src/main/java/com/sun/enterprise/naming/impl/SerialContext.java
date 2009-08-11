@@ -180,12 +180,7 @@ public class SerialContext implements Context {
             ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
             habitat = registry.createHabitat("default");
            
-            StartupContext startupContext = new StartupContext();
-            habitat.add(new ExistingSingletonInhabitant(startupContext));
-
-            habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
-
-	    SerialInitContextFactory.setDefaultHabitat(habitat);
+	        SerialInitContextFactory.setDefaultHabitat(habitat);
         }
         
 

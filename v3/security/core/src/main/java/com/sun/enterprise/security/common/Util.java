@@ -88,7 +88,7 @@ public class Util {
         return penv.getProcessType().equals(ProcessType.ACC);
     }
     public boolean isServer() {
-        return penv.getProcessType().equals(ProcessType.Server);
+        return penv.getProcessType().isServer();
     }
     public boolean isNotServerORACC() {
         return penv.getProcessType().equals(ProcessType.Other);

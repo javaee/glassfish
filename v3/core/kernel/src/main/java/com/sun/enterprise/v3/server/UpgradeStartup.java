@@ -39,13 +39,17 @@ package com.sun.enterprise.v3.server;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.Application;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.config.*;
 import org.glassfish.api.admin.CommandRunner;
 
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.beans.PropertyVetoException;
 
 /**
  * Very simple ModuleStartup that basically force an immediate shutdown.
@@ -60,16 +64,82 @@ public class UpgradeStartup implements ModuleStartup {
     @Inject
     CommandRunner runner;
 
-    public void setStartupContext(StartupContext startupContext) {
+    @Inject
+    AppServerStartup appservStartup;
 
+    @Inject
+    Applications applications;
+
+    // we need to refine, a better logger should be used.
+    @Inject
+    Logger logger;
+
+
+    public void setStartupContext(StartupContext startupContext) {
+        appservStartup.setStartupContext(startupContext);
     }
 
     // do nothing, just return, at the time the upgrade service has
     // run correctly.
     public void start() {
+
+        // disable all applications.
+        List<Application> enabledApps = new ArrayList<Application>();
+        for (Application app : applications.getApplications()) {
+            System.out.println("app " + app.getName() + " is " + app.getEnabled() + " resulting in " + Boolean.parseBoolean(app.getEnabled()));
+            if (Boolean.parseBoolean(app.getEnabled())) {
+                logger.log(Level.INFO, "Disabling application " + app.getName());
+                enabledApps.add(app);
+            }
+        }
+        if (enabledApps.size()>0) {
+            try  {
+                ConfigSupport.apply(new ConfigCode() {
+                    public Object run(ConfigBeanProxy... configBeanProxies) throws PropertyVetoException, TransactionFailure {
+                        for (ConfigBeanProxy proxy : configBeanProxies) {
+                            Application app = (Application) proxy;
+                            app.setEnabled(Boolean.FALSE.toString());
+                        }
+                        return null;
+                    }
+                }, enabledApps.toArray(new Application[enabledApps.size()]));
+            } catch(TransactionFailure tf) {
+                logger.log(Level.SEVERE, "Exception while disabling applications", tf);
+                return;
+            }
+        }
+
+        // start the application server
+        appservStartup.start();
+
+        // redeploy all existing applications
+        for (Application app : applications.getApplications()) {
+            logger.log(Level.INFO, "Redeploy application " + app.getName() + " located at " + app.getLocation());    
+        }
+
+        // re-enables all applications.
+        if (enabledApps.size()>0) {
+            try  {
+                ConfigSupport.apply(new ConfigCode() {
+                    public Object run(ConfigBeanProxy... configBeanProxies) throws PropertyVetoException, TransactionFailure {
+                        for (ConfigBeanProxy proxy : configBeanProxies) {
+                            Application app = (Application) proxy;
+                            logger.log(Level.INFO, "Enabling application " + app.getName());
+                            app.setEnabled(Boolean.TRUE.toString());
+                        }
+                        return null;
+                    }
+                }, enabledApps.toArray(new Application[enabledApps.size()]));
+            } catch(TransactionFailure tf) {
+                logger.log(Level.SEVERE, "Exception while disabling applications", tf);
+                return;
+            }
+        }
+
+        // stop-the server.
         Logger.getAnonymousLogger().info("Exiting after upgrade");
         try {
-            Thread.sleep(1500);
+            Thread.sleep(3000);
             if (runner!=null) {
                 runner.doCommand("stop-domain", new Properties(), new PlainTextActionReporter());
                 return;
@@ -82,6 +152,6 @@ public class UpgradeStartup implements ModuleStartup {
     }
 
     public void stop() {
-
+        appservStartup.stop();
     }
 }

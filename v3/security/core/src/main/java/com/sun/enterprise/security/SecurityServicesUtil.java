@@ -199,7 +199,7 @@ public class SecurityServicesUtil {
         return processEnv.getProcessType().equals(ProcessType.ACC);
     }
     public boolean isServer() {
-        return processEnv.getProcessType().equals(ProcessType.Server);
+        return processEnv.getProcessType().isServer();
     }
     public boolean isNotServerOrACC() {
         return processEnv.getProcessType().equals(ProcessType.Other);

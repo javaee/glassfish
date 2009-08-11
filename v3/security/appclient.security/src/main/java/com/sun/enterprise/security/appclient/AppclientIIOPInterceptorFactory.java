@@ -77,7 +77,7 @@ public class AppclientIIOPInterceptorFactory implements IIOPInterceptorFactory {
     
     // are we supposed to add the interceptor and then return or just return an instance ?.
     public ClientRequestInterceptor createClientRequestInterceptor(ORBInitInfo info, Codec codec) {
-        if (penv.getProcessType().equals(ProcessType.Server)) {
+        if (penv.getProcessType().isServer()) {
             return null;
         }
         ClientRequestInterceptor ret = getClientInterceptorInstance(codec);

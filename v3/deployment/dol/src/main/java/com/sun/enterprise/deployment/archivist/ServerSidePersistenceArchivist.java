@@ -21,7 +21,7 @@ public class ServerSidePersistenceArchivist extends PersistenceArchivist {
         // Reads persitence.xml for ejb jars
         return XModuleType.EJB == moduleType ||
                 // Or App client modules if running inside server
-                (XModuleType.CAR == moduleType && env.getProcessType() == ProcessType.Server);
+                (XModuleType.CAR == moduleType && env.getProcessType().isServer());
     }
 
     @Override

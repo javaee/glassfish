@@ -88,7 +88,7 @@ public class TransactionNamingProxy
             = "java:appserver/TransactionManager";
 
     public void postConstruct() {
-        if( processEnv.getProcessType() == ProcessType.Server) {
+        if( processEnv.getProcessType().isServer()) {
             try {
                // TODO: true or false?
                namingManager.publishObject(USER_TX_NO_JAVA_COMP, 

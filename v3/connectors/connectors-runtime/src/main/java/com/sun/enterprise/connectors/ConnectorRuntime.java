@@ -687,7 +687,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     private void initializeEnvironment(ProcessEnvironment processEnvironment) {
         //TODO V3, remove ConnectorConstants.CLIENT/SERVER usage in connector-runtime, and use only
         //process environment
-        if (processEnvironment.getProcessType().equals(ProcessEnvironment.ProcessType.Server)){
+        if (processEnvironment.getProcessType().isServer()){
             environment = SERVER;
         }else if (processEnvironment.getProcessType().equals(ProcessEnvironment.ProcessType.ACC) ||
                 processEnvironment.getProcessType().equals(ProcessEnvironment.ProcessType.Other)) {

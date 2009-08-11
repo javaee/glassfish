@@ -331,7 +331,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, Post
 
         boolean eligible = false;
 
-        if( processType == ProcessEnvironment.ProcessType.Server ) {
+        if( processType.isServer() ) {
 
             eligible = (bundle instanceof WebBundleDescriptor) ||
                 (bundle instanceof EjbBundleDescriptor);
