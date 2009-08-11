@@ -101,4 +101,17 @@ public interface EJBInvocation {
     */
    public boolean isCallerInRole(String role);
 
+    /**
+     * Used by JAXRPC pre/postHandler classes
+     * @param tie an instance of com.sun.xml.rpc.spi.runtime.Tie
+     */
+    public void setWebServiceTie(Object tie);
+
+    /**
+     * @return instance of com.sun.xml.rpc.spi.runtime.Tie
+     */
+    public Object getWebServiceTie();
+
+    public void setWebServiceMethod(Method method);
+    public Method getWebServiceMethod();
 }

@@ -265,6 +265,12 @@ public class EjbInvocation
 
     private boolean wasCancelCalled = false;
 
+    /**
+     * Used by container within JAXRPC handler processing code.
+     */
+    private Object webServiceTie;
+    private Method webServiceMethod;
+
     // True if lock is currently held for this invocation
     private boolean holdingSFSBSerializedLock = false;
 
@@ -610,32 +616,29 @@ public class EjbInvocation
     public boolean authorizeWebService(Method m) throws Exception {
         Exception ie = null;
         if (isAWebService()) {
-		try {
-		    this.method = m;
-		    if (!((com.sun.ejb.Container)container).authorize(this)) {
-			ie = new Exception
-			    ("Client not authorized for invocation of method {" + method + "}");       
-		    } else {
-			// Record the method on which the successful
-			// authorization check was performed. 
-                        //TODO:V3 the method is not currently available, waiting for inputs from Bhakti
-			//inv.setWebServiceMethod(eInv.method);
-		    }
-		} catch(Exception e) {
-		    String errorMsg = "Error unmarshalling method {" + method + "} for ejb "; 
-		    ie = new UnmarshalException(errorMsg); 
-		    ie.initCause(e);
-		} 
-		if ( ie != null ) {
-		    exception = ie;
-		    throw ie;
-		} 
-
+            try {
+                this.method = m;
+                if (!((com.sun.ejb.Container)container).authorize(this)) {
+                    ie = new Exception
+                    ("Client not authorized for invocation of method {" + method + "}");
+                } else {
+                    // Record the method on which the successful
+                    // authorization check was performed.
+                    setWebServiceMethod(m);
+                }
+            } catch(Exception e) {
+                String errorMsg = "Error unmarshalling method {" + method + "} for ejb ";
+                ie = new UnmarshalException(errorMsg);
+                ie.initCause(e);
+            }
+            if ( ie != null ) {
+                exception = ie;
+                throw ie;
+            }
 	    } else {
-                //TODO:V3 the method is not currently available, waiting for inputs from Bhakti
-		//inv.setWebServiceMethod(null);
+		    setWebServiceMethod(null);
 	    }
-             return true;
+        return true;
 	} 
     
 /**
@@ -646,6 +649,22 @@ public class EjbInvocation
        return getEjbSecurityManager().isCallerInRole(role);
    } 
 
+    public void setWebServiceTie(Object tie) {
+        webServiceTie = tie;
+    }
+
+    public Object getWebServiceTie() {
+        return webServiceTie;
+    }
+
+    public void setWebServiceMethod(Method method) {
+        webServiceMethod = method;
+    }
+
+    public Method getWebServiceMethod() {
+        return webServiceMethod;
+    }
+
    public ResourceHandler getResourceHandler() {
        ResourceHandler rh = super.getResourceHandler();
        if (rh == null && context instanceof ResourceHandler) {
@@ -653,8 +672,7 @@ public class EjbInvocation
        }
 
        return rh;
-   }
-       
-    }
+   }       
+}
     
 

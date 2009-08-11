@@ -46,6 +46,8 @@ import javax.xml.rpc.handler.MessageContext;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import com.sun.logging.LogDomains;
+import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.ejb.api.EJBInvocation;
 
 /**
  * This handler is inserted last in the handler chain for an
@@ -68,46 +70,29 @@ public class EjbContainerPostHandler extends GenericHandler {
     }
 
     public boolean handleRequest(MessageContext context) {
-        /*
-        Invocation inv = null;
-        boolean continueProcessing = true;
-
+        EJBInvocation inv = null;
         try {
-            Switch theSwitch = Switch.getSwitch();
-            InvocationManager invManager = theSwitch.getInvocationManager();
-            inv = (Invocation) invManager.getCurrentInvocation();
-            Container container = (Container) inv.container;
-
+            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+            InvocationManager invManager = wscImpl.getInvocationManager();
+            inv = (EJBInvocation) invManager.getCurrentInvocation();
             Method webServiceMethodInPreHandler = inv.getWebServiceMethod();
-
             if( webServiceMethodInPreHandler != null ) {
                 // Now that application handlers have run, do another method
                 // lookup and compare the results with the original one.  This
                 // ensures that the application handlers have not changed
                 // the message context in any way that would impact which
                 // method is invoked.
-                Method postHandlerMethod = 
-                    wsUtil.getInvMethod(inv.getWebServiceTie(), context);
+                Method postHandlerMethod = wsUtil.getInvMethod(
+                        (com.sun.xml.rpc.spi.runtime.Tie)inv.getWebServiceTie(), context);
                 if( !webServiceMethodInPreHandler.equals(postHandlerMethod) ) {
-                    inv.exception = new UnmarshalException
-                        ("Original method " + webServiceMethodInPreHandler + 
-                         " does not match post-handler method " + 
-                         postHandlerMethod);
+                    throw new UnmarshalException("Original method " + webServiceMethodInPreHandler +
+                         " does not match post-handler method ");
                 }
             }
         } catch(Exception e) {
-            String errorMsg = "Exception while getting method for " +
-                ((inv != null ) ?
-                 ((Container) inv.container).getEjbDescriptor().getName() : "");
-            inv.exception = new UnmarshalException(errorMsg);
-            inv.exception.initCause(e);
-        }
-        
-        if( inv.exception != null ) {
-            logger.log(Level.WARNING, "postEjbHandlerError", inv.exception);
-            wsUtil.throwSOAPFaultException(inv.exception.getMessage(),
+            wsUtil.throwSOAPFaultException(e.getMessage(),
                                            context);
-        } */
+        }
         return true;
     }
 }

@@ -51,6 +51,8 @@ import com.sun.enterprise.InvocationManager;*/
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import com.sun.logging.LogDomains;
+import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.ejb.api.EJBInvocation;
 
 /**
  * This handler is inserted last in the handler chain for an
@@ -71,18 +73,17 @@ public class ServletPostHandler extends GenericHandler {
     }
 
     public boolean handleRequest(MessageContext context) {
-        /*
-        ComponentInvocation inv = null;
+        EJBInvocation inv = null;
 
         try {
-            Switch theSwitch = Switch.getSwitch();
-            InvocationManager invManager = theSwitch.getInvocationManager();
-            inv = invManager.getCurrentInvocation();
-
+            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+            InvocationManager invManager = wscImpl.getInvocationManager();
+            inv = (EJBInvocation) invManager.getCurrentInvocation();
             Method webServiceMethodInPreHandler = inv.getWebServiceMethod();
             if( webServiceMethodInPreHandler != null ) {
                 Method postHandlerMethod = 
-                    wsUtil.getInvMethod(inv.getWebServiceTie(), context);
+                    wsUtil.getInvMethod(
+                            (com.sun.xml.rpc.spi.runtime.Tie)inv.getWebServiceTie(), context);
             
                 if( !webServiceMethodInPreHandler.equals(postHandlerMethod) ) {
                     throw new UnmarshalException
@@ -94,7 +95,7 @@ public class ServletPostHandler extends GenericHandler {
         } catch(Exception e) {
             logger.log(Level.WARNING, "postWebHandlerError", e);
             wsUtil.throwSOAPFaultException(e.getMessage(), context);
-        } */
+        }
         return true;
     }
 }

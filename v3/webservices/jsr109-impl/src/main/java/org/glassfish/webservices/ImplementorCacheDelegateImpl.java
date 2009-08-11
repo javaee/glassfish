@@ -50,6 +50,7 @@ import javax.xml.rpc.server.ServiceLifecycle;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.ejb.api.EJBInvocation;
 
 // JAXRPC-RI classes
 import com.sun.xml.rpc.spi.JaxRpcObjectFactory;
@@ -94,8 +95,7 @@ public class ImplementorCacheDelegateImpl extends ImplementorCacheDelegate {
             WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
             InvocationManager invManager = wscImpl.getInvocationManager();
             ComponentInvocation inv = invManager.getCurrentInvocation();
-            //TBD : VIJAY/BM : inv.setWebServiceTie(implementor.getTie());
-
+            ((EJBInvocation)inv).setWebServiceTie(implementor.getTie());
         } catch(Throwable t) {
             RuntimeException re = new RuntimeException();
             re.initCause(t);

@@ -45,6 +45,8 @@ import javax.xml.rpc.handler.MessageContext;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import com.sun.logging.LogDomains;
+import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.ejb.api.EJBInvocation;
 
 /**
  * This handler is inserted first in the handler chain for an
@@ -66,47 +68,17 @@ public class EjbContainerPreHandler extends GenericHandler {
     }
 
     public boolean handleRequest(MessageContext context) {
-        /*
-        Invocation inv = null;
-        Container container = null;
+        EJBInvocation inv = null;
 
         try {
-
-            Switch theSwitch = Switch.getSwitch();
-            InvocationManager invManager = theSwitch.getInvocationManager();
-            inv = (Invocation) invManager.getCurrentInvocation();
-            container = (Container) inv.container;
-
-            inv.method = wsUtil.getInvMethod(inv.getWebServiceTie(), context);
-
-            // Result can be null for some error cases.  This will be
-            // handled by jaxrpc runtime so we don't treat it as an exception.
-            if( inv.method != null ) {
-                inv.setWebServiceMethod(inv.method);
-               
-                if ( !container.authorize(inv) ) {
-                    inv.exception = new Exception
-                        ("Client not authorized for invocation of " 
-                         + inv.method);
-                }
-            } else {
-                inv.setWebServiceMethod(null);
-            }
+            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+            InvocationManager invManager = wscImpl.getInvocationManager();
+            inv = (EJBInvocation) invManager.getCurrentInvocation();
+            inv.setWebServiceMethod(wsUtil.getInvMethod(
+                    (com.sun.xml.rpc.spi.runtime.Tie)inv.getWebServiceTie(), context));
         } catch(Exception e) {
-            String errorMsg = "Error unmarshalling method " + 
-                ( (container != null ) ?
-                  "for ejb " + container.getEjbDescriptor().getName() : 
-                  "" );
-	    //issue 2422 -- UnmarshalException.initCause always
-            //throws IllegalStateException.  Need to use 2-arg ctor.
-            inv.exception = new UnmarshalException(errorMsg, e);
+            wsUtil.throwSOAPFaultException(e.getMessage(), context);
         }
-        
-        if( inv.exception != null ) {
-            logger.log(Level.WARNING, "preEjbHandlerError", inv.exception);
-            wsUtil.throwSOAPFaultException(inv.exception.getMessage(),
-                                           context);
-        } */
         return true;
     }
 }

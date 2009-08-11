@@ -39,6 +39,7 @@ import java.rmi.Remote;
 
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import org.glassfish.ejb.api.EjbEndpointFacade;
+import org.glassfish.ejb.api.EJBInvocation;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.api.invocation.ComponentInvocation;
 import javax.xml.rpc.handler.MessageContext;
@@ -98,7 +99,7 @@ public class Ejb2RuntimeEndpointInfo extends EjbRuntimeEndpointInfo {
                 tieInstance.setTarget((Remote) webServiceEndpointServant);
             }
         }
-        //inv.setWebServiceTie(tieInstance);
+        ((EJBInvocation)inv).setWebServiceTie(tieInstance);
         aInfo.setHandler((Handler)tieInstance);
         return aInfo;
     }

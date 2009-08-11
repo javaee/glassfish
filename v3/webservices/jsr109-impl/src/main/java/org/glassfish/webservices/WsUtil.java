@@ -1205,7 +1205,7 @@ public class WsUtil {
     /**
      *@return a method object representing the target of a web service 
      * invocation
-     *//*
+     */
     public Method getInvMethod(Tie webServiceTie, MessageContext context) 
         throws Exception {
 
@@ -1218,9 +1218,9 @@ public class WsUtil {
         return streamingHandler.getMethodForOpcode(opcode);
     }
 
-    *//**
+    /**
      * Convenience method for throwing a SOAP fault exception.  
-     *//*
+     */
     public void throwSOAPFaultException(String faultString, MessageContext msgContext) {
         
         SOAPMessage soapMessage = 
@@ -1275,7 +1275,7 @@ public class WsUtil {
         if( sfe != null ) {
             throw sfe;
         }
-    }*/
+    }
 
 
     void writeReply(HttpServletResponse response, 

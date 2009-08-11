@@ -44,6 +44,9 @@ import javax.xml.rpc.handler.MessageContext;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import com.sun.logging.LogDomains;
+import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.ejb.api.EJBInvocation;
 
 /**
  * This handler is inserted first in the handler chain for an
@@ -64,14 +67,14 @@ public class ServletPreHandler extends GenericHandler {
     }
 
     public boolean handleRequest(MessageContext context) {
-        /*
-        ComponentInvocation inv = null;
+        EJBInvocation inv = null;
 
         try {
-            Switch theSwitch = Switch.getSwitch();
-            InvocationManager invManager = theSwitch.getInvocationManager();
-            inv = invManager.getCurrentInvocation();
-            Method method = wsUtil.getInvMethod(inv.getWebServiceTie(), 
+            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+            InvocationManager invManager = wscImpl.getInvocationManager();
+            inv = (EJBInvocation) invManager.getCurrentInvocation();
+            Method method = wsUtil.getInvMethod(
+                    (com.sun.xml.rpc.spi.runtime.Tie)inv.getWebServiceTie(),
                                                 context);
             // Result can be null for some error cases.  This will be
             // handled by jaxrpc runtime so we don't treat it as an exception.
@@ -83,7 +86,7 @@ public class ServletPreHandler extends GenericHandler {
         } catch(Exception e) {
             logger.log(Level.WARNING, "preWebHandlerError", e);
             wsUtil.throwSOAPFaultException(e.getMessage(), context);
-        } */
+        }
         return true;
     }
 }
