@@ -284,4 +284,6 @@ public final class Globals {
         "org.apache.catalina.CONSTRAINT_URI";
 
     public static final String META_INF_RESOURCES = "META-INF/resources";
+
+    public static final String ISO_8859_1_ENCODING = "ISO-8859-1";
 }

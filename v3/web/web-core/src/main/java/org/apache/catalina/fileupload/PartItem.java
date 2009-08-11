@@ -56,10 +56,9 @@ package org.apache.catalina.fileupload;
 
 import java.io.*;
 import java.util.*;
-
 import javax.servlet.http.Part;
 import javax.servlet.ServletException;
-
+import org.apache.catalina.Globals;
 
 /**
  * This class implements java.servlet.http.Part.
@@ -88,17 +87,7 @@ class PartItem
     private static final long serialVersionUID = 2237570099615271025L;
 
 
-    /**
-     * Default content charset to be used when no explicit charset
-     * parameter is provided by the sender. Media subtypes of the
-     * "text" type are defined to have a default charset value of
-     * "ISO-8859-1" when received via HTTP.
-     */
-    public static final String DEFAULT_CHARSET = "ISO-8859-1";
-
-
     // ----------------------------------------------------------- Data members
-
 
     /**
      * UID used in unique file name generation.
@@ -386,7 +375,11 @@ class PartItem
         byte[] rawdata = get();
         String charset = getCharSet();
         if (charset == null) {
-            charset = DEFAULT_CHARSET;
+            /*
+             * Media subtypes of type "text" are defined to have a default
+             * charset value of "ISO-8859-1" when received via HTTP
+             */
+            charset = Globals.ISO_8859_1_ENCODING;
         }
         try {
             return new String(rawdata, charset);

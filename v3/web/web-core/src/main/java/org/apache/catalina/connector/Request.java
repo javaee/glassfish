@@ -3643,7 +3643,8 @@ public class Request
         cc.allocate(length, -1);
 
         String enc = connector.getURIEncoding();
-        if (enc != null) {
+        if (enc != null && !enc.isEmpty() &&
+                !Globals.ISO_8859_1_ENCODING.equalsIgnoreCase(enc)) {
             B2CConverter conv = getURIConverter();
             try {
                 if (conv == null) {

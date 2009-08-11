@@ -62,9 +62,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletException;
+import org.apache.catalina.Globals;
 
 /**
  * <p>High level API for processing file uploads.</p>
@@ -601,7 +601,7 @@ class RequestItemIterator {
         }
         byte[] boundary;
         try {
-            boundary = boundaryStr.getBytes("ISO-8859-1");
+            boundary = boundaryStr.getBytes(Globals.ISO_8859_1_ENCODING);
         } catch (UnsupportedEncodingException e) {
             boundary = boundaryStr.getBytes();
         }
