@@ -1,7 +1,4 @@
 -exportcontents: \
-                        org.glassfish.admin.ncli; \
-                        org.glassfish.admin.ncli.comm; \
-                        org.glassfish.admin.ncli.metadata; \
                         com.sun.enterprise.admin.cli; \
                         com.sun.enterprise.admin.cli.remote; \
                         com.sun.enterprise.admin.cli.util; \

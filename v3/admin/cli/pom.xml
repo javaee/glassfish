@@ -135,7 +135,7 @@
                             <mainClass>com.sun.enterprise.admin.cli.AsadminMain</mainClass> 
                         </manifest>
                         <manifestEntries>
-				<Class-Path>cli-framework.jar cli-optional.jar glassfish.jar server-mgmt.jar common-util.jar admin-util.jar launcher.jar backup.jar stax-osgi.jar admin-cli-l10n.jar security.jar glassfish-api.jar</Class-Path>
+				<Class-Path>cli-optional.jar glassfish.jar server-mgmt.jar common-util.jar admin-util.jar launcher.jar backup.jar stax-osgi.jar admin-cli-l10n.jar security.jar glassfish-api.jar</Class-Path>
                         <!-- 5776: we do not need backup jar entry, but I retain it, Kedar -->
                         </manifestEntries>
                     </archive>
@@ -191,11 +191,6 @@
 	    </plugins>
 	</reporting> 
     <dependencies>
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>cli-framework</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>glassfish</artifactId>
