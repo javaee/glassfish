@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="472"/>
+    <property name="TOTAL_EXPECTED" value="473"/>
 
     &commonSetup;
     &commonBuild;
@@ -359,6 +359,7 @@
 -->
         <ant dir="virtualServerEarWrappedDefaultWebModuleRestart" target="all"/>
         <ant dir="virtualServerRedirectPropertyUrl" target="all"/>
+        <ant dir="virtualServerRedirectPropertyNoSubstringMatch" target="all"/>
         <ant dir="virtualServerDocrootDynamicReconfig" target="all"/>
         <ant dir="virtualServerStateDynamicReconfig" target="all"/>
         <ant dir="virtualServerAlternateDocroot" target="all"/>
