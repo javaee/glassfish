@@ -151,6 +151,12 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-upgrade</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-registration</artifactId>
             <version>${project.version}</version>
             <type>zip</type>

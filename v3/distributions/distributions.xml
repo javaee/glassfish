@@ -331,12 +331,12 @@ origin-for-darwin-universal-sun-contrib]]>
     <apply executable="pack200" dest="${image.directory}/${install.dir.name}/glassfish/modules" parallel="false">
         <targetfile/>
         <srcfile/>
-	<fileset dir="${image.directory}/${install.dir.name}/glassfish/modules" includes="**/*.jar" excludes="**/jaxb-osgi.jar" />
+	<fileset dir="${image.directory}/${install.dir.name}/glassfish/modules" includes="**/*.jar" excludes="**/jaxb-osgi.jar,**/javahelp.jar" />
         <mapper type="glob" from="*.jar" to="*.pack.gz"/>
     </apply>
     <!-- remove *.pack.gz files -->
     <delete>
-	    <fileset dir="${image.directory}/${install.dir.name}/glassfish/modules" includes="**/*.jar" excludes="**/jaxb-osgi.jar" />
+	    <fileset dir="${image.directory}/${install.dir.name}/glassfish/modules" includes="**/*.jar" excludes="**/jaxb-osgi.jar,**/javahelp.jar" />
     </delete>
 </target>
 </project>

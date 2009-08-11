@@ -122,9 +122,16 @@
             <artifactId>cli-optional</artifactId>
             <version>${project.version}</version>
         </dependency>
-            <dependency>
+        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>admin-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- adding temporarily to glassfish-common, should be removed when
+	all dependencies to it get removed from the project -->
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>cli-framework</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -202,6 +209,12 @@
           <groupId>javax.xml.bind</groupId>
           <artifactId>jaxb-api-osgi</artifactId>
        </dependency>   
+       <!-- javahelp jar -->
+       <dependency>
+            <groupId>javax.help</groupId>
+            <artifactId>javahelp</artifactId>
+            <version>2.0.02</version>
+        </dependency>
     
     
       	<!-- now, listing package dependencies so that their content

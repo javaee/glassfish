@@ -32,7 +32,8 @@ own identifying information: Portions Copyright [yyyy]
             <targetfile/>
             <srcfile/>
             <fileset dir="target/stage/${install.dir.name}/glassfish/modules" 
-                     includes="**/*.jar" />
+		    includes="**/*.jar"
+		    excludes="**/javahelp.jar" />
             <mapper type="glob" from="*.jar" to="*.pack.gz"/>
         </apply>
         <apply executable="unpack200" 

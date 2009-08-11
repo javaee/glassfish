@@ -40,11 +40,11 @@ import imp
 conf = imp.load_source("pkg_conf", "../pkg_conf.py")
 
 pkg = {
-    "name"          : "glassfish-verifier",
+    "name"          : "glassfish-upgrade",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "pkg.summary" : "GlassFish Verifier Tool",
-                        "pkg.description" : "GlassFish Verifier Description Placeholder. "+conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish Upgrade Tool",
+                        "pkg.description" : "GlassFish Upgrade Tool Description Placeholder. "+conf.glassfish_description_long,
                         "info.classification" :  conf.glassfish_info_classification,
                       },
     "depends"       : { 
