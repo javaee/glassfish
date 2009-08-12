@@ -50,10 +50,12 @@ import javax.management.Attribute;
 import javax.servlet.http.HttpServletRequest;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.intf.config.AuthRealm;
 import org.glassfish.admin.amx.intf.config.MessageSecurityConfig;
 import org.glassfish.admin.amx.intf.config.Property;
 import org.glassfish.admin.amx.intf.config.ProviderConfig;
+import org.glassfish.admin.amx.intf.config.SecurityService;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 
@@ -521,6 +523,60 @@ public class SecurityHandler {
         }
     }
 
+
+   @Handler(id="createMsgSecurity",
+        input={
+            @HandlerInput(name="attrMap", type=Map.class, required=true)},
+        output={
+            @HandlerOutput(name="providerObjName", type=String.class)}
+     )
+     public static void createMsgSecurity(HandlerContext handlerCtx){
+        Map<String,String> attrMap = (Map<String,String>) handlerCtx.getInputValue("attrMap");
+
+        String providerName = attrMap.get("Name");
+        //setup provider attrMap
+        Map providerAttrs = new HashMap();
+        providerAttrs.put("Name", providerName);
+        providerAttrs.put("ProviderType", attrMap.get("ProviderType"));
+        providerAttrs.put("ClassName", attrMap.get("ClassName"));
+
+
+        //setup MsgSecurityConfig attrMap
+        Map msgAttrs = new HashMap();
+        msgAttrs.put("AuthLayer", attrMap.get("AuthLayer"));
+        if ("true".equals(attrMap.get("defaultProvider"))){
+            String type =  attrMap.get("ProviderType");
+            if (type.equals("server") || type.equals("client-server")){
+                msgAttrs.put("DefaultProvider", providerName);
+            }
+            if (type.equals("client") || type.equals("client-server")){
+                msgAttrs.put("DefaultClientProvider", providerName);
+            }
+        }
+        msgAttrs.put(Util.deduceType(ProviderConfig.class), providerAttrs);
+        SecurityService ss = V3AMX.getInstance().getConfig("server-config").getSecurityService();
+        AMXConfigProxy msgConfig = ss.createChild("message-security-config", msgAttrs);
+        ProviderConfig provider = msgConfig.childrenMap(ProviderConfig.class).get(providerName);
+        handlerCtx.setOutputValue("providerObjName", provider.objectName().toString() );
+    }
+
+
+    @Handler(id="getMessageSecurityAuthLayersForCreate",
+        output={
+            @HandlerOutput(name="layers", type=List.class)}
+        )
+    public static void getMessageSecurityAuthLayersForCreate(HandlerContext handlerCtx){
+        List layers = new ArrayList();
+        layers.add("SOAP");
+        layers.add("HttpServlet");
+        Set<AMXProxy> pSet = V3AMX.getInstance().getDomainRoot().getQueryMgr().queryType("message-security-config");
+        for(AMXProxy msgProxy : pSet){
+            layers.remove(msgProxy.getName());
+        }
+        handlerCtx.setOutputValue("layers", layers);
+    }
+
+
     @Handler(id="getMsgProviderInfo",
         input={
             @HandlerInput(name="providerName", type=String.class, required=true),
@@ -560,7 +616,8 @@ public class SecurityHandler {
     @Handler(id="saveMsgProviderInfo",
          input={
             @HandlerInput(name="attrMap", type=Map.class, required=true),
-            @HandlerInput(name="edit", type=String.class, required=true)
+            @HandlerInput(name="edit", type=String.class, required=true),
+            @HandlerInput(name = "propList", type = List.class)             //propList used when edit is false.
      },
         output={
             @HandlerOutput(name="objName", type=String.class)}
@@ -571,7 +628,8 @@ public class SecurityHandler {
         String providerName = attrMap.get("Name");
         String msgSecurityName = attrMap.get("msgSecurityName");
         String configName = attrMap.get("configName");
-        
+        List propList = (List) handlerCtx.getInputValue("propList");
+
         
         MessageSecurityConfig msgConfig = getMsgSecurityProxy(msgSecurityName);
 
@@ -589,6 +647,9 @@ public class SecurityHandler {
             attrs.put("Name", attrMap.get("Name"));
             attrs.put("ClassName", attrMap.get("ClassName"));
             attrs.put("ProviderType", attrMap.get("ProviderType"));
+            List pList = V3AMX.verifyPropertyList(propList);
+            Map[] propMaps = (Map[])pList.toArray(new Map[pList.size()]);
+            attrs.put(Util.deduceType(Property.class), propMaps);
             msgConfig.createChild("provider-config", attrs);
             provider = msgConfig.childrenMap(ProviderConfig.class).get(providerName);
         }

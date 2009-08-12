@@ -51,7 +51,6 @@
         mapPut(map="#{pageSession.valueMap}" key="configName" value="#{pageSession.configName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.msgSecurityName}&configName=#{pageSession.configName}");
         setPageSessionAttribute(key="edit" value="#{false}" );
-
     />
     </event>
 

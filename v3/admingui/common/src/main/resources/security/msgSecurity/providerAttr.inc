@@ -35,10 +35,9 @@
 -->
 <!-- configuration/providerConfig.inc -->    
 <!-- Provider Configuration section -->               
-<sun:propertySheetSection id="providerConfSection" >
-        //label="$resource{i18nc.msgSecProvider.providerConfLabel}">
+<sun:propertySheetSection id="providerConfSection" label="#{pageSession.providerSectionLabel}" >
 
-    <sun:property id="AuthLayerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.authLayerLabel}" >
+    <sun:property id="AuthLayerProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.authLayerLabel}" >
         <sun:staticText id="AuthLayer" text="#{pageSession.msgSecurityName}" />
     </sun:property>
 
