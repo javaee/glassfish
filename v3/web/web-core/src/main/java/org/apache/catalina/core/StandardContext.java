@@ -5351,30 +5351,38 @@ public class StandardContext
                 ServletContainerInitializerUtil.getInitializerList(
                         servletContainerInitializerInterestList,
                         getClassLoader());
-        if(initializerList == null)
+        if (initializerList == null) {
             return true;
-        // We have the list of initializers and the classes that satisfy
-        // the condition. Time to call the initializers
-        ServletContext ctxt = this.getServletContext();
+        }
+
         // Allow registration of ServletContextListeners, but only within
         // the scope of ServletContainerInitializer#onStartup
         isAllowedToRegisterServletContextListener = true;
-        for (Class<? extends ServletContainerInitializer> initializer :
-                initializerList.keySet()) {
-            try {
-                ServletContainerInitializer iniInstance =
-                    initializer.newInstance();
-                iniInstance.onStartup(initializerList.get(initializer), ctxt);
-            } catch (Throwable t) {
-                log.log(Level.WARNING, 
-                    sm.getString(
-                        "standardContext.servletContainerInitializer.error",
-                        initializer.getCanonicalName()),
-                    t);
-                continue;
+
+        // We have the list of initializers and the classes that satisfy
+        // the condition. Time to call the initializers
+        ServletContext ctxt = this.getServletContext();
+        try {
+            for (Class<? extends ServletContainerInitializer> initializer :
+                    initializerList.keySet()) {
+                try {
+                    ServletContainerInitializer iniInstance =
+                        initializer.newInstance();
+                    iniInstance.onStartup(
+                        initializerList.get(initializer), ctxt);
+                } catch (Throwable t) {
+                    log.log(Level.SEVERE, 
+                        sm.getString(
+                            "standardContext.servletContainerInitializer.error",
+                            initializer.getCanonicalName()),
+                        t);
+                    return false;
+                }
             }
+        } finally {
+            isAllowedToRegisterServletContextListener = false;
         }
-        isAllowedToRegisterServletContextListener = false;
+
         return true;
     }
 
