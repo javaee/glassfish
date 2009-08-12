@@ -21,6 +21,8 @@ import java.util.Enumeration;
 import java.util.Date;
 import java.util.Calendar;
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 
 
@@ -530,8 +532,8 @@ ong with expected and actual result. This is optional as in some case
  {
 
 //     System.out.println("REPORTER\t Inside generateValidReport");
-     FileInputStream fin = null;
-     FileOutputStream fout = null;
+     FileChannel rChannel = null;
+     FileChannel wChannel = null;
      try
      {
 
@@ -549,7 +551,7 @@ ong with expected and actual result. This is optional as in some case
 	{
 		oFileName = resultFile + "Valid.xml";
 	}
-	fout = new FileOutputStream( oFileName ) ;
+        wChannel = new FileOutputStream(oFileName).getChannel();
 
 	String osName = System.getProperty("os.name");
 	String osVersion = System.getProperty("os.version");
@@ -576,27 +578,13 @@ ong with expected and actual result. This is optional as in some case
 	extraXML += "<machineName>" + machineName + "</machineName>";
 	extraXML += "</configuration> <testsuites>";	
 
-	fout.write( extraXML.getBytes() );
+	wChannel.write(ByteBuffer.wrap(extraXML.getBytes()));
 
+        rChannel = new FileInputStream(resultFile).getChannel();
+        wChannel.transferFrom(rChannel, wChannel.position(), rChannel.size());
+        wChannel.position(wChannel.position() + rChannel.size());
 
-	fin = new FileInputStream( resultFile );
-
-	StringBuffer sb = new StringBuffer();
-        while (true) {
-            try {
-                int ch = fin.read();
-                if (ch < 0) {
-                        break;
-                }
-                sb.append((char) ch);
-            } catch(IOException ex ) {
-		System.err.println("PENDING: What to do? ERROR: Problem with " + resultFile );
-            }
-        }
-
-	fout.write( sb.toString().getBytes() );
-	fout.write("</testsuites>\n</report>\n".getBytes());
-	fout.flush();
+	wChannel.write(ByteBuffer.wrap("</testsuites>\n</report>\n".getBytes()));
         //System.out.println("REPORTER\t File validation complete");
 
 	}
@@ -604,8 +592,8 @@ ong with expected and actual result. This is optional as in some case
 	{
 		System.out.println("ERROR : " + e );
 	} finally {
-            close(fin);
-            close(fout);
+            close(rChannel);
+            close(wChannel);
         }
    }
 
@@ -919,6 +907,16 @@ ong with expected and actual result. This is optional as in some case
         if (writer != null) {
             try {
                 writer.close();
+            } catch(IOException ioe) {
+                // ignore
+            }
+        }
+    }
+
+    private void close(FileChannel fileChannel) {
+        if (fileChannel != null) {
+            try {
+                fileChannel.close();
             } catch(IOException ioe) {
                 // ignore
             }
