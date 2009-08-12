@@ -51,6 +51,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import javax.xml.ws.*;
+import javax.xml.ws.RespectBinding;
 import javax.xml.ws.spi.WebServiceFeatureAnnotation;
 import javax.xml.ws.soap.MTOM;
 import javax.xml.ws.soap.Addressing;

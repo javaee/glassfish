@@ -61,11 +61,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.RespectBindingFeature;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.MTOMFeature;
+import javax.xml.ws.soap.AddressingFeature;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -332,9 +336,27 @@ public class JAXWSServlet extends HttpServlet {
         boolean mtomEnabled = wsu.getMtom(endpoint);
         WSBinding binding = null;
         // Only if MTOm is enabled create the Binding with the MTOMFeature
+        ArrayList<WebServiceFeature> wsFeatures = new ArrayList<WebServiceFeature>();
+        // Only if MTOm is enabled create the Binding with the MTOMFeature
         if (mtomEnabled) {
             MTOMFeature mtom = new MTOMFeature(true);
-            binding = BindingID.parse(givenBinding).createBinding(mtom);
+            wsFeatures.add(mtom);
+        }
+
+        Addressing addressing = endpoint.getAddressing();
+        if (addressing != null) {
+            AddressingFeature addressingFeature = new AddressingFeature(addressing.isEnabled(),
+                    addressing.isRequired());
+            wsFeatures.add(addressingFeature);
+        }
+        RespectBinding rb = endpoint.getRespectBinding();
+        if (rb != null) {
+            RespectBindingFeature rbFeature = new RespectBindingFeature(rb.isEnabled());
+            wsFeatures.add(rbFeature);
+        }
+        if (wsFeatures.size()>0){
+            binding = BindingID.parse(givenBinding).createBinding(wsFeatures.toArray
+                    (new WebServiceFeature[0]));
         } else {
             binding = BindingID.parse(givenBinding).createBinding();
         }

@@ -68,6 +68,12 @@ public class WebServicesTagNames {
     public static final String WEB_SERVICE_DESCRIPTION_NAME = 
         "webservice-description-name";
     public static final String WSDL_PORT = "wsdl-port";
+    public static final String RESPECT_BINDING = "respect-binding";
+    public static final String RESPECT_BINDING_ENABLED = "enabled";
+    public static final String ADDRESSING = "addressing";
+    public static final String ADDRESSING_ENABLED = "enabled";
+    public static final String ADDRESSING_REQUIRED = "required";
+    public static final String ADDRESSING_RESPONSES = "responses";
     public static final String WSDL_SERVICE = "wsdl-service";
     public static final String ENABLE_MTOM= "enable-mtom";
     public static final String PROTOCOL_BINDING = "protocol-binding";

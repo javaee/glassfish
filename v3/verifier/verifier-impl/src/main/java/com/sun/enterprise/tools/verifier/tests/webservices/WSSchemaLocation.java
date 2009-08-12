@@ -81,7 +81,8 @@ public class WSSchemaLocation extends WSTest implements WSCheck {
     String myValue = null;
     String[] reqSchemaLocation =
                     {"http://java.sun.com/xml/ns/j2ee http://www.ibm.com/webservices/xsd/j2ee_web_services_1_1.xsd",
-                     "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/javaee_web_services_1_2.xsd"};
+                     "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/javaee_web_services_1_2.xsd",
+                     "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/javaee_web_services_1_3.xsd"};
     int i;
     /**
      * @param descriptor the WebServices  descriptor
@@ -95,7 +96,8 @@ public class WSSchemaLocation extends WSTest implements WSCheck {
                     {"http://java.sun.com/xml/ns/j2ee", "http://java.sun.com/xml/ns/javaee"};
         String[] reqSchemaLocationSub2 =
                     {"http://www.ibm.com/webservices/xsd/j2ee_web_services_1_1.xsd",
-                     "http://java.sun.com/xml/ns/javaee/javaee_web_services_1_2.xsd"};
+                     "http://java.sun.com/xml/ns/javaee/javaee_web_services_1_2.xsd",
+                     "http://java.sun.com/xml/ns/javaee/javaee_web_services_1_3.xsd"};
         boolean rslt = false;
         String schemaVersion = getVerifierContext().getSchemaVersion();
         Document wsdoc=getVerifierContext().getWebServiceDocument();

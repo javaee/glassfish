@@ -64,20 +64,23 @@ import java.util.logging.Level;
 public class ServiceReferenceNode extends DisplayableComponentNode {
     // used for temporary storage during element processing
     private String serviceEndpointInterface = null;
-    private ServiceRefPortInfo portInfo = null;
+    private ServiceRefPortInfo  portInfo = null;
 
     /** Creates a new instance of ServiceReferenceNode */
     public ServiceReferenceNode() {
         super();
         registerElementHandler
-            (new XMLElement(WebServicesTagNames.HANDLER),
-             WebServiceHandlerNode.class, "addHandler");
+                (new XMLElement(WebServicesTagNames.HANDLER),
+                        WebServiceHandlerNode.class, "addHandler");
         registerElementHandler
-            (new XMLElement(WebServicesTagNames.HANDLER_CHAIN),
-             WebServiceHandlerChainNode.class, "addHandlerChain");
+                (new XMLElement(WebServicesTagNames.HANDLER_CHAIN),
+                        WebServiceHandlerChainNode.class, "addHandlerChain");
         registerElementHandler
-            (new XMLElement(TagNames.INJECTION_TARGET), 
-             InjectionTargetNode.class, "addInjectionTarget");         
+                (new XMLElement(WebServicesTagNames.ADDRESSING),
+                        AddressingNode.class, "setAddressing");
+        registerElementHandler
+                (new XMLElement(TagNames.INJECTION_TARGET),
+                        InjectionTargetNode.class, "addInjectionTarget");
     }
     
     /**
@@ -130,6 +133,8 @@ public class ServiceReferenceNode extends DisplayableComponentNode {
             }
         } else if(WebServicesTagNames.ENABLE_MTOM.equals(qname)) {
             portInfo.setMtomEnabled(value);
+        //} //TODO implement this   else if(WebServicesTagNames.ADDRESSING.equals(qname)) {
+          //  portInfo.setAddressing(value);
         } else if( WebServicesTagNames.PORT_COMPONENT_LINK.equals(qname) ) {
             // set link name.  link resolution will be performed during
             // validation stage.

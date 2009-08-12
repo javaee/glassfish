@@ -81,6 +81,9 @@ public class ServiceRefPortInfo extends Descriptor {
     private MessageSecurityBindingDescriptor messageSecBindingDesc = null;
 
     private String mtomEnabled = null;
+
+
+    private Addressing addressing  ;
     
     public ServiceRefPortInfo(ServiceRefPortInfo other) {
 	super(other);

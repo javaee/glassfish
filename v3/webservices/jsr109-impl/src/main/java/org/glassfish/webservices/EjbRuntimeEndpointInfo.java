@@ -35,10 +35,7 @@
  */
 package org.glassfish.webservices;
 
-import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-import com.sun.enterprise.deployment.InjectionTarget;
+import com.sun.enterprise.deployment.*;
 import com.sun.logging.LogDomains;
 import org.glassfish.ejb.api.EjbEndpointFacade;
 
@@ -51,10 +48,13 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.BindingID;
 
 import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.soap.MTOMFeature;
+import javax.xml.ws.soap.AddressingFeature;
 import java.util.ResourceBundle;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.io.File;
@@ -247,13 +247,27 @@ public class EjbRuntimeEndpointInfo {
 
                         boolean mtomEnabled = wsu.getMtom(endpoint);
                         WSBinding binding = null;
+
+                        ArrayList<WebServiceFeature> wsFeatures = new ArrayList<WebServiceFeature>();
                         // Only if MTOm is enabled create the Binding with the MTOMFeature
                         if (mtomEnabled) {
                             MTOMFeature mtom = new MTOMFeature(true);
-                            binding = BindingID.parse(givenBinding).createBinding(mtom);
+                            wsFeatures.add(mtom);
+                        }
+
+                        Addressing addressing = endpoint.getAddressing();
+                        if (endpoint.getAddressing() != null) {
+                            AddressingFeature addressingFeature = new AddressingFeature(addressing.isEnabled(),
+                                    addressing.isRequired());
+                            wsFeatures.add(addressingFeature);
+                        }
+                        if (wsFeatures.size()>0){
+                            binding = BindingID.parse(givenBinding).createBinding(wsFeatures.toArray
+                                    (new WebServiceFeature[0]));
                         } else {
                             binding = BindingID.parse(givenBinding).createBinding();
                         }
+                   
                         wsu.configureJAXWSServiceHandlers(endpoint,
                             endpoint.getProtocolBinding(), binding);
 

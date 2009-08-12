@@ -48,7 +48,7 @@ import java.util.HashMap;
  * @author Jerome Dochez
  */
 
-public class WebService extends Descriptor {    
+public class WebService extends Descriptor {
 
     private String wsdlFileUri;
 
@@ -79,42 +79,42 @@ public class WebService extends Descriptor {
     // This represents a directory on the file system from which deployment
     // is initiated.  URL schemes other than file: are legal but ignored.
     private URL publishUrl;
-    
-    /** 
+
+    /**
      * Default constructor. 
      */
     public WebService() {
         this("");
     }
-    
 
-    /** 
+
+    /**
      * copy constructor. 
      */
     public WebService(WebService other) {
         super(other);
-	wsdlFileUri = other.wsdlFileUri; // String
+        wsdlFileUri = other.wsdlFileUri; // String
         wsdlFileUrl = other.wsdlFileUrl;
-	mappingFileUri = other.mappingFileUri; // String
-	mappingFile = other.mappingFile; 
+        mappingFileUri = other.mappingFileUri; // String
+        mappingFile = other.mappingFile;
         publishUrl = other.publishUrl;
-	webServicesDesc = other.webServicesDesc; // copy as-is
-	if (other.endpoints != null) {
-	    endpoints = new HashMap<String, WebServiceEndpoint>();
-	    for (WebServiceEndpoint wsep : other.endpoints.values()) {
-        	wsep.setWebService(this);
-        	endpoints.put(wsep.getEndpointName(), wsep);
-	    }
-	} else {
-	    endpoints = null;
-	}
-    }    
+        webServicesDesc = other.webServicesDesc; // copy as-is
+        if (other.endpoints != null) {
+            endpoints = new HashMap<String, WebServiceEndpoint>();
+            for (WebServiceEndpoint wsep : other.endpoints.values()) {
+                wsep.setWebService(this);
+                endpoints.put(wsep.getEndpointName(), wsep);
+            }
+        } else {
+            endpoints = null;
+        }
+    }
 
     public WebService(String name) {
         setName(name);
         endpoints = new HashMap();
     }
-    
+
     public void setWebServicesDescriptor(WebServicesDescriptor webServices) {
         webServicesDesc = webServices;
     }
@@ -146,7 +146,7 @@ public class WebService extends Descriptor {
     public void setWsdlFileUrl(URL url) {
         wsdlFileUrl = url;
     }
-    
+
     public String getGeneratedWsdlFilePath() {
         if (hasWsdlFile()) {
             String xmlDir = getBundleDescriptor().getApplication().getGeneratedXMLDirectory();
@@ -161,8 +161,8 @@ public class WebService extends Descriptor {
         } else {
             return getWsdlFileUrl().getPath();
         }
-    }    
-    
+    }
+
     public boolean hasMappingFile() {
         return (mappingFileUri != null);
     }
@@ -190,7 +190,7 @@ public class WebService extends Descriptor {
 
     public void removeEndpointByName(String endpointName) {
         WebServiceEndpoint endpoint = (WebServiceEndpoint)
-            endpoints.remove(endpointName);
+                endpoints.remove(endpointName);
         endpoint.setWebService(null);
     }
 
@@ -220,7 +220,7 @@ public class WebService extends Descriptor {
     }
 
     public boolean hasFilePublishing() {
-        return (hasClientPublishUrl() && 
+        return (hasClientPublishUrl() &&
                 publishUrl.getProtocol().equals("file"));
     }
 
@@ -236,7 +236,7 @@ public class WebService extends Descriptor {
             if( wse.isSecure() ) {
                 pick = wse;
                 break;
-            } 
+            }
             pick = wse;
         }
         return pick;
@@ -246,12 +246,12 @@ public class WebService extends Descriptor {
      * Returns a formatted String of the attributes of this object.
      */
     public void print(StringBuffer toStringBuffer) {
-	super.print(toStringBuffer);
+        super.print(toStringBuffer);
         toStringBuffer.append( "\n wsdl file : ").append( wsdlFileUri);
         toStringBuffer.append( "\n mapping file ").append(mappingFileUri);
         toStringBuffer.append( "\n publish url ").append(publishUrl);
         toStringBuffer.append( "\n final wsdl ").append(wsdlFileUrl);
-        toStringBuffer.append( "\n endpoints ").append(endpoints);        
+        toStringBuffer.append( "\n endpoints ").append(endpoints);
     }
-    
+
 }    

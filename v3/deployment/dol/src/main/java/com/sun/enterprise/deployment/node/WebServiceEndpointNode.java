@@ -68,6 +68,12 @@ public class WebServiceEndpointNode extends DisplayableComponentNode {
             (new XMLElement(WebServicesTagNames.HANDLER),
              WebServiceHandlerNode.class, "addHandler");
         registerElementHandler
+            (new XMLElement(WebServicesTagNames.ADDRESSING),
+             AddressingNode.class, "setAddressing");
+        registerElementHandler
+            (new XMLElement(WebServicesTagNames.RESPECT_BINDING),
+             AddressingNode.class, "setRespectBinding");
+        registerElementHandler
             (new XMLElement(WebServicesTagNames.HANDLER_CHAIN),
              WebServiceHandlerChainNode.class, "addHandlerChain");
     }
@@ -92,6 +98,7 @@ public class WebServiceEndpointNode extends DisplayableComponentNode {
                   "setServiceEndpointInterface");
         table.put(WebServicesTagNames.PROTOCOL_BINDING, "setProtocolBinding");
         table.put(WebServicesTagNames.ENABLE_MTOM, "setMtomEnabled");
+       // table.put(WebServicesTagNames.ADDRESSING, "setAddressing");
         return table;
     }
     
@@ -171,6 +178,7 @@ public class WebServiceEndpointNode extends DisplayableComponentNode {
         appendTextChild(wseNode, 
                         WebServicesTagNames.ENABLE_MTOM,
                         descriptor.getMtomEnabled());
+        //TODO add addressing etc here
         if(descriptor.hasUserSpecifiedProtocolBinding()) {
             appendTextChild(wseNode, 
                         WebServicesTagNames.PROTOCOL_BINDING,
