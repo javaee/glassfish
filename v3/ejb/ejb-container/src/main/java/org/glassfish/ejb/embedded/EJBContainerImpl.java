@@ -90,18 +90,13 @@ public class EJBContainerImpl extends EJBContainer {
     /**
      * Construct new EJBContainerImpl instance and deploy found modules.
      */
-    void deploy(Map<?, ?> properties, Set<File> modules, Set<String> moduleNames) throws EJBException {
+    void deploy(Map<?, ?> properties, Set<File> modules) throws EJBException {
         for (File f : modules) {
             DeployCommandParameters dp = new DeployCommandParameters(f);
             dp.name = f.getName();
             try {
                 String appName = deployer.deploy(f, dp);
-                // XXX TODO - extract module name
-                if (isExpectedModule(appName,  moduleNames)) {
-                    deployedApps.add(appName);
-                } else {
-                    deployer.undeploy(appName);
-                }
+                deployedApps.add(appName);
             } catch (Exception e) {
                 _logger.warning("Cannot deploy file: " + f.getName() + " : " + e.getMessage());
             }
@@ -156,10 +151,4 @@ public class EJBContainerImpl extends EJBContainer {
         return open;
     }
 
-    /**
-     * Returns true if the expected module name set is empty or the name was specified.
-     */
-    private boolean isExpectedModule(String appName,  Set<String>moduleNames) {
-        return (moduleNames == null || moduleNames.isEmpty() || moduleNames.contains(appName));
-    }
 }

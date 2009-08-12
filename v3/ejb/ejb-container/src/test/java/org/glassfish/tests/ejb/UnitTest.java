@@ -61,8 +61,11 @@ public class UnitTest {
         System.out.println("Files in dir/META-INF: " + java.util.Arrays.toString(list));
 
         Map<String, Object> p = new HashMap<String, Object>();
-        if (!Boolean.getBoolean("use-modules-from-classpath")) {
+        boolean fromClassPath = Boolean.getBoolean("use-modules-from-classpath");
+        if (!fromClassPath) {
             p.put(EJBContainer.MODULES, new File(dir));
+        } else {
+            p.put(EJBContainer.MODULES, "sample");
         }
 
         String gf = System.getenv().get("GF_HOME");
@@ -88,7 +91,7 @@ public class UnitTest {
         Context ic = c.getContext();
         try {
             System.out.println("Looking up EJB...");
-            SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/test-classes/SimpleEjb");
+            SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/sample/SimpleEjb");
             if (ejb!=null) {
                 System.out.println("Invoking EJB...");
                 System.out.println("EJB said: " + ejb.saySomething());

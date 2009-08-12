@@ -37,7 +37,7 @@
 package org.glassfish.ejb.embedded;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
@@ -60,6 +60,10 @@ import org.glassfish.api.embedded.EmbeddedFileSystem;
 import org.glassfish.api.embedded.Server;
 
 import org.glassfish.deployment.common.GenericAnnotationDetector;
+import org.glassfish.deployment.common.DeploymentUtils;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
@@ -107,19 +111,12 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
             init(properties);
             try {
-                Set<File> modules = new HashSet<File>();
-                Set<String> moduleNames = addEJBModules(modules, properties);
+                Set<File> modules = addEJBModules(properties);
                 if (modules.isEmpty()) {
                     _logger.log(Level.SEVERE, "No EJB modules found");
                 }
 
-                container.deploy(properties, modules, moduleNames);
-                // Check again - expected module names list might not have matched the found modules
-                if (modules.isEmpty()) {
-                    _logger.log(Level.SEVERE, "No EJB modules found");
-                }
-
-
+                container.deploy(properties, modules);
                 return container;
             } catch (Throwable t) {
                 // Can't throw an exception - only return null.
@@ -197,32 +194,32 @@ System.err.println("+++ domain_file: " + domain_file);
     }
 
     /**
-     * Adds EJB modules for the property in the properties Map and in the future
-     * from the System classpath
+     * Adds EJB modules for the property in the properties Map or if such property
+     * is not specified, from the System classpath
      */
-    private Set<String> addEJBModules(Set<File> modules, Map<?, ?> properties) {
+    private Set<File> addEJBModules(Map<?, ?> properties) {
+        Set<File> modules = new HashSet<File>();
         Object obj = (properties == null)? null : properties.get(EJBContainer.MODULES);
         Set<String> moduleNames = new HashSet<String>();
 
         // Check EJBContainer.MODULES setting first - it can have an explicit set of files
         if (obj != null) {
-            // Process File objects directly
-            if (obj instanceof File) {
-                addEJBModule(modules, (File)obj);
-            } else if (obj instanceof File[]) {
-                File[] arr = (File[])obj;
-                for (File f : arr) {
-                    addEJBModule(modules, f);
-                }
-            // Check module names separately
-            } else if (obj instanceof String) {
+            // Check module names first
+            if (obj instanceof String) {
                 moduleNames.add((String)obj);
             } else if (obj instanceof String[]) {
                 String[] arr = (String[])obj;
                 for (String s : arr) {
                     moduleNames.add(s);
                 }
-            }
+            } else if (obj instanceof File) {
+                addEJBModule(modules, moduleNames, (File)obj);
+            } else if (obj instanceof File[]) {
+                File[] arr = (File[])obj;
+                for (File f : arr) {
+                    addEJBModule(modules, moduleNames, f);
+                }
+            } 
         } 
 
         if (modules.isEmpty()) {
@@ -230,39 +227,64 @@ System.err.println("+++ domain_file: " + domain_file);
             String path = System.getProperty("java.class.path");
             String[] entries = path.split(File.pathSeparator);
             for (String s0 : entries) {
-                addEJBModule(modules, new File(s0));
+                addEJBModule(modules, moduleNames, new File(s0));
             }
         }
 
-        return moduleNames;
+        return modules;
     }
 
     /**
      * @returns true if this file represents EJB module.
      */
-    private boolean isEJBModule(File file) throws IOException {
-        System.err.println("... Testing ... " + file.getName());
-        ReadableArchive archive = archiveFactory.openArchive(file);
+    private boolean isRequestedEJBModule(File file, Set<String> moduleNames) 
+            throws Exception {
+        String fileName = file.getName();
+        System.err.println("... Testing ... " + fileName);
+        ReadableArchive archive = null;
+        InputStream is = null;
+        try {
+            boolean handles = false;
+            String moduleName = DeploymentUtils.getDefaultEEName(fileName);
+            archive = archiveFactory.openArchive(file);
+            is = archive.getEntry("META-INF/ejb-jar.xml");
+            if (is != null) {
+                handles = true;
+                EjbDeploymentDescriptorFile eddf =
+                        new EjbDeploymentDescriptorFile();
+                eddf.setXMLValidation(false);
+                EjbBundleDescriptor bundleDesc =  (EjbBundleDescriptor) eddf.read(is);
+                ModuleDescriptor moduleDesc = bundleDesc.getModuleDescriptor();
+                moduleDesc.setArchiveUri(fileName);
+                moduleName = moduleDesc.getModuleName();
+            } else {
+                GenericAnnotationDetector detector =
+                    new GenericAnnotationDetector(ejbAnnotations);
+                handles = detector.hasAnnotationInArchive(archive);
+            }
+System.err.println("... is EJB module: " + handles);
+if (handles)
+System.err.println("... is Requested EJB module [" + moduleName + "]: " + (moduleNames.isEmpty() || moduleNames.contains(moduleName)));
 
-        boolean handles =  archive.exists("META-INF/ejb-jar.xml");
-        if (!handles) {
-            GenericAnnotationDetector detector =
-                new GenericAnnotationDetector(ejbAnnotations);
-            handles = detector.hasAnnotationInArchive(archive);
+            return handles && (moduleNames.isEmpty() || moduleNames.contains(moduleName));
+        } finally {
+            if (archive != null) 
+                archive.close();
+            if (is != null) 
+                is.close();
         }
-        return handles;
     }
 
     /**
      * Adds an a File to the Set of EJB modules if it represents an EJB module.
      */
-    private void addEJBModule(Set<File> modules, File f) {
+    private void addEJBModule(Set<File> modules, Set<String> moduleNames, File f) {
         try {
-            if (f.exists() && isEJBModule(f) && !skipJar(f)) {
+            if (f.exists() && isRequestedEJBModule(f, moduleNames) && !skipJar(f)) {
                 modules.add(f);
                 _logger.info("... Added EJB Module .... " + f.getName());
             } // skip the rest
-        } catch (IOException ioe) {
+        } catch (Exception ioe) {
             _logger.log(Level.INFO, "ejb.embedded.io_exception", ioe);
             // skip it
         }
@@ -272,7 +294,7 @@ System.err.println("+++ domain_file: " + domain_file);
      * @returns true if this jar is either a GlassFish module jar or one
      * of the other known implementation modules.
      */
-    private boolean skipJar(File file) throws IOException {
+    private boolean skipJar(File file) throws Exception {
         if (!file.isFile()) {
             return false; // probably a directory
         }
