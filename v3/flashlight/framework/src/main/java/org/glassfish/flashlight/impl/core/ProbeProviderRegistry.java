@@ -42,6 +42,13 @@ import java.util.concurrent.*;
  * @author Mahesh Kannan
  * @author Byron Nevins
  * Date: Jun 25, 2008
+ *
+ * Byron Nevins says:  Note this class is used in one and only one place in all of
+ * GF --> FlashlightProbeProviderFactory.java
+ * Apparently it is used exclusively for making sure that 2 probes with the same name are not allowed?!?
+ * look at the putIfAbsent for clues
+ * This class has no business having any public members and should be moved to the only user's package
+ * 
  */
 public class ProbeProviderRegistry {
 

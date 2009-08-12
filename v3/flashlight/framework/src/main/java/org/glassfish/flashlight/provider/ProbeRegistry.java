@@ -27,7 +27,9 @@ public class ProbeRegistry {
     public static ProbeRegistry getInstance() {
         return _me;
     }
-    
+
+    // bnevins -- todo this is a huge concurrency bug!
+    // why is it even here?!?
     public static ProbeRegistry createInstance() {
     	if (_me == null) {
     		_me = new ProbeRegistry();
