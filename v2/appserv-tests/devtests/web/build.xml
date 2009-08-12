@@ -292,7 +292,9 @@
         <ant dir="servlet-3.0/asyncContextHasOriginalRequestAndResponse" target="all"/>
         <ant dir="servlet-3.0/asyncTimeoutNoListener" target="all"/>
         <ant dir="errorPageHandlingForError" target="all"/>
+<!-- temporaily commented out, see IT 9108
         <ant dir="servlet-3.0/multipart" target="all"/>
+-->
     </target>
 
     <target name="web-container">
