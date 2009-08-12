@@ -40,6 +40,7 @@ import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -125,6 +126,73 @@ public class UpgradeUtils {
 		}
 	}
 	
+
+    /**
+     * Copy directories and files that are not on the exclude list from
+     * the src to the target location.
+     *
+     * @param srcDir
+     * @param trgDir
+     * @return
+     */
+    public boolean copyUserLibFiles(File srcDir, File trgDir){
+        boolean flag = false;
+
+        //- get the appropriate list of lib files to exclude
+        String osName = System.getProperty("os.name");
+        String pkgName = this.getClass().getPackage().getName();
+        String excludeFile = pkgName + ".unixV2LibExcludeList"; 
+        if(osName.indexOf("Windows") != -1){
+            excludeFile = pkgName + ".winV2LibExcludeList";
+        } else if (osName.indexOf("Mac") != -1){
+            excludeFile = pkgName + ".macV2LibExcludeList";
+        }
+        String verEd = CommonInfoModel.getInstance().getSource().getVersionEdition();
+        if (verEd.startsWith(UpgradeConstants.VERSION_3_0)) {
+            excludeFile = excludeFile.replaceFirst("V2", "V3");
+        }
+
+        try {
+            String excludeF = excludeFile.replace('.', '/') + ".properties";
+            UpgradeFileFilter fs = new UpgradeFileFilter(excludeF);
+            File [] l = srcDir.listFiles(fs);
+            
+            for(File tmpF: l){
+                if (tmpF.isDirectory()){
+                    try {
+                        File tmpDir = new File(trgDir, tmpF.getName());
+                        tmpDir.mkdir();
+                        copyDirectory(tmpF, tmpDir);
+                        logger.log(Level.INFO,
+                        stringManager.getString("upgrade.common.copied_dir",tmpDir.getName()));
+                    } catch (IOException ioe) {
+                        logger.log(Level.SEVERE,
+                        stringManager.getString("upgrade.common.lib_copy_error",ioe));
+                    }
+                } else {
+                    try{
+                        File tmpFile = new File(trgDir, tmpF.getName());
+                        copyFile(tmpF.getCanonicalPath(), tmpFile.getCanonicalPath());
+                        logger.log(Level.INFO,
+                        stringManager.getString("upgrade.common.copied_file",tmpFile.getName()));
+                    } catch(IOException ioe){
+                        logger.log(Level.SEVERE,
+                        stringManager.getString("upgrade.common.lib_copy_error",ioe));
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            logger.log(Level.SEVERE,
+				stringManager.getString("upgrade.common.lib_exclude_error",e));
+        } catch (IOException io) {
+            logger.log(Level.SEVERE,
+				stringManager.getString("upgrade.common.lib_exclude_error",io));
+        } catch (NullPointerException ne) {
+            logger.log(Level.SEVERE,
+				stringManager.getString("upgrade.common.lib_exclude_error",ne.toString()));
+        } 
+        return flag;
+    }
 
 	public static boolean deleteDirectory(File dir) {
 		if(dir.isDirectory()) {

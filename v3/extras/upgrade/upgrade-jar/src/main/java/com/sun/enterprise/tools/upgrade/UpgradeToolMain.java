@@ -200,6 +200,7 @@ public class UpgradeToolMain {
                             "enterprise.tools.upgrade.domain_log_read_failure", e.getMessage()));
                 }
 
+                dProcessor.copyUserLibFiles();
                 int exitValue = dProcessor.startDomain(_target.getDomainName());
                 if (exitValue == 0){
                     dProcessor.stopDomain(_target.getDomainName());

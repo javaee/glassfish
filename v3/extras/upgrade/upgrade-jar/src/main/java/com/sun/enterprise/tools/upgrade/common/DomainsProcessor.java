@@ -37,6 +37,13 @@
 package com.sun.enterprise.tools.upgrade.common;
 
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.enterprise.tools.upgrade.logging.LogService;
+import com.sun.enterprise.tools.upgrade.common.UpgradeUtils;
+
+import java.io.File;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -48,7 +55,8 @@ public class DomainsProcessor {
 	
 	private static final StringManager stringManager =
         StringManager.getManager(DomainsProcessor.class);
-	
+	private static final Logger logger = LogService.getLogger();
+
 	private boolean domainStarted = false;
 	
 	
@@ -84,4 +92,51 @@ public class DomainsProcessor {
 		}
 		return exitValue;
 	}
+
+    /**
+     * Copy any user files in the src server's lib dir to the target server's
+     * lib dir.
+     */
+    public void copyUserLibFiles() {
+        logger.log(Level.INFO,
+                stringManager.getString("upgrade.common.start_copy_user_libs"));
+        String s = commonInfo.getSource().getInstallDir();
+        File sLibDir = null;  //checkForLibDir(commonInfo.getSource().getInstallDir());
+        StringTokenizer t = new StringTokenizer(s, File.separator);
+        if (t.countTokens() > 1) {
+            File tmpF = new File(s);
+            sLibDir = new File(tmpF.getParentFile().getParentFile(), "lib");
+            if (!sLibDir.exists() || !sLibDir.isDirectory()) {
+                logger.log(Level.FINE,
+                        stringManager.getString("upgrade.common.dir_not_found", sLibDir.getAbsolutePath()));
+                sLibDir = null;
+            }
+        }
+        if (sLibDir == null) {
+            logger.log(Level.WARNING,
+                    stringManager.getString("upgrade.common.src_lib_dir_not_found", s + "/lib"));
+        } else {
+            File tLibDir = null;
+            s = commonInfo.getTarget().getInstallDir();
+            t = new StringTokenizer(s, File.separator);
+            if (t.countTokens() > 1) {
+                File tmpF = new File(s);
+                tLibDir = new File(tmpF.getParentFile(), "lib");
+                if (!tLibDir.exists() || !tLibDir.isDirectory()) {
+                    logger.log(Level.FINE,
+                            stringManager.getString("upgrade.common.dir_not_found", tLibDir.getAbsolutePath()));
+                    tLibDir = null;
+                }
+            }
+            if (tLibDir == null) {
+                logger.log(Level.WARNING,
+                        stringManager.getString("upgrade.common.trg_lib_dir_not_found", s + "/lib"));
+            } else {
+                UpgradeUtils u = UpgradeUtils.getUpgradeUtils(commonInfo);
+                u.copyUserLibFiles(sLibDir, tLibDir);
+            }
+        }
+        logger.log(Level.INFO,
+                stringManager.getString("upgrade.common.finished_copy_user_libs"));
+    }
 }
