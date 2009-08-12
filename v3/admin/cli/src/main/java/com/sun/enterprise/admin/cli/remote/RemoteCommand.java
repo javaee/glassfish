@@ -347,6 +347,9 @@ public class RemoteCommand extends CLICommand {
             logger.printDebugMessage("URL: " + url.toString());
             logger.printDebugMessage("URL: " +
                     url.toURL(uriString.toString()).toString());
+            logger.printDebugMessage("Using auth info: User: " +
+                programOpts.getUser() + ", Password: " +
+                (ok(programOpts.getPassword()) ? "<non-null>" : "<null>"));
             url.setAuthenticationInfo(
                 new AuthenticationInfo(programOpts.getUser(),
                                         programOpts.getPassword()));
@@ -812,17 +815,17 @@ public class RemoteCommand extends CLICommand {
 
         if (programOpts.getUser() == null && li != null) {
             // not on command line and in .asadminpass
-            programOpts.setUser(li.getUser());
             logger.printDebugMessage("Getting user name from ~/.asadminpass: " +
-                                        programOpts.getUser());
+                                        li.getUser());
+            programOpts.setUser(li.getUser());
         }
 
         // initialize password
 
         if (programOpts.getPassword() == null && li != null) {
             // not in passwordfile and in .asadminpass
-            programOpts.setPassword(li.getPassword());
             logger.printDebugMessage("Getting password from ~/.asadminpass");
+            programOpts.setPassword(li.getPassword());
         }                
     }
 }

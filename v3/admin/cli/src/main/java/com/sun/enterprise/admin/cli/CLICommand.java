@@ -157,6 +157,7 @@ public abstract class CLICommand {
             return cmd;
 
         // nope, must be a remote command
+        logger.printDebugMessage("Assuming it's a remote command: " + name);
         return new RemoteCommand(name, programOpts, env);
 
     }

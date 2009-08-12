@@ -66,6 +66,8 @@ public class ProgramOptions {
     public static final String SECURE           = "secure";
     public static final String HELP             = "help";
 
+    private static final CLILogger logger = CLILogger.getInstance();
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ProgramOptions.class);
 
@@ -279,6 +281,7 @@ public class ProgramOptions {
      * @param user the user to set
      */
     public void setUser(String user) {
+        logger.printDebugMessage("Setting user to: " + user);
         options.put(USER, user);
     }
 
@@ -293,6 +296,8 @@ public class ProgramOptions {
      * @param password the password to set
      */
     public void setPassword(String password) {
+        logger.printDebugMessage("Setting password to: " +
+                                    (ok(password) ? "<non-null>" : "<null>"));
         this.password = password;
     }
 
