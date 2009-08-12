@@ -255,7 +255,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
   </echo>
   <antcall target="common.run.asadmin">
     <param name="arg.list" 
-           value="create-file-user --user ${admin.user} --port ${admin.port} --target ${testServer} --passwordfile ${user.password.file} --echo=true --terse=true ${arg.list}"/>
+           value="create-file-user --port ${admin.port} --target ${testServer} --passwordfile ${user.password.file} --echo=true --terse=true ${arg.list}"/>
     </antcall>
   <delete file="${user.password.file}" failonerror="false"/>
 </target>
