@@ -10,9 +10,8 @@ import org.jvnet.hk2.annotations.Contract;
 
 @Contract
 public interface DTraceContract {
-    <T> T getProvider(Class<T> t);
-    //Class getProvider(ProbeProviderInfo ppi);
     boolean isSupported();
-
-    Object getProvider23(ProbeProviderInfo probeInfo);
+    <T> T getProvider(Class<T> t);
+    <T> T getProvider(ProbeProviderInfo ppi);
+    Class getInterface(ProbeProviderInfo ppi);
 }

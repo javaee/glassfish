@@ -73,6 +73,7 @@ public class FlashlightProbeProviderFactory
 
     private ConcurrentHashMap<String, Object> providerInfo = new ConcurrentHashMap<String, Object>();
     private boolean debug = false;
+    private final static Logger logger = Logger.getLogger(FlashlightProbeProviderFactory.class.getName());
 
     private final HashMap<String, String> primTypes = new HashMap() {
         {
@@ -137,27 +138,14 @@ public class FlashlightProbeProviderFactory
 
 
 
-
-
-
-
-
-
-
-
-			// TODO -- need to figure out how to go from byte[] --> java.lang.Class
-            //DTraceContract dt = habitat.getByContract(DTraceContract.class);
-            //dt.getProvider23(provider);
-
-
-
-
-
-
-
-
-
-
+			if(Boolean.parseBoolean(System.getenv("AS_DTRACE"))) { // temporary
+				DTraceContract dt = habitat.getByContract(DTraceContract.class);
+				logger.severe("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX DTrace Enabled: " + dt.isSupported());
+				Class dtraceProviderInterface = dt.getInterface(provider);
+				Object dtraceProviderImpl = dt.getProvider(dtraceProviderInterface);
+				logger.severe("WWWWWWWWWWWWWWW  DTrace Generated Interface:" + dtraceProviderInterface);
+				logger.severe("ZZZZZZZZZZZZZZZ  DTrace Generated Implementation:" + dtraceProviderImpl);
+			}
 
 
             Class<T> tClazz = providerClazz;
@@ -226,7 +214,7 @@ public class FlashlightProbeProviderFactory
                 registerProvider(cl, provider);
 }
         } catch (Exception e) {
-            Logger.getLogger(FlashlightProbeProviderFactory.class.getName()).log(Level.SEVERE, null, e);
+            logger.log(Level.SEVERE, null, e);
         }
 
     }
@@ -234,6 +222,7 @@ public class FlashlightProbeProviderFactory
 	public String toString() {
 		return ObjectAnalyzer.toString(this);
 	}
+
     private void registerProvider(ClassLoader cl, ProbeProviderXMLParser.Provider provider) {
 
         String moduleProviderName = provider.getModuleProviderName();
@@ -277,7 +266,7 @@ public class FlashlightProbeProviderFactory
                     // Lets not create a probe if we see a problem with the
                     // paramType resolution
                     errorParsingProbe = true;
-                    Logger.getLogger(FlashlightProbeProviderFactory.class.getName()).log(Level.SEVERE,
+                    logger.log(Level.SEVERE,
                             "Cannot resolve the paramTypes, unable to create this probe - " + probeName);
                     // stop parsing anymore probe params
                     break;
@@ -326,7 +315,7 @@ public class FlashlightProbeProviderFactory
                 // try to prepend java.lang. to the given class
                 paramType = cl.loadClass("java.lang." + paramTypeStr);
             } catch (Exception e) {
-                Logger.getLogger(FlashlightProbeProviderFactory.class.getName()).log(Level.SEVERE,
+                logger.log(Level.SEVERE,
                         "Cannot resolve the paramTypes of the probe, tried " + paramTypeStr +
                         " and now the following - Try giving a fully qualified name for the type", e);
             }
