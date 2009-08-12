@@ -37,7 +37,6 @@
 <project name="common-impl" default="all" basedir=".">
     
     <property file="${ws.root}/build.properties"/>
-    <property environment="env"/>
     <property name="app.file.ext" value="${app.file}.${archive.type}"/>
     <property name="config.dir" value="${ant.file}"/>
     <property name="is.war.module" value="true"/>

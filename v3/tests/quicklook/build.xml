@@ -36,23 +36,26 @@
 -->
 
 <project name="GlassFish-V3-QuickLook" default="all" basedir=".">
+    <property environment="env"/>
 
     <property file="build.properties"/>
      <property file="${basedir}/gfproject/derby.properties"/>
      <import file="${basedir}/gfproject/db-targets.xml"/>
     
     <description>Builds, tests, and runs the project V3 Quicklook</description>
-    <target name="all_wd" depends="clean">
+    <!-- target name="all_wd" depends="clean" -->
+    <target name="all_wd" >
         <record name="allrun.output" action="start"/>
+        <property name="env.security_manager" value="OFF"/>
         <antcall target="start-derby"/>        
         <antcall target="start-server-felix"/>
 	<antcall target="build-deploy"/>
         <antcall target="runtest">
         <param name="testng.xml" value="testng.xml"/> </antcall>
         <antcall target="undeploy"/>
-        <antcall target="quicklook-summary"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
+        <antcall target="quicklook-summary"/>
         <antcall target="testng-summary"/>
 	<copy file="test-output/emailable-report.html" tofile="test-output/QL-WP-report.html"/>
         <record name="allrun.output" action="stop"/>
@@ -60,6 +63,7 @@
 
     <target name="all_wd_security" depends="clean">
         <record name="allrun.output" action="start"/>
+        <property name="env.security_manager" value="ON"/>
         <antcall target="add-quicklook-policy-grants" />
         <antcall target="start-derby"/>        
         <antcall target="start-server-felix"/>
@@ -68,13 +72,13 @@
         <antcall target="start-server-felix"/>
 	<antcall target="build-deploy"/>
         <antcall target="runtest">
-        <param name="testng.xml" value="testng.xml"/> </antcall>
+            <param name="testng.xml" value="testng.xml"/> </antcall>
         <antcall target="undeploy"/>
         <antcall target="quicklook-summary"/>
-	<!-- antcall target="disable-security-manager"/ -->
+	<antcall target="disable-security-manager"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
-        <!-- antcall target="remove-quicklook-policy-grants"/ -->
+        <antcall target="remove-quicklook-policy-grants"/>
         <antcall target="testng-summary"/>
 	<copy file="test-output/emailable-report.html" tofile="test-output/QL-WP-report.html"/>
         <record name="allrun.output" action="stop"/>
@@ -83,6 +87,7 @@
     <!-- Target for testing glassfish distribution (containing EJB)  -->
     <target name="all" depends="clean">
         <record name="allrun.output" action="start"/>
+        <property name="env.security_manager" value="OFF"/>
         <antcall target="start-derby"/>
         <antcall target="start-server-felix"/>
         <antcall target="build-deploy"/>
@@ -102,6 +107,7 @@
     <!-- Target for testing glassfish distribution (containing EJB)  -->
     <target name="all_gd_security" depends="clean">
         <record name="allrun.output" action="start"/>
+        <property name="env.security_manager" value="ON"/>
         <antcall target="add-quicklook-policy-grants" />
         <antcall target="start-derby"/>
         <antcall target="start-server-felix"/>
@@ -115,10 +121,10 @@
         <antcall target="undeploy"/>
         <antcall target="undeploy-gd"/>
         <antcall target="quicklook-summary"/>
-        <!-- antcall target="disable-security-manager"/ -->
+        <antcall target="disable-security-manager"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
-        <!-- antcall target="remove-quicklook-policy-grants"/ -->
+        <antcall target="remove-quicklook-policy-grants"/>
         <copy file="test-output/emailable-report.html" tofile="test-output/QL-GP-report.html" failonerror="false"/>
         <antcall target="testng-summary"/>
         <record name="allrun.output" action="stop"/>
@@ -334,8 +340,8 @@
         </loadfile>
 	<exec executable="hostname" outputproperty="host.name"/>
 	<property name="titleTime" value="&lt;H1&gt; GF QuickLook Test Results &lt;/H1&gt; &lt;HR&gt; Build Info: ${build_version} &lt;p&gt; Test Completed at: ${end.timestamp}"/>
-	<property name="confRow1" value="&lt;TABLE class=param&gt; &lt;TR&gt; &lt;TD&gt;OS arch&lt;/TD&gt; &lt;TD&gt;Java version &lt;/TD&gt; &lt;TD&gt;Machine Name &lt;/TD&gt; &lt;/TR&gt;"/>
-	<property name="confRow2" value="&lt;TR&gt; &lt;TD&gt;${os.name}-${os.arch}&lt;/TD&gt; &lt;TD&gt;${java.version}&lt;/TD&gt; &lt;TD&gt;${host.name}&lt;/TD&gt; &lt;/TR&gt; &lt;/TABLE&gt;"/>
+	<property name="confRow1" value="&lt;TABLE class=param&gt; &lt;TR&gt; &lt;TD&gt;OS arch&lt;/TD&gt; &lt;TD&gt;Java version &lt;/TD&gt; &lt;TD&gt;Machine Name &lt;/TD&gt; &lt;TD&gt;Security Manager&lt;/TD&gt; &lt;/TR&gt;"/>
+	<property name="confRow2" value="&lt;TR&gt; &lt;TD&gt;${os.name}-${os.arch}&lt;/TD&gt; &lt;TD&gt;${java.version}&lt;/TD&gt; &lt;TD&gt;${host.name}&lt;/TD&gt; &lt;TD&gt;${env.security_manager}&lt;/TD&gt; &lt;/TR&gt; &lt;/TABLE&gt;"/>
 	<replace file="test-output/emailable-report.html" token="&lt;body&gt;" value="&lt;body&gt; ${titleTime} ${confRow1} ${confRow2} &lt;HR&gt; &lt;p&gt;"/>
     </target>
 
