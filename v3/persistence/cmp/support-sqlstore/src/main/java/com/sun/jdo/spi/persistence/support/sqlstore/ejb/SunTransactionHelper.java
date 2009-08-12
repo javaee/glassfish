@@ -57,6 +57,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.spi.ConnectorNamingEventListener;
 import com.sun.appserv.connectors.internal.spi.ConnectorNamingEvent;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
 
 import com.sun.jdo.api.persistence.support.JDOFatalInternalException;
 import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
@@ -65,10 +66,11 @@ import org.glassfish.internal.api.Globals;
 
 
 /** Sun specific implementation for TransactionHelper interface.
-* Though this class does not have special implementation for 
-* <code>registerSynchronization</code>, it uses a special Transaction 
+* This class has a special implementation for 
+* <code>registerSynchronization</code>, because it uses a special 
 * object that registers Synchronization instance to be processed after 
-* any bean's beforeCompletion method.
+* any bean's or container beforeCompletion method, but before the corresponding 
+* afterCompletion.
 */
 public class SunTransactionHelper extends TransactionHelperImpl
         implements //ApplicationLoaderEventListener,
@@ -147,6 +149,12 @@ public class SunTransactionHelper extends TransactionHelperImpl
 	} catch (Exception e) {
 	    throw new JDOFatalInternalException(e.getMessage());
 	}
+    }
+
+    /** SunTransactionHelper specific code */
+    public void registerSynchronization(Transaction jta, Synchronization sync)
+            throws RollbackException, SystemException {
+        EjbContainerUtilImpl.getInstance().registerPMSync(jta, sync);
     }
 
     /** SunTransactionHelper specific code */
