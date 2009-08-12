@@ -117,6 +117,13 @@ public class CLILogger {
     }
 
     /**
+     * Will messages at thislevel be logged?
+     */
+    public boolean isLoggable(Level level) {
+        return s1asLogger.isLoggable(level);
+    }
+
+    /**
      * prints the message with level as INFO
      * @param message the message to be written on the output stream
      */

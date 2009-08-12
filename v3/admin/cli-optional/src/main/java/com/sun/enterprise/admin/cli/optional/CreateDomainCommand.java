@@ -372,6 +372,10 @@ public final class CreateDomainCommand extends CLICommand {
             domainProperties.remove(DomainConfig.K_ADMIN_PORT);
             // saving the login information happens inside this method
             createTheDomain(getDomainsRoot(), domainProperties);
+        } catch (CommandException ce) {
+            logger.printMessage(ce.getLocalizedMessage());
+            throw new CommandException(
+                strings.get("CouldNotCreateDomain", domainName), ce);
         } catch (Exception e) {
             logger.printDetailMessage(e.getLocalizedMessage());
             throw new CommandException(

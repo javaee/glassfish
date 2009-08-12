@@ -36,6 +36,10 @@
 
 package com.sun.enterprise.admin.cli.remote;
 
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.logging.Level;
 import com.sun.appserv.management.client.prefs.LoginInfo;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
@@ -44,9 +48,6 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.FileUtils;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.GFBase64Encoder;
-import java.io.*;
-import java.net.*;
-import java.util.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -364,17 +365,20 @@ public class RemoteCommand extends CLICommand {
             cmd.doCommand(urlConnection);
 
         } catch (ConnectException ce) {
+            logger.printDebugMessage("doHttpCommand: connect exception " + ce);
             // this really means nobody was listening on the remote server
             // note: ConnectException extends IOException and tells us more!
             String msg = strings.get("ConnectException",
                     programOpts.getHost(), programOpts.getPort() + "");
             throw new CommandException(msg, ce);
         } catch (UnknownHostException he) {
+            logger.printDebugMessage("doHttpCommand: host exception " + he);
             // bad host name
             String msg = strings.get("UnknownHostException",
                                         programOpts.getHost());
             throw new CommandException(msg, he);
         } catch (SocketException se) {
+            logger.printDebugMessage("doHttpCommand: socket exception " + se);
             try {
                 boolean serverAppearsSecure = NetUtils.isSecurePort(
                                 programOpts.getHost(), programOpts.getPort());
@@ -389,6 +393,7 @@ public class RemoteCommand extends CLICommand {
                 throw new CommandException(io);
             }
         } catch (IOException e) {
+            logger.printDebugMessage("doHttpCommand: IO exception " + e);
             String msg = "Unknown I/O Error";
             if (urlConnection != null) {
                 try {
@@ -406,6 +411,7 @@ public class RemoteCommand extends CLICommand {
             }
             throw new CommandException(msg, e);
         } catch (Exception e) {
+            logger.printDebugMessage("doHttpCommand: exception " + e);
             logger.printExceptionStackTrace(e);
             throw new CommandException(e);
         }
@@ -607,6 +613,9 @@ public class RemoteCommand extends CLICommand {
                     if (!isReportProcessed) {
                         commandOpts =
                                 parseMetadata(partIt.next().getInputStream());
+                        logger.printDebugMessage(
+                            "fetchCommandMetadata: got command opts: " +
+                            commandOpts);
                         isReportProcessed = true;
                     } else {
                         partIt.next();  // just throw it away
@@ -623,6 +632,18 @@ public class RemoteCommand extends CLICommand {
      * @return the set of ValidOptions
      */
     private Set<ValidOption> parseMetadata(InputStream in) {
+        if (logger.isLoggable(Level.FINER)) { // XXX - assume "debug" == "FINER"
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try {
+                FileUtils.copyStream(in, baos);
+            } catch (IOException ex) { }
+            in = new ByteArrayInputStream(baos.toByteArray());
+            String response = baos.toString();
+            logger.printDebugMessage("------- RAW METADATA RESPONSE ---------");
+            logger.printDebugMessage(response);
+            logger.printDebugMessage("------- RAW METADATA RESPONSE ---------");
+        }
+
         Set<ValidOption> valid = new LinkedHashSet<ValidOption>();
         boolean sawFile = false;
         try {
@@ -806,26 +827,41 @@ public class RemoteCommand extends CLICommand {
         try {
             LoginInfoStore store = LoginInfoStoreFactory.getDefaultStore();
             li = store.read(programOpts.getHost(), programOpts.getPort());
+            if (li == null)
+                return;
         } catch (StoreException se) {
             logger.printDebugMessage(
                     "Login info could not be read from ~/.asadminpass file");
+            return;
         }
 
-        // initialize user name
-
-        if (programOpts.getUser() == null && li != null) {
+        /*
+         * If we don't have a user name, initialize it from .asadminpass.
+         * In that case, also initialize the password unless it was
+         * already specified (overriding what's in .asadminpass).
+         *
+         * If we already have a user name, and it's the same as what's
+         * in .asadminpass, and we don't have a password, use the password
+         * from .asadminpass.
+         */
+        if (programOpts.getUser() == null) {
             // not on command line and in .asadminpass
             logger.printDebugMessage("Getting user name from ~/.asadminpass: " +
                                         li.getUser());
             programOpts.setUser(li.getUser());
+            if (programOpts.getPassword() == null) {
+                // not in passwordfile and in .asadminpass
+                logger.printDebugMessage(
+                    "Getting password from ~/.asadminpass");
+                programOpts.setPassword(li.getPassword());
+            }                
+        } else if (programOpts.getUser().equals(li.getUser())) {
+            if (programOpts.getPassword() == null) {
+                // not in passwordfile and in .asadminpass
+                logger.printDebugMessage(
+                    "Getting password from ~/.asadminpass");
+                programOpts.setPassword(li.getPassword());
+            }                
         }
-
-        // initialize password
-
-        if (programOpts.getPassword() == null && li != null) {
-            // not in passwordfile and in .asadminpass
-            logger.printDebugMessage("Getting password from ~/.asadminpass");
-            programOpts.setPassword(li.getPassword());
-        }                
     }
 }

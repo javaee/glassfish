@@ -47,6 +47,8 @@ import com.sun.enterprise.admin.cli.util.*;
  */
 public class DASUtils {
 
+    public enum Error { NONE, AUTHENTICATION, CONNECTION, IO, UNKNOWN };
+
     private DASUtils() {
         // can't instantiate
     }
@@ -88,32 +90,31 @@ public class DASUtils {
      * See if DAS is alive, but insist that athentication is correct.
      * Do not print out the results of the version command from the server.
      *
-     * @return true if DAS can be reached and can handle commands,
-     * otherwise false.
+     * @throws CommandException on failure
      */
-    public static boolean pingDASWithAuth(ProgramOptions programOpts,
-            Environment env) {
+    public static Error pingDASWithAuth(ProgramOptions programOpts,
+            Environment env) throws CommandException {
         try {
             RemoteCommand cmd = new RemoteCommand("version", programOpts, env);
             cmd.executeAndReturnOutput(new String[] { "version" });
-            return true;
         } catch (AuthenticationException aex) {
-            return false;
+            return Error.AUTHENTICATION;
         } catch (Exception ex) {
             ExceptionAnalyzer ea = new ExceptionAnalyzer(ex);
             if (ea.getFirstInstanceOf(ConnectException.class) != null) {
                 CLILogger.getInstance().printDebugMessage(
                                         "Got java.net.ConnectException");
-                return false; // this definitely means server is not up
+                return Error.CONNECTION;
             } else if (ea.getFirstInstanceOf(IOException.class) != null) {
                 CLILogger.getInstance().printDebugMessage(
                         "It appears that server has started, but for" +
                         " some reason the exception is thrown: " +
                         ex.getMessage());
-                return true;
+                return Error.IO;
             } else {
-                return false; // unknown error, shouldn't really happen
+                return Error.UNKNOWN;
             }
         }
+        return Error.NONE;
     }
 }

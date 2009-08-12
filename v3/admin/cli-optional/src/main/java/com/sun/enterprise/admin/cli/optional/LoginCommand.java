@@ -102,11 +102,21 @@ public class LoginCommand extends CLICommand {
         programOpts.setInteractive(false);      // no more prompting allowed
         
         // Step 2: Invoke version command to validate the authentication info
-        if (!DASUtils.pingDASWithAuth(programOpts, env)) {
-            // this would mean authentication failed.
-            // so don't write into the .asadminpass file.
+        switch (DASUtils.pingDASWithAuth(programOpts, env)) {
+        case NONE:
+            break;
+        case AUTHENTICATION:
             throw new CommandException(
-                            strings.get("InvalidCredentials", adminUser));
+                    strings.get("InvalidCredentials", programOpts.getUser()));
+        case CONNECTION:
+            throw new CommandException(strings.get("ConnectException",
+                programOpts.getHost(), "" + programOpts.getPort()));
+        case IO:
+            throw new CommandException(strings.get("IOException",
+                programOpts.getHost(), "" + programOpts.getPort()));
+        case UNKNOWN:
+            throw new CommandException(strings.get("UnknownException",
+                programOpts.getHost(), "" + programOpts.getPort()));
         }
 
         // Step 3: Save in <userhomedir>/.asadminpass the string 
