@@ -173,7 +173,11 @@ public class FlashlightProbe
         return sbldr.toString();
     }
 
-    public void addDTraceProviderImpl(Object dtraceProviderImpl) {
-        this.dtraceProviderImpl = dtraceProviderImpl;
+    public void setDTraceProviderImpl(Object impl) {
+        dtraceProviderImpl = impl;
+    }
+
+    public Object getDTraceProviderImpl() {
+        return dtraceProviderImpl;
     }
 }

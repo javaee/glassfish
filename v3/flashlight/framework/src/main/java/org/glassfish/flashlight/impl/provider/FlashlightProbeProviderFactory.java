@@ -229,7 +229,7 @@ public class FlashlightProbeProviderFactory
          Collection<FlashlightProbe> probes = provider.getProbes();
 
          for(FlashlightProbe probe : probes) {
-             probe.addDTraceProviderImpl(dtraceProviderImpl);
+             probe.setDTraceProviderImpl(dtraceProviderImpl);
          }
     }
 
