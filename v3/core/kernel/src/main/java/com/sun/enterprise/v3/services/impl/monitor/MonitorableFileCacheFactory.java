@@ -1,9 +1,9 @@
 /*
- * 
+ *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,7 +11,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -20,9 +20,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -36,36 +36,30 @@
  *
  */
 
-package com.sun.enterprise.v3.services.impl;
+package com.sun.enterprise.v3.services.impl.monitor;
 
-import com.sun.grizzly.http.HttpWorkerThread;
-import com.sun.grizzly.http.StatsThreadPool;
-import org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider;
+import com.sun.grizzly.http.FileCache;
+import com.sun.grizzly.http.FileCacheFactory;
 
 /**
- * Grizzly worker thread implementation that emits probe events when taken 
- * from, and returned to, its thread pool.
+ * Monitoring aware {@link FileCacheFactory} implementation.
  *
- * @author jluehe
+ * @author Alexey Stashok
  */
-public class GrizzlyProbeWorkerThread extends HttpWorkerThread {
+public class MonitorableFileCacheFactory extends FileCacheFactory {
+    // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
+    private final GrizzlyMonitoring grizzlyMonitoring;
+    private final String fileCacheName;
 
-    private ThreadPoolProbeProvider threadPoolProbeProvider;
-
-    private String threadPoolName;
-
-
-    /**
-     * Constructor
-     */
-    public GrizzlyProbeWorkerThread(
-            StatsThreadPool threadPool,
-            Runnable runnable,
-            String name, 
-            int initialByteBufferSize,
-            ThreadPoolProbeProvider threadPoolProbeProvider) {
-        super(threadPool, name, runnable, initialByteBufferSize);
-        this.threadPoolProbeProvider = threadPoolProbeProvider;
-        this.threadPoolName = threadPool.getName();
+    public MonitorableFileCacheFactory(GrizzlyMonitoring grizzlyMonitoring,
+            String fileCacheName) {
+        this.grizzlyMonitoring = grizzlyMonitoring;
+        this.fileCacheName = fileCacheName;
     }
+    
+    @Override
+    protected FileCache createFileCache() {
+        return new MonitorableFileCache(grizzlyMonitoring, fileCacheName);
+    }
+
 }

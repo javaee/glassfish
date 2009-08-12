@@ -34,36 +34,50 @@
  * holder.
  */
 
-package org.glassfish.kernel.admin.monitor;
+package com.sun.enterprise.v3.services.impl.monitor;
 
-import org.glassfish.external.probe.provider.annotations.ProbeParam;
+import com.sun.grizzly.http.SelectorThread;
+import com.sun.grizzly.http.SelectorThreadKeyHandler;
+import com.sun.grizzly.util.Copyable;
+import java.nio.channels.SelectionKey;
 
 /**
- * Probe provider interface for thread pool related events.
+ * Monitoring aware {@link SelectorThreadKeyHandler} implementation.
+ *
+ * @author Alexey Stashok
  */
-public interface ThreadPoolProbeProvider {
+public class MonitorableSelectionKeyHandler extends SelectorThreadKeyHandler {
+    // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
+    private GrizzlyMonitoring grizzlyMonitoring;
+    private String listenerName;
 
-    /**
-     * Emits notification that new thread was created and added to the 
-     * thread pool.
-     */
-    public void newThreadsAllocatedEvent(
-        @ProbeParam("threadPoolName") String threadPoolName,
-        @ProbeParam("increment") int increment,
-        @ProbeParam("boolean") boolean startThread);
+    public MonitorableSelectionKeyHandler(GrizzlyMonitoring grizzlyMonitoring,
+            String listenerName) {
+        this(grizzlyMonitoring, listenerName, null);
+    }
 
+    public MonitorableSelectionKeyHandler(GrizzlyMonitoring grizzlyMonitoring,
+            String listenerName, SelectorThread selectorThread) {
+        super(selectorThread);
+        this.grizzlyMonitoring = grizzlyMonitoring;
+        this.listenerName = listenerName;
+    }
 
-    public void maxNumberOfThreadsReachedEvent(
-        @ProbeParam("threadPoolName") String threadPoolName,
-        @ProbeParam("maxNumberOfThreads") int maxNumberOfThreads);
+    @Override
+    public void copyTo(Copyable copy) {
+        super.copyTo(copy);
 
+        MonitorableSelectionKeyHandler copyHandler = (MonitorableSelectionKeyHandler) copy;
+        copyHandler.grizzlyMonitoring = grizzlyMonitoring;
+        copyHandler.listenerName = listenerName;
+    }
 
-    public void threadDispatchedFromPoolEvent(
-        @ProbeParam("threadPoolName") String threadPoolName,
-        @ProbeParam("threadId") String threadId);
+    @Override
+    public void cancel(SelectionKey key) {
+        grizzlyMonitoring.getConnectionsProbeProvider().connectionClosedEvent(
+                listenerName, key.channel().hashCode());
 
+        super.cancel(key);
+    }
 
-    public void threadReturnedToPoolEvent(
-        @ProbeParam("threadPoolName") String threadPoolName,
-        @ProbeParam("threadId") String threadId);
 }

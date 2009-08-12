@@ -25,6 +25,7 @@ package com.sun.enterprise.v3.services.impl;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
+import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.ControllerStateListener;
 import com.sun.grizzly.config.GrizzlyEmbeddedHttp;
@@ -115,7 +116,7 @@ public class GrizzlyProxy implements NetworkProxy {
      * configuration object.
      */
     private void configureGrizzly() {
-        grizzlyListener = new GrizzlyListener(new Controller());
+        grizzlyListener = new GrizzlyListener(grizzlyService.getMonitoring(), new Controller(), networkListener.getName());
         grizzlyListener.configure(networkListener, isWebProfile, grizzlyService.habitat);
 
         if(!grizzlyListener.isGenericListener()) {
@@ -140,6 +141,8 @@ public class GrizzlyProxy implements NetworkProxy {
                 Mapper.class.getName(), networkListener.getPort());
             grizzlyService.notifyMapperUpdateListeners(networkListener, mapper);
         }
+
+        registerMonitoringStatsProviders();
     }
 
     /**
@@ -154,6 +157,8 @@ public class GrizzlyProxy implements NetworkProxy {
             grizzlyService.getHabitat().removeIndex(Mapper.class.getName(),
                         String.valueOf(portNumber));
         }
+
+        unregisterMonitoringStatsProviders();
     }
 
     @Override
@@ -235,6 +240,27 @@ public class GrizzlyProxy implements NetworkProxy {
     public int getPort() {
         return portNumber;
     }
+
+    protected void registerMonitoringStatsProviders() {
+        final String name = networkListener.getName();
+        final GrizzlyMonitoring monitoring = grizzlyService.getMonitoring();
+
+        monitoring.registerThreadPoolStatsProvider(name);
+        monitoring.registerKeepAliveStatsProvider(name);
+        monitoring.registerFileCacheStatsProvider(name);
+        monitoring.registerConnectionsStatsProvider(name);
+    }
+
+    protected void unregisterMonitoringStatsProviders() {
+        final String name = networkListener.getName();
+        final GrizzlyMonitoring monitoring = grizzlyService.getMonitoring();
+
+        monitoring.unregisterThreadPoolStatsProvider(name);
+        monitoring.unregisterKeepAliveStatsProvider(name);
+        monitoring.unregisterFileCacheStatsProvider(name);
+        monitoring.unregisterConnectionsStatsProvider(name);
+    }
+    
 
     public final class GrizzlyFuture implements Future<Result<Thread>> {
         Result<Thread> result;

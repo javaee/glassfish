@@ -22,8 +22,9 @@
  */
 package com.sun.enterprise.v3.services.impl;
 
+import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
+import com.sun.enterprise.v3.services.impl.monitor.MonitorableServiceListener;
 import com.sun.grizzly.Controller;
-import com.sun.grizzly.config.GrizzlyServiceListener;
 import com.sun.grizzly.config.dom.NetworkListener;
 import org.jvnet.hk2.component.Habitat;
 
@@ -36,7 +37,7 @@ import java.util.logging.Logger;
  * and admin listeners
  * @author Vijay Ramachandran
  */
-public class GrizzlyListener extends GrizzlyServiceListener {
+public class GrizzlyListener extends MonitorableServiceListener {
     /**
      * The logger to use for logging messages.
      */
@@ -46,13 +47,14 @@ public class GrizzlyListener extends GrizzlyServiceListener {
     private ServiceInitializerThread serviceInitializer;
     private NetworkListener listener;
 
-    public GrizzlyListener(Controller cont) {
-        super(cont);
+    public GrizzlyListener(GrizzlyMonitoring monitoring, Controller controller, String listenerName) {
+        super(monitoring, controller, listenerName);
     }
 
     /*
     * Configures the given grizzlyListener.
     */
+    @Override
     public void configure(NetworkListener networkListener, boolean isWebProfile, Habitat habitat) {
         this.listener = networkListener;
         if("light-weight-listener".equals(networkListener.getProtocol())) {
@@ -103,6 +105,7 @@ public class GrizzlyListener extends GrizzlyServiceListener {
         }
     }
 
+    @Override
     public Controller getController() {
         if(isGenericListener) {
             return serviceInitializer.getController();
@@ -123,6 +126,7 @@ public class GrizzlyListener extends GrizzlyServiceListener {
         return isGenericListener;
     }
 
+    @Override
     public int getPort() {
         if(isGenericListener) {
             return serviceInitializer.getPort();

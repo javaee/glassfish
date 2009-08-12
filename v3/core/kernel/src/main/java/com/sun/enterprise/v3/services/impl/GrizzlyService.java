@@ -25,7 +25,6 @@ package com.sun.enterprise.v3.services.impl;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -44,6 +43,7 @@ import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
+import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
@@ -57,7 +57,6 @@ import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
-import org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -83,11 +82,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
     public static final int ALL_PORTS = Integer.MAX_VALUE;
 
-    static final ThreadPoolProbeProvider NO_OP_THREADPOOL_PROBE_PROVIDER =
-        (ThreadPoolProbeProvider) Proxy.newProxyInstance(
-            ThreadPoolProbeProvider.class.getClassLoader(),
-            new Class[] { ThreadPoolProbeProvider.class },
-            new NoopInvocationHandler());
     
     @Inject(name="server-config") // for now
     Config config;
@@ -107,7 +101,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
     Collection<String> hosts = new ArrayList<String>();
 
-    private ThreadPoolProbeProvider threadPoolProbeProvider;
+    private final GrizzlyMonitoring monitoring;
 
     ConcurrentLinkedQueue<MapperUpdateListener> mapperUpdateListeners =
             new ConcurrentLinkedQueue<MapperUpdateListener>();
@@ -116,6 +110,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
     public GrizzlyService() {
         futures = new ArrayList<Future<Result<Thread>>>();
+        monitoring = new GrizzlyMonitoring();
     }
     
     /**
@@ -236,16 +231,9 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         return habitat;
     }
 
-
-    /**
-     * Gets the ThreadPoolProbeProvider
-     *
-     * @return the ThreadPoolProbeProvider
-     */   
-    public ThreadPoolProbeProvider getThreadPoolProbeProvider() {
-        return threadPoolProbeProvider;
+    public GrizzlyMonitoring getMonitoring() {
+        return monitoring;
     }
-
 
     /**
      * Returns the life expectency of the service
@@ -278,7 +266,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         configListener.setLogger(logger);
 
         try {
-            createProbeProviders();
             futures = new ArrayList<Future<Result<Thread>>>();
             for (NetworkListener listener : networkConfig.getNetworkListeners().getNetworkListener()) {
                 createNetworkProxy(listener);
@@ -339,34 +326,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     public List<Future<Result<Thread>>> getFutures() {
         return futures;
     }
-
-
-    /**
-     * Creates probe providers for monitoring purposes.
-     */
-    private void createProbeProviders() {
-
-        try {
-            threadPoolProbeProvider = probeProviderFactory.getProbeProvider(
-                "core", "threadpool", null, ThreadPoolProbeProvider.class);
-            if (threadPoolProbeProvider == null) {
-                // Should never happen
-                logger.log(Level.WARNING,
-                    "Unable to create probe provider for interface " +
-                    ThreadPoolProbeProvider.class.getName() +
-                    ", using no-op provider");
-            }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE,
-                       "Unable to create probe provider for interface " +
-                       ThreadPoolProbeProvider.class.getName(),
-                       e);
-        }
-        if (threadPoolProbeProvider == null) {
-            threadPoolProbeProvider = NO_OP_THREADPOOL_PROBE_PROVIDER;
-        }
-    }
-
 
     /*
      * Creates a new NetworkProxy for a particular HttpListner
