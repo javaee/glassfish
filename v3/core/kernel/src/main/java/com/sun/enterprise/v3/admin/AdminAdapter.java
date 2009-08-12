@@ -184,11 +184,11 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
                 report = doCommand(requestURI, req, report, outboundPayload);
             }
         } catch(InterruptedException e) {
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                report.setMessage("V3 cannot process this command at this time, please wait");                        
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage("V3 cannot process this command at this time, please wait");                        
         } catch (Exception e) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage("Error authenticating");
+            report.setMessage("Exception while processing command: " + e);
         }
         
         try {
@@ -220,8 +220,10 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
     public boolean authenticate(Request req)
             throws Exception {
         String[] up = getUserPassword(req);
+        String user = up[0];
+        String password = up.length > 1 ? up[1] : "";
         if (authenticator != null) {
-            return authenticator.login(up[0], up[1], as.getAuthRealmName());
+            return authenticator.login(user, password, as.getAuthRealmName());
         }
         return true;   //if the authenticator is not available, allow all access - per Jerome
     }
