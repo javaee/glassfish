@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="473"/>
+    <property name="TOTAL_EXPECTED" value="472"/>
 
     &commonSetup;
     &commonBuild;
