@@ -74,9 +74,9 @@ public final class LogQueryResultImpl
         mFieldNames   = (String[])records.get( 0 );
         
         mEntries    = new LogQueryEntry[ records.size() - 1 ];
-        for( int i = 1; i < mEntries.length; ++i )
+        for( int i = 0; i < mEntries.length; ++i )
         {
-            mEntries[ i ]   = new LogQueryEntryImpl( records.get( i ) );
+            mEntries[ i ]   = new LogQueryEntryImpl( records.get( i+1 ) );
         }
     }
     

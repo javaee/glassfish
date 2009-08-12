@@ -316,7 +316,7 @@ public class LogViewHandlers {
                 LogQueryResult r = LogQuery.Helper.toLogQueryResult(results);
                 query = r.getEntries();
                // Add the results to the Model
-                for (int i = 1; i < query.length; i++) {
+                for (int i = 0; i < query.length; i++) {
                     HashMap oneRow = new HashMap();
                     LogQueryEntry row = (LogQueryEntry) query[i];
                     oneRow.put("recNumber", row.getRecordNumber());
