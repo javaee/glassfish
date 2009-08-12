@@ -54,6 +54,8 @@ public class ApplicationInfo extends ModuleInfo {
     final private Collection<ModuleInfo> modules = new ArrayList<ModuleInfo>();
     final private ReadableArchive source;
     final private Map<Class<? extends Object>, Object> metaData = new HashMap<Class<? extends Object>, Object>();
+    final private Map<String, Object> transientAppMetaData = new HashMap<String, Object>();
+
     private String libraries;
 
 
@@ -82,7 +84,21 @@ public class ApplicationInfo extends ModuleInfo {
         return c.cast(metaData.get(c));
     }
 
-    
+    public void addTransientAppMetaData(String metaDataKey, 
+        Object metaDataValue) {
+        if (metaDataValue != null) {
+            transientAppMetaData.put(metaDataKey, metaDataValue);
+        }
+    }
+
+    public <T> T getTransientAppMetaData(String key, Class<T> metadataType) {
+        Object metaDataValue = transientAppMetaData.get(key);
+        if (metaDataValue != null) {
+            return metadataType.cast(metaDataValue);
+        }
+        return null;
+    }
+
     /**
      * Returns the registration name for this application
      * @return the application registration name
@@ -177,6 +193,11 @@ public class ApplicationInfo extends ModuleInfo {
         for (ModuleInfo module : modules) {
             module.load(getSubContext(module,context), tracker);
         }
+
+        // put all the transient app meta meta from context to 
+        // application info
+        transientAppMetaData.putAll(context.getTransientAppMetadata());
+
         if (events!=null) {
             events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_LOADED, this), false);
         }        

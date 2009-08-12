@@ -172,6 +172,13 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
     public Collection<Object> getModuleMetadata();  
 
     /**
+     * Returns all the transient app metadata assocated with this deployment
+     *
+     * @return collection of metadata added to the context
+     */
+    public Map<String, Object> getTransientAppMetadata();  
+
+    /**
      * Returns the archive handler that's associated with this context
      *
      * @return archive handler
