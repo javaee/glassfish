@@ -73,12 +73,13 @@ public class RemoteCommand extends CLICommand {
                                     "^[a-zA-Z][-a-zA-Z0-9_]*$";
 
     private String                          responseFormatType = "hk2-agent";
-    private OutputStream                    userOut; // XXX - never set
+    private OutputStream                    userOut;
     // return output string rather than printing it
     private boolean                         returnOutput = false;
     private String                          output;
     private boolean                         doUpload = false;
     private boolean                         addedUploadOption = false;
+    private boolean                         doHelp = false;
     private Payload.Outbound                outboundPayload;
 
     /**
@@ -138,7 +139,7 @@ public class RemoteCommand extends CLICommand {
              * metadata and we throw away all the other options and
              * fake everything else.
              */
-            if (programOpts.isHelp()) {
+            if (doHelp || programOpts.isHelp()) {
                 commandOpts = new HashSet<ValidOption>();
                 ValidOption opt = new ValidOption("help", "BOOLEAN",
                         ValidOption.OPTIONAL, "false");
@@ -421,7 +422,13 @@ public class RemoteCommand extends CLICommand {
      */
     public Reader getManPage() {
         try {
-            String manpage = executeAndReturnOutput(name, "--help");
+            /*
+             * Can't use --help option because processProgramOptions
+             * will complain that it's deprecated syntax.
+             */
+            doHelp = true;
+            String manpage = executeAndReturnOutput(name);
+            doHelp = false;
             return new StringReader(manpage);
         } catch (CommandException cex) {
             // ignore
