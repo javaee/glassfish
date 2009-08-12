@@ -43,8 +43,9 @@
         <groupId>org.glassfish</groupId>
         <artifactId>glassfish-parent</artifactId>
         <version>3.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
-        <groupId>org.glassfish.web</groupId>
+    <groupId>org.glassfish.web</groupId>
     <artifactId>web</artifactId>
     <packaging>pom</packaging>
     <name>GlassFish Web container related modules</name>  

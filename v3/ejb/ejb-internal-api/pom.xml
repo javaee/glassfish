@@ -43,6 +43,7 @@
         <groupId>org.glassfish.ejb</groupId>
         <artifactId>ejb</artifactId>
         <version>3.0-SNAPSHOT</version>
+       <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>ejb-internal-api</artifactId>

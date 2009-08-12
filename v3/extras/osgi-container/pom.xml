@@ -5,6 +5,7 @@
         <groupId>org.glassfish.extras</groupId>
         <artifactId>extras</artifactId>
         <version>3.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>osgi-container</artifactId>

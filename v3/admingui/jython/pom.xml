@@ -41,6 +41,7 @@
         <groupId>org.glassfish.admingui</groupId>
         <artifactId>admingui</artifactId>
         <version>3.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>console-jython-plugin</artifactId>
     <packaging>hk2-jar</packaging>

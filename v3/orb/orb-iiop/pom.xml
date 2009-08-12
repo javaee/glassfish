@@ -6,6 +6,7 @@
         <groupId>org.glassfish.orb</groupId>
         <artifactId>orb</artifactId>
         <version>3.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>orb-iiop</artifactId>
     <packaging>hk2-jar</packaging>
