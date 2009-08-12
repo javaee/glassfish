@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.tools.upgrade.common;
 
-import com.sun.enterprise.cli.framework.InputsAndOutputs;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.io.BufferedReader;
@@ -44,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -106,8 +106,8 @@ public class Commands {
             }			
             InputsAndOutputs io = InputsAndOutputs.getInstance();
             PipedOutputStream pos = new PipedOutputStream();
-            io.setErrorOutput(pos);
-            io.setUserOutput(pos);
+            PrintStream errorOutput = new PrintStream(pos);
+            PrintStream userOutput = new PrintStream(pos);
             CommandOutputReader cor = new CommandOutputReader(pos);
             ((Thread)cor).start();
             logger.info(stringManager.
@@ -118,6 +118,12 @@ public class Commands {
 //            AsadminMain m = new AsadminMain(commandStrings);
 //            exitValue = m.runLocalCommand();
             pos.flush();
+            errorOutput.close();
+            userOutput.close();
+            try {
+                pos.close();
+            } catch (IOException ioe){
+            }
             return exitValue;
         }
         catch(Exception e) {

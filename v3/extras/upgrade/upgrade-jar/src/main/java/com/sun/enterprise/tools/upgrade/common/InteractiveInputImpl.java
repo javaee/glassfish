@@ -228,7 +228,7 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
 
     private String readInput() {
         try {
-            return InputsAndOutputs.getInstance().getUserInput().getLine();
+            return InputsAndOutputs.getInstance().getUserInput().readLine();
         } catch (IOException ioe) {
             return null;
         }

@@ -46,8 +46,8 @@
                         <manifest>
                             <mainClass>com.sun.enterprise.tools.upgrade.UpgradeToolMain</mainClass>
                         </manifest>
-                        <manifestEntries>
-                        <Class-Path>kernel.jar admin-cli.jar cli-framework.jar stax-osgi.jar admin-cli-l10n.jar javahelp-2.0.02.jar</Class-Path>
+                        <manifestEntries> 
+                        <Class-Path>kernel.jar admin-cli.jar stax-osgi.jar admin-cli-l10n.jar javahelp-2.0.02.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
