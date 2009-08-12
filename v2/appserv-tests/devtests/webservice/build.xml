@@ -19,7 +19,9 @@
         <delete file="${env.APS_HOME}/test_results.xml"/>
         <delete dir="${env.APS_HOME}/build/module"/>
         <record name="webservice.output" action="start" />
+        <delete dir="${env.APS_HOME}/build/module"/>
         <ant dir="jaxrpc-hello-ejb" target="all"/>
+        <delete dir="${env.APS_HOME}/build/module"/>
         <ant dir="jaxrpc-hello-web" target="all"/>
 <!--	<ant dir="googleserver" target="all"/>--> <!-- 3 tests -->
         <ant dir="xsdany" target="all"/> <!-- 1 test -->

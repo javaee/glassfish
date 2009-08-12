@@ -8,7 +8,7 @@
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
-<project name="ejbwebservicesinwar-2" default="all" basedir=".">
+<project name="wsRef-webservicefeatures" default="all" basedir=".">
 
     &commonSetup;
     &commonBuild;

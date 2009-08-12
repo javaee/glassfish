@@ -73,7 +73,7 @@
   
   <target name="clean" >
       <delete dir="${build}" />
-      <delete dir="${APS_HOME}/build" />
+      <delete dir="${env.APS_HOME}/build" />
       <delete dir="${dist}" />    
       <delete dir="${assemble}" />
       <delete dir="${assemble.dir}" />
