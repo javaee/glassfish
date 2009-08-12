@@ -36,10 +36,11 @@
 
 package org.glassfish.flashlight.impl.core;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
 /**
  * @author Mahesh Kannan
+ * @author Byron Nevins
  * Date: Jun 25, 2008
  */
 public class ProbeProviderRegistry {
@@ -47,7 +48,7 @@ public class ProbeProviderRegistry {
     private static ProbeProviderRegistry _me =
             new ProbeProviderRegistry();
 
-    private ConcurrentHashMap<String, FlashlightProbeProvider> providerMap =
+    private ConcurrentMap<String, FlashlightProbeProvider> providerMap =
             new ConcurrentHashMap<String, FlashlightProbeProvider>();
 
     private ProbeProviderRegistry() {
@@ -69,17 +70,15 @@ public class ProbeProviderRegistry {
 
         String qname = provider.getModuleProviderName() + ":" +
                 provider.getModuleName() + ":" + ((provider.getProbeProviderName()==null)?clz.getName():provider.getProbeProviderName());
-        //System.out.println("**** Registering Probe Provider" + qname);
-        FlashlightProbeProvider oldProvider = providerMap.get(qname);
 
-        // bnevins - this is a concurrency bug
-        if (oldProvider == null) {
-            providerMap.put(qname, provider);
-        } else {
+        // if there is an entry in the map for qname already -- it is an error
+        // ConcurrentMap allows us to check and put with thread-safety!
+        // putIfAbsent returns null iff there was no value already in there.
+
+        if (providerMap.putIfAbsent(qname, provider) != null) {
             throw new IllegalStateException("Provider already mapped " + qname);
         }
 
         return provider;
     }
-
 }
