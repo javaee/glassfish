@@ -68,6 +68,7 @@ public class Commands {
 
         ArrayList<String> tmpC = new ArrayList<String>();
         tmpC.add("start-domain");
+        tmpC.add("--upgrade");
         tmpC.add("--domaindir");
         tmpC.add(commonInfo.getTarget().getInstallDir());
 

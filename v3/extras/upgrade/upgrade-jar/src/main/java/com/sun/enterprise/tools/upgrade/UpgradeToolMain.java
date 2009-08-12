@@ -202,9 +202,10 @@ public class UpgradeToolMain {
 
                 dProcessor.copyUserLibFiles();
                 int exitValue = dProcessor.startDomain(_target.getDomainName());
-                if (exitValue == 0){
-                    dProcessor.stopDomain(_target.getDomainName());
-                }
+                // obsolete for V3
+                //if (exitValue == 0){
+                //    dProcessor.stopDomain(_target.getDomainName());
+                //}
 
                 //- There should be a new server log file.
                 if (serverLog == null) {
