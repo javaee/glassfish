@@ -95,7 +95,8 @@ public class ImplementorCacheDelegateImpl extends ImplementorCacheDelegate {
             WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
             InvocationManager invManager = wscImpl.getInvocationManager();
             ComponentInvocation inv = invManager.getCurrentInvocation();
-            ((EJBInvocation)inv).setWebServiceTie(implementor.getTie());
+            if (inv instanceof EJBInvocation)
+                ((EJBInvocation)inv).setWebServiceTie(implementor.getTie());
         } catch(Throwable t) {
             RuntimeException re = new RuntimeException();
             re.initCause(t);
