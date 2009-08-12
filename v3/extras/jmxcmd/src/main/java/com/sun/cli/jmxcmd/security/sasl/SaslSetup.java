@@ -9,27 +9,11 @@
 package com.sun.cli.jmxcmd.security.sasl;
 
 import java.util.Map;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.Security;
-import java.security.KeyStoreException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
 import javax.security.sasl.Sasl;
 
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
 
 
-import com.sun.cli.jcmd.util.misc.StringUtil;
 
 public class SaslSetup
 {

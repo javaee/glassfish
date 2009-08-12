@@ -20,8 +20,6 @@ import com.sun.cli.jcmd.util.cmd.OptionsInfoTest;
 import com.sun.cli.jcmd.util.misc.TokenizerTest;
 import com.sun.cli.jcmd.util.misc.CompareUtilTest;
 import com.sun.cli.jcmd.util.misc.StringEscaperTest;
-import com.sun.cli.jcmd.util.misc.StringUtil;
-import com.sun.cli.jcmd.util.misc.ClassUtil;
 import com.sun.cli.jmxcmd.support.ArgParserTest;
 import com.sun.cli.jmxcmd.support.AliasMgrTest;
 import com.sun.cli.jmxcmd.support.CLISupportMBeanImplTest;
@@ -37,7 +35,9 @@ import org.glassfish.admin.amx.util.jmx.ObjectNameQueryImplTest;
 
 import junit.extensions.ActiveTestSuite;
 import junit.framework.TestCase;
+import org.glassfish.admin.amx.util.ClassUtil;
 import org.glassfish.admin.amx.util.ListUtil;
+import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.TypeCast;
 
 

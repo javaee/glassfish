@@ -21,7 +21,6 @@ import javax.management.*;
 
 
 import org.glassfish.admin.amx.util.stringifier.*;
-import com.sun.cli.jcmd.util.misc.ClassUtil;
 
 import com.sun.cli.jmxcmd.support.CLISupportStrings;
 import com.sun.cli.jmxcmd.support.StandardAliases;
@@ -33,6 +32,7 @@ import com.sun.cli.jmxcmd.support.ResultsForGetSet;
 import com.sun.cli.jmxcmd.support.InspectResultStringifier;
 import com.sun.cli.jmxcmd.support.ResultsForGetSetStringifier;
 import com.sun.cli.jmxcmd.support.InvokeResultStringifier;
+import org.glassfish.admin.amx.util.ClassUtil;
 
 
 public final class CLISupportTester

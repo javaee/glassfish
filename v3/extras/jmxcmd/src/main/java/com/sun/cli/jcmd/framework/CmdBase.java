@@ -29,9 +29,7 @@ import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 import org.glassfish.admin.amx.util.stringifier.Stringifier;
 import org.glassfish.admin.amx.util.stringifier.StringifierRegistryImpl;
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
-import com.sun.cli.jcmd.util.misc.ClassUtil;
 import com.sun.cli.jcmd.util.misc.TokenizerException;
-import com.sun.cli.jcmd.util.misc.StringUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 
 import com.sun.cli.jcmd.util.cmd.ArgHelper;
@@ -52,6 +50,8 @@ import com.sun.cli.jcmd.util.cmd.LineReaderImpl;
 import com.sun.cli.jcmd.util.misc.StringSource;
 import com.sun.cli.jcmd.util.misc.PackageStringSources;
 import com.sun.cli.jcmd.util.misc.Formatter;
+import org.glassfish.admin.amx.util.ClassUtil;
+import org.glassfish.admin.amx.util.StringUtil;
 
 
 /**

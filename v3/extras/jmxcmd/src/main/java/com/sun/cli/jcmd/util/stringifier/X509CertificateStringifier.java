@@ -60,8 +60,8 @@ package org.glassfish.admin.amx.util.stringifier;
 import java.security.cert.X509Certificate;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import org.glassfish.admin.amx.util.StringUtil;
 
-import com.sun.cli.jcmd.util.misc.StringUtil;
 
 
 /**

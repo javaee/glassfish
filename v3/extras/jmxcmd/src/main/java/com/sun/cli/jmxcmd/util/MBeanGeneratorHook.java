@@ -26,7 +26,6 @@ import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanOperationInfo;
 
-import com.sun.cli.jcmd.util.misc.ClassUtil;
 
 /**
 	Hook to be passed to MBeanGenerator

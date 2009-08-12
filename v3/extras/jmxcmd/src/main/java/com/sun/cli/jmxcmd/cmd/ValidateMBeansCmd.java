@@ -20,37 +20,21 @@ import java.util.Arrays;
 import java.io.IOException;
 import java.io.NotSerializableException;
 
-import java.util.Properties;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.net.URI;
-import java.math.BigInteger;
 
 import javax.management.ObjectName;
 import javax.management.MBeanServerConnection;
 import javax.management.MBeanOperationInfo;
 import javax.management.InstanceNotFoundException;
-import javax.management.JMException;
-import javax.management.ReflectionException;
-import javax.management.AttributeNotFoundException;
-import javax.management.MBeanException;
 import javax.management.MBeanInfo;
 import javax.management.MBeanAttributeInfo;
-import javax.management.Attribute;
 import javax.management.AttributeList;
 
-import com.sun.cli.jcmd.util.cmd.ArgHelper;
 import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
 import com.sun.cli.jcmd.util.cmd.OptionInfo;
 import com.sun.cli.jcmd.util.cmd.OptionInfoImpl;
-import com.sun.cli.jcmd.util.cmd.OptionsInfo;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
 import org.glassfish.admin.amx.util.ExceptionUtil;
-import com.sun.cli.jcmd.util.misc.ArrayConversion;
-import com.sun.cli.jcmd.util.misc.ArrayUtil;
-import com.sun.cli.jcmd.util.misc.GSetUtil;
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
-import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 import com.sun.cli.jcmd.framework.CmdEnv;
 import com.sun.cli.jcmd.framework.CmdHelp;
@@ -61,12 +45,13 @@ import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;
 import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
 
-import com.sun.cli.jcmd.util.cmd.OperandsInfo;
-import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 
 
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import com.sun.cli.jmxcmd.util.ObjectNameComparator;
+import org.glassfish.admin.amx.util.ArrayConversion;
+import org.glassfish.admin.amx.util.ArrayUtil;
+import org.glassfish.admin.amx.util.SetUtil;
 
 
 
@@ -486,7 +471,7 @@ public class ValidateMBeansCmd extends JMXCmd
 					final String			claimedString	= as.stringify( attrNames );
 					
 					final Set<String> actualSet	= JMXUtil.attributeListToValueMap( attrs ).keySet();
-					final Set<String> missingSet	= GSetUtil.newStringSet( attrNames );
+					final Set<String> missingSet	= SetUtil.newStringSet( attrNames );
 					missingSet.removeAll( actualSet );
 					
 					final String[]	missingNames	= (String[])ArrayConversion.setToArray( missingSet, true );

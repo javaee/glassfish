@@ -45,7 +45,6 @@ import org.glassfish.admin.amx.util.jmx.stringifier.AttributeChangeNotificationS
 import org.glassfish.admin.amx.util.jmx.stringifier.MBeanServerNotificationStringifier;
 import org.glassfish.admin.amx.util.jmx.stringifier.MonitorNotificationStringifier;
 
-import com.sun.cli.jcmd.util.misc.ArrayConversion;
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 
 
@@ -54,6 +53,7 @@ import com.sun.cli.jcmd.util.cmd.CmdInfo;
 import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
 
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
+import org.glassfish.admin.amx.util.ArrayConversion;
 
 
 

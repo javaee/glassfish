@@ -13,10 +13,8 @@ package com.sun.cli.jmxcmd.cmd;
 
 import java.io.IOException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import java.util.Properties;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,9 +44,7 @@ import javax.management.remote.JMXConnectorServer;
 //import javax.management.remote.generic.GenericConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.rmi.RMIConnectorServer;
-import javax.naming.NamingException;
 
-import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 
 
 import com.sun.cli.jcmd.framework.CmdEnv;
@@ -63,16 +59,9 @@ import com.sun.cli.jcmd.util.cmd.DisallowedOptionDependency;
 import com.sun.cli.jcmd.util.cmd.RequiredOptionDependency;
 import com.sun.cli.jcmd.util.cmd.OptionInfo;
 import com.sun.cli.jcmd.util.cmd.OptionInfoImpl;
-import com.sun.cli.jcmd.util.cmd.OptionsInfo;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
-import com.sun.cli.jcmd.util.misc.ClassUtil;
 import com.sun.cli.jcmd.util.misc.StringifiedList;
-import com.sun.cli.jcmd.util.misc.StringUtil;
 
-import com.sun.cli.jmxcmd.spi.JMXConnectorProvider;
-import com.sun.cli.jmxcmd.spi.InProcessConnectorProvider;
-import com.sun.cli.jmxcmd.support.ConnectInfo;
-import com.sun.cli.jmxcmd.security.sasl.PasswordFileCallbackHandler;
 import com.sun.cli.jmxcmd.security.TLSSetup;
 import com.sun.cli.jmxcmd.security.rmi.RMISSLServerSocketFactory;
 import com.sun.cli.jmxcmd.security.rmi.RMISSLClientSocketFactory;
@@ -83,7 +72,6 @@ import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;
 import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
 
-import com.sun.cli.jcmd.util.cmd.OperandsInfo;
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 
 import com.sun.cli.jmxcmd.security.sasl.SaslServerSetup;

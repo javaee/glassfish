@@ -12,7 +12,7 @@ package com.sun.cli.jcmd.framework;
 
 import java.util.List;
 import java.util.ArrayList;
-import com.sun.cli.jcmd.util.misc.ClassUtil;
+import org.glassfish.admin.amx.util.ClassUtil;
 
 /**
 	An implementation of ClassSource which uses classnames. 

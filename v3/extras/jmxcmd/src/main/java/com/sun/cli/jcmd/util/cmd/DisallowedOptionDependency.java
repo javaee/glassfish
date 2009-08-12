@@ -10,8 +10,6 @@
  */
 package com.sun.cli.jcmd.util.cmd;
 
-import com.sun.cli.jcmd.util.misc.ArrayUtil;
-
 
 /**
 	A dependency denoting a disallowed option (one that may not ocurr in conjunction

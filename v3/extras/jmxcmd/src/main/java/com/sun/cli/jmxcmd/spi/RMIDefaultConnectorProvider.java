@@ -13,7 +13,6 @@ package com.sun.cli.jmxcmd.spi;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.Collections;
 
 import java.io.IOException;
 import java.io.File;
@@ -24,23 +23,19 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import javax.net.ssl.HandshakeCompletedListener;
 
 import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXServiceURL;
-import javax.management.remote.JMXConnectorFactory;
 
-import com.sun.cli.jcmd.util.misc.GSetUtil;
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 import com.sun.cli.jmxcmd.security.rmi.RMISSLClientSocketFactoryEnvImpl;
 import com.sun.cli.jcmd.util.security.TrustAnyTrustManager;
 import com.sun.cli.jcmd.util.security.TrustStoreTrustManager;
 import com.sun.cli.jcmd.util.security.HandshakeCompletedListenerImpl;
+import org.glassfish.admin.amx.util.SetUtil;
 
-import com.sun.cli.jmxcmd.security.TLSSetup;
 
 
 /**
@@ -183,7 +178,7 @@ public final class RMIDefaultConnectorProvider
 	
 	public final static String	RMI_PROTOCOL		= "rmi";
 	public static final Set<String>	SUPPORTED_PROTOCOLS	=
-		GSetUtil.newUnmodifiableStringSet( RMI_PROTOCOL );
+		SetUtil.newUnmodifiableStringSet( RMI_PROTOCOL );
 	
 		protected Set<String>
 	getSupportedProtocols()

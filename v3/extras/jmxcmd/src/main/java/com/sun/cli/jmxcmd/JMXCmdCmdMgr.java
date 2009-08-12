@@ -11,7 +11,6 @@
  
 package com.sun.cli.jmxcmd;
 
-import java.io.File;
 import java.util.Map;
 import java.util.Properties;
 
@@ -30,7 +29,6 @@ import org.glassfish.admin.amx.util.stringifier.StringifierRegistryImpl;
 import com.sun.cli.jmxcmd.support.StringifierRegistryIniter;
 
 import org.glassfish.admin.amx.util.ExceptionUtil;
-import com.sun.cli.jcmd.util.misc.ClassUtil;
 
 
 /**

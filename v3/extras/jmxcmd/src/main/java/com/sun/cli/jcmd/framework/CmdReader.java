@@ -12,12 +12,12 @@
 package com.sun.cli.jcmd.framework;
 
 
-import com.sun.cli.jcmd.util.cmd.LineReader;
 import com.sun.cli.jcmd.util.misc.TokenizerImpl;
 import com.sun.cli.jcmd.util.misc.TokenizerParams;
 import com.sun.cli.jcmd.util.misc.TokenizerException;
 import org.glassfish.admin.amx.util.ExceptionUtil;
-import com.sun.cli.jcmd.util.misc.StringUtil;
+import org.glassfish.admin.amx.util.LineReader;
+import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 
 

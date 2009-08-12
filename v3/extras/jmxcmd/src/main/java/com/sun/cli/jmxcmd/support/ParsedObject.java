@@ -12,7 +12,8 @@
 
 package com.sun.cli.jmxcmd.support;
 
-import com.sun.cli.jcmd.util.misc.ClassUtil;
+import org.glassfish.admin.amx.util.ClassUtil;
+
 
 /**
  */

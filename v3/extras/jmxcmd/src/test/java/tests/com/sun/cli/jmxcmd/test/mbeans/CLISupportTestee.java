@@ -20,14 +20,10 @@ import java.util.Properties;
 import java.util.ArrayList;
 import java.util.List;
 import javax.management.*;
+import org.glassfish.admin.amx.util.ClassUtil;
+import org.glassfish.admin.amx.util.StringUtil;
 
 
-import com.sun.cli.jcmd.util.misc.ArrayConversion;
-import com.sun.cli.jcmd.util.misc.ClassUtil;
-
-import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
-import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
-import com.sun.cli.jcmd.util.misc.StringUtil;
 
 
 /*

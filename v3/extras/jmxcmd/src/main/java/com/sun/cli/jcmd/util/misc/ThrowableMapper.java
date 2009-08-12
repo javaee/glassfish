@@ -66,6 +66,7 @@ package com.sun.cli.jcmd.util.misc;
 import java.util.Set;
 
 import org.glassfish.admin.amx.util.ExceptionUtil;
+import org.glassfish.admin.amx.util.SetUtil;
 
 
 
@@ -88,7 +89,7 @@ public class ThrowableMapper
 		of these packages must be mapped to something standard.
 	 */
 	protected final static Set<String>		OK_PACKAGES	=
-			GSetUtil.newUnmodifiableStringSet( "java.", "javax.", "com.sun.cli.jcmd." );
+			SetUtil.newUnmodifiableStringSet( "java.", "javax.", "com.sun.cli.jcmd." );
 	
 		public
 	ThrowableMapper( final Throwable t )

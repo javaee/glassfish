@@ -7,6 +7,7 @@ package com.sun.cli.jcmd.util.misc;
 
 
 import junit.framework.TestCase;
+import org.glassfish.admin.amx.util.CompareUtil;
 
 public class CompareUtilTest extends TestCase
 {

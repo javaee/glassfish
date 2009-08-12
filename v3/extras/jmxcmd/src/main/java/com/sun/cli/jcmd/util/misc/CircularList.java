@@ -63,11 +63,10 @@
  
 package com.sun.cli.jcmd.util.misc;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.AbstractList;
 
 
+import org.glassfish.admin.amx.util.CompareUtil;
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 
 

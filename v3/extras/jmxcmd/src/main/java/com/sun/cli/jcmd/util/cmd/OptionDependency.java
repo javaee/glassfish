@@ -10,7 +10,8 @@
  */
 package com.sun.cli.jcmd.util.cmd;
 
-import com.sun.cli.jcmd.util.misc.ArrayUtil;
+import org.glassfish.admin.amx.util.ArrayUtil;
+
 
 /**
 	Base class for denoting option dependencies.

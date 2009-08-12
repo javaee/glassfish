@@ -23,7 +23,7 @@ import java.io.FileReader;
 
 import com.sun.cli.jcmd.util.misc.StringEscaper;
 import com.sun.cli.jcmd.util.misc.SafeSave;
-import com.sun.cli.jcmd.util.misc.StringUtil;
+import org.glassfish.admin.amx.util.StringUtil;
 
 public final class AliasMgrHashMapImpl implements AliasMgrSPI
 {

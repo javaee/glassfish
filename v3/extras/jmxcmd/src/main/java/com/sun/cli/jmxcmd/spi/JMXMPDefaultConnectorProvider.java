@@ -6,39 +6,25 @@ package com.sun.cli.jmxcmd.spi;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Collections;
 import java.util.Set;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
-import java.security.Security;
-import javax.net.ssl.SSLSocketFactory;
 
 import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXServiceURL;
-import javax.management.remote.JMXConnectorFactory;
 
-import com.sun.cli.jmxcmd.security.sasl.UserPasswordCallbackHandler;
 
 import java.security.cert.CertificateException;
-import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.KeyStoreException;
 import java.security.KeyManagementException;
 import java.security.UnrecoverableKeyException;
-import java.security.Security;
-import java.security.Provider;
-import javax.security.sasl.Sasl;
 
-import com.sun.cli.jmxcmd.security.sasl.DigestMD5ClientCallbackHandler;
 import com.sun.cli.jmxcmd.security.sasl.SaslClientSetup;
 
-import com.sun.cli.jcmd.util.misc.ClassUtil;
-import com.sun.cli.jcmd.util.misc.GSetUtil;
 import com.sun.cli.jmxcmd.security.TLSSetup;
+import org.glassfish.admin.amx.util.SetUtil;
 
 /**
 	Supports connectivity to JSR 160 jmxmp servers.
@@ -121,7 +107,7 @@ public final class JMXMPDefaultConnectorProvider
 	
 	public final static String	JMXMP_PROTOCOL	= "jmxmp";
 	public static final Set<String>	SUPPORTED_PROTOCOLS	=
-		GSetUtil.newUnmodifiableStringSet( JMXMP_PROTOCOL );
+		SetUtil.newUnmodifiableStringSet( JMXMP_PROTOCOL );
 	
 		protected Set<String>
 	getSupportedProtocols()

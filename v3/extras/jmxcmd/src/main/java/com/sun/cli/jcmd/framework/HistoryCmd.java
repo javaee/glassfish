@@ -15,15 +15,14 @@ package com.sun.cli.jcmd.framework;
 import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;
 import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
-import com.sun.cli.jcmd.util.cmd.OperandsInfo;
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 import com.sun.cli.jcmd.util.cmd.OptionsInfo;
 import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
 
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 
-import com.sun.cli.jcmd.util.misc.ArrayConversion;
 import com.sun.cli.jcmd.util.misc.StringEscaper;
+import org.glassfish.admin.amx.util.ArrayConversion;
 
 /**
 	Echo operands to stdout

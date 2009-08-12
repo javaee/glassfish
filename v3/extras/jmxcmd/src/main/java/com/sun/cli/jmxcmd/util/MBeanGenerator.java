@@ -30,12 +30,9 @@ import javax.management.MBeanInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 
-import com.sun.cli.jcmd.util.misc.ClassUtil;
 
+import org.glassfish.admin.amx.util.ClassUtil;
 import org.glassfish.admin.amx.util.jmx.MBeanAttributeInfoComparator;
-
-
-
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.jmx.MBeanOperationInfoComparator;
 

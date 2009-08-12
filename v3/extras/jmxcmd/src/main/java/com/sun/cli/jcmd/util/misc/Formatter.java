@@ -65,13 +65,10 @@ package com.sun.cli.jcmd.util.misc;
 
 
 import java.text.MessageFormat;
-
-import com.sun.cli.jcmd.util.misc.ClassUtil;
-
-import org.glassfish.admin.amx.util.stringifier.Stringifier;
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 import org.glassfish.admin.amx.util.stringifier.StringifierRegistry;
 import org.glassfish.admin.amx.util.stringifier.StringifierRegistryImpl;
+import org.glassfish.admin.amx.util.ClassUtil;
 
 /**
 	Escapes/unescapes strings

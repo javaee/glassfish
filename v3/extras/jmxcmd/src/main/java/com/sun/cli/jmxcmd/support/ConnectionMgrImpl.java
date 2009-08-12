@@ -20,12 +20,10 @@ import java.util.List;
 import java.io.IOException;
 
 import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXServiceURL;
-import javax.management.remote.JMXConnectorFactory;
 
 import com.sun.cli.jmxcmd.spi.JMXConnectorProvider;
-import com.sun.cli.jcmd.util.cmd.LineReaderImpl;
-import com.sun.cli.jcmd.util.misc.ClassUtil;
+import org.glassfish.admin.amx.util.ClassUtil;
+import org.glassfish.admin.amx.util.LineReaderImpl;
 
 
 

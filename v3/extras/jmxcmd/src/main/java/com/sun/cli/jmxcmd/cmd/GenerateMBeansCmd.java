@@ -18,48 +18,31 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import java.io.NotSerializableException;
 
 import javax.management.ObjectName;
 import javax.management.MBeanServerConnection;
-import javax.management.MBeanOperationInfo;
 import javax.management.InstanceNotFoundException;
 import javax.management.IntrospectionException;
-import javax.management.JMException;
 import javax.management.ReflectionException;
-import javax.management.MBeanException;
 import javax.management.MBeanInfo;
-import javax.management.MBeanAttributeInfo;
-import javax.management.Attribute;
-import javax.management.AttributeList;
 
 import com.sun.cli.jcmd.framework.CmdEnv;
 import com.sun.cli.jcmd.framework.CmdHelp;
 import com.sun.cli.jcmd.framework.CmdHelpImpl;
 
-import com.sun.cli.jcmd.util.cmd.ArgHelper;
-import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
 import com.sun.cli.jcmd.util.cmd.OptionInfo;
 import com.sun.cli.jcmd.util.cmd.OptionInfoImpl;
-import com.sun.cli.jcmd.util.cmd.OptionsInfo;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
 import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;
 import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
-import com.sun.cli.jcmd.util.cmd.OperandsInfo;
-import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 
-import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import com.sun.cli.jmxcmd.util.MBeanGenerator;
 
-import org.glassfish.admin.amx.util.ExceptionUtil;
-import com.sun.cli.jcmd.util.misc.ArrayConversion;
-import com.sun.cli.jcmd.util.misc.ArrayUtil;
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 
 

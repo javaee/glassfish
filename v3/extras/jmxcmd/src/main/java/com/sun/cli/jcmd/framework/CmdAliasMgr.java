@@ -20,8 +20,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import com.sun.cli.jcmd.util.misc.SafeSave;
-import com.sun.cli.jcmd.util.misc.FileUtils;
-import com.sun.cli.jcmd.util.misc.ArrayConversion;
+import org.glassfish.admin.amx.util.ArrayConversion;
+import org.glassfish.admin.amx.util.FileUtils;
 
 
 /**

@@ -11,8 +11,8 @@
  
 package com.sun.cli.jcmd.util.cmd;
 
+import org.glassfish.admin.amx.util.ArrayUtil;
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
-import com.sun.cli.jcmd.util.misc.ArrayUtil;
 
 
 /**

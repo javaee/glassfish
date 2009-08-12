@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-import com.sun.cli.jcmd.util.misc.ArrayConversion;
 
 public class OptionsInfoImpl implements OptionsInfo
 {

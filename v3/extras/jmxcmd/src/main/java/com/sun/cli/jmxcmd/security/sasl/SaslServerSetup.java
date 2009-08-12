@@ -11,8 +11,8 @@ package com.sun.cli.jmxcmd.security.sasl;
 import java.util.Map;
 import java.io.File;
 import java.io.IOException;
+import org.glassfish.admin.amx.util.StringUtil;
 
-import com.sun.cli.jcmd.util.misc.StringUtil;
 
 
 public class SaslServerSetup extends SaslSetup

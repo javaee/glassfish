@@ -40,10 +40,7 @@ import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
 
 
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
-import com.sun.cli.jcmd.util.misc.CompareUtil;
-import com.sun.cli.jcmd.util.misc.ArrayConversion;
 import com.sun.cli.jcmd.util.misc.StringifiedList;
-import com.sun.cli.jcmd.util.misc.RegexUtil;
 
 import com.sun.cli.jmxcmd.support.ArgParserImpl;
 import com.sun.cli.jmxcmd.support.ArgParserException;
@@ -66,6 +63,9 @@ import com.sun.cli.jcmd.util.cmd.CmdInfo;
 import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
 
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
+import org.glassfish.admin.amx.util.ArrayConversion;
+import org.glassfish.admin.amx.util.CompareUtil;
+import org.glassfish.admin.amx.util.RegexUtil;
 import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.jmx.ReadWriteAttributeFilter;
 

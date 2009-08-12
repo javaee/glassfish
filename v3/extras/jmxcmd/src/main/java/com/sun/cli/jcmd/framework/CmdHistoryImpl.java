@@ -20,7 +20,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import com.sun.cli.jcmd.util.misc.StringEscaper;
 import com.sun.cli.jcmd.util.misc.SafeSave;
-import com.sun.cli.jcmd.util.misc.FileUtils;
+import org.glassfish.admin.amx.util.FileUtils;
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 
 

@@ -59,11 +59,9 @@ package org.glassfish.admin.amx.util.stringifier;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Collection;
-import java.lang.reflect.Array;
+import org.glassfish.admin.amx.util.ArrayConversion;
+import org.glassfish.admin.amx.util.ClassUtil;
 
-
-import com.sun.cli.jcmd.util.misc.ClassUtil;
-import com.sun.cli.jcmd.util.misc.ArrayConversion;
 
 
 /**

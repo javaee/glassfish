@@ -15,8 +15,8 @@ package com.sun.cli.jmxcmd.test.mbeans;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
-
-import com.sun.cli.jcmd.util.misc.ClassUtil;
+import org.glassfish.admin.amx.util.ClassUtil;
+;
 
 
 /**

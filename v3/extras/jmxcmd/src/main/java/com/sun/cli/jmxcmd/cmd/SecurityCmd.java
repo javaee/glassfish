@@ -13,7 +13,6 @@ package com.sun.cli.jmxcmd.cmd;
 
 import java.util.Set;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,12 +20,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.HandshakeCompletedEvent;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.TrustManager;
 
 import java.security.cert.X509Certificate;
@@ -48,18 +45,16 @@ import com.sun.cli.jcmd.framework.CmdEnv;
 import com.sun.cli.jcmd.framework.CmdHelp;
 import com.sun.cli.jcmd.framework.CmdHelpImpl;
 
-import com.sun.cli.jcmd.util.misc.StringUtil;
-import com.sun.cli.jcmd.util.misc.EnumerationIterator;
 
 
 import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;
 import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
-import com.sun.cli.jcmd.util.misc.StringUtil;
 
 import com.sun.cli.jcmd.util.security.TrustAnyTrustManager;
 import com.sun.cli.jcmd.util.security.HandshakeCompletedListenerImpl;
+import org.glassfish.admin.amx.util.StringUtil;
 
 
 /**
@@ -296,10 +291,8 @@ public class SecurityCmd extends JMXCmd
 	getAliases( KeyStore ks, Set<String> trustedCertificateAliases, Set<String> keyAliases)
 		throws KeyStoreException
 	{
-		Iterator<String> iter	= new EnumerationIterator<String>( ks.aliases() );
-		while ( iter.hasNext() )
+                for( final String alias : keyAliases )
 		{
-			final String	alias	= (String)iter.next();
 			if ( ks.isCertificateEntry( alias ) )
 			{
 				if ( trustedCertificateAliases != null )

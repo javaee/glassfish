@@ -11,17 +11,13 @@
  
 package com.sun.cli.jmxcmd.spi;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collections;
 import java.io.IOException;
 
 import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXServiceURL;
-import javax.management.remote.JMXConnectorFactory;
+import org.glassfish.admin.amx.util.SetUtil;
 
-import com.sun.cli.jcmd.util.misc.GSetUtil;
 
 
 /**
@@ -80,7 +76,7 @@ public final class JMXServiceURLConnectorProvider
 	
 	public final static String	URL_PROTOCOL		= "url";
 	public static final Set<String>	SUPPORTED_PROTOCOLS	=
-		GSetUtil.newUnmodifiableStringSet( URL_PROTOCOL );
+		SetUtil.newUnmodifiableStringSet( URL_PROTOCOL );
 	
 		protected Set<String>
 	getSupportedProtocols()

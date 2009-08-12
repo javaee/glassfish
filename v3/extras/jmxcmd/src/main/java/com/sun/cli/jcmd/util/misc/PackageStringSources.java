@@ -62,8 +62,8 @@ import java.util.Locale;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.glassfish.admin.amx.util.ClassUtil;
 
-import com.sun.cli.jcmd.util.misc.ClassUtil;
 
 /**
 	A StringSource for a package which first looks for a class in the the package

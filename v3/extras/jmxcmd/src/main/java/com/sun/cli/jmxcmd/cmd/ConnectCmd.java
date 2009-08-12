@@ -11,43 +11,25 @@
  
 package com.sun.cli.jmxcmd.cmd;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Properties;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.Iterator;
 
-import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
-import org.glassfish.admin.amx.util.stringifier.IteratorStringifier;
 
-import com.sun.cli.jcmd.util.misc.StringValuePersister;
-import com.sun.cli.jcmd.util.misc.ClassUtil;
 
-import com.sun.cli.jcmd.util.cmd.ArgHelper;
 import com.sun.cli.jcmd.util.cmd.OptionInfo;
 import com.sun.cli.jcmd.util.cmd.OptionInfoImpl;
-import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
-import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
-import com.sun.cli.jcmd.util.cmd.OptionsInfo;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
 import com.sun.cli.jcmd.util.cmd.RequiredOptionDependency;
-import com.sun.cli.jcmd.util.cmd.DisallowedOptionDependency;
 import com.sun.cli.jcmd.util.cmd.DisallowedCmdDependency;
-import com.sun.cli.jcmd.util.cmd.OperandsOptionDependency;
 
-import com.sun.cli.jmxcmd.support.CLISupportMBeanProxy;
 
 import com.sun.cli.jmxcmd.spi.JMXConnectorProvider;
 import com.sun.cli.jmxcmd.spi.JMXConnectorProviderInfo;
 
 import com.sun.cli.jcmd.framework.CmdEnv;
 import com.sun.cli.jcmd.framework.CmdHelp;
-import com.sun.cli.jcmd.framework.CmdException;
 import com.sun.cli.jcmd.framework.CmdHelpImpl;
 import com.sun.cli.jcmd.framework.IllegalUsageException;
 
@@ -62,7 +44,6 @@ import com.sun.cli.jmxcmd.support.ConnectionMgr;
 import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;
 import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
-import com.sun.cli.jcmd.util.cmd.OperandsInfo;
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 
 

@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collections;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
@@ -23,14 +22,12 @@ import javax.management.NotificationListener;
 import javax.management.NotificationFilter;
 import javax.management.remote.JMXConnector;
 import javax.management.ListenerNotFoundException;
-import javax.management.remote.JMXServiceURL;
-import javax.management.remote.JMXConnectorFactory;
 
 import com.sun.cli.jcmd.framework.CmdEnv;
 import com.sun.cli.jcmd.JCmdMain;
 import com.sun.cli.jmxcmd.cmd.JMXCmdEnvKeys;
+import org.glassfish.admin.amx.util.SetUtil;
 
-import com.sun.cli.jcmd.util.misc.GSetUtil;
 
 
 /**
@@ -199,7 +196,7 @@ public final class InProcessConnectorProvider
 	
 	public final static String	IN_PROCESS_PROTOCOL	= "inprocess";
 	public static final Set<String>	SUPPORTED_PROTOCOLS	=
-		GSetUtil.newUnmodifiableStringSet( IN_PROCESS_PROTOCOL );
+		SetUtil.newUnmodifiableStringSet( IN_PROCESS_PROTOCOL );
 	
 		protected Set<String>
 	getSupportedProtocols()

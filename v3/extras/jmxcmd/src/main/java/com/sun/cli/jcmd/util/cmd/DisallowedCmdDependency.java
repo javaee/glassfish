@@ -11,8 +11,8 @@
 package com.sun.cli.jcmd.util.cmd;
 
 import java.util.Set;
+import org.glassfish.admin.amx.util.ArrayConversion;
 
-import com.sun.cli.jcmd.util.misc.ArrayConversion;
 
 
 /**

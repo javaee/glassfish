@@ -22,11 +22,11 @@ import javax.management.*;
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
-import com.sun.cli.jcmd.util.misc.ClassUtil;
-import com.sun.cli.jcmd.util.misc.ArrayConversion;
 
 import com.sun.cli.jmxcmd.test.mbeans.CLISupportTestee;
 import com.sun.cli.jmxcmd.test.mbeans.CLISupportSimpleTestee;
+import org.glassfish.admin.amx.util.ArrayConversion;
+import org.glassfish.admin.amx.util.ClassUtil;
 
 
 public final class CLISupportMBeanImplTest extends junit.framework.TestCase

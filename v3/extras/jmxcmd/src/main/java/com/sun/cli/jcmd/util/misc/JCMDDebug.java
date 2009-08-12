@@ -65,7 +65,10 @@ import java.io.File;
 
 import org.glassfish.admin.amx.util.FileOutput;
 import org.glassfish.admin.amx.util.Output;
+import org.glassfish.admin.amx.util.OutputIgnore;
 import org.glassfish.admin.amx.util.SetUtil;
+import org.glassfish.admin.amx.util.StringUtil;
+import org.glassfish.admin.amx.util.DebugOutImpl;
 
 
 /**
@@ -661,7 +664,7 @@ public final class JCMDDebug
         public static String
     methodString( final String name, final Object... args )
     {
-        return DebugOutImpl.methodString( name, (Object[])args );
+        return DebugOutImpl.methodString( name, args );
     }
 }
 

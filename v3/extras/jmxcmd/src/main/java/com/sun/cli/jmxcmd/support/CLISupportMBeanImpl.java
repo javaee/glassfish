@@ -16,16 +16,15 @@ import java.util.regex.Pattern;
 import java.io.IOException;
 import javax.management.*;
 
+import org.glassfish.admin.amx.util.ArrayConversion;
+import org.glassfish.admin.amx.util.ClassUtil;
 import org.glassfish.admin.amx.util.stringifier.*;
-import com.sun.cli.jcmd.util.misc.ClassUtil;
-import com.sun.cli.jcmd.util.misc.ArrayConversion;
 import org.glassfish.admin.amx.util.ExceptionUtil;
-import com.sun.cli.jcmd.util.misc.RegexUtil;
-import org.glassfish.admin.amx.util.jmx.ObjectNameQueryImpl;
-import org.glassfish.admin.amx.util.jmx.stringifier.MBeanOperationInfoStringifier;
+import org.glassfish.admin.amx.util.RegexUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
+import org.glassfish.admin.amx.util.jmx.ObjectNameQueryImpl;
 import org.glassfish.admin.amx.util.jmx.ReadWriteAttributeFilter;
-
+import org.glassfish.admin.amx.util.jmx.stringifier.MBeanOperationInfoStringifier;
 
 final class CLISupportMBeanImpl implements CLISupportMBean
 {

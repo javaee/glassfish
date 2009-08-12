@@ -31,7 +31,6 @@ import com.sun.cli.jcmd.framework.CmdException;
 
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 import org.glassfish.admin.amx.util.Output;
-import com.sun.cli.jcmd.util.misc.ClassUtil;
 
 import org.glassfish.admin.amx.util.DebugState;
 import org.glassfish.admin.amx.util.ExceptionUtil;
@@ -60,6 +59,7 @@ import com.sun.cli.jmxcmd.util.ConnectionSource;
 
 import com.sun.cli.jcmd.util.cmd.OperandsInfo;
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
+import org.glassfish.admin.amx.util.ClassUtil;
 
 /**
 	Base class for all commands which access an MBeanServer.  Features:

@@ -15,8 +15,6 @@ import java.io.IOException;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.Security;
-import java.security.KeyStoreException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
@@ -28,9 +26,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
 
-import javax.security.sasl.Sasl;
 
-import com.sun.cli.jcmd.util.misc.StringUtil;
 
 
 public final class TLSSetup
