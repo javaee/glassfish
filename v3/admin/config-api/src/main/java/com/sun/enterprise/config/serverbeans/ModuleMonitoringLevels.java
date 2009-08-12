@@ -234,23 +234,6 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
     public void setConnectorService(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the DTrace property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute (defaultValue="OFF")
-    public String getDTrace();
-
-    /**
-     * Sets the value of the DTrace property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setDTrace(String value) throws PropertyVetoException;
-
-    /**
      * Gets the value of the jmsService property.
      *
      * @return possible object is

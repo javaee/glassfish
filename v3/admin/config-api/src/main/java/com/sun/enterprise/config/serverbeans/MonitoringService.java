@@ -130,6 +130,21 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, org.glas
     public void setMonitoringEnabled(String value) throws PropertyVetoException;
 
     /**
+     * Gets the value of the dtrace-enabled attribute.
+     *
+     * @return present dtrace status
+     */
+    @Attribute(defaultValue="false")
+    public String getDtraceEnabled();
+
+    /**
+     * Sets the value of the dtrace-enabled attribute.
+     *
+     * @param value allowed object is String
+     */
+    public void setDtraceEnabled(String value) throws PropertyVetoException;
+
+    /**
      * Get the monitoring configuration for other types of containers.
      *
      * @return  list of container monitoring configurations
