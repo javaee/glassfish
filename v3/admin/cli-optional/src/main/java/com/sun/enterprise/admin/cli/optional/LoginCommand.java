@@ -91,16 +91,11 @@ public class LoginCommand extends CLICommand {
         // Step 1: Get admin username and password
         programOpts.setInteractive(true);       // force it
         adminUser = getAdminUser();
-        if (adminUser == null || adminUser.length() == 0) {
-            adminUser = SystemPropertyConstants.DEFAULT_ADMIN_USER;
+        if (adminUser.equals(SystemPropertyConstants.DEFAULT_ADMIN_USER) 
+            && (adminPassword == null || adminPassword.length() == 0)) {
             adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
-        } else {
-            if (adminUser.equals(SystemPropertyConstants.DEFAULT_ADMIN_USER) 
-                && (adminPassword == null || adminPassword.length() == 0)) {
-                adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
-            } else {                            
-                adminPassword = getAdminPassword();
-            }
+        } else {                            
+            adminPassword = getAdminPassword();
         }
         programOpts.setUser(adminUser);
         programOpts.setPassword(adminPassword);
@@ -127,12 +122,16 @@ public class LoginCommand extends CLICommand {
     private String getAdminUser() {
         Console cons = System.console();
         String user = null;
+        String defuser = programOpts.getUser();
+        if (defuser == null)
+            defuser = SystemPropertyConstants.DEFAULT_ADMIN_USER;
         if (cons != null) {
-            cons.printf("%s ",
-                strings.get("AdminUserPrompt", programOpts.getUser()));
+            cons.printf("%s", strings.get("AdminUserPrompt", defuser));
             String val = cons.readLine();
             if (val != null && val.length() > 0)
                 user = val;
+            else
+                user = defuser;
         }
         return user;
     }
@@ -156,6 +155,8 @@ public class LoginCommand extends CLICommand {
     private void saveLogin(String host, final int port, 
                            final String user, final String passwd) {
         LoginInfo login = null;
+        // to avoid putting commas in the port number (e.g., "4,848")...
+        String sport = Integer.toString(port);
         try {
             // By definition, the host name will default to "localhost" and 
             // entry is overwritten
@@ -167,14 +168,14 @@ public class LoginCommand extends CLICommand {
                 // Let the user know that the user has chosen to overwrite the 
                 // login information. This is non-interactive, on purpose
                 logger.printMessage(strings.get("OverwriteLoginMsgCreateDomain",
-                                        login.getHost(), login.getPort()));
+                                        login.getHost(), "" + login.getPort()));
             }
             store.store(login, true);
             logger.printMessage(strings.get("LoginInfoStored", 
-                user, login.getHost(), port, store.getName()));
+                user, login.getHost(), sport, store.getName()));
         } catch (final Exception e) {
             logger.printWarning(
-                strings.get("LoginInfoNotStored", login.getHost(), port));
+                strings.get("LoginInfoNotStored", login.getHost(), sport));
             if (logger.isDebug()) {
                 logger.printExceptionStackTrace(e);
             }
