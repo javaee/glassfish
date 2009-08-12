@@ -54,6 +54,7 @@ import org.jvnet.hk2.component.Habitat;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
+import javax.transaction.Synchronization;
 import java.util.Timer;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -111,6 +112,9 @@ public interface EjbContainerUtil {
         throws RollbackException, SystemException;
 
     public void removeContainerSync(Transaction tx);
+
+    public void registerPMSync(Transaction jtx, Synchronization sync)
+        throws RollbackException, SystemException;
 
     public EjbContainer getEjbContainer();
 

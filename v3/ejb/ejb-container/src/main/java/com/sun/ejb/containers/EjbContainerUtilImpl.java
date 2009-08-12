@@ -63,6 +63,7 @@ import org.glassfish.ejb.spi.CMPDeployer;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
+import javax.transaction.Synchronization;
 import java.util.Map;
 import java.util.Timer;
 import java.util.Vector;
@@ -305,6 +306,12 @@ public class EjbContainerUtilImpl
 
     public void removeContainerSync(Transaction tx) {
         //No op
+    }
+
+    public void registerPMSync(Transaction jtx, Synchronization sync)
+            throws RollbackException, SystemException {
+
+        getContainerSync(jtx).addPMSynchronization(sync);
     }
 
     public EjbContainer getEjbContainer() {
