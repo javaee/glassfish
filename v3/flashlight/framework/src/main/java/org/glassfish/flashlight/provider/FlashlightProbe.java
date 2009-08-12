@@ -70,6 +70,7 @@ public class FlashlightProbe
     private AtomicBoolean enabled = new AtomicBoolean(false);
 
     private String probeDesc;
+    private Object dtraceProviderImpl;
 
     public FlashlightProbe(int id, Class providerClazz, String moduleProviderName,
     		String moduleName, String probeProviderName, String probeName,
@@ -170,5 +171,9 @@ public class FlashlightProbe
         sbldr.append(")");
 
         return sbldr.toString();
+    }
+
+    public void addDTraceProviderImpl(Object dtraceProviderImpl) {
+        this.dtraceProviderImpl = dtraceProviderImpl;
     }
 }

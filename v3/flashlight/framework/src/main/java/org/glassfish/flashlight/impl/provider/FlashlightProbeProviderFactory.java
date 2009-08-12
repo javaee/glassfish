@@ -38,6 +38,7 @@ package org.glassfish.flashlight.impl.provider;
 
 import com.sun.enterprise.util.ObjectAnalyzer;
 import java.io.InputStream;
+import java.util.*;
 import org.glassfish.api.monitoring.DTraceContract;
 import org.glassfish.flashlight.provider.*;
 import org.glassfish.flashlight.impl.core.*;
@@ -60,6 +61,7 @@ import org.jvnet.hk2.component.Habitat;
 
 /**
  * @author Mahesh Kannan
+ * @author Byron Nevins
  */
 @Service
 public class FlashlightProbeProviderFactory
@@ -135,19 +137,8 @@ public class FlashlightProbeProviderFactory
                 provider.addProbe(probe);
             }
 
-
-
-
-			if(Boolean.parseBoolean(System.getenv("AS_DTRACE"))) { // temporary
-				DTraceContract dt = habitat.getByContract(DTraceContract.class);
-				logger.severe("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX DTrace Enabled: " + dt.isSupported());
-				Class dtraceProviderInterface = dt.getInterface(provider);
-				Object dtraceProviderImpl = dt.getProvider(dtraceProviderInterface);
-				logger.severe("WWWWWWWWWWWWWWW  DTrace Generated Interface:" + dtraceProviderInterface);
-				logger.severe("ZZZZZZZZZZZZZZZ  DTrace Generated Implementation:" + dtraceProviderImpl);
-			}
-
-
+            handleDTrace(provider);
+        
             Class<T> tClazz = providerClazz;
 
             int mod = providerClazz.getModifiers();
@@ -203,6 +194,47 @@ public class FlashlightProbeProviderFactory
         }        
     }
 
+    private void handleDTrace(FlashlightProbeProvider provider) {
+        // bnevins:  The way this works above (getProbeProvider()) is that every
+        //**method** winds up added to the probe registry with an official ID.
+        // I.e. a given provider-class generates possibly many probe objects
+        // DTrace has a 1:1 correspondence between provider class and dtrace class imp
+        // So we loop through all the probes and add the same DTrace impl object to
+        // each probe.
+
+        // the code below fails fast -- it marches through returning immediately
+        // when something is amiss instead of having complicated hard-to-read nested
+        // blocks of code.
+
+        // AS_DTRACE check is temporary...
+
+        if(!Boolean.parseBoolean(System.getenv("AS_DTRACE")))
+            return;
+
+        DTraceContract dt = habitat.getByContract(DTraceContract.class);
+
+        // no value-add available or the OS does not support it
+        // TODO check config for dtrace-enabled as well...
+        if(dt == null || !dt.isSupported())
+            return;
+
+        //Class dtraceProviderInterface = dt.getInterface(provider);
+        //Object dtraceProviderImpl = dt.getProvider(dtraceProviderInterface);
+        Object dtraceProviderImpl = dt.getProvider(provider);
+
+        // something is wrong with the provider class
+        if(dtraceProviderImpl == null)
+            return;
+
+         Collection<FlashlightProbe> probes = provider.getProbes();
+
+         for(FlashlightProbe probe : probes) {
+             probe.addDTraceProviderImpl(dtraceProviderImpl);
+         }
+    }
+
+    // bnevins TODO add support in here for DTrace -- it follows a different code path from
+    // getProbeProvider
     public void processXMLProbeProviders(ClassLoader cl, String xml) {
         mprint("processProbeProviderXML for " + xml);
         try {
