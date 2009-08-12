@@ -39,28 +39,33 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.msgSecurity.ListPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.msgSecProvider.TableTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
-        setPageSessionAttribute(key="childType" value="message-security-config");
+        getRequestValue(key="name" value="#{pageSession.Name}");
+        setSessionAttribute(key="msgSecurityTabs" value="providers");
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=message-security-config,name=#{pageSession.Name}");
+        setPageSessionAttribute(key="childType" value="provider-config");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
-        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteMsgSecurities}");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/security/msgSecurity/msgSecurityNew.jsf?configName=#{pageSession.configName}");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf?configName=#{pageSession.configName}");
-        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/common/security/msgSecurity/msgSecurityEdit.jsf");
-        setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.msgSecurity.TableTitle}");
+        addDefaultProviderInfo(providerList="#{requestScope.listOfRows}",  msgSecurityName="#{pageSession.Name}");
+        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteMsgProviders}");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/security/msgSecurity/providerNew.jsf?msgSecurityName=#{pageSession.Name}&configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf");
+        setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.msgSecProvider.TableTitle}");
+        setPageSessionAttribute(key="additionalDeleteHandler" value="checkMsgSecurityDefaultProvider");
+        setPageSessionAttribute(key="additionalDeleteHandlerArgs" value="msgSecurityName:#{pageSession.Name}");
     />
     </event>
 #include "/common/shared/restart.inc"
 
-
 <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
-     <sun:title id="propertyContentPage" title="$resource{i18nc.msgSecurity.ListPageTitle}"
-                 helpText="$resource{i18nc.msgSecurity.ListPageHelp}" />
+#include "msgSecurityTabs.inc"
+     <sun:title id="propertyContentPage" title="$resource{i18nc.msgSecProvider.TableTitle}"
+                 helpText="$resource{i18nc.msgSecProvider.ListPageHelp}" />
 		 "<br /> <br />
 
 <sun:table id="configs" title="#{tableTitle}"
@@ -86,26 +91,27 @@
             />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18nc.msgSecurity.colAuthLayer}" sort="Name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colProvId}" sort="Name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="authlayer" text="#{td.value.Name}"
-            url="#{editLink}?name=#{td.value.Name}&configName=#{configName}" />
+            url="#{editLink}?name=#{td.value.Name}&msgSecurityName=#{pageSession.Name}&configName=#{configName}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18nc.msgSecurity.colDefaultProv}" sort="DefaultProvider" rowHeader="$boolean{true}" id="col2">
-        <sun:hyperlink id="defaultprov" text="#{td.value.DefaultProvider}"
-            url="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{td.value.DefaultProvider}&msgSecurityName=#{td.value.Name}&configName=#{configName}" />
+    <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colProvType}" sort="ProviderType" rowHeader="$boolean{true}" id="col2">
+        <staticText id="provType" value="#{td.value.ProviderType}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18nc.msgSecurity.colDefaultClientProv}" sort="DefaultClientProvider" rowHeader="$boolean{true}" id="col3">
-        <sun:hyperlink id="defaultclientprov" text="#{td.value.DefaultClientProvider}"
-            url="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{td.value.DefaultClientProvider}&msgSecurityName=#{td.value.Name}&configName=#{configName}" />
+    <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.defaultProviderCol}" sort="default" rowHeader="$boolean{true}" id="col3">
+        <staticText id="default" value="#{td.value.default}" />
+    </sun:tableColumn>
 
+    <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colClassName}" sort="ClassName" rowHeader="$boolean{true}" id="col4">
+        <staticText id="defaultclientprov" value="#{td.value.ClassName}" />
     </sun:tableColumn>
 
   </sun:tableRowGroup>
 </sun:table>
 
-	<sun:hidden id="helpKey" value="$resource{help_common.msgSecurityConfigs}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.msgProviders}" />
             </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 

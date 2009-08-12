@@ -44,12 +44,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.faces.context.ExternalContext;
 import javax.management.Attribute;
 import javax.servlet.http.HttpServletRequest;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
+import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.intf.config.AuthRealm;
+import org.glassfish.admin.amx.intf.config.MessageSecurityConfig;
 import org.glassfish.admin.amx.intf.config.Property;
+import org.glassfish.admin.amx.intf.config.ProviderConfig;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 
@@ -385,7 +389,7 @@ public class SecurityHandler {
             for(Map oneRow : selectedRows){
                 String user = (String)oneRow.get("users");
                 if (realmName.equals("admin-realm") && user.equals(GuiUtil.getSessionValue("userName"))){
-                    error = GuiUtil.getMessage("org.glassfish.common.admingui.Strings", "msg.error.cannotDeleteCurrent");
+                    error = GuiUtil.getMessage(COMMON_BUNDLE, "msg.error.cannotDeleteCurrent");
                     continue;
                 }else{
                     V3AMX.getInstance().getRealmsMgr().removeUser(realmName, user);
@@ -491,5 +495,188 @@ public class SecurityHandler {
 
     private static final String PROPERTY_NAME = "Name";
     private static final String PROPERTY_VALUE = "Value";
+    private static final String COMMON_BUNDLE = "org.glassfish.common.admingui.Strings";
+
+
+
+    @Handler(id="addDefaultProviderInfo",
+        input={
+            @HandlerInput(name="providerList", type=List.class, required=true),
+            @HandlerInput(name="msgSecurityName", type=String.class, required=true)
+    })
+    public static void addDefaultProviderInfo(HandlerContext handlerCtx){
+        List<Map> providerList = (List<Map>) handlerCtx.getInputValue("providerList");
+        MessageSecurityConfig msgConfig = getMsgSecurityProxy((String) handlerCtx.getInputValue("msgSecurityName"));
+        String defaultProvider = msgConfig.getDefaultProvider();
+        String defaultClientProvider = msgConfig.getDefaultClientProvider();
+        String trueStr = GuiUtil.getMessage("common.true");
+        String falseStr = GuiUtil.getMessage("common.false");
+        for(Map oneRow : providerList){
+            String name = (String)oneRow.get("Name");
+            if (name.equals(defaultProvider) || name.equals(defaultClientProvider)){
+                oneRow.put("default", trueStr);
+            }else{
+                oneRow.put("default", falseStr);
+            }
+        }
+    }
+
+    @Handler(id="getMsgProviderInfo",
+        input={
+            @HandlerInput(name="providerName", type=String.class, required=true),
+            @HandlerInput(name="msgSecurityName", type=String.class, required=true),
+            @HandlerInput(name="configName", type=String.class, required=true)
+    },
+        output={
+            @HandlerOutput(name="attrMap", type=Map.class)}
+     )
+     public static void getMsgProviderInfo(HandlerContext handlerCtx){
+        String providerName = (String) handlerCtx.getInputValue("providerName");
+        String msgSecurityName = (String) handlerCtx.getInputValue("msgSecurityName");
+        String configName = (String) handlerCtx.getInputValue("configName");
+        MessageSecurityConfig msgConfig = getMsgSecurityProxy(msgSecurityName);
+        ProviderConfig provider = msgConfig.childrenMap(ProviderConfig.class).get(providerName);
+        Map attrMap = new HashMap();
+        attrMap.put("msgSecurityName", msgSecurityName);
+        attrMap.put("configName", configName);
+        attrMap.put("Name", providerName);
+        attrMap.put("ProviderType", provider.getProviderType());
+        attrMap.put("ClassName", provider.getClassName());
+        if (provider.getRequestPolicy()!= null){
+            attrMap.put("Request-AuthSource",  str(provider.getRequestPolicy().getAuthSource()));
+            attrMap.put("Request-AuthRecipient",  str(provider.getRequestPolicy().getAuthRecipient()));
+        }
+        if (provider.getResponsePolicy()!= null){
+            attrMap.put("Response-AuthSource",  str(provider.getResponsePolicy().getAuthSource()));
+            attrMap.put("Response-AuthRecipient",  str(provider.getResponsePolicy().getAuthRecipient()));
+        }
+        if (providerName.equals(msgConfig.getDefaultClientProvider()) || (providerName.equals(msgConfig.getDefaultProvider()))){
+            attrMap.put("defaultProvider", "true");
+        }
+        handlerCtx.setOutputValue("attrMap",  attrMap);
+    }
+
+
+    @Handler(id="saveMsgProviderInfo",
+         input={
+            @HandlerInput(name="attrMap", type=Map.class, required=true),
+            @HandlerInput(name="edit", type=String.class, required=true)
+     },
+        output={
+            @HandlerOutput(name="objName", type=String.class)}
+     )
+     public static void saveMsgProviderInfo(HandlerContext handlerCtx){
+        Map<String,String> attrMap = (Map<String,String>) handlerCtx.getInputValue("attrMap");
+        String edit = (String)handlerCtx.getInputValue("edit");
+        String providerName = attrMap.get("Name");
+        String msgSecurityName = attrMap.get("msgSecurityName");
+        String configName = attrMap.get("configName");
+        
+        
+        MessageSecurityConfig msgConfig = getMsgSecurityProxy(msgSecurityName);
+
+        ProviderConfig provider = msgConfig.childrenMap(ProviderConfig.class).get(providerName);
+        if (edit.equals("true")){
+            if (provider == null){
+                GuiUtil.handleError(handlerCtx, GuiUtil.getMessage(COMMON_BUNDLE, "msg.error.noSuchProvider")); //normally won't happen.
+                return;
+            }else{
+                provider.setClassName(attrMap.get("ClassName"));
+                provider.setProviderType(attrMap.get("ProviderType"));
+            }
+        }else{
+            Map attrs = new HashMap();
+            attrs.put("Name", attrMap.get("Name"));
+            attrs.put("ClassName", attrMap.get("ClassName"));
+            attrs.put("ProviderType", attrMap.get("ProviderType"));
+            msgConfig.createChild("provider-config", attrs);
+            provider = msgConfig.childrenMap(ProviderConfig.class).get(providerName);
+        }
+
+        String def = attrMap.get("defaultProvider");
+        if (def == null){
+            if (providerName.equals(msgConfig.getDefaultProvider())){
+                msgConfig.setDefaultProvider("");
+            }
+            if (providerName.equals(msgConfig.getDefaultClientProvider())) {
+                msgConfig.setDefaultClientProvider("");
+            }
+        }else{
+            String type = provider.getProviderType();
+            if (type.equals("server") || type.equals("client-server")){
+                msgConfig.setDefaultProvider(providerName);
+            }
+            if (type.equals("client") || type.equals("client-server")){
+                msgConfig.setDefaultClientProvider(providerName);
+            }
+        }
+
+        if ( provider.getRequestPolicy()== null){
+            if (GuiUtil.isEmpty(attrMap.get("Request-AuthSource")) && GuiUtil.isEmpty(attrMap.get("Request-AuthRecipient"))){
+                //no need to create one if all is empty.
+            }else{
+                Map attrs = new HashMap();
+                attrs.put("authSource", attrMap.get("Request-AuthSource"));
+                attrs.put("AuthRecipient", attrMap.get("Request-AuthRecipient"));
+                provider.createChild("request-policy", attrs);
+            }
+        }else{
+            provider.getRequestPolicy().setAuthSource(attrMap.get("Request-AuthSource"));
+            provider.getRequestPolicy().setAuthRecipient(attrMap.get("Request-AuthRecipient"));
+        }
+
+
+        if ( provider.getResponsePolicy()== null){
+            if (GuiUtil.isEmpty(attrMap.get("Response-AuthSource")) && GuiUtil.isEmpty(attrMap.get("Response-AuthRecipient"))){
+                //no need to create one if all is empty.
+            }else{
+                Map attrs = new HashMap();
+                attrs.put("authSource", attrMap.get("Response-AuthSource"));
+                attrs.put("AuthRecipient", attrMap.get("Response-AuthRecipient"));
+                provider.createChild("response-policy", attrs);
+            }
+        }else{
+            provider.getResponsePolicy().setAuthSource(attrMap.get("Response-AuthSource"));
+            provider.getResponsePolicy().setAuthRecipient(attrMap.get("Response-AuthRecipient"));
+        }
+        handlerCtx.setOutputValue("objName",  provider.objectName().toString());
+    }
+
+
+    @Handler(id="checkMsgSecurityDefaultProvider",
+         input={
+            @HandlerInput(name="msgSecurityName", type=String.class, required=true)
+     })
+     public static void checkMsgSecurityDefaultProvider(HandlerContext handlerCtx){
+        String msgSecurityName = (String) handlerCtx.getInputValue("msgSecurityName");
+        MessageSecurityConfig msgConfig = getMsgSecurityProxy(msgSecurityName);
+        String defServer = msgConfig.getDefaultProvider();
+        if ( !GuiUtil.isEmpty(defServer)){
+            if (msgConfig.childrenMap(ProviderConfig.class).get(defServer) == null){
+                msgConfig.setDefaultProvider(null);
+            }
+        }
+        String defClient = msgConfig.getDefaultClientProvider();
+        if ( !GuiUtil.isEmpty(defClient)){
+            if (msgConfig.childrenMap(ProviderConfig.class).get(defClient) == null){
+                msgConfig.setDefaultClientProvider(null);
+            }
+        }
+    }
+
+
+    private static MessageSecurityConfig getMsgSecurityProxy(String msgSecurityName){
+        Set<AMXProxy> pSet = V3AMX.getInstance().getDomainRoot().getQueryMgr().queryTypeName("message-security-config", msgSecurityName);
+        for(AMXProxy msgProxy : pSet){
+            //should be just one.
+            return (MessageSecurityConfig) msgProxy.as(MessageSecurityConfig.class);
+        }
+        return null;
+    }
+
+    private static String str(String aa){
+        return (aa==null) ? "" : aa;
+    }
+
     
 }

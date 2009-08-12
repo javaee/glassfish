@@ -18,6 +18,9 @@
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
             deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
             setAttribute(key="selectedRows" value="${selectedRows}");
+            if (#{pageSession.additionalDeleteHandler}){
+                gf.invokeHandler(handler="#{pageSession.additionalDeleteHandler}", args="#{pageSession.additionalDeleteHandlerArgs}" );
+            }
             redirect(page="#{pageSession.listLink}");
         />
         </sun:button>

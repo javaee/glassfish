@@ -38,8 +38,52 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.auditModule.NewPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.msgSecurity.EditMsgSecurity}" >
 <!define name="content">
-    "Message Security New - TBD
+    <event>
+    <!beforeCreate
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        getRequestValue(key="name" value="#{pageSession.Name}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/msgSecurity/msgSecurityEdit.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
+        setPageSessionAttribute(key="childType" value="message-security-config");
+        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=message-security-config,name=#{pageSession.Name}");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=message-security-config,name=#{pageSession.Name}" type="provider-config" result="#{requestScope.tmp}");
+        addEmptyFirstElement(in="#{requestScope.tmp}" out="#{pageSession.providerList}")
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
+    />
+    </event>
+
+#include "/common/shared/restart.inc"
+    <sun:form id="propertyForm">
+#include "/common/shared/alertMsg.inc"
+
+        <!-- Page Title -->
+        <sun:title id="propertyContentPage" title="$resource{i18nc.msgSecurity.EditMsgSecurity}" helpText="$resource{$resource{i18nc.msgSecurity.EditMsgSecurityInfo}}">
+#include "/common/shared/editPageButtons.inc"
+        </sun:title>
+        "<br><br>
+        <sun:propertySheet id="propertySheet">
+             <sun:propertySheetSection id="propertySheetSection">
+                 <sun:property id="AuthLayerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.authLayerLabel}" >
+                     <sun:staticText id="AuthLayer" text="#{pageSession.Name}" />
+                 </sun:property>
+                 <sun:property id="DefaultProviderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.defaultProviderLabel}" helpText="$resource{i18nc.msgSecurity.defaultProviderHelp}">
+                     <sun:dropDown id="DefaultProvider" selected="#{pageSession.valueMap['DefaultProvider']}" labels="$pageSession{providerList}" />
+                 </sun:property>
+                 <sun:property id="DefaultClProviderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.defaultClProviderLabel}" helpText="$resource{i18nc.msgSecurity.defaultClProviderHelp}">
+                     <sun:dropDown id="DefaultClProvider" selected="#{pageSession.valueMap['DefaultClientProvider']}" labels="$pageSession{providerList}" />
+                 </sun:property>
+             </sun:propertySheetSection>
+         </sun:propertySheet>
+	<sun:hidden id="helpKey" value="$resource{help_common.msgSecurityConfigEdit}" />
+    </sun:form>
 </define>
 </composition>
