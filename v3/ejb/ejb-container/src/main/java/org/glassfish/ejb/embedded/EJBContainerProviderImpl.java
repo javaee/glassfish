@@ -69,6 +69,7 @@ import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
 import org.jvnet.hk2.component.Habitat;
+import com.sun.enterprise.module.bootstrap.Which;
 
 /**
  * GlassFish implementation of the EJBContainerProvider.
@@ -132,44 +133,29 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             // if (container == null || !container.isOpen()) {
                 Server.Builder builder = new Server.Builder("GFEJBContainerProviderImpl");
 
-                File installed_root = null;
-                File domain_file = null;
+                String gf_location = null;
                 if (properties != null) {
-                    String gf_root = (String) properties.get(
+                    gf_location = (String) properties.get(
                             "glassfish.ejb.embedded.glassfish.installation");
-System.err.println("+++ gf_root : " + gf_root);
-                    if (gf_root != null) {
-                        installed_root = new File(gf_root);
-                        if (!installed_root.exists()) {
-                            _logger.log(Level.SEVERE, "ejb.embedded.location_not_exists", gf_root);
-                            installed_root = null;
-                        } else {
-                            // TODO - support a separate location for the domain
-                            String domain_root = gf_root + File.separatorChar 
-                                    + "domains" + File.separatorChar 
-                                    + "domain1" + File.separatorChar 
-                                    + "config" + File.separatorChar 
-                                    + "domain.xml";
-System.err.println("+++ domain_root : " + domain_root);
-                            domain_file = new File(domain_root);
-                            if (!domain_file.exists()) {
-                                _logger.log(Level.SEVERE, "ejb.embedded.location_not_exists", domain_root);
-                                installed_root = null;
-                            }
-                        }
+                }
+                if (gf_location == null) {
+                    // calculate
+                    try {
+                        gf_location = Which.jarFile(getClass()).
+                                getParentFile().getParentFile().getAbsolutePath();
+                    } catch (Exception e) {
+                        _logger.log(Level.SEVERE, "Cannot determine installation location");
+                        _logger.log(Level.FINE, e.getMessage(), e);
                     }
                 }
-System.err.println("+++ installed_root: " + installed_root);
-System.err.println("+++ domain_file: " + domain_file);
 
-                if (installed_root == null) {
+                Result rs = getLocations(gf_location);
+                if (rs == null) {
                     server = builder.build();
                 } else {
-                    //TODO: Stop previous version?
-
                     EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-                    efsb.setInstallRoot(installed_root);
-                    efsb.setConfigurationFile(domain_file);
+                    efsb.setConfigurationFile(rs.domain_file);
+                    efsb.setInstanceRoot(rs.instance_root);
 
                     builder.setEmbeddedFileSystem(efsb.build());
                     server = builder.build();
@@ -321,5 +307,64 @@ System.err.println("... is Requested EJB module [" + moduleName + "]: " + (modul
         }
 
         return false;
+    }
+
+    /**
+     * Create a File object from the location and report an error
+     * if such file does not exist.
+     * Returns null if such file does not exist.
+     */
+    private File getValidFile(String location) {
+        File f = new File(location);
+        if (!f.exists()) {
+            _logger.log(Level.SEVERE, "ejb.embedded.location_not_exists", location);
+            f = null;
+        }
+        return f;
+    }
+
+    /**
+     * Create File objects corresponding to instance root and domain.xml location.
+     */
+    private Result getLocations(String installed_root_location) {
+        Result rs = null;
+System.err.println("+++ installed_root_location : " + installed_root_location);
+        if (installed_root_location != null) {
+System.err.println("+++ version 3");
+            File installed_root = getValidFile(installed_root_location);
+            if (installed_root != null) {
+                // TODO - support a separate location for the domain
+                String instance_root_location = installed_root_location 
+                        + File.separatorChar + "domains" 
+                        + File.separatorChar + "domain1";
+
+                File instance_root = getValidFile(instance_root_location);
+                if (instance_root != null) {
+                    String domain_file_location = instance_root_location
+                            + File.separatorChar + "config" 
+                            + File.separatorChar + "domain.xml";
+System.err.println("+++ domain_file_location : " + domain_file_location);
+                    File domain_file = getValidFile(domain_file_location);
+
+System.err.println("+++ instance_root: " + instance_root);
+System.err.println("+++ domain_file: " + domain_file);
+                    if (domain_file != null) {
+                        rs = new Result(instance_root, domain_file);
+                    }
+                }
+            }
+        }
+
+        return rs;
+    }
+
+    private class Result {
+        File instance_root;
+        File domain_file;
+
+        Result (File instance_root, File domain_file) {
+            this.instance_root  = instance_root;
+            this.domain_file  = domain_file;
+        }
     }
 }
