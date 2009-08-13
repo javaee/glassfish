@@ -52,7 +52,7 @@ import java.util.logging.Logger;
 
 public class UpgradeToolMain {
 
-    private static final String AS_DOMAIN_ROOT = "com.sun.aas.domainRoot";
+    public static final String AS_DOMAIN_ROOT = "com.sun.aas.domainRoot";
 
     private static final Logger logger = LogService.getLogger();
 
@@ -201,11 +201,7 @@ public class UpgradeToolMain {
                 }
 
                 dProcessor.copyUserLibFiles();
-                int exitValue = dProcessor.startDomain(_target.getDomainName());
-                // obsolete for V3
-                //if (exitValue == 0){
-                //    dProcessor.stopDomain(_target.getDomainName());
-                //}
+                int exitValue = dProcessor.startDomain(_target.getDomainName());              
 
                 //- There should be a new server log file.
                 if (serverLog == null) {
@@ -230,7 +226,7 @@ public class UpgradeToolMain {
                          logger.log(Level.INFO, sbuf.toString());
 
                     } else {
-                        logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.success_mgs"));
+                        logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.done"));
 
                     }
 

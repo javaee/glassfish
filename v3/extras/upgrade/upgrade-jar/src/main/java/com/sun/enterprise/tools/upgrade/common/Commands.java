@@ -39,13 +39,13 @@ package com.sun.enterprise.tools.upgrade.common;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import java.util.logging.Level;
+import com.sun.enterprise.tools.upgrade.UpgradeToolMain;
 
 /**
  *
@@ -66,7 +66,23 @@ public class Commands {
         Credentials c = commonInfo.getSource().getDomainCredentials();
 		String adminUser = c.getAdminUserName();
 
+        String installRoot = System.getProperty(UpgradeToolMain.AS_DOMAIN_ROOT);
+        File installRootF = new File(installRoot);
+        File asadminF = new File(installRootF.getParentFile(), "bin/asadmin");
+        String asadminScript = asadminF.getAbsolutePath();
+        try {
+            asadminScript = asadminF.getCanonicalPath();
+        } catch(IOException e){
+            //- no action needed use absolutePath
+        }
+        String ext = "";
+        String osName = System.getProperty("os.name");
+        if(osName.indexOf("Windows") != -1){
+           ext = ".bat";
+        }
         ArrayList<String> tmpC = new ArrayList<String>();
+        //-tmpC.add("bin/asadmin");
+        tmpC.add(asadminScript+ext);
         tmpC.add("start-domain");
         tmpC.add("--upgrade");
         tmpC.add("--domaindir");
@@ -87,84 +103,47 @@ public class Commands {
         String command[] = new String[tmpC.size()];
         command = tmpC.toArray(command);
         return executeCommand(command);
-        
     }
-    
-    public static int stopDomain(String domainName, CommonInfoModel commonInfo) {
-		String command[] = {"stop-domain", "--domaindir",  
-				commonInfo.getTarget().getInstallDir(),  domainName
-        };	
-		
-        return executeCommand(command);
-    }
-    
-    public static int executeCommand(String commandStrings[]){
-        int exitValue = 0;
-        try {
-            StringBuffer commandOneString = new StringBuffer();
+ 
+  
+    private static int executeCommand(String[] commandStrings) {
+        int exitValue=0;
+
+        StringBuffer commandOneString = new StringBuffer();
             for(int i = 0; i < commandStrings.length; i++) {
                 commandOneString.append(commandStrings[i]).append(" ");
-            }			
-            InputsAndOutputs io = InputsAndOutputs.getInstance();
-            PipedOutputStream pos = new PipedOutputStream();
-            PrintStream errorOutput = new PrintStream(pos);
-            PrintStream userOutput = new PrintStream(pos);
-            CommandOutputReader cor = new CommandOutputReader(pos);
-            ((Thread)cor).start();
+            }
             logger.info(stringManager.
                     getString("commands.executingCommandMsg") + commandOneString);
 
-            // skipping for now since there's a gfv3 build error.
-            // will return simply 0.
-//            AsadminMain m = new AsadminMain(commandStrings);
-//            exitValue = m.runLocalCommand();
-            pos.flush();
-            errorOutput.close();
-            userOutput.close();
-            try {
-                pos.close();
-            } catch (IOException ioe){
+        try {
+            Process asadminProcess = Runtime.getRuntime().exec(commandOneString.toString());
+            BufferedReader pInReader =
+                    new BufferedReader(new InputStreamReader(
+                    asadminProcess.getInputStream()));
+            BufferedReader eInReader =
+                    new BufferedReader(new InputStreamReader(
+                    asadminProcess.getErrorStream()));
+            String inLine = null;
+            String eLine = null;
+            while ((eLine = eInReader.readLine()) != null && (inLine = pInReader.readLine()) != null) {
+                if(eLine != null){
+                    logger.log(Level.INFO,eLine);
+                    exitValue++;
+                }
+                if(inLine != null){
+                    logger.log(Level.INFO,inLine);
+                }
             }
-            return exitValue;
-        }
-        catch(Exception e) {
+            asadminProcess.destroy();
+            pInReader.close();
+            eInReader.close();
+        } catch (Exception e) {
             Throwable t = e.getCause();
             logger.warning(stringManager.getString(
 				"upgrade.common.general_exception") + (t==null?e.getMessage():t.getMessage()));
         }
         return exitValue;
-    }
-    
-    
-    static class CommandOutputReader extends Thread {
-        PipedInputStream pis = new PipedInputStream();
-        public CommandOutputReader(PipedOutputStream pout) throws IOException {
-            pis.connect(pout);
-        }
-        
-        @Override
-        public void run() {
-            String s;
-            BufferedReader buffReader = new BufferedReader(new InputStreamReader(
-				pis));
-            try {
-                while((s = buffReader.readLine()) != null) {
-                    logger.info(s);
-                }
-                buffReader.close();
-            } catch (Exception ioe) {
-                try {
-                    buffReader.close();
-                } catch (Exception e) {
-                    logger.info(e.getMessage());
-                }
-            }
-        }
-        
-        @Override
-        protected void finalize() throws Throwable {
-            pis.close();
-        }
     }
 }
 

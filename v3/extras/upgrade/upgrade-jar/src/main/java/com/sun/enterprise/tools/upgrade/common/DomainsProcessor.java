@@ -78,20 +78,6 @@ public class DomainsProcessor {
 		}
 		return exitValue;
 	}
-	
-	public int stopDomain(String domainName) throws HarnessException {
-		int exitValue = 0;
-		if(domainStarted) {
-            exitValue = Commands.stopDomain(domainName, commonInfo);
-			if(exitValue == 0) {
-				domainStarted = false;
-			} else {
-				throw new HarnessException(stringManager.getString(
-					"upgrade.common.domain_stop_failed",domainName));
-			}
-		}
-		return exitValue;
-	}
 
     /**
      * Copy any user files in the src server's lib dir to the target server's
