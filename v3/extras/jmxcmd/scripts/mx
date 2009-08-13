@@ -90,8 +90,9 @@ else
 fi
 
 #DEFINES="-Djava.system.class.loader=$_CLASSLOADER"
-_DEBUG=false
 
+
+_DEBUG=false
 
 #
 # Start it up...
