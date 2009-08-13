@@ -2,7 +2,7 @@
 setEnv()
 {
 	export TEMP_DIR=./temp
-	export PUBLISH_DIR=./publish
+	export PUBLISH_DIR=./bin
 	export SCRIPTS_DIR=./scripts
 	
 }
