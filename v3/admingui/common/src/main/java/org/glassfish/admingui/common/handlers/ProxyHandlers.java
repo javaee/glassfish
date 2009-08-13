@@ -221,17 +221,24 @@ public class ProxyHandlers {
             AMXProxy amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
             Object val = amx.attributesMap().get(attrName);
             if (val instanceof Object[]) {
+                
                 String index = (String) handlerCtx.getInputValue("index");
                 if (index == null) {
                     result = val;
                 } else {
-                    Object value = ((Object[]) val)[Integer.parseInt(index)];
-                    result = (value == null) ? "" : value.toString();
+                    Object[] valArray = (Object[])val;
+                    if (valArray.length <=0){
+                        result = "";
+                    }else{
+                        Object value = valArray[Integer.parseInt(index)];
+                        result = (value == null) ? "" : value.toString();
+                    }
                 }
             } else {
                 result = (val == null) ? "" : val.toString();
             }
         } catch (Exception ex) {
+            GuiUtil.getLogger().info("objectName=" + objectNameStr + ", attributeName=" + attrName);
             ex.printStackTrace();
         }
         handlerCtx.setOutputValue("value", result);
