@@ -50,7 +50,8 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/corba/iiopListeners.jsf");
         setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/iiop-service,type=iiop-listener,name=#{pageSession.Name}")
         setPageSessionAttribute(key="childType" value="ssl")
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config]/iiop-service/iiop-listener[#{pageSession.Name}],type=ssl");
+        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/iiop-service/iiop-listener[#{pageSession.Name}],type=ssl");
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" )
 #include "/common/shared/sslPrepare.inc"
       />
   </event>
