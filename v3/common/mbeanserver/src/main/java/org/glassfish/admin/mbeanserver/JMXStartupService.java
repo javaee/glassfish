@@ -126,7 +126,7 @@ public final class JMXStartupService implements Startup, PostConstruct
 
     private void shutdown()
     {
-        Util.getLogger().info("ConnectorStartupService: shutting down AMX and JMX");
+        Util.getLogger().info("JMXStartupService: shutting down AMX and JMX");
 
         mConnectorsStarterThread.shutdown();
     }
@@ -160,7 +160,7 @@ public final class JMXStartupService implements Startup, PostConstruct
                 {
                     final JMXServiceURL address = connector.getAddress();
                     connector.stop();
-                    Util.getLogger().info("Stopped JMXConnectorServer: " + address);
+                    Util.getLogger().info("JMXStartupService: Stopped JMXConnectorServer: " + address);
                 }
                 catch (final Exception e)
                 {
@@ -195,7 +195,7 @@ public final class JMXStartupService implements Startup, PostConstruct
             final int port = Integer.parseInt(connConfig.getPort());
             final String authRealmName = connConfig.getAuthRealmName();
             final boolean securityEnabled = Boolean.parseBoolean(connConfig.getSecurityEnabled());
-
+        
             JMXConnectorServer server = null;
             final BootAMXListener listener = new BootAMXListener(server, mAMXBooterNew);
             if (protocol.equals("rmi_jrmp"))
@@ -214,7 +214,7 @@ public final class JMXStartupService implements Startup, PostConstruct
             }
 
             final JMXServiceURL url = server.getAddress();
-            Util.getLogger().info("Started JMXConnector, JMXService URL = " + url);
+            Util.getLogger().info("JMXStartupService: Started JMXConnector, JMXService URL = " + url);
 
             try
             {
@@ -241,15 +241,13 @@ public final class JMXStartupService implements Startup, PostConstruct
 
         public void run()
         {
-            // JmxConnectorServerDriver.testStart(8686, "rmi_jrmp", true );
-
-            Util.getLogger().fine("Number of JMX connectors: " + mConfiguredConnectors.size());
-
+            Util.getLogger().info("JMXStartupService: JMX authenticator is " + sAuthenticator );
+            
             for (final JmxConnector c : mConfiguredConnectors)
             {
                 if (!Boolean.parseBoolean(c.getEnabled()))
                 {
-                    Util.getLogger().info("JmxConnector " + c.getName() + " is disabled, skipping.");
+                    Util.getLogger().info("JMXStartupService: JMXConnector " + c.getName() + " is disabled, skipping.");
                     continue;
                 }
 
@@ -264,15 +262,9 @@ public final class JMXStartupService implements Startup, PostConstruct
                     //t.printStackTrace();
                 }
             }
-
-            /*
-            if (Boolean.valueOf(System.getProperty("START_JMXMP")))
-            {
-            startJMXMPConnector();
-            }
-             */
         }
     }
+    
     public static final String JMX_CONNECTOR_SERVER_PREFIX = "jmxremote:type=jmx-connector-server";
 
     public static final Set<ObjectName> getJMXConnectorServers(final MBeanServer server)
