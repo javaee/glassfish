@@ -97,7 +97,7 @@ _DEBUG=true
 # Start it up...
 #
 #$_JAVA -version
-$_JAVA -ea -cp $_CLASSPATH ${DEFINES} $_MAIN boot --debug=$_DEBUG --name=mc -c com.sun.cli.jmxcmd.JMXCmdCmdMgr "${@}"
+$_JAVA -ea -cp $_CLASSPATH ${DEFINES} $_MAIN boot --debug=$_DEBUG --name=mx -c com.sun.cli.jmxcmd.JMXCmdCmdMgr "${@}"
 
 
 exit $?
