@@ -51,30 +51,7 @@
         setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/iiop-service,type=iiop-listener,name=#{pageSession.Name}")
         setPageSessionAttribute(key="childType" value="ssl")
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config]/iiop-service/iiop-listener[#{pageSession.Name}],type=ssl");
-
-        proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
-
-        if (#{requestScope.exist}){
-            setPageSessionAttribute(key="edit" value="#{true}" )
-            getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-            convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['Ssl3TlsCiphers']}"
-                CommonCiphersList="#{pageSession.selectedCommon}"
-                EphemeralCiphersList="#{pageSession.selectedEphemeral}"
-                OtherCiphersList="#{pageSession.selectedOther}"
-                EccCiphersList="#{pageSession.selectedEcc}")
-
-        }
-        if (! #{requestScope.exist}){
-            setPageSessionAttribute(key="edit" value="#{false}" )
-            getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
-        }
-        //set the following for including buttons.inc
-        
-        setPageSessionAttribute(key="convertToFalseList" value={"SecurityEnabled" "Enabled"})
-        setPageSessionAttribute(key="showDefaultButton" value="#{false}" )
-        setPageSessionAttribute(key="showCancelButton" value="#{true}" )
-        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" )
-        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" )
+#include "/common/shared/sslPrepare.inc"
       />
   </event>
 
@@ -85,15 +62,15 @@
 
         <!-- Page Title -->
         <sun:title id="propertyContentPage" title="$resource{i18n_corba.sslPageTitle}" helpText="$resource{i18n_corba.sslPageTitleHelp}">
-#include "sslButtons.inc"
+#include "/common/shared/sslButtons.inc"
         </sun:title>
         "<br><br>
-#include "/corba/sslAttrs.jsf"
+#include "/common/shared/sslAttrs.inc"
 
 	<sun:hidden id="helpKey" value="$resource{help_corba.iiop.sslEdit}" />
 </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
-#include "sslValidationsJS.inc"
+#include "/common/shared/sslValidationsJS.inc"
 </define>
 </composition>
 
