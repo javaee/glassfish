@@ -61,6 +61,7 @@
                     attrs="#{pageSession.valueMap}"
                     convertToFalse="#{pageSession.convertToFalseList}"
                     result => $attribute{objStr});
+                prepareSuccessfulMsg();
                 redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
             />
         </sun:button>
