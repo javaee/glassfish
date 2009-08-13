@@ -102,8 +102,14 @@ cp target/mx.jar $PUBLISH_DIR/jars
 export JARS_LOC=/v3/glassfishv3/glassfish/modules
 echo ""
 echo "Copying various GlassFish V3 jars from assumed location: " + $JARS_LOC
+
+echo "Copying" $JARS_LOC/amx-core.jar
 cp $JARS_LOC/amx-core.jar $PUBLISH_DIR/jars
+
+echo "Copying" $JARS_LOC/jmxremote_optional-repackaged.jar
 cp $JARS_LOC/jmxremote_optional-repackaged.jar $PUBLISH_DIR/jars/jmxremote_optional.jar
+
+echo "Copying" $JARS_LOC/$JARS_LOC/javax.management.j2ee.jar
 cp $JARS_LOC/javax.management.j2ee.jar $PUBLISH_DIR/jars
 
 echo ""
@@ -116,7 +122,7 @@ ls -lR $PUBLISH_DIR
 
 echo ""
 
-./bin/mx
+#./bin/mx
 
 
 
