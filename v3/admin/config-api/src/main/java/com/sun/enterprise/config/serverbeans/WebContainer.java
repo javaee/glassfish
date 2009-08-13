@@ -41,6 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
@@ -74,6 +75,11 @@ public interface WebContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      */
     void setSessionConfig(SessionConfig value) throws PropertyVetoException;
 
+    @Attribute(defaultValue = "false")
+    String getJspCachingEnabled();
+
+    void setJspCachingEnabled(String value) throws PropertyVetoException;
+
     /**
         Properties.
      */
@@ -87,5 +93,4 @@ public interface WebContainer extends ConfigBeanProxy, Injectable, PropertyBag {
     )
     @Element
     List<Property> getProperty();
-
 }

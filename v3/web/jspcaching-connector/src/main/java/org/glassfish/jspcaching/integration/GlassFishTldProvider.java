@@ -54,6 +54,7 @@ import com.sun.enterprise.util.net.JarURIPattern;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.logging.LogDomains;
+import com.sun.appserv.web.taglibs.cache.CacheTag;
 
 /**
  * Implementation of TldProvider for JSP caching taglib.
@@ -110,17 +111,14 @@ public class GlassFishTldProvider
         if (webContainer == null) {
             return;
         }
-        String jspCachingEnabled = webContainer.getPropertyValue(
-            "jspCachingEnabled");
-        if (!Boolean.valueOf(jspCachingEnabled)) {
+        if (!Boolean.valueOf(webContainer.getJspCachingEnabled())) {
             return;
         }
 
         /*
          * JSP caching has been enabled
          */
-        Class jspCachingImplClass =
-            com.sun.appserv.web.taglibs.cache.CacheTag.class;
+        Class jspCachingImplClass = CacheTag.class;
         URI[] uris = null;
         Module m = null;
         if (jspCachingImplClass != null) {

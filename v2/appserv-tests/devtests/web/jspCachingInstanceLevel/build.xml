@@ -35,10 +35,10 @@
  holder.
 -->
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
-<!ENTITY run SYSTEM "file:./../../../config/run.xml">
-<!ENTITY testproperties SYSTEM "file:./build.properties">
+<!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../config/common.xml">
+<!ENTITY run SYSTEM "../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "build.properties">
 ]>
 
 <project name="webcontainer_unittest" default="all" basedir=".">
@@ -102,7 +102,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.web-container.property.jspCachingEnabled=true"/>
+                   value="${appserver.instance.name}.web-container.jsp-caching-enabled=true"/>
         </antcall>
         <antcall target="restart-server-instance-common"/>
     </target>
@@ -111,7 +111,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.web-container.property.jspCachingEnabled=false"/>
+                   value="${appserver.instance.name}.web-container.jsp-caching-enabled=false"/>
         </antcall>
         <antcall target="restart-server-instance-common"/>
     </target>

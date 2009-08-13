@@ -50,6 +50,8 @@ public class ServletTest extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 			Thread.sleep(10000);
+            response.setContentType("text/plain");
+			response.getWriter().println("Here's your content.");
 		} catch(InterruptedException ie) {
 			throw new IOException(ie);
 		}
