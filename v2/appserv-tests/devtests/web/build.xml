@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="472"/>
+    <property name="TOTAL_EXPECTED" value="473"/>
 
     &commonSetup;
     &commonBuild;
@@ -343,9 +343,7 @@
         <ant dir="sessionSerializeOnShutdownOnly" target="all"/>
         <ant dir="singleSignOnCookieSecure" target="all"/>
         <ant dir="singleSignOnHttpServiceDynamicReconfig" target="all"/>
-<!-- disabled temporarily.  might be related to reopened 8042
         <ant dir="threadPoolIdleTimeout" target="all"/>
--->
         <ant dir="webappDeployDashDashLibraries" target="all"/>
         <ant dir="webappLoaderIgnoreHiddenJarFiles" target="all"/>
         <ant dir="webappLoaderConsiderHiddenJarFiles" target="all"/>
