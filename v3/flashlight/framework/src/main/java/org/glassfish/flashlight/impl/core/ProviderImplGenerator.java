@@ -144,24 +144,25 @@ public class ProviderImplGenerator {
 
         int index = generatedClassName.lastIndexOf('.');
         String clsName = generatedClassName.substring(index+1);
-        /*
-        System.out.println("**** Generated ClassDATA " + clsName);
-        try {
-            String rootPath = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) +
-                                File.separator + "lib" + File.separator;
 
-            String fileName = rootPath + clsName + ".class";
-            System.out.println("***ClassFile: " + fileName);
-            File file = new File(fileName);
+        if(Boolean.parseBoolean(System.getenv("AS_DEBUG"))) {
+			System.out.println("**** Generated ClassDATA " + clsName);
+			try {
+				String rootPath = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) +
+									File.separator + "lib" + File.separator;
 
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write(classData);
-            fos.flush();
-            fos.close();
-        } catch (Exception ex) {
-           ex.printStackTrace();
-        }
-        */
+				String fileName = rootPath + clsName + ".class";
+				System.out.println("***ClassFile: " + fileName);
+				File file = new File(fileName);
+				file.getParentFile().mkdirs();
+				FileOutputStream fos = new FileOutputStream(file);
+				fos.write(classData);
+				fos.flush();
+				fos.close();
+			} catch (Exception ex) {
+			   ex.printStackTrace();
+			}
+		}
         return classData;
     }
 
