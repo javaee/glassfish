@@ -34,32 +34,30 @@ import javax.management.StandardMBean;
 import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 
-import org.glassfish.api.amx.AMXUtil;
 import org.glassfish.api.amx.BootAMXMBean;
 
 /**
-    The MBean implementation for BootAMXMBean.
+The MBean implementation for BootAMXMBean.
 
-    Public API is the name of the booter MBean eg {@link BootAMXMBean.OBJECT_NAME}
+Public API is the name of the booter MBean eg {@link BootAMXMBean.OBJECT_NAME}
  */
 final class BootAMX implements BootAMXMBean
 {
     private final MBeanServer mMBeanServer;
-
     private final ObjectName mObjectName;
-
     private final Habitat mHabitat;
-
     private ObjectName mDomainRootObjectName;
+
 
     private static void debug(final String s)
     {
         System.out.println(s);
     }
 
+
     private BootAMX(
-            final Habitat habitat,
-            final MBeanServer mbeanServer)
+        final Habitat habitat,
+        final MBeanServer mbeanServer)
     {
         mHabitat = habitat;
         mMBeanServer = mbeanServer;
@@ -72,6 +70,7 @@ final class BootAMX implements BootAMXMBean
         }
     }
 
+
     /**
     Create an instance of the booter.
      */
@@ -83,7 +82,7 @@ final class BootAMX implements BootAMXMBean
         try
         {
             final StandardMBean mbean = new StandardMBean(booter, BootAMXMBean.class);
-           
+
             if (!server.registerMBean(mbean, objectName).getObjectName().equals(objectName))
             {
                 throw new IllegalStateException();
@@ -96,9 +95,10 @@ final class BootAMX implements BootAMXMBean
         }
         return booter;
     }
-    
+
+
     AMXStartupServiceMBean getLoader()
-    {       
+    {
         try
         {
             return mHabitat.getByContract(AMXStartupServiceMBean.class);
@@ -109,6 +109,7 @@ final class BootAMX implements BootAMXMBean
             throw new RuntimeException(t);
         }
     }
+
 
     /**
     We need to dynamically load the AMX module.  HOW?  we can't depend on the amx-impl module.
@@ -149,31 +150,14 @@ final class BootAMX implements BootAMXMBean
         return mDomainRootObjectName;
     }
 
+
     /**
     Return the JMXServiceURLs for all connectors we've loaded.
      */
     public JMXServiceURL[] getJMXServiceURLs()
     {
-        final ObjectName queryPattern = AMXUtil.newObjectName("jmxremote:type=jmx-connector,*");
-        final Set<ObjectName> objectNames = mMBeanServer.queryNames(queryPattern, null);
-
-        final List<JMXServiceURL> urls = new ArrayList<JMXServiceURL>();
-        for (final ObjectName objectName : objectNames)
-        {
-            try
-            {
-                urls.add((JMXServiceURL) mMBeanServer.getAttribute(objectName, "Address"));
-            }
-            catch (JMException e)
-            {
-                e.printStackTrace();
-                // ignore
-            }
-        }
-
-        return urls.toArray(new JMXServiceURL[urls.size()]);
+        return JMXStartupService.getJMXServiceURLs(mMBeanServer);
     }
-
 }
 
 

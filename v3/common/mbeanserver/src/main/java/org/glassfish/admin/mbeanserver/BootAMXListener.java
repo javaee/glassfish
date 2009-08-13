@@ -33,15 +33,67 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.base;
+package org.glassfish.admin.mbeanserver;
 
-import org.glassfish.admin.amx.core.AMXProxy;
+import javax.management.Notification;
+import javax.management.NotificationListener;
+import javax.management.ListenerNotFoundException;
 
+import org.glassfish.api.amx.BootAMXMBean;
+
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectionNotification;
 
 /**
-	Parent MBean for all add-on runtime MBeans (excluding monitoring and JSR 77) that are associated
-    with a particular server.  There is one of these MBeans for each server.
+ * Listens for a connection on the connector server, and when made,
+ * ensures that AMX has been started.
  */
-public interface ServerRuntime extends AMXProxy
+class BootAMXListener implements NotificationListener
 {
+    private final JMXConnectorServer mServer;
+    private final BootAMXMBean mBooter;
+
+
+    public BootAMXListener(
+        final JMXConnectorServer server,
+        final BootAMXMBean booter)
+    {
+        mServer = server;
+        mBooter = booter;
+    }
+
+
+    public void handleNotification(final Notification notif, final Object handback)
+    {
+        if (notif instanceof JMXConnectionNotification)
+        {
+            final JMXConnectionNotification n = (JMXConnectionNotification) notif;
+            if (n.getType().equals(JMXConnectionNotification.OPENED))
+            {
+                Util.getLogger().info("BootAMXListener: connection made for " + handback + ", booting AMX MBeans");
+                mBooter.bootAMX();
+
+                // job is done, stop listening
+                try
+                {
+                    mServer.removeNotificationListener(this);
+                    Util.getLogger().fine("ConnectorStartupService.BootAMXListener: AMX is booted, stopped listening");
+                }
+                catch (final ListenerNotFoundException e)
+                {
+                    // should be impossible.
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
+
+
+
+
+
+
+
+
+

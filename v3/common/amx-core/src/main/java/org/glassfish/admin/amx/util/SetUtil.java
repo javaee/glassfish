@@ -69,6 +69,13 @@ public final class SetUtil
             set.add(item);
         }
     }
+    
+    
+    public static <T> Set<T> newSet()
+    {
+        return new HashSet<T>();
+    }
+    
 
     public static <T> Set<T> newSet(final Collection<T> c)
     {

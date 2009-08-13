@@ -241,7 +241,8 @@ public final class ListUtil
 
         return (list);
     }
-
+    
+    
     /**
     Return a new List in reverse order. Because the List is new,
     it works on any list, modifiable or not.

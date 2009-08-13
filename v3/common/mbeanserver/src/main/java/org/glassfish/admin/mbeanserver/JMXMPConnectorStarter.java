@@ -23,7 +23,6 @@
 package org.glassfish.admin.mbeanserver;
 
 import javax.management.MBeanServer;
-import javax.management.ObjectName;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
 import javax.management.NotCompliantMBeanException;
@@ -31,7 +30,6 @@ import javax.management.NotCompliantMBeanException;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.management.remote.jmxmp.JMXMPConnectorServer;
 
@@ -40,58 +38,34 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.glassfish.api.amx.AMXUtil;
-
+import org.glassfish.internal.api.AdminAccessController;
 
 /**
 Start and stop JMX connectors.
  */
-final class JMXMPConnectorStarter
+final class JMXMPConnectorStarter extends ConnectorStarter
 {
-    protected static void debug(final String s)
-    {
-        System.out.println(s);
-    }
-
-    public static final String JMXMP = "jmxmp";
-    
-    private final MBeanServer mMBeanServer;
-
-    private volatile JMXConnectorServer mJMXMP = null;
-
-    private volatile JMXServiceURL mJMXMPServiceURL = null;
-
-    private final String mAddress;
-    private final int mPort;
-    private final String mAuthRealmName;
-    private final boolean mSecurityEnabled;
-
-    public JMXServiceURL getJMXServiceURL()
-    {
-        return mJMXMPServiceURL;
-    }
-
     JMXMPConnectorStarter(
         final MBeanServer mbeanServer,
         final String address,
         final int port,
         final String authRealmName,
-        final boolean securityEnabled)
+        final boolean securityEnabled,
+        final AdminAccessController authenticator,
+        final BootAMXListener bootListener)
     {
-        mMBeanServer = mbeanServer;
-        mAddress = address;
-        mPort = port;
-        mAuthRealmName = authRealmName;
-        mSecurityEnabled = securityEnabled;
+        super(mbeanServer, address, port, authRealmName, securityEnabled, authenticator, bootListener);
     }
 
-    public synchronized JMXConnectorServer start(final boolean tryOtherPorts)
+
+    public synchronized JMXConnectorServer start()
     {
-        if (mJMXMP != null)
+        if (mConnectorServer != null)
         {
-            return mJMXMP;
+            return mConnectorServer;
         }
 
+        final boolean tryOtherPorts = false;
         final int TRY_COUNT = tryOtherPorts ? 100 : 1;
 
         int port = mPort;
@@ -100,7 +74,7 @@ final class JMXMPConnectorStarter
         {
             try
             {
-                mJMXMP = startJMXMPConnectorServer(port);
+                mConnectorServer = startJMXMPConnectorServer(port);
                 break;
             }
             catch (final java.net.BindException e)
@@ -120,32 +94,21 @@ final class JMXMPConnectorStarter
                 port = port + 1;
             }
         }
-        return mJMXMP;
+        return mConnectorServer;
     }
 
-    public synchronized void stop()
-    {
-        try
-        {
-            mJMXMP.stop();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    static void ignore(Throwable t)
-    {
-        // ignore
-    }
+    public static final String JMXMP = "jmxmp";
 
     private JMXConnectorServer startJMXMPConnectorServer(final int port)
-            throws MalformedURLException, IOException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException
+        throws MalformedURLException, IOException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException
     {
         final Map<String, Object> env = new HashMap<String, Object>();
         env.put("jmx.remote.protocol.provider.pkgs", "com.sun.jmx.remote.protocol");
         env.put("jmx.remote.protocol.provider.class.loader", this.getClass().getClassLoader());
+        if (mAuthenticator != null)
+        {
+            env.put("jmx.remote.authenticator", mAuthenticator);
+        }
 
         final JMXServiceURL serviceURL = new JMXServiceURL("service:jmx:" + JMXMP + "://" + Util.localhost() + ":" + port);
         JMXConnectorServer jmxmp = null;
@@ -154,11 +117,12 @@ final class JMXMPConnectorStarter
         try
         {
             jmxmp = new JMXMPConnectorServer(serviceURL, env, mMBeanServer);
-            
+            jmxmp.addNotificationListener(mBootListener, null, "jmxmp connector");
+
             jmxmp.start();
             startedOK = true;
         }
-        catch( final Exception e )
+        catch (final Exception e)
         {
             e.printStackTrace();
         }
@@ -169,7 +133,10 @@ final class JMXMPConnectorStarter
             {
                 try
                 {
-                    if ( jmxmp != null ) jmxmp.stop();
+                    if (jmxmp != null)
+                    {
+                        jmxmp.stop();
+                    }
                 }
                 catch (Exception e)
                 {
@@ -178,14 +145,15 @@ final class JMXMPConnectorStarter
             }
         }
 
-        mJMXMPServiceURL = serviceURL;
-        mJMXMP = jmxmp;
+        mJMXServiceURL  = serviceURL;
+        mConnectorServer = jmxmp;
 
         // verify
-        final JMXConnector jmxc = JMXConnectorFactory.connect(serviceURL, null);
-        jmxc.getMBeanServerConnection().getMBeanCount();
-        
-        return mJMXMP;
+        //final JMXConnector jmxc = JMXConnectorFactory.connect(serviceURL, null);
+        //jmxc.getMBeanServerConnection().getMBeanCount();
+        //jmxc.close();
+
+        return mConnectorServer;
     }
 }
 
