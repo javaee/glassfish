@@ -63,12 +63,9 @@
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                     onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
                 <!command
-                    createMsgSecurity(attrMap="#{pageSession.valueMap}" providerObjName="#{pageSession.providerObjName}" )
-                    if (#{pageSession.hasPropertyTable}){
-                        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                        setProxyProperties(objectNameStr="#{pageSession.providerObjName}", propertyList="$attribute{newList}");
-                    }
+                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    createMsgSecurity(attrMap="#{pageSession.valueMap}" providerObjName="#{pageSession.providerObjName}" propList="$attribute{newList}")
                     redirect(page="#{pageSession.parentPage}?configName=#{configName}")
                 />
             </sun:button>

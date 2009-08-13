@@ -59,7 +59,7 @@
             </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
                 <!command
-                    redirect(page="#{pageSession.parentPage}");
+                    redirect(page="#{pageSession.cancelPage}");
                 />
             </sun:button>
         </sun:panelGroup>

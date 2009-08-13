@@ -66,8 +66,15 @@
 #include "msgSecurityTabs.inc"
      <sun:title id="propertyContentPage" title="$resource{i18nc.msgSecProvider.TableTitle}"
                  helpText="$resource{i18nc.msgSecProvider.ListPageHelp}" />
-		 "<br /> <br />
-
+		 
+ <sun:propertySheet id="propertySheet">
+     <sun:propertySheetSection id="propertySheetSection">
+         <sun:property id="AuthLayerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.authLayerLabel}" >
+             <sun:staticText id="AuthLayer" text="#{pageSession.Name}" />
+         </sun:property>
+     </sun:propertySheetSection>
+ </sun:propertySheet>
+ "<br /> <br />
 <sun:table id="configs" title="#{tableTitle}"
     deselectMultipleButton="$boolean{true}"
     deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"

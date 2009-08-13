@@ -52,7 +52,10 @@
             value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service/message-security-config[#{pageSession.msgSecurityName}],type=provider-config,name=#{pageSession.Name}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{pageSession.Name}&msgSecurityName=#{pageSession.msgSecurityName}&configName=#{pageSession.configName}");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.msgSecurityName}&configName=#{configName}");
+        setPageSessionAttribute(key="cPage" value="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.msgSecurityName}&configName=#{configName}");
+        getRequestValue(key="cancelPage" 
+                value="#{pageSession.cancelPage}" 
+                default="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.msgSecurityName}&configName=#{configName}")
         setPageSessionAttribute(key="edit" value="#{true}" );
     />
     </event>

@@ -40,7 +40,7 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.msgProvider.EditPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.msgProvider.NewPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
@@ -50,6 +50,7 @@
         mapPut(map="#{pageSession.valueMap}" key="msgSecurityName" value="#{pageSession.msgSecurityName}");
         mapPut(map="#{pageSession.valueMap}" key="configName" value="#{pageSession.configName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.msgSecurityName}&configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="cancelPage" value="#{pageSession.parentPage}" )
         setPageSessionAttribute(key="edit" value="#{false}" );
     />
     </event>
@@ -59,7 +60,7 @@
 #include "/common/shared/alertMsg.inc"
 
         <!-- Page Title -->
-        <sun:title id="propertyContentPage" title="$resource{i18nc.msgProvider.EditPageTitle}" helpText="$resource{$resource{i18nc.msgProvider.EditPageTitleHelp}}">
+        <sun:title id="propertyContentPage" title="$resource{i18nc.msgProvider.NewPageTitle}" helpText="$resource{$resource{i18nc.msgProvider.NewPageTitleHelp}}">
 #include "providerButtons.inc"
         </sun:title>
         "<br><br>

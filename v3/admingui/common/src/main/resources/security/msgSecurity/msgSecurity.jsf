@@ -98,7 +98,7 @@
 
     <sun:tableColumn headerText="$resource{i18nc.msgSecurity.colDefaultClientProv}" sort="DefaultClientProvider" rowHeader="$boolean{true}" id="col3">
         <sun:hyperlink id="defaultclientprov" text="#{td.value.DefaultClientProvider}"
-            url="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{td.value.DefaultClientProvider}&msgSecurityName=#{td.value.Name}&configName=#{configName}" />
+            url="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{td.value.DefaultClientProvider}&msgSecurityName=#{td.value.Name}&configName=#{configName}&cancelPage=#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf" />
 
     </sun:tableColumn>
 

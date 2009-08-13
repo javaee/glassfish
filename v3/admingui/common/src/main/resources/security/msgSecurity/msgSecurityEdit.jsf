@@ -53,8 +53,8 @@
         setPageSessionAttribute(key="childType" value="message-security-config");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=message-security-config,name=#{pageSession.Name}");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=message-security-config,name=#{pageSession.Name}" type="provider-config" result="#{requestScope.tmp}");
-        addEmptyFirstElement(in="#{requestScope.tmp}" out="#{pageSession.providerList}")
+        getProvidersByType(msgSecurityName="#{pageSession.Name}"  type={"server", "client-server"}  result="#{pageSession.serverTypeProviderList}")
+        getProvidersByType(msgSecurityName="#{pageSession.Name}"  type={"client", "client-server"}  result="#{pageSession.clientTypeProviderList}")
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
@@ -73,17 +73,17 @@
         <sun:title id="propertyContentPage" title="$resource{i18nc.msgSecurity.EditMsgSecurity}" helpText="$resource{$resource{i18nc.msgSecurity.EditMsgSecurityInfo}}">
 #include "/common/shared/editPageButtons.inc"
         </sun:title>
-        "<br><br>
+        "<br>
         <sun:propertySheet id="propertySheet">
              <sun:propertySheetSection id="propertySheetSection">
                  <sun:property id="AuthLayerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.authLayerLabel}" >
                      <sun:staticText id="AuthLayer" text="#{pageSession.Name}" />
                  </sun:property>
                  <sun:property id="DefaultProviderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.defaultProviderLabel}" helpText="$resource{i18nc.msgSecurity.defaultProviderHelp}">
-                     <sun:dropDown id="DefaultProvider" selected="#{pageSession.valueMap['DefaultProvider']}" labels="$pageSession{providerList}" />
+                     <sun:dropDown id="DefaultProvider" selected="#{pageSession.valueMap['DefaultProvider']}" labels="$pageSession{serverTypeProviderList}" />
                  </sun:property>
                  <sun:property id="DefaultClProviderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.defaultClProviderLabel}" helpText="$resource{i18nc.msgSecurity.defaultClProviderHelp}">
-                     <sun:dropDown id="DefaultClProvider" selected="#{pageSession.valueMap['DefaultClientProvider']}" labels="$pageSession{providerList}" />
+                     <sun:dropDown id="DefaultClProvider" selected="#{pageSession.valueMap['DefaultClientProvider']}" labels="$pageSession{clientTypeProviderList}" />
                  </sun:property>
              </sun:propertySheetSection>
          </sun:propertySheet>
