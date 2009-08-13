@@ -429,7 +429,17 @@ public abstract class JMXCmd extends CmdBase implements Output
 		throws Exception
 	{
 		final ConnectionSource			connSource	= createConnectionSource( name );
-		final MBeanServerConnection		conn		= connSource.getMBeanServerConnection( false );
+        MBeanServerConnection conn = null;
+		try
+        {
+            conn		= connSource.getMBeanServerConnection( false );
+        }
+        catch( final Exception e )
+        {
+            getConnectionMgr().close(name);
+            conn = connSource.getMBeanServerConnection( true );
+        }
+        
 		//final MBeanServerConnection conn	=
 			//new org.glassfish.admin.amx.util.jmx.MBeanServerConnection_Perf( connX, getOutput() );
 		
@@ -464,7 +474,7 @@ public abstract class JMXCmd extends CmdBase implements Output
 		clearProxy();
 		
 		MBeanServerConnection	conn	= null;
-		if ( refresh )
+		if ( true || refresh )
 		{
 			try
 			{
@@ -474,6 +484,7 @@ public abstract class JMXCmd extends CmdBase implements Output
 			catch( Exception ee )
 			{
 				printError( "Can't reestablish connection" );
+                ee.printStackTrace();
 				throw e;
 			}
 		}
@@ -481,13 +492,13 @@ public abstract class JMXCmd extends CmdBase implements Output
 	}
 	/**
 		The current connection has received an IOException.
-	 */
 		protected MBeanServerConnection
 	connectionIOException( IOException e )
 		throws IOException
 	{
 		return( connectionIOException( e, true ) );
 	}
+	 */
 	
 	
 	/**
@@ -714,7 +725,7 @@ public abstract class JMXCmd extends CmdBase implements Output
 	{
 		if ( e instanceof IOException )
 		{
-			connectionIOException( (IOException)e );
+			connectionIOException( (IOException)e, true );
 		}
 		
 		super.handleException( e );

@@ -2,13 +2,6 @@
  * Copyright 2003 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
- 
-/*
- * $Header: /m/jws/jmxcmd/src/com/sun/cli/jmxcmd/cmd/ConnectCmd.java,v 1.25 2005/04/06 01:36:10 llc Exp $
- * $Revision: 1.25 $
- * $Date: 2005/04/06 01:36:10 $
- */
- 
 package com.sun.cli.jmxcmd.cmd;
 
 
@@ -87,14 +80,17 @@ public class ConnectCmd extends JMXCmd
 	
 	private final static String	CONNECT_TEXT		=
 	"Connects to the specified host and port with optional username and password and protocol.\n" +
-	"Several variants of this command are available:\n" +
-	"(1) Makes a connection to the specified server and associates the name with it (if specified).\n" +
-	"(2) Same as (1), but uses <name> to lookup the connection parameters.\n" +
-	"(3) Makes a connection to the default server.\n" +
-	"(4) Lists the active connections.\n" + 
+	"Examples:\n" +
+	"    connect --port 8686 local-rmi  // new connection named 'local-rmi'\n" +
+	"    connect --port 8687 --protocol jmxmp local-jmxmp   // new connection named 'local-jmxmp'\n" +
+	"    connect local-rmi              // use existing connection\n" +
+	"    connect local-jmxmp            // use existing connection\n" +
+	"    list-connections               // use existing connection\n" +
+	"    close-connection local-rmi     // close connection\n" +
+    "\n" +
 	"\nNotes:\n" +
 	"If --host is not specified, then localhost is used.\n" +
-	"If --protocol is not specified, the jmxmp is used.  \n" +
+	"If --protocol is not specified, the rmi (rmi_jrmp) is used.  \n" +
 	"If user and password-file are not specified, no user and password are used." +
 	"Additional options as name/value pairs may be specified and will be passed to the JMX connector " +
 	"as additional configuration data.\n" + 
@@ -233,6 +229,7 @@ public class ConnectCmd extends JMXCmd
 		return( new CmdInfos( CONNECT_INFO, LIST_CONNECTIONS_INFO, CLOSE_CONNECTION_INFO ) );
 	}
 	
+    @Override
 		protected void
 	establishProxy()
 		throws Exception
@@ -272,8 +269,7 @@ public class ConnectCmd extends JMXCmd
 			{
 				establishProxy( name, connectInfo );
 				
-				println( "Connection " + name +
-					" (" + connectInfo.toString() + ") is now the active connection" );
+				println( "Connection " + name + " (" + connectInfo.toString() + ") is now the active connection" );
 			}
 			envPut( DEFAULT_CONNECTION_NAME_KEY, name, true );
 		}
@@ -447,18 +443,23 @@ public class ConnectCmd extends JMXCmd
 		else
 		{
 			final String	host			= getString( HOST_OPTION.getShortName(), "localhost" );
-			final String	port			= getString( PORT_OPTION.getShortName(), null );
-			final String	protocol		= getString( PROTOCOL_OPTION.getShortName(), "jmxmp" );
+			final String	port			= getString( PORT_OPTION.getShortName(), null);
+			String	protocol		= getString( PROTOCOL_OPTION.getShortName(), null );
 			final String	user			= getString( USER_OPTION.getShortName(), null );
 			final String	passwordFile	= getString( PASSWORD_FILE_OPTION.getShortName(), null );
 			final String	trustStoreFile	= getString( TRUSTSTORE_OPTION.getShortName(), null );
-			final String	jndiName		= getString( JNDI_NAME_OPTION.getShortName(), null );
+			final String	jndiName		= getString( JNDI_NAME_OPTION.getShortName(), "/jmxrmi" );
 			final String	url				= getString( URL_OPTION.getShortName(), null );
 			final String	options			= getString( OPTIONS_OPTION.getShortName(), null );
 			final boolean	prompt			= getBoolean( PROMPT_OPTION.getShortName(), Boolean.FALSE ).booleanValue();
 			final String	sasl			= getString( SASL_OPTION.getShortName(), null );
 			final boolean	cacheMBeanInfo	=
 				getBoolean( CACHE_MBEAN_INFO_OPTION.getShortName(), Boolean.FALSE ).booleanValue();
+        
+            if ( protocol == null || protocol.equals("rmi_jrmp") )
+            {
+                protocol = "rmi";
+            }
 			
 			final HashMap<String,String>	params	= new HashMap<String,String>();
 			maybePut( params, JMXConnectorProvider.HOST, host );

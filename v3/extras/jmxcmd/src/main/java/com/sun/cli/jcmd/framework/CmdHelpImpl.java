@@ -20,8 +20,8 @@ import com.sun.cli.jcmd.util.cmd.CmdInfos;
  */
 public abstract class CmdHelpImpl implements CmdHelp
 {
-	private final static String		SYNTAX_DELIM	= "$\n\n";
-	private final static String		CMD_DELIM	= "|";
+	private final static String		SYNTAX_DELIM	= "\n\n";
+	private final static String		CMD_DELIM	= "";
 	private final CmdInfos			mInfos;
 	
 		protected

@@ -176,9 +176,8 @@ public final class RMIDefaultConnectorProvider
 	}
 	
 	
-	public final static String	RMI_PROTOCOL		= "rmi";
-	public static final Set<String>	SUPPORTED_PROTOCOLS	=
-		SetUtil.newUnmodifiableStringSet( RMI_PROTOCOL );
+	public final static String	RMI_PROTOCOL		= "rmi";    // treat the same as "rmi_jrmp"
+	public static final Set<String>	SUPPORTED_PROTOCOLS	= SetUtil.newUnmodifiableStringSet( RMI_PROTOCOL, "rmi_jrmp" );
 	
 		protected Set<String>
 	getSupportedProtocols()
