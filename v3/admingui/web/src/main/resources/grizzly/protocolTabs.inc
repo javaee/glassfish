@@ -43,6 +43,12 @@
         redirect(page="#{request.contextPath}/web/grizzly/protocolEdit.jsf?configName=#{configName}&name=#{pageSession.Name}");
         />
     </sun:tab>
+    <sun:tab id="sslTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.sslTab}" >
+        <!command
+        setSessionAttribute(key="protocolTabs" value="sslTab");
+        redirect(page="#{request.contextPath}/web/grizzly/protocolSSLEdit.jsf?configName=#{configName}&name=#{pageSession.Name}");
+        />
+    </sun:tab>
     <sun:tab id="httpTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.httpTab}" >
         <!command
         setSessionAttribute(key="protocolTabs" value="httpTab");
