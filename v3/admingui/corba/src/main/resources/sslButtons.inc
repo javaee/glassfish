@@ -56,7 +56,7 @@
                 onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
             <!command
                 convertCiphersItemsToStr(common="#{pageSession.selectedCommon}" ephemeral="#{pageSession.selectedEphemeral}" other="#{pageSession.selectedOther}" ecc="#{pageSession.selectedEcc}" ciphers="#{requestScope.ciphers}")
-                mapPut(map="#{pageSession.valueMap}" key="Ssl3TlsCiphers" value="{#requestScope.ciphers}")
+                mapPut(map="#{pageSession.valueMap}" key="Ssl3TlsCiphers" value="#{requestScope.ciphers}")
                 createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                     attrs="#{pageSession.valueMap}"
                     convertToFalse="#{pageSession.convertToFalseList}"
