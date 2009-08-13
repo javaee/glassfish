@@ -1,4 +1,4 @@
-#! jmxcmd
+#! mc
 
 create-cmd-alias cca=create-cmd-alias
 cca dca=delete-cmd-alias

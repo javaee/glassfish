@@ -1,11 +1,11 @@
-source --verbose ./std-cmd-aliases.jmxcmd
-source --verbose ./start-test-mbs.jmxcmd
+source --verbose ./std-cmd-aliases.mc
+source --verbose ./start-test-mbs.mc
 
 # setup our environment
 setenv debug=false
 cca delim="echo -- --------------------------------------------------------------------------------"
-cta -k simple-testee=jmxcmd.test:name=cli-support-simple-testee
-cta -k support-testee=jmxcmd.test:name=cli-support-testee
+cta -k simple-testee=mc.test:name=cli-support-simple-testee
+cta -k support-testee=mc.test:name=cli-support-testee
 # run our unit tests first
 run-all-tests
 load-jmxmp-connector --port 8344 

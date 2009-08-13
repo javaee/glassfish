@@ -1,5 +1,5 @@
 #
-# source this file from within jmxcmd after making sure
+# source this file from within mc after making sure
 # the requisite class files are available.
 #
 
