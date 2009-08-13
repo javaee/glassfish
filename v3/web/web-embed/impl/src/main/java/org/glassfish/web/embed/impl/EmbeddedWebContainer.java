@@ -99,6 +99,8 @@ public class EmbeddedWebContainer implements
     
     private File path = null;
     
+    private String defaultDomain = "com.sun.appserv";
+    
 
     // --------------------------------------------------------- Public Methods
 
@@ -129,7 +131,8 @@ public class EmbeddedWebContainer implements
      * <p>This method also creates and starts a default
      * <tt>VirtualServer</tt> with id <tt>server</tt> and hostname
      * <tt>localhost</tt>, as well as a default <tt>WebListener</tt>
-     * with id <tt>http-listener-1</tt> on port 8080.
+     * with id <tt>http-listener-1</tt> on port 8080 if no other virtual server 
+     * or listener configuration exists.
      * In order to change any of these default settings, 
      * {@link #start(WebContainerConfig)} may be called.
      * 
@@ -144,42 +147,42 @@ public class EmbeddedWebContainer implements
         String webListenerId = "http-listener-1";
         String virtualServerId = "server";
         String hostName = "localhost";
-        String defaultDomain = "com.sun.appserv";
     
         try { 
-            Engine engine = embedded.createEngine();
-            engine.setName(defaultDomain);
-            ((StandardEngine)engine).setDomain(defaultDomain);
-            engine.setDefaultHost(virtualServerId);
-            engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
+            if (createDefaultConfig()) {
+                Engine engine = embedded.createEngine();
+                engine.setName(defaultDomain);
+                ((StandardEngine)engine).setDomain(defaultDomain);
+                engine.setDefaultHost(virtualServerId);
+                engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
+                embedded.addEngine(engine);
             
-            WebListener webListener = 
-                createWebListener(webListenerId, WebListener.class);
-            webListener.setPort(port);
-            webListener.setDefaultHost(virtualServerId);
-            webListener.setDomain(defaultDomain);
-            WebListener[] webListeners = new WebListener[1];
-            webListeners[0] = webListener;
+                WebListener webListener = 
+                    createWebListener(webListenerId, WebListener.class);
+                webListener.setPort(port);
+                webListener.setDefaultHost(virtualServerId);
+                webListener.setDomain(defaultDomain);
+                WebListener[] webListeners = new WebListener[1];
+                webListeners[0] = webListener;
             
-            File docRoot = getPath();
-            defaultVirtualServer = (VirtualServer)
-                createVirtualServer(virtualServerId, docRoot, webListeners);
-            defaultVirtualServer.addAlias(hostName);
-            engine.addChild(defaultVirtualServer);
+                File docRoot = getPath();
+                defaultVirtualServer = (VirtualServer)
+                    createVirtualServer(virtualServerId, docRoot, webListeners);
+                defaultVirtualServer.addAlias(hostName);
+                engine.addChild(defaultVirtualServer);
             
-            Context context = (Context) createContext(docRoot, null);
-            defaultVirtualServer.addChild(context);
+                Context context = (Context) createContext(docRoot, null);
+                defaultVirtualServer.addChild(context);
       
-            embedded.addEngine(engine);
-                      
-            addWebListener(webListener);
+                addWebListener(webListener);
+            }
             
             embedded.start();
             
         } catch (Exception e) {
             throw new LifecycleException(e);
         }
-        
+
     }
 
     /**
@@ -559,10 +562,20 @@ public class EmbeddedWebContainer implements
         throws ConfigException, LifecycleException {
         
         Engine[] engines = embedded.getEngines();
+        if (engines.length==0) {
+            Engine engine = embedded.createEngine();
+            engine.setName(defaultDomain);
+            ((StandardEngine)engine).setDomain(defaultDomain);
+            engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
+            embedded.addEngine(engine);
+        }
+        engines = embedded.getEngines();
         if (engines[0].findChild(virtualServer.getId())!=null) {
             throw new ConfigException("VirtualServer with id "+
                     virtualServer.getId()+" is already registered");
         } else {
+            
+            engines[0].setDefaultHost(virtualServer.getId());
             engines[0].addChild((Container)virtualServer);
         }
         log.info("Added virtual server "+virtualServer.getId());
@@ -650,5 +663,21 @@ public class EmbeddedWebContainer implements
     public void setLogLevel(Level level) {
         log.setLevel(level);
     }
+    
+    public boolean createDefaultConfig() {
+        
+        Engine[] engines = embedded.getEngines();
+        if (engines.length==0 || engines[0]==null) {
+            return true;
+        }      
+        
+        if (embedded.findConnectors().length>0 && 
+                engines[0].findChildren().length>0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+   
     
 }

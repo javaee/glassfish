@@ -71,7 +71,8 @@ public interface EmbeddedWebContainer extends EmbeddedContainer {
      * <p>This method also creates and starts a default
      * <tt>VirtualServer</tt> with id <tt>server</tt> and hostname
      * <tt>localhost</tt>, as well as a default <tt>WebListener</tt>
-     * with id <tt>http-listener-1</tt> on port 8080.
+     * with id <tt>http-listener-1</tt> on port 8080 if no other virtual server 
+     * or listener configuration exists.
      * In order to change any of these default settings, 
      * {@link #start(WebContainerConfig)} may be called.
      * 
