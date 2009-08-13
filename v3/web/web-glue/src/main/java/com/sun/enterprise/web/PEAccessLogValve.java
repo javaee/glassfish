@@ -144,12 +144,6 @@ public final class PEAccessLogValve
 
 
     /**
-     * Has this component been started yet?
-     */
-    private boolean started = false;
-
-
-    /**
      * The suffix that is added to log file filenames.
      */
     private String suffix = "";
@@ -757,9 +751,14 @@ public final class PEAccessLogValve
 
         setDirectory(dir.getAbsolutePath());
 
-        // If the property is defined under virtual-server, override the one
-        // defined under http-service.
-        String acWriteInterval = vsBean.getPropertyValue(Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY,accessLogWriteInterval);
+        /*
+         * If there is any accessLogWriteInterval property defined under
+         * <virtual-server>, it overrides the write-interval-seconds attribute
+         * of <http-service><access-log>
+         */
+        String acWriteInterval = vsBean.getPropertyValue(
+            Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY,
+            accessLogWriteInterval);
         if (acWriteInterval != null) {
             try{
                 setWriterInterval(Integer.parseInt(acWriteInterval));
@@ -770,9 +769,13 @@ public final class PEAccessLogValve
             }
         }
          
-        // If the property is defined under virtual-server, override the one
-        // defined under http-service.
-        String acBufferSize = vsBean.getPropertyValue(Constants.ACCESS_LOG_BUFFER_SIZE_PROPERTY,accessLogBufferSize);
+        /*
+         * If there is any accessLogBufferSize property defined under
+         * <virtual-server>, it overrides the buffer-size-bytes attribute
+         * of <http-service><access-log>
+         */
+        String acBufferSize = vsBean.getPropertyValue(
+            Constants.ACCESS_LOG_BUFFER_SIZE_PROPERTY, accessLogBufferSize);
         if (acBufferSize != null) {
             try {
                 setBufferSize(Integer.parseInt(acBufferSize));
@@ -1059,6 +1062,7 @@ public final class PEAccessLogValve
             // Start the background writer writerThread
             threadStart();
         }
+
         started = true;
    }
 
@@ -1074,9 +1078,11 @@ public final class PEAccessLogValve
     public void stop() throws LifecycleException {
 
         // Validate and update our current component state
-        if (!started)
+        if (!started) {
             throw new LifecycleException
                 (_rb.getString("peaccesslogvalve.notStarted"));
+        }
+
         lifecycle.fireLifecycleEvent(STOP_EVENT, null);
         started = false;
         
@@ -1086,7 +1092,6 @@ public final class PEAccessLogValve
         }
         
         close();
-
     }
 
     
