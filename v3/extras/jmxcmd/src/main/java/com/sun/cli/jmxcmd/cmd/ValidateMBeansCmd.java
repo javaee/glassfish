@@ -162,7 +162,7 @@ public class ValidateMBeansCmd extends JMXCmd
 			}
 			catch( IOException e )
 			{
-				connectionIOException( e );
+				connectionIOException( e, true);
 				failures.put( attrName, e );
 			}
 			catch( Exception e )
@@ -580,7 +580,7 @@ public class ValidateMBeansCmd extends JMXCmd
 			
 			if ( e instanceof IOException )
 			{
-				connectionIOException( (IOException)e );
+				connectionIOException( (IOException)e, true);
 				throw (IOException)e;
 			}
 		}
@@ -643,7 +643,7 @@ public class ValidateMBeansCmd extends JMXCmd
 						
 					if ( e instanceof IOException)
 					{
-						connectionIOException( (IOException)e );
+						connectionIOException( (IOException)e, true);
 					}
 					valid	= false;
 				}
