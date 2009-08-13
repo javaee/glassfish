@@ -19,6 +19,9 @@ import com.sun.cli.jcmd.util.cmd.OperandsInfo;
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 
 import java.util.List;
+import java.util.Set;
+import org.glassfish.admin.amx.util.ListUtil;
+import org.glassfish.admin.amx.util.SetUtil;
 
 public class HelpCmd extends CmdBase
 {
@@ -136,38 +139,55 @@ public class HelpCmd extends CmdBase
             final CmdFactory factory = getCmdFactory();
 
             final List<Class<? extends Cmd>> classes = factory.getClasses();
-            final CmdInfos[] cmdInfos = new CmdInfos[classes.size() ];
-            final CmdHelp[] cmdHelps = new CmdHelp[classes.size() ];
+            final List<CmdInfos> cmdInfos = ListUtil.newList();
+            final List<CmdHelp>  cmdHelps = ListUtil.newList();
 
-            for (int i = 0; i < classes.size(); ++i)
+            // make sure classes are unique
+            final Set<Class<? extends Cmd>> classesSet = SetUtil.newSet();
+            classesSet.addAll(classes);
+
+            for (final Class<? extends Cmd> clazz : classesSet )
             {
+                if ( clazz == null ) throw new IllegalArgumentException("null class");
                 try
                 {
-                    cmdInfos[i] = getCmdInfos(classes.get(i));
-                    cmdHelps[i] = getHelpForCmd(classes.get(i));
+                    final CmdInfos infos = getCmdInfos( clazz );
+                    final CmdHelp help = getHelpForCmd( clazz );
+
+                    if ( infos == null )
+                    {
+                        System.out.println( "Null CmdInfos from class " + clazz.getName() );
+                        continue;
+                    }
+                    if ( help == null )
+                    {
+                        System.out.println( "Null CmdHelp from class " + clazz.getName() );
+                        continue;
+                    }
+                    
+                    cmdInfos.add( infos );
+                    cmdHelps.add( help );
                 }
                 catch (Exception e)
                 {
-                    cmdHelps[i] = null;
                     e.printStackTrace();
                 }
             }
 
-            final String[] helps = new String[classes.size()];
-            for (int classIdx = 0; classIdx < classes.size(); ++classIdx)
+            final String[] helps = new String[cmdHelps.size()];
+            for (int classIdx = 0; classIdx < cmdHelps.size(); ++classIdx)
             {
-                helps[classIdx] = cmdHelps[classIdx].getName() +
-                        ": " + cmdHelps[classIdx].getSynopsis();
+                final CmdHelp   help  = cmdHelps.get(classIdx);
+                final CmdInfos  infos = cmdInfos.get(classIdx);
+                
+                helps[classIdx] = help.getName() + " : " + help.getSynopsis();
 
-                final int numSubCmds = cmdInfos[classIdx].size();
-                if (numSubCmds <= 1)
-                {
-                }
-                else
+                final int numSubCmds = infos.size();
+                if (numSubCmds >= 2)
                 {
                     for (int subCmdIdx = 0; subCmdIdx < numSubCmds; ++subCmdIdx)
                     {
-                        helps[classIdx] += "\n    " + cmdInfos[classIdx].get(subCmdIdx).getName();
+                        helps[classIdx] += "\n    " + infos.get(subCmdIdx).getName();
                     }
                 }
             }
