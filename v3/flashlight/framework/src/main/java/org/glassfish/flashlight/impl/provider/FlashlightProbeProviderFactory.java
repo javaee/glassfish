@@ -47,6 +47,7 @@ import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.external.probe.provider.annotations.*;
+import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -94,9 +95,6 @@ public class FlashlightProbeProviderFactory
         }
     };
 
-    public FlashlightProbeProviderFactory() {
-        setDTraceAvailabilty();
-    }
         
     public <T> T getProbeProvider(Class<T> providerClazz)
             throws InstantiationException, IllegalAccessException {
@@ -251,6 +249,9 @@ public class FlashlightProbeProviderFactory
          for(FlashlightProbe probe : probes) {
              probe.setDTraceProviderImpl(dtraceProviderImpl);
          }
+
+		 //does not work!!!!
+         //FlashlightProbeClientMediator.getInstance().registerListener(dtraceProviderImpl, provider);
     }
 
     private void registerProvider(ClassLoader cl, ProbeProviderXMLParser.Provider provider) {
@@ -367,7 +368,6 @@ public class FlashlightProbeProviderFactory
         // when something is amiss instead of having complicated hard-to-read nested
         // blocks of code.
         
-        // call this code only once!
         dt = null;
 
         // AS_DTRACE check is temporary...
@@ -386,9 +386,10 @@ public class FlashlightProbeProviderFactory
     }
 
     private boolean isDtraceEnabled() {
+		setDTraceAvailabilty();
         return
             dt != null &&
-            Boolean.parseBoolean(monitoringServiceConfig.getMonitoringEnabled()) &&
+            //Boolean.parseBoolean(monitoringServiceConfig.getMonitoringEnabled()) &&
             true; //Boolean.parseBoolean(monitoringServiceConfig.getDtraceEnabled());
     }
 }
