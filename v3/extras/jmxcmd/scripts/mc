@@ -36,7 +36,7 @@ SCRIPT_DIR=$FULLPATH_RESULT
 echo SCRIPT_DIR=$SCRIPT_DIR
 
 # our jar file should be in the same directory as the script
-MAIN_JAR=$SCRIPT_DIR/jars/mc.jar
+MAIN_JAR=$SCRIPT_DIR/jars/mx.jar
 if [ ! -f $MAIN_JAR ]
 then
 echo $MAIN_JAR " not found "
@@ -62,7 +62,7 @@ fi
 
 # 'D' is simply an abbreviation to keep things compact.
 D=$SCRIPT_DIR/jars
-OPTIONAL_JARS=$D/jmxcmd-optional.jar
+OPTIONAL_JARS=$D/mx-optional.jar
 USER_JARS=$D/amx-core.jar${CPS}$D/jmxremote_optional.jar${CPS}$D/javax.management.j2ee.jar
 
 echo D=$D
