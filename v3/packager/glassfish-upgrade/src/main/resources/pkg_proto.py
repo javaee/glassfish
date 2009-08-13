@@ -44,7 +44,7 @@ pkg = {
     "version"       : conf.glassfish_version,
     "attributes"    : {
                         "pkg.summary" : "GlassFish Upgrade Tool",
-                        "pkg.description" : "GlassFish Upgrade Tool Description Placeholder. "+conf.glassfish_description_long,
+                        "pkg.description" : "GlassFish Upgrade Tool (asupgrade) is a utility to migrate the server configuration, its persisted state, Java EE services, and deployed Java EE applications from a previously installed GlassFish application server to the present GlassFish application server. "+conf.glassfish_description_long,
                         "info.classification" :  conf.glassfish_info_classification,
                       },
     "depends"       : { 
