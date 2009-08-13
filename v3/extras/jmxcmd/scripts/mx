@@ -33,7 +33,6 @@ fullpath()
 fullpath `dirname $0`
 SCRIPT_DIR=$FULLPATH_RESULT
 
-echo SCRIPT_DIR=$SCRIPT_DIR
 
 # our jar file should be in the same directory as the script
 MAIN_JAR=$SCRIPT_DIR/jars/mx.jar
@@ -61,21 +60,22 @@ fi
 # echo "Classpath separator = " $CPS
 
 # 'D' is simply an abbreviation to keep things compact.
-D=$SCRIPT_DIR/jars
+JARS_DIR=$SCRIPT_DIR/jars
 OPTIONAL_JARS=$D/mx-optional.jar
-USER_JARS=$D/amx-core.jar${CPS}$D/jmxremote_optional.jar${CPS}$D/javax.management.j2ee.jar
+USER_JARS=$JARS_DIR/amx-core.jar${CPS}$JARS_DIR/jmxremote_optional.jar${CPS}$JARS_DIR/javax.management.j2ee.jar
 
-echo D=$D
 #
 # Support jars are usually already incorporated, but can be separated out.
 #
-JMXREMOTE_OPTIONAL=$D/jmxremote_optional.jar
-JAVAX77_JAR=$D/javax77.jar
+JMXREMOTE_OPTIONAL=$JARS_DIR/jmxremote_optional.jar
+JAVAX77_JAR=$JARS_DIR/javax77.jar
 SUPPORT_JARS=${JMXREMOTE_OPTIONAL}${CPS}${JAVAX77_JAR}
 
 _CLASSPATH=$MAIN_JAR${CPS}${OPTIONAL_JARS}${CPS}${USER_JARS}${CPS}${SUPPORT_JARS}
 
-echo CLASSPATH=$_CLASSPATH
+#echo CLASSPATH=$_CLASSPATH
+#echo SCRIPT_DIR=$SCRIPT_DIR
+#echo JARS_DIR=$JARS_DIR
 
 # main routine to invoke
 _MAIN=com.sun.cli.jcmd.JCmdMain
@@ -90,7 +90,7 @@ else
 fi
 
 #DEFINES="-Djava.system.class.loader=$_CLASSLOADER"
-_DEBUG=true
+_DEBUG=false
 
 
 #
