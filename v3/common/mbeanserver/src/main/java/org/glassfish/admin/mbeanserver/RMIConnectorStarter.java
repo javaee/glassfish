@@ -59,7 +59,6 @@ final class RMIConnectorStarter extends ConnectorStarter
 {
     private final Registry mRegistry;
 
-
     public RMIConnectorStarter(
         final MBeanServer mbeanServer,
         final String address,
@@ -116,29 +115,34 @@ final class RMIConnectorStarter extends ConnectorStarter
         }
         // env.put("jmx.remote.protocol.provider.pkgs", "com.sun.jmx.remote.protocol");
         //env.put("jmx.remote.protocol.provider.class.loader", this.getClass().getClassLoader());
+        final String hostPort = hostname + ":" + mPort;
 
-        final boolean useSamePortForClients = false;
-        String urlStr = null;
-        if (useSamePortForClients)
-        {
-            // extended variant uses the same port for both the RMIRegistry and the client port
-            // see: http://blogs.sun.com/jmxetc/entry/connecting_through_firewall_using_jmx
-            urlStr = "service:jmx:rmi:///jndi/rmi://" + hostname + ":" + mPort + "/" +
-                "/jndi/rmi://" + hostname + ":" + mPort + "/" + name;
-
-        }
-        else
-        {
-            urlStr = "service:jmx:rmi:///jndi/rmi://" + hostname + ":" + mPort + "/" + name;
-        }
+        // !!!
+        //  extended JMXServiceURL  uses the same port for both the RMIRegistry and the client port
+        // see: http://blogs.sun.com/jmxetc/entry/connecting_through_firewall_using_jmx
+        //
+        // the first hostPort value is the host/port to be used for the client connections; this makes it a fixed
+        // port number and we're making it the same as the RMI registry port.
+        final String urlStr = "service:jmx:rmi://" + hostPort + "/jndi/rmi://" + hostPort + "/" + name;
+        //final String urlStr = "service:jmx:rmi:///jndi/rmi://" + hostPort + "/" + name;  <== KEEP for reference, this is the basic form
 
         mJMXServiceURL = new JMXServiceURL(urlStr);
-
         mConnectorServer = JMXConnectorServerFactory.newJMXConnectorServer(mJMXServiceURL, env, mMBeanServer);
-        mConnectorServer.addNotificationListener(mBootListener, null, "rmi_jrmp connector");
+        mConnectorServer.addNotificationListener(mBootListener, null, mJMXServiceURL.toString() );
         mConnectorServer.start();
 
         return mConnectorServer;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
 
