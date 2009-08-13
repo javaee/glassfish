@@ -36,10 +36,10 @@ SCRIPT_DIR=$FULLPATH_RESULT
 echo SCRIPT_DIR=$SCRIPT_DIR
 
 # our jar file should be in the same directory as the script
-JMXCMD_JAR=$SCRIPT_DIR/jars/jmxcmd.jar
-if [ ! -f $JMXCMD_JAR ]
+MAIN_JAR=$SCRIPT_DIR/jars/mc.jar
+if [ ! -f $MAIN_JAR ]
 then
-echo $JMXCMD_JAR " not found "
+echo $MAIN_JAR " not found "
 exit
 fi
 
@@ -63,7 +63,7 @@ fi
 # 'D' is simply an abbreviation to keep things compact.
 D=$SCRIPT_DIR/jars
 OPTIONAL_JARS=$D/jmxcmd-optional.jar
-USER_JARS=$D/amx-api.jar${CPS}$D/jmxremote_optional.jar
+USER_JARS=$D/amx-core.jar${CPS}$D/jmxremote_optional.jar${CPS}$D/javax.management.j2ee.jar
 
 echo D=$D
 #
@@ -73,7 +73,7 @@ JMXREMOTE_OPTIONAL=$D/jmxremote_optional.jar
 JAVAX77_JAR=$D/javax77.jar
 SUPPORT_JARS=${JMXREMOTE_OPTIONAL}${CPS}${JAVAX77_JAR}
 
-_CLASSPATH=$JMXCMD_JAR${CPS}${OPTIONAL_JARS}${CPS}${USER_JARS}${CPS}${SUPPORT_JARS}
+_CLASSPATH=$MAIN_JAR${CPS}${OPTIONAL_JARS}${CPS}${USER_JARS}${CPS}${SUPPORT_JARS}
 
 echo CLASSPATH=$_CLASSPATH
 
@@ -96,7 +96,8 @@ _DEBUG=true
 #
 # Start it up...
 #
-$_JAVA -ea -cp $_CLASSPATH ${DEFINES} $_MAIN boot --debug=$_DEBUG --name=jmxcmd -c com.sun.cli.jmxcmd.JMXCmdCmdMgr "${@}"
+#$_JAVA -version
+$_JAVA -ea -cp $_CLASSPATH ${DEFINES} $_MAIN boot --debug=$_DEBUG --name=mc -c com.sun.cli.jmxcmd.JMXCmdCmdMgr "${@}"
 
 
 exit $?

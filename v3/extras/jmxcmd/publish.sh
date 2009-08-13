@@ -23,7 +23,7 @@ initialize()
 
 askUser()
 {
- echo "Produce jmxcmd.jar? (y for yes, n for no)"
+ echo "Produce mc.jar? (y for yes, n for no)"
  read ans
  if [ ${ans} == "y" ] ; then
   echo "going ahead ..."
@@ -40,8 +40,8 @@ copy()
 	cp required-jars/jmxremote_optional.jar ${TEMP_DIR}/jmxremote_optional.jar
 	cp required-jars/javax77.jar ${TEMP_DIR}/javax77.jar
 	
-	cp jars/jmxcmd.jar ${TEMP_DIR}
-	cp jars/jmxcmd-optional.jar ${TEMP_DIR}
+	cp jars/mc.jar ${TEMP_DIR}
+	cp jars/mc-optional.jar ${TEMP_DIR}
 }
 
 unjar()
@@ -59,26 +59,26 @@ unjarAll()
 	unjar jmxtools.jar
 	unjar jmxremote_optional.jar
 	
-	unjar jmxcmd.jar
-	unjar jmxcmd-optional.jar
+	unjar mc.jar
+	unjar mc-optional.jar
 	cd $CWD
 }
 
-jarJmxCmd()
+jarMC()
 {
-	echo "Creating jmxcmd.jar..."
+	echo "Creating mc.jar..."
 	CWD=`pwd`
 	cd ${TEMP_DIR}
-	jar cf	jmxcmd.jar com javax META-INF
+	jar cf	mc.jar com javax META-INF
 	cd $CWD
 }
 
 
 copyScripts()
 {
-    cp ${SCRIPTS_DIR}/jmxcmd ${PUBLISH_DIR}
-    cp ${SCRIPTS_DIR}/jmxcmd.bat ${PUBLISH_DIR}
-    cp ${SCRIPTS_DIR}/*.jmxcmd ${PUBLISH_DIR}
+    cp ${SCRIPTS_DIR}/mc ${PUBLISH_DIR}
+    cp ${SCRIPTS_DIR}/mc.bat ${PUBLISH_DIR}
+    cp ${SCRIPTS_DIR}/*.mc ${PUBLISH_DIR}
 }
 
 cleanup()
@@ -93,9 +93,15 @@ initialize
 #askUser
 #copy
 #unjarAll
-#jarJmxCmd
-#mv ${TEMP_DIR}/jmxcmd.jar $PUBLISH_DIR/jmxcmd.jar
-cp target/jmxcmd.jar $PUBLISH_DIR/jars
+#jarMC
+#mv ${TEMP_DIR}/mc.jar $PUBLISH_DIR/mc.jar
+cp target/mc.jar $PUBLISH_DIR/jars
+cp /v3/glassfishv3/glassfish/modules/amx-core.jar $PUBLISH_DIR/jars
+cp /v3/glassfishv3/glassfish/modules/jmxremote_optional-repackaged.jar $PUBLISH_DIR/jars/jmxremote_optional.jar
+cp /v3/glassfishv3/glassfish/modules/javax.management.j2ee.jar $PUBLISH_DIR/jars
+
+
+
 copyScripts
 cleanup
 echo $PUBLISH_DIR

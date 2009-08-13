@@ -15,7 +15,7 @@ package com.sun.cli.jcmd.framework;
 /**
 	A marker interface a source of Cmd classes.
  */
-public interface CmdSource extends ClassSource
+public interface CmdSource extends ClassSource<Cmd>
 {
 };
 

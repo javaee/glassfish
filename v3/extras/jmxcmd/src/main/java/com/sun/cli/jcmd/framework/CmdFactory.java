@@ -26,7 +26,7 @@ import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
  */
 public class CmdFactory
 {
-	private final Map<String,Class>			mCmds;
+	private final Map<String,Class<? extends Cmd>>			mCmds;
 	private UnknownCmdClassGetter	mCmdClassGetter;
 	
 	public static final String	DEFAULT_CMD_NAME	= "DEFAULT_CMD";
@@ -43,7 +43,7 @@ public class CmdFactory
 	 */
 	public interface UnknownCmdClassGetter
 	{
-		public Class	getCmdClass( String name );
+		public Class<? extends Cmd>	getCmdClass( String name );
 	}
 	
 	private class MyCmdClassGetter implements UnknownCmdClassGetter
@@ -53,7 +53,7 @@ public class CmdFactory
 		{
 		}
 		
-			public Class
+			public Class<? extends Cmd>
 		getCmdClass( String name )
 		{
 			return( mCmds.get( DEFAULT_CMD_NAME ) );
@@ -66,7 +66,7 @@ public class CmdFactory
 		public
 	CmdFactory()
 	{
-		mCmds			= new HashMap<String,Class>();
+		mCmds = new HashMap<String,Class<? extends Cmd>>();
 		mCmdClassGetter	= new MyCmdClassGetter();
 	}
 	
@@ -89,7 +89,7 @@ public class CmdFactory
 		to do anything with it.
 	 */
 		public void
-	addCmdMapping( final String name, final Class theClass )
+	addCmdMapping( final String name, final Class<? extends Cmd> theClass )
 	{
 		if ( ! Cmd.class.isAssignableFrom( theClass ) )
 		{
@@ -120,10 +120,10 @@ public class CmdFactory
 		@param cmdName	name of the command
 		@return the class associated with the Cmd
 	 */
-		public Class
+		public Class<? extends Cmd>
 	getClass( String cmdName  )
 	{
-		final Class	cmdClass	= (Class)mCmds.get( cmdName );
+		final Class<? extends Cmd>	cmdClass	= mCmds.get( cmdName );
 		
 		return( cmdClass );
 	}
@@ -134,10 +134,10 @@ public class CmdFactory
 		
 		@return a Class[] of all command classes
 	 */
-		public Class[]
+		public List<Class<? extends Cmd>>
 	getClasses(  )
 	{
-		final Set<Class>	s	= new HashSet<Class>();
+		final List<Class<? extends Cmd>>	s	= new ArrayList<Class<? extends Cmd>>();
 		
 		final String[]	names	= getNames();
 		for( int i = 0; i < names.length; ++i )
@@ -145,10 +145,8 @@ public class CmdFactory
 			s.add( getClass( names[ i ] ) );
 		}
 		
-		final Class[]	classes	= new Class[ s.size() ];
-		s.toArray( classes );
 		
-		return( classes );
+		return s;
 	}
 	
 	
@@ -209,12 +207,12 @@ public class CmdFactory
 	{
 		final String	cmdString	= cmdName;
 		
-		final Cmd	cmd	= createCmd( cmdName, (Class)mCmds.get( cmdName ), env );
+		final Cmd cmd = createCmd( cmdName, mCmds.get( cmdName ), env );
 		
 		return( cmd );
 	}
 		Cmd
-	createCmd( String cmdName, Class cmdClass, CmdEnv env )
+	createCmd( String cmdName, Class<? extends Cmd> cmdClass, CmdEnv env )
 		throws Exception
 	{
 		if ( cmdClass == null )
@@ -231,7 +229,7 @@ public class CmdFactory
 		Cmd cmd	= null;
 		try
 		{
-			cmd	= (CmdBase)ClassUtil.InstantiateObject( cmdClass, args );
+			cmd	= ClassUtil.InstantiateObject( cmdClass, args );
 		}
 		catch( Exception e )
 		{

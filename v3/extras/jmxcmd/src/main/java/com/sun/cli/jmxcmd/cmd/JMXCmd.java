@@ -313,7 +313,7 @@ public abstract class JMXCmd extends CmdBase implements Output
 		return( map );
 	}
 	
-		protected java.util.Set
+		protected java.util.Set<String>
 	getMBeanServerNames( )
 	{
 		return( getMBeanServers().keySet() );

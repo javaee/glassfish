@@ -12,15 +12,17 @@
 
 package com.sun.cli.jcmd.framework;
 
+import java.util.List;
+
 /**
 	A ClassSource is a source for Classes.  
  */
-public interface ClassSource
+public interface ClassSource<T>
 {
 	/**
 		Get an array of Classes.
 	 */
-	public Class[]	getClasses( );
+	public List<Class<? extends T>>	getClasses();
 };
 
 
