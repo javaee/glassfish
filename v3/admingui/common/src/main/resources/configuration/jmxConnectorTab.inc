@@ -1,3 +1,4 @@
+
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -33,26 +34,20 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- sslPrepare.inc  -->
+<!-- configuration/jmxConnectorTab.inc -->
 
-proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
-if (#{requestScope.exist}){
-    setPageSessionAttribute(key="edit" value="#{true}" )
-    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-    convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['Ssl3TlsCiphers']}"
-        CommonCiphersList="#{pageSession.selectedCommon}"
-        EphemeralCiphersList="#{pageSession.selectedEphemeral}"
-        OtherCiphersList="#{pageSession.selectedOther}"
-        EccCiphersList="#{pageSession.selectedEcc}")
+<sun:tabSet id="jmxConnectorTab" immediate="$boolean{true}" selected="#{sessionScope.jmxConnectorTab}">
+    <sun:tab id="jmxConnectorEdit" immediate="$boolean{true}" text="$resource{i18n.edJmxConnector.jmxConnectorLabel}" >
+        <!command
+            setSessionAttribute(key="jmxConnectorTab" value="jmxConnectorEdit");
+            redirect(page="#{request.contextPath}/common/configuration/jmxConnectorEdit.jsf?configName=#{pageSession.configName}");
+        /> 
+    </sun:tab>
 
-}
-if (! #{requestScope.exist}){
-    setPageSessionAttribute(key="edit" value="#{false}" )
-    getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
-}
-//set the following for including buttons.inc
-
-setPageSessionAttribute(key="convertToFalseList" value={"SecurityEnabled" "Enabled"})
-setPageSessionAttribute(key="showDefaultButton" value="#{false}" )
-setPageSessionAttribute(key="hasPropertySheet" value="#{true}" )
-setPageSessionAttribute(key="hasPropertyTable" value="#{false}" )
+    <sun:tab id="jmxSSLEdit" immediate="$boolean{true}" text="$resource{i18n.edJmxConnector.sslSettingsLabel}" >
+        <!command
+            setSessionAttribute(key="jmxConnectorTab" value="jmxSSLEdit");
+            redirect(page="#{request.contextPath}/common/configuration/jmxSSLEdit.jsf?configName=#{pageSession.configName}");
+        /> 
+    </sun:tab>
+</sun:tabSet>

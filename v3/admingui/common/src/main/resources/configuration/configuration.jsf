@@ -35,8 +35,8 @@
 -->
 <!-- common/configuration/configuration.jsf -->
 <!initPage
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.server.AppsConfigPageTitle}" >
 <!define name="content">
@@ -66,7 +66,7 @@
                             includeIntegrations(type="org.glassfish.admingui:configuration" root="#{component}");
                         />
                     </event>
-                <sun:hidden id="helpKey" value="$resource{help.configuration}" />
+                <sun:hidden id="helpKey" value="$resource{help_common.configuration}" />
             </sun:form>           
 </define>
 </composition>

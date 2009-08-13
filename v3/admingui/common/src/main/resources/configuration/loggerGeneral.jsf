@@ -35,7 +35,10 @@
 -->
 <!-- common/configuration/loggerGeneral.jsf -->
 
-
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+/>
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.log.LoggingSettings}" >
 <!define name="content">
 <event>
@@ -94,7 +97,7 @@
     </sun:propertySheetSection>
     </sun:propertySheet>
 
-<sun:hidden id="helpKey" value="$resource{help.serverInstLogging}" />
+<sun:hidden id="helpKey" value="$resource{help_common.serverInstLogging}" />
 
     </sun:form>
     "<br/>

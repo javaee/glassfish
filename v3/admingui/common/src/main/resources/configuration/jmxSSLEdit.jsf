@@ -33,26 +33,44 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- sslPrepare.inc  -->
+<!-- jmxSSLEdit.jsf -->
 
-proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
-if (#{requestScope.exist}){
-    setPageSessionAttribute(key="edit" value="#{true}" )
-    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-    convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['Ssl3TlsCiphers']}"
-        CommonCiphersList="#{pageSession.selectedCommon}"
-        EphemeralCiphersList="#{pageSession.selectedEphemeral}"
-        OtherCiphersList="#{pageSession.selectedOther}"
-        EccCiphersList="#{pageSession.selectedEcc}")
 
-}
-if (! #{requestScope.exist}){
-    setPageSessionAttribute(key="edit" value="#{false}" )
-    getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
-}
-//set the following for including buttons.inc
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+/>
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.edJmxConnector.sslSettingsLabel}" >
+<!define name="content">
+    <event>
+      <!beforeCreate
+        getRequestValue(key="configName" value="#{pageSession.configName}" default="server-config");
+        setSessionAttribute(key="jmxConnectorTab" value="jmxSSLEdit");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/configuration/jmxSSLEdit.jsf");
+        setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/admin-service,type=jmx-connector,name=system")
+        setPageSessionAttribute(key="childType" value="ssl")
+        setPageSessionAttribute(key="showCancelButton" value="#{false}")
+        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config]/admin-service/jmx-connector[system],type=ssl");
+#include "/common/shared/sslPrepare.inc"
+      />
+  </event>
 
-setPageSessionAttribute(key="convertToFalseList" value={"SecurityEnabled" "Enabled"})
-setPageSessionAttribute(key="showDefaultButton" value="#{false}" )
-setPageSessionAttribute(key="hasPropertySheet" value="#{true}" )
-setPageSessionAttribute(key="hasPropertyTable" value="#{false}" )
+#include "/common/shared/restart.inc"
+            <sun:form id="propertyForm">
+#include "jmxConnectorTab.inc"
+#include "/common/shared/alertMsg.inc"
+
+        <!-- Page Title -->
+        <sun:title id="propertyContentPage" title="$resource{i18n.edJmxConnector.sslSettingsLabel}" helpText="$resource{i18n.edJmxConnector.sslSettingsLabelHelp}">
+#include "/common/shared/sslButtons.inc"
+        </sun:title>
+        "<br><br>
+#include "/common/shared/sslAttrs.inc"
+
+	<sun:hidden id="helpKey" value="$resource{help_common.jmxSSLEdit}" />
+</sun:form>
+#include "/common/shared/changeButtonsJS.inc"
+#include "/common/shared/sslValidationsJS.inc"
+</define>
+</composition>
+
