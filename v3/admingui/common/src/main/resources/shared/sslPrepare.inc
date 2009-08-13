@@ -52,7 +52,7 @@ if (! #{requestScope.exist}){
 }
 //set the following for including buttons.inc
 
-setPageSessionAttribute(key="convertToFalseList" value={"SecurityEnabled" "Enabled"})
+setPageSessionAttribute(key="convertToFalseList" value={"Ssl3Enabled" "TlsEnabled" "ClientAuthEnabled" })
 setPageSessionAttribute(key="showDefaultButton" value="#{false}" )
 setPageSessionAttribute(key="hasPropertySheet" value="#{true}" )
 setPageSessionAttribute(key="hasPropertyTable" value="#{false}" )
