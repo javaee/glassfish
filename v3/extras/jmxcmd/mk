@@ -95,15 +95,28 @@ initialize
 #unjarAll
 #jarMC
 #mv ${TEMP_DIR}/mx.jar $PUBLISH_DIR
-cp target/mx.jar $PUBLISH_DIR/jars
-cp /v3/glassfishv3/glassfish/modules/amx-core.jar $PUBLISH_DIR/jars
-cp /v3/glassfishv3/glassfish/modules/jmxremote_optional-repackaged.jar $PUBLISH_DIR/jars/jmxremote_optional.jar
-cp /v3/glassfishv3/glassfish/modules/javax.management.j2ee.jar $PUBLISH_DIR/jars
 
+
+cp target/mx.jar $PUBLISH_DIR/jars
+
+export JARS_LOC=/v3/glassfishv3/glassfish/modules
+echo ""
+echo "Copying various GlassFish V3 jars from assumed location: " + $JARS_LOC
+cp $JARS_LOC/amx-core.jar $PUBLISH_DIR/jars
+cp $JARS_LOC/jmxremote_optional-repackaged.jar $PUBLISH_DIR/jars/jmxremote_optional.jar
+cp $JARS_LOC/javax.management.j2ee.jar $PUBLISH_DIR/jars
+
+echo ""
 
 
 copyScripts
 cleanup
-echo $PUBLISH_DIR
+echo "Contents of" $PUBLISH_DIR
 ls -lR $PUBLISH_DIR
+
+echo ""
+
+./bin/mx
+
+
 
