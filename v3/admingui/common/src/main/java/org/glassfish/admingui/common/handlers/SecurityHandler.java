@@ -526,7 +526,8 @@ public class SecurityHandler {
 
    @Handler(id="createMsgSecurity",
         input={
-            @HandlerInput(name="attrMap", type=Map.class, required=true)},
+            @HandlerInput(name="attrMap", type=Map.class, required=true),
+            @HandlerInput(name="propList", type=List.class, required=true)},
         output={
             @HandlerOutput(name="providerObjName", type=String.class)}
      )
@@ -540,7 +541,11 @@ public class SecurityHandler {
         providerAttrs.put("ProviderType", attrMap.get("ProviderType"));
         providerAttrs.put("ClassName", attrMap.get("ClassName"));
 
-
+        List pList = V3AMX.verifyPropertyList((List) handlerCtx.getInputValue("propList"));
+        if (pList.size() > 0){
+            Map[] propMaps = (Map[])pList.toArray(new Map[pList.size()]);
+            providerAttrs.put(Util.deduceType(Property.class), propMaps);
+        }
         //setup MsgSecurityConfig attrMap
         Map msgAttrs = new HashMap();
         msgAttrs.put("AuthLayer", attrMap.get("AuthLayer"));
@@ -576,6 +581,26 @@ public class SecurityHandler {
         handlerCtx.setOutputValue("layers", layers);
     }
 
+
+    @Handler(id="getProvidersByType",
+        input={
+            @HandlerInput(name="msgSecurityName", type=String.class, required=true),
+            @HandlerInput(name="type", type=List.class, required=true)},
+        output={
+            @HandlerOutput(name="result", type=List.class)})
+     public static void getProvidersByType(HandlerContext handlerCtx){
+        List type = (List) handlerCtx.getInputValue("type");
+        List result = new ArrayList();
+        MessageSecurityConfig msgConfig = getMsgSecurityProxy((String) handlerCtx.getInputValue("msgSecurityName"));
+        Map<String, ProviderConfig> providers = msgConfig.childrenMap(ProviderConfig.class);
+        for(ProviderConfig pp : providers.values()){
+            if (type.contains(pp.getProviderType())){
+                result.add(pp.getName());
+            }
+        }
+        result.add(0, "");
+        handlerCtx.setOutputValue("result", result);
+    }
 
     @Handler(id="getMsgProviderInfo",
         input={
@@ -648,8 +673,10 @@ public class SecurityHandler {
             attrs.put("ClassName", attrMap.get("ClassName"));
             attrs.put("ProviderType", attrMap.get("ProviderType"));
             List pList = V3AMX.verifyPropertyList(propList);
-            Map[] propMaps = (Map[])pList.toArray(new Map[pList.size()]);
-            attrs.put(Util.deduceType(Property.class), propMaps);
+            if (pList.size() > 0){
+                Map[] propMaps = (Map[])pList.toArray(new Map[pList.size()]);
+                attrs.put(Util.deduceType(Property.class), propMaps);
+            }
             msgConfig.createChild("provider-config", attrs);
             provider = msgConfig.childrenMap(ProviderConfig.class).get(providerName);
         }
