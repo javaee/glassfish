@@ -418,6 +418,7 @@ public abstract class CLICommand {
     protected void processProgramOptions()
             throws CommandException, CommandValidationException  {
         if (!programOpts.isOptionsSet()) {
+            logger.printDebugMessage("Parsing program options");
             /*
              * asadmin options and command options are intermixed.
              * Parse the entire command line for asadmin options,
@@ -431,6 +432,7 @@ public abstract class CLICommand {
             argv = operands.toArray(new String[operands.size()]);
             if (params.size() > 0) {
                 // at least one program option specified after command name
+                logger.printDebugMessage("Update program options");
                 programOpts.updateOptions(params);
                 initializeLogger();
                 initializePasswords();
@@ -496,7 +498,7 @@ public abstract class CLICommand {
                                         passwords);
             String password = passwords.get(
                     Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD");
-            if (ok(password))
+            if (ok(password) && programOpts.getPassword() == null)
                 programOpts.setPassword(password);
         }
     }
