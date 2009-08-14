@@ -49,7 +49,7 @@
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service");
         setPageSessionAttribute(key="childType" value="iiop-listener");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
-        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nSecurity.msg.JS.confirmDeleteIiopListener}");
+        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_corba.msg.JS.confirmDeleteIiopListener}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/corba/iiopListenerNew.jsf?configName=#{pageSession.configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/corba/iiopListeners.jsf?configName=#{pageSession.configName}");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/corba/iiopListenerEdit.jsf?configName=#{pageSession.configName}");
