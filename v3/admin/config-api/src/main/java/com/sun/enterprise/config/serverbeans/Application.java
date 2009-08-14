@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.net.URISyntaxException;
 import java.net.URI;
@@ -316,8 +317,21 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
             if (appRef==null) {
                 throw new IllegalArgumentException("Null appRef passed");
             }
-            DeployCommandParameters deploymentParams = new DeployCommandParameters(new File(app.getLocation()));
+            URI uri = null;
+            try {
+                uri = new URI(app.getLocation());
+            } catch (URISyntaxException e) {
+                Logger.getAnonymousLogger().log(
+                    Level.SEVERE, e.getMessage(), e);
+            }
+
+            if (uri == null) {
+                return null;
+            }
+
+            DeployCommandParameters deploymentParams = new DeployCommandParameters(new File(uri));
             deploymentParams.name = app.getName();
+            deploymentParams.description = app.getDescription();
             deploymentParams.enabled = Boolean.parseBoolean(app.getEnabled());
             deploymentParams.contextroot = app.getContextRoot();
             deploymentParams.libraries = app.getLibraries();
