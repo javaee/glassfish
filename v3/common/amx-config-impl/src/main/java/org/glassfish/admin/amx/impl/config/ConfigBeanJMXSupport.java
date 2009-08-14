@@ -70,7 +70,7 @@ import org.glassfish.admin.amx.impl.util.InjectedValues;
  * @author llc
  */
 @Taxonomy(stability = Stability.NOT_AN_INTERFACE)
-public class ConfigBeanJMXSupport
+class ConfigBeanJMXSupport
 {
     private final Class<? extends ConfigBeanProxy> mIntf;
 
@@ -127,6 +127,7 @@ public class ConfigBeanJMXSupport
         mKey = key;
 
         findStuff(intf, mAttrInfos, mElementInfos, mDuckTypedInfos);
+        sanityCheckConfigured();
 
         mMBeanInfo = _getMBeanInfo();
         sanityCheckMBeanInfo();
@@ -514,6 +515,25 @@ public class ConfigBeanJMXSupport
                 duckTyped.add(new DuckTypedInfo(m, dt));
             }
         }
+    }
+    
+    /** check for Bad Stuff in Configured interface. */
+    public List<String>  sanityCheckConfigured()
+    {
+        final List<String> problems = new ArrayList<String>();
+        for( final AttributeMethodInfo info : mAttrInfos )
+        {
+            final Class<?> dataType = info.inferDataType();
+            if ( (dataType == Boolean.class || dataType == boolean.class) && ! info.hasDefaultValue()  )
+            {
+                problems.add( "Missing defaultValue for Boolean @Configured " + mIntf.getName() + "." + info.attrName() + "()" );
+            }
+        }
+        if ( problems.size() != 0 )
+        {
+            System.out.println( CollectionUtil.toString( problems, "\n" ) );
+        }
+        return problems;
     }
 
     public static String xmlName(final MBeanAttributeInfo info, final String defaultValue)
@@ -1118,6 +1138,12 @@ public class ConfigBeanJMXSupport
                 return Units.COUNT;
             }
             return null;
+        }
+        
+        public boolean hasDefaultValue()
+        {
+            final Object defaultValue = attribute().defaultValue();
+            return defaultValue != null && ! defaultValue.equals( "\u0000" );
         }
 
         /** infer the data type, using specified value if present */
