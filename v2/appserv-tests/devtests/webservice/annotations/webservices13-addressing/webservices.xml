@@ -6,7 +6,6 @@
     <webservice-description>
         <display-name>SubtractNumbersService</display-name>
         <webservice-description-name>SubtractNumbersService</webservice-description-name>
-        <wsdl-file>WEB-INF/wsdl/SubtractNumbers.wsdl</wsdl-file>
         <port-component>
             <port-component-name>SubtractNumbersImpl</port-component-name>
             <wsdl-service xmlns:wsdl-port_ns__="http://duke.org">wsdl-port_ns__:SubtractNumbersService</wsdl-service>
@@ -22,7 +21,7 @@
             </respect-binding>
 -->
 
-            <service-endpoint-interface>endpoint.SubtractNumbersPortType</service-endpoint-interface>
+            <service-endpoint-interface>endpoint.SubtractNumbersImpl</service-endpoint-interface>
             <service-impl-bean>
                 <servlet-link>SubtractNumbersService</servlet-link>
             </service-impl-bean>

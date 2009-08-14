@@ -27,14 +27,14 @@
     </path>
 
 
-    <target name="all" depends="clean, setup, runtest, undeploy"/>
+    <target name="all" depends="clean, setup, runtest"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
       <delete dir="${env.S1AS_HOME}/build/localwsdl"/>
     </target>
 
-    <target name="setup" depends="assemble-web, assemble-client, deploy-app, deploy-client"/>
+    <target name="setup" depends="assemble-web,  deploy-app, assemble-client, deploy-client"/>
 
     <target name="compile" depends="init-common">
       <antcall target="compile-common">
@@ -44,16 +44,11 @@
 
     <target name="assemble-web" depends="init-common">
       <mkdir dir="${build.classes.dir}"/>
-      <antcall target="wsimport">
+      <!--<antcall target="wsimport">
         <param name="wsimport.args"
-          value="-wsdllocation WEB-INF/wsdl/SubtractNumbers.wsdl -Xendorsed -b custom-server.xml -keep -d ${build.classes.dir} ${env.APS_HOME}/devtests/webservice/annotations/webservices13-addressing/SubtractNumbers.wsdl"/>
-      </antcall>
+          value=" -Xendorsed -p endpoint -keep -d ${build.classes.dir} ${env.APS_HOME}/devtests/webservice/annotations/webservices13-addressing/SubtractNumbers.wsdl"/>
+      </antcall> -->
       <antcall target="compile"/>
-     <copy file="SubtractNumbers.wsdl" todir="${env.APS_HOME}/build/localwsdl"/> 
-      <copy file="sun-web.xml.template" tofile="sun-web.xml"/>
-      <replace file="sun-web.xml">
-        <replacefilter token="%TOKEN%" value="file:${env.APS_HOME}/build/localwsdl"/>
-      </replace>
       <antcall target="pkg-war">
         <param name="wsdlfile.location" value="${env.APS_HOME}/devtests/webservice/annotations/webservices13-addressing"/>
         <param name="wsdlfile.name" value="SubtractNumbers.wsdl"/>
@@ -66,7 +61,7 @@
       <mkdir dir="${build.classes.dir}/webclient/WEB-INF/classes"/>
       <antcall target="wsimport">
         <param name="wsimport.args"
-          value="-b custom-client.xml  -Xendorsed -keep -d ${build.classes.dir}/webclient/WEB-INF/classes ${env.APS_HOME}/devtests/webservice/annotations/webservices13-addressing/SubtractNumbers.wsdl"/>
+          value="-p client  -Xendorsed -keep -d ${build.classes.dir}/webclient/WEB-INF/classes http://localhost:8080/webservices13-addressing/webservice/SubtractNumbersService?wsdl"/>
       </antcall>
       <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
             includes="webclient/**">
@@ -75,10 +70,6 @@
  
       </javac>
       <copy file="client-web.xml" tofile="${build.classes.dir}/webclient/WEB-INF/web.xml"/>
-      <copy file="client-sun-web.xml.template" tofile="client-sun-web.xml"/>
-      <replace file="client-sun-web.xml">
-        <replacefilter token="%TOKEN%" value="file:${env.APS_HOME}/build/localwsdl"/>
-      </replace>
       <copy file="client-sun-web.xml" tofile="${build.classes.dir}/webclient/WEB-INF/sun-web.xml"/>
       <jar destfile="${assemble.dir}/wsclient.war" basedir="${build.classes.dir}/webclient" includes="**"/>
     </target>

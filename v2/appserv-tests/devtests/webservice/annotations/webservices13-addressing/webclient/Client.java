@@ -11,8 +11,9 @@ import javax.xml.ws.soap.*;
 public class Client extends HttpServlet {
 
         @javax.xml.ws.WebServiceRef(SubtractNumbersService.class)
-       // @Addressing (required = true,enabled=true)
-        SubtractNumbersPortType port;
+       //@Addressing (required = true,enabled=true ,responses=AddressingFeature.Responses.NON_ANONYMOUS)
+        //@Addressing 
+        SubtractNumbersImpl port;
 
        public void doGet(HttpServletRequest req, HttpServletResponse resp) 
 		throws javax.servlet.ServletException {
