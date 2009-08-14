@@ -49,6 +49,8 @@ public class WebTest
     static SimpleReporterAdapter stat=
         new SimpleReporterAdapter("appserv-tests");
 
+    
+
     public static void main(String args[])
     {
 
@@ -58,9 +60,12 @@ public class WebTest
         String portS = args[1];
         String contextRoot = args[2];
 
+        String testdir = System.getenv("APS_HOME") +
+                             "/devtests/web/servlet-3.0/multipart/";
+
         int port = new Integer(portS).intValue();
         try {
-            goPost(host, port, contextRoot + "/ServletTest" );
+            goPost(host, port, contextRoot + "/ServletTest", testdir);
         } catch (Throwable t) {
             stat.addStatus("multiPartTest", stat.FAIL);
             System.out.println("Exception: " + t);
@@ -69,7 +74,8 @@ public class WebTest
         stat.printSummary("MultipartTest");
     }
 
-    private static void goPost(String host, int port, String contextPath)
+    private static void goPost(String host, int port, String contextPath,
+             String dir)
          throws Exception
     {
         // First compose the post request data
@@ -80,7 +86,7 @@ public class WebTest
         ba.write("Content-Type: text/plain\r\n\r\n".getBytes());
 
         // Write content of first text file
-        InputStream is = new FileInputStream ("test.txt");
+        InputStream is = new FileInputStream (dir + "test.txt");
         int c;
         while ((c = is.read()) != -1) {
             ba.write(c);
@@ -92,7 +98,7 @@ public class WebTest
         ba.write("Content-Type: application/x-java-archive\r\n\r\n".getBytes());
 
         // Write content of second binary file
-        is = new FileInputStream ("Test.war");
+        is = new FileInputStream (dir + "Test.war");
         while ((c = is.read()) != -1) {
             ba.write(c);
         }
