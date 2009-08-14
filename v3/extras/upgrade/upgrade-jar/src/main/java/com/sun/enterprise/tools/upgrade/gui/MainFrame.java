@@ -352,7 +352,8 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
     }
 
     /*
-     * Called by the worker thread when the upgrade has finished.
+     * Called by the worker class (in the dispatch
+     * thread) when the upgrade has finished.
      */
     void done() {
         JProgressBar jpBar = progressPanel.getProgressBar();
