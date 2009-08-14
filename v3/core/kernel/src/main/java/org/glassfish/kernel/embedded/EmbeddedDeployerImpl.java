@@ -165,6 +165,15 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        if(params.property != null){
+            context.getAppProps().putAll(params.property);
+        }
+
+        if(params.properties != null){
+            context.getAppProps().putAll(params.properties);        
+        }
+        
         final ClassLoader cl = context.getClassLoader();
         Collection<Sniffer> sniffers = snifferMgr.getSniffers(archive, cl);
         List<Sniffer> finalSniffers = new ArrayList<Sniffer>();
