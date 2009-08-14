@@ -45,8 +45,10 @@ public class WebTest {
 
     private static final String TEST_NAME = "async-listener-on-timeout";
 
-    private static SimpleReporterAdapter stat
-        = new SimpleReporterAdapter("appserv-tests");
+    private static SimpleReporterAdapter stat =
+        new SimpleReporterAdapter("appserv-tests");
+
+    private static final String EXPECTED_RESPONSE = "Hello world";
 
     private String host;
     private String port;
@@ -76,18 +78,38 @@ public class WebTest {
     }
 
     public void doTest(String mode) throws Exception {
-     
-        URL url = new URL("http://" + host  + ":" + port
-                          + contextRoot + "/TestServlet?" + mode);
-        System.out.println("Connecting to: " + url.toString());
 
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setReadTimeout(20 * 1000);
-        conn.connect();
-        int responseCode = conn.getResponseCode();
+        InputStream is = null;
+        BufferedReader input = null;
+       
+        try {     
+            URL url = new URL("http://" + host  + ":" + port +
+                contextRoot + "/TestServlet?" + mode);
+            System.out.println("Connecting to: " + url.toString());
 
-        if (responseCode != 200) {
-            throw new Exception("Unexpected return code: " + responseCode);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(20 * 1000);
+            conn.connect();
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode != 200) {
+                throw new Exception("Unexpected return code: " + responseCode);
+            }
+
+            is = conn.getInputStream();
+            input = new BufferedReader(new InputStreamReader(is));
+            String response = input.readLine();
+            if (!EXPECTED_RESPONSE.equals(response)) {
+                throw new Exception("Missing or wrong response. Expected: " +
+                    EXPECTED_RESPONSE + ", received: " + response);
+            }
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (input != null) input.close();
+            } catch (IOException ex) {}
         }
     }
 }

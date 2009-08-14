@@ -41,8 +41,6 @@ import javax.servlet.http.*;
 
 public class TestServlet extends HttpServlet implements AsyncListener {
 
-    private boolean onTimeoutCalled = false;
-
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
@@ -69,6 +67,6 @@ public class TestServlet extends HttpServlet implements AsyncListener {
 
 
     public void onTimeout(AsyncEvent event) throws IOException {
-        onTimeoutCalled = true;
+        event.getResponse().getWriter().println("Hello world");
     }
 }
