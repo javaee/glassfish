@@ -38,7 +38,7 @@
 <sun:propertySheetSection id="propertSectionTextField">
 
         <sun:property id="nameNew"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}" helpText="$resource{i18n_web.common.nameHelp}">
-            <sun:textField id="name"  required="#{true}" columns="$int{10}" text="#{pageSession.valueMap['Name']}" />
+            <sun:textField id="name"  styleClass="required" required="#{true}" columns="$int{10}" text="#{pageSession.valueMap['Name']}" />
         </sun:property>
 
         <sun:property id="name"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}">

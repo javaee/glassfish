@@ -53,7 +53,8 @@
         setPageSessionAttribute(key="childType" value="http");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.httpMap}");
         setPageSessionAttribute(key="valueMap" value="#{pageSession.httpMap}");
-        setPageSessionAttribute(key="convertToFalseList" value={"EnableCometSupport"});
+        setPageSessionAttribute(key="convertToFalseList" 
+            value={"EnableCometSupport" , "EnableCometSupport"  ,"DisableUploadTimeout"  ,"EnableDnsLookup" , "EnableRcmSupport"  ,"TraceEnabled"  ,"Compression" , "EnableAuthPassThrough" , "ChunkingDisabled" , "XpoweredBy"  });
         setSessionAttribute(key="protocolTabs" value="httpTab");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
