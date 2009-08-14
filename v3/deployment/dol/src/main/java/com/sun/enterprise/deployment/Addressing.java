@@ -27,6 +27,12 @@ public class Addressing extends Descriptor {
     public Addressing() {
     }
 
+    public Addressing(boolean enabled, boolean req, String resp) {
+        this.enabled = enabled;
+        this.required = req;
+        this.responses = resp;
+    }
+
     public String getResponses() {
         return responses;
     }

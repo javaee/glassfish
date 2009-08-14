@@ -76,6 +76,7 @@ public class WebServicesTagNames {
     public static final String ADDRESSING_RESPONSES = "responses";
     public static final String WSDL_SERVICE = "wsdl-service";
     public static final String ENABLE_MTOM= "enable-mtom";
+    public static final String MTOM_THRESHOLD= "mtom-threshold";
     public static final String PROTOCOL_BINDING = "protocol-binding";
     public static final String HANDLER_CHAINS = "handler-chains";
     public static final String HANDLER_CHAIN= "handler-chain";

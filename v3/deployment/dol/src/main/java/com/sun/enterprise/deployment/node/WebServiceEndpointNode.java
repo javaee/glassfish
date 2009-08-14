@@ -98,7 +98,7 @@ public class WebServiceEndpointNode extends DisplayableComponentNode {
                   "setServiceEndpointInterface");
         table.put(WebServicesTagNames.PROTOCOL_BINDING, "setProtocolBinding");
         table.put(WebServicesTagNames.ENABLE_MTOM, "setMtomEnabled");
-       // table.put(WebServicesTagNames.ADDRESSING, "setAddressing");
+        table.put(WebServicesTagNames.MTOM_THRESHOLD, "setMtomThreshold");
         return table;
     }
     
@@ -175,9 +175,12 @@ public class WebServiceEndpointNode extends DisplayableComponentNode {
                          descriptor.getWsdlPortNamespacePrefix());
         }
 
-        appendTextChild(wseNode, 
+        appendTextChild(wseNode,
                         WebServicesTagNames.ENABLE_MTOM,
                         descriptor.getMtomEnabled());
+        appendTextChild(wseNode,
+                        WebServicesTagNames.MTOM_THRESHOLD,
+                        descriptor.getMtomThreshold());
         //TODO add addressing etc here
         if(descriptor.hasUserSpecifiedProtocolBinding()) {
             appendTextChild(wseNode, 

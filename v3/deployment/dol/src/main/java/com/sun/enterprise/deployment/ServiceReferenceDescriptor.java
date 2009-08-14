@@ -118,14 +118,14 @@ public class ServiceReferenceDescriptor extends EnvironmentProperty
 
     //Support for JAXWS 2.2 features
     //@RespectBinding for WebserviceRef
-    private boolean respectBindingEnabled;
+    private RespectBinding respectBinding;
 
     //Support for JAXWS 2.2 features
     //@Addressing for WebserviceRef
-    private boolean addressingEnabled;
+    private Addressing addressing;
 
-    private boolean addressingRequired;
-
+    //Support for JAXWS 2.2 features
+    //mtomThreshold
     private int mtomThreshold;
 
     public Map<Class<? extends Annotation>, Annotation> getOtherAnnotations() {
@@ -145,13 +145,19 @@ public class ServiceReferenceDescriptor extends EnvironmentProperty
             new HashMap<Class<? extends Annotation>, Annotation>();
 
     public boolean isRespectBindingEnabled() {
-        return respectBindingEnabled;
+        return respectBinding.isEnabled();
     }
 
+    public Addressing getAddressing() {
+        return addressing;
+    }
 
+    public RespectBinding getRespectBinding() {
+        return respectBinding;
+    }
 
-    public void setRespectBindingEnabled(boolean respectBindingEnabled) {
-        this.respectBindingEnabled = respectBindingEnabled;
+    public void setRespectBinding(RespectBinding respectBinding) {
+        this.respectBinding = respectBinding;
     }
 
     public boolean isMtomEnabled() {
@@ -163,21 +169,16 @@ public class ServiceReferenceDescriptor extends EnvironmentProperty
     }
 
     public boolean isAddressingEnabled() {
-        return addressingEnabled;
+        return addressing.isEnabled();
     }
 
-    public void setAddressingEnabled(boolean addressingEnabled) {
-        this.addressingEnabled = addressingEnabled;
+    public void setAddressing(Addressing addressing) {
+        this.addressing = addressing;
     }
-
 
 
     public boolean isAddressingRequired() {
-        return addressingRequired;
-    }
-
-    public void setAddressingRequired(boolean addressingRequired) {
-        this.addressingRequired = addressingRequired;
+        return addressing.isRequired();
     }
 
     public int getMtomThreshold() {

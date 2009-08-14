@@ -266,7 +266,6 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
             wsdlFile = wsu.resolveCatalog(catalogFile, desc.getWsdlFileUri(), null);
         }   */
 
-        ArrayList<WebServiceFeature> wsFeatures = getWebServiceFeatures(desc);
 
         Object obj = null ;
 
@@ -295,11 +294,14 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
         if (desc.isMtomEnabled()) {
             wsFeatures.add( new MTOMFeature(true,desc.getMtomThreshold()))   ;
         }
-        if (desc.isAddressingEnabled()) {
-            wsFeatures.add( new AddressingFeature(true,desc.isAddressingRequired()))   ;
+        com.sun.enterprise.deployment.Addressing add = desc.getAddressing();
+        if (add != null) {
+            wsFeatures.add( new AddressingFeature(
+                    add.isEnabled(),add.isRequired(),getResponse(add.getResponses())))   ;
         }
-        if (desc.isRespectBindingEnabled()) {
-            wsFeatures.add( new RespectBindingFeature(true))   ;
+        com.sun.enterprise.deployment.RespectBinding rb = desc.getRespectBinding();
+        if (rb != null) {
+            wsFeatures.add( new RespectBindingFeature(rb.isEnabled()))   ;
         }
         Map<Class<? extends Annotation>, Annotation> otherAnnotations =
             desc.getOtherAnnotations();
@@ -309,6 +311,11 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
         }
         
         return wsFeatures;
+    }
+
+    private AddressingFeature.Responses getResponse(String s) {
+        return AddressingFeature.Responses.valueOf(AddressingFeature.Responses.class,s);
+        
     }
 
     private void resolvePortComponentLinks(ServiceReferenceDescriptor desc)

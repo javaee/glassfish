@@ -339,14 +339,15 @@ public class JAXWSServlet extends HttpServlet {
         ArrayList<WebServiceFeature> wsFeatures = new ArrayList<WebServiceFeature>();
         // Only if MTOm is enabled create the Binding with the MTOMFeature
         if (mtomEnabled) {
-            MTOMFeature mtom = new MTOMFeature(true);
+            int mtomThreshold = endpoint.getMtomThreshold() != null ? new Integer(endpoint.getMtomThreshold()):0;
+            MTOMFeature mtom = new MTOMFeature(true,mtomThreshold);
             wsFeatures.add(mtom);
         }
 
         Addressing addressing = endpoint.getAddressing();
         if (addressing != null) {
             AddressingFeature addressingFeature = new AddressingFeature(addressing.isEnabled(),
-                    addressing.isRequired());
+                    addressing.isRequired(),getResponse(addressing.getResponses()));
             wsFeatures.add(addressingFeature);
         }
         RespectBinding rb = endpoint.getRespectBinding();
@@ -418,6 +419,11 @@ public class JAXWSServlet extends HttpServlet {
 
     }
 
+
+    private AddressingFeature.Responses getResponse(String s) {
+        return AddressingFeature.Responses.valueOf(AddressingFeature.Responses.class,s);
+
+    }
 
     private void registerEndpointUrlPattern(Adapter info) {
         JAXWSAdapterRegistry.getInstance().addAdapter(contextRoot, urlPattern,info);

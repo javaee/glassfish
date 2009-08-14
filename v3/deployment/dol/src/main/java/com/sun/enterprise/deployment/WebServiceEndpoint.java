@@ -89,6 +89,7 @@ public class WebServiceEndpoint extends Descriptor
     private String wsdlServiceNamespacePrefix;
 
     private String mtomEnabled = null;
+    private String mtomThreshold = null;
 
     private String protocolBinding = null;
     private boolean securePipeline = false;
@@ -247,7 +248,16 @@ public class WebServiceEndpoint extends Descriptor
 
     }
 
+    public String getMtomThreshold() {
+        return mtomThreshold;
+    }
+
+    public void setMtomThreshold(String mtomThreshold) {
+        this.mtomThreshold = mtomThreshold;
+    }
+
     public WebService getWebService() {
+
         return webService;
     }
 

@@ -266,13 +266,20 @@ public class WebServiceRefHandler extends AbstractHandler  {
                 //Check Addressing Annotation
 
                 if (addressing != null) {
-                    aRef.setAddressingEnabled( addressing.enabled());
-                    aRef.setAddressingRequired(addressing.required());
+                    com.sun.enterprise.deployment.Addressing add =
+                            new com.sun.enterprise.deployment.Addressing(addressing.enabled(),
+                                 addressing.required(), addressing.responses().toString() );
+
+                    aRef.setAddressing(add);
+
                 }
                 //Check RespectBinding Annotation
 
                 if (respectBinding != null) {
-                    aRef.setRespectBindingEnabled( respectBinding.enabled());
+                    com.sun.enterprise.deployment.RespectBinding rb =
+                            new com.sun.enterprise.deployment.RespectBinding(respectBinding.enabled());
+
+                    aRef.setRespectBinding(rb);
                 }
 
                 aRef.setOtherAnnotations(otherAnnotations);
