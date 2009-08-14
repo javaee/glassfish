@@ -41,8 +41,6 @@ import javax.servlet.http.*;
 
 public class TestServlet extends HttpServlet implements AsyncListener {
 
-    private boolean onCompleteCalled = false;
-
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
@@ -60,15 +58,11 @@ public class TestServlet extends HttpServlet implements AsyncListener {
             ac = req.startAsync();
         }
         ac.complete();
-
-        if (!onCompleteCalled) {
-            throw new ServletException("AsyncListener#onComplete not called");
-        }
     }
 
 
     public void onComplete(AsyncEvent event) throws IOException {
-        onCompleteCalled = true;
+        event.getResponse().getWriter().println("Hello world");
     }
 
 
