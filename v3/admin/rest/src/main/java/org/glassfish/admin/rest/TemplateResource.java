@@ -135,7 +135,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             mapOfChanges.put(getConfigBean(), data);
             RestService.getConfigSupport().apply(mapOfChanges); //throws TransactionFailure
             return Response.ok().entity("\"" + uriInfo.getAbsolutePath() + "\" updated successfully").build();
-        } catch (TransactionFailure ex) {
+        } catch (Exception ex) {
             System.out.println("exception" + ex);
             throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
         }
