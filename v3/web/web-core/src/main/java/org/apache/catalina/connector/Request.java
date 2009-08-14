@@ -529,6 +529,13 @@ public class Request
     protected Context context = null;
     protected ServletContext servletContext = null;
 
+    /*
+     * The components of the request path
+     */
+    private String contextPath;
+    private String servletPath;
+    private String pathInfo;
+
 
     // ----------------------------------------------------------- Constructor
 
@@ -580,6 +587,9 @@ public class Request
         
         context = null;
         servletContext = null;
+        contextPath = null;
+        servletPath = null;
+        pathInfo = null;
         wrapper = null;
 
         dispatcherTypeAttr = null;
@@ -784,10 +794,22 @@ public class Request
     }
     
     /**
-     * Return mapping data.
+     * Sets the mapping data for this Request.
      */
     public void setMappingData(MappingData mappingData) {
         this.mappingData = mappingData;
+        /*
+         * Save the path components of this request, in order for them to
+         * survive when the mapping data get recycled as the request
+         * returns to the container after it has been put into async mode.
+         * This is required to satisfy the requirements of subsequent async
+         * dispatches (or error dispatches, if the async operation times out,
+         * and no async listeners have been registered that could be notified
+         * at their onTimeout method)
+         */
+        this.pathInfo = mappingData.pathInfo.toString();
+        this.servletPath = mappingData.wrapperPath.toString();
+        this.contextPath = mappingData.contextPath.toString();
     }
 
     /**
@@ -2071,10 +2093,11 @@ public class Request
     /**
      * Set the path information for this Request.
      *
-     * @param path The path information
+     * @param pathInfo The path information
      */
-    public void setPathInfo(String path) {
-        mappingData.pathInfo.setString(path);
+    public void setPathInfo(String pathInfo) {
+        mappingData.pathInfo.setString(pathInfo);
+        this.pathInfo = pathInfo;
     }
 
     /**
@@ -2176,11 +2199,11 @@ public class Request
     /**
      * Sets the servlet path for this Request.
      *
-     * @param path The servlet path
+     * @param servletPath The servlet path
      */
-    public void setServletPath(String path) {
-        if (path != null)
-            mappingData.wrapperPath.setString(path);
+    public void setServletPath(String servletPath) {
+        mappingData.wrapperPath.setString(servletPath);
+        this.servletPath = servletPath;
     }
 
     /**
@@ -2240,7 +2263,7 @@ public class Request
         if (isDefaultContext && maskDefaultContextMapping) {
             return "";
         } else {
-            return mappingData.contextPath.toString();
+            return contextPath;
         }
     }
 
@@ -2361,7 +2384,7 @@ public class Request
      */
     @Override
     public String getPathInfo() {
-        return (mappingData.pathInfo.toString());
+        return pathInfo;
     }
 
     /**
@@ -2510,7 +2533,7 @@ public class Request
      */
     @Override
     public String getServletPath() {
-        return (mappingData.wrapperPath.toString());
+        return servletPath;
     }
 
     /**
@@ -3724,27 +3747,6 @@ public class Request
         }
     }
 
-    private Multipart getMultipart() {
-        if (multipart == null) {
-            multipart = new Multipart(this,
-                                      wrapper.getMultipartLocation(),
-                                      wrapper.getMultipartMaxFileSize(),
-                                      wrapper.getMultipartMaxRequestSize(),
-                                      wrapper.getMultipartFileSizeThreshold());
-        }
-        return multipart;
-    }
-
-    @Override
-    public Collection<Part> getParts() throws IOException, ServletException {
-        return getMultipart().getParts();
-    }
-
-    @Override
-    public Part getPart(String name) throws IOException, ServletException {
-        return getMultipart().getPart(name);
-    }
-
     /**
      * Starts async processing on this request.
      *
@@ -3945,15 +3947,16 @@ public class Request
      * 
      * If none of the <tt>onTimeout</tt> handlers call complete or dispatch,
      * have the container complete the async operation.
-     *
-     * If there is no AsyncListener registered and an async timeout
-     * occurs, the container MUST do an ERROR dispatch to the original
-     * URI with a response code of 500.
      */
     void asyncTimeout() {
         if (asyncListenerHolders == null ||
                 asyncListenerHolders.isEmpty()) {
-            ((HttpServletResponse)response).setStatus(
+            /*
+             * If there are no AsyncListeners registered, the container
+             * MUST do an ERROR dispatch to the original URI with a response
+             * code of 500
+             */
+            ((HttpServletResponse) response).setStatus(
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             asyncComplete();
         } else {
@@ -4011,6 +4014,27 @@ public class Request
                 }
             }
         }
+    }
+
+    private Multipart getMultipart() {
+        if (multipart == null) {
+            multipart = new Multipart(this,
+                                      wrapper.getMultipartLocation(),
+                                      wrapper.getMultipartMaxFileSize(),
+                                      wrapper.getMultipartMaxRequestSize(),
+                                      wrapper.getMultipartFileSizeThreshold());
+        }
+        return multipart;
+    }
+
+    @Override
+    public Collection<Part> getParts() throws IOException, ServletException {
+        return getMultipart().getParts();
+    }
+
+    @Override
+    public Part getPart(String name) throws IOException, ServletException {
+        return getMultipart().getPart(name);
     }
 
     /**
