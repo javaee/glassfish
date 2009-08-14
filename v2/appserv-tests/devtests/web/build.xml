@@ -279,9 +279,9 @@
         <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
         <ant dir="servlet-3.0/defaultErrorPage" target="all"/>
         <ant dir="servlet-3.0/asyncContextComplete" target="all"/>
-        <ant dir="servlet-3.0/asyncContextDispatch" target="all"/>
-        <ant dir="servlet-3.0/asyncCrossContextDispatch" target="all"/>
-        <ant dir="servlet-3.0/asyncContextZeroArgDispatch" target="all"/>
+        <ant dir="servlet-3.0/asyncContextDispatchToPath" target="all"/>
+        <ant dir="servlet-3.0/asyncContextDispatchCrossContext" target="all"/>
+        <ant dir="servlet-3.0/asyncContextDispatchZeroArg" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnComplete" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnTimeout" target="all"/>
         <ant dir="servlet-3.0/asyncSupportedTrueDeclarative" target="all"/>
