@@ -58,10 +58,6 @@ own identifying information: Portions Copyright [yyyy]
 		<fileset dir="src/main/resources/bin"/>
 	</copy>
 
-	<copy todir="target/stage/${install.dir.name}/glassfish/config" overwrite="true">
-		<fileset dir="src/main/resources/config"/>
-	</copy>
-
 	<chmod file="target/stage/${install.dir.name}/bin/*" perm="ugo+rx"/>
 	<chmod file="target/stage/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
 
