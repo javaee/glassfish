@@ -113,6 +113,7 @@ import org.apache.catalina.Session;
 import org.apache.catalina.Wrapper;
 
 import org.apache.catalina.authenticator.SingleSignOn;
+import org.apache.catalina.core.ApplicationDispatcher;
 import org.apache.catalina.core.ApplicationHttpRequest;
 import org.apache.catalina.core.ApplicationHttpResponse;
 import org.apache.catalina.core.StandardContext;
@@ -3958,6 +3959,30 @@ public class Request
              */
             ((HttpServletResponse) response).setStatus(
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            // Determine dispatch target
+            StringBuilder sb = new StringBuilder();
+            if (getServletPath() != null) {
+                sb.append(getServletPath());
+            }
+            if (getPathInfo() != null) {
+                sb.append(getPathInfo());
+            }
+            // Do the dispatch
+            setAttribute(RequestDispatcher.ERROR_STATUS_CODE,
+                Integer.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+            ApplicationDispatcher dispatcher = (ApplicationDispatcher)
+                getRequestDispatcher(sb.toString());
+            try {
+                dispatcher.dispatch(getRequest(), getResponse().getResponse(), 
+                    DispatcherType.ERROR);
+            } catch (Exception e) {
+                log.log(Level.WARNING, "Unable to perform ERROR dispatch", e);
+            }
+            /*
+             * Complete the response. No worries, there are no listeners
+             * that could be called at their onComplete methods, because there
+             * are no listeners registered, or we would not have gotten here
+             */
             asyncComplete();
         } else {
             notifyAsyncListeners(AsyncEventType.TIMEOUT);
