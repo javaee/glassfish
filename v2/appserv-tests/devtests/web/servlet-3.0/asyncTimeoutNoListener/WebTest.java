@@ -38,9 +38,9 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * Unit test for the spec requirement that if there is no AsyncListener
- * registered and an async timeout occurs, the container MUST do an
- * ERROR dispatch to the original URI with a response code of 500.
+ * Unit test for the spec requirement that if an async timeout occurs, and
+ * there are no AsyncListeners registered, the container MUST do an ERROR
+ * dispatch to the original URI with a response code of 500.
  */
 public class WebTest {
 
@@ -49,7 +49,8 @@ public class WebTest {
     private static SimpleReporterAdapter stat =
         new SimpleReporterAdapter("appserv-tests");
 
-    private static final int EXPECTED_RESPONSE_CODE = 500;
+    private static final int EXPECTED_RESPONSE_CODE = 200;
+    private static final String EXPECTED_RESPONSE = "SUCCESS";
    
     private String host;
     private String port;
@@ -79,17 +80,38 @@ public class WebTest {
 
     public void doTest() throws Exception {
      
-        URL url = new URL("http://" + host  + ":" + port
-                          + contextRoot + "/TestServlet");
-        System.out.println("Connecting to: " + url.toString());
+        InputStream is = null;
+        BufferedReader input = null;
 
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setReadTimeout(20 * 1000);
-        conn.connect();
-        int responseCode = conn.getResponseCode();
-        if (responseCode != EXPECTED_RESPONSE_CODE) {
-            throw new Exception("Unexpected return code: " + responseCode +
-                                ", expected: " + EXPECTED_RESPONSE_CODE);
+        try {
+            URL url = new URL("http://" + host  + ":" + port +
+                contextRoot + "/TestServlet");
+            System.out.println("Connecting to: " + url.toString());
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(20 * 1000);
+            conn.connect();
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode != EXPECTED_RESPONSE_CODE) {
+                throw new Exception("Unexpected return code. Expected: " +
+                    EXPECTED_RESPONSE_CODE + ", received: " + responseCode);
+            }
+
+            is = conn.getInputStream();
+            input = new BufferedReader(new InputStreamReader(is));
+            String response = input.readLine();
+            if (!EXPECTED_RESPONSE.equals(response)) {
+                throw new Exception("Missing or wrong response. Expected: " +
+                    EXPECTED_RESPONSE + ", received: " + response);
+            }
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (input != null) input.close();
+            } catch (IOException ex) {}
         }
     }
 }
