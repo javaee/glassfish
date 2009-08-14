@@ -157,19 +157,6 @@
 
     <target name="servlet">
         <ant dir="index" target="all"/>
-        <ant dir="servlet-3.0/asyncContextComplete" target="all"/>
-<!-- XXX temporarily commented out due to IT 9041
-        <ant dir="servlet-3.0/asyncContextDispatch" target="all"/>
-        <ant dir="servlet-3.0/asyncCrossContextDispatch" target="all"/>
--->
-        <ant dir="servlet-3.0/asyncContextZeroArgDispatch" target="all"/>
-        <ant dir="servlet-3.0/asyncListenerOnComplete" target="all"/>
-        <ant dir="servlet-3.0/asyncListenerOnTimeout" target="all"/>
-        <ant dir="servlet-3.0/asyncSupportedTrueDeclarative" target="all"/>
-        <ant dir="servlet-3.0/asyncSupportedTrueProgrammatic" target="all"/>
-        <ant dir="servlet-3.0/asyncSupportedFalse" target="all"/>
-        <ant dir="servlet-3.0/asyncContextHasOriginalRequestAndResponse" target="all"/>
-        <ant dir="servlet-3.0/asyncTimeoutNoListener" target="all"/>
         <ant dir="standalonewar" target="all"/>  
         <ant dir="contentlength" target="all"/>
         <ant dir="sessionDestroyed" target="all"/>
@@ -291,6 +278,19 @@
         <ant dir="servlet-3.0/pluggability/servletContainerInitializer/sharedLibWithInterfaceImplementation" target="all"/>
         <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
         <ant dir="servlet-3.0/defaultErrorPage" target="all"/>
+        <ant dir="servlet-3.0/asyncContextComplete" target="all"/>
+<!-- XXX temporarily commented out due to IT 9041
+        <ant dir="servlet-3.0/asyncContextDispatch" target="all"/>
+        <ant dir="servlet-3.0/asyncCrossContextDispatch" target="all"/>
+-->
+        <ant dir="servlet-3.0/asyncContextZeroArgDispatch" target="all"/>
+        <ant dir="servlet-3.0/asyncListenerOnComplete" target="all"/>
+        <ant dir="servlet-3.0/asyncListenerOnTimeout" target="all"/>
+        <ant dir="servlet-3.0/asyncSupportedTrueDeclarative" target="all"/>
+        <ant dir="servlet-3.0/asyncSupportedTrueProgrammatic" target="all"/>
+        <ant dir="servlet-3.0/asyncSupportedFalse" target="all"/>
+        <ant dir="servlet-3.0/asyncContextHasOriginalRequestAndResponse" target="all"/>
+        <ant dir="servlet-3.0/asyncTimeoutNoListener" target="all"/>
         <ant dir="errorPageHandlingForError" target="all"/>
         <ant dir="servlet-3.0/multipart" target="all"/>
     </target>
@@ -502,13 +502,13 @@
         
         <record name="web.output" action="start" />
         <antcall target="startDomain"/>
-        <antcall target="servlet"/>
         <antcall target="jsp"/>
         <antcall target="taglib"/>
         <antcall target="el"/>
         <antcall target="web-container"/>
         <antcall target="security"/>
         <antcall target="http-connector"/>
+        <antcall target="servlet"/>
         <antcall target="stopDomain"/>
         <record name="web.output" action="stop" />
 
