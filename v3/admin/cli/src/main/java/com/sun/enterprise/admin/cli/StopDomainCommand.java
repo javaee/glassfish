@@ -58,11 +58,7 @@ import com.sun.enterprise.universal.xml.MiniXmlParserException;
  * @author bnevins
  * @author Bill Shannon
  */
-public class StopDomainCommand extends CLICommand {
-    private File domainsDir;
-    private File domainRootDir;
-    private String domainName;
-    private File domainXml;
+public class StopDomainCommand extends LocalDomainCommand {
 
     private final static long WAIT_FOR_DAS_TIME_MS = 60000;
 
@@ -95,56 +91,10 @@ public class StopDomainCommand extends CLICommand {
         processProgramOptions();
     }
 
-    /**
-     * The validate method validates that the type and quantity of
-     * parameters and operands matches the requirements for this
-     * command.  The validate method supplies missing options from
-     * the environment.  It also supplies passwords from the password
-     * file or prompts for them if interactive.
-     */
-    @Override
-    protected void validate()
-            throws CommandException, CommandValidationException {
-        super.validate();
-
-        // get domainName
-        if (!operands.isEmpty()) {
-            domainName = (String)operands.get(0);
-        }
-
-        // get domainsDir
-        String domaindir = getOption("domaindir");
-
-        if (ok(domaindir)) {
-            domainsDir = new File(domaindir);
-            if (!domainsDir.isDirectory()) {
-                throw new CommandValidationException(
-                        strings.get("StopDomain.badDomainsDir", domainsDir));
-            }
-        }
-    }
-
     @Override
     protected int executeCommand()
             throws CommandException, CommandValidationException {
-        getDomainRootDir();
-        getDomainXml();
-        domainRootDir = SmartFile.sanitize(domainRootDir);
-        Integer[] ports = null;
-
-        try {
-            MiniXmlParser parser = new MiniXmlParser(domainXml);
-            Set<Integer> portsSet = parser.getAdminPorts();
-            ports = portsSet.toArray(new Integer[portsSet.size()]);
-        } catch (MiniXmlParserException ex) {
-            throw new CommandValidationException(
-                    strings.get("StopDomain.parserError", ex), ex);
-        }
-
-        // TODO -- it would be nice to know if it worked!
-        // If so use other port numbers
-
-        int adminPort = ports[0];
+        int adminPort = getAdminPort();
         programOpts.setPort(adminPort);
 
         // Verify that the DAS is running and reachable
@@ -162,68 +112,6 @@ public class StopDomainCommand extends CLICommand {
         return 0;
     }
 
-    private void getDomainRootDir() throws CommandValidationException {
-        if (domainsDir == null) {
-            domainsDir = new File(getSystemProperty(
-                            SystemPropertyConstants.DOMAINS_ROOT_PROPERTY));
-        }
-
-        if (!domainsDir.isDirectory()) {
-            throw new CommandValidationException(
-                    strings.get("StopDomain.badDomainsDir", domainsDir));
-        }
-
-        if (domainName != null) {
-            domainRootDir = new File(domainsDir, domainName);
-        } else {
-            domainRootDir = getTheOneAndOnlyDomain(domainsDir);
-        }
-
-        if (!domainRootDir.isDirectory()) {
-            throw new CommandValidationException(
-                    strings.get("StopDomain.badDomainDir", domainRootDir));
-        }
-    }
-
-    private void getDomainXml() throws CommandValidationException {
-        // root-dir/config/domain.xml
-        domainXml = new File(domainRootDir, "config/domain.xml");
-
-        if (!domainXml.canRead()) {
-            throw new CommandValidationException(
-                    strings.get("StopDomain.noDomainXml", domainXml));
-        }
-    }
-
-    /**
-     * It either throws an Exception or returns a valid directory
-     * @param parent
-     * @return
-     * @throws com.sun.enterprise.cli.framework.CommandValidationException
-     */
-    private File getTheOneAndOnlyDomain(File parent)
-            throws CommandValidationException {
-        // look for subdirs in the parent dir -- there must be one and only one
-
-        File[] files = parent.listFiles(new FileFilter() {
-            public boolean accept(File f) {
-                return f.isDirectory();
-            }
-        });
-
-        if (files == null || files.length == 0) {
-            throw new CommandValidationException(
-                    strings.get("StopDomain.noDomainDirs", parent));
-        }
-
-        if (files.length > 1) {
-            throw new CommandValidationException(
-                    strings.get("StopDomain.tooManyDomainDirs", parent));
-        }
-
-        return files[0];
-    }
-
     private void waitForDeath(int adminPort) throws CommandException {
         // 1) it's impossible to use the logger to print anything without \n
         // 2) The Logger is set to WARNING right now to kill the version
@@ -235,7 +123,7 @@ public class StopDomainCommand extends CLICommand {
         boolean alive = true;
 
         while (!timedOut(startWait)) {
-            if (!pingPort(adminPort)) {
+            if (!isRunning(adminPort)) {
                 alive = false;
                 break;
             }
@@ -252,28 +140,6 @@ public class StopDomainCommand extends CLICommand {
         if (alive) {
             throw new CommandException(strings.get("StopDomain.DASNotDead",
                     (WAIT_FOR_DAS_TIME_MS / 1000)));
-        }
-    }
-
-    /**
-     * This is no substitute for DASUtils.pingDAS() -- that command guarantees
-     * that DAS is at the other end of the port.  This is a quick check that can
-     * be used after verifying DAS is in fact listening on the port.
-     * I ran into a problem where stop-domain hangs on pingDAS() after it
-     * shuts down, waiting on a network timeout.  This ping is fast!
-     *
-     * @param port the port to ping
-     * @return true if the server socket is reachable
-     */
-    private boolean pingPort(int port) {
-        try {
-            String host = null;
-            new Socket(host, port);
-            return true;
-        } catch (Exception ex) {
-            logger.printDebugMessage(
-                strings.get("StopDomain.pingPortEx", ex));
-            return false;
         }
     }
 

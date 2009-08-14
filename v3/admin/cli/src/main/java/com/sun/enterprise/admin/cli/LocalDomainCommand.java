@@ -43,10 +43,8 @@ import com.sun.enterprise.universal.xml.MiniXmlParser;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.security.store.PasswordAdapter;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.Socket;
 import java.security.KeyStore;
 import java.util.Set;
 
@@ -64,6 +62,7 @@ public abstract class LocalDomainCommand extends CLICommand {
     
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(LocalDomainCommand.class);
+
     /**
      * Constructor used by subclasses to save the name, program options,
      * and environment information into corresponding protected fields.
@@ -119,6 +118,8 @@ public abstract class LocalDomainCommand extends CLICommand {
         }
         domainRootDir = SmartFile.sanitize(domainRootDir);
         domainsDir    = SmartFile.sanitize(domainsDir);
+
+        initializeLocalPassword();
     }
     
     private File getTheOneAndOnlyDomain(File parent)
@@ -160,6 +161,39 @@ public abstract class LocalDomainCommand extends CLICommand {
         if (!mp.canRead())
             return null;
         return mp;
+    }
+
+    /**
+     * If there's a local-password file, use the local password so the
+     * user never has to enter a password.
+     */
+    protected void initializeLocalPassword() {
+        // root-dir/config/local-password
+        File localPassword = new File(new File(domainRootDir, "config"),
+                                    "local-password");
+        BufferedReader r = null;
+        try {
+            r = new BufferedReader(new FileReader(localPassword));
+            String pwd = r.readLine();
+            if (ok(pwd)) {
+                // use the local password
+                logger.printDebugMessage("Using local password");
+                programOpts.setPassword(pwd);
+                // if no user specified, use the default
+                if (programOpts.getUser() == null)
+                    programOpts.setUser(
+                                    SystemPropertyConstants.DEFAULT_ADMIN_USER);
+            }
+        } catch (IOException ex) {
+            logger.printDebugMessage(
+                "IOException reading local password: " + ex);
+        } finally {
+            if (r != null) {
+                try {
+                    r.close();
+                } catch (IOException ex) { }
+            }
+        }
     }
     
     protected File getJKS() {
@@ -247,11 +281,23 @@ public abstract class LocalDomainCommand extends CLICommand {
      * In such cases, we need to know if the domain is running and this method
      * provides a way to do that.
      *
-     *
      * @return boolean indicating whether the server is running
-     * @throws UnsupportedOperationException for now (Kedar - 24 Jul 2009) ...
      */
-    protected boolean isRunning() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();    
+    protected boolean isRunning(int port) {
+        Socket server = null;
+        try {
+            String host = null;
+            server = new Socket(host, port);
+            return true;
+        } catch (Exception ex) {
+            logger.printDebugMessage("\nisRunning got exception: " + ex);
+            return false;
+        } finally {
+            if (server != null) {
+                try {
+                    server.close();
+                } catch (IOException ex) { }
+            }
+        }
     }
 }

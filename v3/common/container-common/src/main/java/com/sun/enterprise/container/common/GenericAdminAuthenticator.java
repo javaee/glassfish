@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -68,6 +68,10 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
 
     @Inject
     volatile AdminService as;
+
+    @Inject
+    LocalPassword localPassword;
+
     private final Logger logger = Logger.getAnonymousLogger();
 
     public boolean login(String user, String password, String realm) throws LoginException {
@@ -92,6 +96,11 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
         if (anonok) {
             return anonok;
         }
+
+        boolean isLocal = isLocalPassword(user, password);
+        if (isLocal)
+            return true;
+
         try {
             AuthRealm ar = as.getAssociatedAuthRealm();
             if (FileRealm.class.getName().equals(ar.getClassname())) {
@@ -141,6 +150,21 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
         }
         return false;
     }
+
+    /**
+     * Check whether the password is the local password.
+     * We ignore the user name but could check whether it's
+     * a valid admin user name.
+     */
+    private boolean isLocalPassword(String user, String password) {
+        if (!localPassword.isLocalPassword(password)) {
+            logger.finest("Password is not the local password");
+            return false;
+        }
+        logger.fine("Allowing access using local password");
+        return true;
+    }
+
     public Subject authenticate(Object credentials) {
         if (this.serverAllowsAnonymousFileRealmLogin()) {
             logger.fine("Allowing anonymous login for JMX Access");
@@ -159,6 +183,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
         if (realm == null)
             realm = as.getAuthRealmName();
 
+        // XXX - allow local password for JMX?
         try {
             this.login(u, p, realm);
             return null; //for now;
