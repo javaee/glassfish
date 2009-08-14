@@ -526,7 +526,7 @@ class ConfigBeanJMXSupport
             final Class<?> dataType = info.inferDataType();
             if ( (dataType == Boolean.class || dataType == boolean.class) && ! info.hasDefaultValue()  )
             {
-                problems.add( "Missing defaultValue for Boolean @Configured " + mIntf.getName() + "." + info.attrName() + "()" );
+                problems.add( "Missing defaultValue for Boolean @Configured " + mIntf.getName() + ".get" + info.attrName() + "()" );
             }
         }
         if ( problems.size() != 0 )
