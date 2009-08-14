@@ -133,11 +133,8 @@ public class UpgradeUtils {
      *
      * @param srcDir
      * @param trgDir
-     * @return
      */
-    public boolean copyUserLibFiles(File srcDir, File trgDir){
-        boolean flag = false;
-
+    public void copyUserLibFiles(File srcDir, File trgDir){
         //- get the appropriate list of lib files to exclude
         String osName = System.getProperty("os.name");
         String pkgName = this.getClass().getPackage().getName();
@@ -191,7 +188,6 @@ public class UpgradeUtils {
             logger.log(Level.SEVERE,
 				stringManager.getString("upgrade.common.lib_exclude_error",ne.toString()));
         } 
-        return flag;
     }
 
 	public static boolean deleteDirectory(File dir) {
