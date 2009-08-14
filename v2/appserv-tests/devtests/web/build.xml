@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="474"/>
+    <property name="TOTAL_EXPECTED" value="476"/>
 
     &commonSetup;
     &commonBuild;
@@ -279,10 +279,8 @@
         <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
         <ant dir="servlet-3.0/defaultErrorPage" target="all"/>
         <ant dir="servlet-3.0/asyncContextComplete" target="all"/>
-<!-- XXX temporarily commented out due to IT 9041
         <ant dir="servlet-3.0/asyncContextDispatch" target="all"/>
         <ant dir="servlet-3.0/asyncCrossContextDispatch" target="all"/>
--->
         <ant dir="servlet-3.0/asyncContextZeroArgDispatch" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnComplete" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnTimeout" target="all"/>
