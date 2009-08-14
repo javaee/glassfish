@@ -421,7 +421,9 @@ public class JAXWSServlet extends HttpServlet {
 
 
     private AddressingFeature.Responses getResponse(String s) {
-        return AddressingFeature.Responses.valueOf(AddressingFeature.Responses.class,s);
+        if (s != null) {
+            return AddressingFeature.Responses.valueOf(AddressingFeature.Responses.class,s);
+        } else return AddressingFeature.Responses.ALL;    
 
     }
 
