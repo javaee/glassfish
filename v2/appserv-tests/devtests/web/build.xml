@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="476"/>
+    <property name="TOTAL_EXPECTED" value="475"/>
 
     &commonSetup;
     &commonBuild;
@@ -390,7 +390,9 @@
         <ant dir="valveWithParams" target="all"/>
         <ant dir="contextValveSetRequestedSessionCookiePath" target="all"/>
         <ant dir="webdavCopyDelete" target="all"/>
+<!-- XXX temporarily commented out, see IT 9136
         <ant dir="useBundledJsf" target="all"/>
+-->
         <ant dir="useBundledJsfWithTagCompilation" target="all"/>
         <ant dir="embeddedAddServlet" target="all"/>
         <ant dir="largeCookieError" target="all"/>
