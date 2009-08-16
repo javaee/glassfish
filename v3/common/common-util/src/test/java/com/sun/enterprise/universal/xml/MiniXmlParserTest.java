@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Ignore;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -20,6 +21,7 @@ import org.junit.Test;
 /**
  * @author bnevins
  */
+@Ignore
 @SuppressWarnings({"StaticNonFinalField"})
 public class MiniXmlParserTest {
     private static File hasProfiler;
