@@ -43,34 +43,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.List;
 import java.util.ArrayList;
 import org.glassfish.api.monitoring.ProbeInfo;
+import org.glassfish.flashlight.FlashlightUtils;
+import org.glassfish.flashlight.impl.client.DTraceClientInvoker;
 
 public class FlashlightProbe
         implements ProbeHandle, ProbeInfo{
-
-    private int id;
-    
-    private Class providerClazz;
-
-    private String moduleProviderName;
-
-    private String moduleName;
-
-    private String probeName;
-
-    private String probeProviderName;
-
-    private String[] probeParamNames;
-
-    private Class[] paramTypes;
-
-    private List<ProbeClientInvoker> invokerList = new ArrayList(2);
-
-    private String providerJavaMethodName;
-
-    private AtomicBoolean enabled = new AtomicBoolean(false);
-
-    private String probeDesc;
-    private Object dtraceProviderImpl;
 
     public FlashlightProbe(int id, Class providerClazz, String moduleProviderName,
     		String moduleName, String probeProviderName, String probeName,
@@ -91,28 +68,31 @@ public class FlashlightProbe
     public synchronized boolean addInvoker(ProbeClientInvoker invoker) {
     	boolean isFirst = invokerList.size() == 0;
         invokerList.add(invoker);
-        enabled.set(true);
+        listenerEnabled.set(true);
         
         return isFirst;
     }
 
     public synchronized boolean removeInvoker(ProbeClientInvoker invoker) {
         invokerList.remove(invoker);
-        enabled.set(invokerList.size() > 0);
+        listenerEnabled.set(invokerList.size() > 0);
         
-        return enabled.get();
+        return listenerEnabled.get();
     }
 
     public void fireProbe(Object[] params) {
-
-        //System.out.println("[FL] fireProbe?? ==> " + enabled.get() + " " + invokerList.size());
-        for (ProbeClientInvoker invoker : invokerList) {
-            invoker.invoke(params);
+        if(listenerEnabled.get()) {
+            for (ProbeClientInvoker invoker : invokerList)
+                invoker.invoke(params);
+        }
+        if(isDtraceEnabled()) {
+            DTraceClientInvoker dtInvoker = new DTraceClientInvoker(this, dtraceProviderImpl, params);
+            dtInvoker.invoke();
         }
     }
 
-    public boolean isEnabled() {        
-        return enabled.get();
+    public boolean isEnabled() {
+        return listenerEnabled.get() || isDtraceEnabled();
     }
 
     public int getId() {
@@ -180,4 +160,21 @@ public class FlashlightProbe
     public Object getDTraceProviderImpl() {
         return dtraceProviderImpl;
     }
+
+    private boolean isDtraceEnabled() {
+        return FlashlightUtils.isDtraceEnabled() && (dtraceProviderImpl != null);
+    }
+    private int id;
+    private Class providerClazz;
+    private String moduleProviderName;
+    private String moduleName;
+    private String probeName;
+    private String probeProviderName;
+    private String[] probeParamNames;
+    private Class[] paramTypes;
+    private List<ProbeClientInvoker> invokerList = new ArrayList(2);
+    private String providerJavaMethodName;
+    private AtomicBoolean listenerEnabled = new AtomicBoolean(false);
+    private String probeDesc;
+    private Object dtraceProviderImpl;
 }

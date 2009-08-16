@@ -145,8 +145,19 @@ public class ProviderImplGenerator {
         int index = generatedClassName.lastIndexOf('.');
         String clsName = generatedClassName.substring(index+1);
 
+
         if(Boolean.parseBoolean(System.getenv("AS_DEBUG"))) {
 			System.out.println("**** Generated ClassDATA " + clsName);
+
+            // the path is horribly long.  Let's just write t directly into the
+            // lib dir.  It is not for loading as a class but just for us humans
+            // to decompile to figure out what is going on.  No need to make it even harder!
+            clsName = clsName.replace('\\', '/'); // just in case Windows?  unlikely...
+            index = clsName.lastIndexOf("/");
+
+            if(index >= 0)
+                clsName = clsName.substring(index + 1);
+
 			try {
 				String rootPath = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) +
 									File.separator + "lib" + File.separator;

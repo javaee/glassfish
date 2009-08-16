@@ -41,13 +41,13 @@ import com.sun.enterprise.util.ObjectAnalyzer;
 import java.io.InputStream;
 import java.util.*;
 import org.glassfish.api.monitoring.DTraceContract;
+import org.glassfish.flashlight.FlashlightUtils;
 import org.glassfish.flashlight.provider.*;
 import org.glassfish.flashlight.impl.core.*;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.external.probe.provider.annotations.*;
-import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -60,6 +60,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * @author Mahesh Kannan
@@ -67,7 +68,7 @@ import org.jvnet.hk2.component.Habitat;
  */
 @Service
 public class FlashlightProbeProviderFactory
-        implements ProbeProviderFactory {
+        implements ProbeProviderFactory, PostConstruct {
     @Inject
     MonitoringService monitoringServiceConfig;
 
@@ -77,7 +78,6 @@ public class FlashlightProbeProviderFactory
     @Inject
     Habitat habitat;
 
-    private DTraceContract dt; // if this is not null then DTrace is ready-to-go!
     private ConcurrentHashMap<String, Object> providerInfo = new ConcurrentHashMap<String, Object>();
     private boolean debug = false;
     private final static Logger logger = Logger.getLogger(FlashlightProbeProviderFactory.class.getName());
@@ -95,6 +95,9 @@ public class FlashlightProbeProviderFactory
         }
     };
 
+    public void postConstruct() {
+        FlashlightUtils.initialize(habitat, monitoringServiceConfig);
+    }
         
     public <T> T getProbeProvider(Class<T> providerClazz)
             throws InstantiationException, IllegalAccessException {
@@ -230,8 +233,10 @@ public class FlashlightProbeProviderFactory
         // So we loop through all the probes and add the same DTrace impl object to
         // each probe.
 
+        DTraceContract dt = FlashlightUtils.getDtraceEngine();
+
         // is DTrace available and enabled?
-        if(!isDtraceEnabled())
+        if(dt == null)
             return;
 
         // here is a way to do the same thing but you get the intermediate interface class
@@ -249,9 +254,6 @@ public class FlashlightProbeProviderFactory
          for(FlashlightProbe probe : probes) {
              probe.setDTraceProviderImpl(dtraceProviderImpl);
          }
-
-		 //does not work!!!!
-         //FlashlightProbeClientMediator.getInstance().registerListener(dtraceProviderImpl, provider);
     }
 
     private void registerProvider(ClassLoader cl, ProbeProviderXMLParser.Provider provider) {
@@ -362,34 +364,5 @@ public class FlashlightProbeProviderFactory
         if (debug) {
             System.out.println("APK: " + str);
         }
-    }
-    private void setDTraceAvailabilty() {
-        // the code below fails fast -- it marches through returning immediately
-        // when something is amiss instead of having complicated hard-to-read nested
-        // blocks of code.
-        
-        dt = null;
-
-        // AS_DTRACE check is temporary...
-        if(!Boolean.parseBoolean(System.getenv("AS_DTRACE"))) {
-            return;
-        }
-
-        dt = habitat.getByContract(DTraceContract.class);
-
-        if(dt == null)
-            return;
-
-        if(!dt.isSupported())
-            dt = null;
-        // else dt is available!!
-    }
-
-    private boolean isDtraceEnabled() {
-		setDTraceAvailabilty();
-        return
-            dt != null &&
-            //Boolean.parseBoolean(monitoringServiceConfig.getMonitoringEnabled()) &&
-            true; //Boolean.parseBoolean(monitoringServiceConfig.getDtraceEnabled());
     }
 }
