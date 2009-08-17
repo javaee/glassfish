@@ -24,6 +24,7 @@ own identifying information: Portions Copyright [yyyy]
     <property name="rootdir" value="target"/>
     <property name="zipdir" value="${rootdir}/packager_zips"/>
     <property name="jardir" value="${rootdir}/packager_jars"/>
+    <property name="modulesdir" value="${jardir}/glassfishv3/glassfish/modules"/>
     <property name="filedir" value="${rootdir}/packager_files"/>
     <property name="finaljar" value="${rootdir}/glassfish-embedded-all.jar"/>
 
@@ -42,6 +43,9 @@ own identifying information: Portions Copyright [yyyy]
                 <include name="*.zip"/>
             </fileset>
         </unzip>
+
+	<delete file="${modulesdir}/javahelp.jar"/>
+	<delete file="${modulesdir}/upgrade-tool.jar"/>
 
         <echo message="rejarring and processing metadata..."/>
         <taskdef name="rejar" classname="org.jvnet.maven.plugin.antrun.RejarTask" />
