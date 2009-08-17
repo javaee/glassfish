@@ -87,13 +87,13 @@ public class DomainsProcessor {
         logger.log(Level.INFO,
                 stringManager.getString("upgrade.common.start_copy_user_libs"));
         String s = commonInfo.getSource().getInstallDir();
-        File sLibDir = null;  //checkForLibDir(commonInfo.getSource().getInstallDir());
+        File sLibDir = null;
         StringTokenizer t = new StringTokenizer(s, File.separator);
         if (t.countTokens() > 1) {
             File tmpF = new File(s);
             sLibDir = new File(tmpF.getParentFile().getParentFile(), "lib");
             if (!sLibDir.exists() || !sLibDir.isDirectory()) {
-                logger.log(Level.FINE,
+                logger.log(Level.WARNING,
                         stringManager.getString("upgrade.common.dir_not_found", sLibDir.getAbsolutePath()));
                 sLibDir = null;
             }
@@ -101,6 +101,8 @@ public class DomainsProcessor {
         if (sLibDir == null) {
             logger.log(Level.WARNING,
                     stringManager.getString("upgrade.common.src_lib_dir_not_found", s + "/lib"));
+                logger.log(Level.WARNING,
+                        stringManager.getString("upgrade.common.warning_user_must_copy_file"));
         } else {
             File tLibDir = null;
             s = commonInfo.getTarget().getInstallDir();
@@ -117,6 +119,8 @@ public class DomainsProcessor {
             if (tLibDir == null) {
                 logger.log(Level.WARNING,
                         stringManager.getString("upgrade.common.trg_lib_dir_not_found", s + "/lib"));
+                logger.log(Level.WARNING,
+                        stringManager.getString("upgrade.common.warning_user_must_copy_file"));
             } else {
                 UpgradeUtils u = UpgradeUtils.getUpgradeUtils(commonInfo);
                 u.copyUserLibFiles(sLibDir, tLibDir);
