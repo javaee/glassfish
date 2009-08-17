@@ -87,12 +87,7 @@ public class AdministeredObjectHandler extends AbstractHandler {
                     processAdminObjectInterface(adminObjectClassName, adminObjectInterface.getName(), desc);
                 }
             } else {
-                //TODO V3 need to process the "implements <intf> even if "adminObjectInterfaces()" is specified ??
-                Class interfaces[] = c.getInterfaces();
-                //TODO V3 Arrays.asList() need to be changed
-                List<Class> interfacesList = new ArrayList<Class>(Arrays.asList(interfaces));
-                interfacesList.remove(Serializable.class);
-                interfacesList.remove(Externalizable.class);
+                List<Class> interfacesList = deriveAdminObjectInterfacesFromHierarchy(c);
 
                 if (interfacesList.size() == 1) {
                     Class intf = interfacesList.get(0);
@@ -102,14 +97,21 @@ public class AdministeredObjectHandler extends AbstractHandler {
                     //TODO V3 this case is, multiple interfaces implemented, no "adminObjectInterfaces()" attribute defined,
                     // should we check the DD whether this Impl class is already specified in any of "admin-object" elements ?
                     // If present, return. If not present, throw exception ?
-
-                    //TODO V3 throw exception
                 }
             }
         } else {
             getFailureResult(element, "not a rar bundle context", true);
         }
         return getDefaultProcessedResult();
+    }
+
+    public static List<Class> deriveAdminObjectInterfacesFromHierarchy(Class c) {
+        Class interfaces[] = c.getInterfaces();
+
+        List<Class> interfacesList = new ArrayList<Class>(Arrays.asList(interfaces));
+        interfacesList.remove(Serializable.class);
+        interfacesList.remove(Externalizable.class);
+        return interfacesList;
     }
 
     private void processAdminObjectInterface(String adminObjectClassName, String adminObjectInterfaceName,
@@ -129,7 +131,12 @@ public class AdministeredObjectHandler extends AbstractHandler {
         if (!ignore) {
             AdminObject ao = new AdminObject(adminObjectInterfaceName, adminObjectClassName);
             desc.addAdminObject(ao);
-        } //TODO V3 fine-message for ignoring ?
+        }else{
+            if(logger.isLoggable(Level.FINEST)){
+                logger.log(Level.FINEST,"Ignoring administered object annotation " +
+                        "[ "+adminObjectInterfaceName+"," + adminObjectClassName + "] as it is already defined ");
+            }
+        }
     }
 
     public Class<? extends Annotation>[] getTypeDependencies() {
@@ -150,9 +157,15 @@ public class AdministeredObjectHandler extends AbstractHandler {
         if (doLog) {
             Class c = (Class) element.getAnnotatedElement();
             String className = c.getName();
-            //TODO V3 logStrings
-            logger.log(Level.WARNING, "failed to handle annotation [ " + element.getAnnotation() + " ]" +
-                    " on class [ " + className + " ], reason : " + message);
+            Object args[] = new Object[]{
+                element.getAnnotation(),
+                className,
+                message,
+            };
+            String localString = localStrings.getLocalString(
+                    "enterprise.deployment.annotation.handlers.connectorannotationfailure",
+                    "failed to handle annotation [ {0} ] on class [ {1} ], reason : {2}", args);
+            logger.log(Level.WARNING, localString);
         }
         return result;
     }

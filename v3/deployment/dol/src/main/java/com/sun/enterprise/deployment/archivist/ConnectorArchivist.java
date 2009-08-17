@@ -39,8 +39,7 @@ package com.sun.enterprise.deployment.archivist;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.annotation.introspection.ResourceAdapterAnnotationScanner;
 import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
-import com.sun.enterprise.deployment.util.XModuleType;
-import com.sun.enterprise.deployment.util.ConnectorAnnotationDetector;
+import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.deployment.io.ConnectorDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.ConnectorRuntimeDDFile;
@@ -140,4 +139,39 @@ public class ConnectorArchivist extends Archivist<ConnectorDescriptor> {
     protected String getArchiveExtension() {
         return CONNECTOR_EXTENSION;
     }
+
+    /**
+     * perform any post deployment descriptor reading action
+     *
+     * @param descriptor the deployment descriptor for the module
+     * @param archive the module archive
+     */
+    @Override
+    protected void postOpen(ConnectorDescriptor descriptor, ReadableArchive archive)
+        throws IOException {
+        super.postOpen(descriptor, archive);
+        ConnectorDescriptor connectorDescriptor = (ConnectorDescriptor) descriptor;
+        ConnectorValidator mdv = new ConnectorValidator();
+        connectorDescriptor.visit(mdv);
+    }
+
+
+    /**
+     * validates the DOL Objects associated with this archivist, usually
+     * it requires that a class loader being set on this archivist or passed
+     * as a parameter
+     */
+    @Override
+    public void validate(ClassLoader aClassLoader) {
+        ClassLoader cl = aClassLoader;
+        if (cl==null) {
+            cl = classLoader;
+        }
+        if (cl==null) {
+            return;
+        }
+        descriptor.setClassLoader(cl);
+        descriptor.visit(new ConnectorValidator());        
+    }
+
 }

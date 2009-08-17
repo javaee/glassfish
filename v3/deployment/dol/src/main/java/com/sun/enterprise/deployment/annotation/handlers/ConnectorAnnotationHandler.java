@@ -45,19 +45,14 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import javax.resource.spi.Connector;
 import javax.resource.spi.SecurityPermission;
 import javax.resource.spi.AuthenticationMechanism;
-import javax.resource.spi.security.GenericCredential;
-import javax.resource.spi.security.PasswordCredential;
 import javax.resource.spi.work.WorkContext;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 import java.util.logging.Level;
 
-import org.ietf.jgss.GSSCredential;
 import org.glassfish.apf.*;
-import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.apf.impl.HandlerProcessingResultImpl;
 import org.jvnet.hk2.annotations.Service;
 
@@ -78,200 +73,182 @@ public class ConnectorAnnotationHandler extends AbstractHandler  {
         AnnotatedElementHandler aeHandler = element.getProcessingContext().getHandler();
         Connector connector = (Connector) element.getAnnotation();
 
-        //TODO V3
-        // need to check whether there are multiple @Connector annotations
-        // decide which can be used (based on r-a-class in the descriptor
-        // TODO V3
-        // what if there isn't r-a-class specified in descriptor
-        // current processing way is that, process the annotation, *directly* update the descriptor
-        // this will cause issues when multiple annotations are present.
-
-        // need a mechanism by which all @Connector annotations are found upfront,
-        // decide which one is valid and use it / or throw exception when unable to decide
-        // Above behavior will avoid inconsistent updates (mixed) from multiple @Connector annotations
-        // i.e., first @Connector annotation is not the RA-Class as specified in descriptor and has a set of supported inflow context
-        // second @Connector annotation is the class that is RA-Class of DD and does not define supported inflow-contexts 
-
-        if (aeHandler instanceof RarBundleContext) {
-            RarBundleContext rarContext = (RarBundleContext) aeHandler;
-            ConnectorDescriptor desc = rarContext.getDescriptor();
-            //TODO V3 don't use deprecated methods
-
-            //TODO V3 For *all annotations* need to ignore "default" or unspecified attributes
-            //TODO V3 make sure that the annotation defined defaults are the defaults of DD and DOL
-
-
-            if (desc.getDescription().equals("") && connector.description().length > 0) {
-                desc.setDescription(convertStringArrayToStringBuffer(connector.description()));
-            }
-
-            if (desc.getDisplayName().equals("") && connector.displayName().length > 0) {
-                desc.setDisplayName(convertStringArrayToStringBuffer(connector.displayName()));
-            }
-
-            if ((desc.getSmallIconUri() == null || desc.getSmallIconUri().equals(""))
-                    && connector.smallIcon().length > 0) {
-                desc.setSmallIconUri(convertStringArrayToStringBuffer(connector.smallIcon()));
-            }
-
-            if ((desc.getLargeIconUri() == null || desc.getLargeIconUri().equals(""))
-                    && connector.largeIcon().length > 0) {
-                desc.setLargeIconUri(convertStringArrayToStringBuffer(connector.largeIcon()));
-            }
-
-            if (desc.getVendorName().equals("") && !connector.vendorName().equals("")) {
-                desc.setVendorName(connector.vendorName());
-            }
-
-            if (desc.getEisType().equals("") && !connector.eisType().equals("")) {
-                desc.setEisType(connector.eisType());
-            }
-
-            if (desc.getVersion().equals("") && !connector.version().equals("")) {
-                desc.setVersion(connector.version());
-            }
-
-            if (desc.getLicenseDescriptor() == null) {
-                //TODO V3 We will be able to detect whether license description is specified in annotation
-                // or not, but "license required" can't be detected. Hence taking the annotated values *always*
-                // if DD does not have an equivalent
-                String[] licenseDescriptor = connector.licenseDescription();
-                boolean licenseRequired = connector.licenseRequired();
-                LicenseDescriptor ld = new LicenseDescriptor();
-                ld.setDescription(convertStringArrayToStringBuffer(licenseDescriptor));
-                ld.setLicenseRequired(licenseRequired);
-                desc.setLicenseDescriptor(ld);
-            }
-
-            OutboundResourceAdapter ora = getOutbound(desc);
-
-            //if (desc.getAuthMechanisms().size() == 0) {
-            AuthenticationMechanism[] auths = connector.authMechanisms();
-            if (auths != null && auths.length > 0) {
-                for (AuthenticationMechanism auth : auths) {
-                    String authMechString = auth.authMechanism();
-                    int authMechInt = AuthMechanism.getAuthMechInt(authMechString);
-
-                    // check whether the same auth-mechanism is defined in DD also,
-                    // possible change could be with auth-mechanism's credential-interface for a particular
-                    // auth-mechanism-type
-                    boolean ignore = false;
-                    Set ddAuthMechanisms = ora.getAuthMechanisms();
-
-                    for (Object o : ddAuthMechanisms) {
-                        AuthMechanism ddAuthMechanism = (AuthMechanism) o;
-                        if (ddAuthMechanism.getAuthMechType().equals(auth.authMechanism())) {
-                            ignore = true;
-                            break;
-                        }
-                    }
-
-                    // if it was not specified in DD, add it to connector-descriptor
-                    if (!ignore) {
-                        String credentialInterfaceName = getCredentialInterfaceName(auth.credentialInterface());
-                        AuthMechanism authM = new AuthMechanism(auth.description(), authMechInt,
-                                credentialInterfaceName);
-                        ora.addAuthMechanism(authM);
-                    }
-                }
-            }
-            //}
-
-            //TODO V3 care should be taken that only one annotation sets it
-            //TODO V3 so that the "authSupportSet" logic is not made void
-            if (!ora.isReauthenticationSupportSet()) {
-                ora.setReauthenticationSupport(connector.reauthenticationSupport());
-            }
-
-
-            // merge DD and annotation entries of security-permission
-            //if (desc.getSecurityPermissions().size() == 0) {
-            SecurityPermission[] perms = connector.securityPermissions();
-            if (perms != null && perms.length > 0) {
-                for (SecurityPermission perm : perms) {
-                    boolean ignore = false;
-                    // check whether the same permission is defined in DD also,
-                    // though it does not make any functionality difference except possible
-                    // "Description" change
-                    Set ddSecurityPermissions = desc.getSecurityPermissions();
-                    for (Object o : ddSecurityPermissions) {
-                        com.sun.enterprise.deployment.SecurityPermission ddSecurityPermission =
-                                (com.sun.enterprise.deployment.SecurityPermission) o;
-                        if (ddSecurityPermission.getPermission().equals(perm.permissionSpec())) {
-                            ignore = true;
-                            break;
-                        }
-                    }
-
-                    // if it was not specified in DD, add it to connector-descriptor
-                    if (!ignore) {
-                        com.sun.enterprise.deployment.SecurityPermission sp =
-                                new com.sun.enterprise.deployment.SecurityPermission();
-                        sp.setPermission(perm.permissionSpec());
-                        sp.setDescription(perm.description());
-                        desc.addSecurityPermission(sp);
-                    }
-                }
-            }
-            //}
-
-            //TODO V3 care should be taken that only one annotation sets it
-            //TODO V3 so that the "authSupportSet" logic is not made void
-            if (!ora.isTransactionSupportSet()) {
-                ora.setTransactionSupport(connector.transactionSupport().toString());
-            }
-
-            //merge the DD & annotation specified values of required-inflow-contexts
-            //merge involves simple union of class-names of inflow-contexts of DD and annotation
-            // TODO V3 due to the above approach, its not possible to switch off one of the required-inflow-contexts ?
-            // TODO V3 need to check support and throw exception ?
-
-            //if(desc.getRequiredInflowContexts().size() == 0){
-            Class<? extends WorkContext>[] requiredInflowContexts = connector.requiredWorkContexts();
-            if (requiredInflowContexts != null) {
-                for (Class<? extends WorkContext> ic : requiredInflowContexts) {
-                    desc.addRequiredWorkContext(ic.getName());
-                }
-            }
-            //}
-
-            // TODO V3 Do not detect ResourceAdapter class if one is already defined in the descriptor
-            // TODO V3 Refer the comments on top of the method for unhandled cases.
-            if (desc.getResourceAdapterClass().equals("")) {
-                Class c = (Class) element.getAnnotatedElement();
-                String targetClassName = c.getName();
-                if (javax.resource.spi.ResourceAdapter.class.isAssignableFrom(c)) {
-                    desc.setResourceAdapterClass(targetClassName);
-                }
-            }
-        } else {
-            String logMessage = "Not a rar bundle context";
-            return getFailureResult(element, logMessage, true);
-        }
         List<Class<? extends Annotation>> list = new ArrayList<Class<? extends Annotation>>();
         list.add(getAnnotationType());
 /*
         list.add(SecurityPermission.class);
         list.add(AuthenticationMechanism.class);
 */
+
+        if (aeHandler instanceof RarBundleContext) {
+            RarBundleContext rarContext = (RarBundleContext) aeHandler;
+            ConnectorDescriptor desc = rarContext.getDescriptor();
+            Class annotatedClass = (Class)element.getAnnotatedElement();
+            if(desc.getResourceAdapterClass().equals("")){
+                desc.addConnectorAnnotation(element);
+                return getSuccessfulProcessedResult(list);
+            }else if(!isResourceAdapterClass(annotatedClass)){
+                desc.addConnectorAnnotation(element);
+                return getSuccessfulProcessedResult(list);
+            }else if(!desc.getResourceAdapterClass().equals(annotatedClass.getName())){
+                desc.addConnectorAnnotation(element);
+                return getSuccessfulProcessedResult(list);
+            }else{
+                processDescriptor(annotatedClass, connector, desc);
+                desc.setValidConnectorAnnotationProcessed(true);
+            }
+        } else {
+            String logMessage = "Not a rar bundle context";
+            return getFailureResult(element, logMessage, true);
+        }
         return getSuccessfulProcessedResult(list);
     }
 
+    public static void processDescriptor(Class annotatedClass, Connector connector, ConnectorDescriptor desc) {
+        //TODO don't use deprecated methods
 
-    //TODO V3, move to outbound ra ?
-    private String getCredentialInterfaceName(AuthenticationMechanism.CredentialInterface ci) {
-        if (ci.equals(AuthenticationMechanism.CredentialInterface.GenericCredential)) {
-            return GenericCredential.class.getName();
-        } else if (ci.equals(AuthenticationMechanism.CredentialInterface.GSSCredential)) {
-            return GSSCredential.class.getName(); //TODO validate ?
-        } else if (ci.equals(AuthenticationMechanism.CredentialInterface.PasswordCredential)) {
-            return PasswordCredential.class.getName();
+        //TODO For *all annotations* need to ignore "default" or unspecified attributes
+        //TODO make sure that the annotation defined defaults are the defaults of DD and DOL
+
+
+        if (desc.getDescription().equals("") && connector.description().length > 0) {
+            desc.setDescription(convertStringArrayToStringBuffer(connector.description()));
         }
-        throw new RuntimeException("Invalid credential interface :  " + ci);
+
+        if (desc.getDisplayName().equals("") && connector.displayName().length > 0) {
+            desc.setDisplayName(convertStringArrayToStringBuffer(connector.displayName()));
+        }
+
+        if ((desc.getSmallIconUri() == null || desc.getSmallIconUri().equals(""))
+                && connector.smallIcon().length > 0) {
+            desc.setSmallIconUri(convertStringArrayToStringBuffer(connector.smallIcon()));
+        }
+
+        if ((desc.getLargeIconUri() == null || desc.getLargeIconUri().equals(""))
+                && connector.largeIcon().length > 0) {
+            desc.setLargeIconUri(convertStringArrayToStringBuffer(connector.largeIcon()));
+        }
+
+        if (desc.getVendorName().equals("") && !connector.vendorName().equals("")) {
+            desc.setVendorName(connector.vendorName());
+        }
+
+        if (desc.getEisType().equals("") && !connector.eisType().equals("")) {
+            desc.setEisType(connector.eisType());
+        }
+
+        if (desc.getVersion().equals("") && !connector.version().equals("")) {
+            desc.setVersion(connector.version());
+        }
+
+        if (desc.getLicenseDescriptor() == null) {
+            // We will be able to detect whether license description is specified in annotation
+            // or not, but "license required" can't be detected. Hence taking the annotated values *always*
+            // if DD does not have an equivalent
+            String[] licenseDescriptor = connector.licenseDescription();
+            boolean licenseRequired = connector.licenseRequired();
+            LicenseDescriptor ld = new LicenseDescriptor();
+            ld.setDescription(convertStringArrayToStringBuffer(licenseDescriptor));
+            ld.setLicenseRequired(licenseRequired);
+            desc.setLicenseDescriptor(ld);
+        }
+
+        OutboundResourceAdapter ora = getOutbound(desc);
+
+        AuthenticationMechanism[] auths = connector.authMechanisms();
+        if (auths != null && auths.length > 0) {
+            for (AuthenticationMechanism auth : auths) {
+                String authMechString = auth.authMechanism();
+                int authMechInt = AuthMechanism.getAuthMechInt(authMechString);
+
+                // check whether the same auth-mechanism is defined in DD also,
+                // possible change could be with auth-mechanism's credential-interface for a particular
+                // auth-mechanism-type
+                boolean ignore = false;
+                Set ddAuthMechanisms = ora.getAuthMechanisms();
+
+                for (Object o : ddAuthMechanisms) {
+                    AuthMechanism ddAuthMechanism = (AuthMechanism) o;
+                    if (ddAuthMechanism.getAuthMechType().equals(auth.authMechanism())) {
+                        ignore = true;
+                        break;
+                    }
+                }
+
+                // if it was not specified in DD, add it to connector-descriptor
+                if (!ignore) {
+                    String credentialInterfaceName = ora.getCredentialInterfaceName(auth.credentialInterface());
+                    AuthMechanism authM = new AuthMechanism(auth.description(), authMechInt,
+                            credentialInterfaceName);
+                    ora.addAuthMechanism(authM);
+                }
+            }
+        }
+
+        if (!ora.isReauthenticationSupportSet()) {
+            ora.setReauthenticationSupport(connector.reauthenticationSupport());
+        }
+
+
+        // merge DD and annotation entries of security-permission
+        SecurityPermission[] perms = connector.securityPermissions();
+        if (perms != null && perms.length > 0) {
+            for (SecurityPermission perm : perms) {
+                boolean ignore = false;
+                // check whether the same permission is defined in DD also,
+                // though it does not make any functionality difference except possible
+                // "Description" change
+                Set ddSecurityPermissions = desc.getSecurityPermissions();
+                for (Object o : ddSecurityPermissions) {
+                    com.sun.enterprise.deployment.SecurityPermission ddSecurityPermission =
+                            (com.sun.enterprise.deployment.SecurityPermission) o;
+                    if (ddSecurityPermission.getPermission().equals(perm.permissionSpec())) {
+                        ignore = true;
+                        break;
+                    }
+                }
+
+                // if it was not specified in DD, add it to connector-descriptor
+                if (!ignore) {
+                    com.sun.enterprise.deployment.SecurityPermission sp =
+                            new com.sun.enterprise.deployment.SecurityPermission();
+                    sp.setPermission(perm.permissionSpec());
+                    sp.setDescription(perm.description());
+                    desc.addSecurityPermission(sp);
+                }
+            }
+        }
+
+        if (!ora.isTransactionSupportSet()) {
+            ora.setTransactionSupport(connector.transactionSupport().toString());
+        }
+
+        //merge the DD & annotation specified values of required-inflow-contexts
+        //merge involves simple union of class-names of inflow-contexts of DD and annotation
+
+        //due to the above approach, its not possible to switch off one of the required-inflow-contexts ?
+
+        //TODO need to check support and throw exception ?
+
+        Class<? extends WorkContext>[] requiredInflowContexts = connector.requiredWorkContexts();
+        if (requiredInflowContexts != null) {
+            for (Class<? extends WorkContext> ic : requiredInflowContexts) {
+                desc.addRequiredWorkContext(ic.getName());
+            }
+        }
+
+        if (desc.getResourceAdapterClass().equals("")) {
+            if (isResourceAdapterClass(annotatedClass)) {
+                desc.setResourceAdapterClass(annotatedClass.getName());
+            }
+        }
     }
 
+    public static boolean isResourceAdapterClass(Class claz){
+        return javax.resource.spi.ResourceAdapter.class.isAssignableFrom(claz);
+    }
 
-    public String convertStringArrayToStringBuffer(String[] stringArray) {
+    public static String convertStringArrayToStringBuffer(String[] stringArray) {
         StringBuffer result = new StringBuffer();
         if (stringArray != null) {
             for (String string : stringArray) {
@@ -299,7 +276,7 @@ public class ConnectorAnnotationHandler extends AbstractHandler  {
         return null;
     }
 
-    public OutboundResourceAdapter getOutbound(ConnectorDescriptor desc) {
+    public static OutboundResourceAdapter getOutbound(ConnectorDescriptor desc) {
         if (!desc.getOutBoundDefined()) {
             desc.setOutboundResourceAdapter(new OutboundResourceAdapter());
         }
@@ -312,9 +289,15 @@ public class ConnectorAnnotationHandler extends AbstractHandler  {
         if (doLog) {
             Class c = (Class) element.getAnnotatedElement();
             String className = c.getName();
-            //TODO V3 logStrings
-            logger.log(Level.WARNING, "failed to handle annotation [ " + element.getAnnotation() + " ]" +
-                    " on class [ " + className + " ], reason : " + message);
+            Object args[] = new Object[]{
+                element.getAnnotation(),
+                className,
+                message,
+            };
+            String localString = localStrings.getLocalString(
+                    "enterprise.deployment.annotation.handlers.connectorannotationfailure",
+                    "failed to handle annotation [ {0} ] on class [ {1} ], reason : {2}", args);
+            logger.log(Level.WARNING, localString);
         }
         return result;
     }

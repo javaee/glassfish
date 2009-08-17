@@ -38,10 +38,15 @@ package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.xml.ConnectorTagNames;
 
+import javax.resource.spi.AuthenticationMechanism;
+import javax.resource.spi.security.GenericCredential;
+import javax.resource.spi.security.PasswordCredential;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.ietf.jgss.GSSCredential;
 
 /**
  * Deployment Information for connector outbound-resourceadapter
@@ -504,4 +509,16 @@ public class OutboundResourceAdapter extends Descriptor
     public boolean isTransactionSupportSet() {
         return transactionSupportSet;
     }
+
+    public static String getCredentialInterfaceName(AuthenticationMechanism.CredentialInterface ci) {
+        if (ci.equals(AuthenticationMechanism.CredentialInterface.GenericCredential)) {
+            return GenericCredential.class.getName();
+        } else if (ci.equals(AuthenticationMechanism.CredentialInterface.GSSCredential)) {
+            return GSSCredential.class.getName(); 
+        } else if (ci.equals(AuthenticationMechanism.CredentialInterface.PasswordCredential)) {
+            return PasswordCredential.class.getName();
+        }
+        throw new RuntimeException("Invalid credential interface :  " + ci);
+    }
+
 }

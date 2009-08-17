@@ -44,7 +44,10 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
+import java.util.List;
+import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.glassfish.apf.impl.HandlerProcessingResultImpl;
@@ -114,8 +117,8 @@ public class ConfigPropertyHandler extends AbstractHandler {
                         supportsDynamicUpdates, confidential, type, m.getName().substring(3));
 
 
-                Class c = m.getDeclaringClass();
-                handleConfigPropertyAnnotation(element, desc, ep, c);
+                Class declaringClass = m.getDeclaringClass();
+                handleConfigPropertyAnnotation(element, desc, ep, declaringClass);
 
             } else if (element.getElementType().equals(ElementType.FIELD)) {
                 Field f = (Field) element.getAnnotatedElement();
@@ -132,7 +135,9 @@ public class ConfigPropertyHandler extends AbstractHandler {
                     }
                 }
 
-                //TODO V3 need to get the defaultValue from the field if its not specified via annotation
+                if(defaultValue == null || defaultValue.equals("")){
+                    defaultValue = deriveDefaultValueOfField(f);
+                }
                 ConnectorConfigProperty ep = getConfigProperty(defaultValue,description, ignore,
                         supportsDynamicUpdates, confidential,  type, f.getName());
 
@@ -146,6 +151,43 @@ public class ConfigPropertyHandler extends AbstractHandler {
         return getDefaultProcessedResult();
     }
 
+    private String deriveDefaultValueOfField(Field f){
+        Class declaringClass = f.getDeclaringClass();
+        String fieldName = f.getName();
+        String value = null;
+        try {
+            Object o = declaringClass.newInstance();
+            String getterMethod = "get" + getCamelCasedPropertyName(fieldName);
+
+            if(Boolean.class.isAssignableFrom(f.getType())){
+                getterMethod = "is" + getCamelCasedPropertyName(fieldName);                
+            }
+            Method m = declaringClass.getDeclaredMethod(getterMethod);
+            m.setAccessible(true);
+            Object result = m.invoke(o);
+            if(result != null) {
+                value = result.toString();
+            }
+        } catch (Exception e) {
+            Object[] args = {fieldName, declaringClass.getName(), e.getMessage()};
+            String localString = localStrings.getLocalString(
+                    "enterprise.deployment.annotation.handlers.configpropertyfieldreadfailure",
+                    "failed to read the value of field [{0}] on class [{1}], reason : {2}", args);
+            logger.log(Level.WARNING, localString, e);
+        }
+        return value;
+    }
+
+    /**
+     * Returns camel-cased version of a propertyName. Used to construct
+     * correct accessor and mutator method names for a give property.
+     */
+    private String getCamelCasedPropertyName(String propertyName) {
+        return propertyName.substring(0, 1).toUpperCase() +
+                propertyName.substring(1);
+    }
+
+
     private ConnectorConfigProperty getConfigProperty(String defaultValue, String description, boolean ignore,
                                                       boolean supportsDynamicUpdates, boolean confidential,
                                                       Class type, String propertyName) {
@@ -155,7 +197,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
             ep.setDescription(description);
         }
         //use default value if specified
-        if (!defaultValue.equals("")) {
+        if ( defaultValue!= null && !defaultValue.equals("")) {
             ep.setValue(defaultValue);
         }
         ep.setType(type.getName());
@@ -174,139 +216,190 @@ public class ConfigPropertyHandler extends AbstractHandler {
         return ep;
     }
 
-    private void handleConfigPropertyAnnotation(AnnotationInfo element,
-                                                ConnectorDescriptor desc, ConnectorConfigProperty ep, Class c) {
-        if (ResourceAdapter.class.isAssignableFrom(c)
-                || c.getAnnotation(Connector.class) != null) {
-            processConnector(desc, ep);
-        } else if (ManagedConnectionFactory.class.isAssignableFrom(c)
-                || c.getAnnotation(ConnectionDefinition.class) != null) {
-            processConnectionDefinition(element, desc, ep, c);
-        } else if (ActivationSpec.class.isAssignableFrom(c)
-                || c.getAnnotation(Activation.class) != null) {
-            processActivation(element, desc, ep, c);
-        } else if (c.getAnnotation(AdministeredObject.class) != null) {
-            //TODO V3 handle "AdministeredObject interface also
-            
-            handleConfigPropertyForAdministeredObject(element, desc, ep, c);
+    private void handleConfigPropertyAnnotation(AnnotationInfo element, ConnectorDescriptor desc,
+                                                ConnectorConfigProperty ep, Class declaringClass) {
+
+        if (ResourceAdapter.class.isAssignableFrom(declaringClass)) {
+            //@Connector must be of type ResourceAdapter and hence the above check is sufficient to
+            //take care of JavaBean as well annotation
+            if(!processConnector(desc, ep, declaringClass)){
+                //need to book-keep the annotation for post-processing
+                desc.addConfigPropertyAnnotation(declaringClass.getName(), element);
+            }
+        } else if (ManagedConnectionFactory.class.isAssignableFrom(declaringClass)) {
+            //@ConnectionDefintion, @ConnectionDefinitions must be of type ManagedConnectionFactory and hence
+            //the above check is sufficient to take care of JavaBean as well annotation.
+            processConnectionDefinition(element, desc, ep, declaringClass);
+        } else if (ActivationSpec.class.isAssignableFrom(declaringClass)
+                || declaringClass.getAnnotation(Activation.class) != null) {
+            processActivation(element, desc, ep, declaringClass);
+        } else if (declaringClass.getAnnotation(AdministeredObject.class) != null
+                || isAdminObjectJavaBean(declaringClass, desc) ) {
+            proecessAdministeredObject(element, desc, ep, declaringClass);
         }
     }
 
-    private void handleConfigPropertyForAdministeredObject(AnnotationInfo element,
-                                                           ConnectorDescriptor desc, ConnectorConfigProperty ep, Class c) {
+    private boolean isAdminObjectJavaBean(Class adminObjectClass, ConnectorDescriptor desc) {
+        boolean isAdminObject = false;
+        Set adminObjects = desc.getAdminObjects();
+        Iterator adminObjectsItr = adminObjects.iterator();
+        while(adminObjectsItr.hasNext()){
+            AdminObject adminObject = (AdminObject)adminObjectsItr.next();
+            if(adminObject.getAdminObjectClass().equals(adminObjectClass.getName())){
+                isAdminObject = true;
+                break;
+            }
+        }
+        return isAdminObject;
+    }
 
-        if (c.getAnnotation(AdministeredObject.class) != null) {
-            AdministeredObject ao = (AdministeredObject) c.getAnnotation(AdministeredObject.class);
+    private void proecessAdministeredObject(AnnotationInfo element, ConnectorDescriptor desc,
+                                                           ConnectorConfigProperty ep, Class declaringClass) {
+
+        if (declaringClass.getAnnotation(AdministeredObject.class) != null) {
+            AdministeredObject ao = (AdministeredObject) declaringClass.getAnnotation(AdministeredObject.class);
             Class[] adminObjectInterfaces = ao.adminObjectInterfaces();
-            for (Class adminObjectInterface : adminObjectInterfaces) {
-                AdminObject adminObject = desc.getAdminObject(adminObjectInterface.getName(), c.getName());
-                if (adminObject != null) {
+            if(adminObjectInterfaces.length > 0){
+                for (Class adminObjectInterface : adminObjectInterfaces) {
+                    handleAdministeredObject(element, desc, ep, declaringClass, adminObjectInterface);
+                }
+            }else{
+                //handle the case where admin object interfaces are not specified via annotaiton
+                List<Class> interfacesList = AdministeredObjectHandler.
+                        deriveAdminObjectInterfacesFromHierarchy(declaringClass);
+
+                //We assume that there will be only one interface (if there had been many, admin-object annotation
+                //handler would have rejected it.)
+                if(interfacesList.size() == 1){
+                    Class intf = interfacesList.get(0);
+                    handleAdministeredObject(element, desc, ep, declaringClass, intf);
+                }
+            }
+        } else {
+            Set adminObjects = desc.getAdminObjects();
+            Iterator adminObjectItr = adminObjects.iterator();
+            while(adminObjectItr.hasNext()){
+                AdminObject adminObject = (AdminObject)adminObjectItr.next();
+                if(adminObject.getAdminObjectClass().equals(declaringClass.getName())){
                     if (!(isConfigDefined(adminObject.getConfigProperties(), ep))) {
                         adminObject.addConfigProperty(ep);
                     }
-                } else {
-                    // ideally adminObject should not be null as "@AdministeredObject"
-                    // should have been handled before @ConfigProperty
-                    getFailureResult(element, "could not get adminobject of interface " +
-                            "[ " + adminObjectInterface.getName() + " ]" +
-                            " and class [ " + c.getName() + " ]", true);
                 }
             }
+        }
+    }
+
+    private void handleAdministeredObject(AnnotationInfo element, ConnectorDescriptor desc,
+                                          ConnectorConfigProperty ep, Class adminObjectClass, Class adminObjectIntf) {
+        AdminObject adminObject = desc.getAdminObject(adminObjectIntf.getName(), adminObjectClass.getName());
+        if (adminObject != null) {
+            if (!(isConfigDefined(adminObject.getConfigProperties(), ep))) {
+                adminObject.addConfigProperty(ep);
+            }
+        } else {
+            // ideally adminObject should not be null as "@AdministeredObject" 
+            // should have been handled before @ConfigProperty
+            getFailureResult(element, "could not get adminobject of interface " +
+                    "[ " + adminObjectIntf.getName() + " ]" +
+                    " and class [ " + adminObjectClass.getName() + " ]", true);
         }
     }
 
     private void processActivation(AnnotationInfo element, ConnectorDescriptor desc,
-                                   ConnectorConfigProperty ep, Class c) {
-        if (desc.getInBoundDefined()) {
-            //TODO V3 above check is not needed if we are sure that "@Activation" is handled already
+                                   ConnectorConfigProperty ep, Class declaringClass) {
+
+            // Inbound Resource Adapter should have been defined if @Activation annotation
+            // was processed successfully, before.
             InboundResourceAdapter ira = desc.getInboundResourceAdapter();
-            if (c.getAnnotation(Activation.class) != null) {
-                Activation activation = (Activation) c.getAnnotation(Activation.class);
+            if (declaringClass.getAnnotation(Activation.class) != null) {
+                Activation activation = (Activation) declaringClass.getAnnotation(Activation.class);
                 Class[] messageListeners = activation.messageListeners();
 
                 //messageListeners cant be 0 as we ask "@Activation" to be handled before "@ConfigProperty"
-
                 for (Class clz : messageListeners) {
                     if (ira.hasMessageListenerType(clz.getName())) {
                         MessageListener ml = ira.getMessageListener(clz.getName());
 
-                        if (!(isConfigDefined(ml.getConfigProperties(), ep))) {
+                        //check whether the activation-spec class in the descriptor
+                        //for a particular message-listener is the same as this class as it is possible
+                        //that this activation-spec class may have been ignored if ra.xml is already defined with
+                        //this particular message-listener-type. If so, we should not add config-property as they
+                        // belong to a particular activation-spec class.
+                        if (ml.getActivationSpecClass().equals(declaringClass.getName()) &&
+                                !(isConfigDefined(ml.getConfigProperties(), ep))) {
                             ml.addConfigProperty(ep);
                         }
-
-                    } else {
-                        //TODO V3 possible that tha Activation annotation is not handled yet ?
                     }
                 }
             } else {
-                //TODO V3 how do we handle this case ? as multiple message-listeners can have
-                // same activationSpec class ?
-                debug("configProperty annotation is not annotated with Activation, but implements ActivationSpec");
+                if(desc.getInBoundDefined()){
+                    Set messageListeners = desc.getInboundResourceAdapter().getMessageListeners();
+                    Iterator mlItr = messageListeners.iterator();
+                    while(mlItr.hasNext()){
+                        MessageListener ml = (MessageListener)mlItr.next();
+                        if(ml.getActivationSpecClass().equals(declaringClass.getName())){
+                            if (!(isConfigDefined(ml.getConfigProperties(), ep))) {
+                                ml.addConfigProperty(ep);
+                            }
+                        }
+                    }
+                }
             }
-        } else {
-            //TODO V3 can't happen as we ask "@Activation" to be handled before processing "@ConfigProperty" ?
-            getFailureResult(element, "No Inbound RA yet defined ", true);
         }
-    }
 
     private void processConnectionDefinition(AnnotationInfo element, ConnectorDescriptor desc,
-                                             ConnectorConfigProperty ep, Class c) {
-        //3) TODO V3 how do we make sure that @Connector annotation for this MCF is already processed ?
-        //TODO V3 should we handle @connectionDefinitions also ?
-
-        //TODO V3 make sure that the class that implements MCF is annotated with connectionDefinition ?
-
-        //TODO V3 can't we just test for ConnectionDefinition annotation alone ?
-
+                                             ConnectorConfigProperty ep, Class declaringClass) {
         if (desc.getOutBoundDefined()) {
+
             OutboundResourceAdapter ora = desc.getOutboundResourceAdapter();
             Set connectionDefinitions = ora.getConnectionDefs();
-            boolean foundConnectionDefinition = false;
+
             for (Object o : connectionDefinitions) {
                 ConnectionDefDescriptor cd = (ConnectionDefDescriptor) o;
-                //TODO V3 is assuming that a connection-defintion with the MCF class as this
-                // annotation's MCF class
-                // is the one that need to be updated with config properties, correct ?
 
-                if (cd.getManagedConnectionFactoryImpl().equals(c.getName())) {
+                if (cd.getManagedConnectionFactoryImpl().equals(declaringClass.getName())) {
 
                     if (!(isConfigDefined(cd.getConfigProperties(), ep))) {
                         cd.addConfigProperty(ep);
                     }
-
-                    foundConnectionDefinition = true;
-                    /* TODO V3 it is possible that multiple MCFs with same class, but different
-                     connection-factory-interface
-                     hence process all connection definitions ? */
-                    // break;
                 }
-            }
-            if (!foundConnectionDefinition) {
-                // TODO V3 should we create a new connection defintion ? We may not have necessary
-                // properties if its not @ConnectionDefinition (MCF alone)
+                //ignore if connection-definition entry is not found as it is possible that
+                //ra.xml has a connection-definition with the same connection-factory class
+                //as this annotation.
 
-                getFailureResult(element, "could not find connection definition for MCF class " + c.getName(), true);
+                //it is possible that multiple ConnectionDefinitions with same MCF class, but different
+                //connection-factory-interface can be defined.Hence process all connection definitions
             }
+
         } else {
+            // if there is a @ConfigProperty annotation on any of the connection-definition (MCF), either it is
+            // defined via ra.xml and hence actual @ConnectionDefinition(s) annotation is ignored
+            // or
+            // no clash between ra.xml and the annotation, actual annotation is considered
+            // So, outbound-ra must have been defined either way.
             getFailureResult(element, "Outbound RA is not yet defined", true);
         }
     }
 
-    private void processConnector(ConnectorDescriptor desc, ConnectorConfigProperty ep) {
-        //handle the annotation specified on a ResourceAdapter JavaBean
-        /* TODO V3
-         1) how do we make sure that this ResourceAdapter JavaBean is the one that is
-         actually selected by the descriptor
-         2) how do we make sure that the connector annotation in question is the one that is
-         actually selected ? */
+    public static boolean processConnector(ConnectorDescriptor desc, ConnectorConfigProperty ep, Class declaringClass) {
+        // make sure that the RA Class considered here is the one specified in descriptor
+        // If not, it will be processed once the @Connector is selected during post-processing 
 
-        //make sure that the property is not already specified in DD
-        if (!(isConfigDefined(desc.getConfigProperties(), ep))) {
-            desc.addConfigProperty(ep);
+        // handle the annotation specified on a ResourceAdapter JavaBean
+        // make sure that the property is not already specified in DD
+        if(desc.getResourceAdapterClass().equals(declaringClass.getName())){
+            if (!(isConfigDefined(desc.getConfigProperties(), ep))) {
+                desc.addConfigProperty(ep);
+            }
+            //indicate that the config-property is processed
+            return true;
+        }else{
+            //indicate that the config-property is not processed and need to be processed during post-processing
+            return false;
         }
     }
 
-    private boolean isConfigDefined(Set configProperties, ConnectorConfigProperty ep) {
+    private static boolean isConfigDefined(Set configProperties, ConnectorConfigProperty ep) {
         boolean result = false;
         for (Object o : configProperties) {
             ConnectorConfigProperty ddEnvProperty = (ConnectorConfigProperty) o;
@@ -347,9 +440,15 @@ public class ConfigPropertyHandler extends AbstractHandler {
             }else { //else it can be only METHOD
                 className = ((Method)o).getDeclaringClass().getName();
             }
-            //TODO V3 logStrings
-            logger.log(Level.WARNING, "failed to handle annotation [ " + element.getAnnotation() + " ]" +
-                    " on class [ " + className + " ], reason : " + message);
+            Object args[] = new Object[]{
+                element.getAnnotation(),
+                className,
+                message,
+            };
+            String localString = localStrings.getLocalString(
+                    "enterprise.deployment.annotation.handlers.connectorannotationfailure",
+                    "failed to handle annotation [ {0} ] on class [ {1} ], reason : {2}", args);
+            logger.log(Level.WARNING, localString);
         }
         return result;
     }

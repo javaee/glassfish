@@ -50,10 +50,12 @@ public class MessageListener extends Descriptor {
     private String msgListenerType;
     private String activationSpecClass;
     private Set configProperties;
+    private Set requiredConfigProperties;
 
     //default constructor
     public MessageListener() {
 	this.configProperties = new OrderedSet();
+	this.requiredConfigProperties = new OrderedSet();
     }
 
    
@@ -75,22 +77,40 @@ public class MessageListener extends Descriptor {
     }
 
      
-    /** add a configProperty to the set
+    /** add a connector-configProperty to the set
      */
-    public void addConfigProperty(EnvironmentProperty configProperty) {
+    public void addConfigProperty(ConnectorConfigProperty configProperty) {
 	this.configProperties.add(configProperty);
     }
     
-    /** remove a configProperty from the set
+    /** remove a connector-configProperty from the set
      */ 
-    public void removeConfigProperty(EnvironmentProperty configProperty) {
+    public void removeConfigProperty(ConnectorConfigProperty configProperty) {
 	this.configProperties.remove(configProperty);
     }
 
-    /** Set of EnvironmentProperty 
+    /** Set of ConnectorConfigProperty 
      */
     public Set getConfigProperties() {
         return configProperties;
+    }
+
+    /** add a configProperty to the set
+     */
+    public void addRequiredConfigProperty(EnvironmentProperty configProperty) {
+	this.requiredConfigProperties.add(configProperty);
+    }
+
+    /** remove a configProperty from the set
+     */
+    public void removeRequiredConfigProperty(EnvironmentProperty configProperty) {
+	this.requiredConfigProperties.remove(configProperty);
+    }
+
+    /** Set of EnvironmentProperty
+     */
+    public Set getRequiredConfigProperties() {
+        return requiredConfigProperties;
     }
 
     //return the msg listener name

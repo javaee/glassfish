@@ -94,7 +94,8 @@ public class ConfigPropertyNode extends DeploymentDescriptorNode {
         if (! (descriptor instanceof ConnectorDescriptor) && 
 	    ! (descriptor instanceof AdminObject) && 
 	    ! (descriptor instanceof ConnectionDefDescriptor) &&
-	    ! (descriptor instanceof OutboundResourceAdapter)) {
+	    ! (descriptor instanceof OutboundResourceAdapter) &&
+        ! (descriptor instanceof MessageListener) )  {
             throw new IllegalArgumentException(getClass() + " cannot handle descriptors of type " + descriptor.getClass());
         }
 	Iterator configProps = null;
@@ -106,7 +107,9 @@ public class ConfigPropertyNode extends DeploymentDescriptorNode {
 	    configProps = ((AdminObject)descriptor).getConfigProperties().iterator();
 	} else if (descriptor instanceof OutboundResourceAdapter) {
 	    configProps = ((OutboundResourceAdapter)descriptor).getConfigProperties().iterator();
-	}
+	} else if (descriptor instanceof MessageListener){
+        configProps = ((MessageListener)descriptor).getConfigProperties().iterator();
+    }
 	//config property info
 	for (;configProps.hasNext();) {
 	    ConnectorConfigProperty config = (ConnectorConfigProperty) configProps.next();

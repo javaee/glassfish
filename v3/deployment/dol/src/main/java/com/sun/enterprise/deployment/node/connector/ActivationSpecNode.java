@@ -39,6 +39,7 @@ package com.sun.enterprise.deployment.node.connector;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.MessageListener;
 import com.sun.enterprise.deployment.ConnectorConfigProperty;
+import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.ConnectorTagNames;
@@ -57,9 +58,10 @@ public class ActivationSpecNode extends DeploymentDescriptorNode {
     private MessageListener msgListener = null;
     
     public ActivationSpecNode() {
-	registerElementHandler(new XMLElement(ConnectorTagNames.REQUIRED_CONFIG_PROP),
-			       RequiredConfigNode.class); 
-	
+	    registerElementHandler(new XMLElement(ConnectorTagNames.REQUIRED_CONFIG_PROP),
+			       RequiredConfigNode.class);
+        registerElementHandler(new XMLElement(ConnectorTagNames.CONFIG_PROPERTY),
+                       ConfigPropertyNode.class); 
     }
 
    /**
@@ -92,9 +94,11 @@ public class ActivationSpecNode extends DeploymentDescriptorNode {
      * @param descriptor the new descriptor
      */
     public void addDescriptor(Object obj) {
-	if (obj instanceof ConnectorConfigProperty) {
-	    msgListener.addConfigProperty((ConnectorConfigProperty)obj);
-	}
+        if (obj instanceof ConnectorConfigProperty) {
+            msgListener.addConfigProperty((ConnectorConfigProperty)obj);
+        }else if (obj instanceof EnvironmentProperty){
+            msgListener.addRequiredConfigProperty((EnvironmentProperty)obj);
+        }
     }
 
     /**
@@ -117,7 +121,9 @@ public class ActivationSpecNode extends DeploymentDescriptorNode {
 	//required-config-property
 	RequiredConfigNode reqNode = new RequiredConfigNode();
 	actSpecNode = reqNode.writeDescriptor(actSpecNode, msgListener);
-	
+
+    ConfigPropertyNode configPropertyNode = new ConfigPropertyNode();
+    actSpecNode = configPropertyNode.writeDescriptor(actSpecNode, msgListener);    
 	return parent;
     }
 }

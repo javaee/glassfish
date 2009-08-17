@@ -43,11 +43,14 @@ import com.sun.enterprise.deployment.util.DescriptorVisitor;
 import com.sun.enterprise.deployment.util.XModuleType;
 
 import javax.enterprise.deploy.shared.ModuleType;
+import javax.resource.spi.Connector;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.zip.ZipEntry;
+
+import org.glassfish.apf.AnnotationInfo;
+
 /**
  * Deployment Information for connector
  *
@@ -104,6 +107,15 @@ public class ConnectorDescriptor extends BundleDescriptor {
       annotation processing need not (must not) set the values from annotation */
     private boolean specVersionSet = false;
 
+
+    // book keeping annotations that cannot be processed up-front. These will be processed
+    // during validation phase of the descriptor
+    private transient Set<AnnotationInfo> connectorAnnotations;
+
+    private boolean validConnectorAnnotationProcessed ;
+
+    private transient Map<String, Set<AnnotationInfo>> configPropertyAnnotations ;
+
     public ConnectorDescriptor() {
         this.configProperties = new OrderedSet();
 	this.authMechanisms = new OrderedSet();
@@ -113,6 +125,9 @@ public class ConnectorDescriptor extends BundleDescriptor {
 
         //FIXME.  need to remove the following
 	this.messageListeners = new OrderedSet();
+
+    this.connectorAnnotations = new OrderedSet<AnnotationInfo>();
+    this.configPropertyAnnotations = new HashMap<String, Set<AnnotationInfo>>();
     }
 
 
@@ -890,5 +905,39 @@ public class ConnectorDescriptor extends BundleDescriptor {
     public boolean isSpecVersionSet() {
         return specVersionSet;
     }
+
+    public void addConnectorAnnotation(AnnotationInfo c){
+        connectorAnnotations.add(c);
+    }
+
+    public Set<AnnotationInfo> getConnectorAnnotations(){
+        return connectorAnnotations;
+    }
+
+    public void setValidConnectorAnnotationProcessed(boolean processed){
+        this.validConnectorAnnotationProcessed = processed;
+    }
+
+    public boolean getValidConnectorAnnotationProcessed(){
+        return validConnectorAnnotationProcessed;
+    }
+
+    public void addConfigPropertyAnnotation(String className, AnnotationInfo info){
+        Set<AnnotationInfo> configProperties = configPropertyAnnotations.get(className);
+        if(configProperties == null){
+            configProperties = new HashSet<AnnotationInfo>();
+            configPropertyAnnotations.put(className, configProperties);
+        }
+        configProperties.add(info);
+    }
+
+    public Collection<AnnotationInfo> getConfigPropertyAnnotations(String className){
+        return configPropertyAnnotations.get(className);
+    }
+
+    public Map<String, Set<AnnotationInfo>> getAllConfigPropertyAnnotations(){
+        return configPropertyAnnotations;
+    }
+
 }
 

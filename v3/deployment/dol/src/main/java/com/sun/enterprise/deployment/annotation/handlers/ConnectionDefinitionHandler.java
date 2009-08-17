@@ -107,9 +107,14 @@ public class ConnectionDefinitionHandler extends AbstractHandler  {
                 cdd.setManagedConnectionFactoryImpl(targetClassName);
 
                 ora.addConnectionDefDescriptor(cdd);
-            } else {
-                //TODO V3 fine logging ?
-            }
+            }// else {
+                // ignore the duplicates
+                // duplicates can be via :
+                // (i) connection-definition defined in DD
+                // (ii) as part of this particular annotation processing,
+                // already this connection-definition is defined
+                //TODO V3 how to handle (ii)
+            //}
         } else {
             getFailureResult(element, "Cant handle ConnectionDefinition annotation as the annotated class does not" +
                     "implement ManagedConnectionFactory", true);
@@ -134,9 +139,15 @@ public class ConnectionDefinitionHandler extends AbstractHandler  {
         if (doLog) {
             Class c = (Class) element.getAnnotatedElement();
             String className = c.getName();
-            //TODO V3 logStrings
-            logger.log(Level.WARNING, "failed to handle annotation [ " + element.getAnnotation() + " ]" +
-                    " on class [ " + className + " ], reason : " + message);
+            Object args[] = new Object[]{
+                element.getAnnotation(),
+                className,
+                message,
+            };
+            String localString = localStrings.getLocalString(
+                    "enterprise.deployment.annotation.handlers.connectorannotationfailure",
+                    "failed to handle annotation [ {0} ] on class [ {1} ], reason : {2}", args);
+            logger.log(Level.WARNING, localString);
         }
         return result;
     }

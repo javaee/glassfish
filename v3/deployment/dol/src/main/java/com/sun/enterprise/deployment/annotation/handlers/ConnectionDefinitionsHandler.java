@@ -103,9 +103,15 @@ public class ConnectionDefinitionsHandler extends AbstractHandler  {
         if (doLog) {
             Class c = (Class) element.getAnnotatedElement();
             String className = c.getName();
-            //TODO V3 logStrings
-            logger.log(Level.WARNING, "failed to handle annotation [ " + element.getAnnotation() + " ]" +
-                    " on class [ " + className + " ], reason : " + message);
+            Object args[] = new Object[]{
+                element.getAnnotation(),
+                className,
+                message,
+            };
+            String localString = localStrings.getLocalString(
+                    "enterprise.deployment.annotation.handlers.connectorannotationfailure",
+                    "failed to handle annotation [ {0} ] on class [ {1} ], reason : {2}", args);
+            logger.log(Level.WARNING, localString);
         }
         return result;
     }

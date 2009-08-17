@@ -44,11 +44,9 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import javax.resource.spi.Activation;
 import java.lang.annotation.Annotation;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.apf.*;
-import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.apf.impl.HandlerProcessingResultImpl;
 
 
@@ -72,9 +70,6 @@ public class ActivationHandler extends AbstractHandler {
             RarBundleContext rarContext = (RarBundleContext) aeHandler;
             ConnectorDescriptor desc = rarContext.getDescriptor();
 
-            //TODO V3 should we make sure that r-a-class is also provided in the descriptor ?
-            //TODO V3 issue might be with the order of annotation processing ?
-            
             //process annotation only if message-listeners are provided
             if (activation.messageListeners().length > 0) {
                 //initialize inbound if it was not done already
@@ -96,17 +91,14 @@ public class ActivationHandler extends AbstractHandler {
 
                     if (!ira.hasMessageListenerType(mlClass.getName())) {
                         ira.addMessageListener(ml);
-                    } else {
+                    }// else {
                         // ignore the duplicates
                         // duplicates can be via :
                         // (i) message listner defined in DD
-                        // (ii) as part of this particular annotation processing, already this message-listener-type is defined
-                        //TODO V3 should we detect and throw exception for (ii) or ignore it ?
-                        //TODO V3 above behavior is applicable for *all* annotations that return multiple values
-
-                        //TODO V3 should we throw exception incase the message-listener-type is not unique ?
-                        //TODO V3 throw exception
-                    }
+                        // (ii) as part of this particular annotation processing,
+                        // already this message-listener-type is defined
+                        //TODO V3 how to handle (ii)
+                    //}
                 }
             }
         } else {
@@ -133,9 +125,15 @@ public class ActivationHandler extends AbstractHandler {
         if (doLog) {
             Class c = (Class) element.getAnnotatedElement();
             String className = c.getName();
-            //TODO V3 logStrings
-            logger.log(Level.WARNING, "failed to handle annotation [ " + element.getAnnotation() + " ]" +
-                    " on class [ " + className + " ], reason : " + message);
+            Object args[] = new Object[]{
+                element.getAnnotation(),
+                className,
+                message,
+            };
+            String localString = localStrings.getLocalString(
+                    "enterprise.deployment.annotation.handlers.connectorannotationfailure",
+                    "failed to handle annotation [ {0} ] on class [ {1} ], reason : {2}", args);
+            logger.log(Level.WARNING, localString);
         }
         return result;
     }

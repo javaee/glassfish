@@ -38,7 +38,7 @@ package com.sun.enterprise.deployment.node.connector;
 
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.MessageListener;
-import com.sun.enterprise.deployment.ConnectorConfigProperty;
+import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.DescriptorFactory;
 import com.sun.enterprise.deployment.xml.ConnectorTagNames;
@@ -55,7 +55,7 @@ import java.util.Map;
  */
 public class RequiredConfigNode extends DeploymentDescriptorNode {
 
-    private ConnectorConfigProperty config = null;
+    private EnvironmentProperty config = null;
 
    /**
      * all sub-implementation of this class can use a dispatch table to map xml element to
@@ -74,7 +74,7 @@ public class RequiredConfigNode extends DeploymentDescriptorNode {
     */    
     public Object getDescriptor() {
         if (config == null) {
-            config = (ConnectorConfigProperty) DescriptorFactory.getDescriptor(getXMLPath());
+            config = (EnvironmentProperty) DescriptorFactory.getDescriptor(getXMLPath());
         } 
         return config;
     } 
@@ -93,12 +93,12 @@ public class RequiredConfigNode extends DeploymentDescriptorNode {
         }
 	Iterator configProps = null;
 	if (descriptor instanceof MessageListener) {
-	    configProps = ((MessageListener)descriptor).getConfigProperties().iterator();
+	    configProps = ((MessageListener)descriptor).getRequiredConfigProperties().iterator();
 	}
 
 	//config property info
 	for (;configProps.hasNext();) {
-	    ConnectorConfigProperty config = (ConnectorConfigProperty) configProps.next();
+	    EnvironmentProperty config = (EnvironmentProperty) configProps.next();
 	    Node configNode = appendChild(parent, ConnectorTagNames.REQUIRED_CONFIG_PROP);
             writeLocalizedDescriptions(configNode, config);
 	    appendTextChild(configNode, ConnectorTagNames.CONFIG_PROPERTY_NAME, config.getName());  

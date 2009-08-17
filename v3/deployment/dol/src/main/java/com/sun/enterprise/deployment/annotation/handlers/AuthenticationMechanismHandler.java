@@ -58,7 +58,6 @@ import org.glassfish.apf.impl.HandlerProcessingResultImpl;
 import org.jvnet.hk2.annotations.Service;
 
 
-//TODO V3 no need to handle this as its already handled by @ConnectorAnnotationHandler
 /**
  * @author Jagadish Ramu
  */
@@ -89,7 +88,7 @@ public class AuthenticationMechanismHandler extends AbstractHandler  {
                 String description = authMechanism.description();
                 int authMechanismValue = getAuthMechVal(authMechanism.authMechanism());
                 AuthenticationMechanism.CredentialInterface ci = authMechanism.credentialInterface();
-                String credentialInterface = getCredentialInterfaceName(ci);
+                String credentialInterface = ora.getCredentialInterfaceName(ci);
                 AuthMechanism auth = new AuthMechanism(description, authMechanismValue, credentialInterface);
                 ora.addAuthMechanism(auth);
             } else {
@@ -100,17 +99,6 @@ public class AuthenticationMechanismHandler extends AbstractHandler  {
             getFailureResult(element, "Not a rar bundle context", true);
         }
         return getDefaultProcessedResult();
-    }
-
-    private String getCredentialInterfaceName(AuthenticationMechanism.CredentialInterface ci) {
-        if (ci.equals(AuthenticationMechanism.CredentialInterface.GenericCredential)) {
-            return GenericCredential.class.getName();
-        } else if (ci.equals(AuthenticationMechanism.CredentialInterface.GSSCredential)) {
-            return GSSCredential.class.getName(); //TODO validate ?
-        } else if (ci.equals(AuthenticationMechanism.CredentialInterface.PasswordCredential)) {
-            return PasswordCredential.class.getName();
-        }
-        throw new RuntimeException("Invalid credential interface :  " + ci);
     }
 
     private boolean hasConnectorAnnotation(AnnotationInfo element) {
@@ -149,9 +137,15 @@ public class AuthenticationMechanismHandler extends AbstractHandler  {
         if (doLog) {
             Class c = (Class) element.getAnnotatedElement();
             String className = c.getName();
-            //TODO V3 logStrings
-            logger.log(Level.WARNING, "failed to handle annotation [ " + element.getAnnotation() + " ]" +
-                    " on class [ " + className + " ], reason : " + message);
+            Object args[] = new Object[]{
+                element.getAnnotation(),
+                className,
+                message,
+            };
+            String localString = localStrings.getLocalString(
+                    "enterprise.deployment.annotation.handlers.connectorannotationfailure",
+                    "failed to handle annotation [ {0} ] on class [ {1} ], reason : {2}", args);
+            logger.log(Level.WARNING, localString);
         }
         return result;
     }
