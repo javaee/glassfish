@@ -81,8 +81,8 @@ public class ACCLogger extends Logger {
     }
 
     private void init(final LogService logService) throws IOException {
-        final Level level = chooseLevel(logService.getLevel());
-        final Handler configuredFileHandler = createHandler(logService.getFile(), level);
+        final Level level = chooseLevel(logService);
+        final Handler configuredFileHandler = createHandler(logService, level);
 
         /*
          * Set existing loggers to at least the configured level.
@@ -103,14 +103,17 @@ public class ACCLogger extends Logger {
      * @param configLevelText configured level name
      * @return log level to use for all logging in the ACC
      */
-    private static Level chooseLevel(final String configLevelText) {
+    private static Level chooseLevel(final LogService logService) {
         Level level = DEFAULT_ACC_LOG_LEVEL;
-        if (configLevelText != null &&  ( ! configLevelText.equals(""))) {
-            try {
-                level = Level.parse(configLevelText);
-            } catch (IllegalArgumentException e) {
-                //ignore - use the previously-assigned default - and log it !
-                Logger.getLogger(ACCLogger.class.getName()).warning("Logger.Level = " + configLevelText + "??");
+        if (logService != null ) {
+            String configLevelText = logService.getLevel();
+            if (configLevelText!= null &&  ( ! configLevelText.equals(""))) {
+                try {
+                    level = Level.parse(configLevelText);
+                } catch (IllegalArgumentException e) {
+                    //ignore - use the previously-assigned default - and log it !
+                    Logger.getLogger(ACCLogger.class.getName()).warning("Logger.Level = " + configLevelText + "??");
+                }
             }
         }
         return level;
@@ -123,8 +126,9 @@ public class ACCLogger extends Logger {
      * @param level level at which to log
      * @return logging Handler if filePath is specified and valid; null otherwise
      */
-    private static Handler createHandler(final String filePath, final Level level) throws IOException {
+    private static Handler createHandler(final LogService logService, final Level level) throws IOException {
         Handler handler = null;
+        final String filePath = (logService == null) ? null : logService.getFile();
         if (filePath == null || filePath.equals("")) {
             return null;
         }
