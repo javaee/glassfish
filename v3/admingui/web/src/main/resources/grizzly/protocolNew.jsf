@@ -75,45 +75,19 @@
 #include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.protocolNewPageTitle}" helpText="$resource{i18n_web.grizzly.protocolNewPageTitleHelp}">
-<!facet pageButtonsTop>
-        <sun:panelGroup id="topButtons">
-            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
-                <!command
-                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                            attrs="#{pageSession.valueMap}"
-                            convertToFalse={"SecurityEnabled"},
-                            result="#{pageSession.newProxy}" );
-
-                    createProxy(parentObjectNameStr="#{pageSession.newProxy}" childType="#{pageSession.childType2}"
-                            attrs="#{pageSession.httpMap}"
-                            onlyUseAttrs={"EnableCometSupport", "DefaultVirtualServer", "ServerName", "RedirectPort"}
-                            convertToFalse={"EnableCometSupport"},
-                            result="#{pageSession.newHttp}");
-
-                    createProxy(parentObjectNameStr="#{pageSession.newHttp}" childType="#{pageSession.childType3}"
-                            attrs="#{pageSession.fileMap}"
-                            convertToFalse={"Enabled"},
-                             );
-
-                    redirect(page="#{parentPage}?configName=#{configName}")
-                />
-            </sun:button>
-            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
-                <!command
-                    redirect(page="#{parentPage}?configName=#{configName}");
-                />
-            </sun:button>
-        </sun:panelGroup>
-    </facet>
-                    </sun:title>
+    <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.protocolNewPageTitle}" helpText="$resource{i18n_web.grizzly.protocolNewPageTitleHelp}">
+#include "protocolNewButtons.inc"
+    </sun:title>
     <sun:propertySheet id="propertySheet">
 #include "/web/grizzly/protocolAttr.inc"
-#include "/web/grizzly/httpAttr.inc"
 #include "/web/grizzly/fileCacheAttrs.inc"
+#include "/web/grizzly/httpAttr.inc"
     </sun:propertySheet>
+
 "<br><br>
+        <sun:title id="bottom" >
+#include "protocolNewButtons.inc"
+    </sun:title>
     <sun:hidden id="helpKey" value="$resource{help_web.protocolNew}" />
             </sun:form>
 
