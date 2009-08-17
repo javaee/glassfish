@@ -221,15 +221,15 @@ public final class AMXValidator
 
     /** types that are not open types, but that we deem acceptable for a remote API */
     private static Set<Class> EXTRA_ALLOWED_TYPES = SetUtil.newTypedSet(
-            (Class) JMXServiceURL.class,
-            CompositeDataSupport.class 
+        // any special-case exceptions go here
     );
 
     private static boolean isAcceptableRemoteType(final Class<?> c)
     {
         if (c.isPrimitive() ||
             EXTRA_ALLOWED_TYPES.contains(c) ||
-            OpenType.ALLOWED_CLASSNAMES_LIST.contains(c.getName()))
+            OpenType.ALLOWED_CLASSNAMES_LIST.contains(c.getName()) ||
+            c.getName().startsWith("javax.management.") )
         {
             return true;
         }
