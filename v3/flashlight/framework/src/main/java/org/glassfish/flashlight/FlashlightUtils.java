@@ -42,10 +42,8 @@ public class FlashlightUtils {
         if(!Boolean.parseBoolean(monConfig.getMonitoringEnabled()))
             return false;
 
-        /* TODO wait for implementation...
         if(!Boolean.parseBoolean(monConfig.getDtraceEnabled()))
             return false;
-         */
 
         return true;
     }

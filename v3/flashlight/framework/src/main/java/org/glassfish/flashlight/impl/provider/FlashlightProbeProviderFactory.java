@@ -323,6 +323,8 @@ public class FlashlightProbeProviderFactory
         if (flProvider.getProbes().size() == 0)
             return;
 
+		handleDTrace(flProvider);
+
         ProbeProviderRegistry.getInstance().registerProbeProvider(
                 flProvider, providerClazz);
         mprint (" Provider registered successfully - " + probeProviderName);
