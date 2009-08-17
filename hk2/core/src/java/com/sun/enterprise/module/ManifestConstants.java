@@ -67,6 +67,11 @@ public class ManifestConstants {
     public static final String BUNDLE_NAME = "HK2-Bundle-Name";
 
     /**
+     * Bundle Version
+     */
+    public static final String BUNDLE_VERSION = "Bundle-Version";
+
+    /**
      * Module name that we'll launch.
      * <p>
      * This is equivalent of "Main-Class" for us. We'll find {@link ModuleStartup}

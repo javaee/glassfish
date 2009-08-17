@@ -41,6 +41,11 @@ import com.sun.hk2.component.SingletonInhabitant;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.jvnet.hk2.annotations.Scoped;
 
+import javax.print.attribute.UnmodifiableSetException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Factory for {@link Inhabitant}.
  * @author Kohsuke Kawaguchi
@@ -82,6 +87,27 @@ public class Inhabitants {
         if(scope==null)
             throw new ComponentException("Failed to look up %s for %s",scopeClass,c);
         return new ScopedInhabitant<T>(womb,scope);
+    }
+
+    public static <T> Iterator<String> getIndexes(Inhabitant<T> i) {
+        final Iterator<Map.Entry<String, List<String>>> itr = i.metadata().entrySet().iterator();
+        return new Iterator<String>() {
+            public boolean hasNext() {
+                return itr.hasNext();
+            }
+
+            public String next() {
+                return itr.next().getKey();
+            }
+
+            public void remove() {
+                throw new UnmodifiableSetException();
+            }
+        };
+    }
+
+    public static <T> Iterator<String> getNamesFor(Inhabitant<T> i, String indexName) {
+        return i.metadata().get(indexName).iterator();
     }
 
 }
