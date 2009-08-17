@@ -11,15 +11,15 @@
             <wsdl-service xmlns:wsdl-port_ns__="http://duke.org">wsdl-port_ns__:SubtractNumbersService</wsdl-service>
             <wsdl-port xmlns:wsdl-port_ns__="http://duke.org">wsdl-port_ns__:SubtractNumbersPortType</wsdl-port>
            <enable-mtom>true</enable-mtom>
+           <mtom-threshold>200</mtom-threshold>
             <addressing>
               <enabled>true</enabled>
               <required>true</required>
-              <responses>NON_ANONYMOUS</responses>
+              <responses>ANONYMOUS</responses>
             </addressing>
-           <!-- <respect-binding>
+            <!--<respect-binding>
               <enabled>true</enabled>
-            </respect-binding>
--->
+            </respect-binding>-->
 
             <service-endpoint-interface>endpoint.SubtractNumbersImpl</service-endpoint-interface>
             <service-impl-bean>

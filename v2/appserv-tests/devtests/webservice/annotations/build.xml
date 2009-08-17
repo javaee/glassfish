@@ -10,6 +10,7 @@
 
 <!--	<ant dir="prepkged-svc-1" target="all"/>-->
 	<ant dir="dol-override-1" target="all"/>
+        <ant dir="webservices13-addressing" target="all"/>
 	<ant dir="provider" target="all"/>
 	<ant dir="svchandler-1" target="all"/>
 	<ant dir="svchandler-2" target="all"/>

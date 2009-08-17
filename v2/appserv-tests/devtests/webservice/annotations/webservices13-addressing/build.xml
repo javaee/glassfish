@@ -27,14 +27,14 @@
     </path>
 
 
-    <target name="all" depends="clean, setup, runtest"/>
+    <target name="all" depends="clean, setup, runtest,undeploy"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
       <delete dir="${env.S1AS_HOME}/build/localwsdl"/>
     </target>
 
-    <target name="setup" depends="assemble-web,  deploy-app, assemble-client, deploy-client"/>
+    <target name="setup" depends="assemble-web,  deploy-app, assemble-client, deploy-client" />
 
     <target name="compile" depends="init-common">
       <antcall target="compile-common">
