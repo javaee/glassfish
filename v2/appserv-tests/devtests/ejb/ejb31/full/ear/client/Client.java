@@ -4,7 +4,7 @@ package com.acme;
 import java.net.*;
 import java.io.*;
 import java.util.*;
-
+import javax.annotation.PostConstruct;
 import javax.naming.InitialContext;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
@@ -30,6 +30,8 @@ public class Client {
 	host = args[1];
         port = args[2];
     }
+
+   
 
     public void doTest() {
 

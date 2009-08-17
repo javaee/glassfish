@@ -35,6 +35,13 @@ public class Client {
 
 	    System.out.println("Singleton says : " + hello.hello());
 
+	    try {
+		hello.testError();
+		throw new RuntimeException("Expected EJBException");
+	    } catch(EJBException e) {
+		System.out.println("Got expected EJBException after java.lang.Error thrown from ejb");
+	    }
+
 	     stat.addStatus("local main", stat.PASS);
 
 	} catch(Exception e) {

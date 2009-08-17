@@ -26,6 +26,18 @@ public class Client {
     @EJB(mappedName="java:app/ejb-ejb31-security-simple-ejb/SingletonBean!com.acme.Hello") 
     static Hello hello4;
 
+ @PostConstruct
+	public static void init() {
+	try {
+	    System.out.println("In init()");
+	Integer envEntry = (Integer)
+	    new InitialContext().lookup("java:app/env/value1");
+	System.out.println("java:ap/env/value1 = " + envEntry);
+	} catch(Exception e) {
+	    e.printStackTrace();
+	}
+    }
+
     public static void main(String args[]) {
 
 	appName = args[0];

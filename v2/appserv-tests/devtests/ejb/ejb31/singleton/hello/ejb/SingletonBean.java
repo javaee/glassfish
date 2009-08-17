@@ -25,6 +25,10 @@ public class SingletonBean {
 	return "hello, world!\n";
     }
 
+    public void testError() {
+	throw new Error("test java.lang.Error");
+    }
+
     @PreDestroy
     public void destroy() {
         System.out.println("In SingletonBean::destroy()");
