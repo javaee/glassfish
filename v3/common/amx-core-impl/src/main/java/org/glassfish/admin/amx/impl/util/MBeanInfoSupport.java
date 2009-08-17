@@ -143,13 +143,18 @@ public final class MBeanInfoSupport
             if (managedAttr != null)
             {
                 String attrName = null;
-                if (JMXUtil.isIsOrGetter(method))
+                final int numArgs = method.getParameterTypes().length;
+                if ( managedOp != null )
+                {
+                    ImplUtil.getLogger().warning( "MBeanInfoSupport:  @ManagedAttribute cannot also be @ManagedOperation: " + intf.getName() + "." + method.getName() + "()");
+                }
+                else if (numArgs == 0 && JMXUtil.isIsOrGetter(method))
                 {
                     attrName = JMXUtil.getAttributeName(method);
                     getters.put(attrName, method);
                     //debug( "findInterfaceMethods: getter: " + attrName );
                 }
-                else if (JMXUtil.isSetter(method))
+                else if ( numArgs == 1 && JMXUtil.isSetter(method))
                 {
                     attrName = JMXUtil.getAttributeName(method);
                     setters.put(attrName, method);
@@ -157,7 +162,7 @@ public final class MBeanInfoSupport
                 }
                 else
                 {
-                    //debug( "findInterfaceMethods: ignore: " + attrName );
+                    ImplUtil.getLogger().warning( "MBeanInfoSupport:  @ManagedAttribute not a getter or setter: " + intf.getName() + "." + method.getName() + "()");
                     // ignore
                 }
 
