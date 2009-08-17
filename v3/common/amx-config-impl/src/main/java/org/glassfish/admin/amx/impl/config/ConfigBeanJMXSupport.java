@@ -524,7 +524,7 @@ class ConfigBeanJMXSupport
         for( final AttributeMethodInfo info : mAttrInfos )
         {
             final Class<?> dataType = info.inferDataType();
-            if ( (dataType == Boolean.class || dataType == boolean.class) && ! info.hasDefaultValue()  )
+            if ( (dataType == Boolean.class || dataType == boolean.class) &&  info.notNull() && ! info.hasDefaultValue()  )
             {
                 problems.add( "Missing defaultValue for Boolean @Configured " + mIntf.getName() + ".get" + info.attrName() + "()" );
             }
