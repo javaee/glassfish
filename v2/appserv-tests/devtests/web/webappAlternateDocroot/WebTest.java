@@ -82,6 +82,10 @@ import com.sun.ejte.ccl.reporter.*;
  * If it were not for the alternate docroots, the above requests would have
  * all resulted in 404 responses, since the requested resources have not
  * been bundled with the webapp.
+ *
+ * In addition, this test also declares the webapp as the virtual server's
+ * default-web-module, and repeats the above requests with a <context-root>
+ * that is equal to the empty string.
  */
 public class WebTest {
 
@@ -109,9 +113,12 @@ public class WebTest {
 
     public void doTest() {     
         try { 
-            invoke("/domain.xml", "<domain ");
-            invoke("/server.policy", "grant codeBase");
-            invoke("/config/login.conf", "fileRealm");
+            invoke(contextRoot, "/domain.xml", "<domain ");
+            invoke(contextRoot, "/server.policy", "grant codeBase");
+            invoke(contextRoot, "/config/login.conf", "fileRealm");
+            invoke("", "/domain.xml", "<domain ");
+            invoke("", "/server.policy", "grant codeBase");
+            invoke("", "/config/login.conf", "fileRealm");
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -124,7 +131,8 @@ public class WebTest {
      * @param expected The string that must be present in the returned contents
      * in order for the test to pass
      */
-    private void invoke(String uri, String expected) throws Exception {
+    private void invoke(String contextRoot, String uri, String expected)
+            throws Exception {
         
         URL url = new URL("http://" + host  + ":" + port + contextRoot + uri);
         System.out.println("Connecting to: " + url.toString());

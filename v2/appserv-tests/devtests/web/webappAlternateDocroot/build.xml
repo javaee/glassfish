@@ -46,7 +46,7 @@
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="build,setup,deploy,run,undeploy,restore"/>
+    <target name="all" depends="build,setup,deploy,reconfig,run,undeploy,restore"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -80,12 +80,16 @@
         </copy>
     </target>
 
-    <target name="build-publish-war" depends="build, publish-war-common" />
-    
-    <target name="re-deploy" depends="init-common">
-        <antcall target="deploy-war-common"/>
+    <target name="reconfig" depends="init-common">
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                   value="${appserver.instance.name}.http-service.virtual-server.server.default-web-module=${appname}-web"/>
+        </antcall>
     </target>
 
+    <target name="build-publish-war" depends="build, publish-war-common" />
+    
     <target name="deploy" depends="init-common">
         <antcall target="deploy-war-common"/>
     </target>
@@ -108,6 +112,11 @@
 
     <target name="restore" depends="init-common">
         <antcall target="removeResources"/>
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                   value="${appserver.instance.name}.http-service.virtual-server.server.default-web-module="/>
+        </antcall>
     </target>
 
     <target name="removeResources" depends="init-common">
