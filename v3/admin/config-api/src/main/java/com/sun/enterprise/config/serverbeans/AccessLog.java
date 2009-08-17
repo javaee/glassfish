@@ -57,10 +57,8 @@ import javax.validation.constraints.Max;
 public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
-     * Gets the value of the format property.
-     * The global format for the access log rotation-policy The
-     * policy based on which the log rotation would be done. 
-     * At this time only time based rotation is enabled.
+     * Gets the value of the format attribute, which specifies the format
+     * of the access log.
      * 
      * @return possible object is
      *         {@link String }
@@ -69,7 +67,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
     String getFormat();
 
     /**
-     * Sets the value of the format property.
+     * Sets the value of the format attribute.
      *
      * @param value allowed object is
      *              {@link String }
@@ -77,7 +75,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
     void setFormat(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the rotationPolicy property.
+     * Gets the value of the rotation-policy attribute.
      *
      * @return possible object is
      *         {@link String }
@@ -86,7 +84,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
     String getRotationPolicy();
 
     /**
-     * Sets the value of the rotationPolicy property.
+     * Sets the value of the rotation-policy attribute.
      *
      * @param value allowed object is
      *              {@link String }
@@ -94,7 +92,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
     void setRotationPolicy(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the rotationIntervalInMinutes property.
+     * Gets the value of the rotation-interval-in-minutes attribute.
      * The time interval in minutes between two successive rotations of the
      * access logs.
      * @return possible object is
@@ -106,7 +104,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
     String getRotationIntervalInMinutes();
 
     /**
-     * Sets the value of the rotationIntervalInMinutes property.
+     * Sets the value of the rotation-interval-in-minutes attribute.
      *
      * @param value allowed object is
      *              {@link String }
@@ -114,7 +112,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
     void setRotationIntervalInMinutes(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the rotationSuffix property.
+     * Gets the value of the rotation-suffix attribute.
      * The suffix to be added to the access-log name after rotation.
      * Acceptable values include those supported by
      * java.text.SimpleDateFormat and "%YYYY;%MM;%DD;-%hh;h%mm;m%ss;s".
@@ -126,7 +124,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
     String getRotationSuffix();
 
     /**
-     * Sets the value of the rotationSuffix property.
+     * Sets the value of the rotation-suffix attribute.
      *
      * @param value allowed object is
      *              {@link String }
@@ -134,7 +132,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
     void setRotationSuffix(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the rotationEnabled property.
+     * Gets the value of the rotation-enabled attribute.
      * The flag for enabling the access-log rotation
      * @return possible object is
      *         {@link String }
@@ -143,7 +141,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
     String getRotationEnabled();
 
     /**
-     * Sets the value of the rotationEnabled property.
+     * Sets the value of the rotation-enabled attribute.
      *
      * @param value allowed object is
      *              {@link String }
@@ -170,3 +168,4 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
     
     void setWriteIntervalSeconds(String value);
 }
+
