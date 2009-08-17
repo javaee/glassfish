@@ -14,15 +14,6 @@
         <module>maven-glassfishbuild-plugin</module>
         <module>maven-glassfishbuild-extension</module>
     </modules>
-    <distributionManagement>
-        <repository>            
-            <uniqueVersion>false</uniqueVersion>
-            <!-- the ID maps to ~/.m2/settings.xml, so don't change the ID -->
-            <id>rator.sfbay</id>
-            <url>dav:http://rator.sfbay/maven/repositories/glassfish/</url>
-        </repository>
-    </distributionManagement>
-    
     <build>
         <extensions>
              <extension>
