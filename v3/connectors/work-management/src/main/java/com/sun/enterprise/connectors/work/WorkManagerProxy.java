@@ -49,18 +49,16 @@ import java.util.logging.Logger;
  *
  * @author Jagadish Ramu
  */
-public class WorkManagerProxy implements WorkManager, Externalizable/*, MonitorableWorkManager */{
+public class WorkManagerProxy implements WorkManager, Externalizable {
 
     private transient WorkManager wm;
     private String moduleName;
-    //private boolean monitorableInstance;
     private static Logger _logger = LogDomains.getLogger(WorkManagerProxy.class, LogDomains.RSR_LOGGER);
 
 
     public WorkManagerProxy(WorkManager wm, String moduleName){
         this.wm = wm;
         this.moduleName = moduleName;
-        //monitorableInstance = isMonitorableInstance(wm);
     }
 
     public WorkManagerProxy(){
@@ -76,7 +74,8 @@ public class WorkManagerProxy implements WorkManager, Externalizable/*, Monitora
     /**
      * @see javax.resource.spi.work.WorkManager
      */
-    public void doWork(Work work, long startTimeout, ExecutionContext executionContext, WorkListener workListener) throws WorkException {
+    public void doWork(Work work, long startTimeout, ExecutionContext executionContext,
+                       WorkListener workListener) throws WorkException {
         wm.doWork(work, startTimeout, executionContext, workListener);
     }
 
@@ -90,7 +89,8 @@ public class WorkManagerProxy implements WorkManager, Externalizable/*, Monitora
     /**
      * @see javax.resource.spi.work.WorkManager
      */
-    public long startWork(Work work, long startTimeout, ExecutionContext executionContext, WorkListener workListener) throws WorkException {
+    public long startWork(Work work, long startTimeout, ExecutionContext executionContext,
+                          WorkListener workListener) throws WorkException {
         return wm.startWork(work, startTimeout, executionContext, workListener);
     }
 
@@ -103,7 +103,8 @@ public class WorkManagerProxy implements WorkManager, Externalizable/*, Monitora
     /**
      * @see javax.resource.spi.work.WorkManager
      */
-    public void scheduleWork(Work work, long startTimeout, ExecutionContext executionContext, WorkListener workListener) throws WorkException {
+    public void scheduleWork(Work work, long startTimeout, ExecutionContext executionContext,
+                             WorkListener workListener) throws WorkException {
         wm.scheduleWork(work, startTimeout, executionContext, workListener);
     }
 
@@ -120,7 +121,6 @@ public class WorkManagerProxy implements WorkManager, Externalizable/*, Monitora
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         moduleName = in.readUTF();
         wm = WorkManagerFactory.retrieveWorkManager(moduleName);
-        //monitorableInstance = isMonitorableInstance(wm);
         _logger = LogDomains.getLogger(WorkManagerProxy.class, LogDomains.RSR_LOGGER);
     }
 
@@ -136,117 +136,4 @@ public class WorkManagerProxy implements WorkManager, Externalizable/*, Monitora
     public int hashCode(){
         return wm.hashCode();
     }
-
-/*
-    private boolean isMonitorableInstance(WorkManager wm){
-        boolean isMonitorable = (wm instanceof MonitorableWorkManager);
-        if(!isMonitorable){
-            _logger.warning("Monitoring information cannot be collected for this WorkManager " +
-                    "[ " + wm.getClass().getName() + " ] as it is not of type " +
-                    MonitorableWorkManager.class.getName() );
-        }
-        return isMonitorable;
-    }
-
-    public boolean isMonitoringEnabled() {
-        if(monitorableInstance){
-            return ((MonitorableWorkManager)wm).isMonitoringEnabled();
-        }else{
-            return false;
-        }
-    }//reset all counts when isEnabled = false;
-    public void setMonitoringEnabled(boolean isEnabled){
-        if(monitorableInstance){
-            ((MonitorableWorkManager)wm).setMonitoringEnabled(isEnabled);
-        }
-    }
-
-    public long getCurrentActiveWorkCount() {
-        if(monitorableInstance){
-            return ((MonitorableWorkManager)wm).getCurrentActiveWorkCount();
-        }else{
-            return -1;
-        }
-    }
-
-    public long getMaxActiveWorkCount() {
-        if(monitorableInstance){
-            return ((MonitorableWorkManager)wm).getMaxActiveWorkCount();
-        }else{
-            return -1;
-        }
-    }
-
-    public long getMinActiveWorkCount() {
-        if(monitorableInstance){
-            return ((MonitorableWorkManager)wm).getMinActiveWorkCount();
-        }else{
-            return -1;
-        }
-    }
-
-    public long getWaitQueueLength() {
-        if(monitorableInstance){
-            return ((MonitorableWorkManager)wm).getWaitQueueLength();
-        }else{
-            return -1;
-        }
-    }
-
-    public long getMaxWaitQueueLength() {
-        if(monitorableInstance){
-            return ((MonitorableWorkManager)wm).getMaxWaitQueueLength();
-        }else{
-            return -1;
-        }
-    }
-
-    public long getMinWaitQueueLength() {
-        if(monitorableInstance){
-            return ((MonitorableWorkManager)wm).getMinWaitQueueLength();
-        }else{
-            return -1;
-        }
-    }
-
-    public long getSubmittedWorkCount() {
-        if(monitorableInstance){
-            return ((MonitorableWorkManager)wm).getSubmittedWorkCount();
-        }else{
-            return -1;
-        }
-    }
-
-    public long getRejectedWorkCount() {
-        if(monitorableInstance){
-            return ((MonitorableWorkManager)wm).getRejectedWorkCount();
-        }else{
-            return -1;
-        }
-    }
-
-    public long getCompletedWorkCount() {
-        if(monitorableInstance){
-            return ((MonitorableWorkManager)wm).getCompletedWorkCount();
-        }else{
-            return -1;
-        }
-    }
-
-    public long getMaxWorkRequestWaitTime() {
-        if(monitorableInstance){
-            return ((MonitorableWorkManager)wm).getMaxWorkRequestWaitTime();
-        }else{
-            return -1;
-        }
-    }
-
-    public long getMinWorkRequestWaitTime() {
-        if(monitorableInstance){
-            return ((MonitorableWorkManager)wm).getMinWorkRequestWaitTime();
-        }else{
-            return -1;
-        }
-    }
-*/
 }

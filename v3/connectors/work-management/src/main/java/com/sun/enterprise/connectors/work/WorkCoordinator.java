@@ -194,8 +194,8 @@ public final class WorkCoordinator {
 
     }
 
-    public void setupContext() {
-        contextHandler.setupContext(getExecutionContext(ec, work), this);
+    public void setupContext(OneWork oneWork) {
+        contextHandler.setupContext(getExecutionContext(ec, work), this, oneWork);
         if (probeProvider != null) {
             probeProvider.workProcessingStarted(raName);
             probeProvider.workDequeued(raName);

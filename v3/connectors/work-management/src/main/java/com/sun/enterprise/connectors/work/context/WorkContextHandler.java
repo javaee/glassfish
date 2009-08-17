@@ -37,6 +37,7 @@
 package com.sun.enterprise.connectors.work.context;
 
 import com.sun.enterprise.connectors.work.WorkCoordinator;
+import com.sun.enterprise.connectors.work.OneWork;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.security.common.PrincipalImpl;
 import org.glassfish.security.common.Group;
@@ -56,6 +57,7 @@ import javax.security.auth.callback.CallbackHandler;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.io.Serializable;
 
 
 /**
@@ -264,7 +266,7 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
      * @param ec ExecutionContext
      * @param wc Work coordinator
      */
-    public void setupContext(ExecutionContext ec, WorkCoordinator wc) {
+    public void setupContext(ExecutionContext ec, WorkCoordinator wc, OneWork work) {
         boolean useExecutionContext = true;
         for (WorkContext ic : validContexts) {
             WorkContextLifecycleListener listener = getListener(ic);
@@ -274,7 +276,7 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
             } else if (ic instanceof SecurityContext) {
                 setupSecurityWorkContext((SecurityContext) ic, listener, wc.getRAName());
             } else if (ic instanceof HintsContext) {
-                //TODO V3 handle hints context ?
+                setupHintsContext((HintsContext)ic, listener, work);
             } else {
                 Class<? extends WorkContext> claz = null;
                 String className = ic.getClass().getName();
@@ -299,6 +301,19 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
                 wc.setException(we);
             } catch (Exception e) {
                 wc.setException(e);
+            }
+        }
+    }
+
+    private void setupHintsContext(HintsContext ic, WorkContextLifecycleListener listener, OneWork work) {
+        Map<String, Serializable> hints = ic.getHints();
+        for(String key : hints.keySet()){
+            if(HintsContext.NAME_HINT.equals(key)){
+                Object value = hints.get(key);
+                if(value != null){
+                    work.setName(value.toString());
+                    notifyContextSetupComplete(listener);
+                }
             }
         }
     }

@@ -54,75 +54,42 @@ public class WorkManagementProbeProvider {
     @Probe(name = "workSubmitted")
     public void workSubmitted(
             @ProbeParam("raName") String raName
-    ) {
-        /*
-            workStats.submittedWorkCount++;
-         */
-    }
+    ) {}
 
     @Probe(name = "workQueued")
     public void workQueued(
             @ProbeParam("raName") String raName
-    ) {
-        /*
-            workStats.incrementWaitQueueLength();
-         */
-    }
+    ) {}
 
     @Probe(name = "workWaitedFor")
     public void workWaitedFor(
             @ProbeParam("raName") String raName,
             @ProbeParam("elapsedTime") long elapsedTime
-    ) {
-        /*
-        workStats.setWorkWaitTime(elapsedTime);
-        */
-    }
+    ) {}
 
     @Probe(name = "workDequeued")
     public void workDequeued(
             @ProbeParam("raName") String raName
-    ) {
-        /*
-        workStats.decrementWaitQueueLength();
-        */
-    }
+    ) {}
 
     @Probe(name = "workProcessingStarted")
     public void workProcessingStarted(
             @ProbeParam("raName") String raName
-    ) {
-        /*
-            workStats.setActiveWorkCount(++workStats.currentActiveWorkCount);
-        */
-    }
+    ) {}
 
     @Probe(name = "workProcessingCompleted")
     public void workProcessingCompleted(
             @ProbeParam("raName") String raName
-    ) {
-        /*
-                    workStats.setActiveWorkCount
-                                (--workStats.currentActiveWorkCount);
-        */
-    }
+    ) {}
 
     @Probe(name = "workProcessed")
     public void workProcessed(
             @ProbeParam("raName") String raName
-    ) {
-        /*
-                    workStats.completedWorkCount++;
-        */
-    }
+    ) {}
 
     @Probe(name = "workTimedOut")
     public void workTimedOut(
             @ProbeParam("raName") String raName
-    ) {
-        /*
-            workStats.rejectedWorkCount++;
-        */
-    }
+    ) {}
 
 }

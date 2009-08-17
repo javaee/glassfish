@@ -55,6 +55,7 @@ public final class OneWork implements com.sun.corba.se.spi.orbutil.threadpool.Wo
     private WorkContextHandler contextHandler;
     private static final Logger logger =
             LogDomains.getLogger(OneWork.class, LogDomains.RSR_LOGGER);
+    private String name = "Resource adapter work";
 
     /**
      * Creates a work object that can be submitted to a workqueue.
@@ -82,7 +83,7 @@ public final class OneWork implements com.sun.corba.se.spi.orbutil.threadpool.Wo
             //TODO V3 check coordinator.getEC() - what happens when an EC
             //TODO V3 is set and the case where work is ICP with TIC
             //validateWork(work, coordinator.getExecutionContext());
-            coordinator.setupContext();
+            coordinator.setupContext(this);
         } catch (Throwable e) {
             coordinator.setException(e);
         }
@@ -121,7 +122,11 @@ public final class OneWork implements com.sun.corba.se.spi.orbutil.threadpool.Wo
      * @return Name of the work.
      */
     public String getName() {
-        return "Resource adapter work";
+        return name;
+    }
+
+    public void setName(String name){
+        this.name = name;
     }
 
     /**

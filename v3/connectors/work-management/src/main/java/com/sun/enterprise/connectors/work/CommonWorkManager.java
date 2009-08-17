@@ -64,7 +64,7 @@ import org.glassfish.external.probe.provider.PluginPoint;
  * @author Binod P.G
  */
 
-public final class CommonWorkManager implements WorkManager /*implements MonitorableWorkManager*/ {
+public final class CommonWorkManager implements WorkManager {
 
     //TODO V3 need to use ee.threadpool
     private static WorkManager wm = null;
@@ -75,11 +75,6 @@ public final class CommonWorkManager implements WorkManager /*implements Monitor
     private static final Logger logger =
             LogDomains.getLogger(CommonWorkManager.class, LogDomains.RSR_LOGGER);
 
-/*
-    private boolean isMonitoringEnabled = false; //default = false;
-*/
-
-    //private WorkStats workStats = null;
     private WorkManagementProbeProvider probeProvider = null;
     private WorkManagementStatsProvider statsProvider = null;
     private String dottedNamesHierarchy;
@@ -356,163 +351,4 @@ public final class CommonWorkManager implements WorkManager /*implements Monitor
                 + "] -- " + message;
         return msg;
     }
-
-    //SJSAS 8.1 Monitoring additions begins
-/*
-    public boolean isMonitoringEnabled() {
-        return this.isMonitoringEnabled;
-    }
-
-    public void setMonitoringEnabled(boolean isEnabled) {
-        this.isMonitoringEnabled = isEnabled;
-        if (this.workStats == null) {
-            this.workStats = new WorkStats();
-        }
-        //reset WorkStats when monitoring disabled
-        if (!isEnabled) {
-            this.workStats.reset();
-        }
-    }
-
-    public long getWaitQueueLength() {
-        return this.workStats.currWaitQueueLength;
-    }
-
-    public long getMaxWaitQueueLength() {
-        return this.workStats.maxWaitQueueLength;
-    }
-
-    public long getMinWaitQueueLength() {
-        if (this.workStats.minWaitQueueLength != Long.MAX_VALUE) {
-            return this.workStats.minWaitQueueLength;
-        } else {
-            return 0;
-        }
-    }
-
-    public long getMaxWorkRequestWaitTime() {
-        return this.workStats.maxWorkRequestWaitTime;
-
-    }
-
-    public long getMinWorkRequestWaitTime() {
-        return this.workStats.minWorkRequestWaitTime;
-    }
-
-    public long getSubmittedWorkCount() {
-        return this.workStats.submittedWorkCount;
-    }
-
-    public long getRejectedWorkCount() {
-        return this.workStats.rejectedWorkCount;
-    }
-
-    public long getCompletedWorkCount() {
-        return this.workStats.completedWorkCount;
-    }
-
-    public long getCurrentActiveWorkCount() {
-        return this.workStats.currentActiveWorkCount;
-    }
-
-    public long getMaxActiveWorkCount() {
-        return this.workStats.maxActiveWorkCount;
-    }
-
-    public long getMinActiveWorkCount() {
-        if (this.workStats.minActiveWorkCount != Long.MAX_VALUE) {
-            return this.workStats.minActiveWorkCount;
-        } else {
-            return 0;
-        }
-    }
-    //SJSAS 8.1 Monitoring additions end
-
-}
-*/
-
-/**
- * A simple class that holds all statistics-related entries captured by the
- * commonworkmanager together with the work-coordinator
- * <p/>
- * An instance of workStats is passed to the Work-Coordinator, during
- * construction, so that the work-coordinator can update the stats of a
- * work-manager
- *
- * @author Sivakumar Thyagarajan
- */
-/*class WorkStats {
-    long submittedWorkCount;
-    long completedWorkCount;
-    long rejectedWorkCount;
-    long maxWaitQueueLength;
-    long minWaitQueueLength;
-
-    long currentActiveWorkCount;
-    long minActiveWorkCount;
-    long maxActiveWorkCount;
-
-    long maxWorkRequestWaitTime;
-    long minWorkRequestWaitTime;
-    long currWaitQueueLength;
-
-    public void reset() {
-        this.submittedWorkCount = 0L;
-        this.rejectedWorkCount = 0L;
-        this.completedWorkCount = 0L;
-
-        this.currWaitQueueLength = 0L;
-        this.maxWaitQueueLength = 0L;
-        this.minWaitQueueLength = Long.MAX_VALUE;
-
-        this.currentActiveWorkCount = 0L;
-        this.minActiveWorkCount = Long.MAX_VALUE;
-        this.maxActiveWorkCount = 0L;
-
-        this.maxWorkRequestWaitTime = 0L;
-        this.minWorkRequestWaitTime = 0L;
-    }
-
-    public synchronized void setWorkWaitTime(long waitTime) {
-        //latch high
-        if (waitTime > maxWorkRequestWaitTime) {
-            this.maxWorkRequestWaitTime = waitTime;
-        }
-
-        //latch low
-        if (waitTime < minWorkRequestWaitTime) {
-            this.minWorkRequestWaitTime = waitTime;
-        }
-    }
-
-    public synchronized void incrementWaitQueueLength() {
-        setWaitQueueLength(++this.currWaitQueueLength);
-    }
-
-    public synchronized void decrementWaitQueueLength() {
-        setWaitQueueLength(--this.currWaitQueueLength);
-    }
-
-    private void setWaitQueueLength(long waitQueueLength) {
-        //latch high
-        if (waitQueueLength > maxWaitQueueLength) {
-            maxWaitQueueLength = waitQueueLength;
-        }
-        //latch low
-        if (waitQueueLength < minWaitQueueLength) {
-            minWaitQueueLength = waitQueueLength;
-        }
-    }
-
-    public synchronized void setActiveWorkCount(long currentActiveWorkCount) {
-        this.currentActiveWorkCount = currentActiveWorkCount;
-        //latch high
-        if (currentActiveWorkCount > maxActiveWorkCount) {
-            maxActiveWorkCount = currentActiveWorkCount;
-        }
-        //latch low
-        if (currentActiveWorkCount < minActiveWorkCount) {
-            minActiveWorkCount = currentActiveWorkCount;
-        }
-    }*/
 }
