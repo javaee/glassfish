@@ -46,7 +46,7 @@
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="build,setup,deploy,reconfig,run,undeploy,restore"/>
+    <target name="all" depends="build,setup,deploy,reconfig,run,restore,undeploy"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
