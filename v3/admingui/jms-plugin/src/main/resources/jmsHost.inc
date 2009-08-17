@@ -89,7 +89,7 @@
             <sun:textField id="AdminUser" columns="$int{20}" text="#{pageSession.valueMap['AdminUserName']}" />
         </sun:property>
         <sun:property id="AdminPwdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.adminPwdLabel}" helpText="$resource{i18njms.edJmsHost.adminPwdHelp}" >
-            <sun:textField id="AdminPwd" columns="$int{20}" text="#{pageSession.valueMap['AdminPassword']}" />
+            <sun:passwordField id="AdminPwd" columns="$int{20}" text="#{pageSession.valueMap['AdminPassword']}" />
         </sun:property>
         "<br /><br />
     </sun:propertySheetSection>
