@@ -86,7 +86,7 @@
                 <artifactId>hk2-maven-plugin</artifactId>
                 <configuration>
                     <compilerArguments>
-                        <bootclasspath>${project.build.directory}/endorsed/webservices-api-osgi-${webservices.version}.jar:${project.build.directory}/endorsed/jaxb-api-osgi-${jaxb.version}.jar:${java.home}/lib/rt.jar</bootclasspath>
+                        <bootclasspath>${project.build.directory}/endorsed/webservices-api-osgi-${webservices.version}.jar${path.separator}${project.build.directory}/endorsed/jaxb-api-osgi-${jaxb.version}.jar${path.separator}${java.home}/lib/rt.jar</bootclasspath>
                     </compilerArguments>
                     <fork>true</fork>
                     <archive>

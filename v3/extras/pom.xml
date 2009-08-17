@@ -50,7 +50,6 @@
     <packaging>pom</packaging>
     <name>GlassFish Extras modules</name>  
     <modules>
-        <module>phobos</module>
         <module>grizzly-container</module>
         <module>osgi-container</module>
         <module>embedded-shell</module>
