@@ -58,8 +58,9 @@
     </target>
 
     <target name="runclient" depends="prepare">
+<echo>appclient -xml client/sun-acc-no-log-service.xml -client ${archivedir}/${testName}Client.jar</echo>
         <exec executable="${APPCLIENT}" resultproperty="result" failonerror="false" output="${build}/${log.id}.output.log">
-            <arg line="-client ${archivedir}/${testName}Client.jar"/>
+            <arg line="-xml client/sun-acc-no-log-service.xml -client ${archivedir}/${testName}Client.jar"/>
         </exec>
         <antcall target="processResult">
             <param name="result" value="${result}"/>
