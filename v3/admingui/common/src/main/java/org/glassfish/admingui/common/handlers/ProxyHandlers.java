@@ -610,6 +610,10 @@ public class ProxyHandlers {
         handlerCtx.setOutputValue("result", result);
     }
 
+    /**
+     * TODO: Document me!
+     * @param handlerCtx
+     */
     @Handler(id = "setProxyProperties",
         input = {
             @HandlerInput(name = "objectNameStr", type = String.class, required = true),
@@ -742,16 +746,21 @@ public class ProxyHandlers {
 
     @Handler(id = "createResourceRef",
         input = {
-            @HandlerInput(name = "resourceName", type = String.class, required = true)
+            @HandlerInput(name = "resourceName", type = String.class, required = true),
+            @HandlerInput(name = "enabled", type=String.class)
         })
     public static void createResourceRef(HandlerContext handlerCtx) {
         String resourceName = (String) handlerCtx.getInputValue("resourceName");
+        String enabled = (String) handlerCtx.getInputValue("enabled");
+        if (enabled == null) {
+            enabled = "true";
+        }
 
         try {
             Server server = V3AMX.getInstance().getServer("server");
             Map<String, Object> attrs = new HashMap<String, Object>();
             attrs.put("Name", resourceName);
-            attrs.put("Enabled", "true");
+            attrs.put("Enabled", enabled);
             server.createChild("resource-ref", attrs);
         } catch (Exception ex) {
             GuiUtil.getLogger().log(Level.SEVERE, null, ex);
