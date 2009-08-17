@@ -216,7 +216,37 @@
                         
 #include "/web/monitor/monitoringTableRows.inc"  
         "<br/>
-    </sun:tableRowGroup>    
+    </sun:tableRowGroup>
+    <sun:tableRowGroup id="jRubyRuntimeStats" data={"$attribute{jRubyRuntimeStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jRubyStatisticsRuntime} : #{appVal} "
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="JRubyRuntimePoolStatsProvider" name="containers/jruby/runtime-pool/#{appVal}", result=>$attribute{jRubyRuntimeStatsList});
+
+         />
+
+#include "/web/monitor/jRubyTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup>
+    <sun:tableRowGroup id="jRubyHttpStats" data={"$attribute{jRubyHttpStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jRubyStatisticsHttp} : #{appVal} "
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="JRubyHttpStatsProvider" name="containers/jruby/http-stats/#{appVal}", result=>$attribute{jRubyHttpStatsList});
+
+         />
+
+#include "/web/monitor/monitoringTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup>
+    <sun:tableRowGroup id="jRubyStats" data={"$attribute{jRubyStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jRubyStatistics}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="JRubyProbeStatsProvider" name="containers/jruby", result=>$attribute{jRubyStatsList});
+
+         />
+
+#include "/web/monitor/monitoringTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup>
     <sun:tableRowGroup id="wmStats" data={"$attribute{wmStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.WorkManagementStats} : #{connVal}" 
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate

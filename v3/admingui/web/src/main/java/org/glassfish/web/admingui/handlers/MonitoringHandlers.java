@@ -57,6 +57,7 @@ import java.util.Date;
 
 import javax.management.Attribute;
 import javax.management.ObjectName;
+import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.CompositeType;
 import org.glassfish.admingui.common.util.V3AMX;
@@ -140,12 +141,17 @@ public class MonitoringHandlers {
                         String last = "--";
                         String unit = "";
                         String current = "";
-                        
+                        String runtimes = "--";
+                        String queuesize = "--";
+                        String thresholds = "--";
                         if (val instanceof CompositeDataSupport) {
                             CompositeDataSupport cds = ((CompositeDataSupport) val);
-                            statMap.put("Name", cds.get("name"));
-                            
                             CompositeType ctype = cds.getCompositeType();
+                            if(cds.containsKey("name")){
+                                statMap.put("Name", cds.get("name"));
+                            } else {
+                                statMap.put("Name", monName);
+                            }
                            if(cds.containsKey("unit")){
                                 unit = (String)cds.get("unit");
                             }
@@ -167,6 +173,18 @@ public class MonitoringHandlers {
                             if(cds.containsKey("totalTime")){
                                 details = details + (GuiUtil.getMessage("monitoring.TotalTime")+": " + cds.get("totalTime") + " " + unit + "<br/>");
                             }
+                            if(cds.containsKey("activeRuntimes")) {
+                                runtimes = (String)cds.get("activeRuntimes");
+                            }
+                            if(cds.containsKey("queueSize")) {
+                                queuesize = (String)cds.get("queueSize");
+                            }
+                            if(cds.containsKey("hardMaximum") && cds.get("hardMaximum") != null) {
+                                val = cds.get("hardMaximum") + " " + "hard max "+ "<br/>"+cds.get("hardMinimum") + " " + "hard min";
+                            }
+                            if(cds.containsKey("newThreshold") && cds.get("newThreshold") != null) {
+                                thresholds = cds.get("newThreshold") + " " + "new "+ "<br/>"+cds.get("queueDownThreshold") + " " + "queue down";
+                            }
                             if(cds.containsKey("count")){
                                 val = cds.get("count") + " " + unit;
                             } else if(cds.containsKey("current")){
@@ -174,8 +192,6 @@ public class MonitoringHandlers {
                             }else {
                                 val = "--";
                             }
-                            
-                            
                         } else if (val instanceof String[]) {
                             statMap.put("Name", monName);
                             String values = "";
@@ -184,19 +200,34 @@ public class MonitoringHandlers {
 
                             }
                             val = values;
+                        } else if (val instanceof CompositeData[]) {
+                            String apptype = "";
+                            for (CompositeData cd : (CompositeData[]) val) {
+                                if(cd.containsKey("appName")) {
+                                    statMap.put("Name", cd.get("appName"));
+                                }
+                                if(cd.containsKey("applicationType")) {
+                                    apptype = (String)cd.get("applicationType");
+                                }
+                                if(cd.containsKey("queueSize") && cd.containsKey("jrubyVersion")) {
+                                    details = details + cd.get("environment") + " " + cd.get("jrubyVersion");
+                                }
+                            }
+                            val = apptype;
                         } else {
                             statMap.put("Name", monName);
                         }
-                        
+                        statMap.put("Thresholds", (thresholds == null) ? "--" : thresholds);
+                        statMap.put("QueueSize", (queuesize == null) ? "--" : queuesize);
+                        statMap.put("Runtimes", (runtimes == null) ? "--" : runtimes);
                         statMap.put("Current", current);
                         statMap.put("StartTime", start);
                         statMap.put("LastTime", last);
                         statMap.put("Description", desc);
-                        statMap.put("Value", val);
-                        statMap.put("Details", details);
+                        statMap.put("Value", (val == null) ? "" : val);
+                        statMap.put("Details", (details == null) ? "--" : details);
                         result.add(statMap);
-
-
+           
                     }
                 }
             }
