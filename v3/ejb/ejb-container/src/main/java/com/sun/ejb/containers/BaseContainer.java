@@ -3119,7 +3119,7 @@ public abstract class BaseContainer
 
     void registerSystemInterceptor(Object o) {
 
-        if (isSession) {
+        if (needSystemInterceptorProxy()) {
             interceptorManager.registerRuntimeInterceptor(o);
         }
     }
@@ -3128,8 +3128,9 @@ public abstract class BaseContainer
 
         // TODO only really needed if JAX-RS needs to dynamically register an
         // interceptor during web application init.  Can optimize this out
-        // by checking for the existence of any JAX-RS resources in module
-        return isSession;
+        // by checking for the existence of any JAX-RS resources in module.
+        // Only applies to stateless and singleton session beans.
+        return isSession && !isStatefulSession;
 
     }
 

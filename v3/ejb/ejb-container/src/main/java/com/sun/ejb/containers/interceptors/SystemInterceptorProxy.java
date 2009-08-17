@@ -54,8 +54,10 @@ import java.io.Serializable;
  * @author Kenneth Saks
  */    
 
-public final class SystemInterceptorProxy implements Serializable
+public class SystemInterceptorProxy
 {
+    // Won't actually be Serialized since it only applies to Stateless/Singleton
+
     public Object delegate;
 
     private Method postConstruct;

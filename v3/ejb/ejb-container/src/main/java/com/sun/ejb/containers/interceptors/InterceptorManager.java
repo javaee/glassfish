@@ -162,7 +162,7 @@ public class InterceptorManager {
             Class clazz = serializableInterceptorClasses[index];
             try {
                 interceptors[index] = clazz.newInstance();
-                if( (clazz == SystemInterceptorProxy.class) && (runtimeInterceptor != null) ) {
+                if( SystemInterceptorProxy.class.isAssignableFrom(clazz) && (runtimeInterceptor != null) ) {
                     ((SystemInterceptorProxy)interceptors[index]).setDelegate(runtimeInterceptor);
                 }
             } catch (IllegalAccessException illEx) {

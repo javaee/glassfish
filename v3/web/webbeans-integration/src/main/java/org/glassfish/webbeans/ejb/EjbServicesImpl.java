@@ -99,7 +99,7 @@ public class EjbServicesImpl implements EjbServices
         // from this module on javax.ejb)
         Annotation ejbAnnotation = null;
 
-        for(Annotation annotation : injectionPoint.getBindings()) {
+        for(Annotation annotation : injectionPoint.getAnnotated().getAnnotations()) {
             if( annotation.annotationType().getName().equals("javax.ejb.EJB")) {
                 ejbAnnotation = annotation;
                 break;

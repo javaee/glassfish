@@ -553,8 +553,12 @@ public class EjbInvocation
             return getInterceptorChain().invokeNext(interceptorIndex, this);
         } catch (Exception ex) {
             throw ex;
-        } catch (Throwable th) {
-            throw new Exception(th);
+        } catch (Error error) {
+            throw error;
+        } catch (Throwable t) {
+            // This shouldn't be possible since we specifically catch
+            // Exception and Error before this, but ...
+            throw new RuntimeException(t);
         } finally {
             interceptorIndex--;
         }
