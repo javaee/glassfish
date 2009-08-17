@@ -76,16 +76,14 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
     private volatile State state = State.RESUMED;
 
     private final String contextRoot;
-    private final String userFriendlyContextRoot;
 
     private final ConcurrentHashMap<String,StaticContent> content =
             new ConcurrentHashMap<String,StaticContent>();
 
     public RestrictedContentAdapter(
             final String contextRoot,
-            final String userFriendlyContextRoot,
             final Map<String,StaticContent> content) throws IOException {
-        this(contextRoot, userFriendlyContextRoot);
+        this(contextRoot);
         this.content.putAll(content);
         /*
          * Preload the adapter's cache with the static content.  This helps
@@ -104,15 +102,14 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
                 dumpContent());
     }
 
-    public RestrictedContentAdapter(final String contextRoot,
-            final String userFriendlyContextRoot) {
+    public RestrictedContentAdapter(final String contextRoot) {
         /*
          * Turn off the default static resource handling.  We do our own from
          * our service method, rather than letting the StaticResourcesAdapter
          * (superclass) logic have a try at each request first.
          */
         this.contextRoot = contextRoot;
-        this.userFriendlyContextRoot = userFriendlyContextRoot;
+//        this.userFriendlyContextRoot = userFriendlyContextRoot;
         setHandleStaticResources(false);
 
         setUseSendFile(false);
@@ -134,9 +131,9 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
         return contextRoot;
     }
 
-    public String userFriendlyContextRoot() {
-        return userFriendlyContextRoot;
-    }
+//    public String userFriendlyContextRoot() {
+//        return userFriendlyContextRoot;
+//    }
 
     public synchronized void addContentIfAbsent(final String relativeURIString,
             final StaticContent newContent) throws IOException {
@@ -162,17 +159,17 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
     }
 
 
-    protected String relativizeURIString(final String uriString) {
-        String result;
-        if ( (result = relativizeURIString(contextRoot, uriString)) == null) {
-            if ( ( result = relativizeURIString(userFriendlyContextRoot, uriString)) == null) {
-                logger.log(Level.WARNING, "enterprise.deployment.appclient.jws.uriOutsideContextRoot",
-                    new Object[] {uriString, contextRoot, userFriendlyContextRoot});
-                return null;
-            }
-        }
-        return result;
-    }
+//    protected String relativizeURIString(final String uriString) {
+//        String result;
+//        if ( (result = relativizeURIString(contextRoot, uriString)) == null) {
+//            if ( ( result = relativizeURIString(userFriendlyContextRoot, uriString)) == null) {
+//                logger.log(Level.WARNING, "enterprise.deployment.appclient.jws.uriOutsideContextRoot",
+//                    new Object[] {uriString, contextRoot, userFriendlyContextRoot});
+//                return null;
+//            }
+//        }
+//        return result;
+//    }
 
     protected String relativizeURIString(final String candidateContextRoot,
             final String uriString) {
@@ -193,7 +190,7 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
 
     protected boolean serviceContent(GrizzlyRequest gReq, GrizzlyResponse gResp) throws IOException {
 
-        String relativeURIString = relativizeURIString(gReq.getRequestURI());
+        String relativeURIString = relativizeURIString(contextRoot, gReq.getRequestURI());
 
         /*
          * "Forbidden" seems like a more helpful response than "not found"

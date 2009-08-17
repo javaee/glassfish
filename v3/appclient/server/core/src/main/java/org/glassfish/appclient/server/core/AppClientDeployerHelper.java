@@ -75,11 +75,7 @@ import org.glassfish.deployment.common.DownloadableArtifacts;
 public abstract class AppClientDeployerHelper {
 
     private final static String PERSISTENCE_XML_PATH = "META-INF/persistence.xml";
-    private final static String SIGNING_ALIAS_PROPERTY_NAME = "jar-signing-alias";
-
-    // TODO: instead of this constant we should use a security method to get the current default value
-    private final static String TEMP_DEFAULT_ALIAS = "s1as";
-
+    
     private final DeploymentContext dc;
     private final ApplicationClientDescriptor appClientDesc;
     protected final AppClientArchivist archivist;
@@ -88,8 +84,6 @@ public abstract class AppClientDeployerHelper {
 
     private final ClassLoader gfClientModuleClassLoader;
 
-    private final String defaultSigningAlias;
-    private final String signingAlias;
     private final Application application;
 
     /**
@@ -101,8 +95,7 @@ public abstract class AppClientDeployerHelper {
     static AppClientDeployerHelper newInstance(
             final DeploymentContext dc,
             final AppClientArchivist archivist,
-            final ClassLoader gfClientModuleLoader,
-            final String defaultAlias) throws IOException {
+            final ClassLoader gfClientModuleLoader) throws IOException {
         ApplicationClientDescriptor bundleDesc = dc.getModuleMetaData(ApplicationClientDescriptor.class);
         Application application = bundleDesc.getApplication();
         boolean insideEar = ! application.isVirtual();
@@ -112,14 +105,12 @@ public abstract class AppClientDeployerHelper {
                                     bundleDesc,
                                     archivist,
                                     gfClientModuleLoader,
-                                    defaultAlias,
                                     application)
                           : new StandaloneAppClientDeployerHelper(
                                     dc,
                                     bundleDesc,
                                     archivist,
                                     gfClientModuleLoader,
-                                    defaultAlias,
                                     application));
     }
 
@@ -128,7 +119,6 @@ public abstract class AppClientDeployerHelper {
             final ApplicationClientDescriptor bundleDesc,
             final AppClientArchivist archivist,
             final ClassLoader gfClientModuleClassLoader,
-            final String defaultSigningAlias,
             final Application application) throws IOException {
         super();
         this.dc = dc;
@@ -138,8 +128,6 @@ public abstract class AppClientDeployerHelper {
         this.appName = appClientDesc.getApplication().getRegistrationName();
         this.clientName = appClientDesc.getModuleDescriptor().getArchiveUri();
 
-        this.defaultSigningAlias = defaultSigningAlias;
-        signingAlias = chooseAlias();
         this.application = application;
     }
 
@@ -148,7 +136,7 @@ public abstract class AppClientDeployerHelper {
      * @param dc the deployment context for the current deployment
      * @return
      */
-    protected abstract URI facadeServerURI(DeploymentContext dc);
+    public abstract URI facadeServerURI(DeploymentContext dc);
 
     /**
      * Returns the URI for the facade JAR, relative to the download
@@ -157,7 +145,7 @@ public abstract class AppClientDeployerHelper {
      * @param dc the deployment context for the current deployment
      * @return
      */
-    protected abstract URI facadeUserURI(DeploymentContext dc);
+    public abstract URI facadeUserURI(DeploymentContext dc);
 
     /**
      * Returns the file name (and type) for the facade, excluding any
@@ -175,7 +163,7 @@ public abstract class AppClientDeployerHelper {
      * @param dc
      * @return
      */
-    protected abstract URI appClientUserURI(DeploymentContext dc);
+    public abstract URI appClientUserURI(DeploymentContext dc);
 
     /**
      * Returns the URI to be used for the GlassFish-AppClient manifest entry
@@ -184,7 +172,7 @@ public abstract class AppClientDeployerHelper {
      * @param dc
      * @return
      */
-    protected abstract URI appClientUserURIForFacade(DeploymentContext dc);
+    public abstract URI appClientUserURIForFacade(DeploymentContext dc);
 
     /**
      * Returns the URI to the server's copy of the developer's original app
@@ -193,7 +181,7 @@ public abstract class AppClientDeployerHelper {
      * @param dc
      * @return
      */
-    protected abstract URI appClientServerURI(DeploymentContext dc);
+    public abstract URI appClientServerURI(DeploymentContext dc);
 
     /**
      * Returns the URI within the enclosing app of the app client JAR.
@@ -205,7 +193,7 @@ public abstract class AppClientDeployerHelper {
      * @param dc
      * @return
      */
-    protected abstract URI appClientURIWithinApp(DeploymentContext dc);
+    public abstract URI appClientURIWithinApp(DeploymentContext dc);
 
     /**
      *
@@ -264,20 +252,6 @@ public abstract class AppClientDeployerHelper {
         ClientJarMakerUtils.copyArchive(source, target, Collections.EMPTY_SET);
         target.close();
         return new File(target.getURI());
-    }
-
-    private String chooseAlias() {
-        final String userSpecifiedAlias;
-        return ((userSpecifiedAlias = extractUserProvidedAlias()) != null)
-                ? userSpecifiedAlias : defaultSigningAlias;
-    }
-
-    private String extractUserProvidedAlias() {
-        return dc.getAppProps().getProperty(SIGNING_ALIAS_PROPERTY_NAME);
-    }
-
-    public String signingAlias() {
-        return signingAlias;
     }
 
     private URI expandedDirURI(final URI submoduleURI) {
@@ -448,7 +422,7 @@ public abstract class AppClientDeployerHelper {
 
     protected abstract Set<DownloadableArtifacts.FullAndPartURIs> clientLevelDownloads() throws IOException;
 
-    protected abstract Set<DownloadableArtifacts.FullAndPartURIs> earLevelDownloads() throws IOException;
+    public abstract Set<DownloadableArtifacts.FullAndPartURIs> earLevelDownloads() throws IOException;
 
     protected abstract void addGroupFacadeToEARDownloads();
     

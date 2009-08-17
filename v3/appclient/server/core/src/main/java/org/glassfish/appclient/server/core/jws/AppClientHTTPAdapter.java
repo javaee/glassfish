@@ -91,14 +91,13 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
 
     public AppClientHTTPAdapter(
             final String contextRoot,
-            final String userFriendlyContextRoot,
             final Map<String,StaticContent> staticContent,
             final Map<String,DynamicContent> dynamicContent,
             final Properties tokens,
             final File domainDir,
             final File installDir,
             final IiopService iiopService) throws IOException {
-        super(contextRoot, userFriendlyContextRoot, staticContent);
+        super(contextRoot, staticContent);
         this.dynamicContent = dynamicContent;
         this.tokens = tokens;
         this.iiopService = iiopService;
@@ -120,7 +119,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
     @Override
     public void service(GrizzlyRequest gReq, GrizzlyResponse gResp) {
         final String relativeURIString =
-                relativizeURIString(gReq.getRequestURI());
+                relativizeURIString(contextRoot(), gReq.getRequestURI());
         if (relativeURIString == null) {
             respondNotFound(gResp);
         } else if (dynamicContent.containsKey(relativeURIString)) {

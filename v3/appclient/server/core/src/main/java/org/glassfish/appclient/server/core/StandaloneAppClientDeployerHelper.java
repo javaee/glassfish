@@ -74,9 +74,8 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
             final ApplicationClientDescriptor bundleDesc,
             final AppClientArchivist archivist,
             final ClassLoader gfClientModuleClassLoader,
-            final String defaultAlias,
             final Application application) throws IOException {
-        super(dc, bundleDesc, archivist, gfClientModuleClassLoader, defaultAlias,
+        super(dc, bundleDesc, archivist, gfClientModuleClassLoader, 
                 application);
     }
 
@@ -136,7 +135,7 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
      * @return
      */
     @Override
-    protected URI facadeServerURI(DeploymentContext dc) {
+    public URI facadeServerURI(DeploymentContext dc) {
         File genXMLDir = dc.getScratchDir("xml");
         return genXMLDir.toURI().resolve(facadeFileNameAndType(dc));
     }
@@ -150,7 +149,7 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
      * @return
      */
     @Override
-    protected URI facadeUserURI(DeploymentContext dc) {
+    public URI facadeUserURI(DeploymentContext dc) {
         return URI.create(facadeFileNameAndType(dc));
     }
 
@@ -162,7 +161,7 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
      * @return
      */
     @Override
-    protected URI appClientUserURI(DeploymentContext dc) {
+    public URI appClientUserURI(DeploymentContext dc) {
         return URI.create(facadeNameOnly(dc) + '/' + appClientURIWithinApp(dc));
     }
 
@@ -172,7 +171,7 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
      * @return
      */
     @Override
-    protected URI appClientServerURI(DeploymentContext dc) {
+    public URI appClientServerURI(DeploymentContext dc) {
         File genXMLDir = dc.getScratchDir("xml");
         return genXMLDir.toURI().resolve(appClientURIWithinApp(dc));
     }
@@ -189,7 +188,7 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
      * @return
      */
     @Override
-    protected URI appClientURIWithinApp(DeploymentContext dc) {
+    public URI appClientURIWithinApp(DeploymentContext dc) {
 
         String uriText = appClientDesc().getModuleDescriptor().getArchiveUri();
         if ( ! uriText.endsWith(".jar")) {
@@ -216,12 +215,12 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
     }
 
     @Override
-    protected Set<FullAndPartURIs> earLevelDownloads() throws IOException {
+    public Set<FullAndPartURIs> earLevelDownloads() throws IOException {
         return Collections.EMPTY_SET;
     }
 
     @Override
-    protected URI appClientUserURIForFacade(DeploymentContext dc) {
+    public URI appClientUserURIForFacade(DeploymentContext dc) {
         return appClientUserURI(dc);
     }
 

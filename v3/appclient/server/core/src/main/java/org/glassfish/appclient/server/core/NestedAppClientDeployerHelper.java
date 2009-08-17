@@ -91,9 +91,8 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             final ApplicationClientDescriptor bundleDesc,
             final AppClientArchivist archivist,
             final ClassLoader gfClientModuleClassLoader,
-            final String defaultAlias,
             final Application application) throws IOException {
-        super(dc, bundleDesc, archivist, gfClientModuleClassLoader, defaultAlias, application);
+        super(dc, bundleDesc, archivist, gfClientModuleClassLoader, application);
         earURI = dc.getSource().getParentArchive().getURI();
         processDependencies();
     }
@@ -430,13 +429,13 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     }
 
     @Override
-    protected URI facadeServerURI(DeploymentContext dc) {
+    public URI facadeServerURI(DeploymentContext dc) {
         File genXMLDir = dc.getScratchDir("xml");
         return genXMLDir.toURI().resolve(relativeFacadeURI(dc));
     }
 
     @Override
-    protected Set<FullAndPartURIs> earLevelDownloads() {
+    public Set<FullAndPartURIs> earLevelDownloads() {
         return earLevelDownloads;
     }
 
@@ -463,7 +462,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     }
 
     @Override
-    protected URI facadeUserURI(DeploymentContext dc) {
+    public URI facadeUserURI(DeploymentContext dc) {
         return URI.create(appName(dc) + "Client/" + relativeFacadeURI(dc));
     }
 
@@ -477,12 +476,12 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     }
 
     @Override
-    protected URI appClientUserURI(DeploymentContext dc) {
+    public URI appClientUserURI(DeploymentContext dc) {
         return earDirUserURI(dc).resolve(moduleURI());
     }
 
     @Override
-    protected URI appClientUserURIForFacade(DeploymentContext dc) {
+    public URI appClientUserURIForFacade(DeploymentContext dc) {
         return URI.create(Util.getURIName(appClientUserURI(dc)));
     }
 
@@ -492,7 +491,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     }
 
     @Override
-    protected URI appClientServerURI(DeploymentContext dc) {
+    public URI appClientServerURI(DeploymentContext dc) {
         URI result;
         String appClientURIWithinEAR = appClientDesc().getModuleDescriptor().getArchiveUri();
         Matcher m = submoduleURIPattern.matcher(appClientURIWithinEAR);
@@ -515,7 +514,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     }
 
     @Override
-    protected URI appClientURIWithinApp(DeploymentContext dc) {
+    public URI appClientURIWithinApp(DeploymentContext dc) {
         return URI.create(appClientDesc().getModuleDescriptor().getArchiveUri());
     }
 

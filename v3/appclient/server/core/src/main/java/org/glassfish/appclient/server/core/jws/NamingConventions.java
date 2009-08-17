@@ -41,6 +41,7 @@ package org.glassfish.appclient.server.core.jws;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.runtime.JavaWebStartAccessDescriptor;
+import org.glassfish.appclient.server.core.AppClientServerApplication;
 
 /**
  *
