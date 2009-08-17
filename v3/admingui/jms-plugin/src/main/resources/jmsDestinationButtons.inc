@@ -37,16 +37,9 @@
 <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
         onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
     <!command
-        if(#{pageSession.hasPropertySheet}){
-            saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",
-                convertToFalse="#{pageSession.convertToFalseList}"
-            );
-            if(#{pageSession.has2Objects}){
-                saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}", attrs="#{pageSession.valueMap2}", skipAttrs="#{pageSession.skipAttrsList2}",
-                    convertToFalse="#{pageSession.convertToFalseList2}"
-                );
-            }
-        }
+        saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",convertToFalse="#{pageSession.convertToFalseList}");
+        //mapPut(map="#{pageSession.valueMap2}", key="Enabled", value="#{pageSession.resourceRefEnabled}");
+        saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}", attrs="#{pageSession.valueMap2}");
 
         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
@@ -61,7 +54,7 @@
     <!command
         createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                 attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}", result => $attribute{objStr});
-        createResourceRef(resourceName="#{pageSession.valueMap['Name']}");
+        createResourceRef(resourceName="#{pageSession.valueMap['Name']}", enabled="#{pageSession.valueMap2['Enabled'] == 'true'}");
 
         // TODO: We might need to add something here to create the resource-ref, but I'm not seeing any examples of how
         if (#{pageSession.hasPropertyTable}){
@@ -73,7 +66,6 @@
             mapPut(map="$attribute{nameMap}", key="Name", value="Name");
             mapPut(map="$attribute{nameMap}", key="Value", value="#{pageSession.physDestName}");
             listAdd(list="$attribute{newList}", value="$attribute{nameMap}");
-            gui.log(message="***** newList = $attribute{newList}");
             
             setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
         }
