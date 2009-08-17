@@ -103,5 +103,6 @@
         </sun:title>
         <sun:hidden id="helpKey" value="$resource{help.jmsDestinationEdit}" />
     </sun:form>
+#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>

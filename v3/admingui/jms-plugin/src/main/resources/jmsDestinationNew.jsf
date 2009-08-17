@@ -96,5 +96,6 @@
         </sun:title>
         <sun:hidden id="helpKey" value="$resource{help.jmsDestinationNew}" />
     </sun:form>
+#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>
