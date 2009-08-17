@@ -126,7 +126,7 @@ then
 fi
 
 #Check if metadata is available
-if [ ! -d ${CWD}/metadata ]
+if [ ! -d ${CWD}/install/metadata ]
 then
 	echo "metadata directory is missing from this installation. Aborting uninstallation."
 	exit ${METADATA_DIRECTORY_MISSING}
@@ -138,7 +138,7 @@ fi
 fireUninstaller() {
 cd ${CWD}/install/bin
 #Pass in any additional arguments passed to the script.
-./uninstaller -s ${CWD}/var/install/config/glassfish -m file://${CWD}/metadata -p Default-Product-ID=glassfish -p Pkg-Format=zip -J "-Dorg.openinstaller.provider.configurator.class=org.openinstaller.provider.conf.InstallationConfigurator" ${ARGS} 
+./uninstaller -s ${CWD}/var/install/config/glassfish -m file://${CWD}/install/metadata -p Default-Product-ID=glassfish -p Pkg-Format=zip -J "-Dorg.openinstaller.provider.configurator.class=org.openinstaller.provider.conf.InstallationConfigurator" ${ARGS} 
 #Pass the exit code from OI back to the env.
 exit $?
 }
