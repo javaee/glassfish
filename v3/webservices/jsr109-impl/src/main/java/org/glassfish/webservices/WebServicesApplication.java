@@ -67,6 +67,7 @@ public class WebServicesApplication implements ApplicationContainer {
         this.config = config;
         this.habitat = habitat;
     }
+    
     public Object getDescriptor() {
         return null;
     }
@@ -101,7 +102,7 @@ public class WebServicesApplication implements ApplicationContainer {
     private Collection<String> getContextRoots() {
         contextRoots = new ArrayList<String>();
         Application app = deploymentCtx.getModuleMetaData(Application.class);
-       if (!isJAXWSbasedApp(app)) {
+        if (!isJAXWSbasedApp(app)) {
             Set<BundleDescriptor> bundles = app.getBundleDescriptors();
             for(BundleDescriptor bundle : bundles) {
                 WebServicesDescriptor wsDesc = bundle.getWebServices();
@@ -110,7 +111,7 @@ public class WebServicesApplication implements ApplicationContainer {
                     for (WebServiceEndpoint endpoint:ws.getEndpoints() ){
                         //Only add for ejb based endpoints
                         if (endpoint.implementedByEjbComponent())
-                        contextRoots.add(endpoint.getEndpointAddressUri())  ;
+                            contextRoots.add(endpoint.getEndpointAddressUri())  ;
                     }
                 }
             }

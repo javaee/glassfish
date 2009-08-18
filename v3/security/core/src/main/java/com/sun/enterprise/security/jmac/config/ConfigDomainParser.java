@@ -77,7 +77,7 @@ public class ConfigDomainParser implements ConfigParser {
     private Map configMap = new HashMap();
     private Set<String> layersWithDefault = new HashSet<String>();
 
-    ConfigDomainParser() throws IOException {
+    public ConfigDomainParser() throws IOException {
     }
 
     public void initialize(Object service) throws IOException {

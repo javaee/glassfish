@@ -79,6 +79,9 @@ public class ServiceReferenceNode extends DisplayableComponentNode {
                 (new XMLElement(WebServicesTagNames.ADDRESSING),
                         AddressingNode.class, "setAddressing");
         registerElementHandler
+                (new XMLElement(WebServicesTagNames.RESPECT_BINDING),
+                        AddressingNode.class, "setRespectBinding");
+        registerElementHandler
                 (new XMLElement(TagNames.INJECTION_TARGET),
                         InjectionTargetNode.class, "addInjectionTarget");
     }

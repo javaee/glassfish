@@ -179,6 +179,8 @@ public class DescriptorFactory {
                  com.sun.enterprise.deployment.WebServiceHandler.class);
         register(new XMLElement(WebServicesTagNames.ADDRESSING),
                  com.sun.enterprise.deployment.Addressing.class);
+        register(new XMLElement(WebServicesTagNames.RESPECT_BINDING),
+                 com.sun.enterprise.deployment.RespectBinding.class);
         register(new XMLElement(WebServicesTagNames.HANDLER_CHAIN), 
                  com.sun.enterprise.deployment.WebServiceHandlerChain.class);
         register(new XMLElement(WebServicesTagNames.PORT_INFO),
