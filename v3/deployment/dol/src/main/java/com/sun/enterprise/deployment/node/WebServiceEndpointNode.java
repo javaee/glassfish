@@ -72,7 +72,7 @@ public class WebServiceEndpointNode extends DisplayableComponentNode {
              AddressingNode.class, "setAddressing");
         registerElementHandler
             (new XMLElement(WebServicesTagNames.RESPECT_BINDING),
-             AddressingNode.class, "setRespectBinding");
+             RespectBindingNode.class, "setRespectBinding");
         registerElementHandler
             (new XMLElement(WebServicesTagNames.HANDLER_CHAIN),
              WebServiceHandlerChainNode.class, "addHandlerChain");
