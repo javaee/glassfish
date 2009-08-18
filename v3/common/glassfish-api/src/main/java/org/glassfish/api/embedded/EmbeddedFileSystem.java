@@ -70,6 +70,13 @@ public class EmbeddedFileSystem implements PreDestroy {
 
         public Builder setInstanceRoot(File f) {
             this.instanceRoot=f;
+            if (this.configFile==null) {
+                File tmp = new File(instanceRoot, "config");
+                configFile = new File(tmp, "domain.xml");
+                if (!configFile.exists()) {
+                    configFile = null;
+                }
+            }
             return this;
         }
 

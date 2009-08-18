@@ -110,6 +110,9 @@
           </provider-config>
         </message-security-config>
       </security-service>
+      <monitoring-service>
+        <module-monitoring-levels />
+      </monitoring-service>      
       <transaction-service tx-log-dir="${com.sun.aas.instanceRoot}/logs" >
       </transaction-service>
       <network-config>

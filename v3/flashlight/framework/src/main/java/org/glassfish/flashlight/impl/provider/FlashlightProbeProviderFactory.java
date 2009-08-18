@@ -69,7 +69,7 @@ import org.jvnet.hk2.component.PostConstruct;
 @Service
 public class FlashlightProbeProviderFactory
         implements ProbeProviderFactory, PostConstruct {
-    @Inject
+    @Inject(optional=true)
     MonitoringService monitoringServiceConfig;
 
     @Inject
