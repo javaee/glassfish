@@ -64,7 +64,7 @@
 
     setPageSessionAttribute(key="objectNameStr2", value="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{pageSession.Name}");
     getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
-    setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
+    setPageSessionAttribute(key="convertToFalseList2" value={"Enabled"});
     setPageSessionAttribute(key="has2Objects" value="#{true}" );
     />
 </event>
@@ -74,21 +74,7 @@
     
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njca.adminObjectResource.editPageTitle}" helpText="$resource{i18njca.adminObjectResource.editPageHelp}" >
-    <sun:button id="loadDefaults" style="margin-left: 8pt"  rendered="#{pageSession.showDef}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
-        <!beforeCreate
-            if (!#{pageSession.edit}){
-                setPageSessionAttribute(key="showDef" value="#{false}");
-            }
-            if (#{pageSession.edit}){
-                setPageSessionAttribute(key="showDef" value="#{pageSession.showDefaultButton}");
-            }
-        />
-        <!command
-            getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  orig="#{pageSession.valueMap}" valueMap="#{pageSession.valueMap}")
-            
-        />
-    </sun:button>
-#include "/common/shared/editPageButtons_2.inc"
+#include "/common/shared/editPageButtons.inc"
     </sun:title>
     "<br><br>
     
