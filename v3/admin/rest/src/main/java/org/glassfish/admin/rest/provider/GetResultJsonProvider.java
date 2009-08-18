@@ -114,7 +114,8 @@ public class GetResultJsonProvider extends ProviderUtil implements MessageBodyWr
 
 
     private String getTypeKey(Dom proxy) {
-        return quote(getName(proxy.typeName()));
+        String uri = uriInfo.getAbsolutePath().toString();
+        return upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
     }
 
 

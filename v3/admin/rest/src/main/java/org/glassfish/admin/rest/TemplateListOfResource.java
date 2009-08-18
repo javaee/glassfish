@@ -97,7 +97,7 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
         List<Dom> domList = new ArrayList();
         List<E> entities = getEntity();
         if (entities==null){
-            return new GetResultList(domList,
+            return new GetResultList(domList, getPostCommand(),
                getCommandResourcesPaths());//empty dom list
         }
         Iterator iterator = entities.iterator();
@@ -107,7 +107,7 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
             domList.add(Dom.unwrap(e));
         }
 
-        return new GetResultList(domList, getCommandResourcesPaths());
+        return new GetResultList(domList, getPostCommand(), getCommandResourcesPaths());
     }
 
 
@@ -130,6 +130,8 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
             if (data.containsKey("error")) {
                 return Response.status(415).entity("Unable to parse the input entity. Please check the syntax.").build();//unsupported media
             }
+
+            __resourceUtil.purgeEmptyEntries(data);
 
             //Command to execute
             String commandName = getPostCommand();

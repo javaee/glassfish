@@ -114,7 +114,8 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
 
 
     private String getTypeKey(Dom proxy) {
-       return getName(proxy.typeName());
+        String uri = uriInfo.getAbsolutePath().toString();
+        return upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
     }
 
 

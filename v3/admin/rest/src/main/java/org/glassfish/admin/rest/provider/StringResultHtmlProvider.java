@@ -88,33 +88,24 @@ public class StringResultHtmlProvider extends ProviderUtil
 
 
     private String getHtml(StringResult proxy) {
-        String result;
-        result = "<html><head><title>GlassFish REST resource: " +
-            getTypeKey(proxy.getName())+"</title></head><body>";
-        result = result + "<h1>" + getTypeKey(proxy.getName()) + "</h1>";
+        String result = getHtmlHeader();
+        String uri = uriInfo.getAbsolutePath().toString();
+        String name = upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
+        String parentName =
+            upperCaseFirstLetter(eleminateHypen(getParentName(uri)));
+
+        result = result + "<h1>" + name + "</h1>";
 
         if (proxy.isError()) {
             result = result + "<h2>Error:</h2>";
             result = result + proxy.getErrorMessage() + "<br>";
         } else {
-            result = result + "<h2>Attributes:</h2>";
-            result = result + getAttribute("value", proxy.getMessage()) + "<br>";
+            result = result + "<h2>" + parentName + " - " + name + "</h2>";
+            result = result + proxy.getMessage() + "<br>";
         }
+        result = "<div>" + result + "</div>" + "<br>";
 
         result = result + "</body></html>";
-        return result;
-    }
-
-
-    private String getTypeKey(String name) {
-       return upperCaseFirstLetter(eleminateHypen(name));
-    }
-
-
-    private String getAttribute(String name, String value) {
-        String result = "";
-        result = result + name + "&nbsp;:&nbsp;" + value;
-        result = result + "<br>";
         return result;
     }
 }

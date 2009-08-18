@@ -92,12 +92,15 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
 
 
      private String getHtml(List<TreeNode> proxy) {
-        String result;
-        result = "<html><body>";
+        String result = getHtmlHeader();
         result = result + "<h1>" + getTypeKey() + "</h1>" + "<hr>";
-            result = result + getAttributes(proxy) + "<br><br>";
-        result = result + "<h2>" + getResourcesKey() + "</h2>" + "<hr>";
-            result = result + getResourcesLinks(proxy);
+
+        String attributes = getAttributes(proxy);
+        result = getHtmlForComponent(attributes, "Attributes", result);
+
+        String childResourceLinks =  getResourcesLinks(proxy);
+        result = getHtmlForComponent(childResourceLinks, "Child Resources", result);
+
         result = result + "</html></body>";
         return result;
     }
@@ -115,18 +118,11 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
             if (!node.hasChildNodes()) {
                 //getValue() on leaf node will return one of the following -
                 //Statistic object, String object or the object for primitive type
-                result = result + node.getName() + " : " +
-                    htmlForNodeValue(node.getValue());
-                result = result + "<br>";
+                result = result + htmlForNode(node.getName(), node.getValue());
             }
         }
 
         return result;
-    }
-
-
-    private String getResourcesKey() {
-        return "Child Resources";
     }
 
 
@@ -152,7 +148,7 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
     }
 
 
-    private String htmlForNodeValue(Object value) {
+    private String htmlForNode(String name, Object value) {
         String result ="";
         if (value == null) return result;
 
@@ -163,14 +159,20 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
                 Set<String> attributes = map.keySet();
                 Object attributeValue;
                 for (String attributeName: attributes) {
-                    result = result + "<br>";
-                    result = result + indent;
                     attributeValue = map.get(attributeName);
                     //for html output, string value of the object should suffice,
                     //irrespective of the type of object
-                    result = result + attributeName + " : " +
-                         attributeValue.toString();
+                    result = result + "<dt><label for=\"" + attributeName + "\">"
+                        + attributeName + ":&nbsp;" + "</label></dt>";
+                    result = result + "<dd>" + attributeValue.toString() + "</dd>";
                 }
+
+                if (result != "") {
+                    result = "<h3>" + name + "</h3>" +
+                        "<div><dl>" + result + "</dl></div>";
+                }
+
+                result = result + "<br class=\"separator\">";
                 return result;
             }
         } catch (Exception exception) {
@@ -179,11 +181,11 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
 
         //for html output, string value of the object should suffice,
         //irrespective of the type of object
-        result =  value.toString();
+        result = result + "<dt><label for=\"" + name + "\">" + name + ":&nbsp;" + "</label></dt>";
+        result = result + "<dd>" + value.toString() + "</dd>";
+        result = "<div><dl>" + result + "</dl></div>";
 
         return result;
     }
 
-
-    private static String indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 }

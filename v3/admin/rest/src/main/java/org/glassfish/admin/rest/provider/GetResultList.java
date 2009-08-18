@@ -52,8 +52,10 @@ public class GetResultList extends Result {
     /**
      * Constructor
      */
-    public GetResultList(List<Dom> domList, String[][] commandResourcesPaths) {
+    public GetResultList(List<Dom> domList, String postCommand,
+            String[][] commandResourcesPaths) {
         __domList = domList;
+        __postCommand = postCommand;
         __commandResourcesPaths = commandResourcesPaths;
     }
 
@@ -65,6 +67,13 @@ public class GetResultList extends Result {
     }
 
     /**
+     * Returns postCommand associated with the resource.
+     */
+    public String getPostCommand() {
+        return __postCommand;
+    }
+
+    /**
      * Returns an array of command resources paths and the operation type.
      */
     public String[][] getCommandResourcesPaths() {
@@ -72,5 +81,6 @@ public class GetResultList extends Result {
     }
 
     List<Dom> __domList;
+    String __postCommand;
     String[][] __commandResourcesPaths;
 }

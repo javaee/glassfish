@@ -41,46 +41,56 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
- * Response information object. Returned on call to GET method on singleton
+ * Response information object. Returned on call to GET method on command
  * resource. Information used by provider to generate the appropriate output.
  *
  * @author Rajeshwar Patil
  */
-public class GetResult extends Result {
+public class CommandResourceGetResult extends Result {
 
     /**
      * Constructor
      */
-    public GetResult(Dom dom, String deleteCommand,
-            String[][] commandResourcesPaths) {
-        __dom = dom;
-        __deleteCommand = deleteCommand;
-        __commandResourcesPaths = commandResourcesPaths;
+    public CommandResourceGetResult(String commandResourceName, String command,
+            String commandDisplayName, String commandMethod) {
+        __commandResourceName = commandResourceName;
+        __command = command;
+        __commandDisplayName = commandDisplayName;
+        __commandMethod = commandMethod;
     }
 
     /**
-     * Returns the Dom object associated with the resource.
+     * Returns command resource name.
      */
-    public Dom getDom() {
-        return __dom;
+    public String getCommandResourceName() {
+        return __commandResourceName;
     }
 
     /**
-     * Returns deleteCommand associated with the resource.
+     * Returns command associated with the command resource.
      */
-    public String getDeleteCommand() {
-        return __deleteCommand;
+    public String getCommand() {
+        return __command;
     }
 
     /**
-     * Returns an array of command resources paths and the operation type.
+     * Returns display name for command associated with the command resource.
      */
-    public String[][] getCommandResourcesPaths() {
-        return __commandResourcesPaths;
+    public String getCommandDisplayName() {
+        return __commandDisplayName;
+    }
+
+    /**
+     * Returns type of command associated with the command resource.
+     * Type can be POST, GET or DETELE.
+     */
+    public String getCommandMethod() {
+        return __commandMethod;
     }
 
 
-    Dom __dom;
-    String __deleteCommand;
-    String[][] __commandResourcesPaths;
+    String __commandResourceName;
+    String __command;
+    String __commandDisplayName;
+    String __commandMethod;
 }

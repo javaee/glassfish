@@ -43,11 +43,20 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
-import  org.glassfish.external.statistics.Statistic;
+import org.jvnet.hk2.config.Dom;
+
+import org.glassfish.admin.rest.provider.MethodMetaData;
+import org.glassfish.admin.rest.ResourceUtil;
+import org.glassfish.admin.rest.RestService;
+import org.glassfish.external.statistics.Statistic;
 
 import javax.ws.rs.core.UriInfo;
+
 
 /**
  *
@@ -83,6 +92,17 @@ public class ProviderUtil {
         }
         return typeName;
     }
+
+    /**
+     * returns just the parent name of the resource from the resource url.
+     */
+    protected String getParentName(String url) {
+        if ((url == null) || ("".equals(url))) return url;
+        String name = getName(url, '/');
+        int nameIndex = url.indexOf(name);
+        return getName(url.substring(0, nameIndex-1), '/');
+    }
+
 
     /**
      * Removes any hypens ( - ) from the given string.
@@ -253,5 +273,205 @@ public class ProviderUtil {
              }
         }
         return results;
+    }
+
+
+    static protected String getHtmlRespresentationForAttributes(Dom proxy,
+            UriInfo uriInfo) {
+        String result = "";
+        Set<String> attributes = proxy.model.getAttributeNames();
+        for (String attribute : attributes) { //for each attribute
+            result = result + "<dt><label for=\"" + attribute + "\">" + attribute + ":&nbsp;" + "</label></dt>";
+            result = result + "<dd><input name=\"" + attribute + "\" value =\"" + proxy.attribute(attribute) + "\" type=\"text\"></dd>";
+        }
+
+        if (result != "") {
+            result = "<div><form action=\"" + uriInfo.getAbsolutePath().toString() + "\" method=\"post\">" +
+                "<dl>" + result +
+                    "<dt class=\"button\"></dt><dd class=\"button\"><input value=\"Update\" type=\"submit\"></input></dd>" +
+                        "</dl></form></div>";
+        }
+
+        return result;
+    }
+
+
+    static protected String getHtmlRespresentationsForCommand(String command,
+            String commandMethod, String commandDisplayName, UriInfo uriInfo) {
+        String result ="";
+        if ((command != null) && (command != "")) {
+            ResourceUtil resourceUtil = new ResourceUtil();
+            MethodMetaData methodMetaData = resourceUtil.getMethodMetaData(
+            command, RestService.getHabitat(), RestService.logger);
+            Set<String> parameters = methodMetaData.parameters();
+            Iterator<String> iterator = parameters.iterator();
+            String parameter;
+            ParameterMetaData parameterMetaData;
+            while (iterator.hasNext()) {
+                parameter = iterator.next();
+                if ((!commandMethod.equals("delete")) ||                                //in case of delete operation(command),
+                    ((commandMethod.equals("delete")) && (!parameter.equals("id")))) {  //do not  display/provide id attribute.
+                    parameterMetaData = methodMetaData.getParameterMetaData(parameter);
+                    result = result +
+                        getHtmlRespresentationForParameter(parameter, parameterMetaData);
+                }
+            }
+
+            //Fix to diplay component for commands with 0 arguments.
+            //For example, rotate-log or restart.
+            if (result.equals("")) {
+                result = " ";
+            }
+
+        }
+
+        if (result != "") {
+            result = "<div><form action=\"" + uriInfo.getAbsolutePath().toString() +
+                "\" method=\"" + /*commandMethod*/"post" + "\">" +  //hack-1 : support delete method for html
+                "<dl>" + result;                       //hardcode "post" instead of commandMethod which chould be post or delete.
+
+            //hack-1 : support delete method for html
+            //add hidden field
+            if(commandMethod.equals("delete")) {
+                result = result +
+                    "<input name=\"operation\" value=\"__deleteoperation\" type=\"hidden\"></input>";
+            }
+
+            result = result + "<dt class=\"button\"></dt><dd class=\"button\"><input value=\"" + commandDisplayName + "\" type=\"submit\"></input></dd>";
+            result = result + "</dl></form></div>";
+        }
+
+        return result;
+    }
+
+
+    static protected String getHtmlForComponent(String component, String heading,
+            String result) {
+        if ((component != null) && (component != "")) {
+            result = result + "<h2>" + heading + "</h2>";
+            result = result + component;
+            result = result + "<hr class=\"separator\"/>";
+        }
+        return result;
+    }
+
+
+    static protected String getHtmlHeader() {
+        String result = "<html><head>";
+        result = result + "<title>GlassFish REST Interface</title>";
+        result = result + getInternalStyleSheet();
+        //FIXME - uncomment with the correct link for css file. This external file will override the internal style sheet.
+        ///result = result + "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://localhost:8080/glassfish_rest_interface.css\" />";
+        result = result + "</head><body>";
+        result = result + "<h1 class=\"mainheader\">GlassFish REST Interface</h1>";
+        result = result + "<hr>";
+        return result;
+    }
+
+
+    static private String getHtmlRespresentationForParameter(String parameter,
+            ParameterMetaData parameterMetaData) {
+        String result = parameter;
+        
+        //indicate mandatory field with * super-script
+        if (parameterMetaData.getAttributeValue("Optional").equalsIgnoreCase("false")) {
+            result = result + "<sup>*</sup>";
+        }
+
+        result = "<dt><label for=\"" + parameter + "\">" + result + ":&nbsp;" + "</label></dt>";
+
+        boolean isBoolean = false;
+        if(parameterMetaData.getAttributeValue("Type").endsWith("java.lang.Boolean")) {
+            isBoolean = true;
+        }
+
+        boolean hasAcceptableValues = false;
+        String acceptableValues = parameterMetaData.getAttributeValue("Acceptable Values");
+        if ((acceptableValues != null) && (acceptableValues.length() > 0)) {
+            hasAcceptableValues = true;
+        }
+
+        String defaultValue = parameterMetaData.getAttributeValue("Default Value");
+        boolean hasDefaultValue = false;
+        if ((defaultValue != null) && (defaultValue.length() > 0)) {
+            hasDefaultValue = true;
+        }
+
+        if (isBoolean || hasAcceptableValues) {
+            //use combo box
+            result = result + "<dd><select name=" + parameter + "><br>";
+            String[] values;
+            if (isBoolean) {
+                values = new String[] {"true", "false"};
+            } else {
+                values = stringToArray(acceptableValues, ",");
+            }
+
+            for (String value : values) {
+                if ((hasDefaultValue) && (value.equalsIgnoreCase(defaultValue))){
+                    if (isBoolean) { defaultValue = defaultValue.toLowerCase();} //boolean options are all displayed as lowercase
+                    result = result + "<option selected>" + defaultValue + "<br>";
+                } else {
+                    result = result + "<option>" + value + "<br>";
+                }
+            }
+            result = result + "</select></dd>";
+        } else {
+            //use text box
+            if (hasDefaultValue) {
+                result = result + "<dd><input name=\"" + parameter + "\" value =\"" +
+                    defaultValue + "\" type=\"text\"></dd>";
+            } else {
+                result = result + "<dd><input name=\"" + parameter + "\" type=\"text\"></dd>";
+            }
+        }
+
+        return result;
+    }
+
+
+    /**
+     *  This method converts a string into stringarray, uses the delimeter as the
+     *  separator character. If the delimiter is null, uses space as default.
+     */
+    private static String[] stringToArray(String str, String delimiter) {
+        String[] retString = new String[0];
+
+        if (str != null) {
+            if(delimiter == null) {
+                delimiter = " ";
+            }
+            StringTokenizer tokens = new StringTokenizer(str, delimiter);
+            retString = new String[tokens.countTokens()];
+            int i = 0;
+            while(tokens.hasMoreTokens()) {
+                retString[i++] = tokens.nextToken();
+            }
+        }
+        return retString;
+    }
+
+
+    private static String getInternalStyleSheet() {
+        String result = "<style type=\"text/css\">";
+        result = result + "body {";
+        result = result + "font-size:75%;font-family:verdana,arial,'sans serif';";
+        result = result + "background-repeat:repeat-x;background-color:#F0F0F0;";
+        result = result + "color:#303030;";
+        result = result + "margin:60px;margin-top:20px;margin-bottom:20px;margin-right:60px;margin-left:60px;";
+        result = result + "}";
+        result = result + "h1 {font-size:200%;background-color:#E0E0E0}";
+        result = result + "h2 {font-size:140%;background-color:#E8E8E8}";
+        result = result + "h3 {font-size:110%;background-color:#E8E8E8}";
+        result = result + "h1.mainheader {color:#101010;font-size:200%;background-color:#D8D8D8;text-align:center}";
+        result = result + "a:link {color:#000080;}";
+        result = result + "a:hover {color:red;}";
+        result = result + "input[type=\"text\"] {background-color:#F8F8F8;border-style:inset;width:350px}";
+        result = result + "dl {position: relative;width:500px}";
+        result = result + "dt {clear: both;float:left;width: 210px;padding: 4px 0 2px 0;text-align:left}";
+        result = result + "dd {float: left;width: 200px;margin: 0 0 8px 0;padding-left: 6px;}";
+        result = result + ".separator{clear:both}";
+        result = result + "</style>";
+        return result;
     }
 }

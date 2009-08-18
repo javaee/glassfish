@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Thu Jul 30 19:16:47 PDT 2009
+* date=Tue Aug 11 16:09:03 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -19,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.glassfish.admin.rest.provider.CommandResourceGetResult;
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.ResourceUtil;
@@ -55,6 +56,15 @@ return Response.status(400).entity(errorMessage).build(); /*400 - bad request*/
 throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 }
 }
+@GET
+@Consumes({MediaType.TEXT_HTML})
+public CommandResourceGetResult get() {
+try {
+return new CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod);
+} catch (Exception e) {
+throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+}
+}
 @OPTIONS
 @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
 public OptionsResult options() {
@@ -74,7 +84,9 @@ return optionsResult;
 @Context
 protected UriInfo uriInfo;
 
+private static final String resourceName = "DomainStop";
 private static final String commandName = "stop-domain";
+private static final String commandDisplayName = "stop";
 private static final String commandMethod = "POST";
 private ResourceUtil __resourceUtil;
 }

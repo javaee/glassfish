@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Logger;
 import java.util.Properties;
+import java.util.Set;
 
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigBean;
@@ -198,6 +199,21 @@ public class ResourceUtil {
         //print(params);
         return params;
     }
+
+
+    //removes entries with empty value from the given Map
+    void purgeEmptyEntries(HashMap<String, String> data) {
+        Set<String> keys = data.keySet();
+        Iterator<String> iterator = keys.iterator();
+        String key;
+        while (iterator.hasNext()) {
+            key = iterator.next();
+            if (data.get(key).length() < 1) {
+                data.remove(key);
+                iterator = keys.iterator();
+            }
+        }
+     }
 
 
     //Construct parameter meta-data from the model

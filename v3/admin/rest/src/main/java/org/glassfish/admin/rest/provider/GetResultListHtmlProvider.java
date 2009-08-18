@@ -94,12 +94,17 @@ public class GetResultListHtmlProvider extends ProviderUtil implements MessageBo
 
 
      private String getHtml(GetResultList proxy) {
-        String result;
-        result = "<html><head><title>GlassFish REST Access to "+getTypeKey()+"</title></head><body>";
+        String result = getHtmlHeader();
         result = result + "<h1>" + getTypeKey() + "</h1>";
-        result = result + "<h2>Child Resources:</h2>" ;
-            result = result + getResourcesLinks(proxy.getDomList(),
-                proxy.getCommandResourcesPaths());
+
+        String command = proxy.getPostCommand();
+        String postCommand = getHtmlRespresentationsForCommand(command, "post", "Create", uriInfo);
+        result = getHtmlForComponent(postCommand, "Create " + getTypeKey(), result);
+
+        String childResourceLinks = getResourcesLinks(proxy.getDomList(),
+            proxy.getCommandResourcesPaths());
+        result = getHtmlForComponent(childResourceLinks, "Child Resources", result);
+
         result = result + "</html></body>";
         return result;
     }
@@ -127,19 +132,18 @@ public class GetResultListHtmlProvider extends ProviderUtil implements MessageBo
         //add command resources
         for (String[] commandResourcePath : commandResourcesPaths) {
             try {
-                if ("GET".equals(commandResourcePath[1])) {
-                    result = result + "<a href=" + getElementLink(uriInfo, commandResourcePath[0]) + ">";
-                    result = result + commandResourcePath[0];
-                    result = result + "</a>";
-                } else {
-                    result = result + commandResourcePath[0];
-                }
+                result = result + "<a href=" + getElementLink(uriInfo, commandResourcePath[0]) + ">";
+                result = result + commandResourcePath[0];
+                result = result + "</a>";
                 result = result + "<br>";
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
+        if (result != "") {
+            result = "<div>" + result + "</div>" + "<br>";
+        }
         return result;
     }
 }

@@ -37,6 +37,7 @@ package org.glassfish.admin.rest;
 
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.Map;
 
@@ -112,7 +113,8 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
-        return new GetResult(Dom.unwrap(getEntity()), getCommandResourcesPaths());
+        return new GetResult(Dom.unwrap(getEntity()), getDeleteCommand(),
+            getCommandResourcesPaths());
     }
 
 
@@ -121,7 +123,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
     }
 
 
-    @PUT  //update
+    @POST  //update
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     public Response updateEntity(HashMap<String, String> data) {
         try {
@@ -129,6 +131,18 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             if (data.containsKey("error")) {
              return Response.status(415).entity(
                  "Unable to parse the input entity. Please check the syntax.").build();//unsupported media
+            }
+
+            __resourceUtil.purgeEmptyEntries(data);
+
+            //hack-1 : support delete method for html
+            //Currently, browsers do not support delete method. For html media,
+            //delete operations can be supported through POST. Redirect html
+            //client POST request for delete operation to DELETE method.
+            if ((data.containsKey("operation")) &&
+                (data.get("operation").equals("__deleteoperation"))) {
+                data.remove("operation");
+                return delete(data);
             }
 
             Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
@@ -152,6 +166,8 @@ public class TemplateResource<E extends ConfigBeanProxy> {
                 return Response.status(415).entity(
                     "Unable to parse the input entity. Please check the syntax.").build();//unsupported media
             }
+
+            __resourceUtil.purgeEmptyEntries(data);
 
             __resourceUtil.adjustParameters(data);
             if (data.get("DEFAULT") == null) {
@@ -206,8 +222,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             optionsResult.putMethodMetaData("PUT", new MethodMetaData());
 
             //DELETE meta data
-            String command = __resourceUtil.getCommand(
-                RestRedirect.OpType.DELETE, getConfigBean());
+            String command = getDeleteCommand();
             if (command != null) {
                 MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
                         command, RestService.getHabitat(), RestService.logger);
@@ -233,6 +248,12 @@ public class TemplateResource<E extends ConfigBeanProxy> {
 
     public String[][] getCommandResourcesPaths() {
         return new String[][]{};
+    }
+
+
+    private String getDeleteCommand() {
+         return __resourceUtil.getCommand(
+            RestRedirect.OpType.DELETE, getConfigBean());
     }
 
 

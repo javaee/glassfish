@@ -632,8 +632,7 @@ public class GeneratorResource {
 
                 //generate command resource for the resource- resourceName
                 createCommandResourceFile(commandResourceFileName,
-                    commandResourceName, ConfigBeansToCommandResourcesMap[i][1],
-                        ConfigBeansToCommandResourcesMap[i][2]);
+                    commandResourceName, ConfigBeansToCommandResourcesMap[i]);
 
                 //define method with @Path in resource- resourceName
                 out.write("@Path(\"" + ConfigBeansToCommandResourcesMap[i][3] + "/\")\n");
@@ -655,8 +654,14 @@ public class GeneratorResource {
     }
 
     private void createCommandResourceFile(String commandResourceFileName,
-        String commandResourceName, String commandName,
-            String commandMethod) throws IOException {
+        String commandResourceName, String [] configBeansToCommandResourcesArray)
+            throws IOException {
+        String resourceName = configBeansToCommandResourcesArray[0] +
+            getBeanName(configBeansToCommandResourcesArray[3]);
+        String commandName = configBeansToCommandResourcesArray[1];
+        String commandDisplayName = configBeansToCommandResourcesArray[3];
+        String commandMethod = configBeansToCommandResourcesArray[2];
+
         File file = new File(commandResourceFileName);
         try {
             file.createNewFile();
@@ -678,6 +683,7 @@ public class GeneratorResource {
         out.write("import javax.ws.rs.core.MediaType;\n");
         out.write("import javax.ws.rs.core.Response;\n");
         out.write("import javax.ws.rs.core.UriInfo;\n\n");
+        out.write("import org.glassfish.admin.rest.provider.CommandResourceGetResult;\n");
         out.write("import org.glassfish.admin.rest.provider.OptionsResult;\n");
         out.write("import org.glassfish.admin.rest.provider.MethodMetaData;\n");
         if (commandMethod.equals("GET")) {
@@ -702,6 +708,9 @@ public class GeneratorResource {
         } else {
             //post, put or delete method
             createCommandMethod(commandMethod, out);
+
+            //get method
+            createGetMethod(out);
         }
 
         //create options method
@@ -710,7 +719,9 @@ public class GeneratorResource {
         //variable declarations
         out.write("@Context\n");
         out.write("protected UriInfo uriInfo;\n\n");
+        out.write("private static final String resourceName = \"" + resourceName + "\";\n");
         out.write("private static final String commandName = \"" + commandName + "\";\n");
+        out.write("private static final String commandDisplayName = \"" + commandDisplayName + "\";\n");
         out.write("private static final String commandMethod = \"" + commandMethod + "\";\n");
         out.write("private ResourceUtil __resourceUtil;\n");
         out.write("}\n");
@@ -740,6 +751,20 @@ public class GeneratorResource {
         out.write("}\n\n");
         out.write("String errorMessage = actionReport.getMessage();\n");
         out.write("return Response.status(400).entity(errorMessage).build(); /*400 - bad request*/\n");
+        out.write("} catch (Exception e) {\n");
+        out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
+        out.write("}\n");
+        out.write("}\n");
+    }
+
+
+    private void createGetMethod(BufferedWriter out)
+                throws IOException {
+        out.write("@" + "GET" + "\n");
+        out.write("@Consumes({MediaType.TEXT_HTML})\n");
+        out.write("public CommandResourceGetResult get() {\n");
+        out.write("try {\n");
+        out.write("return new CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod);\n");
         out.write("} catch (Exception e) {\n");
         out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
         out.write("}\n");
