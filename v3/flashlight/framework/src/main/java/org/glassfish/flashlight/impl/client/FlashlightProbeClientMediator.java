@@ -83,10 +83,6 @@ public class FlashlightProbeClientMediator
 
     private static ConcurrentHashMap<Integer, Object> clients =
             new ConcurrentHashMap<Integer, Object>();
-    /*
-    private HandlerRegistry _handlerRegistry
-            = HandlerRegistry.getInstance();
-    */
 
     Instrumentation inst = null;
 
