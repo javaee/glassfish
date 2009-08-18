@@ -17,11 +17,15 @@ import org.jvnet.hk2.config.Configured;
 @Configured
 public interface MonitoringItem extends ConfigBeanProxy {
 
+    public static final String LEVEL_OFF = "OFF";
+    public static final String LEVEL_LOW = "LOW";
+    public static final String LEVEL_HIGH = "HIGH";
+
     /**
      * The monitoring level of this monitoring item 
      * @return String with values HIGH/LOW/OFF
      */
-    @Attribute
+    @Attribute (defaultValue="OFF")
     @NotNull
     public String getLevel();
 
