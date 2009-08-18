@@ -93,7 +93,7 @@ public final class AMXOtherTests extends AMXTestBase
             
             final Map<String,Object> pingResults = api.pingJDBCConnectionPool(poolName);
             assert pingResults != null;
-            assert pingResults.get(ConnectorRuntimeAPIProvider.BOOLEAN_KEY) != null || pingResults.get(REASON_FAILED_KEY) != null;
+            assert pingResults.get(ConnectorRuntimeAPIProvider.PING_CONNECTION_POOL_KEY) != null || pingResults.get(REASON_FAILED_KEY) != null;
             //System.out.println( "pingResults for: " + poolName + ": " + pingResults );
         }
 
