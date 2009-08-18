@@ -36,7 +36,7 @@ import java.util.Properties;
  *
  * @author dochez
  */
-@Service
+@Service(name = "html")
 @Scoped(PerLookup.class)
 public class HTMLActionReporter extends ActionReporter {
     

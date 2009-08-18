@@ -289,7 +289,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         }
         if (report==null) {
             // get the default one.
-            report = habitat.getComponent(ActionReport.class);
+            report = habitat.getComponent(ActionReport.class, "html");
         }
         return report;
     }
