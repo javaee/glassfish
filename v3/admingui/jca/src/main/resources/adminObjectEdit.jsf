@@ -74,7 +74,21 @@
     
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njca.adminObjectResource.editPageTitle}" helpText="$resource{i18njca.adminObjectResource.editPageHelp}" >
-#include "/common/shared/editPageButtons.inc"
+    <sun:button id="loadDefaults" style="margin-left: 8pt"  rendered="#{pageSession.showDef}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
+        <!beforeCreate
+            if (!#{pageSession.edit}){
+                setPageSessionAttribute(key="showDef" value="#{false}");
+            }
+            if (#{pageSession.edit}){
+                setPageSessionAttribute(key="showDef" value="#{pageSession.showDefaultButton}");
+            }
+        />
+        <!command
+            getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  orig="#{pageSession.valueMap}" valueMap="#{pageSession.valueMap}")
+            
+        />
+    </sun:button>
+#include "/common/shared/editPageButtons_2.inc"
     </sun:title>
     "<br><br>
     
