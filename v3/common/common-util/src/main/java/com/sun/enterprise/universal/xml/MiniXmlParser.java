@@ -54,50 +54,6 @@ import java.util.logging.Logger;
  * @author bnevins
  */
 public class MiniXmlParser {
-    private static final String DEFAULT_ADMIN_VS_ID = "__asadmin";
-
-    private static final String DEFAULT_VS_ID = "server";
-
-    private LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
-
-    private File domainXml;
-
-    private XMLStreamReader parser;
-
-    private FileInputStream domainXmlstream;
-
-    private String serverName;
-
-    private String configRef;
-
-    private List<String> jvmOptions = new ArrayList<String>();
-
-    private List<String> profilerJvmOptions = new ArrayList<String>();
-
-    private Map<String, String> javaConfig;
-
-    private Map<String, String> profilerConfig = Collections.emptyMap();
-
-    private Map<String, String> sysProps = new HashMap<String, String>();
-
-    private Map<String, String> profilerSysProps = new HashMap<String, String>();
-
-    private boolean valid = false;
-
-    private Set<Integer> adminPorts = new HashSet<Integer>();
-
-    private String domainName;
-
-    private String logFilename;
-
-    private static final LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
-
-    private boolean monitoringEnabled;
-
-    private List<Map<String, String>> vsAttributes = new ArrayList<Map<String, String>>();
-
-    private List<Map<String, String>> listenerAttributes = new ArrayList<Map<String, String>>();
-
     public MiniXmlParser(File domainXml) throws MiniXmlParserException {
         this(domainXml, "server");  // default for a domain
     }
@@ -211,6 +167,8 @@ public class MiniXmlParser {
         return monitoringEnabled;
     }
 
+    /////////////////////  all private below  /////////////////////////
+    
     private void read() throws XMLStreamException, EndDocumentException, FileNotFoundException {
         createParser();
         getConfigRefName();
@@ -717,4 +675,27 @@ public class MiniXmlParser {
         EndDocumentException() {
         }
     }
+
+    private static final String DEFAULT_ADMIN_VS_ID = "__asadmin";
+    private static final String DEFAULT_VS_ID = "server";
+    private LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
+    private File domainXml;
+    private XMLStreamReader parser;
+    private FileInputStream domainXmlstream;
+    private String serverName;
+    private String configRef;
+    private List<String> jvmOptions = new ArrayList<String>();
+    private List<String> profilerJvmOptions = new ArrayList<String>();
+    private Map<String, String> javaConfig;
+    private Map<String, String> profilerConfig = Collections.emptyMap();
+    private Map<String, String> sysProps = new HashMap<String, String>();
+    private Map<String, String> profilerSysProps = new HashMap<String, String>();
+    private boolean valid = false;
+    private Set<Integer> adminPorts = new HashSet<Integer>();
+    private String domainName;
+    private String logFilename;
+    private static final LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
+    private boolean monitoringEnabled;
+    private List<Map<String, String>> vsAttributes = new ArrayList<Map<String, String>>();
+    private List<Map<String, String>> listenerAttributes = new ArrayList<Map<String, String>>();
 }
