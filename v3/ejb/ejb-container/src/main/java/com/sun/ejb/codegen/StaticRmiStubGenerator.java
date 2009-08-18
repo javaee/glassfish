@@ -38,16 +38,14 @@ package com.sun.ejb.codegen;
 import java.lang.reflect.Method;
 import java.io.*;
 import java.util.*;
-import com.sun.ejb.EJBUtils;
-
-import static java.lang.reflect.Modifier.*;
 
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.deployment.common.DeploymentException;
+import org.glassfish.deployment.common.ClientArtifactsManager;
 import org.glassfish.loader.util.ASClassLoaderUtil;
-import com.sun.enterprise.deployment.util.TypeUtil;
 
-import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
 import java.util.logging.Level;
@@ -55,13 +53,15 @@ import java.util.logging.Logger;
 
 import org.jvnet.hk2.component.Habitat;
 
+import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.deployment.EjbReferenceDescriptor;
-
-import org.glassfish.api.deployment.DeployCommandParameters;
-
+import com.sun.enterprise.deployment.util.TypeUtil;
+import com.sun.enterprise.config.serverbeans.JavaConfig;
+import com.sun.enterprise.util.OS;
+import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 
 /**
  * This class is used to generate the RMI-IIOP version of a 
@@ -70,19 +70,74 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 
 public class StaticRmiStubGenerator {
 
-    private static final LocalStringManagerImpl localStrings =
-	    new LocalStringManagerImpl(StaticRmiStubGenerator.class);
+    private static final StringManager localStrings = StringManager.getManager(StaticRmiStubGenerator.class);
 
      private static final Logger _logger =
                 LogDomains.getLogger(StaticRmiStubGenerator.class, LogDomains.EJB_LOGGER);
 
      private static final String ORG_OMG_STUB_PREFIX  = "org.omg.stub.";
 
+     private final String javaExePath;
+     private final String toolsJarPath;
 
     /**
      * This class is only instantiated internally.
      */
-    public StaticRmiStubGenerator() { }
+    public StaticRmiStubGenerator() { 
+        // Find java path and tools.jar
+
+        //Try this jre's parent
+        String jreHome = System.getProperty("java.home");
+        File jdkDir = null;
+        if(jreHome != null) {
+            // on the mac the java.home does not point to the jre
+            // subdirectory.
+            if (OS.isDarwin()) {
+                jdkDir = new File(jreHome);
+            } else {
+                jdkDir = (new File(jreHome)).getParentFile();       //jdk_dir/jre/..
+            }
+
+            jdkDir = getValidDirectory(jdkDir);
+        }
+
+        if(jdkDir == null) {
+            // Check for "JAVA_HOME" -- which is set via Server.xml during initialization
+            // of the Server that is calling us.
+
+            String jh = System.getProperty("JAVA_HOME");
+            if(jh != null) {
+                jdkDir = getValidDirectory(new File(jh));  // e.g. c:/ias7/jdk
+            }
+        }
+
+        if(jdkDir == null) {
+            //Somehow, JAVA_HOME is not set. Try the "well-known" location...
+/** XXX ???
+            if(installRoot != null) {
+                jdkDir = getValidDirectory(new File(installRoot + "/jdk"));
+
+            }
+** XXX **/
+        }
+
+        if(jdkDir == null) {
+            _logger.warning("Cannot identify JDK location.");
+            javaExePath = null;
+            toolsJarPath = null;
+        } else {
+            String javaName = (OS.isWindows())? "java.exe" : "java";
+            File javaExe = new File(jdkDir + "/bin/" + javaName);
+            javaExePath = javaExe.getPath();
+            File toolsJar = new File(jdkDir + "/lib/tools.jar" );
+            if (toolsJar != null && toolsJar.exists()) {
+                toolsJarPath = toolsJar.getPath();
+            } else {
+                toolsJarPath = null;
+            }
+
+        }
+    }
 
     /**
      * Generates and compiles the necessary impl classes, stubs and skels.
@@ -111,16 +166,16 @@ public class StaticRmiStubGenerator {
      * @return   array of the client stubs files as zip items or empty array
      *
      */
-    public void /* ZipItem[] */ ejbc(Habitat h, DeploymentContext deploymentCtx) throws Exception {
+    public void ejbc(Habitat h, DeploymentContext deploymentCtx) throws Exception {
 
         // stubs dir for the current deployment
         File stubsDir = deploymentCtx.getScratchDir("ejb");
+        String explodedDir = deploymentCtx.getSource().getURI().getSchemeSpecificPart();
 
         // deployment descriptor object representation
         EjbBundleDescriptor ejbBundle  = deploymentCtx.getModuleMetaData(EjbBundleDescriptor.class);
 
         long startTime = now();
-        long time;	// scratchpad variable
 
         // class path to be used for this application during javac & rmic
         String classPath =  ASClassLoaderUtil.getModuleClassPath(h, deploymentCtx);
@@ -146,84 +201,52 @@ public class StaticRmiStubGenerator {
         // controls the generation of rmic stubs.  Dynamic stubs will be used
         // in the server, in the Application Client container, and in
         // stand-alone clients that instantiate our naming provider.  
-        DeployCommandParameters dcp =
-                deploymentCtx.getCommandParameters(DeployCommandParameters.class);
-        boolean generateRmicStubs = dcp.generatermistubs;
 
-
-        //progress(localStrings.getStringWithDefault
-          //       ("generator.processing_beans", "Processing beans..."));
+        progress(localStrings.getStringWithDefault
+                 ("generator.processing_beans", "Processing beans..."));
 
 
         // ---- END OF EJB DEPLOYMENT DESCRIPTORS --------------------------
 
-        // ---- LOCAL HOME & OBJECT ----------------------------------------
-
-        /**         TODO
-        FileArchive dArchive = new FileArchive();
-        dArchive.open(gnrtrTMP);
-        DeploymentContext context = new DeploymentContext(dArchive,application);
-
-         */
-
-        // Generate code for Remote EJB 30 business interfaces
-        Vector remote30Files = new Vector();
-
         // ---- RMIC ALL STUB CLASSES --------------------------------------
 
-        Set allStubClasses = new HashSet();
+        Set<String> allStubClasses = new HashSet<String>();
 
-        if( generateRmicStubs ) {
+        // stubs classes for ejbs within this app that need rmic
+        Set<String> ejbStubClasses = getStubClasses(jcl, ejbBundle);
+        allStubClasses.addAll(ejbStubClasses);
 
-            // stubs classes for ejbs within this app that need rmic
-            Set ejbStubClasses = getStubClasses(jcl, ejbBundle);
+        // Compile and RMIC all Stubs
+        List<String> rmicOptionsList = new ArrayList<String>();
+        JavaConfig jc = h.getComponent(JavaConfig.class);
 
-
-            allStubClasses.addAll(ejbStubClasses);
-
-            // Compile and RMIC all Stubs
-
-            time = now();
-
-            //compileAndRmic(classPath, ejbcCtx.getRmicOptions(), allStubClasses,
-              //             stubsDir, gnrtrTMP);
-
-            //ejbcCtx.getTiming().RMICompileTime += (now() - time);
+        String rmicOptions = jc.getRmicOptions();
+        StringTokenizer st = new StringTokenizer(rmicOptions, " ");
+        while (st.hasMoreTokens()) {
+            String op = (String) st.nextToken();
+            rmicOptionsList.add(op);
+            _logger.log(Level.INFO, "Detected Rmic option: " + op);
         }
+        rmic(classPath, rmicOptionsList, allStubClasses, stubsDir, gnrtrTMP, explodedDir);
+
+        _logger.log(Level.INFO,  "[RMIC] RMIC execution time: " + (now() - startTime) + " msec");
 
         // ---- END OF RMIC ALL STUB CLASSES -------------------------------
 
         // Create list of all server files and client files
-        Vector allClientFiles = new Vector();
+        List<String> allClientFiles = new ArrayList<String>();
 
         // assemble the client files
         addGeneratedFiles(allStubClasses, allClientFiles, stubsDir);
 
-        if( remote30Files.size() > 0 ) {
-
-            Iterator itr = remote30Files.iterator();
-            if (itr != null) {
-                for (;itr.hasNext();) {
-                    String file = (String) itr.next();
-                    allClientFiles.add(file.replace(".java", ".class"));
-                }
-            }
-
+        ClientArtifactsManager cArtifactsManager =  ClientArtifactsManager.get(deploymentCtx);
+        for (String file : allClientFiles) {
+            cArtifactsManager.add(stubsDir, new File(file));
         }
 
+        _logger.log(Level.INFO, "ejbc.end", deploymentCtx.getModuleMetaData(Application.class).getRegistrationName());
+        _logger.log(Level.INFO,  "[RMIC] Total time: " + (now() - startTime) + " msec");
 
-
-        /**                   TODO
-        // client zip entries
-        ZipItem[] clientStubs = getClientZipEntries(allClientFiles, stubsDir);
-
-        _logger.log(Level.FINE, "ejbc.end", application.getRegistrationName());
-        ejbcCtx.getTiming().totalTime = now() - startTime;
-
-         */
-
-
-        return;
     }
 
     /**
@@ -281,79 +304,90 @@ public class StaticRmiStubGenerator {
      *                             the other files
      * @param    destDir           destination directory for javac & rmic
      * @param    repository        repository for code generator
+     * @param    explodedDir  exploded directory for .class files
      *
      * @exception    GeneratorException  if an error during code generation
      * @exception    IOException         if an i/o error
      */
-    private void rmic(String classPath, List rmicOptions,
-                                Set stubClasses, File destDir,
-                                String repository)
+    private void rmic(String classPath, List<String> rmicOptions,
+                                Set<String> stubClasses, File destDir,
+                                String repository, String explodedDir)
         throws GeneratorException, IOException
     {
 
-        if( (stubClasses.size() == 0) ) {
-            _logger.log(Level.FINE,  "[EJBC] No code generation required");
+        if( stubClasses.size() == 0 ) {
+            _logger.log(Level.INFO,  "[RMIC] No code generation required");
             return;
         }
 
-        /**
+        if( javaExePath == null ) {
+            _logger.log(Level.INFO,  "[RMIC] JDK location was not found");
+            return;
+        }
+
+        if( toolsJarPath == null ) {
+            _logger.log(Level.INFO,  "[RMIC] tools.jar location was not found");
+            return;
+        }
+
         progress(localStrings.getStringWithDefault(
                                          "generator.compiling_rmi_iiop",
                                          "Compiling RMI-IIOP code."));
-         */
 
-        List options = new ArrayList();
-        List fileList = new ArrayList();
-
-        options.addAll(rmicOptions);
-
-        options.add("-classpath");
+        List<String> cmds = new ArrayList<String>();
+        cmds.add(javaExePath);
+        cmds.add("-classpath");
         String bigClasspath = System.getProperty("java.class.path")
+                            + File.pathSeparator + toolsJarPath
                             + File.pathSeparator + classPath
+                            + File.pathSeparator + explodedDir
                             + File.pathSeparator + repository;
 
-        options.add(bigClasspath);
-        options.add("-d");
-        options.add(destDir.toString());
-
-        for(Iterator extraIter = stubClasses.iterator();
-            extraIter.hasNext();) {
-            String next = (String) extraIter.next();
-            _logger.log(Level.FINE,"[EJBC] rmic " + next + "...");
-            fileList.add(next);
+        cmds.add(bigClasspath);
+        if (OS.isDarwin()) {
+            // add lib/endorsed so it finds the right rmic
+            cmds.add("-Djava.endorsed.dirs=" + System.getProperty("com.sun.aas.installRoot") +
+                    File.separatorChar + "lib" + File.separatorChar + "endorsed");
         }
 
-        /** TODO
+        cmds.add("-Djava.ext.dirs=" + System.getProperty("java.ext.dirs"));
+        cmds.add("sun.rmi.rmic.Main");
+        cmds.add("-classpath");
+        cmds.add(bigClasspath);
+        cmds.add("-d");
+        cmds.add(destDir.toString());
+        cmds.addAll(rmicOptions);
+        cmds.addAll(stubClasses);
 
+        if (_logger.isLoggable(Level.INFO)){
+            StringBuffer sbuf = new StringBuffer();
+            for(String o : cmds) {
+                sbuf.append("\n\t").append(o);
+            }
+            _logger.log(Level.INFO,"[RMIC] RMIC COMMAND: " + sbuf.toString());
+        }
+
+        int result = -1;
         try {
+            Process p = Runtime.getRuntime().exec(cmds.toArray(new String[0]));
 
-             * RMICompiler rmic = new RMICompiler(options, fileList);
-            rmic.setClasspath(bigClasspath);
-            rmic.compile();
+            // This call suppose to prevent problems with err and out streams
+            ProcessStreamDrainer.redirect("rmic", p);
 
-
-        } catch(JavaCompilerException e) {
-            _logger.log(Level.FINE,"ejbc.codegen_rmi_fail",e);
-             String msg =
-                "generator.rmic_compilation_failed";
+            result = p.waitFor();
+        } catch(Exception e) {
+            _logger.log(Level.INFO,"ejbc.codegen_rmi_fail",e);
+            String msg =
+                localStrings.getString("generator.rmic_compilation_failed");
             GeneratorException ge = new GeneratorException(msg);
             ge.initCause(e);
             throw ge;
         }
 
-         */
-
-        if (_logger.isLoggable(Level.FINE)){
-            StringBuffer sbuf = new StringBuffer();
-            for(Iterator it = options.iterator(); it.hasNext(); ) {
-                sbuf.append("\n\t").append(it.next());
-            }
-            for(Iterator it = fileList.iterator(); it.hasNext(); ) {
-                sbuf.append("\n\t").append(it.next());
-            }
-            _logger.log(Level.FINE,"[EJBC] RMIC COMMAND: " + sbuf.toString());
+        if (result != 0) {
+            throw new GeneratorException(
+                    localStrings.getString("generator.rmic_compilation_failed_see_log"));
         }
-        return;
     }
 
 
@@ -361,22 +395,21 @@ public class StaticRmiStubGenerator {
      * Assembles the name of the client jar files into the given vector.
      *
      * @param    stubClasses  classes that required rmic
-     * @param    allClientFiles    vector that contains all client jar files
+     * @param    allClientFiles    List that contains all client jar files
      * @param    stubsDir          current stubsnskells dir for the app
      */
-    private void addGeneratedFiles(Set stubClasses,
-                                   Vector allClientFiles, File stubsDir)
+    private void addGeneratedFiles(Set<String> stubClasses,
+                                   List<String> allClientFiles, File stubsDir)
     {
-        for (Iterator iter = stubClasses.iterator(); iter.hasNext();) {
-            String next = (String) iter.next();
+        for (String stubClass : stubClasses) {
             String stubFile = stubsDir.toString() + File.separator +
-                                getStubName(next).replace('.',
+                                getStubName(stubClass).replace('.',
                                 File.separatorChar) + ".class";
             allClientFiles.add(stubFile);
         }
 
-        _logger.log(Level.FINE,
-                    "[EJBC] Generated client files: " + allClientFiles);
+        _logger.log(Level.INFO,
+                    "[RMIC] Generated client files: " + allClientFiles);
     }
 
       
@@ -393,85 +426,31 @@ public class StaticRmiStubGenerator {
 
         String stubName = packageName + "_" + className + "_Stub";
 
-		if(isSpecialPackage(fullName))
+    	if(isSpecialPackage(fullName))
             stubName = ORG_OMG_STUB_PREFIX + stubName;
 
         return stubName;
     }
 
     private boolean isSpecialPackage(String name)
-	{
-		// these package names are magic.  RMIC puts any home/remote stubs
-		// into a different directory in these cases.
-		// 4845896  bnevins, April 2003
+    {
+    	// these package names are magic.  RMIC puts any home/remote stubs
+    	// into a different directory in these cases.
+    	// 4845896  bnevins, April 2003
 
-		// this is really an error.  But we have enough errors. Let's be forgiving
-		// and not allow a NPE out of here...
-		if(name == null)
-			return false;
+    	// this is really an error.  But we have enough errors. Let's be forgiving
+    	// and not allow a NPE out of here...
+    	if(name == null)
+    		return false;
 
-		// Licensee bug 4959550
-		// if(name.startsWith("com.sun.") || name.startsWith("javax."))
-		if(name.startsWith("javax.")) {
-			return true;
+    	// Licensee bug 4959550
+    	// if(name.startsWith("com.sun.") || name.startsWith("javax."))
+    	if(name.startsWith("javax.")) {
+    		return true;
         }
 
-		return false;
-	}
-
-    /**
-     * Constructs the client zip entries.
-     *
-     * @param    allClientFiles  all client stubs
-     * @param    stubsDir        stubs directory for the current app
-     *
-     * @return   the client zip entries or an empty array if no stubs
-     */
-    /**    TODO
-    private ZipItem[] getClientZipEntries(Vector allClientFiles,
-                                          File stubsDir)
-        throws IOException, ZipFileException {
-
-        // number of client stubs
-        final int CLIENT_SZ = allClientFiles.size();
-
-        ZipItem[] zipEntries = new ZipItem[CLIENT_SZ];
-
-        // string representaion of the stubs dir - please note that
-        // toString is used to convert the file object to string earlier.
-        // So, canonical path should not be used here
-        String stubsDirPath = stubsDir.toString();
-
-        for (int i=0; i<CLIENT_SZ; i++) {
-            String longName = (String) allClientFiles.elementAt(i);
-            File file = new File(longName);
-
-            _logger.log(Level.FINE,"[EJBC] stubs - >>"+longName);
-
-            // coverts the file name to a jar entry name
-            String entryName = "";
-            if (longName.startsWith(stubsDirPath)) {
-                entryName = longName.substring(stubsDirPath.length());
-                if (entryName.charAt(0) == File.separatorChar) {
-                    entryName = entryName.substring(1);
-                }
-            } else {
-                // throw exception
-                String msg =
-                    localStrings.getString("generator.unknown_class_prefix");
-                throw new RuntimeException(msg);
-            }
-            // zip entry has forward slashes
-            entryName = entryName.replace(File.separatorChar,'/');
-
-            // create the zip entry
-            zipEntries[i] = new ZipItem(file, entryName);
-        }
-
-        // returns the client stubs
-        return zipEntries;
+    	return false;
     }
-     **/
 
     private Set getRemoteSuperInterfaces(ClassLoader jcl,
                                          String homeRemoteIntf)
@@ -499,18 +478,17 @@ public class StaticRmiStubGenerator {
     }
 
 
-    private Set getStubClasses(ClassLoader jcl,
+    private Set<String> getStubClasses(ClassLoader jcl,
                               EjbBundleDescriptor ejbBundle)
             throws IOException, ClassNotFoundException
     {
 
-        Set stubClasses     = new HashSet();
+        Set<String> stubClasses     = new HashSet<String>();
 
         for (Iterator iter = ejbBundle.getEjbs().iterator(); iter.hasNext();)
         {
 
             EjbDescriptor desc = (EjbDescriptor) iter.next();
-
             if( desc.isRemoteInterfacesSupported() ) {
 
                 String home   = desc.getHomeClassName();
@@ -564,11 +542,22 @@ public class StaticRmiStubGenerator {
 
     private void progress(String message) {
             try {
-                _logger.log(Level.FINE, message);
+                _logger.log(Level.INFO, message);
             } catch(Throwable t) {
                 _logger.log(Level.FINER,"Cannot set status message",t);
             }
     }
 
+
+    private File getValidDirectory(File f) {
+        try {
+            if(f != null && f.isDirectory()) {
+                return f.getCanonicalFile();
+            }
+        } catch (IOException e) {
+            _logger.log(Level.INFO, e.getMessage(), e);
+        }
+        return null;
+    }
 }
 

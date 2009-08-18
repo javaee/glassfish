@@ -252,7 +252,6 @@ public class EjbDeployer
             }
         }
 
-        /**  TODO 
         DeployCommandParameters dcp =
                 dc.getCommandParameters(DeployCommandParameters.class);
         boolean generateRmicStubs = dcp.generatermistubs;
@@ -265,7 +264,6 @@ public class EjbDeployer
                         dc.getSourceDir(), e);
             }
         }
-        **/
 
         if (bundle == null || !bundle.containsCMPEntity()) {
             // bundle WAS null in a war file where we do not support CMPs
