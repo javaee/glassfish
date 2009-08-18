@@ -1,9 +1,9 @@
 /*
- * 
+ *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,7 +11,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -20,9 +20,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,57 +34,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.container.common.impl;
 
-import com.sun.enterprise.container.common.impl.mail.MailSessionAuthenticator;
-import com.sun.enterprise.deployment.MailConfiguration;
-import com.sun.enterprise.naming.spi.NamingObjectFactory;
-import com.sun.enterprise.naming.spi.NamingUtils;
-import org.jvnet.hk2.annotations.Service;
+package com.sun.enterprise.container.common.impl.mail;
 
-import javax.naming.Context;
-import javax.naming.NamingException;
-import java.io.PrintStream;
 import java.util.Properties;
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
 
-@Service
-public class MailNamingObjectFactory
-    implements NamingObjectFactory {
+/**
+ *
+ * @author peterw99
+ */
+public class MailSessionAuthenticator extends Authenticator {
 
-    private String name;
+    private final Properties props;
 
-    private String physicalJndiName;
-
-    private NamingUtils namingUtils;
-    
-    public MailNamingObjectFactory(String name, String physicalJndiName,
-                                    NamingUtils namingUtils) {
-        this.name = name;
-        this.physicalJndiName = physicalJndiName;
-
-        this.namingUtils = namingUtils;
+    public MailSessionAuthenticator(Properties props) {
+        this.props = props;
     }
 
-    public boolean isCreateResultCacheable() {
-        return false;
+    @Override
+    protected PasswordAuthentication getPasswordAuthentication() {
+        PasswordAuthentication authenticator = null;
+        String protocol = getRequestingProtocol();
+        if(protocol != null) {
+            String password = props.getProperty("mail." + protocol + ".password");
+            String username = getDefaultUserName();
+            if(password != null && username != null) {
+                authenticator = new PasswordAuthentication(username, password);
+            }
+        }
+        return authenticator;
     }
 
-    public Object create(Context ic)
-        throws NamingException {
-		MailConfiguration config =
-		    (MailConfiguration) ic.lookup(physicalJndiName);
-
-		// Note: javax.mail.Session is not serializable,
-		// but we need to get a new instance on every lookup.
-                Properties props = config.getMailProperties();
-		javax.mail.Session s = javax.mail.Session.getInstance(
-                        props, new MailSessionAuthenticator(props));
-                if("smtps".equals(props.getProperty("mail.transport.protocol"))) {
-                    s.setProtocolForAddress("rfc822", "smtps");
-                }
-		s.setDebugOut(new PrintStream(namingUtils.getMailLogOutputStream()));
-		s.setDebug(true);
-
-        return s;
-    }
 }
