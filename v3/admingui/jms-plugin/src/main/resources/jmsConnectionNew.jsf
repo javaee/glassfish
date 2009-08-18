@@ -74,11 +74,6 @@
 #include "/common/shared/alertMsg.inc"
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njms.connectionFactory.newPageTitle}" helpText="$resource{i18njms.connectionFactory.newPageTitleHelp}">
-        <sun:button id="loadDefaults" style="margin-left: 8pt" immediate="#{true}"  primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
-            <!command
-                getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
-            />
-        </sun:button>
         <!facet pageButtonsTop>
             <sun:panelGroup id="topButtons">
 #include "/jms/jmsConnectionButtons.inc"
