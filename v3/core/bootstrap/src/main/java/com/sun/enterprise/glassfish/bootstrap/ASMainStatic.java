@@ -47,11 +47,15 @@ import com.sun.hk2.component.InhabitantsParserDecorator;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.MalformedURLException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.*;
+import java.util.jar.Manifest;
+import java.util.jar.JarFile;
 
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitants;
@@ -244,18 +248,98 @@ public class ASMainStatic extends ASMainNonOSGi {
 
     public ClassLoader createTmpClassLoader(File moduleDir) throws Exception {
         List<URL> urls = new ArrayList<URL>();
-        insertURLs(moduleDir, urls);
+        Set<ModuleInfo> modules = getAlreadyLoadedModules();
+        insertURLs(moduleDir, modules, urls);
         findDerbyClient(urls);
         return new URLClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader());
 
     }
+    private final class ModuleInfo {
+        final String bundleName;
+        final String bundleVersion;
 
-    private void insertURLs(File directory, List<URL> result) throws Exception {
+        private ModuleInfo(String bundleName, String bundleVersion) {
+            this.bundleName = bundleName;
+            this.bundleVersion = bundleVersion;
+        }
+
+        public boolean equals(Object other) {
+            if (!(other instanceof ModuleInfo)) {
+                return false;
+            }
+            ModuleInfo o = (ModuleInfo) other;
+            return this.bundleName.equals(o.bundleName) && this.bundleVersion.equals(o.bundleVersion);
+        }
+    }
+
+    private URL getJarFileURL(URL url) throws MalformedURLException {
+        final String urlString = url.toExternalForm();
+        return new URL(urlString.substring("jar:".length(), urlString.length()-
+                JarFile.MANIFEST_NAME.length()));
+   }
+    
+
+    private Set<ModuleInfo> getAlreadyLoadedModules() throws IOException {
+        ClassLoader cl = getClass().getClassLoader();
+        Set<ModuleInfo> modules = new HashSet<ModuleInfo>();
+        Enumeration<URL> urls = cl.getResources(JarFile.MANIFEST_NAME);
+        while (urls.hasMoreElements()) {
+            InputStream is = null;
+            URL url = urls.nextElement();
+            try {
+                is = url.openStream();
+                Manifest m = new Manifest(is);
+                if (m.getMainAttributes().getValue(ManifestConstants.BUNDLE_NAME)!=null) {
+                    modules.add(new ModuleInfo(
+                            m.getMainAttributes().getValue(ManifestConstants.BUNDLE_NAME),
+                            m.getMainAttributes().getValue("Bundle-Version")
+                    ));
+                }
+            } finally {
+                try {
+                    if (is!=null) {
+                        is.close();
+                    }
+                } catch(IOException e) {
+                    // ignore
+                }
+            }
+        }
+        return modules;
+    }
+
+    private void insertURLs(File directory, Set<ModuleInfo> modules, List<URL> result) throws Exception {
         for (File file : directory.listFiles()) {
             if (file.isFile()) {
-                result.add(file.toURI().toURL());
+                processFile(file, modules, result);
             } else {
-                insertURLs(file, result);
+                insertURLs(file,modules, result);
+            }
+        }
+    }
+
+    private void processFile(File file, Set<ModuleInfo> modules, List<URL> result) throws IOException {
+        JarFile jarFile = new JarFile(file);
+        Manifest m = jarFile.getManifest();
+        String bundleName = m.getMainAttributes().getValue(ManifestConstants.BUNDLE_NAME);
+        if (bundleName != null) {
+            String version = m.getMainAttributes().getValue(ManifestConstants.BUNDLE_VERSION);
+            ModuleInfo info = new ModuleInfo(bundleName, version);
+            if (!modules.contains(info)) {
+                result.add(file.toURI().toURL());
+                modules.add(info);
+            }
+        } else {
+            result.add(file.toURI().toURL());
+        }
+        // claaspath processing
+        String classpath = m.getMainAttributes().getValue("Class-Path");
+        if (classpath!=null) {
+            StringTokenizer st = new StringTokenizer(classpath);
+            while (st.hasMoreTokens()) {
+                String cpe =  st.nextToken();
+                
+                
             }
         }
     }

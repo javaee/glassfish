@@ -27,12 +27,16 @@ import com.sun.enterprise.module.common_impl.Tokenizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Iterator;
+
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.Inhabitants;
 
 /**
  * Simple admin command to list all existing commands.
@@ -68,34 +72,27 @@ public class ListCommandsCommand implements AdminCommand {
     
     private List<String> sortedAdminCommands() {
         List<String> names = new ArrayList<String>();
-        for (AdminCommand command : habitat.getAllByContract(AdminCommand.class)) {
-            Service service = command.getClass().getAnnotation(Service.class);
+        for (Inhabitant<?> command : habitat.getInhabitantsByContract(AdminCommand.class.getName())) {
+            Iterator<String> itr = Inhabitants.getNamesFor(command, AdminCommand.class.getName());
+            while (itr.hasNext()) {
+                String name = itr.next();
 
-            if(service == null)
-                continue;   // not a Service -- ignore it....
+                if (debugCommand(command)) { //it's a debug command, add only if debug is set
+                    if (debugSet())
+                        names.add(name);
+                } else { //always add non-debug commands     \
+                    names.add(name);
+                }
 
-            String name = service.name();
-
-            if (debugCommand(command)) { //it's a debug command, add only if debug is set
-                if (debugSet())
-                    names.add(name);                
-            } else { //always add non-debug commands
-                names.add(name);
             }
         }
         Collections.sort(names);
         return (names);
     }
     
-    private static boolean debugCommand(AdminCommand command) {
-        String metadata = command.getClass().getAnnotation(Service.class).metadata();
-        boolean dc = false;
-        if (metadata != null) {
-            if (metadataContains(metadata, DEBUG_PAIR)) {
-                dc = true;
-            }
-        }
-        return ( dc );
+    private static boolean debugCommand(Inhabitant command) {
+        Iterator<String> debug = Inhabitants.getNamesFor(command, "mode");
+        return debug.hasNext();
     }
     
     private static boolean metadataContains(String md, String nev) {
