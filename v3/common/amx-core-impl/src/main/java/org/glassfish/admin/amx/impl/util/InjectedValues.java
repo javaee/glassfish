@@ -48,6 +48,9 @@ import org.glassfish.admin.mbeanserver.UnprocessedConfigListener;
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.module.ModulesRegistry;
 
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.AMXPrefs;
+
 /**
 Utility class that gets various useful values injected into it for use
 by other AMX facilities which don't have injection available to themselves.  This is needed
@@ -71,10 +74,24 @@ public class InjectedValues
 
     @Inject
     ModulesRegistry mModulesRegistry;
+    
+    @Inject
+    Domain   mDomain;
 
     public MBeanServer getMBeanServer()
     {
         return mMBeanServer;
+    }
+
+    /** might return null */
+    public AMXPrefs getAMXPrefs()
+    {
+        final AMXPrefs prefs = mDomain.getAMXPrefs();
+        if ( prefs == null )
+        {
+            // create one?
+        }
+        return prefs;
     }
 
     public Habitat getHabitat()

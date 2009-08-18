@@ -102,12 +102,21 @@ public final class AMXValidator
     // created if needed
     private MBeanTrackerMBean  mMBeanTracker;
 
-    public AMXValidator(final MBeanServerConnection conn)
+    private volatile boolean  mUnregisterNonCompliant;
+    private volatile String   mValidationLevel;
+    
+    public AMXValidator(
+        final MBeanServerConnection conn,
+        final String    validationLevel,
+        final boolean   unregisterNonCompliant)
     {
         mMBeanServer = conn;
 
         mProxyFactory = ProxyFactory.getInstance(conn);
         mDomainRoot = mProxyFactory.getDomainRootProxy(false);
+        
+        mValidationLevel = validationLevel;
+        mUnregisterNonCompliant = unregisterNonCompliant;
     }
 
     private static final class IllegalClassException extends Exception
@@ -1003,12 +1012,15 @@ public final class AMXValidator
     
     private void unregisterNonCompliantMBean( final ObjectName objectName)
     {
-        try {
-            mMBeanServer.unregisterMBean(objectName);
-            debug( "Unregistered non-compliant MBean " + objectName );
-        }
-        catch( final Exception ignore ) {
-            debug( "Unable to unregister non-compliant MBean " + objectName );
+        if ( mUnregisterNonCompliant )
+        {
+            try {
+                mMBeanServer.unregisterMBean(objectName);
+                debug( "Unregistered non-compliant MBean " + objectName );
+            }
+            catch( final Exception ignore ) {
+                debug( "Unable to unregister non-compliant MBean " + objectName );
+            }
         }
     }
     

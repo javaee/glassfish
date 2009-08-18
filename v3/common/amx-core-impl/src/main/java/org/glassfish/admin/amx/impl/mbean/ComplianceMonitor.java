@@ -52,6 +52,9 @@ import org.glassfish.admin.amx.core.AMXValidator;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
+import com.sun.enterprise.config.serverbeans.AMXPrefs;
+import org.glassfish.admin.amx.impl.util.InjectedValues;
+
 /**
 Validates AMX MBeans as they are registered.  Problems are emitted as WARNING to the server log.
  */
@@ -64,6 +67,9 @@ public final class ComplianceMonitor implements NotificationListener
     private final MBeanServer mServer;
 
     private volatile boolean mStarted = false;
+    
+    private volatile String mValidationLevel;
+    private volatile boolean  mUnregisterNonCompliant;
 
     /** offloads the validation so as not to block during Notifications */
     private final ValidatorThread mValidatorThread;
@@ -73,8 +79,15 @@ public final class ComplianceMonitor implements NotificationListener
         mDomainRoot = domainRoot;
 
         mServer = (MBeanServer) domainRoot.extra().mbeanServerConnection();
+        
+        final AMXPrefs amxPrefs = InjectedValues.getInstance().getAMXPrefs();
+        mValidationLevel = amxPrefs == null ? AMXPrefs.VALIDATION_LEVEL_FULL : amxPrefs.getValidationLevel();
+        mUnregisterNonCompliant = amxPrefs == null ?  true : Boolean.valueOf(amxPrefs.getUnregisterNonCompliant());
 
-        mValidatorThread = new ValidatorThread(mServer);
+        mValidatorThread = new ValidatorThread(mServer, mValidationLevel, mUnregisterNonCompliant);
+        
+        ImplUtil.getLogger().info(  "AMX ComplianceMonitor: validation level = " + mValidationLevel +
+                                    ", unregisterNonCompliant = " + mUnregisterNonCompliant );
     }
     
     public int getNumComplianceFailures() {
@@ -101,10 +114,15 @@ public final class ComplianceMonitor implements NotificationListener
             validate(objectName);
         }
     }
+    
+    boolean shouldValidate() { return ! AMXPrefs.VALIDATION_LEVEL_OFF.equals(mValidationLevel); }
 
-    public void validate(final ObjectName objectName)
+    private void validate(final ObjectName objectName)
     {
-        mValidatorThread.add(objectName);
+        if ( shouldValidate() )
+        {
+            mValidatorThread.add(objectName);
+        }
     }
 
     public static synchronized ComplianceMonitor getInstance(final DomainRoot domainRoot)
@@ -119,7 +137,7 @@ public final class ComplianceMonitor implements NotificationListener
 
     public void start()
     {
-        if (!mStarted)
+        if (shouldValidate() && !mStarted)
         {
             mValidatorThread.start();
         }
@@ -134,7 +152,7 @@ public final class ComplianceMonitor implements NotificationListener
             final ObjectName objectName = notif.getMBeanName();
             if (objectName.getDomain().equals(mDomainRoot.objectName().getDomain()))
             {
-                mValidatorThread.add(objectName);
+                validate(objectName);
             }
         }
     }
@@ -148,12 +166,21 @@ public final class ComplianceMonitor implements NotificationListener
         /** total number of failures */
         private final AtomicInteger   mComplianceFailures = new AtomicInteger();
 
-        ValidatorThread(final MBeanServer server)
+        private final boolean mUnregisterNonCompliant;
+        private volatile String mValidationLevel;
+        
+        ValidatorThread(
+            final MBeanServer server,
+            final String validationLevel,
+            final boolean unregisterNonCompliant)
         {
             super("ComplianceMonitor.ValidatorThread");
             mServer = server;
+            mValidationLevel = validationLevel;
+            mUnregisterNonCompliant = unregisterNonCompliant;
         }
-
+        
+        /** queue poison pill */
         private static final ObjectName QUIT = JMXUtil.newObjectName("quit:type=quit");
 
         public int getNumComplianceFailures() {
@@ -196,9 +223,8 @@ public final class ComplianceMonitor implements NotificationListener
                     break;  // poison, quit;
                 }
 
-                // process available MBeans as a group so we can emit summary information
-                // as a group.
-                final AMXValidator validator = new AMXValidator(mServer);
+                // process available MBeans as a group so we can emit summary information as a group.
+                final AMXValidator validator = new AMXValidator(mServer, mValidationLevel, mUnregisterNonCompliant );
                 try
                 {
                     //debug( "VALIDATING MBeans: " + toValidate.size() );
