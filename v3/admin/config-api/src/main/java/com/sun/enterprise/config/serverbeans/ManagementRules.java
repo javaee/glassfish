@@ -69,7 +69,7 @@ public interface ManagementRules extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(dataType=Boolean.class)
+    @Attribute(defaultValue="true", dataType=Boolean.class)
     public String getEnabled();
 
     /**
