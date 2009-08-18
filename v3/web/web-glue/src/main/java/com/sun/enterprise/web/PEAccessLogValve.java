@@ -36,6 +36,18 @@
 
 package com.sun.enterprise.web;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.BufferOverflowException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.FileChannel;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.*;
+
 import com.sun.enterprise.config.serverbeans.AccessLog;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -47,6 +59,7 @@ import com.sun.enterprise.web.accesslog.CommonAccessLogFormatterImpl;
 import com.sun.enterprise.web.accesslog.DefaultAccessLogFormatterImpl;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.logging.LogDomains;
+
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
@@ -55,18 +68,6 @@ import org.apache.catalina.Response;
 import org.apache.catalina.valves.ValveBase;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.component.Habitat;
-
-import javax.servlet.ServletException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.BufferOverflowException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.channels.FileChannel;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.logging.*;
 
 /**
  * <p>Implementation of the <b>Valve</b> interface that generates a web server
@@ -556,9 +557,6 @@ public final class PEAccessLogValve
      *
      * @param request Request being processed
      * @param response Response being processed
-     *
-     * @exception IOException if an input/output error has occurred
-     * @exception ServletException if a servlet error has occurred
      */ 
     public int invoke(Request request, Response response) {
 
@@ -850,6 +848,40 @@ public final class PEAccessLogValve
 
         setAddDateStampToFirstAccessLogFile(
             fac.getAddDateStampToFirstAccessLogFile());
+
+        // max-history-files
+        deleteAllHistoryFiles = false;
+        historyFiles = null;
+        maxHistoryFiles = 10;
+        String prop = System.getProperty(LOGGING_MAX_HISTORY_FILES);
+        if (prop != null) {
+            if (!"".equals(prop)) {
+                try {
+                    maxHistoryFiles = Integer.parseInt(prop);
+                } catch (NumberFormatException e) {
+                    String msg = _rb.getString(
+                        "accesslog.invalidMaxHistoryFiles");
+                    msg = MessageFormat.format(msg, prop);
+                    _logger.log(Level.WARNING, msg, e);   
+                }
+            }
+        } else {
+            try {
+                maxHistoryFiles = Integer.parseInt(
+                    accessLogConfig.getMaxHistoryFiles());
+            } catch (NumberFormatException e) {
+                String msg = _rb.getString(
+                    "accesslog.invalidMaxHistoryFiles");
+                msg = MessageFormat.format(msg,
+                    accessLogConfig.getMaxHistoryFiles());
+                _logger.log(Level.WARNING, msg, e);   
+            }
+        }
+        if (maxHistoryFiles == 0) {
+            deleteAllHistoryFiles = true;
+        } else if (maxHistoryFiles > 0) {
+            historyFiles = new LinkedList<File>();
+        }
     }
 
 
@@ -1011,23 +1043,6 @@ public final class PEAccessLogValve
         }
 
         lifecycle.fireLifecycleEvent(START_EVENT, null);
-
-        deleteAllHistoryFiles = false;
-        historyFiles = null;
-        String prop = System.getProperty(LOGGING_MAX_HISTORY_FILES);
-        if (prop != null) {
-            maxHistoryFiles = 10;
-            if (!"".equals(prop)) {
-                try {
-                    maxHistoryFiles = Integer.parseInt(prop);
-                } catch (NumberFormatException e) {}
-            }
-	    if (maxHistoryFiles == 0) {
-                deleteAllHistoryFiles = true;
-            } else if (maxHistoryFiles > 0) {
-                historyFiles = new LinkedList<File>();
-            }
-        }
 
         if (bufferSize <= 0) {
             bufferSize = MIN_BUFFER_SIZE;

@@ -49,6 +49,7 @@ import org.glassfish.api.admin.config.PropertyBag;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
 
 /* @XmlType(name = "") */
 
@@ -167,5 +168,23 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
     String getWriteIntervalSeconds();
     
     void setWriteIntervalSeconds(String value);
+
+
+    /**
+     * Gets the maximum number of rotated access log files that are to be
+     * kept.
+     * 
+     * <p>A negative value must be interpreted as no limit.
+     */
+    @NotNull
+    @Attribute(defaultValue = "-1", dataType=Integer.class)
+    String getMaxHistoryFiles();
+
+    /**
+     * Sets the maximum number of rotated access log files that are to be
+     * kept.
+     */    
+    void setMaxHistoryFiles(String value);
+
 }
 

@@ -84,4 +84,8 @@ public interface AccessLog extends ConfigElement, Singleton
     public String getRotationSuffix();
 
     public void setRotationSuffix(final String value);
+
+    public String getMaxHistoryFiles();
+
+    public void setMaxHistoryFiles(final String value);
 }
