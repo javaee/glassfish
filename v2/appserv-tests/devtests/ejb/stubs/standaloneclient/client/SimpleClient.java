@@ -59,7 +59,9 @@ public class SimpleClient {
             Properties props = new Properties();
             FileInputStream fis = new FileInputStream(propsFileName);
             props.load(fis);
+	    System.out.println("Using props = " + props);
             ic = new InitialContext(props);
+	    System.out.println("ic = " + ic);
         }
 
         return ic;

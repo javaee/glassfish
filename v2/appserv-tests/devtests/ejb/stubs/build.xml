@@ -19,13 +19,9 @@
         <antcall target="ejbclient"/>
         <antcall target="appclient"/>
 
-	<!-- depends on MBean classes
         <antcall target="webclient"/>
-         -->
 
-	<!-- need handleDelegate and SerialInitContextFactory fix
         <antcall target="standaloneclient"/>
-	-->
 
         <ant dir="ejbapp" target="undeploy"/>
 

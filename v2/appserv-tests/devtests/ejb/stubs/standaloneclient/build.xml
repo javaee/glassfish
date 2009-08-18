@@ -28,7 +28,7 @@
               failonerror="true"/>        
     </target>
  
-    <target name="runclient_nooverride">
+    <target name="runclient_nooverride" depends="init-common">
        <java  fork="on" 
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
