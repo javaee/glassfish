@@ -273,9 +273,9 @@
         <ant dir="servlet-3.0/relativeOrderingWebFragments" target="all"/>
         <ant dir="servlet-3.0/servletRequestResponseWrapperIsWrapperFor" target="all"/>
         <ant dir="servlet-3.0/servletRequestDispatcherType" target="all"/>
-        <ant dir="servlet-3.0/pluggability/servletContainerInitializer/sharedLibWithWars" target="all"/>
-        <ant dir="servlet-3.0/pluggability/servletContainerInitializer/sharedLibWithEAR" target="all"/>
-        <ant dir="servlet-3.0/pluggability/servletContainerInitializer/sharedLibWithInterfaceImplementation" target="all"/>
+        <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithWars" target="all"/>
+        <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithEAR" target="all"/>
+        <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithInterfaceImplementation" target="all"/>
         <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
         <ant dir="servlet-3.0/defaultErrorPage" target="all"/>
         <ant dir="servlet-3.0/asyncContextComplete" target="all"/>

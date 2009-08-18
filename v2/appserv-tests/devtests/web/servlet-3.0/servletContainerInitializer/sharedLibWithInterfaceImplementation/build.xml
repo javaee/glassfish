@@ -35,9 +35,9 @@
  holder.
 -->
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "./../../../../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "./../../../../../../config/common.xml">
-<!ENTITY run SYSTEM "./../../../../../../config/run.xml">
+<!ENTITY commonSetup SYSTEM "./../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../../../config/common.xml">
+<!ENTITY run SYSTEM "./../../../../../config/run.xml">
 <!ENTITY testproperties SYSTEM "./build.properties">
 ]>
 

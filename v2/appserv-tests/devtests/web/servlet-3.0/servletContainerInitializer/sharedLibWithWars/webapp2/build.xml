@@ -38,104 +38,54 @@
 <!ENTITY commonSetup SYSTEM "./../../../../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "./../../../../../../config/common.xml">
 <!ENTITY run SYSTEM "./../../../../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "./build.properties">
 ]>
 
 <project name="webcontainer_unittest" default="all" basedir=".">
 
     &commonSetup;
     &commonBuild;
+    &testproperties;
     &run;
 
-    <target name="all" depends="init-sharedlib,build,run,undeploy,stopDomain,clean-lib"/>
-
     <target name="clean" depends="init-common">
-	<ant dir="webapp1" target="clean"/>
-	<ant dir="webapp2" target="clean"/>
         <antcall target="clean-common"/>
         <delete>
             <fileset dir="." includes="*.class"/>
         </delete>
     </target>
        
-    <target name="clean-lib" depends="init-common">
-	<delete file="${env.S1AS_HOME}/lib/TestSharedLib1.jar"/>
-	<delete file="${env.S1AS_HOME}/lib/TestSharedLib2.jar"/>
-	<delete file="${env.S1AS_HOME}/lib/TestSharedLib3.jar"/>
-	<delete file="${env.S1AS_HOME}/lib/TestSharedLib4.jar"/>
-        <antcall target="startDomain"/>
+    <target name="compile" depends="init-common">
+        <antcall target="compile-common">
+            <param name="src" value="servlet"/>
+        </antcall>
     </target>
 
-    <target name="init-sharedlib" depends="init-common">
-        <antcall target="stopDomain"/>
-  	<javac srcdir="./sharedlib1"
-    		destdir="./sharedlib1"
+    <target name="build" depends="compile">
+  	<javac srcdir="./applib2"
+    		destdir="./applib2"
     		classpath="${s1astest.classpath}"
     		debug="on"
     		failonerror="true"/>
-	<jar destfile="${env.S1AS_HOME}/lib/TestSharedLib1.jar">
-	    <fileset dir="./sharedlib1"/>
+        <mkdir dir="lib"/>
+	<jar destfile="lib/AppSharedLib2.jar">
+	    <fileset dir="./applib2"/>
 	</jar>
-  	<javac srcdir="./sharedlib2"
-    		destdir="./sharedlib2"
-    		classpath="${s1astest.classpath}"
-    		debug="on"
-    		failonerror="true"/>
-	<jar destfile="${env.S1AS_HOME}/lib/TestSharedLib2.jar">
-	    <fileset dir="./sharedlib2"/>
-	</jar>
-  	<javac srcdir="./sharedlib3"
-    		destdir="./sharedlib3"
-    		classpath="${s1astest.classpath}"
-    		debug="on"
-    		failonerror="true"/>
-	<jar destfile="${env.S1AS_HOME}/lib/TestSharedLib3.jar">
-	    <fileset dir="./sharedlib3"/>
-	</jar>
-  	<javac srcdir="./sharedlib4"
-    		destdir="./sharedlib4"
-    		classpath="${s1astest.classpath}"
-    		debug="on"
-    		failonerror="true"/>
-	<jar destfile="${env.S1AS_HOME}/lib/TestSharedLib4.jar">
-	    <fileset dir="./sharedlib4"/>
-	</jar>
-        <sleep seconds="15" />
-        <antcall target="startDomain"/>
-    </target>
-
-    <target name="build">
-	<ant dir="webapp1" target="deploy"/>
-	<ant dir="webapp2" target="deploy"/>
-        <javac srcdir="." classpath="${env.APS_HOME}/lib/reporter.jar"
-               includes="WebTest.java"/>
+        <property name="hasWebclient" value="yes"/> 
+        <antcall target="webclient-war-common">
+            <param name="hasWebclient" value="yes"/>
+            <param name="webclient.war.classes" value="**/*.class"/> 
+        </antcall>
     </target> 
 
-    <target name="run" depends="init-common">
-        <java classname="WebTest">
-          <arg value="${http.host}"/>
-          <arg value="${http.port}"/>
-          <arg value="/web-servlet-pluggability-1"/>
-          <arg value="1"/>
-          <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
-           <pathelement location="."/>
-         </classpath>
-        </java>
-        <java classname="WebTest">
-          <arg value="${http.host}"/>
-          <arg value="${http.port}"/>
-          <arg value="/web-servlet-pluggability-2"/>
-          <arg value="2"/>
-          <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
-           <pathelement location="."/>
-         </classpath>
-        </java>
+    <target name="build-publish-war" depends="build, publish-war-common" />
+    
+    <target name="deploy" depends="build">
+        <antcall target="deploy-war-common"/>
+        <antcall target="clean"/>
     </target>
- 
+    
     <target name="undeploy" depends="init-common">
-	<ant dir="webapp1" target="undeploy"/>
-	<ant dir="webapp2" target="undeploy"/>
+        <antcall target="undeploy-war-common"/>
     </target>   
-
 </project>
