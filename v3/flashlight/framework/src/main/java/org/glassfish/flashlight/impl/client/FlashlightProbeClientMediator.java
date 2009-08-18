@@ -110,69 +110,7 @@ public class FlashlightProbeClientMediator
     }
 
     public synchronized Collection<ProbeClientMethodHandle> registerListener(Object listener) {
-
-        /*
-        if (!agentInitialized.get()) {
-            synchronized (agentInitialized) {
-                if (!agentInitialized.get()) {
-                    // The following heavily depends on Java 1.6 code
-                    //  For now commented
-                    
-                    List<AttachProvider> lst = AttachProvider.providers();
-                    String myVMId = "";
-                    for (AttachProvider p : lst) {
-                        if (agentInitialized.get()) {
-                            break;
-                        }
-                        List<VirtualMachineDescriptor> vms = p.listVirtualMachines();
-                        for (VirtualMachineDescriptor vmd : vms) {
-                            myVMId = vmd.id();
-                            System.out.println("***************** Attempting to attach to VM: <" + myVMId + ">");
-
-                            try {
-                                VirtualMachine vm = VirtualMachine.attach(myVMId);
-                                vm.loadAgent("/space/v3/flashlight/glassfish/modules/flashlight-agent-10.0-SNAPSHOT.jar");
-                                System.out.println("***************** DONE INITIALIZING VM: " + myVMId);
-
-
-                                Class agentClazz = Class.forName("org.glassfish.flashlight.agent.ProbeAgentMain");
-                                Method m = agentClazz.getMethod("getInstrumentation()", null);
-                                this.inst = (Instrumentation) m.invoke(null);
-                                System.out.println("Got Instrumentation: " + inst);
-                                agentInitialized.set(true);
-                            } catch (Throwable th) {
-                                th.printStackTrace();
-                            }
-
-                        }
-                    }
-
-                    try {
-                        Class agentClazz = Class.forName("org.glassfish.flashlight.agent.ProbeAgentMain");
-                        Method m = agentClazz.getMethod("getInstrumentation()", null);
-                        this.inst = (Instrumentation) m.invoke(null);
-                        System.out.println("Got Instrumentation: " + inst);
-                        agentInitialized.set(true);
-                    } catch (ClassNotFoundException cnfEx) {
-                        //TODO
-                    } catch (NoSuchMethodException nsmEx) {
-                        //TODO
-                    } catch (IllegalAccessException iaEx) {
-                        //TODO
-                    } catch (InvocationTargetException invtEx) {
-                        //TODO
-                    }
-                }
-            }
-        }
-        */
-
         int clientID = clientIdGenerator.incrementAndGet();
-        /*
-        System.out.println("*********************************************");
-        System.out.println("*** clientID: " + clientID + " ***");
-        System.out.println("*********************************************");
-         */
         clients.put(clientID, listener);
 
         Class clientClz = listener.getClass();
@@ -206,10 +144,8 @@ public class FlashlightProbeClientMediator
                 	probesRequiringClassTransformation.add(probe);
                 	//System.out.println("ADDED Method for transformation: " + probe);
                 } else {
-                	//System.out.println("Some other client method has already taken care of: " + probe);
                 }
             } else {
-            	//System.out.println("**Non listener method: " + clientMethod);
             }
         }
         
@@ -234,7 +170,6 @@ public class FlashlightProbeClientMediator
     }
 
     private void submit2BTrace(byte [] bArr) {
-        //System.out.println("MSR:FlashlightProbeClientMediator:submit2BTrace: before calling Main.handleFlashLightClient ...");
         try {
             ClassLoader scl = this.getClass().getClassLoader().getSystemClassLoader();
             Class agentMainClass = scl.loadClass("com.sun.btrace.agent.Main");
@@ -250,13 +185,10 @@ public class FlashlightProbeClientMediator
         } catch (java.lang.reflect.InvocationTargetException ite) {
             //todo: handle exception
         }
-        //System.out.println("MSR:FlashlightProbeClientMediator:submit2BTrace: after calling Main.handleFlashLightClient ...");
     }
 
     private static boolean btraceAgentAttached = false;
     public static boolean isAgentAttached() {
-        //System.out.println("MSR:FlashlightProbeClientMediator:agentAttached: ...");
-        //System.out.println("MSR:System.getProperty for btrace.port = " + System.getProperty("btrace.port"));
         if (agentInitialized.get()) {
             return btraceAgentAttached;
         }
@@ -279,5 +211,4 @@ public class FlashlightProbeClientMediator
         }
         return btraceAgentAttached;
     }
-
 }
