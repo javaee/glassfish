@@ -36,7 +36,10 @@
 package org.glassfish.admin.amx.base;
 
 import javax.management.MBeanOperationInfo;
+import javax.management.ObjectName;
+
 import org.glassfish.admin.amx.annotation.ManagedOperation;
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.admin.amx.core.AMXProxy;
@@ -47,7 +50,7 @@ Interface for a sample MBean , used as target for sample and test code.
 Various Attributes of varying types are made available for testing.
  */
 @Taxonomy(stability = Stability.NOT_AN_INTERFACE)
-@AMXMBeanMetadata(singleton = true, globalSingleton = true, leaf = true)
+@AMXMBeanMetadata(singleton = true, globalSingleton = true, leaf = true, immutableMBeanInfo=false)
 public interface Sample extends AMXProxy
 {
     /**
@@ -97,12 +100,20 @@ public interface Sample extends AMXProxy
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     public byte[] downloadBytes(final int numBytes);
 
-    /*
-    // these two methods exercise proxyt code in different ways
+    /** explicity getter using an array, must work through proxy code */
     @ManagedAttribute
     public ObjectName[] getAllAMX();
-     */
+    
+    /** Attribute whose values will have a variety of types that should pass the AMXValidtor */
+    @ManagedAttribute
+    public Object[] getAllSortsOfStuff();
 }
+
+
+
+
+
+
 
 
 

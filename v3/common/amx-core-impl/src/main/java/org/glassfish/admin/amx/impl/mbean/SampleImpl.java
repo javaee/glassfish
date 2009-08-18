@@ -39,14 +39,25 @@ import javax.management.Attribute;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.ObjectName;
+import javax.management.openmbean.*;
+import javax.management.remote.JMXServiceURL;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.HashMap;
 
 import org.glassfish.admin.amx.base.Sample;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
+import org.glassfish.admin.amx.util.jmx.OpenMBeanUtil;
+import org.glassfish.admin.amx.util.MapUtil;
+import org.glassfish.admin.amx.util.ListUtil;
+import org.glassfish.admin.amx.util.SetUtil;
+import org.glassfish.admin.amx.util.StringUtil;
 
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.core.Util;
@@ -58,8 +69,8 @@ public final class SampleImpl extends AMXImplBase
 {
     // all Attributes live in a Map
     private final Map<String, Serializable> mAttributes;
-
     private MBeanInfo mExtendedMBeanInfo;
+
 
     public void emitNotifications(final Serializable data, final int numNotifs, final long interval)
     {
@@ -71,12 +82,14 @@ public final class SampleImpl extends AMXImplBase
         new EmitterThread(data, numNotifs, interval).start();
     }
 
+
     public SampleImpl(final ObjectName parentObjectName)
     {
         super(parentObjectName, Sample.class);
         mAttributes = Collections.synchronizedMap(new HashMap<String, Serializable>());
         mExtendedMBeanInfo = null;
     }
+
 
     public void addAttribute(final String name, final Serializable value)
     {
@@ -89,16 +102,13 @@ public final class SampleImpl extends AMXImplBase
         //mExtendedMBeanInfo	= null;
     }
 
+
     public void removeAttribute(final String name)
     {
         mAttributes.remove(name);
         mExtendedMBeanInfo = null;
     }
 
-    public boolean getMBeanInfoIsInvariant()
-    {
-        return (false);
-    }
 
     private synchronized MBeanInfo createMBeanInfo(final MBeanInfo baseMBeanInfo)
     {
@@ -110,15 +120,16 @@ public final class SampleImpl extends AMXImplBase
             final String type = value == null ? String.class.getName() : value.getClass().getName();
 
             dynamicAttrInfos[i] = new MBeanAttributeInfo(name, type, "dynamically-added Attribute",
-                    true, true, false);
+                true, true, false);
             ++i;
         }
 
         final MBeanAttributeInfo[] attrInfos =
-                JMXUtil.mergeMBeanAttributeInfos(dynamicAttrInfos, baseMBeanInfo.getAttributes());
+            JMXUtil.mergeMBeanAttributeInfos(dynamicAttrInfos, baseMBeanInfo.getAttributes());
 
         return (JMXUtil.newMBeanInfo(baseMBeanInfo, attrInfos));
     }
+
 
     public synchronized MBeanInfo getMBeanInfo()
     {
@@ -130,10 +141,12 @@ public final class SampleImpl extends AMXImplBase
         return (mExtendedMBeanInfo);
     }
 
+
     protected Serializable getAttributeManually(final String name)
     {
         return (mAttributes.get(name));
     }
+
 
     protected void setAttributeManually(final Attribute attr)
     {
@@ -143,10 +156,9 @@ public final class SampleImpl extends AMXImplBase
     private final class EmitterThread extends Thread
     {
         private final Serializable mData;
-
         private final int mNumNotifs;
-
         private final long mIntervalMillis;
+
 
         public EmitterThread(final Serializable data, final int numNotifs, final long intervalMillis)
         {
@@ -154,6 +166,7 @@ public final class SampleImpl extends AMXImplBase
             mNumNotifs = numNotifs;
             mIntervalMillis = intervalMillis;
         }
+
 
         public void run()
         {
@@ -171,15 +184,15 @@ public final class SampleImpl extends AMXImplBase
                 }
             }
         }
-
     }
+
 
     public void uploadBytes(final byte[] bytes)
     {
         // do nothing; just a bandwidth test
     }
-
     private final static int MEGABYTE = 1024 * 1024;
+
 
     public byte[] downloadBytes(final int numBytes)
     {
@@ -193,6 +206,7 @@ public final class SampleImpl extends AMXImplBase
         return (bytes);
     }
 
+
     public ObjectName[] getAllAMX()
     {
         final List<ObjectName> all = Util.toObjectNameList(getDomainRootProxy().getQueryMgr().queryAll());
@@ -200,8 +214,67 @@ public final class SampleImpl extends AMXImplBase
         return CollectionUtil.toArray(all, ObjectName.class);
     }
 
-}
 
+    /** Purpose: have the AMXValidator  check what we're returning as acceptable */
+    public Object[] getAllSortsOfStuff()
+    {
+        final List<Object> stuff = ListUtil.newList();
+
+        // generate a bunch of fields for a CompositeData, naming them with a simple type eg "Byte"
+        final Map<String, Object> values = MapUtil.newMap();
+        values.put("ByteField", new Byte((byte) 0));
+        values.put("ShortField", new Short((short) 0));
+        values.put("IntegerField", new Integer(0));
+        values.put("LongField", new Long(0));
+        values.put("FloatField", new Float(0.0));
+        values.put("DoubleField", new Double(0.0));
+        values.put("BigDecimalField", new java.math.BigDecimal("999999999999999999999999999999.999999999999999999999999999999"));
+        values.put("BigIntegerField", new java.math.BigInteger("999999999999999999999999999999999999999999999999999999999999"));
+        values.put("CharacterField", 'x');
+        values.put("StringField", "hello");
+        values.put("BooleanField", true);
+        values.put("DateField", new java.util.Date());
+        values.put("ObjectNameField", getObjectName() );
+        CompositeData data = null;
+        try
+        {
+            
+            data = OpenMBeanUtil.mapToCompositeData("org.glassfish.test.Sample1", "test", values);
+            stuff.add(data);
+        }
+        catch (final Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+        
+        // Add all those open types to our main list too
+        stuff.add( data );
+        stuff.addAll( values.values() );
+        stuff.add(MapUtil.newMap());
+        stuff.add(ListUtil.newList());
+        stuff.add(SetUtil.newSet());
+
+        TabularDataSupport table = null;
+        try
+        {
+            // might not be appropriate TabularData, investigate...
+            final String[] indexNames = CollectionUtil.toArray( values.keySet(), String.class );
+            final CompositeType rowType = data.getCompositeType();
+            final TabularType tabularType = new TabularType( "org.glassfish.test.Sample2", "test", rowType, indexNames);
+            table = new TabularDataSupport(tabularType);
+            table.put( data );
+        }
+        catch (final OpenDataException e)
+        {
+            throw new RuntimeException(e);
+        }
+        stuff.add(table);
+        
+        final Object[] result = CollectionUtil.toArray(stuff, Object.class);
+
+        return result;
+    }
+}
 
 
 
