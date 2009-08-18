@@ -1,9 +1,11 @@
 package com.sun.common.util.logging;
 
+import org.jvnet.hk2.annotations.Contract;
 import java.util.Map;
 import java.util.Set;
 import java.io.IOException;
 
+@Contract
 public interface LoggingConfig {
 	/* set propertyName to be propertyValue.  The logManager 
 	*  readConfiguration is not called in this method.
