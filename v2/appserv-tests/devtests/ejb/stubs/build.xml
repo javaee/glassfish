@@ -16,12 +16,15 @@
         <antcall target="stubser"/>
 
         <antcall target="ejbapp"/>
+        <!-- standaloneclient must be executed right after ejbapp 
+             to be able to use the generated stubs from the app client
+        -->
+        <antcall target="standaloneclient"/>
+
         <antcall target="ejbclient"/>
         <antcall target="appclient"/>
 
         <antcall target="webclient"/>
-
-        <antcall target="standaloneclient"/>
 
         <ant dir="ejbapp" target="undeploy"/>
 

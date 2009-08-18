@@ -12,7 +12,7 @@
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="build, run_default"/>
+    <target name="all" depends="build, run_default, run_cosnaming"/>
 
     <target name="clean" depends="init-common">
       <antcall  target="clean-common"/>
@@ -31,7 +31,7 @@
     <target name="runclient_nooverride" depends="init-common">
        <java  fork="on" 
               failonerror="true"
-              classpath="${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classpath="${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${assemble.dir}/ejb-stubs-ejbappAppClient/ejb-stubs-ejbapp-clientClient.jar:${env.APS_HOME}/lib/reporter.jar"
            classname="${simple.client}">
            <jvmarg
                    value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>

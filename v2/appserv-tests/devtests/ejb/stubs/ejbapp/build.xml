@@ -58,7 +58,9 @@
     
     <target name="deploy" 
             depends="init-common">
-        <antcall target="deploy-common"/>
+        <antcall target="deploy-common">
+            <param name="as.props" value="${as.props} --generatermistubs=true"/>
+        </antcall>
     </target>
 
     <target name="run" depends="init-common">
