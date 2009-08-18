@@ -54,35 +54,24 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 @AMXMBeanMetadata(singleton = true, globalSingleton = true, leaf = true)
 public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleton
 {
-    /** Key into Map returned by various methods including {@link #getConnectionDefinitionPropertiesAndDefaults} */
-    public static final String PROPERTY_MAP_KEY = "PropertyMapKey";
+    /**Value of type Map from {@link #getConnectionDefinitionPropertiesAndDefaults} */
+    public static final String CONN_DEFINITION_PROPS_KEY = "ConnDefinitionPropsKey";
 
-    /** Key into Map returned by various methods including {@link #getConnectionDefinitionNames}
-     * {@link #getAdminObjectInterfaceNames}
-     * {@link #getMessageListenerTypes}
-     * {@link #getMessageListenerTypes}
-     * **/
-    public static final String STRING_ARRAY_KEY = "StringArrayKey";
-
-    /** Key into Map returned by {@link #getActivationSpecClass} **/
-    public static final String STRING_KEY = "StringKey";
-
-    /** Key into Map returned by various methods including
-     * {@link #getBuiltInCustomResources}
-     * {@link #getMCFConfigProps}
-     * {@link #getResourceAdapterConfigProps}
-     * {@link #getAdminObjectConfigProps}
-     * {@link #getConnectorConfigJavaBeans}
-     * {@link #getMessageListenerConfigProps}
-     * {@link #getMessageListenerConfigPropTypes} **/
-    public static final String MAP_KEY = "MapKey";
-
-    /** Key into Map returned by various methods including {@link #flushConnectionPool} */
-    public static final String BOOLEAN_KEY = "BooleanKey";
-
-    /** Key into Set returned by various methods including {@link #getValidationTableNames} {@link #getJdbcDriverClassNames} */
-    public static final String SET_KEY = "SetKey";
-
+    /**Value of type boolean for Map from {@link #pingJDBCConnectionPool} */
+    public static final String PING_CONNECTION_POOL_KEY = "PingConnectionPoolKey";
+    
+    /**Value of type boolean for Map from {@link #flushConnectionPool} */
+    public static final String FLUSH_CONNECTION_POOL_KEY = "FlushConnectionPoolKey";
+    
+    /**Value of type Set for Map from {@link #getValidationClassNames}*/
+    public static final String VALIDATION_CLASS_NAMES_KEY = "ValidationClassNamesKey";
+    
+    /**Value of type Set for Map from {@link #getJdbcDriverClassNames}*/
+    public static final String JDBC_DRIVER_CLASS_NAMES_KEY = "JdbcDriverClassNamesKey";
+    
+    /**Value of type Set for Map from {@link #getValidationTableNames}*/
+    public static final String VALIDATION_TABLE_NAMES_KEY = "ValidationTableNamesKey";
+    
     /** Key into Map returned by various methods including {@link #getConnectionDefinitionPropertiesAndDefaults}
      * {@link #getConnectionDefinitionNames}
      * {@link #getAdminObjectInterfaceNames}
@@ -100,11 +89,47 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
      * {@link #getMessageListenerConfigPropTypes}
      * **/
     public static final String REASON_FAILED_KEY = "ReasonFailedKey";
+    
+    /**Value of type String[] for Map from {@link #getSystemConnectorsAllowingPoolCreation}*/
+    public static final String SYSTEM_CONNECTORS_KEY = "SystemConnectorsKey";
+    
+    /**Value of type Map for Map from {@link #getBuiltInCustomResources}*/
+    public static final String BUILT_IN_CUSTOM_RESOURCES_KEY = "BuiltInCustomResourcesKey";
+    
+    /**Value of type String[] for Map from {@link #getConnectionDefinitionNames}*/
+    public static final String CONNECTION_DEFINITION_NAMES_KEY = "ConnectionDefinitionNamesKey";
+    
+    /**Value of type Map for Map from {@link #getMCFConfigProps}*/
+    public static final String MCF_CONFIG_PROPS_KEY = "McfConfigPropsKey";
+    
+    /**Value of type String[] for Map from {@link #getAdminObjectInterfaceNames}*/
+    public static final String ADMIN_OBJECT_INTERFACES_KEY = "AdminObjectInterfacesKey";
+    
+    /**Value of type Map for Map from {@link #getResourceAdapterConfigProps}*/
+    public static final String RESOURCE_ADAPTER_CONFIG_PROPS_KEY = "ResourceAdapterConfigPropsKey";
+    
+    /**Value of type Map for Map from {@link #getAdminObjectConfigProps}*/
+    public static final String ADMIN_OBJECT_CONFIG_PROPS_KEY = "AdminObjectConfigPropsKey";
+    
+    /**Value of type Map for Map from {@link #getConnectorConfigJavaBeans}*/
+    public static final String CONNECTOR_CONFIG_JAVA_BEANS_KEY = "ConnectorConfigJavaBeansKey";
+    
+    /**Value of type String for Map from {@link #getActivationSpecClass}*/
+    public static final String ACTIVATION_SPEC_CLASS_KEY = "ActivationSpecClassKey";
+    
+    /**Value of type String[] for Map from {@link #getMessageListenerTypes}*/
+    public static final String MESSAGE_LISTENER_TYPES_KEY = "MessageListenerTypesKey";
+    
+    /**Value of type Map for Map from {@link #getMessageListenerConfigProps}*/
+    public static final String MESSAGE_LISTENER_CONFIG_PROPS_KEY = "MessageListenerConfigPropsKey";
+    
+    /**Value of type Map for Map from {@link #getMessageListenerConfigPropTypes}*/
+    public static final String MESSAGE_LISTENER_CONFIG_PROP_TYPES_KEY = "MessageListenerConfigPropTypesKey";
 
     /**
-    Get properties of JDBC Data Source
-    @see #PROPERTY_MAP_KEY
-    @see #REASON_FAILED_KEY
+     * Get properties of JDBC Data Source along with its default values.
+     * @see #CONN_DEFINITION_PROPS_KEY
+     * @see #REASON_FAILED_KEY
      */
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("Returns the connection definition properties and their default values of a datasource class")
@@ -174,7 +199,8 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
 
     /**
      * Flush Connection pool.
-     * @param poolName
+     * @see #FLUSH_CONNECTION_POOL_KEY
+     * @see #REASON_FAILED_KEY
      */
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("Flush connection pool by reinitializing all connections established in the pool")
@@ -182,8 +208,8 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
 
     /**
      * Obtain connection validation table names.
-     * @param poolName
-     * @return set of validation table names.
+     * @see #VALIDATION_TABLE_NAMES_KEY
+     * @see #REASON_FAILED_KEY
      */
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("Get Connection validation table names for display in GUI")
@@ -191,9 +217,8 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
 
     /**
      * Obtain Jdbc driver implementation class names.
-     * @param dbVendor
-     * @param resType
-     * @return set of implementation class names.
+     * @see #JDBC_DRIVER_CLASS_NAMES_KEY
+     * @see #REASON_FAILED_KEY
      */
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("Get Jdbc driver implementation class names")
@@ -202,8 +227,8 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
 
     /**
      * Ping the ConnectionPool and return status.
-     * @param poolName
-     * @return
+     * @see #PING_CONNECTION_POOL_KEY
+     * @see #REASON_FAILED_KEY
      */
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("Ping Connection Pool and return status")
@@ -211,8 +236,8 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
 
     /**
      * Obtain connection validation class names.
-     * @param poolName
-     * @return Set of connection validation class names for custom validation.
+     * @see #VALIDATION_CLASS_NAMES_KEY
+     * @see #REASON_FAILED_KEY
      */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
     @Description("Get connection validation class names for custom validation")

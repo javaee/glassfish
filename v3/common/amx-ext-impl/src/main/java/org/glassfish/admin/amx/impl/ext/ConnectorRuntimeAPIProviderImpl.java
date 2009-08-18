@@ -73,8 +73,22 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         }
     }
 
-    public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(final String datasourceClassName,
-            final String resType) {
+    /**
+     * Obtain properties of the JDBC DataSource/Driver. This is used by the 
+     * administration console to list all the additional properties for the
+     * particular resource type.
+     * @param datasourceClassName
+     * @param resType one of javax.sql.DataSource, javax.sql.XADataSource,
+     * javax.sql.ConnectionPoolDataSource, java.sql.Driver.
+     * @return a map containing a CONN_DEFINITION_PROPS_KEY with a map of
+     * connection definition properties with the default values. 
+     * If CONN_DEFINITION_PROPS_KEY is null, an exception has occured and 
+     * REASON_FAILED_KEY would give the reason
+     * why getting connection definition properties and its defaults failed. 
+     */
+    public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(
+            final String datasourceClassName, final String resType) {
+        
         final Map<String, Object> result = new HashMap<String, Object>();
 
         // get connector runtime
@@ -82,11 +96,11 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         {
             final Map<String, Object> connProps = getConnectorRuntime().
                     getConnectionDefinitionPropertiesAndDefaults(datasourceClassName, resType);
-            result.put(ConnectorRuntimeAPIProvider.PROPERTY_MAP_KEY, connProps);
+            result.put(ConnectorRuntimeAPIProvider.CONN_DEFINITION_PROPS_KEY, connProps);
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.PROPERTY_MAP_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.CONN_DEFINITION_PROPS_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
 
@@ -105,11 +119,11 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         try
         {
             final String[] systemRars = getConnectorRuntime().getSystemConnectorsAllowingPoolCreation();
-            result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, systemRars);
+            result.put(ConnectorRuntimeAPIProvider.SYSTEM_CONNECTORS_KEY, systemRars);
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.SYSTEM_CONNECTORS_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
@@ -122,11 +136,11 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         try
         {
             final Map<String, String> customResources = getConnectorRuntime().getBuiltInCustomResources();
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, customResources);
+            result.put(ConnectorRuntimeAPIProvider.BUILT_IN_CUSTOM_RESOURCES_KEY, customResources);
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.BUILT_IN_CUSTOM_RESOURCES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
@@ -140,16 +154,16 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         try
         {
             conDefnNames = getConnectorRuntime().getConnectionDefinitionNames(rarName);
-            result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, conDefnNames);
+            result.put(ConnectorRuntimeAPIProvider.CONNECTION_DEFINITION_NAMES_KEY, conDefnNames);
         }
         catch (ConnectorRuntimeException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.CONNECTION_DEFINITION_NAMES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.CONNECTION_DEFINITION_NAMES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
@@ -162,16 +176,16 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         try
         {
             Map<String, String> configProperties = getConnectorRuntime().getMCFConfigProps(rarName, connectionDefName);
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, configProperties);
+            result.put(ConnectorRuntimeAPIProvider.MCF_CONFIG_PROPS_KEY, configProperties);
         }
         catch (ConnectorRuntimeException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.MCF_CONFIG_PROPS_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.MCF_CONFIG_PROPS_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
@@ -185,16 +199,16 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         try
         {
             final String[] adminObjectInterfaceNames = getConnectorRuntime().getAdminObjectInterfaceNames(rarName);
-            result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, adminObjectInterfaceNames);
+            result.put(ConnectorRuntimeAPIProvider.ADMIN_OBJECT_INTERFACES_KEY, adminObjectInterfaceNames);
         }
         catch (ConnectorRuntimeException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.ADMIN_OBJECT_INTERFACES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.ADMIN_OBJECT_INTERFACES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
@@ -207,16 +221,16 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         try
         {
             Map<String, String> configProperties = getConnectorRuntime().getResourceAdapterConfigProps(rarName);
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, configProperties);
+            result.put(ConnectorRuntimeAPIProvider.RESOURCE_ADAPTER_CONFIG_PROPS_KEY, configProperties);
         }
         catch (ConnectorRuntimeException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.RESOURCE_ADAPTER_CONFIG_PROPS_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.RESOURCE_ADAPTER_CONFIG_PROPS_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
@@ -229,16 +243,16 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         try
         {
             Map<String, String> configProperties = getConnectorRuntime().getAdminObjectConfigProps(rarName, adminObjectIntf);
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, configProperties);
+            result.put(ConnectorRuntimeAPIProvider.ADMIN_OBJECT_CONFIG_PROPS_KEY, configProperties);
         }
         catch (ConnectorRuntimeException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.ADMIN_OBJECT_CONFIG_PROPS_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.ADMIN_OBJECT_CONFIG_PROPS_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
@@ -251,16 +265,16 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         try
         {
             Map<String, String> configProperties = getConnectorRuntime().getConnectorConfigJavaBeans(rarName, connectionDefName, type);
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, configProperties);
+            result.put(ConnectorRuntimeAPIProvider.CONNECTOR_CONFIG_JAVA_BEANS_KEY, configProperties);
         }
         catch (ConnectorRuntimeException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.CONNECTOR_CONFIG_JAVA_BEANS_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.CONNECTOR_CONFIG_JAVA_BEANS_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
@@ -274,16 +288,16 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         try
         {
             String activationSpec = getConnectorRuntime().getActivationSpecClass(rarName, messageListenerType);
-            result.put(ConnectorRuntimeAPIProvider.STRING_KEY, activationSpec);
+            result.put(ConnectorRuntimeAPIProvider.ACTIVATION_SPEC_CLASS_KEY, activationSpec);
         }
         catch (ConnectorRuntimeException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.STRING_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.ACTIVATION_SPEC_CLASS_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.STRING_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.ACTIVATION_SPEC_CLASS_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
@@ -297,16 +311,16 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         try
         {
             final String[] messageListenerTypes = getConnectorRuntime().getMessageListenerTypes(rarName);
-            result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, messageListenerTypes);
+            result.put(ConnectorRuntimeAPIProvider.MESSAGE_LISTENER_TYPES_KEY, messageListenerTypes);
         }
         catch (ConnectorRuntimeException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.MESSAGE_LISTENER_TYPES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.MESSAGE_LISTENER_TYPES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
@@ -322,16 +336,16 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         {
             Map<String, String> configProperties = getConnectorRuntime().getMessageListenerConfigProps(
                     rarName, messageListenerType);
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, configProperties);
+            result.put(ConnectorRuntimeAPIProvider.MESSAGE_LISTENER_CONFIG_PROPS_KEY, configProperties);
         }
         catch (ConnectorRuntimeException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.MESSAGE_LISTENER_CONFIG_PROPS_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.MESSAGE_LISTENER_CONFIG_PROPS_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
@@ -346,24 +360,30 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         {
             Map<String, String> configProperties = getConnectorRuntime().getMessageListenerConfigPropTypes(
                     rarName, messageListenerType);
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, configProperties);
+            result.put(ConnectorRuntimeAPIProvider.MESSAGE_LISTENER_CONFIG_PROP_TYPES_KEY, configProperties);
         }
         catch (ConnectorRuntimeException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.MESSAGE_LISTENER_CONFIG_PROP_TYPES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.MESSAGE_LISTENER_CONFIG_PROP_TYPES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
     }
 
     /**
-     * Flush Connection pool.
+     * Flush Connection pool. This API is used by administration console for the
+     * Flush button the admin GUI. The connections in connection pool are 
+     * re-initialized when flush is executed.
      * @param poolName
+     * @return a map containing a FLUSH_CONNECTION_POOL_KEY with a boolean value
+     * indicating pass/fail. If FLUSH_CONNECTION_POOL_KEY is false, an 
+     * exception has occured and REASON_FAILED_KEY would give the reason
+     * why getting flush connection pool failed. 
      */
     public Map<String, Object> flushConnectionPool(final String poolName)
     {
@@ -371,7 +391,7 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
 
         if (mHabitat == null)
         {
-            result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, false);
+            result.put(ConnectorRuntimeAPIProvider.FLUSH_CONNECTION_POOL_KEY, false);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, "Habitat is null");
             return result;
         }
@@ -379,24 +399,31 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         {
             final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
             connRuntime.flushConnectionPool(poolName);
-            result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, true);
+            result.put(ConnectorRuntimeAPIProvider.FLUSH_CONNECTION_POOL_KEY, true);
         }
         catch (ConnectorRuntimeException ex)
         {
-            result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, false);
+            result.put(ConnectorRuntimeAPIProvider.FLUSH_CONNECTION_POOL_KEY, false);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(ex));
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, false);
+            result.put(ConnectorRuntimeAPIProvider.FLUSH_CONNECTION_POOL_KEY, false);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
     }
 
     /**
-     * Obtain connection validation table names.
+     * Obtain connection validation table names for the database that the jdbc 
+     * connection pool refers to. This is used by administration console to list
+     * the validation table names when connection validation is enabled and/or 
+     * table is chosen for validation method.
      * @param poolName
+     * @return a map containing a VALIDATION_TABLE_NAMES_KEY with a set of
+     * validation table names. If VALIDATION_TABLE_NAMES_KEY is null, an 
+     * exception has occured and REASON_FAILED_KEY would give the reason
+     * why getting connection validation table names failed. 
      */
     public Map<String, Object> getValidationTableNames(final String poolName)
     {
@@ -406,25 +433,33 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         {
             final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
             final Set<String> tableNames = connRuntime.getValidationTableNames(poolName);
-            result.put(ConnectorRuntimeAPIProvider.SET_KEY, tableNames);
+            result.put(ConnectorRuntimeAPIProvider.VALIDATION_TABLE_NAMES_KEY, tableNames);
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.SET_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.VALIDATION_TABLE_NAMES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         catch (Exception e)
         {
-            result.put(ConnectorRuntimeAPIProvider.SET_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.VALIDATION_TABLE_NAMES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
     }
 
     /**
-     * Obtain Jdbc driver implementation class names.
+     * Obtain Jdbc driver implementation class names for a particular 
+     * dbVendor and resource type. This is used by the administration console
+     * to list the driver-classname or datasource-classname fields based on the
+     * resType provided.
      * @param dbVendor
-     * @param resType
+     * @param resType one of javax.sql.DataSource, javax.sql.ConnectionPoolDataSource,
+     * javax.sql.XADataSource, java.sql.Driver.
+     * @return a map containing a JDBC_DRIVER_CLASS_NAMES_KEY with a set of
+     * datasource/driver class names. If JDBC_DRIVER_CLASS_NAMES_KEY is null, an 
+     * exception has occured and REASON_FAILED_KEY would give the reason
+     * why getting datasource/driver classnames failed. 
      */
     public Map<String, Object> getJdbcDriverClassNames(final String dbVendor,
                                                        final String resType)
@@ -435,25 +470,32 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         {
             final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
             final Set<String> implClassNames = connRuntime.getJdbcDriverClassNames(dbVendor, resType);
-            result.put(ConnectorRuntimeAPIProvider.SET_KEY, implClassNames);
+            result.put(ConnectorRuntimeAPIProvider.JDBC_DRIVER_CLASS_NAMES_KEY, implClassNames);
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.SET_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.JDBC_DRIVER_CLASS_NAMES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         catch (Exception e)
         {
-            result.put(ConnectorRuntimeAPIProvider.SET_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.JDBC_DRIVER_CLASS_NAMES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
     }
 
     /**
-     * Ping JDBC Connection Pool and return status
-     * @param poolName
-     * @return
+     * Ping JDBC Connection Pool and return status.
+     * 
+     * This API is used for the Ping button in the administration console. Ping
+     * could be executed for a connection pool after its creation to verify if
+     * the connection pool is usable.
+     * @param poolName 
+     * @return a map containing a PING_CONNECTION_POOL_KEY with a boolean value 
+     * indicating a pass/fail. If PING_CONNECTION_POOL_KEY is false, an 
+     * exception has occured and REASON_FAILED_KEY would give the reason
+     * why ping connection pool failed.
      */
     public Map<String, Object> pingJDBCConnectionPool(final String poolName)
     {
@@ -461,7 +503,7 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
 
         if (mHabitat == null)
         {
-            result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, false);
+            result.put(ConnectorRuntimeAPIProvider.PING_CONNECTION_POOL_KEY, false);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, "Habitat is null");
             return result;
         }
@@ -469,29 +511,37 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         {
             final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
             final boolean pingStatus = connRuntime.pingConnectionPool(poolName);
-            result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, pingStatus);
+            result.put(ConnectorRuntimeAPIProvider.PING_CONNECTION_POOL_KEY, pingStatus);
         }
         catch (ResourceException ex)
         {
-            result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.PING_CONNECTION_POOL_KEY, false);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(ex));
         }
         catch (ComponentException e)
         {
-            result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.PING_CONNECTION_POOL_KEY, false);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         catch (Exception e)
         {
-            result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.PING_CONNECTION_POOL_KEY, false);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
     }
 
     /**
-     * Obtain connection validation class names.
+     * Obtain a set of connection validation class names for the database
+     * vendor that the jdbc connection pool refers to. This API is used when
+     * custom-validation is chosen as the connection validation method, to list
+     * the various custom validation implementations available for this dbvendor.
+
      * @param poolName
+     * @return a map containing a VALIDATION_CLASS_NAMES_KEY with a set of
+     * validation class names. If VALIDATION_CLASS_NAMES_KEY is null, an 
+     * exception has occured and REASON_FAILED_KEY would give the reason
+     * why getting connection validation classnames failed.
      */
     public Map<String, Object> getValidationClassNames(final String dbVendor) {
         final Map<String, Object> result = new HashMap<String, Object>();
@@ -499,12 +549,12 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         try {
             final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
             final Set<String> valClassNames = connRuntime.getValidationClassNames(dbVendor);
-            result.put(ConnectorRuntimeAPIProvider.SET_KEY, valClassNames);
+            result.put(ConnectorRuntimeAPIProvider.VALIDATION_CLASS_NAMES_KEY, valClassNames);
         } catch (ComponentException e) {
-            result.put(ConnectorRuntimeAPIProvider.SET_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.VALIDATION_CLASS_NAMES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         } catch (Exception e) {
-            result.put(ConnectorRuntimeAPIProvider.SET_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.VALIDATION_CLASS_NAMES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;

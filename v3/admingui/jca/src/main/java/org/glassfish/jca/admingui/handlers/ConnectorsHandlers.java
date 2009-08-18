@@ -132,7 +132,7 @@ public class ConnectorsHandlers {
             List propsList = new ArrayList();
             if (!GuiUtil.isEmpty(definition) && !GuiUtil.isEmpty(resAdapter)) {
                 Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getMCFConfigProps(resAdapter, definition);
-                Map<String, String> props = (Map) result.get(MAP_KEY);
+                Map<String, String> props = (Map) result.get(MCF_CONFIG_PROPS_KEY);
                 if(props != null){
                     handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
                 } else {
@@ -204,7 +204,7 @@ public class ConnectorsHandlers {
             return defs;
         } else {
             Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionNames(resAdapter);
-            String[] names = (String[]) result.get(STRING_ARRAY_KEY);
+            String[] names = (String[]) result.get(CONNECTION_DEFINITION_NAMES_KEY);
             if (names != null) {                
                 return Arrays.asList(names);
             } else {
@@ -213,8 +213,8 @@ public class ConnectorsHandlers {
         }
     }
     
-    public static final String STRING_ARRAY_KEY = "StringArrayKey";
-    public static final String MAP_KEY = "MapKey";
+    public static final String CONNECTION_DEFINITION_NAMES_KEY = "ConnectionDefinitionNamesKey";
+    public static final String MCF_CONFIG_PROPS_KEY = "McfConfigPropsKey";
 
 
 }

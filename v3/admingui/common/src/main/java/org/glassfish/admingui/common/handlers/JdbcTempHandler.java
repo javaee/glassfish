@@ -87,7 +87,7 @@ public class JdbcTempHandler {
 
                 Map<String, Object> statusMap = V3AMX.getInstance().getConnectorRuntime().pingJDBCConnectionPool(jndiName);
                  
-                if ((Boolean) statusMap.get(BOOLEAN_KEY)){
+                if ((Boolean) statusMap.get(PING_CONNECTION_POOL_KEY)){
                     GuiUtil.prepareAlert(handlerCtx,"success", GuiUtil.getMessage("msg.PingSucceed"), null);
                 }else{
                     GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), statusMap.get(REASON_FAILED_KEY).toString() );
@@ -111,7 +111,7 @@ public class JdbcTempHandler {
 
                 Map<String, Object> statusMap = V3AMX.getInstance().getConnectorRuntime().flushConnectionPool(jndiName);
                  
-                if ((Boolean) statusMap.get(BOOLEAN_KEY)){
+                if ((Boolean) statusMap.get(FLUSH_CONNECTION_POOL_KEY)){
                     GuiUtil.prepareAlert(handlerCtx,"success", GuiUtil.getMessage("msg.FlushSucceed"), null);
                 }else{
                     GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), statusMap.get(REASON_FAILED_KEY).toString() );
@@ -136,7 +136,7 @@ public class JdbcTempHandler {
             List result = new ArrayList();
             Map<String, Object> tn = V3AMX.getInstance().getConnectorRuntime().getValidationTableNames(name);
             if (tn != null) {
-                Set keys = (Set) tn.get(SET_KEY);
+                Set keys = (Set) tn.get(VALIDATION_TABLE_NAMES_KEY);
                 if (keys != null) {
                    Iterator iter = keys.iterator();
                    while (iter.hasNext()) {
@@ -204,7 +204,7 @@ public class JdbcTempHandler {
                     String classname = "";
                     Map<String, Object> dcn = V3AMX.getInstance().getConnectorRuntime().getJdbcDriverClassNames(dbVendor, resType);
                     if (dcn != null) {
-                        Set keys = (Set) dcn.get(SET_KEY);
+                        Set keys = (Set) dcn.get(JDBC_DRIVER_CLASS_NAMES_KEY);
                         Iterator iter = keys.iterator();
                         while (iter.hasNext()) {
                             classname = (String) iter.next();
@@ -224,7 +224,7 @@ public class JdbcTempHandler {
                     if (!GuiUtil.isEmpty(classname)) {
                         Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionPropertiesAndDefaults(classname, resType);
                         if (result != null) {
-                            Map<String, String> props = (Map) result.get(PROPERTY_MAP_KEY);
+                            Map<String, String> props = (Map) result.get(CONN_DEFINITION_PROPS_KEY);
                             handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
 
                         } 
@@ -266,9 +266,13 @@ public class JdbcTempHandler {
 
     
         public static final  String REASON_FAILED_KEY = "ReasonFailedKey";   
-        public static final  String SET_KEY = "SetKey";
-        public static final  String BOOLEAN_KEY = "BooleanKey";
-        static private final String PROPERTY_MAP_KEY = "PropertyMapKey"; 
+        //public static final  String SET_KEY = "SetKey";
+        //public static final  String BOOLEAN_KEY = "BooleanKey";
+        static private final String CONN_DEFINITION_PROPS_KEY = "ConnDefinitionPropsKey"; 
+        static private final String PING_CONNECTION_POOL_KEY = "PingConnectionPoolKey";
+        static private final String FLUSH_CONNECTION_POOL_KEY = "FlushConnectionPoolKey";
+        static private final String VALIDATION_TABLE_NAMES_KEY = "ValidationTableNamesKey";
+        static private final String JDBC_DRIVER_CLASS_NAMES_KEY = "JdbcDriverClassNamesKey";
         static private final String DATA_SOURCE = "javax.sql.DataSource";
 	static private final String XADATA_SOURCE = "javax.sql.XADataSource";
 	static private final String CCDATA_SOURCE = "javax.sql.ConnectionPoolDataSource";
