@@ -72,6 +72,7 @@ public class EnvEntryNode extends DeploymentDescriptorNode {
         table.put(TagNames.ENVIRONMENT_PROPERTY_VALUE, "setValue");
         table.put(TagNames.ENVIRONMENT_PROPERTY_TYPE, "setType");        
         table.put(TagNames.MAPPED_NAME, "setMappedName");
+        table.put(TagNames.LOOKUP_NAME, "setLookupName");
         return table;
     }    
     
@@ -124,6 +125,7 @@ public class EnvEntryNode extends DeploymentDescriptorNode {
                 ijNode.writeDescriptor(envEntryNode, TagNames.INJECTION_TARGET, target);
             }
         }
+        appendTextChild(envEntryNode, TagNames.LOOKUP_NAME, envProp.getLookupName());
 
         return envEntryNode;
     }

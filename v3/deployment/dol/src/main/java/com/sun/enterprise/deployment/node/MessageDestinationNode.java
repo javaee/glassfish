@@ -62,6 +62,7 @@ public class MessageDestinationNode extends DisplayableComponentNode  {
         Map table = super.getDispatchTable();
         table.put(TagNames.MESSAGE_DESTINATION_NAME, "setName");
         table.put(TagNames.MAPPED_NAME, "setMappedName");
+        table.put(TagNames.LOOKUP_NAME, "setLookupName");
         return table;
     }
     
@@ -85,6 +86,8 @@ public class MessageDestinationNode extends DisplayableComponentNode  {
                         desc.getName()); 
         appendTextChild(msgDestNode, TagNames.MAPPED_NAME,
                         desc.getMappedName()); 
+        appendTextChild(msgDestNode, TagNames.LOOKUP_NAME,
+                        desc.getLookupName()); 
 
         return msgDestNode;
     }    

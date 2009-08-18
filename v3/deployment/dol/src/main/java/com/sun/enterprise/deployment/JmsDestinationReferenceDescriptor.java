@@ -81,8 +81,13 @@ public class JmsDestinationReferenceDescriptor extends EnvironmentProperty imple
     */
     public String getJndiName() {
         String jndiName = this.getValue();
-        return (jndiName != null  && ! jndiName.equals("")) ? 
-            jndiName : getMappedName();
+        if (jndiName != null  && ! jndiName.equals("")) {
+            return jndiName;
+        }
+        if (mappedName != null && ! mappedName.equals("")) {
+            return mappedName;
+        }
+        return lookupName;
     }
 
    /**

@@ -71,6 +71,7 @@ public class ResourceRefNode  extends DeploymentDescriptorNode {
         table.put(EjbTagNames.RESOURCE_AUTHORIZATION, "setAuthorization");
         table.put(EjbTagNames.RESOURCE_SHARING_SCOPE, "setSharingScope");
         table.put(TagNames.MAPPED_NAME, "setMappedName");
+        table.put(TagNames.LOOKUP_NAME, "setLookupName");
         return table;
     }
     
@@ -97,6 +98,7 @@ public class ResourceRefNode  extends DeploymentDescriptorNode {
                 ijNode.writeDescriptor(ejbResNode, TagNames.INJECTION_TARGET, target);
             }
         }
+        appendTextChild(ejbResNode, TagNames.LOOKUP_NAME, descriptor.getLookupName());
             
         return ejbResNode;
     }

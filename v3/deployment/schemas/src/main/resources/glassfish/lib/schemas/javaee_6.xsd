@@ -2175,6 +2175,7 @@
         among message destination names within the same 
         Deployment File. 
         - an optional mapped name
+        - an optional lookup name
         
         Example: 
         
@@ -2211,9 +2212,9 @@
             should be mapped to.  Each message-destination-ref
             element that references this message destination will
             define a name in the namespace of the referencing
-            component.  (It's a name in the JNDI java:comp/env
-            namespace.)  Many application servers provide a way to
-            map these local names to names of resources known to the
+            component or in one of the other predefined namespaces. 
+            Many application servers provide a way to map these
+            local names to names of resources known to the
             application server.  This mapped name is often a global
             JNDI name, but may be a name of any form.  Each of the
             local names should be mapped to this same global name.
@@ -2223,6 +2224,17 @@
             to use mapped names.  The mapped name is
             product-dependent and often installation-dependent.  No
             use of a mapped name is portable.
+            
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="lookup-name"
+                   type="javaee:xsdStringType"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+
+            The JNDI name to be looked up to resolve the message destination.
             
           </xsd:documentation>
         </xsd:annotation>
@@ -2289,10 +2301,7 @@
             The message-destination-ref-name element specifies
             the name of a message destination reference; its
             value is the environment entry name used in
-            Deployment Component code.  The name is a JNDI name
-            relative to the java:comp/env context and must be
-            unique within an ejb-jar (for enterprise beans) or a
-            Deployment File (for others).
+            Deployment Component code.
             
           </xsd:documentation>
         </xsd:annotation>

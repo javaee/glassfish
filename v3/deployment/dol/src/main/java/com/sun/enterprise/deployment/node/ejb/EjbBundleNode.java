@@ -202,11 +202,6 @@ public class EjbBundleNode extends BundleNode<EjbBundleDescriptor> {
      */    
     public Node writeDescriptor(Node parent, EjbBundleDescriptor ejbDesc) {
         Node jarNode = super.writeDescriptor(parent, ejbDesc);
-
-        if( ejbDesc.getModuleDescriptor().getDescriptor() instanceof EjbBundleDescriptor ) {
-            appendTextChild(jarNode, TagNames.MODULE_NAME, ejbDesc.getModuleDescriptor().getModuleName());
-        }
-
         Node entrepriseBeansNode = appendChild(jarNode, EjbTagNames.EJBS);
         for (Iterator ejbs = ejbDesc.getEjbs().iterator();ejbs.hasNext();) {
             EjbDescriptor ejb = (EjbDescriptor) ejbs.next();

@@ -70,6 +70,7 @@ public class ResourceEnvRefNode extends DeploymentDescriptorNode  {
         table.put(TagNames.RESOURCE_ENV_REFERENCE_NAME, "setName");    
         table.put(TagNames.RESOURCE_ENV_REFERENCE_TYPE, "setRefType");    
         table.put(TagNames.MAPPED_NAME, "setMappedName");
+        table.put(TagNames.LOOKUP_NAME, "setLookupName");
         return table;
     }
     
@@ -96,7 +97,7 @@ public class ResourceEnvRefNode extends DeploymentDescriptorNode  {
                 ijNode.writeDescriptor(ejbResNode, TagNames.INJECTION_TARGET, target);
             }
         }
-
+        appendTextChild(ejbResNode, TagNames.LOOKUP_NAME, descriptor.getLookupName());
         return ejbResNode;
     }    
 }

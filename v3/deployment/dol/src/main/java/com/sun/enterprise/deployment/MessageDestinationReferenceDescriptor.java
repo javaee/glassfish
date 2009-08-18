@@ -127,8 +127,13 @@ public class MessageDestinationReferenceDescriptor extends EnvironmentProperty
     }
 
     public String getJndiName() {
-        return (jndiName != null  && ! jndiName.equals("")) ? 
-            jndiName : mappedName;
+        if (jndiName != null  && ! jndiName.equals("")) {
+            return jndiName;
+        }
+        if (mappedName != null && ! mappedName.equals("")) {
+            return mappedName;
+        }
+        return lookupName;
     }
 
     public void setJndiName(String physicalDestinationName) {

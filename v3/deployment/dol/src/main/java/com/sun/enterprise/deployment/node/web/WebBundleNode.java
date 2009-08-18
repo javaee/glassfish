@@ -160,8 +160,6 @@ public class WebBundleNode extends WebCommonNode<WebBundleDescriptor> {
         WebBundleDescriptor webBundleDesc) {
 
         Node jarNode = super.writeDescriptor(parent, webBundleDesc);
-        appendTextChild(jarNode, TagNames.MODULE_NAME, webBundleDesc.getModuleDescriptor().getModuleName());
-
         if (webBundleDesc.getAbsoluteOrderingDescriptor() != null) {
             AbsoluteOrderingNode absOrderingNode = new AbsoluteOrderingNode();
             absOrderingNode.writeDescriptor(jarNode, WebTagNames.ABSOLUTE_ORDERING,

@@ -73,6 +73,7 @@ public class MessageDestinationRefNode extends DeploymentDescriptorNode  {
         table.put(TagNames.MESSAGE_DESTINATION_LINK, 
                   "setMessageDestinationLinkName");
         table.put(TagNames.MAPPED_NAME, "setMappedName");
+        table.put(TagNames.LOOKUP_NAME, "setLookupName");
 
         return table;
     }
@@ -110,6 +111,9 @@ public class MessageDestinationRefNode extends DeploymentDescriptorNode  {
                 ijNode.writeDescriptor(msgDestRefNode, TagNames.INJECTION_TARGET, target);
             }
         }
+
+        appendTextChild(msgDestRefNode, TagNames.LOOKUP_NAME, 
+            desc.getLookupName());
 
         return msgDestRefNode;
     }    

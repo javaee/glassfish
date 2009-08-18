@@ -83,6 +83,8 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
 	    new LocalStringManagerImpl(EnvironmentProperty.class);
 
     protected String mappedName;
+
+    protected String lookupName;
 						    
     /** 
     ** copy constructor.
@@ -278,6 +280,13 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
         return (mappedName != null)? mappedName : "";
     }
 
+   public void setLookupName(String lName) {
+        lookupName = lName;
+    }
+
+    public String getLookupName() {
+        return (lookupName != null)? lookupName : "";
+    }
     
      /** 
     ** Sets the value of the environment property to the given string.

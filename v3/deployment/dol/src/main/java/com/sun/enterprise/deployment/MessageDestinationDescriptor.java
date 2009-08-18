@@ -57,6 +57,7 @@ public class MessageDestinationDescriptor extends Descriptor implements NamedDes
     // destination is mapped.
     private String jndiName;
     private String mappedName;
+    private String lookupName;
 
     // Set of MessageDestinationReferencer descriptors pointing to me.
     private Set referencers = new HashSet();
@@ -121,7 +122,13 @@ public class MessageDestinationDescriptor extends Descriptor implements NamedDes
     }
 
     public String getJndiName() {
-        return (jndiName != null) ? jndiName : mappedName;
+        if (jndiName != null  && ! jndiName.equals("")) {
+            return jndiName;
+        }
+        if (mappedName != null && ! mappedName.equals("")) {
+            return mappedName;
+        }
+        return lookupName;
     }
 
     public void setJndiName(String physicalDestinationName) {
@@ -135,4 +142,13 @@ public class MessageDestinationDescriptor extends Descriptor implements NamedDes
     public void getMappedName(String mappedName) {
         this.mappedName = mappedName;
     }
+
+    public void setLookupName(String lName) {
+        lookupName = lName;
+    }
+
+    public String getLookupName() {
+        return (lookupName != null)? lookupName : "";
+    }
+
 }
