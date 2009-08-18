@@ -689,18 +689,20 @@ public class WebappLoader
         // Register a stream handler factory for the JNDI protocol
         URLStreamHandlerFactory streamHandlerFactory =
             new DirContextURLStreamHandlerFactory();
-        if (first) {
-            first = false;
-            try {
-                URL.setURLStreamHandlerFactory(streamHandlerFactory);
-            } catch (Exception e) {
-                // Log and continue anyway, this is not critical
-                log.log(Level.SEVERE,
-                        "Error registering jndi stream handler", e);
-            } catch (Throwable t) {
-                // This is likely a dual registration
-                log.info("Dual registration of jndi stream handler: " 
-                         + t.getMessage());
+        synchronized (WebappLoader.class) {
+            if (first) {
+                first = false;
+                try {
+                    URL.setURLStreamHandlerFactory(streamHandlerFactory);
+                } catch (Exception e) {
+                    // Log and continue anyway, this is not critical
+                    log.log(Level.SEVERE,
+                            "Error registering jndi stream handler", e);
+                } catch (Throwable t) {
+                    // This is likely a dual registration
+                    log.info("Dual registration of jndi stream handler: "
+                            + t.getMessage());
+                }
             }
         }
 
