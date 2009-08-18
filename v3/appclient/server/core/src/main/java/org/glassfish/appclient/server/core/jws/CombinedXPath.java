@@ -37,7 +37,7 @@
  * holder.
  */
 
-package org.glassfish.appclient.server.core;
+package org.glassfish.appclient.server.core.jws;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;

@@ -37,7 +37,7 @@
  * holder.
  */
 
-package org.glassfish.appclient.server.core;
+package org.glassfish.appclient.server.core.jws;
 
 import com.sun.enterprise.deployment.runtime.JnlpDocDescriptor;
 import java.io.ByteArrayOutputStream;

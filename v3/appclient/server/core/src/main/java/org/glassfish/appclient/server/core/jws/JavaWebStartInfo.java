@@ -63,7 +63,6 @@ import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.appclient.server.core.AppClientDeployerHelper;
 import org.glassfish.appclient.server.core.AppClientServerApplication;
-import org.glassfish.appclient.server.core.DeveloperContentHandler;
 import org.glassfish.appclient.server.core.jws.servedcontent.ASJarSigner;
 import org.glassfish.appclient.server.core.jws.servedcontent.AutoSignedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.Content;
