@@ -21,7 +21,6 @@ import org.junit.Test;
 /**
  * @author bnevins
  */
-@Ignore
 @SuppressWarnings({"StaticNonFinalField"})
 public class MiniXmlParserTest {
     private static File hasProfiler;
@@ -72,7 +71,7 @@ public class MiniXmlParserTest {
             MiniXmlParserTest.class.getClassLoader().getResource("monitoringFalse.xml").getPath());
         monitoringTrue = new File(MiniXmlParserTest.class.getClassLoader().getResource("monitoringTrue.xml").getPath());
         monitoringNone = new File(MiniXmlParserTest.class.getClassLoader().getResource("monitoringNone.xml").getPath());
-        v2DomainXml = new File(MiniXmlParserTest.class.getClassLoader().getResource("v2Domain.xml").getPath());
+        v2DomainXml = new File(MiniXmlParserTest.class.getClassLoader().getResource("v2domain.xml").getPath());
         issue9127DomainXml = new File(MiniXmlParserTest.class.getClassLoader().getResource("domain9127.xml").getPath());
         assertTrue(wrongOrder.exists());
         assertTrue(rightOrder.exists());
