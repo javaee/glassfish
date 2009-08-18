@@ -65,7 +65,7 @@ public class Ejb2RuntimeEndpointInfo extends EjbRuntimeEndpointInfo {
     // of initialization.
     private Tie tieInstance;
 
-    /*private ServerAuthConfig serverAuthConfig;*/
+    private Object serverAuthConfig;
 
 
     public Ejb2RuntimeEndpointInfo(WebServiceEndpoint webServiceEndpoint,
@@ -74,14 +74,15 @@ public class Ejb2RuntimeEndpointInfo extends EjbRuntimeEndpointInfo {
                                   
         super(webServiceEndpoint, ejbContainer, servant);
         tieClass = tie;
-        /*
+        
         if (Globals.getDefaultHabitat() != null) {
-            SecurityService secServ = Globals.get(SecurityService.class);
+            org.glassfish.webservices.SecurityService secServ = Globals.get(
+                    org.glassfish.webservices.SecurityService.class);
             if (secServ != null) {
-                secServ.mergeSOAPMessageSecurityPolicies(webServiceEndpoint.getMessageSecurityBinding());
+                serverAuthConfig = secServ.mergeSOAPMessageSecurityPolicies(webServiceEndpoint.getMessageSecurityBinding());
             }
         }
-        */
+        
     }
 
     public AdapterInvocationInfo getHandlerImplementor()
@@ -121,6 +122,10 @@ public class Ejb2RuntimeEndpointInfo extends EjbRuntimeEndpointInfo {
             messageDispatcher = new EjbWebServiceDispatcher();
         }
         return messageDispatcher;
+    }
+
+    public Object getServerAuthConfig() {
+     return serverAuthConfig;
     }
 
 }

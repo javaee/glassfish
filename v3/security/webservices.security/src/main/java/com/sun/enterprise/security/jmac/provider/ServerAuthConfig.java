@@ -48,6 +48,9 @@ import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescri
 import java.util.logging.Logger;
 import com.sun.logging.LogDomains;
 
+import com.sun.xml.rpc.spi.runtime.StreamingHandler;
+import javax.xml.soap.SOAPMessage;
+
 /**
  * This class is the client container's interface to the AuthConfig subsystem
  * to get AuthContext objects on which to invoke message layer authentication
@@ -121,20 +124,20 @@ public class ServerAuthConfig extends BaseAuthConfig {
 	    (layer,provider,requestPolicy,responsePolicy,cbh);
     }
 
-   /* public ServerAuthContext 
+   public ServerAuthContext 
 	getAuthContext(StreamingHandler handler, SOAPMessage message) {
 	return (ServerAuthContext) getContext(handler,message);
-    }*/
+    }
 
     public ServerAuthContext getAuthContext
 	(javax.xml.ws.handler.soap.SOAPMessageContext context) {
 	return (ServerAuthContext) getContext(context);
     }
 
-   /* public ServerAuthContext 
+   public ServerAuthContext 
 	getAuthContextForOpCode(StreamingHandler handler, int opcode) throws
 	    ClassNotFoundException, NoSuchMethodException {
 	return (ServerAuthContext) getContextForOpCode(handler,opcode);
-    }*/
+    }
 
 }

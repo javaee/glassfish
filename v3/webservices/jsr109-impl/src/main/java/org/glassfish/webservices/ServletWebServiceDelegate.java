@@ -74,6 +74,7 @@ import java.io.IOException;
 import java.io.EOFException;
 
 import com.sun.logging.LogDomains;
+import org.glassfish.internal.api.Globals;
 import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
 
 /**
@@ -133,28 +134,18 @@ public class ServletWebServiceDelegate extends ServletSecondDelegate {
                 // if a conventional authentication mechanism has NOT been configured
                 // for the endpoint create and install system handler for web services
                 // security
-                SystemHandlerDelegate securityHandlerDelegate = null;
-                /*TBD VIJAY/BM
-                if (!endpoint_.hasAuthMethod()) {
-                    try {
-                        ServerAuthConfig config = ServerAuthConfig.getConfig
-                                (com.sun.enterprise.security.jauth.AuthConfig.SOAP,
-                                        endpoint_.getMessageSecurityBinding(),
-                                        null);
-                        if (config != null) {
-                            securityHandlerDelegate =
-                                    new ServletSystemHandlerDelegate(config, endpoint_);
-                            rpcDelegate_.setSystemHandlerDelegate(securityHandlerDelegate);
-                        }
-                    } catch (Exception e) {
-                        logger.log(Level.SEVERE,
-                                "Servlet Webservice security configuration Failure", e);
+                org.glassfish.webservices.SecurityService  secServ = Globals.get(
+                        org.glassfish.webservices.SecurityService.class);
+                if (secServ != null) {
+                    SystemHandlerDelegate securityHandlerDelegate = secServ.getSecurityHandler(endpoint_);
+                    if (securityHandlerDelegate != null) {
+                        rpcDelegate_.setSystemHandlerDelegate(securityHandlerDelegate);
+
+                        // need to invoke the endpoint lifecylcle
+                        endpointImpl_ = (JAXRPCEndpointImpl) wsEngine_.createHandler(securityHandlerDelegate, endpoint_);
+                        rpcDelegate_.setSystemHandlerDelegate(endpointImpl_);
                     }
                 }
-                */
-                // need to invoke the endpoint lifecylcle 
-                endpointImpl_ = (JAXRPCEndpointImpl)wsEngine_.createHandler(securityHandlerDelegate, endpoint_);
-                rpcDelegate_.setSystemHandlerDelegate(endpointImpl_);
 
             } else {
                 throw new ServletException(servletName + " not found");

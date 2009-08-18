@@ -59,7 +59,7 @@ import com.sun.enterprise.deployment.runtime.common.MessageDescriptor;
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityDescriptor;
 import com.sun.enterprise.deployment.runtime.common.ProtectionDescriptor;
 
-//import com.sun.xml.rpc.spi.runtime.StreamingHandler;
+import com.sun.xml.rpc.spi.runtime.StreamingHandler;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -380,7 +380,6 @@ public class BaseAuthConfig {
 	return rvalue;
     }
 
-    /*TODO:V3 JAXRPC stuff
     private Object getExplicitContextForOpCode(StreamingHandler handler, 
 	int opcode) throws ClassNotFoundException, NoSuchMethodException {
 
@@ -448,8 +447,7 @@ public class BaseAuthConfig {
 	    rvalue = null;
 	}
 	return rvalue;
-    }*/
-
+    }
     private static String getOpName(SOAPMessage message) {
 
 	String rvalue = null;
@@ -601,7 +599,7 @@ public class BaseAuthConfig {
 	}
 	return rvalue;
     }
-    /*TODO:V3 JAXRPC stuff
+    
     protected Object getContext(StreamingHandler handler,SOAPMessage message){
 
 	Object rvalue = null;
@@ -663,7 +661,7 @@ public class BaseAuthConfig {
 	}
 
 	return rvalue;
-    }*/
+    }
 
     // used by jaxws system handler delegates and handlers
     protected Object getContext(SOAPMessageContext soapMC) {

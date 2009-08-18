@@ -61,6 +61,7 @@ import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.ServiceRefPortInfo;
 import com.sun.enterprise.deployment.NameValuePairDescriptor;
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
+import org.glassfish.internal.api.Globals;
 
 
 
@@ -235,25 +236,12 @@ public class ServiceInvocationHandler implements InvocationHandler {
         if (portInfo != null) {
             binding = portInfo.getMessageSecurityBinding();
         }
-        /**    TODO Fix later
-        ClientAuthConfig config = ClientAuthConfig.getConfig
-                (com.sun.enterprise.security.jauth.AuthConfig.SOAP,
-                        binding, null);
 
-        if (config != null) {
-
-            // get understood headers from auth module.
-            QName[] headers = config.getMechanisms();
-
-            Map properties = new HashMap();
-            properties.put(MessageLayerClientHandler.CLIENT_AUTH_CONFIG, config);
-            properties.put(javax.xml.ws.handler.MessageContext.WSDL_SERVICE,
-                    serviceRef.getServiceName());
-
-            rvalue = new HandlerInfo(MessageLayerClientHandler.class,
-                    properties, headers);
-        }*/
-
+        org.glassfish.webservices.SecurityService  secServ = Globals.get(
+                        org.glassfish.webservices.SecurityService.class);
+        if (secServ != null) {
+           rvalue = secServ.getMessageSecurityHandler(binding, serviceRef.getServiceName());
+        }
         return rvalue;
     }
 

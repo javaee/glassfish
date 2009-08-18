@@ -38,13 +38,18 @@ package com.sun.enterprise.security.webservices;
 
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
+import com.sun.enterprise.security.jauth.AuthException;
 import com.sun.logging.LogDomains;
 import com.sun.web.security.RealmAdapter;
+import com.sun.xml.rpc.spi.runtime.SOAPMessageContext;
+import com.sun.xml.rpc.spi.runtime.SystemHandlerDelegate;
 import java.security.cert.X509Certificate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.namespace.QName;
+import javax.xml.rpc.handler.HandlerInfo;
 import org.glassfish.webservices.Ejb2RuntimeEndpointInfo;
 import org.glassfish.webservices.EjbRuntimeEndpointInfo;
 import org.glassfish.webservices.SecurityService;
@@ -62,6 +67,12 @@ import org.glassfish.webservices.monitoring.AuthenticationListener;
 import org.glassfish.webservices.monitoring.Endpoint;
 import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
 import com.sun.enterprise.security.audit.AuditManager;
+import com.sun.enterprise.security.jauth.ServerAuthContext;
+import com.sun.enterprise.security.jmac.provider.ClientAuthConfig;
+import com.sun.enterprise.security.jmac.provider.ServerAuthConfig;
+import com.sun.xml.rpc.spi.runtime.StreamingHandler;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -73,23 +84,26 @@ public class SecurityServiceImpl implements SecurityService {
     
     protected static final Logger _logger = LogDomains.getLogger(SecurityServiceImpl.class,
         LogDomains.SECURITY_LOGGER);
-    private com.sun.enterprise.security.jmac.provider.ServerAuthConfig serverAuthConfig = null;
     
     private static final Base64 base64Helper = new Base64();
     private static final String AUTHORIZATION_HEADER = "authorization";
     
-    public void mergeSOAPMessageSecurityPolicies(MessageSecurityBindingDescriptor desc) {
+    public Object mergeSOAPMessageSecurityPolicies(MessageSecurityBindingDescriptor desc) {
         try {
 	    // merge message security policy from domain.xml and sun-specific
 	    // deployment descriptor
-	     serverAuthConfig = com.sun.enterprise.security.jmac.provider.ServerAuthConfig.getConfig
+	     ServerAuthConfig 
+                     serverAuthConfig =
+                     com.sun.enterprise.security.jmac.provider.ServerAuthConfig.getConfig
 		(com.sun.enterprise.security.jauth.AuthConfig.SOAP,
 		 desc,
 		 null);
+             return serverAuthConfig;
 	} catch (com.sun.enterprise.security.jauth.AuthException ae) {
             _logger.log(Level.SEVERE, 
 		       "EJB Webservice security configuration Failure", ae);
 	}
+        return null;
     }
 
     public boolean doSecurity(HttpServletRequest hreq, EjbRuntimeEndpointInfo epInfo, String realmName, WebServiceContextImpl context) {
@@ -221,6 +235,76 @@ public class SecurityServiceImpl implements SecurityService {
         
     public void resetSecurityContext() {
         SecurityContext.setCurrent(null);
+    }
+
+    public SystemHandlerDelegate getSecurityHandler(WebServiceEndpoint endpoint) {
+
+        if (!endpoint.hasAuthMethod()) {
+            try {
+                ServerAuthConfig config = ServerAuthConfig.getConfig(com.sun.enterprise.security.jauth.AuthConfig.SOAP,
+                        endpoint.getMessageSecurityBinding(),
+                        null);
+                if (config != null) {
+                    return new ServletSystemHandlerDelegate(config, endpoint);
+                }
+            } catch (Exception e) {
+                _logger.log(Level.SEVERE,
+                        "Servlet Webservice security configuration Failure", e);
+            }
+        }
+        return null;
+    }
+
+    public boolean validateRequest(Object serverAuthConfig, StreamingHandler implementor, SOAPMessageContext context) {
+        ServerAuthConfig authConfig = (ServerAuthConfig) serverAuthConfig;
+        if (authConfig != null) {
+            ServerAuthContext sAC = authConfig.getAuthContext((StreamingHandler) implementor, context.getMessage());
+            if (sAC != null) {
+                try {
+                    return WebServiceSecurity.validateRequest(context, sAC);
+                } catch (AuthException ex) {
+                    _logger.log(Level.SEVERE, ex.getMessage(), ex);
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+        return true;
+    }
+
+    public void secureResponse(Object serverAuthConfig, StreamingHandler implementor,SOAPMessageContext msgContext) {
+        if (serverAuthConfig != null) {
+            ServerAuthConfig config = (ServerAuthConfig)serverAuthConfig;
+            ServerAuthContext sAC = config.getAuthContext(implementor, msgContext.getMessage());
+            if (sAC != null) {
+                try {
+                    WebServiceSecurity.secureResponse(msgContext, sAC);
+                } catch (AuthException ex) {
+                    _logger.log(Level.SEVERE, null, ex);
+                    throw new RuntimeException(ex);
+                }
+            }
+
+        }
+    }
+
+    public HandlerInfo getMessageSecurityHandler(MessageSecurityBindingDescriptor binding, QName serviceName) {
+        HandlerInfo rvalue = null;
+        try {
+            ClientAuthConfig config = ClientAuthConfig.getConfig(com.sun.enterprise.security.jauth.AuthConfig.SOAP, binding, null);
+            if (config != null) {
+                // get understood headers from auth module.
+                QName[] headers = config.getMechanisms();
+                Map properties = new HashMap();
+                properties.put(MessageLayerClientHandler.CLIENT_AUTH_CONFIG, config);
+                properties.put(javax.xml.ws.handler.MessageContext.WSDL_SERVICE, serviceName);
+                rvalue = new HandlerInfo(MessageLayerClientHandler.class, properties, headers);
+            }
+
+        } catch (AuthException ex) {
+            _logger.log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
+        }
+        return rvalue;
     }
 
 }

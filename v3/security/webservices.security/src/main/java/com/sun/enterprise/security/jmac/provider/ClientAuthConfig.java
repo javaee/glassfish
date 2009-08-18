@@ -43,10 +43,11 @@ import javax.security.auth.callback.CallbackHandler;
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityDescriptor;
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
 
-//TODO:V3 JAXRPC stuff import com.sun.xml.rpc.spi.runtime.StreamingHandler;
+import com.sun.xml.rpc.spi.runtime.StreamingHandler;
 
 import java.util.logging.Logger;
 import com.sun.logging.LogDomains;
+import javax.xml.soap.SOAPMessage;
 
 /**
  * This class is the client container's interface to the AuthConfig subsystem
@@ -121,22 +122,20 @@ public class ClientAuthConfig extends BaseAuthConfig {
 	    (layer,provider,requestPolicy,responsePolicy,cbh);
     }
 
-    /*TODO:V3 JAXRPC stuff
     public ClientAuthContext 
 	getAuthContext(StreamingHandler handler, SOAPMessage message) {
 	return (ClientAuthContext) getContext(handler,message);
-    }*/
+    }
 
     public ClientAuthContext getAuthContext
 	(javax.xml.ws.handler.soap.SOAPMessageContext context) {
 	return (ClientAuthContext) getContext(context);
     }
 
-    /*TODO:V3 JAXRPC stuff
     public ClientAuthContext 
 	getAuthContextForOpCode(StreamingHandler handler, int opcode) throws
 	    ClassNotFoundException, NoSuchMethodException {
 	return (ClientAuthContext) getContextForOpCode(handler,opcode);
-    }*/
+    }
 
 }

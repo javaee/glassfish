@@ -73,6 +73,7 @@ import org.glassfish.webservices.monitoring.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import com.sun.logging.LogDomains;
+import org.glassfish.internal.api.Globals;
 
 /**
  * Handles dispatching of ejb web service http invocations.
@@ -152,8 +153,7 @@ public class EjbWebServiceDispatcher implements EjbMessageDispatcher {
             msgContext = rpcFactory.createSOAPMessageContext();
             SOAPMessage message = createSOAPMessage(req, headers);
                         
-    	    ServerAuthContext sAC = null;
-	        boolean wssSucceded = true;
+    	    boolean wssSucceded = true;
             
             if (message != null) {                                
                 
@@ -181,16 +181,12 @@ public class EjbWebServiceDispatcher implements EjbMessageDispatcher {
                     // Set http response object so one-way operations will
                     // response before actual business method invocation.
                     msgContext.setProperty(HTTP_SERVLET_RESPONSE, resp);
-                    
-		            /*ServerAuthConfig authConfig = endpointInfo2.getServerAuthConfig();
-		            if (authConfig != null) {
-			            sAC = authConfig.getAuthContext((StreamingHandler)implementor,message);
-                        if (sAC != null) {
-                            wssSucceded =
-                            WebServiceSecurity.validateRequest(msgContext,sAC);
-                        }
-    		        }*/
-
+                    org.glassfish.webservices.SecurityService  secServ = Globals.get(
+                        org.glassfish.webservices.SecurityService.class);
+                    if (secServ != null) {
+                        wssSucceded = secServ.validateRequest(endpointInfo2.getServerAuthConfig(),
+                                (StreamingHandler)aInfo.getHandler(), msgContext);
+                    }
                     // Trace if necessary
                     if (messageID!=null || (endpoint!=null && endpoint.hasListeners())) {
                         // create the thread local
@@ -224,11 +220,13 @@ public class EjbWebServiceDispatcher implements EjbMessageDispatcher {
                 endpoint.processResponse(msgContext);
             }
             SOAPMessage reply = msgContext.getMessage();
-            /*
-            if (sAC != null && wssSucceded) {
-                WebServiceSecurity.secureResponse(msgContext,sAC);
+            org.glassfish.webservices.SecurityService  secServ = Globals.get(
+                        org.glassfish.webservices.SecurityService.class);
+            if (secServ != null && wssSucceded) {
+                Ejb2RuntimeEndpointInfo endpointInfo2 = (Ejb2RuntimeEndpointInfo)endpointInfo;
+                secServ.secureResponse(endpointInfo2.getServerAuthConfig(),(StreamingHandler)endpointInfo2.getHandlerImplementor().getHandler(),msgContext);
             }
-            */
+            
             if (reply.saveRequired()) {
                 reply.saveChanges();
             }

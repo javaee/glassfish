@@ -36,8 +36,14 @@
 
 package org.glassfish.webservices;
 
+import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
+import com.sun.xml.rpc.spi.runtime.SystemHandlerDelegate;
 import javax.servlet.http.HttpServletRequest;
+import com.sun.xml.rpc.spi.runtime.SOAPMessageContext;
+import com.sun.xml.rpc.spi.runtime.StreamingHandler;
+import javax.xml.namespace.QName;
+import javax.xml.rpc.handler.HandlerInfo;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -47,7 +53,12 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface SecurityService {
     
-    public void mergeSOAPMessageSecurityPolicies(MessageSecurityBindingDescriptor desc);
+    public Object mergeSOAPMessageSecurityPolicies(MessageSecurityBindingDescriptor desc);
     public boolean doSecurity(HttpServletRequest hreq, EjbRuntimeEndpointInfo ejbEndpoint, String realmName, WebServiceContextImpl context);
     public void resetSecurityContext();
+    public SystemHandlerDelegate getSecurityHandler(WebServiceEndpoint endpoint);
+    public boolean validateRequest(Object serverAuthConfig, StreamingHandler implementor, SOAPMessageContext context);
+    public void secureResponse(Object serverAuthConfig, StreamingHandler implementor, SOAPMessageContext context);
+    public HandlerInfo getMessageSecurityHandler(MessageSecurityBindingDescriptor binding, QName serviceName);
 }
+
