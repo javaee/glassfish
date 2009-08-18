@@ -28,25 +28,24 @@ public class BtraceClientGenerator {
 
     private BtraceClientGenerator() {
         // all static class
-        // no instances llowed
+        // no instances allowed
     }
 
     public static byte[] generateBtraceClientClassData(int clientID,
-    		Collection<FlashlightProbe> probesRequiringTransformation,
-    		Class clientClazz) {
+    		Collection<FlashlightProbe> probesRequiringTransformation) {
 
+        StringBuilder sb = new StringBuilder("com.sun.btrace.flashlight.");
+        /*
+        // create a unique name.  It does not matter what the name is.
+        for (FlashlightProbe probe : probesRequiringTransformation) {
+            sb.append(probe.getProbeName());
+            sb.append("_");
+        }
+         */
 
-        Type classType = Type.getType(clientClazz);
-        //System.out.println("** classType: " + classType);
-        //System.out.println("** classDesc: " + Type.getDescriptor(providerClazz));
-
-        //System.out.println("Generating for: " + generatedClassName);
-
-        String generatedClassName = clientClazz.getName();
-        generatedClassName += "_BTrace_" + clientID + "_";
-        generatedClassName = "com.sun.btrace.flashlight." + generatedClassName;
+        sb.append("BTrace_").append(clientID);
+        String generatedClassName = sb.toString();
         generatedClassName = generatedClassName.replace('.', '/');
-
         int cwFlags = ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS;
         ClassWriter cw = new ClassWriter(cwFlags);
 
@@ -143,57 +142,8 @@ public class BtraceClientGenerator {
     }
 }
 
-/*  Happy Hunting Ground for Huge Comments
 
-    public String defineClass(FlashlightProbeProvider provider, Class providerClazz) {
-
-        String generatedClassName = provider.getModuleProviderName() + "_Flashlight_" + provider.getModuleName() + "_"
-                + "Probe_" + ((provider.getProbeProviderName() == null) ? providerClazz.getName() : provider.getProbeProviderName());
-        generatedClassName = providerClazz.getName() + "_" + generatedClassName;
-
-        byte[] classData = generateBtraceClientClassData(provider, providerClazz, generatedClassName);
-
-        ProtectionDomain pd = providerClazz.getProtectionDomain();
-
-        java.lang.reflect.Method jm = null;
-        for (java.lang.reflect.Method jm2 : ClassLoader.class.getDeclaredMethods()) {
-            if (jm2.getName().equals("defineClass") && jm2.getParameterTypes().length == 5) {
-                jm = jm2;
-                break;
-            }
-        }
-
-        final java.lang.reflect.Method clM = jm;
-        try {
-            java.security.AccessController.doPrivileged(
-                    new java.security.PrivilegedExceptionAction() {
-                        public java.lang.Object run() throws Exception {
-                            if (!clM.isAccessible()) {
-                                clM.setAccessible(true);
-                            }
-                            return null;
-                        }
-                    });
-
-            clM.invoke(providerClazz.getClassLoader(), generatedClassName, classData, 0,
-                    classData.length, pd);
-
-            return generatedClassName;
-        } catch (PrivilegedActionException pEx) {
-            throw new RuntimeException(pEx);
-        } catch (IllegalAccessException
-                illegalAccessException) {
-            throw new RuntimeException(illegalAccessException);
-        } catch (InvocationTargetException
-                invtEx) {
-            throw new RuntimeException(invtEx);
-        }
-
-    }
-    */
-
-
-/****  Example generated class
+/****  Example generated class (bnevins, August 2009)
  *
  * package com.sun.btrace.flashlight.org.glassfish.web.admin.monitor;
 

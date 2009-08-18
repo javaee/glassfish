@@ -143,7 +143,7 @@ public class FlashlightProbeClientMediator
             (probesRequiringClassTransformation.size() > 0)) {
 
             byte [] bArr = BtraceClientGenerator.generateBtraceClientClassData(clientID,
-        		    probesRequiringClassTransformation, clientClz);
+        		    probesRequiringClassTransformation);
 
             // submit to btrace agent
             // todo: check for the existence of agent before submitting the code
