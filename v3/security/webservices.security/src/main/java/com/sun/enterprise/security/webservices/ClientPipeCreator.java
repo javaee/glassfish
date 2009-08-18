@@ -76,6 +76,7 @@ public class ClientPipeCreator extends ClientPipelineHook {
         propBag.put(PipeConstants.SERVICE_REF, svcRef);
 	propBag.put(PipeConstants.NEXT_PIPE,tail);
         propBag.put(PipeConstants.CONTAINER,ctxt.getContainer());
+        propBag.put(PipeConstants.ASSEMBLER_CONTEXT, ctxt);
         ClientSecurityPipe ret = new ClientSecurityPipe(propBag, tail);
         AuthConfigRegistrationWrapper listenerWrapper = ClientPipeCloser.getInstance().lookupListenerWrapper(svcRef);
         //there is a 1-1 mapping between Service_Ref and a ListenerWrapper
