@@ -59,12 +59,6 @@ import java.util.logging.Logger;
 import com.sun.logging.LogDomains;
 import java.io.PrintWriter;
 
-/*
-import com.sun.tools.attach.spi.AttachProvider;
-import com.sun.tools.attach.VirtualMachineDescriptor;
-import com.sun.tools.attach.VirtualMachine;
-*/
-
 /**
  * @author Mahesh Kannan
  *         Date: Jan 27, 2008
