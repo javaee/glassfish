@@ -51,6 +51,15 @@ public class SfulEJB implements Sful, SessionSynchronization
             DataSource myDS2 = (DataSource)ic.lookup("java:comp/env/jdbc/__default");
             int loginTimeout2 = myDS2.getLoginTimeout();
             System.out.println("myDS2 login timeout = " + loginTimeout2);
+
+            DataSource myDS3 = (DataSource)ic.lookup("java:comp/env/myDS3");
+            int loginTimeout3 = myDS3.getLoginTimeout();
+            System.out.println("myDS3 login timeout = " + loginTimeout3);
+
+            DataSource myDS4 = (DataSource)ic.lookup("java:comp/env/myDS4");
+            int loginTimeout4 = myDS4.getLoginTimeout();
+            System.out.println("myDS4 login timeout = " + loginTimeout4);
+
         } catch(Exception ex) {
             throw new IllegalStateException("Cannot get login timeout: " + ex);
         } 
