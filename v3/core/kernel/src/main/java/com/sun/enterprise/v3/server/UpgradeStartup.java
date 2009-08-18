@@ -43,17 +43,26 @@ import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.*;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.ActionReport;
 
 import java.util.*;
+import java.util.jar.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.net.URISyntaxException;
+import java.net.URI;
+import java.io.*;
 import java.beans.PropertyVetoException;
 
 /**
@@ -75,6 +84,9 @@ public class UpgradeStartup implements ModuleStartup {
     @Inject
     Applications applications;
 
+    @Inject
+    ArchiveFactory archiveFactory;
+
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Server server;
 
@@ -85,6 +97,7 @@ public class UpgradeStartup implements ModuleStartup {
     @Inject
     Logger logger;
 
+    private final static String MODULE_TYPE = "moduleType";
 
     public void setStartupContext(StartupContext startupContext) {
         appservStartup.setStartupContext(startupContext);
@@ -93,40 +106,6 @@ public class UpgradeStartup implements ModuleStartup {
     // do nothing, just return, at the time the upgrade service has
     // run correctly.
     public void start() {
-
-        // all the applications will be directory redeployed
-        // store all the archive deployed applications so we can reset
-        // directory-deployed attribute properly after the redeployment 
-        List<Application> archiveDeployedApps = new ArrayList<Application>();
-        List<String> archiveDeployedAppNames = new ArrayList<String>();
-        for (Application app : applications.getApplications()) {
-            if (!Boolean.parseBoolean(app.getDirectoryDeployed())) {
-                logger.log(Level.INFO, "Application " + app.getName() + " is archive deployed");
-                archiveDeployedAppNames.add(app.getName());
-                archiveDeployedApps.add(app);
-            }
-        }
-
-        if (archiveDeployedApps.size()>0) {
-            try  {
-                ConfigSupport.apply(new ConfigCode() {
-                    public Object run(ConfigBeanProxy... configBeanProxies) throws PropertyVetoException, TransactionFailure {
-                        for (ConfigBeanProxy proxy : configBeanProxies) {
-                            Application app = (Application) proxy;
-                            app.setDirectoryDeployed(Boolean.TRUE.toString());
-                        }
-                        return null;
-                    }
-                }, archiveDeployedApps.toArray(new Application[archiveDeployedApps.size()]));
-            } catch(TransactionFailure tf) {
-                logger.log(Level.SEVERE, "Exception while disabling applications", tf);
-                return;
-            }
-        }
-
-        // start the application server
-        appservStartup.start();
-
         // we need to disable all the applications before starting server 
         // so the applications will not get loaded before redeployment
         // store the list of previous enabled applications
@@ -200,27 +179,6 @@ public class UpgradeStartup implements ModuleStartup {
             }
         }
 
-        // reset the directory-deployed attribute for all archive 
-        // deployed applications.
-        if (archiveDeployedAppNames.size()>0) {
-            for (Application app: applications.getApplications()) {
-                if (archiveDeployedAppNames.contains(app.getName())) {
-                    logger.log(Level.INFO, "Resetting the directory-deployed attribute for " + app.getName());
-                    try  {
-                        ConfigSupport.apply(new SingleConfigCode<Application>() {
-                            public Object run(Application param) throws PropertyVetoException, TransactionFailure {                        
-                                param.setDirectoryDeployed(Boolean.FALSE.toString());
-                                return null;
-                            }
-                        }, app);
-                    } catch(TransactionFailure tf) {
-                        logger.log(Level.SEVERE, "Exception while resetting directory-deployed attribute for archive deployed application " + app.getName(), tf);
-                        return;
-                    }
-                }
-            }
-        }
-
         // stop-the server.
         Logger.getAnonymousLogger().info("Exiting after upgrade");
         try {
@@ -241,6 +199,12 @@ public class UpgradeStartup implements ModuleStartup {
     }
 
     private boolean redeployApp(Application app) {
+        // we don't need to redeploy any v3 type application
+        if (app.getModule().size() > 0 ) {
+            logger.log(Level.INFO, "Skip redeploying v3 type application " + 
+                app.getName());
+            return true;
+        }
         ApplicationRef ref = null;
         for (ApplicationRef appRef : server.getApplicationRef()) {
             if (appRef.getRef().equals(app.getName())) {
@@ -251,21 +215,238 @@ public class UpgradeStartup implements ModuleStartup {
 
         // populate the params and properties from application element first
         DeployCommandParameters deployParams = app.getDeployParameters(ref);
+
+        // for archive deployment, let's repackage the archive and redeploy
+        // that way
+        // we cannot just directory redeploy the archive deployed apps in
+        // v2->v3 upgrade as the repository layout was different in v2 
+        // we should not have to repackage for any upgrade from v3 
+        if (! Boolean.valueOf(app.getDirectoryDeployed())) {
+            File repackagedFile = null;
+            try {
+                repackagedFile = repackageArchive(app);
+                logger.log(Level.INFO, "Repackaged application " + app.getName()
+                    + " at " + repackagedFile.getPath()); 
+            } catch (IOException ioe) {
+                logger.log(Level.SEVERE, "Repackaging of application " + app.getName() + " failed: " + ioe.getMessage(), ioe);
+                return false;
+            }
+            if (repackagedFile == null) {
+                logger.log(Level.SEVERE, "Repackaging of application " + app.getName() + " failed.");
+                return false;
+            }
+            deployParams.path = repackagedFile;
+        }
+
         deployParams.properties = app.getDeployProperties();
+        // remove the marker properties so they don't get carried over 
+        // through redeployment
+        deployParams.properties.remove(MODULE_TYPE);
 
         // now override the ones needed for the upgrade
         deployParams.force = true;
         deployParams.dropandcreatetables = false;
+        deployParams.createtables = false;
         deployParams.enabled = false;
 
         ActionReport report = new PlainTextActionReporter();
 
         commandRunner.doCommand("deploy", deployParams, report, null, null);
 
+        // should we delete the temp file after we are done
+        // it seems it might be useful to keep it around for debugging purpose
+
         if (report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
             logger.log(Level.SEVERE, "Redeployment of application " + app.getName() + " failed: " + report.getMessage() + " Please reploy " + app.getName() + " manually.", report.getFailureCause());
             return false;
         }
         return true;
+    }
+
+    private File repackageArchive(Application app) throws IOException {
+        URI uri = null;
+        try {
+            uri = new URI(app.getLocation());
+        } catch (URISyntaxException e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        if (uri == null) {
+            return null;
+        }
+        
+        Properties appProperties = app.getDeployProperties();
+        String moduleType = appProperties.getProperty(MODULE_TYPE);
+        String suffix = getSuffixFromType(moduleType);
+        if (suffix == null) {
+            suffix = ".jar";
+        }
+        File repositoryDir = new File(uri);
+
+        // get temporary file directory of the system and set targetDir to it
+        File tmp = File.createTempFile("upgrade", null);
+        String targetParentDir = tmp.getParent();
+        tmp.delete();
+
+        if (moduleType.equals(ServerTags.J2EE_APPLICATION)) {
+            return repackageApplication(repositoryDir, targetParentDir, suffix);
+        } else {
+            return repackageStandaloneModule(repositoryDir, targetParentDir, suffix);
+        }
+    }
+
+    private File repackageApplication(File appDir,
+        String targetParentDir, String suffix) throws IOException {
+        String appName = appDir.getName();
+
+        ReadableArchive source = archiveFactory.openArchive(appDir);
+
+        File tempEar = new File(targetParentDir, appName + suffix);
+
+        if (tempEar.exists()) {
+            tempEar.delete();
+        }
+
+        WritableArchive target = archiveFactory.createArchive(tempEar);
+
+        Collection<String> directoryEntries = source.getDirectories();
+        List<String> subModuleEntries = new ArrayList<String>();
+        List<String> entriesToExclude = new ArrayList<String>();
+ 
+        // first put all the sub module jars to the target archive
+        for (String directoryEntry : directoryEntries) {
+            if (directoryEntry.endsWith("_jar") || 
+                directoryEntry.endsWith("_war") || 
+                directoryEntry.endsWith("_rar")) {
+                subModuleEntries.add(directoryEntry); 
+                File moduleJar = processModule(new File(
+                    appDir, directoryEntry), targetParentDir, null);
+                OutputStream os = null;
+                InputStream is = new BufferedInputStream(
+                    new FileInputStream(moduleJar));
+                try {
+                    os = target.putNextEntry(moduleJar.getName());
+                    FileUtils.copy(is, os, moduleJar.length());
+                } finally {
+                    if (os!=null) {
+                        target.closeEntry();
+                    }
+                    is.close();
+                }
+            }
+        }
+
+        // now find all the entries we should exclude to copy to the target
+        // basically all sub module entries should be excluded
+        for (String subModuleEntry : subModuleEntries) {
+            Enumeration<String> ee = source.entries(subModuleEntry);
+            while (ee.hasMoreElements()) {
+                String eeEntryName = ee.nextElement();
+                entriesToExclude.add(eeEntryName);
+            }
+        }
+
+        // now copy the rest of the entries
+        Enumeration<String> e = source.entries();
+        while (e.hasMoreElements()) {
+            String entryName = e.nextElement();
+            if (! entriesToExclude.contains(entryName)) {
+                InputStream is = new BufferedInputStream(source.getEntry(entryName));
+                OutputStream os = null;
+                try {
+                    os = target.putNextEntry(entryName);
+                    FileUtils.copy(is, os, source.getEntrySize(entryName));
+                } finally {
+                    if (os!=null) {
+                        target.closeEntry();
+                    }
+                    is.close();
+                }
+            }
+        }
+
+        source.close();
+        target.close();
+      
+        return tempEar;
+    }
+
+    private File repackageStandaloneModule(File moduleDirName, 
+        String targetParentDir, String suffix) throws IOException {
+        return processModule(moduleDirName, targetParentDir, suffix);
+    }
+
+    // repackage a module and return it as a jar file
+    private File processModule(File moduleDir, String targetParentDir, 
+        String suffix) throws IOException {
+ 
+        String moduleName = moduleDir.getName();
+
+        // sub module in ear case 
+        if (moduleName.endsWith("_jar") || moduleName.endsWith("_war") || moduleName.endsWith("_rar")) {
+            suffix = "." +  moduleName.substring(moduleName.length() - 3);
+            moduleName = moduleName.substring(0, moduleName.lastIndexOf('_'));
+        }
+
+        ReadableArchive source = archiveFactory.openArchive(moduleDir);
+
+        File tempJar = new File(targetParentDir, moduleName + suffix);
+
+        if (tempJar.exists()) {
+            tempJar.delete();
+        }
+
+        WritableArchive target = archiveFactory.createArchive(tempJar);
+
+        Enumeration<String> e = source.entries();
+        while (e.hasMoreElements()) {
+            String entryName = e.nextElement();
+            InputStream is = new BufferedInputStream(source.getEntry(entryName));
+            OutputStream os = null;
+            try {
+                os = target.putNextEntry(entryName);
+                FileUtils.copy(is, os, source.getEntrySize(entryName));
+            } finally {
+                if (os!=null) {
+                    target.closeEntry();
+                }
+                is.close();
+            }
+        }
+
+        // last is manifest if existing.
+        Manifest m = source.getManifest();
+        if (m!=null) {
+            OutputStream os  = target.putNextEntry(JarFile.MANIFEST_NAME);
+            m.write(os);
+            target.closeEntry();
+        }
+
+        source.close();
+        target.close();
+
+        return tempJar;
+    }
+
+    private String getSuffixFromType(String moduleType) {
+        if (moduleType == null) {
+            return null;
+        }
+        if (moduleType.equals(ServerTags.CONNECTOR_MODULE)) {
+            return ".rar"; 
+        }
+        if (moduleType.equals(ServerTags.EJB_MODULE)) {
+            return ".jar"; 
+        }
+        if (moduleType.equals(ServerTags.WEB_MODULE)) {
+            return ".war"; 
+        }
+        if (moduleType.equals(ServerTags.APPCLIENT_MODULE)) {
+            return ".jar"; 
+        }
+        if (moduleType.equals(ServerTags.J2EE_APPLICATION)) {
+            return ".ear"; 
+        }
+        return null;
     }
 }

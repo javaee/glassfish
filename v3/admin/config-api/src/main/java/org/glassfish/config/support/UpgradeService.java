@@ -29,6 +29,8 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
 
     @Inject
     Domain domain;
+
+    private static final String MODULE_TYPE = "moduleType";
     
     public void postConstruct() {
         upgradeApplicationElements();
@@ -116,6 +118,12 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
                             app.getProperty().add(prop);
                         }
 
+                        Property prop =
+                            app.createChild(Property.class);
+                        prop.setName(MODULE_TYPE);
+                        prop.setValue(ServerTags.CONNECTOR_MODULE);
+                        app.getProperty().add(prop);
+
                         // removing the old connector module 
                         applications.getModules().remove(connectorModule);
                         // adding the new application element
@@ -148,6 +156,12 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
                             prop.setValue(property.getValue());
                             app.getProperty().add(prop);
                         }
+
+                        Property prop =
+                            app.createChild(Property.class);
+                        prop.setName(MODULE_TYPE);
+                        prop.setValue(ServerTags.EJB_MODULE);
+                        app.getProperty().add(prop);
 
                         // removing the old ejb module
                         applications.getModules().remove(ejbModule);
@@ -182,6 +196,12 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
                             prop.setValue(property.getValue());
                             app.getProperty().add(prop);
                         }
+
+                        Property prop =
+                            app.createChild(Property.class);
+                        prop.setName(MODULE_TYPE);
+                        prop.setValue(ServerTags.WEB_MODULE);
+                        app.getProperty().add(prop);
 
                         // removing the old web module
                         applications.getModules().remove(webModule);
@@ -218,6 +238,12 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
                         prop.setValue(
                             appclientModule.getJavaWebStartEnabled());
                         app.getProperty().add(prop);
+
+                        Property prop2 =
+                            app.createChild(Property.class);
+                        prop2.setName(MODULE_TYPE);
+                        prop2.setValue(ServerTags.APPCLIENT_MODULE);
+                        app.getProperty().add(prop2);
 
                         // removing the old appclient module
                         applications.getModules().remove(appclientModule);
@@ -257,6 +283,12 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
                         prop.setValue(
                             j2eeApp.getJavaWebStartEnabled());
                         app.getProperty().add(prop);
+
+                        Property prop2 =
+                            app.createChild(Property.class);
+                        prop2.setName(MODULE_TYPE);
+                        prop2.setValue(ServerTags.J2EE_APPLICATION);
+                        app.getProperty().add(prop2);
 
                         // removing the old j2eeapplication module
                         applications.getModules().remove(j2eeApp);
@@ -333,7 +365,7 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
                         prop4.setValue("true");
                         app.getProperty().add(prop4);
 
-                        // removing the old j2eeapplication module
+                        // removing the old lifecycle module
                         applications.getModules().remove(lifecycleModule);
                         // adding the new application element
                         applications.getModules().add(app);

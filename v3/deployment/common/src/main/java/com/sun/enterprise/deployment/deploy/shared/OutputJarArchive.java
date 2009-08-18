@@ -25,6 +25,8 @@ package com.sun.enterprise.deployment.deploy.shared;
 
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 
 import java.io.*;
 import java.util.Enumeration;
@@ -44,6 +46,7 @@ import java.net.URISyntaxException;
  * @author Jerome Dochez
  */
 @Service(name="jar")
+@Scoped(PerLookup.class)
 public class OutputJarArchive extends JarArchive implements WritableArchive {
 
     // the path
