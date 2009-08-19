@@ -454,10 +454,10 @@ public interface Context extends Container {
 
     // --------------------------------------------------------- Public Methods
 
-
     /**
-     * Adds the Listener with the given class name to the set of Listeners
-     * configured for this application.
+     * Adds the Listener with the given class name that is declared in the
+     * deployment descriptor to the set of Listeners configured for this
+     * application.
      *
      * @param listener the fully qualified class name of the Listener
      */
@@ -715,13 +715,6 @@ public interface Context extends Container {
             Servlet instance, Map<String, String> initParams,
             String... urlPatterns)
         throws ServletException;
-
-
-    /**
-     * Gets the (possibly empty) list of application listener class names
-     * configured for this application.
-     */
-    List<String> findApplicationListeners();
 
 
     /**
@@ -1043,12 +1036,6 @@ public interface Context extends Container {
      *  property is set to <code>false</code>.
      */
     void reload();
-
-
-    /**
-     * Removes any application listeners from this Context
-     */
-    void removeApplicationListeners();
 
 
     /**

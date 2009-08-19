@@ -627,8 +627,9 @@ public class StandardDefaultContext
 
 
     /**
-     * Add a new Listener class name to the list of Listeners
-     * configured for this application.
+     * Adds the Listener with the given class name that is declared in the
+     * deployment descriptor to the set of Listeners configured for this
+     * application.
      *
      * @param listener Java class name of a listener class
      */
