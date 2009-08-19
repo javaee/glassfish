@@ -77,8 +77,9 @@ public class DriverLoader implements ConnectorConstants,
     private Set<String> getImplClassesByIteration(File f, String resType, String dbVendor) {
         SortedSet<String> implClassNames = new TreeSet<String>();
         String implClass = null;
+        JarFile jarFile = null;
         try {
-            JarFile jarFile = new JarFile(f);
+            jarFile = new JarFile(f);
             Enumeration e = jarFile.entries();
             while(e.hasMoreElements()) {
 
@@ -126,6 +127,15 @@ public class DriverLoader implements ConnectorConstants,
             }
         } catch (IOException ex) {
             logger.log(Level.WARNING, "Error while getting Jdbc driver classnames ", ex);
+        } finally {
+            if (jarFile != null) {
+                try {
+                    jarFile.close();
+                } catch (IOException ex) {
+                    logger.log(Level.FINE, "Exception while closing JarFile '"
+                            + jarFile.getName() + "' :", ex);
+                }
+            }
         }
         //Could be one or many depending on the connection definition class name 
         return implClassNames;
@@ -277,8 +287,9 @@ public class DriverLoader implements ConnectorConstants,
         //File could be a jdbc jar file or a normal jar file
         boolean isVendorSpecific = false;
         String vendor = null;
+        JarFile jarFile = null;
         try {
-            JarFile jarFile = new JarFile(f);
+            jarFile = new JarFile(f);
             Manifest manifest = jarFile.getManifest();
             Attributes mainAttributes = manifest.getMainAttributes();
             vendor = mainAttributes.getValue(Attributes.Name.IMPLEMENTATION_VENDOR.toString());
@@ -298,6 +309,15 @@ public class DriverLoader implements ConnectorConstants,
             }
         } catch (IOException ex) {
             logger.log(Level.WARNING, "Exception while reading manifest file : ", ex);
+        } finally {
+            if (jarFile != null) {
+                try {
+                    jarFile.close();
+                } catch (IOException ex) {
+                    logger.log(Level.FINE, "Exception while closing JarFile '"
+                            + jarFile.getName() + "' :", ex);
+                }
+            }
         }
         return isVendorSpecific;
     }
@@ -329,7 +349,7 @@ public class DriverLoader implements ConnectorConstants,
      * @return true if f is vendor specific.
      */
     private boolean isVendorSpecificByIteration(String dbVendor, File f) {
-        JarFile jarFile;
+        JarFile jarFile = null;
         boolean isVendorSpecific = false;
         try {
             jarFile = new JarFile(f);
@@ -350,7 +370,17 @@ public class DriverLoader implements ConnectorConstants,
         } catch (IOException ex) {
             logger.log(Level.WARNING, "Exception while introspecting jdbc jar file " +
                     "for driver/datasource classname introspection : ", ex);
+        } finally {
+            if (jarFile != null) {
+                try {
+                    jarFile.close();
+                } catch (IOException ex) {
+                    logger.log(Level.FINE, "Exception while closing JarFile '"
+                            + jarFile.getName() + "' :", ex);
+                }
+            }
         }
+
         return isVendorSpecific;
     }
 
@@ -366,8 +396,9 @@ public class DriverLoader implements ConnectorConstants,
      */
     private boolean isVendorSpecificByManifest(File f, String dbVendor) {
         boolean isVendorSpecific = false;
+        JarFile jarFile = null;
         try {
-            JarFile jarFile = new JarFile(f);
+            jarFile = new JarFile(f);
             Manifest manifest = jarFile.getManifest();
             Attributes mainAttributes = manifest.getMainAttributes();
             String implVendor = mainAttributes.getValue(Attributes.Name.IMPLEMENTATION_VERSION.toString());
@@ -378,8 +409,17 @@ public class DriverLoader implements ConnectorConstants,
             }
         } catch (IOException ex) {
             logger.log(Level.WARNING, "Exception while reading manifest file : ", ex);
+        } finally {
+            if (jarFile != null) {
+                try {
+                    jarFile.close();
+                } catch (IOException ex) {
+                    logger.log(Level.FINE, "Exception while closing JarFile '"
+                            + jarFile.getName() + "' :", ex);
+                }
+            }
         }
-        //TODO should we close the jar file handles? 
+
         return isVendorSpecific;
     }
 }
