@@ -26,7 +26,7 @@ public class ListJndiEntries implements AdminCommand {
     @Param(name="context", optional = true)
     String contextName;
 
-    @Param(primary = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
 
     public void execute(AdminCommandContext context) {
