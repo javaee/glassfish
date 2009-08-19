@@ -52,9 +52,11 @@
 
 
     <packaging>pom</packaging>
-    <name>Glassfish embedded shell dist. fragment</name>  
+    <name>Embedded GlassFish Shell Jars </name>  
     <modules>
         <module>glassfish-embedded-shell</module>
         <module>glassfish-embedded-shell-frag</module>
+        <module>glassfish-embedded-static-shell</module>
+        <module>glassfish-embedded-static-shell-frag</module>
     </modules>
 </project>
