@@ -32,6 +32,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.embedded.Server;
 
 /**
  * Defines various global configuration for the running GlassFish instance.
@@ -45,6 +46,9 @@ import org.glassfish.api.admin.ServerEnvironment;
 public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     @Inject
     StartupContext startupContext;
+
+    @Inject(optional=true)
+    Server server=null;
 
     /** folder where all generated code like compiled jsps, stubs is stored */
     public static final String kGeneratedDirName = "generated";
@@ -90,7 +94,12 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
      */
     public void postConstruct() {
 
-        asenv = new ASenvPropertyReader(startupContext);
+        // todo : dochez : this will need to be reworked...
+        if (server==null) {
+            asenv = new ASenvPropertyReader(startupContext.getRootDirectory().getParentFile());
+        } else {
+            asenv = new ASenvPropertyReader(startupContext.getRootDirectory());
+        }
 
         // default
         if(this.root==null) {

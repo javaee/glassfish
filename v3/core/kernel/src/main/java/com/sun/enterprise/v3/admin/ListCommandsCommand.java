@@ -73,9 +73,7 @@ public class ListCommandsCommand implements AdminCommand {
     private List<String> sortedAdminCommands() {
         List<String> names = new ArrayList<String>();
         for (Inhabitant<?> command : habitat.getInhabitantsByContract(AdminCommand.class.getName())) {
-            Iterator<String> itr = Inhabitants.getNamesFor(command, AdminCommand.class.getName());
-            while (itr.hasNext()) {
-                String name = itr.next();
+            for (String name : Inhabitants.getNamesFor(command, AdminCommand.class.getName())) {
 
                 if (debugCommand(command)) { //it's a debug command, add only if debug is set
                     if (debugSet())
@@ -91,8 +89,7 @@ public class ListCommandsCommand implements AdminCommand {
     }
     
     private static boolean debugCommand(Inhabitant command) {
-        Iterator<String> debug = Inhabitants.getNamesFor(command, "mode");
-        return debug.hasNext();
+        return !Inhabitants.getNamesFor(command, "mode").isEmpty();
     }
     
     private static boolean metadataContains(String md, String nev) {

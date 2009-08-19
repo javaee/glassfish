@@ -48,6 +48,7 @@ public class EmbeddedFileSystem implements PreDestroy {
 
     public static class Builder {
         boolean autoDelete=false;
+        boolean cookedMode=false;
         File configFile=null;
         File installRoot=null;
         File instanceRoot=null;
@@ -64,7 +65,12 @@ public class EmbeddedFileSystem implements PreDestroy {
         }
 
         public Builder setInstallRoot(File f) {
+            return setInstallRoot(f, false);
+        }
+
+        public Builder setInstallRoot(File f, boolean cookedMode) {
             this.installRoot = f;
+            this.cookedMode = cookedMode;
             return this;
         }
 
@@ -87,6 +93,7 @@ public class EmbeddedFileSystem implements PreDestroy {
     }
 
     public final boolean autoDelete;
+    public final boolean cookedMode;
     public final File installRoot;
     public final File instanceRoot;
     public final File configFile;
@@ -96,6 +103,7 @@ public class EmbeddedFileSystem implements PreDestroy {
         installRoot = builder.installRoot;
         instanceRoot = builder.instanceRoot;
         configFile = builder.configFile;
+        cookedMode = builder.cookedMode;
     }
 
     public void preDestroy() {

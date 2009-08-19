@@ -467,11 +467,11 @@ public class Server {
 
     private PlatformMain getMain() {
 
-        String platformName;
+        String platformName = "Embedded";
         if (fileSystem.get().installRoot!=null && fileSystem.get().instanceRoot.exists()) {
-            platformName = "Static";
-        } else {
-            platformName = "Embedded";
+            if (!fileSystem.get().cookedMode) {
+                platformName = "Static";
+            }
         }
 
         ServiceLoader<PlatformMain> mains = ServiceLoader.load(PlatformMain.class, Server.class.getClassLoader());
