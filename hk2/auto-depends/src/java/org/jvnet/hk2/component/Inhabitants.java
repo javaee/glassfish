@@ -42,9 +42,7 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.jvnet.hk2.annotations.Scoped;
 
 import javax.print.attribute.UnmodifiableSetException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Factory for {@link Inhabitant}.
@@ -89,25 +87,39 @@ public class Inhabitants {
         return new ScopedInhabitant<T>(womb,scope);
     }
 
-    public static <T> Iterator<String> getIndexes(Inhabitant<T> i) {
-        final Iterator<Map.Entry<String, List<String>>> itr = i.metadata().entrySet().iterator();
-        return new Iterator<String>() {
-            public boolean hasNext() {
-                return itr.hasNext();
-            }
-
-            public String next() {
-                return itr.next().getKey();
-            }
-
-            public void remove() {
-                throw new UnmodifiableSetException();
-            }
-        };
+    /**
+     * Calculate the list of indexes under which the inhabitant is registered.
+     * An index is usually obtained from a contract implementation, a service can
+     * be implementing more than one contract and therefore be indexed by multiple
+     * contract names.
+     *
+     * @param i instance of inhabitant to obtain the indexes from
+     * @param <T> Contract type, optional
+     * @return a collection of indexes (usually there is only one) under which this
+     * service is available.
+     */
+    public static <T> Collection<String> getIndexes(Inhabitant<T> i) {
+        ArrayList<String> indexes = new ArrayList<String>();
+        Iterator<Map.Entry<String, List<String>>> itr = i.metadata().entrySet().iterator();
+        while (itr.hasNext()) {
+            indexes.add(itr.next().getKey());
+        }
+        return indexes;
     }
 
-    public static <T> Iterator<String> getNamesFor(Inhabitant<T> i, String indexName) {
-        return i.metadata().get(indexName).iterator();
+    /**
+     * Returns the list of names the service implementation in known. Services in hk2 are
+     * indexed by the contract name and an optional name. There can also be some aliasing
+     * so the same service can be known under different names.
+     *
+     * @param i instance of inhabitant to obtain its registration name
+     * @param indexName the contract name this service is implementing
+     * @param <T> contract type, optional
+     * @return a collaction of names (usually there is only one) under which this service
+     * is registered for the passed contract name
+     */
+    public static <T> Collection<String> getNamesFor(Inhabitant<T> i, String indexName) {
+        return new ArrayList<String>(i.metadata().get(indexName));
     }
 
 }
