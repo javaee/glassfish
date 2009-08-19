@@ -66,6 +66,8 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import org.glassfish.internal.api.Globals;
 
 /** 
@@ -1295,12 +1297,12 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 	createPolicyContextDirectory();
 	removePolicyFile(granted);
 	String name = getPolicyFileName(granted);
-	FileWriter writer = null;
+	OutputStreamWriter writer = null;
 	try {
 	    if(logger.isLoggable (Level.FINE)){
 		logger.fine("JACC Policy Provider: Writing grant statements to policy file: "+name);
 	    }
-	    writer = new FileWriter(name);
+	    writer = new OutputStreamWriter(new FileOutputStream(name), "UTF-8");
 	    parser.write(writer);
 	    result = false;
 	} catch(java.io.FileNotFoundException fnfe) {

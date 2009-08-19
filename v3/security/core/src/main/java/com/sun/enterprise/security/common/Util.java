@@ -119,10 +119,13 @@ public class Util {
     }
     
     public static File writeConfigFileToTempDir(String fileName) throws IOException {
+        File filePath = new File(fileName);
+        if (filePath.exists()) {
+            //the string provided is a filepath, so return
+            return filePath;
+        }
         String userHome = System.getProperty("user.home");
-       
-        
-      
+  
         String embeddedServerName = getCurrentEmbeddedServerName();
         File tempDir = new File(userHome + File.separator + ".glassfishv3-"+embeddedServerName+File.separator + "config");
         boolean mkDirSuccess = true;
