@@ -39,6 +39,7 @@ package com.sun.enterprise.admin.cli.optional;
 import java.io.File;
 import java.io.Console;
 import java.util.*;
+import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.DomainsManager;
@@ -72,6 +73,7 @@ import com.sun.logging.LogDomains;
 /**
  *  This is a local command that creates a domain.
  */
+@Service(name = "create-domain")
 public final class CreateDomainCommand extends CLICommand {
 
     // constants for create-domain options
@@ -130,13 +132,6 @@ public final class CreateDomainCommand extends CLICommand {
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CreateDomainCommand.class);
-
-    /**
-     */
-    public CreateDomainCommand(String name, ProgramOptions programOpts,
-            Environment env) {
-        super(name, programOpts, env);
-    }
 
     /**
      * The prepare method must ensure that the commandOpts,

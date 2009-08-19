@@ -39,6 +39,11 @@ package com.sun.enterprise.admin.cli;
 import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
+
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
+
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
@@ -63,7 +68,8 @@ import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
  *
  * @author Bill Shannon
  */
-public abstract class CLICommand {
+@Contract
+public abstract class CLICommand implements PostConstruct {
     public static final int ERROR = 1;
     public static final int CONNECTION_ERROR = 2;
     public static final int INVALID_COMMAND_ERROR = 3;
@@ -72,8 +78,6 @@ public abstract class CLICommand {
     private static final Set<String> unsupported;
     private static final String UNSUPPORTED_CMD_FILE_NAME =
                                     "unsupported-legacy-command-names";
-
-    private static final CommandTable localCommands = new CommandTable();
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CLICommand.class);
@@ -93,12 +97,14 @@ public abstract class CLICommand {
      * The program options for the command.
      * Initialized in the constructor.
      */
+    @Inject
     protected ProgramOptions programOpts;
 
     /**
      * The environment for the command.
      * Initialized in the constructor.
      */
+    @Inject
     protected Environment env;
 
     /**
@@ -145,64 +151,42 @@ public abstract class CLICommand {
     /**
      * Get a CLICommand object representing the named command.
      */
-    public static CLICommand getCommand(String name, ProgramOptions programOpts,
-            Environment env) throws CommandException {
+    public static CLICommand getCommand(Habitat habitat, String name)
+            throws CommandException {
 
         // first, check if it's a known unsupported command
         checkUnsupportedLegacyCommand(name);
 
-        // next, try to load out own implementation of the command
-        CLICommand cmd = getCommandClass(name, programOpts, env);
+        // next, try to load our own implementation of the command
+        CLICommand cmd = habitat.getComponent(CLICommand.class, name);
         if (cmd != null)
             return cmd;
 
         // nope, must be a remote command
         logger.printDebugMessage("Assuming it's a remote command: " + name);
-        return new RemoteCommand(name, programOpts, env);
-
+        return new RemoteCommand(name,
+            habitat.getComponent(ProgramOptions.class),
+            habitat.getComponent(Environment.class));
     }
 
     /**
-     * Try to load a local implementation of the command by converting
-     * the command name to a class name.
-     * XXX - this is just temporary
+     * Constructor used by subclasses when instantiated by HK2.
+     * ProgramOptions and Environment are injected.  name is set here.
      */
-    private static CLICommand getCommandClass(String name,
-            ProgramOptions programOpts, Environment env) {
-        try {
-            Class cls = localCommands.get(name);
-            if (cls == null)    // XXX - for optional commands
-                cls = Class.forName(nameToClass(name));
-            Constructor cons = cls.getConstructor(new Class[] {
-                                String.class,
-                                ProgramOptions.class,
-                                Environment.class
-                            });
-            return (CLICommand)cons.newInstance(name, programOpts, env);
-        } catch (Exception ex) {
-            logger.printDebugMessage("Failed to load command class: " + ex);
-            return null;
-        }
+    protected CLICommand() {
+        Service service = this.getClass().getAnnotation(Service.class);
+
+        if (service == null)
+            name = "unknown-command";   // should never happen
+        else
+            name = service.name();
     }
 
-    private static String nameToClass(String name) {
-        StringBuilder sb = new StringBuilder(
-                            "com.sun.enterprise.admin.cli.optional.");
-        boolean makeUpper = true;
-        for (int i = 0; i < name.length(); i++) {
-            char c = name.charAt(i);
-            if (makeUpper && Character.isLowerCase(c))
-                c = Character.toUpperCase(c);
-            if (c == '-') {
-                makeUpper = true;
-            } else {
-                makeUpper = false;
-                sb.append(c);
-            }
-        }
-        sb.append("Command");
-        logger.printDebugMessage("Command class: " + sb.toString());
-        return sb.toString();
+    /**
+     * Initialize the logger after being instantiated by HK2.
+     */
+    public void postConstruct() {
+        initializeLogger();
     }
 
     /**

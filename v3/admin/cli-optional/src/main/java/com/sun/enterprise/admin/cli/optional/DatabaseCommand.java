@@ -80,13 +80,6 @@ public abstract class DatabaseCommand extends CLICommand {
             new LocalStringsImpl(DatabaseCommand.class);
 
     /**
-     */
-    public DatabaseCommand(String name, ProgramOptions programOpts,
-            Environment env) {
-        super(name, programOpts, env);
-    }
-
-    /**
      * Prepare variables to invoke start/ping database command.
      */
     protected void prepareProcessExecutor() throws Exception {

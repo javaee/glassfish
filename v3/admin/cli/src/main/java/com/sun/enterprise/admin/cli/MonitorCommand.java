@@ -39,6 +39,7 @@ package com.sun.enterprise.admin.cli;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
+import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.cli.util.*;
@@ -52,6 +53,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Prashanth
  * @author Bill Shannon
  */
+@Service(name = "monitor")
 public class MonitorCommand extends CLICommand {
 
     private int interval = 30 * 1000;    // default 30 seconds
@@ -66,14 +68,6 @@ public class MonitorCommand extends CLICommand {
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(MonitorCommand.class);
-
-    /**
-     */
-    public MonitorCommand(String name, ProgramOptions programOpts,
-            Environment env)
-            throws CommandException, CommandValidationException {
-        super(name, programOpts, env);
-    }
 
     /**
      */

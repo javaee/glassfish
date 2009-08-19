@@ -38,6 +38,7 @@ package com.sun.enterprise.admin.cli.optional;
 
 import java.io.Console;
 import java.util.*;
+import org.jvnet.hk2.annotations.Service;
 import com.sun.appserv.management.client.prefs.LoginInfo;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
@@ -53,6 +54,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Nandini Ektare
  * @author Bill Shannon
  */
+@Service(name = "login")
 public class LoginCommand extends CLICommand {
 
     private String adminUser = null;
@@ -60,14 +62,6 @@ public class LoginCommand extends CLICommand {
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(LoginCommand.class);
-
-    /**
-     */
-    public LoginCommand(String name, ProgramOptions programOpts,
-            Environment env)
-            throws CommandException, CommandValidationException {
-        super(name, programOpts, env);
-    }
 
     /**
      */

@@ -47,8 +47,10 @@ import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 /**
- *  This is a local command that lists the domains.
+ * Create a "service" in the operating system to start this domain
+ * automatically.
  */
+@org.jvnet.hk2.annotations.Service(name = "create-service")
 public final class CreateServiceCommand extends CLICommand {
 
     private static final String DOMAIN_PARENT_DIR = "domaindir";
@@ -67,13 +69,6 @@ public final class CreateServiceCommand extends CLICommand {
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CreateServiceCommand.class);
-
-    /**
-     */
-    public CreateServiceCommand(String name, ProgramOptions programOpts,
-            Environment env) {
-        super(name, programOpts, env);
-    }
 
     /**
      * The prepare method must ensure that the commandOpts,

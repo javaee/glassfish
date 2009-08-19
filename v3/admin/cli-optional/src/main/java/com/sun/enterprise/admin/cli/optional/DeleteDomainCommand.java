@@ -37,6 +37,7 @@
 package com.sun.enterprise.admin.cli.optional;
 
 import java.util.*;
+import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.launcher.GFLauncher;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
@@ -52,19 +53,13 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 /**
  *  This is a local command that deletes a domain.
  */
+@Service(name = "delete-domain")
 public final class DeleteDomainCommand extends CLICommand {
 
     private static final String DOMAINDIR = "domaindir";
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(DeleteDomainCommand.class);
-
-    /**
-     */
-    public DeleteDomainCommand(String name, ProgramOptions programOpts,
-            Environment env) {
-        super(name, programOpts, env);
-    }
 
     /**
      * The prepare method must ensure that the commandOpts,

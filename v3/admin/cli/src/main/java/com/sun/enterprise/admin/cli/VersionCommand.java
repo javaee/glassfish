@@ -37,6 +37,7 @@
 package com.sun.enterprise.admin.cli;
 
 import java.util.*;
+import org.jvnet.hk2.annotations.Service;
 import com.sun.appserv.server.util.Version;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.*;
@@ -54,14 +55,10 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author km@dev.java.net
  * @author Bill Shannon
  */
+@Service(name = "version")
 public class VersionCommand extends CLICommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(VersionCommand.class);
-
-    public VersionCommand(String name, ProgramOptions programOpts,
-            Environment env) throws CommandException {
-        super(name, programOpts, env);
-    }
 
     @Override
     protected void prepare()

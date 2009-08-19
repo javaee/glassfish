@@ -40,6 +40,7 @@ import java.io.*;
 import java.util.*;
 import java.net.Socket;
 import java.util.logging.Level;
+import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
@@ -58,21 +59,13 @@ import com.sun.enterprise.universal.xml.MiniXmlParserException;
  * @author bnevins
  * @author Bill Shannon
  */
+@Service(name = "stop-domain")
 public class StopDomainCommand extends LocalDomainCommand {
 
     private final static long WAIT_FOR_DAS_TIME_MS = 60000;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StopDomainCommand.class);
-
-    /**
-     * Constructor.
-     */
-    public StopDomainCommand(String name, ProgramOptions programOpts,
-            Environment env)
-            throws CommandException, CommandValidationException {
-        super(name, programOpts, env);
-    }
 
     /**
      */

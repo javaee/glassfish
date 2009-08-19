@@ -39,8 +39,10 @@ package com.sun.enterprise.admin.cli;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.admin.cli.remote.*;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
+import com.sun.enterprise.admin.cli.util.CLIUtil;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import static com.sun.enterprise.admin.cli.CLIConstants.EOL;
 
@@ -50,14 +52,22 @@ import static com.sun.enterprise.admin.cli.CLIConstants.EOL;
  * @author bnevins
  * @author Bill Shannon
  */
+@Service(name = "list-commands")
 public class ListCommandsCommand extends CLICommand {
-    String[] remoteCommands;
-    String[] localCommands;
-    boolean localOnly;
-    boolean remoteOnly;
+    @Inject
+    private Habitat habitat;
+
+    private String[] remoteCommands;
+    private String[] localCommands;
+    private boolean localOnly;
+    private boolean remoteOnly;
     private static final String SPACES = "                                                            ";
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ListCommandsCommand.class);
+
+    public ListCommandsCommand() {
+        super();
+    }
 
     public ListCommandsCommand(String name, ProgramOptions programOpts,
             Environment env) throws CommandException {
@@ -100,79 +110,27 @@ public class ListCommandsCommand extends CLICommand {
     public int executeCommand()
             throws CommandException, CommandValidationException {
         if (!remoteOnly) {
-            getLocalCommands();
+            localCommands = CLIUtil.getLocalCommands(habitat);
             printLocalCommands();
         }
         if (!localOnly) {
-            getRemoteCommands();
+            remoteCommands = CLIUtil.getRemoteCommands(programOpts, env);
             printRemoteCommands();
         }
         logger.printMessage("");
         return 0;
     }
 
-    // XXX - public because AsadminMain uses it
-    public String[] getLocalCommands() throws CommandException {
-        List<String> names = new ArrayList<String>();
-
-        names.addAll(new CommandTable().keySet());
-        localCommands = names.toArray(new String[names.size()]);
-        Arrays.sort(localCommands);
-        return localCommands;
-    }
-
-    /**
-     * Get the list of commands from the remote server.
-     *
-     * @return the commands as a String array, sorted
-     */
-    // XXX - public because AsadminMain uses it
-    public String[] getRemoteCommands()
-            throws CommandException, CommandValidationException {
-        RemoteCommand cmd =
-            new RemoteCommand("list-commands", programOpts, env);
-        String cmds = cmd.executeAndReturnOutput("list-commands");
-        List<String> rcmds = new ArrayList<String>();
-        BufferedReader r = new BufferedReader(new StringReader(cmds));
-        String line;
-
-        /*
-         * The output of the remote list-commands command is a bunch of
-         * lines of the form:
-         * Command : cmd-name
-         * We extract the command name from each such line.
-         * XXX - depending on this output format is gross;
-         * should be able to send --terse to remote command
-         * to cause it to produce exactly the output we want.
-         */
-        try {
-            while ((line = r.readLine()) != null) {
-                if (line.startsWith("Command")) {
-                    int i = line.indexOf(':');
-                    if (i < 0)
-                        continue;
-                    String s = line.substring(i + 1).trim();
-                    rcmds.add(s);
-                }
-            }
-        } catch (IOException ioex) {
-            // ignore it, will never happen
-        }
-        Collections.sort(rcmds);
-        remoteCommands = rcmds.toArray(new String[rcmds.size()]);
-        return remoteCommands;
-    }
-
     void printLocalCommands() {
-        logger.printMessage("********** Local Commands **********");
-        
+        logger.printMessage(strings.get("listCommands.localCommandHeader"));
+
         for (String s : localCommands) {
             logger.printMessage(s);
         }
     }
 
     void printRemoteCommands() {
-        logger.printMessage("********** Remote Commands **********");
+        logger.printMessage(strings.get("listCommands.remoteCommandHeader"));
         
         // there are a LOT of remote commands -- make 2 columns
         int num = remoteCommands.length;

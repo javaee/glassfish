@@ -38,6 +38,9 @@ package com.sun.enterprise.admin.cli;
 
 import java.io.*;
 import java.util.*;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
@@ -46,21 +49,17 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * The help command will display the help text for all the commands and their
  * options
  */
+@Service(name = "help")
 public class HelpCommand extends CLICommand {
+    @Inject
+    private Habitat habitat;
+
     private static final int DEFAULT_PAGE_LENGTH = 50;
     private static final int NO_PAGE_LENGTH = -1;
     private static final String DEFAULT_HELP_PAGE = "help";
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(HelpCommand.class);
-
-    /**
-     */
-    public HelpCommand(String name, ProgramOptions programOpts,
-            Environment env)
-            throws CommandException, CommandValidationException {
-        super(name, programOpts, env);
-    }
 
     /**
      * The prepare method must ensure that the commandOpts,
@@ -118,8 +117,7 @@ public class HelpCommand extends CLICommand {
 
     private Reader getSource()
             throws CommandException, CommandValidationException {
-        CLICommand cmd =
-            CLICommand.getCommand(getCommandName(), programOpts, env);
+        CLICommand cmd = CLICommand.getCommand(habitat, getCommandName());
         Reader r = cmd.getManPage();
         if (r == null)
             throw new CommandException(

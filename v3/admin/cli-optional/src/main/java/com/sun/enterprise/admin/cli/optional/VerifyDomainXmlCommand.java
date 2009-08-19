@@ -45,6 +45,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 import org.glassfish.api.embedded.Server;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.Dom;
@@ -58,19 +59,13 @@ import org.jvnet.hk2.config.DomDocument;
  * 
  * @author Nandini Ektare
  */
+@Service(name = "verify-domain-xml")
 public final class VerifyDomainXmlCommand extends LocalDomainCommand {
 
     private static final String DOMAINDIR = "domaindir";
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(VerifyDomainXmlCommand.class);
-
-    /**
-     */
-    public VerifyDomainXmlCommand(String name, ProgramOptions programOpts,
-            Environment env) {
-        super(name, programOpts, env);
-    }
 
     /**
      * The prepare method must ensure that the commandOpts,

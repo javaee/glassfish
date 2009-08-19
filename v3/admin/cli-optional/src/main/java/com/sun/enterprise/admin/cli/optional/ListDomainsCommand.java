@@ -37,6 +37,7 @@
 package com.sun.enterprise.admin.cli.optional;
 
 import java.util.*;
+import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.DASUtils;
 import com.sun.enterprise.admin.launcher.GFLauncher;
@@ -53,19 +54,13 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 /**
  *  This is a local command that lists the domains.
  */
+@Service(name = "list-domains")
 public final class ListDomainsCommand extends CLICommand {
 
     private static final String DOMAINDIR = "domaindir";
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ListDomainsCommand.class);
-
-    /**
-     */
-    public ListDomainsCommand(String name, ProgramOptions programOpts,
-            Environment env) {
-        super(name, programOpts, env);
-    }
 
     /**
      * The prepare method must ensure that the commandOpts,

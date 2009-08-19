@@ -38,6 +38,7 @@ package com.sun.enterprise.admin.cli.optional;
 
 import java.io.File;
 import java.util.*;
+import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.OS;
@@ -50,18 +51,11 @@ import com.sun.enterprise.util.OS;
  *  @author <a href="mailto:jane.young@sun.com">Jane Young</a>
  *  @author Bill Shannon
  */
+@Service(name = "stop-database")
 public final class StopDatabaseCommand extends DatabaseCommand {
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StopDatabaseCommand.class);
-
-    /**
-     */
-    public StopDatabaseCommand(String name, ProgramOptions programOpts,
-            Environment env)
-            throws CommandException, CommandValidationException {
-        super(name, programOpts, env);
-    }
 
     /**
      * The prepare method must ensure that the commandOpts,

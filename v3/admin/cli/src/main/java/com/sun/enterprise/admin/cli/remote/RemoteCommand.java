@@ -102,14 +102,26 @@ public class RemoteCommand extends CLICommand {
      * Construct a new remote command object.  The command and arguments
      * are supplied later using the execute method in the superclass.
      */
+    public RemoteCommand() throws CommandException {
+        super();
+        checkName();
+    }
+
+    /**
+     * Construct a new remote command object.  The command and arguments
+     * are supplied later using the execute method in the superclass.
+     */
     public RemoteCommand(String name, ProgramOptions po, Environment env)
             throws CommandException {
         super(name, po, env);
+        checkName();
+    }
 
-        /*
-         * Make sure the command name is legitimate and
-         * won't allow any URL spoofing attacks.
-         */
+    /**
+     * Make sure the command name is legitimate and
+     * won't allow any URL spoofing attacks.
+     */
+    private void checkName() throws CommandException {
         if (!name.matches(COMMAND_NAME_REGEXP))
             throw new CommandException("Illegal command name: " + name);
     }
@@ -210,6 +222,8 @@ public class RemoteCommand extends CLICommand {
             StringBuilder uriString = new StringBuilder(ADMIN_URI_PATH).
                     append(name).append(QUERY_STRING_INTRODUCER);
             GFBase64Encoder encoder = new GFBase64Encoder();
+            if (doHelp)
+                addStringOption(uriString, "help", "true");
             for (Map.Entry<String, String> param : options.entrySet()) {
                 String paramName = param.getKey();
                 String paramValue = param.getValue();

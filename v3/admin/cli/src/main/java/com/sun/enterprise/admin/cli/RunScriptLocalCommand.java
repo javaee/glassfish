@@ -32,6 +32,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jvnet.hk2.annotations.Service;
 
 /** Establishes a connection with Comet server (Provided by servlet)
  *  and also initiates a server execution of the deployed javascript.
@@ -39,6 +40,7 @@ import java.util.logging.Logger;
  * @author Prashanth Abbagani
  */
 
+@Service(name = "run-script-local")
 public final class RunScriptLocalCommand extends RemoteCommand {
 
     public static final String TERSE = "terse";
@@ -50,15 +52,8 @@ public final class RunScriptLocalCommand extends RemoteCommand {
     private int httpPort = 8080;
     private String scriptName;
 
-    /**
-     * Constructor used by subclasses to save the name, program options,
-     * and environment information into corresponding protected fields.
-     * Finally, this constructor calls the initializeLogger method.
-     */
-    public RunScriptLocalCommand(String name, ProgramOptions programOpts, Environment env)
-                throws CommandException {
-        super(name, programOpts, env);
-        //logger.printMessage("In the RunScriptLocalCommand.constructor()");
+    public RunScriptLocalCommand() throws CommandException {
+        super();
     }
 
     /**

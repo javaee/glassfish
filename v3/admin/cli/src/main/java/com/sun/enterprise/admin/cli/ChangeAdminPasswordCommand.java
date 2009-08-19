@@ -37,6 +37,7 @@
 package com.sun.enterprise.admin.cli;
 
 import java.util.*;
+import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
@@ -50,17 +51,14 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  *
  * @author Bill Shannon
  */
+@Service(name = "change-admin-password")
 public class ChangeAdminPasswordCommand extends RemoteCommand {
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ChangeAdminPasswordCommand.class);
 
-    /**
-     * Constructor.
-     */
-    public ChangeAdminPasswordCommand(String name, ProgramOptions programOpts,
-            Environment env) throws CommandException {
-        super(name, programOpts, env);
+    public ChangeAdminPasswordCommand() throws CommandException {
+        super();
     }
 
     @Override

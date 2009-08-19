@@ -38,7 +38,10 @@ package com.sun.enterprise.admin.cli;
 
 import java.io.*;
 import java.util.*;
-import com.sun.enterprise.admin.cli.*;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
+import com.sun.enterprise.admin.cli.util.CLIUtil;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
@@ -47,20 +50,17 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author केदार(km@dev.java.net)
  * @author Bill Shannon
  */
+@Service(name = "multimode")
 public class MultimodeCommand extends CLICommand {
+    @Inject
+    private Habitat habitat;
+
     private boolean printPrompt;
     private String encoding;
     private File file;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(MultimodeCommand.class);
-
-    /**
-     */
-    public MultimodeCommand(String name, ProgramOptions programOpts,
-            Environment env) {
-        super(name, programOpts, env);
-    }
 
     /**
      * The prepare method must ensure that the commandOpts,
@@ -202,7 +202,8 @@ public class MultimodeCommand extends CLICommand {
                 po.setProgramArguments(programOpts.getProgramArguments());
                 po.setClassPath(programOpts.getClassPath());
                 po.setClassName(programOpts.getClassName());
-                cmd = CLICommand.getCommand(command, po, env);
+                habitat.addComponent("program-options", po);
+                cmd = CLICommand.getCommand(habitat, command);
                 rc = cmd.execute(args);
             } catch (CommandValidationException cve) {
                 logger.printError(cve.getMessage());
@@ -213,8 +214,8 @@ public class MultimodeCommand extends CLICommand {
                     // find closest match with local or remote commands
                     logger.printError(ce.getMessage());
                     try {
-                        AsadminMain.displayClosestMatch(command,
-                            AsadminMain.getAllCommands(po, env),
+                        CLIUtil.displayClosestMatch(command,
+                            CLIUtil.getAllCommands(habitat, po, env),
                            strings.get("ClosestMatchedLocalAndRemoteCommands"));
                     } catch (InvalidCommandException e) {
                         // not a big deal if we cannot help
@@ -223,8 +224,8 @@ public class MultimodeCommand extends CLICommand {
                     // find closest match with local commands
                     logger.printError(ce.getMessage());
                     try {
-                        AsadminMain.displayClosestMatch(command,
-                            AsadminMain.getLocalCommands(po, env),
+                        CLIUtil.displayClosestMatch(command,
+                            CLIUtil.getLocalCommands(habitat),
                             strings.get("ClosestMatchedLocalCommands"));
                     } catch (InvalidCommandException e) {
                         logger.printMessage(
@@ -233,6 +234,10 @@ public class MultimodeCommand extends CLICommand {
                 } else
                     logger.printError(ce.getMessage());
                 rc = ERROR;
+            } finally {
+                // restore the original program options
+                // XXX - is this necessary?
+                habitat.addComponent("program-options", programOpts);
             }
 
             // XXX - this duplicates code in AsadminMain, refactor it
@@ -258,7 +263,7 @@ public class MultimodeCommand extends CLICommand {
                     strings.get("CommandUnSuccessful", command));
                 break;
             }
-            AsadminMain.writeCommandToDebugLog(args, rc);
+            CLIUtil.writeCommandToDebugLog(args, rc);
         }
         return rc;
     }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,23 +48,14 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.jvnet.hk2.annotations.Service;
+
 /** Class that implements the change-master-password command.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
+@Service(name = "change-master-password")
 public class ChangeMasterPasswordCommand extends LocalDomainCommand {
     private String savemp = "savemasterpassword";
-
-    /**
-     * Constructor used by subclasses to save the name, program options,
-     * and environment information into corresponding protected fields.
-     * Finally, this constructor calls the initializeLogger method.
-     * @param name String representing command name
-     * @param programOpts instance of asadmin program options
-     * @param env the asadmin command environment
-     */
-    public ChangeMasterPasswordCommand(String name, ProgramOptions programOpts, Environment env) {
-        super(name, programOpts, env);
-    }
 
     @Override
     protected void prepare() throws CommandException, CommandValidationException {

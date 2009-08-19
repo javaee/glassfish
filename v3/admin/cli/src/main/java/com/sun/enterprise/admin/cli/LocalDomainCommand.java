@@ -63,16 +63,6 @@ public abstract class LocalDomainCommand extends CLICommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(LocalDomainCommand.class);
 
-    /**
-     * Constructor used by subclasses to save the name, program options,
-     * and environment information into corresponding protected fields.
-     * Finally, this constructor calls the initializeLogger method.
-     */
-    protected LocalDomainCommand(String name, ProgramOptions programOpts,
-                                Environment env) {
-        super(name, programOpts, env);
-    }
-
     @Override
     protected void validate()
                         throws CommandException, CommandValidationException {

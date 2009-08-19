@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.admin.cli;
 
+import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.admin.cli.CLIConstants;
 import com.sun.enterprise.util.net.NetUtils;
 import static com.sun.enterprise.admin.cli.CLIConstants.*;
@@ -58,20 +59,13 @@ import java.util.*;
  * @author bnevins
  * @author Bill Shannon
  */
+@Service(name = "start-domain")
 public class StartDomainCommand extends LocalDomainCommand {
 
     private GFLauncherInfo info;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartDomainCommand.class);
-
-    /**
-     * Creates the instance of this command in accordance with what
-     * {@link CLICommand} does for it.
-     */
-    public StartDomainCommand(String name, ProgramOptions po, Environment env) {
-        super(name, po, env);
-    }
 
     /**
      * The prepare method must ensure that the commandOpts,
