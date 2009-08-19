@@ -1,20 +1,22 @@
 package org.glassfish.webservices.monitoring;
 
-import org.glassfish.gmbal.ManagedObject;
-import org.glassfish.gmbal.ManagedAttribute;
-import org.glassfish.gmbal.Description;
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.ConcurrentHashMap;
-
-import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.enterprise.deployment.Application;
-import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
+import org.glassfish.external.statistics.Statistic;
+import org.glassfish.external.statistics.Stats;
+import org.glassfish.gmbal.Description;
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedData;
+import org.glassfish.gmbal.ManagedObject;
 
 import javax.servlet.ServletContext;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -39,7 +41,7 @@ public class WebServiceStatsProvider {
                        @ProbeParam("endpoint")WebServiceEndpoint endpoint) {
         String path = endpoint.getEndpointAddressPath();
         if (!endpoints.containsKey(path)) {
-            DeployedEndpointData data = new DeployedEndpointData(app, endpoint);
+            DeployedEndpointData data = new DeployedEndpointData(path, app, endpoint);
             endpoints.put(path, data);
         }
     }
@@ -50,32 +52,56 @@ public class WebServiceStatsProvider {
         endpoints.remove(path);
     }
 
+    // sun-jaxws.xml deployment
+    @ProbeListener("glassfish:webservices:ri:deploy")
+    public void riDeploy(@ProbeParam("adapter")ServletAdapter adapter) {
+        String path = adapter.getServletContext().getContextPath()+adapter.getValidPath();
+        if (!endpoints.containsKey(path)) {
+            DeployedEndpointData data = new DeployedEndpointData(path, adapter);
+            endpoints.put(path, data);
+        }
+    }
 
-//    Uncomment after latest metro is integrated
-//
-//    // sun-jaxws.xml deployment
-//    @ProbeListener("glassfish:webservices:ri:deploy")
-//    public void riDeploy(@ProbeParam("adapter")ServletAdapter adapter) {
-//        ServletContext ctxt = adapter.getServletContext();
-//        String name = ctxt.getContextPath()+adapter.getValidPath();
-//        if (!endpoints.containsKey(name)) {
-//            DeployedEndpointData data = new DeployedEndpointData(adapter);
-//            endpoints.put(name, data);
-//        }
-//    }
-//
-//    // sun-jaxws.xml undeployment
-//    @ProbeListener("glassfish:webservices:ri:undeploy")
-//    public void riUndeploy(@ProbeParam("adapter")ServletAdapter adapter) {
-//        ServletContext ctxt = adapter.getServletContext();
-//        String name = ctxt.getContextPath()+adapter.getValidPath();
-//        endpoints.remove(name);
-//    }
+    // sun-jaxws.xml undeployment
+    @ProbeListener("glassfish:webservices:ri:undeploy")
+    public void riUndeploy(@ProbeParam("adapter")ServletAdapter adapter) {
+        ServletContext ctxt = adapter.getServletContext();
+        String name = ctxt.getContextPath()+adapter.getValidPath();
+        endpoints.remove(name);
+    }
 
+    // admin CLI doesn't pick-up Collection<DeployedEndpointData>. Hence
+    // implementing "Stats"
     @ManagedAttribute
     @Description("Deployed Web Service Endpoints")
-    public Collection<DeployedEndpointData> getEndpoints() {
-        return Collections.unmodifiableCollection(endpoints.values());
+    public MyStats getEndpoints() {
+        return new MyStats(endpoints);
+    }
+
+    @ManagedData
+    private static class MyStats implements Stats {
+
+        final Map<String, DeployedEndpointData> endpoints = new HashMap<String, DeployedEndpointData>();
+        final DeployedEndpointData[] data;
+
+        MyStats(Map<String, DeployedEndpointData> curEndpoints) {
+            endpoints.putAll(curEndpoints);     // Take a snapshot of current endpoints
+            data = this.endpoints.values().toArray(new DeployedEndpointData[endpoints.size()]);
+        }
+
+        public Statistic getStatistic(String s) {
+            return endpoints.get(s);
+        }
+
+        public String[] getStatisticNames() {
+            Set<String> names = endpoints.keySet();
+            return names.toArray(new String[names.size()]);
+        }
+
+        @ManagedAttribute
+        public DeployedEndpointData[] getStatistics() {
+            return data;
+        }
     }
 
 }

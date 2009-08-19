@@ -3,12 +3,14 @@ package org.glassfish.webservices.monitoring;
 import org.glassfish.gmbal.ManagedData;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.external.statistics.impl.StatisticImpl;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.Application;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 
 import javax.xml.namespace.QName;
+import java.util.Map;
 
 /**
  * 109 and sun-jaxws.xml style deployed endpoint's info.
@@ -17,7 +19,8 @@ import javax.xml.namespace.QName;
  */
 @ManagedData
 @Description("109 deployed endpoint info")
-public class DeployedEndpointData {
+public class DeployedEndpointData extends StatisticImpl {
+
     @ManagedAttribute
     @Description("Application Name")
     public final String appName;
@@ -63,7 +66,8 @@ public class DeployedEndpointData {
     public final String deploymentType;
 
     // 109 deployed endpoint
-    public DeployedEndpointData(Application app, WebServiceEndpoint endpoint) {
+    public DeployedEndpointData(String path, Application app, WebServiceEndpoint endpoint) {
+        super(path, "", "");
         this.appName = app.getAppName();
         this.endpointName = endpoint.getEndpointName();
         this.namespace = endpoint.getServiceName().getNamespaceURI();
@@ -73,7 +77,7 @@ public class DeployedEndpointData {
         this.implClass = endpoint.implementedByEjbComponent()
                 ? endpoint.getEjbComponentImpl().getEjbImplClassName()
                 : endpoint.getServletImplClass();
-        this.address = endpoint.getEndpointAddressPath();
+        this.address = path;
         this.wsdl = address+"?wsdl";
         this.tester = address+"?Tester";
         this.implType = endpoint.implementedByEjbComponent() ? "EJB" : "SERVLET";
@@ -81,7 +85,8 @@ public class DeployedEndpointData {
     }
 
     // sun-jaxws.xml deployed endpoint
-    public DeployedEndpointData(ServletAdapter adapter) {
+    public DeployedEndpointData(String path, ServletAdapter adapter) {
+        super(path, "", "");
         WSEndpoint endpoint = adapter.getEndpoint();
 
         this.appName = "";
@@ -90,11 +95,30 @@ public class DeployedEndpointData {
         this.serviceName = endpoint.getServiceName().getLocalPart();
         this.portName = endpoint.getPortName().getLocalPart();
         this.implClass = endpoint.getImplementationClass().getName();
-        this.address = adapter.getValidPath();  // TODO adapter.getServletContext().getContextPath()+adapter.getValidPath();
+        this.address = path;
         this.wsdl = address+"?wsdl";
         this.tester = "";
         this.implType = "SERVLET";
         this.deploymentType = "RI";
+    }
+
+    @Override
+    public synchronized Map getStaticAsMap() {
+        Map m = super.getStaticAsMap();
+
+        m.put("appName", appName);
+        m.put("endpointName", endpointName);
+        m.put("namespace", namespace);
+        m.put("serviceName", serviceName);
+        m.put("portName", portName);
+        m.put("implClass", implClass);
+        m.put("address", address);
+        m.put("wsdl", wsdl);
+        m.put("tester", tester);
+        m.put("implType", implType);
+        m.put("deploymentType", deploymentType);
+
+        return m;
     }
 
 }
