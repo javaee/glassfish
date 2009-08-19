@@ -62,6 +62,7 @@ import java.util.concurrent.atomic.*;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
 import java.io.PrintWriter;
+import org.glassfish.flashlight.impl.core.FlashlightProbeProvider;
 
 /**
  * @author Mahesh Kannan
@@ -81,7 +82,7 @@ public class FlashlightProbeClientMediator
     private static final PrintWriter fpw = 
         new FlashLightBTracePrintWriter(new NullStream(), logger);
 
-    private static ProbeClientMediator _me = new FlashlightProbeClientMediator();
+    private static FlashlightProbeClientMediator _me = new FlashlightProbeClientMediator();
 
     private static AtomicBoolean agentInitialized =
             new AtomicBoolean(false);
@@ -99,7 +100,7 @@ public class FlashlightProbeClientMediator
     }
 
 
-    public static ProbeClientMediator getInstance() {
+    public static FlashlightProbeClientMediator getInstance() {
         return _me;
     }
 
@@ -142,14 +143,14 @@ public class FlashlightProbeClientMediator
         return registerListener(listener, null);
     }
 
-    public Collection<ProbeClientMethodHandle> registerListener(Object listener, FlashlightProbe probe) {
+    public Collection<ProbeClientMethodHandle> registerListener(Object listener, FlashlightProbeProvider propro) {
         List<ProbeClientMethodHandle>   pcms                                = new ArrayList<ProbeClientMethodHandle>();
         List<FlashlightProbe>           probesRequiringClassTransformation  = new ArrayList<FlashlightProbe>();
 
-        if(probe == null)
+        if(propro == null)
             registerJavaListener(listener, pcms, probesRequiringClassTransformation);
         else
-            registerDTraceListener(listener, probe, pcms, probesRequiringClassTransformation);
+            registerDTraceListener(listener, propro, pcms, probesRequiringClassTransformation);
 
         transformProbes(listener, probesRequiringClassTransformation);
 
@@ -179,9 +180,25 @@ public class FlashlightProbeClientMediator
 
     private void registerDTraceListener(
             Object listener,
-            FlashlightProbe probe,
+            FlashlightProbeProvider propro,
             List<ProbeClientMethodHandle> pcms,
             List<FlashlightProbe> probesRequiringClassTransformation) {
+
+        // The "listener" needs to be registered against every Probe in propro...
+
+        Collection<FlashlightProbe> probes = propro.getProbes();
+/***
+         for(FlashlightProbe probe : probes) {
+            FlashlightProbe probe = mp.probe;
+            ProbeClientInvoker invoker = ProbeClientInvokerFactory.createInvoker(listener, mp.method, probe);
+            ProbeClientMethodHandleImpl hi = new ProbeClientMethodHandleImpl(invoker.getId(), invoker, probe);
+            pcms.add(hi);
+
+            if (probe.addInvoker(invoker))
+                probesRequiringClassTransformation.add(probe);
+        }
+***/
+        
     }
 
     private void transformProbes(Object listener, List<FlashlightProbe> probes) {

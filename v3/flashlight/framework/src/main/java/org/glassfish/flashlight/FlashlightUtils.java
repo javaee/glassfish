@@ -10,6 +10,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import org.glassfish.api.monitoring.DTraceContract;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
+import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -59,6 +60,8 @@ public class FlashlightUtils {
         // the code below fails fast -- it marches through returning immediately
         // when something is amiss instead of having complicated hard-to-read nested
         // blocks of code.
+
+        ok();
 
         dt = null;
 

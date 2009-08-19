@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.util.*;
 import org.glassfish.api.monitoring.DTraceContract;
 import org.glassfish.flashlight.FlashlightUtils;
+import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 import org.glassfish.flashlight.provider.*;
 import org.glassfish.flashlight.impl.core.*;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
@@ -219,6 +220,8 @@ public class FlashlightProbeProviderFactory
         // DTrace has a 1:1 correspondence between provider class and dtrace class imp
         // So we loop through all the probes and add the same DTrace impl object to
         // each probe.
+        // We set the DTrace Method object inside the probe just this once to avoid
+        // having to discover it anew over and over and over again at runtime...
 
         DTraceContract dt = FlashlightUtils.getDtraceEngine();
 
@@ -239,8 +242,13 @@ public class FlashlightProbeProviderFactory
          Collection<FlashlightProbe> probes = provider.getProbes();
 
          for(FlashlightProbe probe : probes) {
+             // mf will either find a method or throw an Exception
+             DTraceMethodFinder mf = new DTraceMethodFinder(probe, dtraceProviderImpl);
+             probe.setDTraceMethod(mf.matchMethod());
              probe.setDTraceProviderImpl(dtraceProviderImpl);
          }
+
+         FlashlightProbeClientMediator.getInstance().registerListener(dtraceProviderImpl, provider);
     }
 
     private void registerProvider(ClassLoader cl, ProbeProviderXMLParser.Provider provider) {

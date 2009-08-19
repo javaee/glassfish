@@ -36,6 +36,7 @@
 
 package org.glassfish.flashlight.provider;
 
+import java.lang.reflect.Method;
 import org.glassfish.flashlight.client.ProbeClientInvoker;
 import org.glassfish.flashlight.client.ProbeHandle;
 
@@ -161,6 +162,14 @@ public class FlashlightProbe
         return dtraceProviderImpl;
     }
 
+    public Method getDTraceMethod() {
+        return dtraceMethod;
+    }
+
+    public void setDTraceMethod(Method m) {
+        dtraceMethod = m;
+    }
+
     private boolean isDtraceEnabled() {
         return FlashlightUtils.isDtraceEnabled() && (dtraceProviderImpl != null);
     }
@@ -176,5 +185,6 @@ public class FlashlightProbe
     private String providerJavaMethodName;
     private AtomicBoolean listenerEnabled = new AtomicBoolean(false);
     private String probeDesc;
-    private Object dtraceProviderImpl;
+    private Object  dtraceProviderImpl;
+    private Method  dtraceMethod;
 }
