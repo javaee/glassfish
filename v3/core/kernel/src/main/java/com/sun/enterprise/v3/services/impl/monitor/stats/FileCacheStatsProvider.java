@@ -73,49 +73,49 @@ public class FileCacheStatsProvider {
         this.name = name;
     }
 
-    @ManagedAttribute(id = "hits-count")
+    @ManagedAttribute(id = "hits")
     @Description("Number of cache lookup hits")
     public CountStatistic getHitsCount() {
         return hitsCount;
     }
 
-    @ManagedAttribute(id = "misses-count")
+    @ManagedAttribute(id = "misses")
     @Description("Number of cache lookup misses")
     public CountStatistic getMissesCount() {
         return missesCount;
     }
 
-    @ManagedAttribute(id = "info-hits-count")
+    @ManagedAttribute(id = "infohits")
     @Description("Number of hits on cached file info")
     public CountStatistic getInfoHitsCount() {
         return infoHitsCount;
     }
 
-    @ManagedAttribute(id = "info-misses-count")
+    @ManagedAttribute(id = "infomisses")
     @Description("Number of misses on cached file info")
     public CountStatistic getInfoMissesCount() {
         return infoMissesCount;
     }
 
-    @ManagedAttribute(id = "content-hits-count")
+    @ManagedAttribute(id = "contenthits")
     @Description("Number of hits on cached file content")
     public CountStatistic getContentHitsCount() {
         return contentHitsCount;
     }
 
-    @ManagedAttribute(id = "content-misses-count")
+    @ManagedAttribute(id = "contentmisses")
     @Description("Number of misses on cached file content")
     public CountStatistic getContentMissesCount() {
         return contentMissesCount;
     }
 
-    @ManagedAttribute(id = "open-cache-entries-count")
+    @ManagedAttribute(id = "opencacheentries")
     @Description("Number of current open cache entries")
     public CountStatistic getOpenCacheEntriesCount() {
         return openCacheEntriesCount;
     }
 
-    @ManagedAttribute(id = "heap-size")
+    @ManagedAttribute(id = "heapsize")
     @Description("Current cache size in bytes")
     public CountStatistic getHeapSize() {
         final CountStatisticImpl stats = new CountStatisticImpl("HeapSize",
@@ -124,7 +124,7 @@ public class FileCacheStatsProvider {
         return stats;
     }
 
-    @ManagedAttribute(id = "max-heap-size")
+    @ManagedAttribute(id = "maxheapsize")
     @Description("Maximum heap space used for cache")
     public CountStatistic getMaxHeapSize() {
         final CountStatisticImpl stats = new CountStatisticImpl("MaxHeapSize",
@@ -133,7 +133,7 @@ public class FileCacheStatsProvider {
         return stats;
     }
 
-    @ManagedAttribute(id = "mapped-memory-size")
+    @ManagedAttribute(id = "mappedmemorysize")
     @Description("Size of mapped memory used for caching")
     public CountStatistic getMappedMemorySize() {
         final CountStatisticImpl stats = new CountStatisticImpl(
@@ -143,7 +143,7 @@ public class FileCacheStatsProvider {
         return stats;
     }
 
-    @ManagedAttribute(id = "max-mapped-memory-size")
+    @ManagedAttribute(id = "maxmappedmemorysize")
     @Description("Maximum memory map size to be used for caching")
     public CountStatistic getMaxMappedMemorySize() {
         final CountStatisticImpl stats = new CountStatisticImpl(

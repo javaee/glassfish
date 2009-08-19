@@ -62,19 +62,19 @@ public class ThreadPoolStatsProvider {
         this.name = name;
     }
 
-    @ManagedAttribute(id="total-executed-tasks-count")
+    @ManagedAttribute(id="totalexecutedtasks")
     @Description("Total number of tasks, which were executed by the thread-pool")
     public CountStatistic getTotalExecutedTasksCount(){
          return totalExecutedTasksCount;
     }
 
-    @ManagedAttribute(id="current-thread-pool-size")
+    @ManagedAttribute(id="currentthreadpoolsize")
     @Description("Current number of threads running by the thread-pool")
     public CountStatistic getCurrentThreadPoolSize(){
          return currentThreadPoolSize;
     }
 
-    @ManagedAttribute(id="number-of-active-threads")
+    @ManagedAttribute(id="numberofactivethreads")
     @Description("Number of threads, which are currently executing tasks")
     public CountStatistic getNumberOfActiveThreads(){
          return numberOfActiveThreads;

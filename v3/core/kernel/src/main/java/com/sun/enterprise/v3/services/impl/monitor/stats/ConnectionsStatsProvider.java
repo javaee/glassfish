@@ -62,13 +62,13 @@ public class ConnectionsStatsProvider {
         this.name = name;
     }
 
-    @ManagedAttribute(id = "total-connections-count")
+    @ManagedAttribute(id = "totalconnections")
     @Description("The total number of connections accepted")
     public CountStatistic getTotalConnectionsCount() {
         return totalConnectionsCount;
     }
 
-    @ManagedAttribute(id = "open-connections-count")
+    @ManagedAttribute(id = "openconnections")
     @Description("The number of open connections")
     public CountStatistic getOpenConnectionsCount() {
         CountStatisticImpl stats = new CountStatisticImpl("OpenConnectionsCount", "count", "The number of open connections");

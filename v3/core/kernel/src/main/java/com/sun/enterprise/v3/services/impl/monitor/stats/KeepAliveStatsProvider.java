@@ -63,31 +63,31 @@ public class KeepAliveStatsProvider {
         this.name = name;
     }
     
-    @ManagedAttribute(id = "keep-alive-connections-count")
+    @ManagedAttribute(id = "keepaliveconnections")
     @Description("Number of connections in keep-alive mode")
     public CountStatistic getKeepAliveConnectionsCount() {
         return keepAliveConnectionsCount;
     }
 
-    @ManagedAttribute(id = "flushes-count")
+    @ManagedAttribute(id = "flushes")
     @Description("Number of keep-alive connections that were closed")
     public CountStatistic getFlushesCount() {
         return flushesCount;
     }
 
-    @ManagedAttribute(id = "hits-count")
+    @ManagedAttribute(id = "hits")
     @Description("Number of requests received by connections in keep-alive mode")
     public CountStatistic getHitsCount() {
         return hitsCount;
     }
 
-    @ManagedAttribute(id = "refusals-count")
+    @ManagedAttribute(id = "refusals")
     @Description("Number of keep-alive connections that were rejected")
     public CountStatistic getRefusalsCount() {
         return refusalsCount;
     }
 
-    @ManagedAttribute(id = "timeouts-count")
+    @ManagedAttribute(id = "timeouts")
     @Description("Number of keep-alive connections that timed out")
     public CountStatistic getTimeoutsCount() {
         return timeoutsCount;
