@@ -28,9 +28,10 @@ own identifying information: Portions Copyright [yyyy]
     <property name="ds-jdbcra.classpath.additions" value="../lib/install/applications/__ds_jdbc_ra/__ds_jdbc_ra.jar"/>
     <property name="cp-jdbcra.classpath.additions" value="../lib/install/applications/__cp_jdbc_ra/__cp_jdbc_ra.jar"/>
     <property name="xa-jdbcra.classpath.additions" value="../lib/install/applications/__xa_jdbc_ra/__xa_jdbc_ra.jar"/>
+    <property name="dm-jdbcra.classpath.additions" value="../lib/install/applications/__dm_jdbc_ra/__dm_jdbc_ra.jar"/>
     <property name="derby.jar.classpath.additions" value="../../javadb/lib/derby.jar ../../javadb/lib/derbyclient.jar ../../javadb/lib/derbynet.jar ../../javadb/lib/derbytools.jar ../../javadb/lib/derbyrun.jar"/>
     <property name="jaxr-ra.classpath.additions" value="../lib/install/applications/jaxr-ra/jaxr-ra.jar"/>
-    <property name="classpath.additions" value="${mq.classpath.additions} ${ds-jdbcra.classpath.additions} ${cp-jdbcra.classpath.additions} ${xa-jdbcra.classpath.additions} ${derby.jar.classpath.additions} ${jaxr-ra.classpath.additions}"/>
+    <property name="classpath.additions" value="${mq.classpath.additions} ${ds-jdbcra.classpath.additions} ${cp-jdbcra.classpath.additions} ${xa-jdbcra.classpath.additions} ${dm-jdbcra.classpath.additions} ${derby.jar.classpath.additions} ${jaxr-ra.classpath.additions}"/>
     <target name="fixup.library">
         <unzip src="${output.dir}/${output.file}" dest="${stage.dir}">
             <patternset>
