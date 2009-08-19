@@ -4,6 +4,7 @@
                         com.sun.ejb.mejb; \
                         com.sun.ejb.spi.io; \
                         com.sun.ejb.spi.container; \
+                        org.glassfish.ejb.admin.monitor.config; \
                         com.sun.appserv.ejb; version=${project.osgi.version}
 Import-Package: \
                         javax.xml.soap;resolution:=optional, \

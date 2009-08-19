@@ -1,1 +1,3 @@
--exportcontents: org.glassfish.jms.admin.cli; version=${project.osgi.version}
+-exportcontents: \
+                        org.glassfish.jms.admin.monitor.config; \
+                        org.glassfish.jms.admin.cli; version=${project.osgi.version}

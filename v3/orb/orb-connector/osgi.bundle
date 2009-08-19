@@ -1,5 +1,6 @@
 -exportcontents: \
     org.glassfish.enterprise.iiop.api; \
+    org.glassfish.orb.admin.monitor.config; \
     org.glassfish.enterprise.iiop.spi; version=${project.osgi.version} 
  
 
