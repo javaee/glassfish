@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,50 +33,65 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.webservices.transport.tcp;
 
-package com.sun.enterprise.configapi.tests;
-
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.Ssl;
-import com.sun.grizzly.config.GrizzlyConfig;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import com.sun.grizzly.Context;
+import com.sun.grizzly.portunif.PUProtocolRequest;
+import com.sun.grizzly.portunif.ProtocolFinder;
+import com.sun.logging.LogDomains;
+import com.sun.xml.ws.transport.tcp.util.TCPConstants;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * User: Jerome Dochez
- * Date: Mar 4, 2008
- * Time: 2:44:59 PM
+ *
+ * @author Alexey Stashok
  */
-public class Ssl2EnabledTest extends ConfigApiTest {
-    public String getFileName() {
-        return "DomainTest";
+public class WSTCPProtocolFinder implements ProtocolFinder {
+
+    private static Logger logger = LogDomains.getLogger(WSTCPProtocolFinder.class, LogDomains.WEBSERVICES_LOGGER);
+    private final static byte[] PROTOCOL_SCHEMA_BYTES;
+
+    static {
+        byte[] bytes;
+        try {
+            bytes = TCPConstants.PROTOCOL_SCHEMA.getBytes("US-ASCII");
+        } catch (UnsupportedEncodingException e) {
+            logger.log(Level.WARNING, "Can not convert SOAP/TCP protocol id to byte array", e);
+            bytes = TCPConstants.PROTOCOL_SCHEMA.getBytes();
+        }
+
+        PROTOCOL_SCHEMA_BYTES = bytes;
     }
 
-    NetworkConfig config = null;
+    public String find(Context context, PUProtocolRequest puRequest)
+            throws IOException {
 
-    @Before
-    public void setup() {
-        config = getHabitat().getComponent(NetworkConfig.class);
-        assertTrue(config !=null);
+        ByteBuffer buffer = puRequest.getByteBuffer();
+        int position = buffer.position();
+        int limit = buffer.limit();
+        try {
+            buffer.flip();
 
-    }
 
-    @Test
-    public void sslEnabledTest() {
-        for (final NetworkListener listener : config.getNetworkListeners()
-            .getNetworkListener()) {
-            Ssl ssl = listener.findHttpProtocol().getSsl();
-            if (ssl!=null) {
-                try {
-                    logger.fine("SSL2 ENABLED = " + ssl.getSsl2Enabled());
-                    assertFalse(Boolean.parseBoolean(ssl.getSsl2Enabled()));
-                    assertFalse(Boolean.parseBoolean(ssl.getSsl3Enabled()));
-                } catch(Exception e) {
-                     e.printStackTrace();
+            if (buffer.remaining() < PROTOCOL_SCHEMA_BYTES.length) {
+                return null;
+            }
+
+            for (int i = 0; i < PROTOCOL_SCHEMA_BYTES.length; i++) {
+                if (buffer.get(i) != PROTOCOL_SCHEMA_BYTES[i]) {
+                    return null;
                 }
             }
+
+            puRequest.setMapSelectionKey(true);
+            return TCPConstants.PROTOCOL_SCHEMA;
+        } finally {
+            buffer.limit(limit);
+            buffer.position(position);
         }
     }
 }

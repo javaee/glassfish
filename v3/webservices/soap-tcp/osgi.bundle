@@ -1,0 +1,8 @@
+-exportcontents: \
+                       org.glassfish.webservices.transport.tcp; version=${project.osgi.version}
+Import-Package: \
+                       org.glassfish.webservices.*, \
+                       org.glassfish.webservices.monitoring.*, \
+                       org.glassfish.ejb.spi.*, \
+                       com.sun.enterprise.deployment.*;resolution:=optional, \
+                       * 

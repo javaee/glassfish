@@ -75,8 +75,8 @@ public class GrizzlyProxy implements NetworkProxy {
 
     private GrizzlyService grizzlyService;
     //TODO: This must be configurable.
-    private final static boolean isWebProfile =
-        Boolean.parseBoolean(System.getProperty("v3.grizzly.webProfile", "true"));
+//    private final static boolean isWebProfile =
+//        Boolean.parseBoolean(System.getProperty("v3.grizzly.webProfile", "true"));
     private static final List<String> nvVsMapper = new ArrayList<String>();
 
 
@@ -117,7 +117,7 @@ public class GrizzlyProxy implements NetworkProxy {
      */
     private void configureGrizzly() {
         grizzlyListener = new GrizzlyListener(grizzlyService.getMonitoring(), new Controller(), networkListener.getName());
-        grizzlyListener.configure(networkListener, isWebProfile, grizzlyService.habitat);
+        grizzlyListener.configure(networkListener, grizzlyService.habitat);
 
         if(!grizzlyListener.isGenericListener()) {
             final V3Mapper mapper = new V3Mapper(logger);

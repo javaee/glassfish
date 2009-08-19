@@ -67,14 +67,14 @@ public class HttpServiceTest extends ConfigApiTest {
 
     @Test
     public void connectionTest() {
-        final String max = listener.findProtocol().getHttp().getMaxConnections();
+        final String max = listener.findHttpProtocol().getHttp().getMaxConnections();
         logger.fine("Max connections = " + max);
         assertEquals("Should only allow 250 connections.  The default is 256, however.", "250", max);
     }
 
     @Test
     public void validTransaction() throws TransactionFailure {
-        final String max = listener.findProtocol().getHttp().getMaxConnections();
+        final String max = listener.findHttpProtocol().getHttp().getMaxConnections();
 
         ConfigSupport.apply(new SingleConfigCode<NetworkListener>() {
             public Object run(NetworkListener okToChange) throws TransactionFailure {
@@ -87,7 +87,7 @@ public class HttpServiceTest extends ConfigApiTest {
                         param.setHttp(http);
                         return null;
                     }
-                }, okToChange.findProtocol());
+                }, okToChange.findHttpProtocol());
                 return http;
             }
         }, listener);
@@ -98,14 +98,14 @@ public class HttpServiceTest extends ConfigApiTest {
                 param.setMaxConnections(max);
                 return null;
             }
-        }, listener.findProtocol().getHttp());
+        }, listener.findHttpProtocol().getHttp());
         try {
             ConfigSupport.apply(new SingleConfigCode<Http>() {
                 public Object run(Http param) throws TransactionFailure {
                     param.setMaxConnections("7");
                     throw new TransactionFailure("Sorry, changed my mind", null);
                 }
-            }, listener.findProtocol().getHttp());
+            }, listener.findHttpProtocol().getHttp());
         } catch (TransactionFailure e) {
             logger.fine("good, got my exception about changing my mind");
         }

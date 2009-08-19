@@ -196,7 +196,7 @@ public class CreateSsl implements AdminCommand {
             return;
         }
 
-        Ssl ssl = listener.findProtocol().getSsl();
+        Ssl ssl = listener.findHttpProtocol().getSsl();
         if (ssl != null) {
             report.setMessage(localStrings.getLocalString("create.ssl.http.alreadyExists",
                 "Network Listener named {0} to which this ssl element is " +
@@ -213,7 +213,7 @@ public class CreateSsl implements AdminCommand {
                     param.setSsl(newSsl);
                     return newSsl;
                 }
-            }, listener.findProtocol());
+            }, listener.findHttpProtocol());
 
         } catch(TransactionFailure e) {
             reportError(report, e);

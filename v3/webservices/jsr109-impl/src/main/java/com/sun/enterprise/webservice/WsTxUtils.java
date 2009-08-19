@@ -102,7 +102,7 @@ public class WsTxUtils {
 
                 NetworkListener listener = config.getNetworkConfig().getNetworkListener(listenerName.trim());
 
-                if (secure == Boolean.valueOf(listener.findProtocol().getSecurityEnabled())) {
+                if (secure == Boolean.valueOf(listener.findHttpProtocol().getSecurityEnabled())) {
                     return listener.getPort();
                 }                
             }

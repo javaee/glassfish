@@ -932,9 +932,10 @@ public class PECoyoteConnector extends Connector {
         
         configureSSL(listener);
         configureThreadPool(listener.findThreadPool());
-        configureFileCache(listener.findProtocol().getHttp().getFileCache());
         
-        final Http http = listener.findProtocol().getHttp();
+        final Http http = listener.findHttpProtocol().getHttp();
+
+        configureFileCache(http.getFileCache());
         setMaxHttpHeaderSize(Integer.parseInt(http.getSendBufferSizeBytes()));
         setDefaultHost(http.getDefaultVirtualServer());
         setDefaultResponseType(http.getDefaultResponseType());
@@ -1287,7 +1288,7 @@ public class PECoyoteConnector extends Connector {
      */
     private void configureSSL(NetworkListener listener) {
 
-        Ssl sslConfig = listener.findProtocol().getSsl();
+        Ssl sslConfig = listener.findHttpProtocol().getSsl();
         if (sslConfig == null) {
             return;
         }
@@ -1409,8 +1410,8 @@ public class PECoyoteConnector extends Connector {
      */
     private void configureHttpListenerProperties(NetworkListener listener) {
         // Configure Connector with <http-service> properties
-        configHttpProperties(listener.findProtocol().getHttp(),
-            listener.findTransport(), listener.findProtocol().getSsl());
+        configHttpProperties(listener.findHttpProtocol().getHttp(),
+            listener.findTransport(), listener.findHttpProtocol().getSsl());
 /*
         for (Property httpListenerProp  : listener.getProperty()) {
             String propName = httpListenerProp.getName();

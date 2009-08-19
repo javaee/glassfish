@@ -55,14 +55,14 @@ public class GrizzlyListener extends MonitorableServiceListener {
     * Configures the given grizzlyListener.
     */
     @Override
-    public void configure(NetworkListener networkListener, boolean isWebProfile, Habitat habitat) {
+    public void configure(NetworkListener networkListener, Habitat habitat) {
         this.listener = networkListener;
         if("light-weight-listener".equals(networkListener.getProtocol())) {
             isGenericListener = true;
         }
 
         if(!isGenericListener) {
-            super.configure(networkListener, isWebProfile, habitat);
+            super.configure(networkListener, habitat);
         } else {
             initializeListener(networkListener, habitat);
             setName(networkListener.getName());

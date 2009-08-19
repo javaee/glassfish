@@ -26,6 +26,7 @@ package org.glassfish.webservices;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.node.WebServiceNode;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -76,6 +77,12 @@ import java.util.logging.Logger;
  */
 @Service
 public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,WebServicesApplication> {
+    public static final WebServiceDeploymentNotifier deploymentNotifier =
+            new WebServiceDeploymentNotifierImpl();
+
+    public static WebServiceDeploymentNotifier getDeploymentNotifier() {
+        return deploymentNotifier;
+    }
 
     protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
 
@@ -585,6 +592,8 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
          * Combining code from <code>com.sun.enterprise.deployment.backend.WebServiceDeployer</code>
          * in v2
          */
+        final WebServiceDeploymentNotifier notifier = getDeploymentNotifier();
+
         Collection endpoints = web.getWebServices().getEndpoints();
         ClassLoader cl = web.getClassLoader();
         WsUtil wsutil = new WsUtil();
@@ -618,6 +627,9 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                         "org.glassfish.webservices.JAXRPCServlet";
                 }
                 webComp.setWebComponentImplementation(containerServlet);
+                if (notifier != null) {
+                    notifier.notifyDeployed(nextEndpoint);
+                }
             } catch(ClassNotFoundException cex) {
                 throw new DeploymentException( format(rb.getString(
                         "enterprise.deployment.backend.cannot_find_servlet"),
@@ -656,10 +668,15 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     }
 
     public void unload(WebServicesApplication container, DeploymentContext context) {
+        final WebServiceDeploymentNotifier notifier = getDeploymentNotifier();
+
         Application app = container.getApplication();
         for(WebService svc : app.getWebServiceDescriptors()) {
             for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
                 probe.undeploy(endpoint.getEndpointAddressPath());
+                if (notifier != null) {
+                    notifier.notifyUndeployed(endpoint);
+                }
             }
         }
     }

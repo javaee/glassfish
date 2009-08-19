@@ -34,49 +34,63 @@
  * holder.
  */
 
-package com.sun.enterprise.configapi.tests;
+package org.glassfish.webservices.transport.tcp;
 
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.Ssl;
-import com.sun.grizzly.config.GrizzlyConfig;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.xml.namespace.QName;
+
+import com.sun.enterprise.deployment.WebServiceEndpoint;
 
 /**
- * User: Jerome Dochez
- * Date: Mar 4, 2008
- * Time: 2:44:59 PM
+ * @author Alexey Stashok
  */
-public class Ssl2EnabledTest extends ConfigApiTest {
-    public String getFileName() {
-        return "DomainTest";
+public class WSEndpointDescriptor {
+
+    final private QName wsServiceName;
+    final private String uri;
+    final private String contextRoot;
+    final private String urlPattern;
+    final private boolean isEJB;
+    final private WebServiceEndpoint wsServiceEndpoint;
+
+    // Full address to endpoint
+    final private String requestURL;
+
+    public WSEndpointDescriptor(final WebServiceEndpoint wsServiceDescriptor, final String contextRoot,
+            final String urlPattern, final String requestURL) {
+        this.wsServiceName = wsServiceDescriptor.getServiceName();
+        this.uri = wsServiceDescriptor.getEndpointAddressUri();
+        this.isEJB = wsServiceDescriptor.implementedByEjbComponent();
+        this.wsServiceEndpoint = wsServiceDescriptor;
+        this.contextRoot = contextRoot;
+        this.urlPattern = urlPattern;
+        this.requestURL = requestURL;
     }
 
-    NetworkConfig config = null;
-
-    @Before
-    public void setup() {
-        config = getHabitat().getComponent(NetworkConfig.class);
-        assertTrue(config !=null);
-
+    public QName getWSServiceName() {
+        return wsServiceName;
     }
 
-    @Test
-    public void sslEnabledTest() {
-        for (final NetworkListener listener : config.getNetworkListeners()
-            .getNetworkListener()) {
-            Ssl ssl = listener.findHttpProtocol().getSsl();
-            if (ssl!=null) {
-                try {
-                    logger.fine("SSL2 ENABLED = " + ssl.getSsl2Enabled());
-                    assertFalse(Boolean.parseBoolean(ssl.getSsl2Enabled()));
-                    assertFalse(Boolean.parseBoolean(ssl.getSsl3Enabled()));
-                } catch(Exception e) {
-                     e.printStackTrace();
-                }
-            }
-        }
+    public String getURI() {
+        return uri;
+    }
+
+    public String getContextRoot() {
+        return contextRoot;
+    }
+
+    public String getRequestURL() {
+        return requestURL;
+    }
+
+    public String getUrlPattern() {
+        return urlPattern;
+    }
+
+    public WebServiceEndpoint getWSServiceEndpoint() {
+        return wsServiceEndpoint;
+    }
+
+    public boolean isEJB() {
+        return isEJB;
     }
 }

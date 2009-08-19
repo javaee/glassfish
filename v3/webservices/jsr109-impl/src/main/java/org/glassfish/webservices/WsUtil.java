@@ -1538,9 +1538,9 @@ public class WsUtil {
             // }
             }
 
-            if(listener.findProtocol().getSecurityEnabled().equals("false"))
+            if(listener.findHttpProtocol().getSecurityEnabled().equals("false"))
                 wsi.setHttpVS(new VirtualServerInfo("http", host, Integer.parseInt(listener.getPort())));
-            else if(listener.findProtocol().getSecurityEnabled().equals("true"))
+            else if(listener.findHttpProtocol().getSecurityEnabled().equals("true"))
                 wsi.setHttpsVS(new VirtualServerInfo("https", host, Integer.parseInt(listener.getPort())));
         }
 

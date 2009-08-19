@@ -96,7 +96,7 @@ public final class AdminEndpointDecider {
         for (NetworkListener ls : lss) {
             if(ADMIN_LISTENER_ID.equals(ls.getName())) {
                 guiContextRoot = "";  //at the root context for separate admin-listener
-                String dvs     = ls.findProtocol().getHttp().getDefaultVirtualServer();
+                String dvs     = ls.findHttpProtocol().getHttp().getDefaultVirtualServer();
                 guiHosts       = Collections.unmodifiableList(Arrays.asList(dvs));
                 asadminHosts   = guiHosts;  //same for now
                 try {
@@ -111,7 +111,7 @@ public final class AdminEndpointDecider {
         if (dedicatedAdmin == false) {
             //pick first
             NetworkListener effective = lss.get(0);
-            String dvs = effective.findProtocol().getHttp().getDefaultVirtualServer();
+            String dvs = effective.findHttpProtocol().getHttp().getDefaultVirtualServer();
             guiHosts = Collections.unmodifiableList(Arrays.asList(dvs));
             asadminHosts = guiHosts;
             try {

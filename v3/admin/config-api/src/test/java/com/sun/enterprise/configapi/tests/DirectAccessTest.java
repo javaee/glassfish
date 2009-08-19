@@ -79,7 +79,7 @@ public class DirectAccessTest extends ConfigPersistence {
         NetworkConfig networkConfig = habitat.getComponent(NetworkConfig.class);
         final NetworkListener listener = networkConfig.getNetworkListeners()
             .getNetworkListener().get(0);
-        final Http http = listener.findProtocol().getHttp();
+        final Http http = listener.findHttpProtocol().getHttp();
         ConfigBean config = (ConfigBean) ConfigBean.unwrap(http.getFileCache());
         ConfigBean config2 = (ConfigBean) ConfigBean.unwrap(http);
         Map<ConfigBean, Map<String, String>> changes = new HashMap<ConfigBean, Map<String, String>>();

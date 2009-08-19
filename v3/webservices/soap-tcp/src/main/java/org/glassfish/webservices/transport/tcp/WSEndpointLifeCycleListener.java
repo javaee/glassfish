@@ -34,49 +34,21 @@
  * holder.
  */
 
-package com.sun.enterprise.configapi.tests;
+package org.glassfish.webservices.transport.tcp;
 
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.Ssl;
-import com.sun.grizzly.config.GrizzlyConfig;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.glassfish.webservices.monitoring.Endpoint;
+import org.glassfish.webservices.monitoring.EndpointLifecycleListener;
 
 /**
- * User: Jerome Dochez
- * Date: Mar 4, 2008
- * Time: 2:44:59 PM
+ * @author Alexey Stashok
  */
-public class Ssl2EnabledTest extends ConfigApiTest {
-    public String getFileName() {
-        return "DomainTest";
+public final class WSEndpointLifeCycleListener implements EndpointLifecycleListener {
+    public void endpointAdded(final Endpoint endpoint) {
+        System.out.println("endpointAdded: " + endpoint);
+        AppServRegistry.getInstance().registerEndpoint(endpoint);
     }
 
-    NetworkConfig config = null;
-
-    @Before
-    public void setup() {
-        config = getHabitat().getComponent(NetworkConfig.class);
-        assertTrue(config !=null);
-
-    }
-
-    @Test
-    public void sslEnabledTest() {
-        for (final NetworkListener listener : config.getNetworkListeners()
-            .getNetworkListener()) {
-            Ssl ssl = listener.findHttpProtocol().getSsl();
-            if (ssl!=null) {
-                try {
-                    logger.fine("SSL2 ENABLED = " + ssl.getSsl2Enabled());
-                    assertFalse(Boolean.parseBoolean(ssl.getSsl2Enabled()));
-                    assertFalse(Boolean.parseBoolean(ssl.getSsl3Enabled()));
-                } catch(Exception e) {
-                     e.printStackTrace();
-                }
-            }
-        }
+    public void endpointRemoved(final Endpoint endpoint) {
+        AppServRegistry.getInstance().deregisterEndpoint(endpoint);
     }
 }

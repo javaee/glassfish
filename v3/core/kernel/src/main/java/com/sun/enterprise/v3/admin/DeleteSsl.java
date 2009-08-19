@@ -116,7 +116,7 @@ public class DeleteSsl implements AdminCommand {
                     return;
                 }
 
-                Protocol protocol = networkListener.findProtocol();
+                Protocol protocol = networkListener.findHttpProtocol();
                 if (protocol.getSsl() == null) {
                     report.setMessage(localStrings.getLocalString(
                         "delete.ssl.element.doesnotexist", "Ssl element does " +
@@ -130,7 +130,7 @@ public class DeleteSsl implements AdminCommand {
                         param.setSsl(null);
                         return null;
                     }
-                }, networkListener.findProtocol());
+                }, networkListener.findHttpProtocol());
                 
             } else if ("iiop-listener".equals(type)) {
                 IiopListener iiopListener = null;

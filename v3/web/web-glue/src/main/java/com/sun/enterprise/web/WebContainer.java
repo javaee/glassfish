@@ -701,7 +701,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
          * 'security-enabled' attribute in <http-listener>
          * element is set to TRUE.
          */
-        boolean isSecure = Boolean.valueOf(listener.findProtocol().getSecurityEnabled());
+        boolean isSecure = Boolean.valueOf(listener.findHttpProtocol().getSecurityEnabled());
         if (isSecure && defaultRedirectPort == -1) {
             defaultRedirectPort = port;
         }
@@ -789,7 +789,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         } else {
             port = Integer.parseInt(listener.getPort());                
             isSecure = Boolean.valueOf(
-                            listener.findProtocol().getSecurityEnabled());
+                            listener.findHttpProtocol().getSecurityEnabled());
             address = listener.getAddress();
         }
             
@@ -815,7 +815,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         String defaultHost = "server";
         String jkConnectorName = "jk-connector";
         if (listener !=null) {
-            defaultHost = listener.findProtocol().getHttp().getDefaultVirtualServer();
+            defaultHost = listener.findHttpProtocol().getHttp().getDefaultVirtualServer();
             jkConnectorName = listener.getName();     
         }
         jkConnector.setDefaultHost(defaultHost);
@@ -2863,8 +2863,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         WebConnector connector = connectorMap.get(listener.getName());
         if (connector != null) {
-            connector.configHttpProperties(listener.findProtocol().getHttp(),
-                listener.findTransport(), listener.findProtocol().getSsl());
+            connector.configHttpProperties(listener.findHttpProtocol().getHttp(),
+                listener.findTransport(), listener.findHttpProtocol().getSsl());
             connector.configureHttpListenerProperty(propName, propValue);
         }
     }
@@ -2884,7 +2884,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             // Notice that in GlassFish v3, we support a domain.xml configuration
             // that does not declare any admin-listener, in which case the
             // admin-related webapps are accessible on http-listener-1.
-            if (networkListener.findProtocol().getHttp().getDefaultVirtualServer().equals(
+            if (networkListener.findHttpProtocol().getHttp().getDefaultVirtualServer().equals(
                     org.glassfish.api.web.Constants.ADMIN_VS) ||
                 "http-listener-1".equals(networkListener.getName()) &&
                 connectorMap.get("admin-listener") == null) {
@@ -2983,7 +2983,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             // and its MapperListener are started, they will recognize the
             // default-virtual-server as one of their own, and add it to the
             // Mapper
-            String virtualServerName = httpListener.findProtocol().getHttp().getDefaultVirtualServer();
+            String virtualServerName = httpListener.findHttpProtocol().getHttp().getDefaultVirtualServer();
             VirtualServer vs =
                     (VirtualServer) getEngine().findChild(virtualServerName);
             int[] oldPorts = vs.getPorts();

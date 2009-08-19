@@ -101,7 +101,7 @@ public class DeleteHttpListener implements AdminCommand {
             NetworkListener ls = networkConfig.getNetworkListener(listenerId);
             final String name = ls.getProtocol();
             VirtualServer vs = httpService
-                .getVirtualServerByName(ls.findProtocol().getHttp().getDefaultVirtualServer());
+                .getVirtualServerByName(ls.findHttpProtocol().getHttp().getDefaultVirtualServer());
             ConfigSupport.apply(new DeleteNetworkListener(), networkConfig.getNetworkListeners());
             ConfigSupport.apply(new UpdateVirtualServer(), vs);
             cleanUp(name);

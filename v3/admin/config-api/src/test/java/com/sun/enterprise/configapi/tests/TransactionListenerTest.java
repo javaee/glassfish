@@ -72,7 +72,7 @@ public class TransactionListenerTest extends ConfigApiTest {
         NetworkConfig networkConfig = getHabitat().getComponent(NetworkConfig.class);
         final NetworkListener netListener = networkConfig.getNetworkListeners()
             .getNetworkListener().get(0);
-        final Http http = netListener.findProtocol().getHttp();
+        final Http http = netListener.findHttpProtocol().getHttp();
         final TransactionListener listener = new TransactionListener() {
                 public void transactionCommited(List<PropertyChangeEvent> changes) {
                     events = changes;

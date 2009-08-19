@@ -77,6 +77,11 @@
 	    <version>${project.version}</version>
        </dependency>
        <dependency>
+	    <groupId>org.glassfish.webservices</groupId>
+	    <artifactId>soap-tcp</artifactId>
+	    <version>${project.version}</version>
+       </dependency>
+       <dependency>
           <groupId>com.sun.xml.ws</groupId>
            <artifactId>webservices-osgi</artifactId>
        </dependency>

@@ -22,139 +22,106 @@
  */
 package org.glassfish.internal.grizzly;
 
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.util.http.mapper.Mapper;
-
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.grizzly.tcp.Adapter;
+import com.sun.grizzly.util.http.mapper.Mapper;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * Extended that {@link Mapper} that prevent the WebContainer to unregister
- * the current {@link Mapper} configuration.
- * 
+ * Extended that {@link Mapper} that prevent the WebContainer to unregister the current {@link Mapper} configuration.
+ *
  * @author Jeanfrancois Arcand
  */
 @Service
 @ContractProvided(Mapper.class)
-public class V3Mapper extends ContextMapper {
-
-    private static final String ADMIN_LISTENER = "admin-listener";
-    private static final String ADMIN_VS = "__asadmin";
-
+public class ContextMapper extends Mapper {
     private final Logger logger;
-
     private Adapter adapter;
-
     // The id of the associated network-listener
-    private String id;
-    
+    protected String id;
 
-    public V3Mapper() {
+    public ContextMapper() {
         this(Logger.getAnonymousLogger());
-    }   
-    
-    
-    public V3Mapper(Logger logger) {
+    }
+
+    public ContextMapper(final Logger logger) {
         this.logger = logger;
     }
 
-    
     /**
      * {@inheritDoc}
      */
     @Override
-    public void addWrapper(String hostName, String contextPath, String path,
-            Object wrapper, boolean jspWildCard) {
-        super.addWrapper(hostName, contextPath, path, wrapper, jspWildCard);
+    public void addWrapper(final String hostName, final String contextPath, final String path,
+        final Object wrapper, final boolean jspWildCard, final String servletName) {
+        super.addWrapper(hostName, contextPath, path, wrapper, jspWildCard, servletName);
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Wrapper-Host: " + hostName + " contextPath " + contextPath
-                    + " wrapper " + wrapper + " path " + path + " jspWildcard " + jspWildCard);
-        }                          
+                + " wrapper " + wrapper + " path " + path + " jspWildcard " + jspWildCard +
+                " servletName " + servletName);
+        }
     }
-    
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void addHost(String name, String[] aliases,
-            Object host) {
-
-        // Prevent any admin related artifacts from being registered on a
-        // non-admin listener, and vice versa
-        if ((ADMIN_LISTENER.equals(id) && !ADMIN_VS.equals(name)) ||
-                (!ADMIN_LISTENER.equals(id) && ADMIN_VS.equals(name))) {
-            return;
-        }
+    public synchronized void addHost(final String name, final String[] aliases,
+        final Object host) {
 
         super.addHost(name, aliases, host);
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Host-Host: " + name + " aliases " + aliases 
-                    + " host " + host);
+            logger.fine("Host-Host: " + name + " aliases " + Arrays.toString(aliases) + " host " + host);
         }
     }
 
-    
     /**
      * {@inheritDoc}
      */
     @Override
-    public void addContext(String hostName, String path, Object context,
-            String[] welcomeResources, javax.naming.Context resources) {
-        
+    public void addContext(final String hostName, final String path, final Object context,
+        final String[] welcomeResources, final javax.naming.Context resources) {
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Context-Host: " + hostName + " path " + path + " context " + context +
-                    " port " + getPort());
+                " port " + getPort());
         }
-        
-        // Prevent any admin related artifacts from being registered on a
-        // non-admin listener, and vice versa
-        if ((ADMIN_LISTENER.equals(id) && !ADMIN_VS.equals(hostName)) ||
-                (!ADMIN_LISTENER.equals(id) && ADMIN_VS.equals(hostName))) {
-            return;
-        }
-        
         // The WebContainer is registering new Context. In that case, we must
-        // clean all the previously added information, specially the 
+        // clean all the previously added information, specially the
         // MappingData.wrapper info as this information cannot apply
         // to this Container.
-        if (adapter != null && adapter.getClass().getName()
-                .equals("org.apache.catalina.connector.CoyoteAdapter")) {
-            super.removeContext(hostName, path);
+        if (adapter != null && "org.apache.catalina.connector.CoyoteAdapter".equals(adapter.getClass().getName())) {
+            removeContext(hostName, path);
         }
-        
         super.addContext(hostName, path, context, welcomeResources, resources);
     }
 
-    
     /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void removeHost(String name) {
+    public synchronized void removeHost(final String name) {
         // Do let the WebContainer deconfigire us.
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Faking removal of host: " + name);
         }
     }
 
-
-    public void setAdapter(Adapter adapter) {
+    public void setAdapter(final Adapter adapter) {
         this.adapter = adapter;
     }
-
 
     public Adapter getAdapter() {
         return adapter;
     }
 
-
     /**
-     * Sets the id of the associated network-listener on this mapper.
+     * Sets the id of the associated http-listener on this mapper.
      */
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 }

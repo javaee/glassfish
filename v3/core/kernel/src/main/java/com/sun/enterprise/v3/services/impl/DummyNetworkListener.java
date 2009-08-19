@@ -125,6 +125,11 @@ public class DummyNetworkListener implements NetworkListener {
     }
 
     @DuckTyped
+    public Protocol findHttpProtocol() {
+        throw new UnsupportedOperationException();
+    }
+
+    @DuckTyped
     public ThreadPool findThreadPool() {
         throw new UnsupportedOperationException();
     }

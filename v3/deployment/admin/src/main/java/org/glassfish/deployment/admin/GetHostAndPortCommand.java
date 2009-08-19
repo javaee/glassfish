@@ -179,7 +179,7 @@ public class GetHostAndPortCommand implements AdminCommand {
                     if (!Boolean.valueOf(httpListener.getEnabled())) {
                         continue;
                     }
-                    final Protocol protocol = httpListener.findProtocol();
+                    final Protocol protocol = httpListener.findHttpProtocol();
                     if (Boolean.valueOf(protocol.getSecurityEnabled())
                         == securityEnabled) {
                         String serverName = protocol.getHttp().getServerName();
@@ -211,7 +211,7 @@ public class GetHostAndPortCommand implements AdminCommand {
             if (!Boolean.valueOf(httpListener.getEnabled())) {
                 continue;
             }
-            final Protocol protocol = httpListener.findProtocol();
+            final Protocol protocol = httpListener.findHttpProtocol();
             final Http http = protocol.getHttp();
             if (http.getDefaultVirtualServer().equals("__asadmin")){
                 continue;

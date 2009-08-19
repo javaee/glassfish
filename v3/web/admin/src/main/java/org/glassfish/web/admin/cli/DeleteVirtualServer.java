@@ -157,7 +157,7 @@ public class DeleteVirtualServer implements AdminCommand {
         List<NetworkListener> list = networkConfig.getNetworkListeners().getNetworkListener();
         
         for(NetworkListener listener: list) {
-            String virtualServer = listener.findProtocol().getHttp().getDefaultVirtualServer();
+            String virtualServer = listener.findHttpProtocol().getHttp().getDefaultVirtualServer();
          
             if(virtualServer != null && virtualServer.equals(vsid)) {
                 return listener.getName();

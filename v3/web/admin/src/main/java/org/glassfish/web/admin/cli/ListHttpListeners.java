@@ -73,7 +73,7 @@ public class ListHttpListeners implements AdminCommand {
         List<NetworkListener> list = httpService.getNetworkListeners()
             .getNetworkListener();
         for (NetworkListener listener : list) {
-            if (listener.findProtocol().getHttp() != null) {
+            if (listener.findHttpProtocol().getHttp() != null) {
                 report.getTopMessagePart()
                     .addChild().setMessage(listener.getName());
             }
