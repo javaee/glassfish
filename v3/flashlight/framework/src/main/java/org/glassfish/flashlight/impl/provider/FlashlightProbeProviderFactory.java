@@ -69,7 +69,7 @@ import org.jvnet.hk2.component.PostConstruct;
 @Service
 public class FlashlightProbeProviderFactory
         implements ProbeProviderFactory, PostConstruct {
-    @Inject(optional=true)
+    @Inject
     MonitoringService monitoringServiceConfig;
 
     @Inject
@@ -124,24 +124,11 @@ public class FlashlightProbeProviderFactory
                 Probe pnameAnn = m.getAnnotation(Probe.class);
                 String probeName = (pnameAnn != null)
                         ? pnameAnn.name() : m.getName();
-                String[] probeParamNames = new String[sz];
-                int index = 0;
-                Annotation[][] anns2 = m.getParameterAnnotations();
-                for (Annotation[] ann1 : anns2) {
-                    for (Annotation ann : ann1) {
-                        if (ann instanceof ProbeParam) {
-                            ProbeParam pParam = (ProbeParam) ann;
-                            probeParamNames[index++] = pParam.value();
-                            break;
-                        }
-                    }
-                }
-
+                String[] probeParamNames = FlashlightUtils.getParamNames(m);
                 FlashlightProbe probe = ProbeFactory.createProbe(
                         providerClazz, moduleProviderName, moduleName, probeProviderName, probeName,
                         probeParamNames, m.getParameterTypes());
                 probe.setProviderJavaMethodName(m.getName());
-                //System.out.println("\tProbe: " + probe);
                 provider.addProbe(probe);
             }
 

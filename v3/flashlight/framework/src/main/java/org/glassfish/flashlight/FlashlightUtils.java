@@ -6,7 +6,10 @@
 package org.glassfish.flashlight;
 
 import com.sun.enterprise.config.serverbeans.MonitoringService;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import org.glassfish.api.monitoring.DTraceContract;
+import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -72,6 +75,31 @@ public class FlashlightUtils {
         if(!dt.isSupported())
             dt = null;
         // else dt is available!!
+    }
+
+    /** bnevins -- I see 2 exact copies of this big chunk of code -- so I moved it here!
+     *
+     * @param method
+     * @return
+     */
+    public static String[] getParamNames(Method method) {
+        String[] paramNames = new String[method.getParameterTypes().length];
+        Annotation[][] allAnns = method.getParameterAnnotations();
+        int index = 0;
+
+        for (Annotation[] paramAnns : allAnns) {
+            for (Annotation ann : paramAnns) {
+                if(ann instanceof ProbeParam) {
+                    paramNames[index++] = ((ProbeParam)ann).value();
+                        break;
+                }
+            }
+        }
+
+        if(index != paramNames.length)
+            throw new RuntimeException("All params have to be  named with a ProbeParam Annotation.  This method ("  + method + ") did not have them.");
+
+        return paramNames;
     }
 
     private static void ok() {

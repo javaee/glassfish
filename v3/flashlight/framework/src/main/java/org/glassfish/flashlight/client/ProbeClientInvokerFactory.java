@@ -36,6 +36,7 @@
 
 package org.glassfish.flashlight.client;
 
+import org.glassfish.flashlight.FlashlightUtils;
 import org.glassfish.flashlight.impl.client.ReflectiveClientInvoker;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
@@ -65,19 +66,7 @@ public class ProbeClientInvokerFactory {
                                                    FlashlightProbe probe) {
         int invokerId = clientMethodIdCounter.incrementAndGet();
 
-        String[] clientParamNames = new String[method.getParameterTypes().length];
-        int index = 0;
-        Annotation[][] anns2 = method.getParameterAnnotations();
-        for (Annotation[] ann1 : anns2) {
-            for (Annotation ann : ann1) {
-                if (ann instanceof ProbeParam) {
-                    ProbeParam pParam = (ProbeParam) ann;
-                    clientParamNames[index++] = pParam.value();
-                    break;
-                }
-            }
-        }
-
+        String[] clientParamNames = FlashlightUtils.getParamNames(method);
         ProbeClientInvoker pci = new ReflectiveClientInvoker(invokerId, target, method, clientParamNames, probe);
 
         return pci;
