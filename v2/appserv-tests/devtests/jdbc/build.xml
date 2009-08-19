@@ -67,6 +67,7 @@
 	<ant dir="pooling" target="all"/>
 	<ant dir="dmmcf" target="all"/>
 	<ant dir="dmmcf.markconnectionasbad.xa" target="all"/>
+	<ant dir="dmmcf.appclient" target="all"/>
 	<antcall target="report"/>
 	<record name="jdbc.output" action="stop"/>
     </target>
@@ -303,6 +304,12 @@
 	<record name="dmmcf.output" action="start"/>
 	<ant dir="dmmcf" target="all"/>
 	<record name="dmmcf.output" action="stop"/>
+    </target>
+
+    <target name="dmmcf.appclient">
+	<record name="dmmcf.appclient.output" action="start"/>
+	<ant dir="dmmcf.appclient" target="all"/>
+	<record name="dmmcf.appclient.output" action="stop"/>
     </target>
 
     <target name="usage">
