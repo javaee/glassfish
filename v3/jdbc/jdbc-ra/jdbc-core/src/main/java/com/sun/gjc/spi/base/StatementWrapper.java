@@ -165,7 +165,7 @@ public abstract class StatementWrapper implements Statement {
      * @see #getMaxRows
      */
     public void setMaxRows(int max) throws SQLException {
-        jdbcStatement.setMaxFieldSize(max);
+        jdbcStatement.setMaxRows(max);
     }
 
     /**
