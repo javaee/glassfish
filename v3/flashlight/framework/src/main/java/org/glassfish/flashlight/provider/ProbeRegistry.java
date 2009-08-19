@@ -30,6 +30,9 @@ public class ProbeRegistry {
 
     // bnevins -- todo this is a huge concurrency bug!
     // why is it even here?!?
+    // @deprecated
+
+    @Deprecated
     public static ProbeRegistry createInstance() {
     	if (_me == null) {
     		_me = new ProbeRegistry();

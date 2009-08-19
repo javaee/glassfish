@@ -35,37 +35,45 @@
  */
 package org.glassfish.flashlight.impl.client;
 
-/*
-import org.glassfish.gfprobe.client.handler.ProbeClientMethodHandler;
-import org.glassfish.gfprobe.common.HandlerRegistry;
-*/
+//import org.glassfish.external.probe.provider.annotations.ProbeListener;
 
-import org.glassfish.flashlight.client.*;
+import java.lang.annotation.*;
+
+/* BOOBY TRAP SITTING RIGHT HERE!!!  There is a ProbeListener in org.glassfish.flashlight.client
+ * -- don't use that one or everything will fail!
+ * Do not use this import --> import org.glassfish.flashlight.client.* --> import individually instead!!
+ */
+
+import org.glassfish.external.probe.provider.annotations.ProbeListener;
+import org.glassfish.flashlight.client.ProbeClientInvoker;
+import org.glassfish.flashlight.client.ProbeClientInvokerFactory;
+import org.glassfish.flashlight.client.ProbeClientMediator;
+import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
-import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
+import com.sun.logging.LogDomains;
 
 import java.lang.instrument.Instrumentation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.sun.logging.LogDomains;
 import java.io.PrintWriter;
 
 /**
  * @author Mahesh Kannan
  *         Date: Jan 27, 2008
+ * @author Byron Nevins, significant rewrite/refactor August 2009
  */
 @Service
 public class FlashlightProbeClientMediator
         implements ProbeClientMediator, PostConstruct {
+
+    private static final ProbeRegistry probeRegistry = ProbeRegistry.getInstance();
+    private static boolean btraceAgentAttached = false;
 
     private static final Logger logger =
         LogDomains.getLogger(FlashlightProbeClientMediator.class, LogDomains.MONITORING_LOGGER);
@@ -99,85 +107,7 @@ public class FlashlightProbeClientMediator
         return clients.get(id);
     }
 
-    public synchronized Collection<ProbeClientMethodHandle> registerListener(Object listener) {
-        int clientID = clientIdGenerator.incrementAndGet();
-        clients.put(clientID, listener);
-
-        Class clientClz = listener.getClass();
-
-        Collection<ProbeClientMethodHandle> pcms =
-                new ArrayList<ProbeClientMethodHandle>();
-        Collection<FlashlightProbe> probesRequiringClassTransformation =
-        		new ArrayList<FlashlightProbe>();
-        
-        //System.out.println("*** clientID: " + clientID + "; clazz: " + clientClz);
-        for (java.lang.reflect.Method clientMethod : clientClz.getDeclaredMethods()) {
-            ProbeListener probeAnn = clientMethod.getAnnotation(ProbeListener.class);
-            //System.out.println("\t*** clientID: " + clientID + "; " + clientMethod.getName()  + " ==> " + probeAnn);
-
-            if (probeAnn != null) {
-                String probeStr = probeAnn.value();
-                FlashlightProbe probe = ProbeRegistry.createInstance().getProbe(probeStr);
-                //System.out.println("**FlashlightProcbeCM: " + probeStr + " ==> " + probe);
-
-                if (probe == null) {
-                    throw new RuntimeException("Invalid probe desc: " + probeStr);
-                }
-
-                ProbeClientInvoker invoker = ProbeClientInvokerFactory.createInvoker(listener, clientMethod, probe);
-                ProbeClientMethodHandleImpl hi = new ProbeClientMethodHandleImpl(
-                        invoker.getId(), invoker, probe);
-                pcms.add(hi);
-
-                boolean targetClassNeedsTransformation = probe.addInvoker(invoker);
-                if (targetClassNeedsTransformation) {
-                	probesRequiringClassTransformation.add(probe);
-                	//System.out.println("ADDED Method for transformation: " + probe);
-                } else {
-                }
-            } else {
-            }
-        }
-        
-        if ((probesRequiringClassTransformation != null) && 
-            (probesRequiringClassTransformation.size() > 0)) {
-
-            byte [] bArr = BtraceClientGenerator.generateBtraceClientClassData(clientID,
-        		    probesRequiringClassTransformation);
-
-            // submit to btrace agent
-            // todo: check for the existence of agent before submitting the code
-            // todo: agent does not throw exceptions which need to be fixed with btrace
-
-            if (bArr != null) {
-                if (isAgentAttached()) {
-                    submit2BTrace(bArr);
-                }
-            }
-        }
-
-        return pcms;
-    }
-
-    private void submit2BTrace(byte [] bArr) {
-        try {
-            ClassLoader scl = this.getClass().getClassLoader().getSystemClassLoader();
-            Class agentMainClass = scl.loadClass("com.sun.btrace.agent.Main");
-            Class[] params = new Class[] {(new byte[0]).getClass(), PrintWriter.class};
-            Method mthd = agentMainClass.getMethod("handleFlashLightClient", params);
-            mthd.invoke(null, new Object[] {bArr, fpw});
-        } catch (java.lang.ClassNotFoundException cnfe) {
-            //todo: handle exception
-        } catch (java.lang.NoSuchMethodException nme) {
-            //todo: handle exception
-        } catch (java.lang.IllegalAccessException iae) {
-            //todo: handle exception
-        } catch (java.lang.reflect.InvocationTargetException ite) {
-            //todo: handle exception
-        }
-    }
-
-    private static boolean btraceAgentAttached = false;
+    //TODO this method is screwy!!
     public static boolean isAgentAttached() {
         if (agentInitialized.get()) {
             return btraceAgentAttached;
@@ -200,5 +130,129 @@ public class FlashlightProbeClientMediator
             agentInitialized.set(true);
         }
         return btraceAgentAttached;
+    }
+
+    /* The difference between the 2 overloaded registerListener() methods
+     * is that for DTraceListeners you have to supply a FlashlightProbe.
+     * For java Listeners the Listener object itself has the
+     * probe name in an annotation...
+     */
+
+    public synchronized Collection<ProbeClientMethodHandle> registerListener(Object listener) {
+        return registerListener(listener, null);
+    }
+
+    public Collection<ProbeClientMethodHandle> registerListener(Object listener, FlashlightProbe probe) {
+        List<ProbeClientMethodHandle>   pcms                                = new ArrayList<ProbeClientMethodHandle>();
+        List<FlashlightProbe>           probesRequiringClassTransformation  = new ArrayList<FlashlightProbe>();
+
+        if(probe == null)
+            registerJavaListener(listener, pcms, probesRequiringClassTransformation);
+        else
+            registerDTraceListener(listener, probe, pcms, probesRequiringClassTransformation);
+
+        transformProbes(listener, probesRequiringClassTransformation);
+
+        return pcms;
+    }
+
+    private void registerJavaListener(
+            Object listener,
+            List<ProbeClientMethodHandle> pcms,
+            List<FlashlightProbe> probesRequiringClassTransformation) {
+
+        List<MethodProbe> methodProbePairs = handleListenerAnnotations(listener.getClass());
+
+        if(methodProbePairs.isEmpty())
+            return;
+
+        for(MethodProbe mp : methodProbePairs) {
+            FlashlightProbe probe = mp.probe;
+            ProbeClientInvoker invoker = ProbeClientInvokerFactory.createInvoker(listener, mp.method, probe);
+            ProbeClientMethodHandleImpl hi = new ProbeClientMethodHandleImpl(invoker.getId(), invoker, probe);
+            pcms.add(hi);
+
+            if (probe.addInvoker(invoker))
+                probesRequiringClassTransformation.add(probe);
+        }
+    }
+
+    private void registerDTraceListener(
+            Object listener,
+            FlashlightProbe probe,
+            List<ProbeClientMethodHandle> pcms,
+            List<FlashlightProbe> probesRequiringClassTransformation) {
+    }
+
+    private void transformProbes(Object listener, List<FlashlightProbe> probes) {
+        if(probes.isEmpty())
+            return;
+
+        int clientID = clientIdGenerator.incrementAndGet();
+        clients.put(clientID, listener);
+
+        byte [] bArr = BtraceClientGenerator.generateBtraceClientClassData(clientID, probes);
+
+        if (bArr == null)
+            throw new RuntimeException("Internal Error: BtraceClientGenerator.generateBtraceClientClassData() returned null");
+
+        if(isAgentAttached())
+            submit2BTrace(bArr);
+    }
+
+    /**
+     * Pick out all methods in the listener with the correct annotation, look
+     * up the referenced Probe and return a list of all such pairs.
+     * @param listenerClass
+     * @return 
+     */
+    private List<MethodProbe> handleListenerAnnotations(Class listenerClass) {
+        List<MethodProbe> mp = new LinkedList<MethodProbe> ();
+
+        for (Method method : listenerClass.getDeclaredMethods()) {
+
+            Annotation[] anns = method.getDeclaredAnnotations();
+
+            System.out.println(Arrays.toString(anns));
+
+            ProbeListener probeAnn = method.getAnnotation(ProbeListener.class);
+
+            if (probeAnn == null)
+                continue;
+
+            String probeString = probeAnn.value();
+            FlashlightProbe probe = probeRegistry.getProbe(probeString);
+
+            if (probe == null)
+                throw new RuntimeException("Invalid probe desc: " + probeString);
+            
+            mp.add(new MethodProbe(method, probe));
+        }
+        
+        return mp;
+    }
+
+    private void submit2BTrace(byte [] bArr) {
+        try {
+            ClassLoader scl = this.getClass().getClassLoader().getSystemClassLoader();
+            Class agentMainClass = scl.loadClass("com.sun.btrace.agent.Main");
+            Class[] params = new Class[] {(new byte[0]).getClass(), PrintWriter.class};
+            Method mthd = agentMainClass.getMethod("handleFlashLightClient", params);
+            mthd.invoke(null, new Object[] {bArr, fpw});
+        } 
+        catch(Exception e) {
+            throw new RuntimeException("BTrace Error");
+        }
+    }
+
+
+    // this is just used internally for cleanly organizing the code.
+    private static class MethodProbe {
+        MethodProbe(Method m, FlashlightProbe p) {
+            method = m;
+            probe = p;
+        }
+        Method          method;
+        FlashlightProbe probe;
     }
 }
