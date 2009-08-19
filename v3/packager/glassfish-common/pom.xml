@@ -216,7 +216,13 @@
             <artifactId>javahelp</artifactId>
             <version>2.0.02</version>
         </dependency>
-    
+        <!-- embedded shell fragment -->
+        <!--dependency>
+           <groupId>org.glassfish.extras</groupId>
+           <artifactId>glassfish-embedded-shell-frag</artifactId>
+           <version>${project.version}</version>
+           <type>distribution-fragment</type>
+        </dependency-->
     
       	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
