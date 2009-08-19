@@ -70,6 +70,7 @@ import java.net.UnknownHostException;
 // START GlassFish 898
 import java.net.URLDecoder;
 // END GlassFish 898
+import java.nio.charset.UnsupportedCharsetException;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -1361,12 +1362,21 @@ public class Request
     @Override
     public BufferedReader getReader() throws IOException {
 
-        if (usingInputStream)
+        if (usingInputStream) {
             throw new IllegalStateException
                 (sm.getString("coyoteRequest.getReader.ise"));
+        }
 
         usingReader = true;
-        inputBuffer.checkConverter();
+        try {
+            inputBuffer.checkConverter();
+        } catch (UnsupportedCharsetException uce) {
+            UnsupportedEncodingException uee =
+                new UnsupportedEncodingException(uce.getMessage());
+            uee.initCause(uce);
+            throw uee;
+        }
+
         if (reader == null) {
             reader = new CoyoteReader(inputBuffer);
         }
