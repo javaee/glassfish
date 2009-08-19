@@ -56,6 +56,21 @@ public class WebResourceCollectionImpl extends Descriptor
     private Set<String> httpMethods;
     private Set<String> httpMethodOmissions;
     
+    public WebResourceCollectionImpl() {
+    }
+
+    WebResourceCollectionImpl(WebResourceCollectionImpl other) {
+        if (other.urlPatterns != null) {
+            this.urlPatterns = new HashSet<String>(other.urlPatterns);
+        }
+        if (other.httpMethods != null) {
+            this.httpMethods = new HashSet<String>(other.httpMethods);
+        }
+        if (other.httpMethodOmissions != null) {
+            this.httpMethodOmissions = new HashSet<String>(other.httpMethodOmissions);
+        }
+    }
+
     /** 
      * Return my urls patterns (String objects)
      * @return the set of the url patterns.

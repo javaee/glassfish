@@ -62,14 +62,19 @@ public class SecurityConstraintImpl extends Descriptor implements SecurityConstr
     
     /** Copy constructor.*/
     public SecurityConstraintImpl(SecurityConstraintImpl other) {
-	this.webResourceCollections = new HashSet(other.webResourceCollections);
-	if (other.authorizationConstraint != null) {
-	    this.authorizationConstraint = new AuthorizationConstraintImpl((AuthorizationConstraintImpl) other.authorizationConstraint);
-	}
-	if (other.userDataConstraint != null) {
-	    this.userDataConstraint = new UserDataConstraintImpl();
-	    this.userDataConstraint.setTransportGuarantee(other.userDataConstraint.getTransportGuarantee());
-	}
+        if (other.webResourceCollections != null) {
+	        this.webResourceCollections = new HashSet<WebResourceCollection>();
+            for (WebResourceCollection wrc : other.webResourceCollections) {
+                webResourceCollections.add(new WebResourceCollectionImpl((WebResourceCollectionImpl)wrc));
+            }
+        }
+        if (other.authorizationConstraint != null) {
+            this.authorizationConstraint = new AuthorizationConstraintImpl((AuthorizationConstraintImpl) other.authorizationConstraint);
+        }
+        if (other.userDataConstraint != null) {
+            this.userDataConstraint = new UserDataConstraintImpl();
+            this.userDataConstraint.setTransportGuarantee(other.userDataConstraint.getTransportGuarantee());
+        }
     }
     
     

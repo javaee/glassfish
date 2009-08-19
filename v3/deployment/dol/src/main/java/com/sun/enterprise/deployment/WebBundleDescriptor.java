@@ -192,7 +192,7 @@ public class WebBundleDescriptor extends BundleDescriptor
             addErrorPageDescriptor(errPageDesc);
         }
         getAppListeners().addAll(webBundleDescriptor.getAppListeners());
-        getSecurityConstraintsSet().addAll(webBundleDescriptor.getSecurityConstraintsSet());
+        combineSecurityConstraints(getSecurityConstraintsSet(), webBundleDescriptor.getSecurityConstraintsSet());
 
         // ServletFilters
         // do not call getServletFilters.addAll() as there is special overriding rule
@@ -1104,6 +1104,35 @@ public class WebBundleDescriptor extends BundleDescriptor
         return null;
     }
 
+    protected void combineSecurityConstraints(Set<SecurityConstraint> firstScSet,
+            Set<SecurityConstraint> secondScSet) {
+        Set<String> allUrlPatterns = new HashSet<String>();
+        for (SecurityConstraint sc : firstScSet) {
+            for (WebResourceCollection wrc : sc.getWebResourceCollections()) {
+                allUrlPatterns.addAll(wrc.getUrlPatterns());
+            }
+        }
+
+        for (SecurityConstraint sc : secondScSet) {
+            SecurityConstraint newSc = new SecurityConstraintImpl((SecurityConstraintImpl)sc);
+            boolean addSc = false;
+            Iterator<WebResourceCollection> iter = newSc.getWebResourceCollections().iterator();
+            while (iter.hasNext()) {
+                WebResourceCollection wrc = iter.next();
+                Set<String> urlPatterns = wrc.getUrlPatterns();   
+                urlPatterns.removeAll(allUrlPatterns);
+                boolean isEmpty = (urlPatterns.size() == 0);
+                addSc = (addSc || (!isEmpty));
+                if (isEmpty) {
+                    iter.remove();
+                }
+            }
+
+            if (addSc) {
+                firstScSet.add(newSc);
+            }
+        }
+    }
 
     private Set<SecurityConstraint> getSecurityConstraintsSet() {
         if (securityConstraints == null) {

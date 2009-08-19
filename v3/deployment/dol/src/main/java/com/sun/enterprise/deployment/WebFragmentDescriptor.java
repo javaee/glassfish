@@ -36,8 +36,10 @@
 package com.sun.enterprise.deployment;
 
 import java.util.List;
+import java.util.Set;
 
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
+import com.sun.enterprise.deployment.web.SecurityConstraint;
 
 /**
  * I am an object that represents all the deployment information about
@@ -72,6 +74,12 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
 
     public void setOrderingDescriptor(OrderingDescriptor ordering) {
         this.ordering = ordering;
+    }
+
+    @Override
+    protected void combineSecurityConstraints(Set<SecurityConstraint> firstScSet,
+           Set<SecurityConstraint>secondScSet) {
+        firstScSet.addAll(secondScSet);
     }
 
     /**

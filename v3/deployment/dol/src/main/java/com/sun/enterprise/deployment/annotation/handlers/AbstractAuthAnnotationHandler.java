@@ -545,7 +545,7 @@ abstract class AbstractAuthAnnotationHandler extends AbstractCommonAttributeHand
      */
     private Set<String> getNonOverridedUrlPatterns(WebComponentDescriptor webCompDesc) {
 
-        Set<String> nonOverridedUrlPatterns = new HashSet<String>();
+        Set<String> nonOverridedUrlPatterns = new HashSet<String>(webCompDesc.getUrlPatternsSet());
         Map<String, Boolean> url2MatchMap = new HashMap<String, Boolean>();
 
         WebBundleDescriptor webBundleDesc = webCompDesc.getWebBundleDescriptor();
@@ -555,19 +555,7 @@ abstract class AbstractAuthAnnotationHandler extends AbstractCommonAttributeHand
         while (eSecConstr.hasMoreElements()) {
             SecurityConstraint sc = eSecConstr.nextElement();
             for (WebResourceCollection wrc : sc.getWebResourceCollections()) {
-                for (String up : wrc.getUrlPatterns()) {
-                    for (String urlPattern : urlPatterns) {
-                        if (implies(up, urlPattern)) {
-                            url2MatchMap.put(urlPattern, Boolean.TRUE);
-                        }
-                    }
-                }
-            }
-        }
-
-        for (String urlPattern: urlPatterns) {
-            if (!Boolean.TRUE.equals(url2MatchMap.get(urlPattern))) {
-                nonOverridedUrlPatterns.add(urlPattern);
+                nonOverridedUrlPatterns.removeAll(wrc.getUrlPatterns());
             }
         }
 
@@ -605,43 +593,4 @@ abstract class AbstractAuthAnnotationHandler extends AbstractCommonAttributeHand
 
         return securityConstraint;
     }
-
-    // from WebPermissionUtil
-    private boolean implies(String pattern, String path) {
-
-        // Check for exact match
-        if (pattern.equals(path))
-            return (true);
-
-        // Check for path prefix matching
-        if (pattern.startsWith("/") && pattern.endsWith("/*")) {
-            pattern = pattern.substring(0, pattern.length() - 2);
-
-            int length = pattern.length();
-
-            if (length == 0) return (true);  // "/*" is the same as "/"
-
-            return (path.startsWith(pattern) && 
-                    (path.length() == length || 
-                    path.substring(length).startsWith("/")));
-        }
-
-        // Check for suffix matching
-        if (pattern.startsWith("*.")) {
-            int slash = path.lastIndexOf('/');
-            int period = path.lastIndexOf('.');
-            if ((slash >= 0) && (period > slash) &&
-                path.endsWith(pattern.substring(1))) {
-                return (true);
-            }
-            return (false);
-        }
-
-        // Check for universal mapping
-        if (pattern.equals("/"))
-            return (true);
-
-        return (false);
-    }
-
 }
