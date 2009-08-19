@@ -37,18 +37,13 @@
 package com.sun.enterprise.connectors.util;
 
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.component.PostConstruct;
 
 import javax.validation.*;
 import javax.validation.metadata.BeanDescriptor;
-import javax.validation.bootstrap.GenericBootstrap;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.io.InputStream;
 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.connectors.ConnectorRegistry;
@@ -59,7 +54,7 @@ public class ConnectorJavaBeanValidator {
     private final static Logger _logger = LogDomains.getLogger(
             ConnectorJavaBeanValidator.class, LogDomains.RSR_LOGGER);
 
-    public boolean validateJavaBean(Object bean, String rarName) {
+    public void validateJavaBean(Object bean, String rarName) {
         if (bean != null) {
             Validator validator = ConnectorRegistry.getInstance().getBeanValidator(rarName);
             if (validator != null) {
@@ -70,28 +65,29 @@ public class ConnectorJavaBeanValidator {
                 Class array[] = new Class[]{};
                 Set constraintViolations = validator.validate(bean, array);
 
-                if (constraintViolations != null) {
+
+                if (constraintViolations != null && constraintViolations.size() > 0) {
+                    ConstraintViolationException cve = new ConstraintViolationException(constraintViolations);
+                    StringBuffer msg = new StringBuffer();    
+
                     Iterator it = constraintViolations.iterator();
-                    boolean violated = false;
-                    String msg = "Constraints for this bean violated. \n Message = ";
                     while (it.hasNext()) {
-                        violated = true;
                         ConstraintViolation cv = (ConstraintViolation) it.next();
-                        msg = msg + cv.getPropertyPath() + " " + cv.getMessage();
+                        msg.append("\n Bean Class : ").append(cv.getRootBeanClass());
+                        msg.append("\n Bean : ").append(cv.getRootBean());
+                        msg.append("\n Property path : " ).append(cv.getPropertyPath());
+                        msg.append("\n Violation Message : " ).append(cv.getMessage());
                     }
-                    if (violated) {
-                        _logger.log(Level.SEVERE, "Following validation constraints violated " +
-                                "for bean of type [ " + bean.getClass() + " ] : " + msg);
-                        throw new ValidationException(msg);
-                    }
-                    return false;
+
+                    Object[] args = new Object[]{bean.getClass(), rarName, msg.toString()};
+                    _logger.log(Level.SEVERE, "validation.constraints.violation",args);
+                    throw cve;
                 }
-                return true;
             } else {
-                _logger.log(Level.FINE, "no bean validator is available for RAR [ " + rarName + " ]");
-                return true;
+                if(_logger.isLoggable(Level.FINEST)){
+                   _logger.log(Level.FINEST, "No Bean Validator is available for RAR [ " + rarName + " ]");
+                }
             }
         }
-        throw new ValidationException("null Bean passed for validation");
     }
 }
