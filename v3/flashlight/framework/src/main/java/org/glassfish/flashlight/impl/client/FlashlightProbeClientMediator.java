@@ -104,6 +104,15 @@ public class FlashlightProbeClientMediator
         return _me;
     }
 
+    /** bnevins August 19 2009 -- RED HERRING ALERT !!!!
+     * I searched through all of GF and no code ever calls
+     * getClient().  But then -- it is public so it is supposed to live forever.
+     * Is some other code somewhere using it?  Who knows.  Be careful creating public methods!
+     * I'm leaving it in...
+     * @deprecated
+     */
+
+    @Deprecated
     public static Object getClient(int id) {
         return clients.get(id);
     }
@@ -144,6 +153,10 @@ public class FlashlightProbeClientMediator
     }
 
     public Collection<ProbeClientMethodHandle> registerListener(Object listener, FlashlightProbeProvider propro) {
+        // probably pointless to add the client...
+        int clientID = clientIdGenerator.incrementAndGet();
+        clients.put(clientID, listener);
+
         List<ProbeClientMethodHandle>   pcms                                = new ArrayList<ProbeClientMethodHandle>();
         List<FlashlightProbe>           probesRequiringClassTransformation  = new ArrayList<FlashlightProbe>();
 
@@ -205,9 +218,6 @@ public class FlashlightProbeClientMediator
         if(probes.isEmpty())
             return;
 
-        int clientID = clientIdGenerator.incrementAndGet();
-        clients.put(clientID, listener);
-
         byte [] bArr = BtraceClientGenerator.generateBtraceClientClassData(clientID, probes);
 
         if (bArr == null)
@@ -227,11 +237,7 @@ public class FlashlightProbeClientMediator
         List<MethodProbe> mp = new LinkedList<MethodProbe> ();
 
         for (Method method : listenerClass.getDeclaredMethods()) {
-
             Annotation[] anns = method.getDeclaredAnnotations();
-
-            System.out.println(Arrays.toString(anns));
-
             ProbeListener probeAnn = method.getAnnotation(ProbeListener.class);
 
             if (probeAnn == null)
