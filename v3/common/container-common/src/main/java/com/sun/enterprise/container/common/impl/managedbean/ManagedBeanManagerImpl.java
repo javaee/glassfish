@@ -49,7 +49,6 @@ import java.lang.annotation.Annotation;
 
 
 import com.sun.enterprise.container.common.spi.ManagedBeanManager;
-import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 
@@ -69,7 +68,6 @@ import org.jvnet.hk2.component.PostConstruct;
 
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.data.ApplicationInfo;
 
@@ -122,13 +120,12 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, Post
 
     public void event(Event event) {
         
-         if (event.is(Deployment.APPLICATION_PREPARED) ) {
-             DeploymentContext dc =  Deployment.APPLICATION_PREPARED.getHook(event);
+         if (event.is(Deployment.APPLICATION_LOADED) ) {
+             ApplicationInfo info =  Deployment.APPLICATION_LOADED.getHook(event);
 
+             loadManagedBeans(info);
 
-             loadManagedBeans(dc);
-
-             registerAppLevelDependencies(dc);
+             registerAppLevelDependencies(info);
 
          } else if( event.is(Deployment.APPLICATION_UNLOADED) ) {
              
@@ -141,9 +138,9 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, Post
          }
     }
 
-    private void registerAppLevelDependencies(DeploymentContext dc) {
+    private void registerAppLevelDependencies(ApplicationInfo appInfo) {
 
-        Application app = dc.getModuleMetaData(Application.class);
+        Application app = appInfo.getMetaData(Application.class);
 
         if( app == null ) {
             return;
@@ -160,7 +157,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, Post
 
      private void unregisterAppLevelDependencies(ApplicationInfo appInfo) {
 
-           Application app = appInfo.getMetaData(Application.class);
+         Application app = appInfo.getMetaData(Application.class);
 
 
          if( app != null ) {
@@ -174,9 +171,9 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, Post
 
 
     
-    private void loadManagedBeans(DeploymentContext dc) {
+    private void loadManagedBeans(ApplicationInfo appInfo) {
 
-        Application app = dc.getModuleMetaData(Application.class);
+        Application app = appInfo.getMetaData(Application.class);
 
         if( app == null ) {
             return;

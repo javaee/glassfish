@@ -72,14 +72,24 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
     public List<ClassFileTransformer> getTransformers();
 
     /**
-     * Create the class loaders for the application pointed by the getSource()
+     * Create the deployment class loader. It will be used for sniffer 
+     * retrieval, metadata parsing and deployer prepare. 
      *
      * @param clh the hierarchy of class loader for the parent
      * @param handler the archive handler for the source archive
      */
-    public void createClassLoaders(ClassLoaderHierarchy clh, ArchiveHandler handler)
+    public void createDeploymentClassLoader(ClassLoaderHierarchy clh, ArchiveHandler handler)
             throws URISyntaxException, MalformedURLException;
 
+    /**
+     * Create the final class loader. It will be used to load and start
+     * application.
+     *
+     * @param clh the hierarchy of class loader for the parent
+     * @param handler the archive handler for the source archive
+     */
+    public void createApplicationClassLoader(ClassLoaderHierarchy clh, ArchiveHandler handler)
+            throws URISyntaxException, MalformedURLException;
 
     public void clean();
 

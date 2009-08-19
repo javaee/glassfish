@@ -218,7 +218,7 @@ public class ApplicationLifecycle implements Deployment {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return null;                
             }
-            context.createClassLoaders(clh, handler);
+            context.createDeploymentClassLoader(clh, handler);
 
             final ClassLoader cloader = context.getClassLoader();
             final ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
@@ -245,6 +245,8 @@ public class ApplicationLifecycle implements Deployment {
                     tracker.actOn(logger);
                     return null;
                 }
+
+                context.createApplicationClassLoader(clh, handler);
 
                 final String appName = commandParams.name();
 

@@ -178,12 +178,21 @@ public class OSGiDeploymentContextImpl extends DeploymentContextImpl
     }
 
     @Override
-    public void createClassLoaders(ClassLoaderHierarchy clh,
+    public void createDeploymentClassLoader(ClassLoaderHierarchy clh,
                                    ArchiveHandler handler)
             throws URISyntaxException, MalformedURLException
     {
         // do nothing as we override getClassLoader methods.
     }
+
+    @Override
+    public void createApplicationClassLoader(ClassLoaderHierarchy clh,
+                                   ArchiveHandler handler)
+            throws URISyntaxException, MalformedURLException
+    {
+        // do nothing as we override getClassLoader methods.
+    }
+
 
     @Override
     public ClassLoader getClassLoader()

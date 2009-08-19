@@ -140,24 +140,6 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
      * @link {org.jvnet.glassfish.apu.deployment.archive.ArchiveHandler.getClassLoader()}
      */
     public ClassLoader getFinalClassLoader() {
-
-        // someone got hold of our final class loader, the temp is automatically invalidated.
-        if (phase==Phase.PREPARE) {
-            tempClassLoaderInvalidated = true;
-
-            // check if we are in prepare phase and the final class loader has been accessed...
-            if (finalClassLoaderAccessedDuringPrepare) {
-                Boolean force = false;
-                if (parameters instanceof DeployCommandParameters) {
-                    force = ((DeployCommandParameters) parameters).force;
-                }
-                if (!force) {
-                    logger.warning("More than one deployer tried to access the final class loader during prepare phase.");
-                }
-            } else {
-                finalClassLoaderAccessedDuringPrepare=true;
-            }
-        }
         return cloader;
     }
 
@@ -177,28 +159,29 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
         return getClassLoader(true);
     }
 
-    public void createClassLoaders(ClassLoaderHierarchy clh, ArchiveHandler handler)
+    // this classloader will be used for sniffer retrieval, metadata parsing 
+    // and the prepare
+    public void createDeploymentClassLoader(ClassLoaderHierarchy clh, ArchiveHandler handler)
             throws URISyntaxException, MalformedURLException {
+        this.sharableTemp = createClassLoader(clh, handler, null); 
+    }
 
-        if (cloader!=null && sharableTemp!=null) {
-            return;
-        }
+    // this classloader will used to load and start the application
+    public void createApplicationClassLoader(ClassLoaderHierarchy clh, ArchiveHandler handler)
+            throws URISyntaxException, MalformedURLException {
+        this.cloader = createClassLoader(clh, handler, parameters.name());
+    }
+
+    private ClassLoader createClassLoader(ClassLoaderHierarchy clh, ArchiveHandler handler, String appName)
+            throws URISyntaxException, MalformedURLException {
         // first we create the appLib class loader, this is non shared libraries class loader
-        ClassLoader applibCL = clh.getAppLibClassLoader(parameters.name(), getAppLibs());
+        ClassLoader applibCL = clh.getAppLibClassLoader(appName, getAppLibs());
 
         ClassLoader parentCL = clh.createApplicationParentCL(applibCL, this);
 
-        this.sharableTemp = handler.getClassLoader(parentCL, this);
-        this.cloader = handler.getClassLoader(parentCL, this);
+        return handler.getClassLoader(parentCL, this);
     }
 
-    public void invalidateTempClassLoader() {
-        tempClassLoaderInvalidated=true;
-
-    }
-
-
-    
     public synchronized ClassLoader getClassLoader(boolean sharable) {
         // if we are in prepare phase, we need to return our sharable temporary class loader
         // otherwise, we return the final one.
@@ -210,32 +193,17 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
                 return cl.copy();
             }
         } else {
-            // we are out of the prepare phase, if none of our deployers have invalidated
-            // their class loader during the prepare phase, we can continue using the
-            // sharableone which will become the final class loader after all.
-            if (tempClassLoaderInvalidated) {
-                if (sharableTemp!=null) {                                                                 
-                    try {
-                        PreDestroy.class.cast(sharableTemp).preDestroy();
-                    } catch (Exception e) {
-                        // ignore, the classloader does not need to be destroyed
-                    }
-                    sharableTemp=null;
+            // we are out of the prepare phase, destroy the shareableTemp and 
+            // return the final classloader
+            if (sharableTemp!=null) { 
+                try {
+                    PreDestroy.class.cast(sharableTemp).preDestroy();
+                } catch (Exception e) {
+                    // ignore, the classloader does not need to be destroyed
                 }
-                return cloader;
-            } else {
-                if (cloader!=null) {                                       
-                    try {
-                        PreDestroy.class.cast(cloader).preDestroy();
-                    } catch (Exception e) {
-                        // ignore, the classloader does not need to be destroyed
-                    }
-                    cloader=null;
-                }
-
-                return sharableTemp;                
+                sharableTemp=null;
             }
-
+            return cloader;
         }
     }
 

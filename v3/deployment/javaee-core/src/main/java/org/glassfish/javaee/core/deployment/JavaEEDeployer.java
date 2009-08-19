@@ -223,6 +223,9 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         if (app != null) {
             app.setClassLoader(context.getClassLoader());
         }
+        for (BundleDescriptor bundleDesc : app.getBundleDescriptors()) {
+            bundleDesc.setClassLoader(context.getClassLoader());
+        }
 
         return null;
     }
