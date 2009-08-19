@@ -122,13 +122,11 @@
         </facet>
     </dynamicTreeNode>
 
-
-    <!-- no support for transport for now.
     <sun:treeNode
-        id="transports"
-        text="$resource{i18n.tree.grizzly.transports}"
+        id="transport"
+        text="$resource{i18n.tree.grizzly.transport}"
         imageURL="/resource/web/images/httpservice.gif"
-    />
-    -->
+        url="/web/grizzly/transportEdit.jsf?configName=server-config&name=tcp"
+     />
 </sun:treeNode>
 

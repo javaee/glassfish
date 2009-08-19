@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -33,19 +33,117 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- grizzly/networkListenerNew.jsf -->
+<!-- grizzly/tcpEdit.jsf -->
+
 
 <!initPage
-    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings")
+    setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.httpService.accesslog.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.transport.editPageTitle}" >
 <!define name="content">
+    <event>
+    <!beforeCreate
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        getRequestValue(key="name" value="#{pageSession.Name}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/transportEdit.jsf");
+        setPageSessionAttribute(key="childType" value="transport");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=transports");
+        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/transports,type=transport,name=#{pageSession.Name}");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="convertToFalseList" value={"DisplayConfiguration", "EnableSnoop" });
+        //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
+    />
+    </event>
+
+    //#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
-                " Edit Transport (TBD)
-            </sun:form>
+
+        <!-- Page Title -->
+        <sun:title id="propertyContentPage" title="$resource{i18n_web.transport.editPageTitle}" helpText="$resource{i18n_web.transport.editPageTitleHelp}">
+#include "/common/shared/editPageButtons.inc"
+        </sun:title>
+        "<br><br>
+<sun:propertySheet id="propertySheet">
+    <sun:propertySheetSection id="propertSectionTextField">
+
+
+    <sun:property id="name"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.transportName}">
+        <sun:staticText id="name" text="#{pageSession.Name}" />
+    </sun:property>
+
+    <sun:property id="Classname"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.Classname}"  helpText="$resource{i18n_web.transport.ClassnameHelp}">
+        <sun:textField id="Classname" columns="$int{60}" text="#{pageSession.valueMap['Classname']}" />
+    </sun:property>
+
+
+    <sun:property id="SelectionKeyHandler"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.SelectionKeyHandler}"  helpText="$resource{i18n_web.transport.SelectionKeyHandlerHelp}">
+        <sun:textField id="SelectionKeyHandler"  columns="$int{60}" text="#{pageSession.valueMap['SelectionKeyHandler']}" />
+    </sun:property>
+
+    <sun:property id="ByteBufferType"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.ByteBufferType}"  helpText="$resource{i18n_web.transport.ByteBufferTypeHelp}">
+        <sun:dropDown id="ByteBufferType" selected="#{pageSession.valueMap['ByteBufferType']}" labels={"HEAP", "DIRECT"}  />
+    </sun:property>
+
+    <sun:property id="AcceptorThreads"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.AcceptorThreads}" helpText="$resource{i18n_web.transport.AcceptorThreadsHelp}">
+        <sun:textField id="AcceptorThreads" columns="$int{20}" styleClass="intAllowMinusOne" text="#{pageSession.valueMap['AcceptorThreads']}" />
+    </sun:property>
+
+    <sun:property id="MaxConnectionsCount"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.MaxConnectionsCount}"  helpText="$resource{i18n_web.transport.MaxConnectionsCountHelp}">
+        <sun:textField id="MaxConnectionsCount" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['MaxConnectionsCount']}" />
+    </sun:property>
+
+
+    <sun:property id="BufferSizeBytes"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.BufferSizeBytes}"  helpText="$resource{i18n_web.transport.BufferSizeBytesHelp}">
+        <sun:textField id="BufferSizeBytes" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['BufferSizeBytes']}" />
+        <sun:staticText id="bytes" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
+    </sun:property>
+
+
+
+    <sun:property id="IdleKeyTimeoutSeconds"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.IdleKeyTimeoutSeconds}"  helpText="$resource{i18n_web.transport.IdleKeyTimeoutSecondsHelp}">
+        <sun:textField id="IdleKeyTimeoutSeconds" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['IdleKeyTimeoutSeconds']}" />
+        <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
+    </sun:property>
+
+    <sun:property id="ReadTimeoutMillis"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.ReadTimeoutMillis}" helpText="$resource{i18n_web.transport.ReadTimeoutMillisHelp}">
+        <sun:textField id="ReadTimeoutMillis" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['ReadTimeoutMillis']}" />
+        <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
+    </sun:property>
+
+    <sun:property id="SelectorPollTimeoutMillis"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.SelectorPollTimeoutMillis}" helpText="$resource{i18n_web.transport.SelectorPollTimeoutMillisHelp}">
+        <sun:textField id="SelectorPollTimeoutMillis" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['SelectorPollTimeoutMillis']}" />
+        <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
+    </sun:property>
+
+
+    <sun:property id="WriteTimeoutMillis"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.WriteTimeoutMillis}"  helpText="$resource{i18n_web.transport.WriteTimeoutMillisHelp}">
+        <sun:textField id="WriteTimeoutMillis" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['WriteTimeoutMillis']}" />
+        <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
+    </sun:property>
+
+    <sun:property id="TcpNoDelay"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.TcpNoDelay}" helpText="$resource{i18n_web.transport.TcpNoDelayHelp}">
+        <sun:textField id="TcpNoDelay" text="#{pageSession.valueMap['TcpNoDelay']}" />
+    </sun:property>
+
+    <sun:property id="DisplayConfiguration"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.DisplayConfiguration}"  helpText="$resource{i18n_web.transport.DisplayConfigurationHelp}" >
+        <sun:checkbox  selected="#{pageSession.valueMap['DisplayConfiguration']}" selectedValue="true" />
+    </sun:property>
+
+    <sun:property id="EnableSnoop"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.EnableSnoop}"  helpText="$resource{i18n_web.transport.EnableSnoopHelp}" >
+        <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['EnableSnoop']}" selectedValue="true" />
+    </sun:property>
+
+    </sun:propertySheetSection>
+</sun:propertySheet>
+	<sun:hidden id="helpKey" value="$resource{help_web.transportEdit}" />
+</sun:form>
 </define>
 </composition>
-
-
