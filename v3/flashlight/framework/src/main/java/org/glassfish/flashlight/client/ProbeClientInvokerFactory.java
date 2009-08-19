@@ -64,11 +64,6 @@ public class ProbeClientInvokerFactory {
 
     public static ProbeClientInvoker createInvoker(Object target, Method method,
                                                    FlashlightProbe probe) {
-        int invokerId = clientMethodIdCounter.incrementAndGet();
-
-        String[] clientParamNames = FlashlightUtils.getParamNames(method);
-        ProbeClientInvoker pci = new ReflectiveClientInvoker(invokerId, target, method, clientParamNames, probe);
-
-        return pci;
+        return createInvoker(target, method, probe, FlashlightUtils.getParamNames(method));
     }
 }
