@@ -27,8 +27,8 @@
 	<ant dir="pkgedwarservice" target="all"/>
 	<ant dir="warservice" target="all"/>
 	<ant dir="wsdltojava" target="all"/>
-<!--	<ant dir="wsctxt" target="all"/>
-	<ant dir="mappedname" target="all"/>-->
+	<ant dir="wsctxt" target="all"/>
+<!--	<ant dir="mappedname" target="all"/>-->
 <!--	<ant dir="async" target="all"/>-->
 	<!--<ant dir="mbyte" target="all"/>-->
 <!--	<ant dir="postconstruct" target="all"/>
