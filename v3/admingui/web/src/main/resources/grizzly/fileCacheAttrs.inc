@@ -38,6 +38,10 @@
 
 <sun:propertySheetSection id="fileTextField" label="#{pageSession.fileCacheSectionTitle}" >
 
+        <sun:property id="protocolName"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.protocol.protocolName}"  >
+            <sun:staticText id="protocolName" text="#{pageSession.protocolName}" />
+        </sun:property>
+
         <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.status}" >
             <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.fileMap['Enabled']}" selectedValue="true" />
         </sun:property>

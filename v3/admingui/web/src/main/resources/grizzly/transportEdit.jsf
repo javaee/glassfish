@@ -51,7 +51,7 @@
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=transports");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/transports,type=transport,name=#{pageSession.Name}");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        setPageSessionAttribute(key="convertToFalseList" value={"DisplayConfiguration", "EnableSnoop" });
+        setPageSessionAttribute(key="convertToFalseList" value={"DisplayConfiguration", "EnableSnoop", "TcpNoDelay"});
         //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
@@ -129,16 +129,16 @@
         <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
     </sun:property>
 
-    <sun:property id="TcpNoDelay"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.TcpNoDelay}" helpText="$resource{i18n_web.transport.TcpNoDelayHelp}">
-        <sun:textField id="TcpNoDelay" text="#{pageSession.valueMap['TcpNoDelay']}" />
-    </sun:property>
-
     <sun:property id="DisplayConfiguration"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.DisplayConfiguration}"  helpText="$resource{i18n_web.transport.DisplayConfigurationHelp}" >
         <sun:checkbox  selected="#{pageSession.valueMap['DisplayConfiguration']}" selectedValue="true" />
     </sun:property>
 
     <sun:property id="EnableSnoop"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.EnableSnoop}"  helpText="$resource{i18n_web.transport.EnableSnoopHelp}" >
         <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['EnableSnoop']}" selectedValue="true" />
+    </sun:property>
+
+     <sun:property id="TcpNoDelay"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.TcpNoDelay}" helpText="$resource{i18n_web.transport.TcpNoDelayHelp}">
+        <sun:checkbox  selected="#{pageSession.valueMap['TcpNoDelay']}" selectedValue="true" />
     </sun:property>
 
     </sun:propertySheetSection>

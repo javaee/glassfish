@@ -44,8 +44,8 @@
             <sun:textField id="name"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['Name']}" />
         </sun:property>
 
-        <sun:property id="name"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}">
-            <sun:staticText id="name" text="#{pageSession.Name}"  rendered="#{Edit}" />
+        <sun:property id="name"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.listenerName}">
+            <sun:staticText id="name" text="#{pageSession.Name}"  rendered="#{edit}" />
         </sun:property>
 
         <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.status}" >

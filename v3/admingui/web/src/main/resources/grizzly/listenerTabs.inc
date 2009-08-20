@@ -34,31 +34,31 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- grizzly/protocolTabs.jsf -->
+<!-- grizzly/listenerTabs.inc -->
 
-<sun:tabSet id="protocolTabs" immediate="$boolean{true}" selected="#{sessionScope.protocolTabs}">
-    <sun:tab id="protocolGeneral" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.protocolTab}" >
+<sun:tabSet id="listenerTabs" immediate="$boolean{true}" selected="#{sessionScope.protocolTabs}">
+    <sun:tab id="generalTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.networkListener.listenerTab}" >
         <!command
-        setSessionAttribute(key="protocolTabs" value="protocolGeneral");
-        redirect(page="#{request.contextPath}/web/grizzly/protocolEdit.jsf?configName=#{configName}&name=#{pageSession.Name}");
+        setSessionAttribute(key="listenerTabs" value="generalTab");
+        redirect(page="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?configName=#{configName}&name=#{pageSession.listenerName}");
         />
     </sun:tab>
     <sun:tab id="sslTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.sslTab}" >
         <!command
-        setSessionAttribute(key="protocolTabs" value="sslTab");
-        redirect(page="#{request.contextPath}/web/grizzly/protocolSSLEdit.jsf?configName=#{configName}&name=#{pageSession.Name}");
+        setSessionAttribute(key="listenerTabs" value="sslTab");
+        redirect(page="#{request.contextPath}/web/grizzly/listenerSSLEdit.jsf?configName=#{configName}&name=#{pageSession.protocolName}&listenerName=#{pageSession.listenerName}");
         />
     </sun:tab>
     <sun:tab id="httpTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.httpTab}" >
         <!command
-        setSessionAttribute(key="protocolTabs" value="httpTab");
-        redirect(page="#{request.contextPath}/web/grizzly/protocolHttp.jsf?configName=#{pageSession.configName}&name=#{pageSession.Name}");
+        setSessionAttribute(key="listenerTabs" value="httpTab");
+        redirect(page="#{request.contextPath}/web/grizzly/listenerHttpEdit.jsf?configName=#{pageSession.configName}&name=#{pageSession.protocolName}&listenerName=#{pageSession.listenerName}");
         />
     </sun:tab>
     <sun:tab id="fileCacheTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.fileCacheTab}" >
         <!command
-        setSessionAttribute(key="protocolTabs" value="fileCacheTab");
-        redirect(page="#{request.contextPath}/web/grizzly/protocolFileCache.jsf?configName=#{configName}&name=#{pageSession.Name}");
+        setSessionAttribute(key="listenerTabs" value="fileCacheTab");
+        redirect(page="#{request.contextPath}/web/grizzly/listenerFileCache.jsf?configName=#{configName}&name=#{pageSession.protocolName}&listenerName=#{pageSession.listenerName}");
         />
     </sun:tab>
 

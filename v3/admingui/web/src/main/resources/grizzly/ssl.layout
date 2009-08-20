@@ -1,4 +1,3 @@
-
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -34,36 +33,49 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- grizzly/transports.jsf -->
-
+<!-- ssl.layout -->
 
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.grizzly.transportsPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.grizzly.sslPageTitle}" >
 <!define name="content">
     <event>
-    <!beforeCreate
-        getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        getTransports(configName="$pageSession{configName}", result=>$attribute{listOfRows} );
-        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteTransport}");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/grizzly/networkListenerNew.jsf?configName=#{configName}");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/transports.jsf?configName=#{configName}");
-        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?configName=#{configName}");
-        setPageSessionAttribute(key="type" value="networkListener");
-        setPageSessionAttribute(key="tableTitle" value="networkListener");
-    />
-    </event>
-#include "/common/shared/restart.inc"    
+      <!beforeCreate
+        getRequestValue(key="configName" value="#{pageSession.configName}" default="server-config");
+        getRequestValue(key="name" value="#{pageSession.Name}");
+        setPageSessionAttribute(key="protocolName" value="#{pageSession.Name}");
+        setSessionAttribute(key="protocolTabs" value="sslTab");
+        setSessionAttribute(key="listenerTabs" value="sslTab");
+        getRequestValue(key="listenerName" value="#{pageSession.listenerName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/protocolSSLEdit.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/protocols.jsf");
+        setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=#{pageSession.Name}")
+        setPageSessionAttribute(key="childType" value="ssl")
+            setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols/protocol[#{pageSession.Name}],type=ssl");
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" )
+#include "/common/shared/sslPrepare.inc"
+      />
+  </event>
 
+#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
+
+<!insert name="protocolTabs" />
+
 #include "/common/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.transportsPageTitle}"
-                 helpText="$resource{i18n_web.grizzly.transportsPageTitleHelp}" />
-		 "<br /> <br />
-#include "/web/grizzly/transportsTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help_web.transports}" />
-            </sun:form>
+        <!-- Page Title -->
+        <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.sslPageTitle}" helpText="$resource{i18n_web.grizzly.sslPageTitleHelp}">
+#include "/common/shared/sslButtons.inc"
+        </sun:title>
+        "<br><br>
+#include "/common/shared/sslAttrs.inc"
+
+	<sun:hidden id="helpKey" value="$resource{help_web.protocolSSLEdit}" />
+</sun:form>
+#include "/common/shared/changeButtonsJS.inc"
+#include "/common/shared/sslValidationsJS.inc"
 </define>
 </composition>
+

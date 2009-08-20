@@ -33,45 +33,10 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- sslEdit.jsf -->
+<!-- protocolSSLEdit.jsf -->
 
-<!initPage
-    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
-/>
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.grizzly.sslPageTitle}" >
-<!define name="content">
-    <event>
-      <!beforeCreate
-        getRequestValue(key="configName" value="#{pageSession.configName}" default="server-config");
-        getRequestValue(key="name" value="#{pageSession.Name}");
-        setSessionAttribute(key="protocolTabs" value="sslTab");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/protocolSSLEdit.jsf");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/protocols.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=#{pageSession.Name}")
-        setPageSessionAttribute(key="childType" value="ssl")
-            setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols/protocol[#{pageSession.Name}],type=ssl");
-        setPageSessionAttribute(key="showCancelButton" value="#{true}" )
-#include "/common/shared/sslPrepare.inc"
-      />
-  </event>
-
-#include "/common/shared/restart.inc"
-            <sun:form id="propertyForm">
-#include "protocolTabs.inc"
-#include "/common/shared/alertMsg.inc"
-
-        <!-- Page Title -->
-        <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.sslPageTitle}" helpText="$resource{i18n_web.grizzly.sslPageTitleHelp}">
-#include "/common/shared/sslButtons.inc"
-        </sun:title>
-        "<br><br>
-#include "/common/shared/sslAttrs.inc"
-
-	<sun:hidden id="helpKey" value="$resource{help_web.protocolSSLEdit}" />
-</sun:form>
-#include "/common/shared/changeButtonsJS.inc"
-#include "/common/shared/sslValidationsJS.inc"
+<!composition template="/web/grizzly/ssl.layout"  guiTitle="$resource{i18n_web.grizzly.sslPageTitle}" >
+<!define name="protocolTabs">
+#include "/web/grizzly/protocolTabs.inc"
 </define>
 </composition>
-

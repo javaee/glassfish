@@ -39,6 +39,10 @@
 <sun:propertySheetSection id="httpTextField" label="#{pageSession.httpSectionTitle}" >
 
 
+        <sun:property id="protocolName" rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.protocol.protocolName}"  >
+            <sun:staticText id="protocolName" text="#{pageSession.protocolName}" />
+        </sun:property>
+
         <sun:property id="ServerNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.serverNameLabel}" helpText="$resource{i18n_web.http.serverNameHelp}" >
             <sun:textField id="ServerName" styleClass="required" required="#{true}"  columns="$int{50}" text="#{pageSession.httpMap['ServerName']}" />
         </sun:property>

@@ -44,6 +44,7 @@
 <!define name="content">
     <event>
     <!beforeCreate
+        setSessionAttribute(key="listenerTabs" value="generalTab");
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf");
@@ -54,6 +55,7 @@
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
         setPageSessionAttribute(key="protocolName" value="#{pageSession.valueMap['Protocol']}")
+        setPageSessionAttribute(key="listenerName" value="#{pageSession.Name}");
         setPageSessionAttribute(key="parentObjectNameStr2", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=network-listeners");
         setPageSessionAttribute(key="childType2" value="protocol");
         setPageSessionAttribute(key="objectNameStr2" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=#{pageSession.valueMap['Protocol']}")
@@ -72,6 +74,7 @@
 #include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
+#include "listenerTabs.inc"
 
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkListenerEditPageTitle}" helpText="$resource{i18n_web.grizzly.networkListenerEditPageTitleHelp}">
@@ -103,7 +106,7 @@
         </sun:property>
 
         <sun:property id="protocol"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.protocol}" >
-             <sun:hyperlink id="protocol" text="#{pageSession.valueMap['Protocol']}" url="#{request.contextPath}/web/grizzly/protocolEdit.jsf?name=#{pageSession.valueMap['Protocol']}" />
+             <sun:staticText id="protocol" text="#{pageSession.valueMap['Protocol']}" />
         </sun:property>
 
         <sun:property id="transport"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.transport}" >
