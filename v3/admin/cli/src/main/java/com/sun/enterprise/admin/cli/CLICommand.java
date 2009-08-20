@@ -792,7 +792,7 @@ public abstract class CLICommand implements PostConstruct {
      * Currently only verifies that the password is at least 8 characters.
      */
     protected boolean isPasswordValid(String passwd) {
-        return (passwd.length() < 8)? false:true;
+        return (passwd == null || passwd.length() < 8) ? false : true;
     }
 
     /**
