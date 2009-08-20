@@ -1,6 +1,7 @@
 -exportcontents: \
                         com.sun.enterprise.server.logging; \
                         com.sun.enterprise.server.logging.logviewer.backend; \
+                        com.sun.enterprise.server.logging.diagnostics; \
                         com.sun.enterprise.v3.admin; \
                         com.sun.enterprise.v3.admin.adapter; \
                         com.sun.enterprise.v3.admin.commands; \

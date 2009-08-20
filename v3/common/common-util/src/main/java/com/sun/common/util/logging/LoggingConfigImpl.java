@@ -59,13 +59,14 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Injectable;
-
+import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.*;
 
 import java.util.logging.LogManager;
 
 @Service
+@Contract
 public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 		 
 		@Inject

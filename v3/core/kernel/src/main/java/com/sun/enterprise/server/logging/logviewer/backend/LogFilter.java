@@ -57,6 +57,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
  * class static method.
  *
  * @AUTHOR: Hemanth Puttaswamy and Ken Paulsen
+ * @AUTHOR: Carla Mott
  */
 public class LogFilter {
 

@@ -52,7 +52,7 @@ import org.glassfish.external.arc.Taxonomy;
 	
 	@since AS 9.0
  */
-@Taxonomy(stability = Stability.EXPERIMENTAL)
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public interface LogQuery
 {
     /**
@@ -146,12 +146,12 @@ public interface LogQuery
     /**
      */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public String[] getDiagnosticCauses(  @Param(name="messageID") String messageID );
+    public String[] getDiagnosticCauses(  @Param(name="messageID") String messageID, @Param(name="moduleName") String moduleName);
     
     /**
      */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public String[] getDiagnosticChecks( @Param(name="messageID") String messageID );
+    public String[] getDiagnosticChecks( @Param(name="messageID") String messageID, @Param(name="moduleName") String moduleName);
     
     
     /**

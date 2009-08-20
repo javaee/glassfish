@@ -324,21 +324,22 @@ public class LogViewHandlers {
                             GuiUtil.getLocale(), row.getDate()));
                     String msgId = (String) row.getMessageID();
                     String level = (String) row.getLevel();
+                    String moduleName = (String)row.getModule();
                     //only SEVERE msg provoides diagnostic info.
                     if (level.equalsIgnoreCase("severe")) {
                         // NOTE: Image name/location is hard-coded
                         oneRow.put("levelImage", GuiUtil.getMessage("common.errorGif"));
                         oneRow.put(SHOW_LEVEL_IMAGE, new Boolean(true));
-                        oneRow.put("diagnosticCauses", getDiagnosticCauses(handlerCtx, msgId));
-                        oneRow.put("diagnosticChecks", getDiagnosticChecks(handlerCtx, msgId));
-                        oneRow.put("diagnosticURI", getDiagnosticURI(handlerCtx, msgId));
+//                        oneRow.put("diagnosticCauses", getDiagnosticCauses(handlerCtx, msgId, moduleName));
+                        oneRow.put("diagnosticChecks", getDiagnosticChecks(handlerCtx, msgId, moduleName));
+//                        oneRow.put("diagnosticURI", getDiagnosticURI(handlerCtx, msgId));
                     } else {
                         oneRow.put(SHOW_LEVEL_IMAGE, new Boolean(false));
                         oneRow.put("diagnostic", "");
                     }
                     oneRow.put("level", level);
                     oneRow.put("productName", row.getProductName());
-                    oneRow.put("logger", row.getModule());
+                    oneRow.put("logger", moduleName);
                     try {
                         oneRow.put("nvp", row.getNameValuePairsMap());
                     } catch (Exception ex) {
@@ -483,12 +484,12 @@ public class LogViewHandlers {
    /**
      * * This method get the diagnostic Checks based on the message id
      */
-    private static String getDiagnosticChecks(HandlerContext handlerCtx, String msgId) {
+    private static String getDiagnosticChecks(HandlerContext handlerCtx, String msgId, String moduleName) {
         if (msgId == null || "".equals(msgId)) {
             return formatArrayForDisplay(null);
         }
         Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
-        String[] results = logging.getDiagnosticChecks(msgId);
+        String[] results = logging.getDiagnosticChecks(msgId, moduleName);
         String res = formatArrayForDisplay(results);
         return res;
 
@@ -497,18 +498,19 @@ public class LogViewHandlers {
     /**
      * * This method get the diagnostic based on the message id
      */
-    private static String getDiagnosticCauses(HandlerContext handlerCtx, String msgId) {
+    /*
+    private static String getDiagnosticCauses(HandlerContext handlerCtx, String msgId, String moduleName) {
 
         if (msgId == null || "".equals(msgId)) {
             return formatArrayForDisplay(null);
         }
         Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
-        String[] results = logging.getDiagnosticCauses(msgId);
+        String[] results = logging.getDiagnosticCauses(msgId, moduleName);
 
         String res = formatArrayForDisplay(results);
         return res;
     }
-    
+       */
      public static String getLogFilesDirectory(String instanceName){
         if (GuiUtil.isEmpty(instanceName))
             return "";
@@ -561,7 +563,7 @@ public class LogViewHandlers {
     /**
      * * This method get the diagnostic Checks based on the message id
      */
-    private static String getDiagnosticURI(HandlerContext handlerCtx, String msgId) {
+    private static String getDiagnosticURI(HandlerContext handlerCtx, String msgId, String moduleName) {
         if (msgId == null || "".equals(msgId)) {
             return "";
         }

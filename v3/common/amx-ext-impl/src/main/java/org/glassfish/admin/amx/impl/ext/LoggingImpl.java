@@ -49,9 +49,11 @@ import org.glassfish.admin.amx.util.jmx.NotificationBuilder;
 import org.glassfish.admin.amx.util.*;
 import com.sun.enterprise.server.logging.GFFileHandler;
 import com.sun.enterprise.server.logging.logviewer.backend.LogFilter;
+import com.sun.enterprise.server.logging.diagnostics.MessageIdCatalog;
 //import com.sun.enterprise.server.logging.ModuleToLoggerNameMapper;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 import org.glassfish.server.ServerEnvironmentImpl;
+import org.glassfish.admin.amx.util.CollectionUtil;
 
 
 import javax.management.*;
@@ -94,6 +96,7 @@ public final class LoggingImpl extends AMXImplBase
     private final LoggingConfigImpl loggingConfig;
 //    private final GFFileHandler  gfFileHandler;
     private final LogFilter logFilter;
+    private final MessageIdCatalog msgIdCatalog;
     private final Logger logger;
 
     final String  FILE_SEP;
@@ -133,6 +136,7 @@ public final class LoggingImpl extends AMXImplBase
         loggingConfig = new LoggingConfigImpl();
         loggingConfig.setupConfigDir(env.getConfigDirPath());
         logFilter = new LogFilter();
+        msgIdCatalog = new MessageIdCatalog();
 //        gfFileHandler =   InjectedValues.getInstance().getGFFileHandler();
         logger = Logger.getAnonymousLogger();
 
@@ -611,12 +615,10 @@ public final class LoggingImpl extends AMXImplBase
 
 
         public String[]
-    getDiagnosticCauses( final String messageID )
+    getDiagnosticCauses( final String messageID, final String moduleName )
     {
-        unimplemented();
         /*
-    	final List<String>	causes	= TypeCast.checkList( 
-    		getLogMBean().getDiagnosticCausesForMessageId( messageID ), String.class );
+    	final List<String>	causes	= msgIdCatalog.getDiagnosticCausesForMessageId( messageID , moduleName );
     	
     	String[]	result = null;
     	if ( causes != null )
@@ -625,29 +627,25 @@ public final class LoggingImpl extends AMXImplBase
     	}
     	
         return result;
-        */
-	            return null;
+*/
+        return null;
         
     }
 
         public String[]
-    getDiagnosticChecks( final String messageID )
+    getDiagnosticChecks(  String messageID,  String moduleName )
     {
-        unimplemented();
-        /*
-    	final List<String>	checks	= TypeCast.checkList( 
-    		getLogMBean().getDiagnosticChecksForMessageId( messageID ), String.class );
+
+    	final List<String>	checks	= msgIdCatalog.getDiagnosticChecksForMessageId( messageID , moduleName );
     	
     	String[]	result = null;
     	if ( checks != null )
     	{
-    	    result  = new String[checks.size()];
-    	    checks.toArray( result );
+    	    result  = CollectionUtil.toArray( checks, String.class );
     	}
     	        
     	return	result;
-    	*/
-	            return null;
+    	
     	
     }
 
