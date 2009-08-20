@@ -37,6 +37,7 @@ package com.sun.enterprise.resource.pool.monitor;
 
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+import com.sun.enterprise.config.serverbeans.MonitoringService;
 import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.listener.PoolLifeCycle;
@@ -44,15 +45,23 @@ import com.sun.enterprise.resource.pool.ConnectionPoolEmitterImpl;
 import com.sun.enterprise.resource.pool.PoolLifeCycleListenerRegistry;
 import com.sun.enterprise.resource.pool.PoolLifeCycleRegistry;
 import com.sun.enterprise.resource.pool.PoolManager;
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.glassfish.api.monitoring.MonitoringItem;
+import org.glassfish.jdbc.admin.monitor.config.JdbcConnectionPoolMI;
+import org.glassfish.connectors.admin.monitor.config.ConnectorConnectionPoolMI;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
 
@@ -82,6 +91,12 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
     @Inject
     private PoolManager poolManager;
 
+    @Inject
+    MonitoringService monitoringService;
+
+    public static final String JDBC_CONNECTION_POOL = "jdbc-connection-pool";
+    public static final String CONNECTOR_CONNECTION_POOL = "connector-connection-pool";
+
     //List of all jdbc pool stats providers that are created and stored.
     private List<JdbcConnPoolStatsProvider> jdbcStatsProviders = null;
     
@@ -105,6 +120,8 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
     
     public void postConstruct() {
         logger.finest("[Monitor]In the JDBCPoolStatsProviderBootstrap");
+
+        createMonitoringConfig();
     }
 
     /**
@@ -262,6 +279,49 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
         logger.finest("Pool Destroyed : " + poolName);
         if (ConnectorRuntime.getRuntime().isServer()) {
             unregisterPool(poolName);
+        }
+    }
+
+    /**
+     * Creates jdbc-connection-pool, connector-connection-pool, connector-service
+     * config elements for monitoring.
+     */
+    private void createMonitoringConfig() {
+       createMonitoringConfig(JDBC_CONNECTION_POOL, JdbcConnectionPoolMI.class);
+       createMonitoringConfig(CONNECTOR_CONNECTION_POOL, ConnectorConnectionPoolMI.class);
+    }
+
+    /**
+     * Creates config elements for monitoring.
+     *
+     * Check if the monitoring config has been created.
+     * If it has not, then add it.
+     */
+    private void createMonitoringConfig(final String name, final Class monitoringItemClass) {
+        List<MonitoringItem> itemList = monitoringService.getMonitoringItems();
+        boolean hasMonitorConfig = false;
+        for (MonitoringItem mi : itemList) {
+            if (mi.getName().equals(name)) {
+                hasMonitorConfig = true;
+            }
+        }
+
+        try {
+            if (!hasMonitorConfig) {
+                ConfigSupport.apply(new SingleConfigCode<MonitoringService>() {
+
+                    public Object run(MonitoringService param) throws PropertyVetoException, TransactionFailure {
+
+                        MonitoringItem newItem = (MonitoringItem) param.createChild(monitoringItemClass);
+                        newItem.setName(name);
+                        newItem.setLevel(MonitoringItem.LEVEL_OFF);
+                        param.getMonitoringItems().add(newItem);
+                        return newItem;
+                    }
+                }, monitoringService);
+            }
+        } catch (TransactionFailure tfe) {
+            logger.log(Level.SEVERE, "Exception adding " + name + " MonitoringItem", tfe);
         }
     }
 }
