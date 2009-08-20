@@ -634,6 +634,7 @@ public final class AMXConfigLoader extends MBeanImplBase
             objectName = instance.getObjectName();
             mRegistry.add( cb, objectName );
 
+            //System.out.println( "AMXConfigLoader.createAndRegister(): REGISTERED: " + objectName + " at " + System.currentTimeMillis() );
             //System.out.println( JMXUtil.toString( mServer.getMBeanInfo(objectName) ) );
         }
         catch( final JMException e )
