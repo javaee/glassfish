@@ -248,7 +248,7 @@ public class FlashlightProbeProviderFactory
              probe.setDTraceProviderImpl(dtraceProviderImpl);
          }
 
-         FlashlightProbeClientMediator.getInstance().registerListener(dtraceProviderImpl, provider);
+         FlashlightProbeClientMediator.getInstance().registerDTraceListener(provider);
     }
 
     private void registerProvider(ClassLoader cl, ProbeProviderXMLParser.Provider provider) {

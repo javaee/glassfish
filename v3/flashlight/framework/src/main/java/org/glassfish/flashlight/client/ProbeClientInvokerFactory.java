@@ -45,6 +45,7 @@ import org.jvnet.hk2.annotations.Service;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.glassfish.flashlight.impl.client.DTraceClientInvoker;
 
 /**
  * @author Mahesh Kannan
@@ -65,5 +66,11 @@ public class ProbeClientInvokerFactory {
     public static ProbeClientInvoker createInvoker(Object target, Method method,
                                                    FlashlightProbe probe) {
         return createInvoker(target, method, probe, FlashlightUtils.getParamNames(method));
+    }
+
+
+    public static ProbeClientInvoker createDTraceInvoker(FlashlightProbe probe)     {
+        int invokerId = clientMethodIdCounter.incrementAndGet();
+        return  new DTraceClientInvoker(invokerId, probe);
     }
 }

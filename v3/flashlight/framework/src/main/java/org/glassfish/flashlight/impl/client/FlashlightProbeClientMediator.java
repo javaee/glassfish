@@ -133,26 +133,22 @@ public class FlashlightProbeClientMediator
         return btraceAgentAttached;
     }
 
-    /* The difference between the 2 overloaded registerListener() methods
-     * is that for DTraceListeners you have to supply a FlashlightProbe.
-     * For java Listeners the Listener object itself has the
-     * probe name in an annotation...
-     */
-
     public synchronized Collection<ProbeClientMethodHandle> registerListener(Object listener) {
-        return registerListener(listener, null);
+        List<ProbeClientMethodHandle>   pcms                                = new ArrayList<ProbeClientMethodHandle>();
+        List<FlashlightProbe>           probesRequiringClassTransformation  = new ArrayList<FlashlightProbe>();
+
+        registerJavaListener(listener, pcms, probesRequiringClassTransformation);
+        transformProbes(listener, probesRequiringClassTransformation);
+
+        return pcms;
     }
 
-    public Collection<ProbeClientMethodHandle> registerListener(Object listener, FlashlightProbeProvider propro) {
+    public synchronized Collection<ProbeClientMethodHandle> registerDTraceListener(FlashlightProbeProvider propro) {
 
         List<ProbeClientMethodHandle>   pcms                                = new ArrayList<ProbeClientMethodHandle>();
         List<FlashlightProbe>           probesRequiringClassTransformation  = new ArrayList<FlashlightProbe>();
 
-        if(propro == null)
-            registerJavaListener(listener, pcms, probesRequiringClassTransformation);
-        else
-            registerDTraceListener(listener, propro, pcms, probesRequiringClassTransformation);
-
+        Object listener = registerDTraceListener(propro, pcms, probesRequiringClassTransformation);
         transformProbes(listener, probesRequiringClassTransformation);
 
         return pcms;
@@ -179,8 +175,7 @@ public class FlashlightProbeClientMediator
         }
     }
 
-    private void registerDTraceListener(
-            Object listener,
+    private Object  registerDTraceListener(
             FlashlightProbeProvider propro,
             List<ProbeClientMethodHandle> pcms,
             List<FlashlightProbe> probesRequiringClassTransformation) {
@@ -188,18 +183,21 @@ public class FlashlightProbeClientMediator
         // The "listener" needs to be registered against every Probe in propro...
 
         Collection<FlashlightProbe> probes = propro.getProbes();
-/***
-         for(FlashlightProbe probe : probes) {
-            FlashlightProbe probe = mp.probe;
-            ProbeClientInvoker invoker = ProbeClientInvokerFactory.createInvoker(listener, mp.method, probe);
+        Object listener = null;
+
+        for(FlashlightProbe probe : probes) {
+            ProbeClientInvoker invoker = ProbeClientInvokerFactory.createDTraceInvoker(probe);
             ProbeClientMethodHandleImpl hi = new ProbeClientMethodHandleImpl(invoker.getId(), invoker, probe);
             pcms.add(hi);
 
             if (probe.addInvoker(invoker))
                 probesRequiringClassTransformation.add(probe);
+
+            if(listener == null)
+                listener = probe.getDTraceProviderImpl();    // all the probes in propro have the same "listener"
         }
-***/
-        
+
+        return listener;
     }
 
     private void transformProbes(Object listener, List<FlashlightProbe> probes) {

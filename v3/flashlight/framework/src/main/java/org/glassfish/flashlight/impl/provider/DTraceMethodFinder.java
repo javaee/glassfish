@@ -7,6 +7,7 @@ package org.glassfish.flashlight.impl.provider;
 
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.lang.reflect.Method;
+import org.glassfish.flashlight.FlashlightUtils;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 
 /**
@@ -58,25 +59,21 @@ class DTraceMethodFinder {
                 continue;
 
             // something that can be coverted to String...
-            else if(dtraceClass.equals(String.class) && !isIntegralPrimitive(probeClass))
+            else if(dtraceClass.equals(String.class) && !FlashlightUtils.isIntegral(probeClass))
                 continue;
+
+            // check for something like Short.class versus short.class
+            // JDK will handle the boxing/unboxing
+            else if(FlashlightUtils.compareIntegral(dtraceClass, probeClass))
+                continue;
+            
             else
                 return false;
         }
+        
         return true;
     }
 
-    private boolean isIntegralPrimitive(Class clazz) {
-        // all primitives except double and float
-        if(!clazz.isPrimitive())
-            return false;
-
-        if(clazz.equals(double.class) || clazz.equals(float.class))
-            return false;
-
-        return true;
-    }
-    
     private final   FlashlightProbe probe;
     private final   Object          targetObject;
     private final   Class           targetClass;

@@ -5,9 +5,11 @@
 
 package org.glassfish.flashlight.impl.client;
 
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.lang.reflect.Method;
+import java.util.*;
 import java.util.logging.*;
+import org.glassfish.flashlight.FlashlightUtils;
+import org.glassfish.flashlight.client.ProbeClientInvoker;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 
 /**
@@ -21,98 +23,61 @@ import org.glassfish.flashlight.provider.FlashlightProbe;
  * So what we do is automagically convert other class objects to String via Object.toString()
  * This brings in a new rub with overloaded methods.  E.g. we can't tell apart these 2 methods:
  * foo(Date) and foo(String)
+ *
  * TODO:I believe we should disallow such overloads when the DTrace object is being produced rather than
  * worrying about it in this class.
- * TODO: handle float and double
+ * 
+ * TODO: float and double are handled OK???
+ *
  * @author bnevins
  */
-public class DTraceClientInvoker{
-    public DTraceClientInvoker(FlashlightProbe p, Object t, Object[] ps) {
+public class DTraceClientInvoker implements ProbeClientInvoker{
+    public DTraceClientInvoker(int ID, FlashlightProbe p) {
         probe = p;
-        targetObject = t;
-        args = (ps == null) ? new Object[0] : ps;
-        targetClass = targetObject.getClass();
-        numParams = args.length;
-        fixArgs = new Object[numParams];
+        id = ID;
     }
 
-    public void invoke() {
-        try {
-            matchMethod();
-            method.invoke(targetObject, fixArgs);
-        }
-        catch(Exception e) {
-            Logger.getAnonymousLogger().warning(e.getMessage());
+    public void invoke(Object[] args) {
+        if(FlashlightUtils.isDtraceEnabled()) {
+            try {
+                probe.getDTraceMethod().invoke(probe.getDTraceProviderImpl(), fixArgs(args));
+            }
+            catch(Exception e) {
+                Logger.getAnonymousLogger().warning(e.getMessage());
+            }
         }
     }
 
-    private void matchMethod() {
-        String metname = probe.getProviderJavaMethodName();
-        Class[] probeParamTypes = probe.getParamTypes();
-        int numProbeParams = (probeParamTypes == null) ? 0 : probeParamTypes.length;
-
-        if(numProbeParams != numParams)
-            throw new RuntimeException(strings.get("dtraceinvoker_numparams", numParams, numProbeParams));
-
-        for(Method m : targetClass.getMethods()) {
-            if(!m.getName().equals(metname))
-                continue;
-            // name match!!
-            Class[] paramTypes = m.getParameterTypes(); // gyuaranteed non null
-
-            if(paramTypes.length != numParams)
-                continue; // overloaded method
-
-            if(!compareParams(probeParamTypes, paramTypes))
-                continue; // overloaded method
-
-            // we have a match!!!
-            method = m;
-            fixTheArgs(probeParamTypes, paramTypes);
-            return;
-        }
-        throw new RuntimeException(strings.get("dtraceinvoker_cantfind", metname));
+    public int getId() {
+        return id;
     }
 
-    private boolean compareParams(Class[] probep, Class[] dtracep) {
-        // the lengths are guaranteed to be the same!
-        for(int i = 0; i < probep.length; i++) {
-            Class probeClass = probep[i];
-            Class dtraceClass = dtracep[i];
+    private Object[] fixArgs(Object[] args) {
+        // Logic:  DTrace only allows integral primitives and java.lang.String.
+        // convert anything else to String.
+        // be careful to not unbox!!
+        // Very important to send back a COPY -- other listeners are sharing these args!!
 
-            if(probeClass.equals(dtraceClass))
+        Object[] fixedArgs = new Object[args.length];
+
+        for(int i = 0; i < args.length; i++) {
+            if(args[i] == null) {
+                fixedArgs[i] = null;
                 continue;
-            else if(dtraceClass.equals(String.class) && !probeClass.isPrimitive())
-                continue;
+            }
+
+            Class clazz = args[i].getClass();
+
+            if(!FlashlightUtils.isLegalDtraceParam(clazz))
+                fixedArgs[i] = args[i].toString();
             else
-                return false;
+                fixedArgs[i] = args[i];
         }
-        return true;
-    }
-
-
-    private void fixTheArgs(Class[] probep, Class[] dtracep) {
-        // the lengths are guaranteed to be the same!
-        // if probep is a class other than String -- convert
-        for(int i = 0; i < probep.length; i++) {
-            Class probeClass = probep[i];
-            Class dtraceClass = dtracep[i];
-
-            if(probeClass.equals(dtraceClass))
-                fixArgs[i] = args[i];
-            else
-                fixArgs[i] = args[i].toString();
-        }
+        
+        return fixedArgs;
     }
 
     private final   FlashlightProbe probe;
-    private final   Object          targetObject;
-    private final   Object[]        args;
-    private final   Object[]        fixArgs;
-    private final   Class           targetClass;
-    private final   int             numParams;
-    private         Method          method;
-
-    private final static boolean debug = Boolean.parseBoolean(System.getenv("AS_DEBUG"));
-    private static final LocalStringsImpl strings = new LocalStringsImpl(DTraceClientInvoker.class);
+    private final   int             id;
 }
+

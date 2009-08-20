@@ -86,14 +86,10 @@ public class FlashlightProbe
             for (ProbeClientInvoker invoker : invokerList)
                 invoker.invoke(params);
         }
-        if(isDtraceEnabled()) {
-            DTraceClientInvoker dtInvoker = new DTraceClientInvoker(this, dtraceProviderImpl, params);
-            dtInvoker.invoke();
-        }
     }
 
     public boolean isEnabled() {
-        return listenerEnabled.get() || isDtraceEnabled();
+        return listenerEnabled.get();
     }
 
     public int getId() {
@@ -170,9 +166,6 @@ public class FlashlightProbe
         dtraceMethod = m;
     }
 
-    private boolean isDtraceEnabled() {
-        return FlashlightUtils.isDtraceEnabled() && (dtraceProviderImpl != null);
-    }
     private int id;
     private Class providerClazz;
     private String moduleProviderName;

@@ -99,9 +99,6 @@ public class ReflectiveClientInvoker
     }
 
     public void invoke(Object[] args) {
-//        for (Object obj : args) {
-//            System.out.println("[FL] method: " + method.getName() + "  **Arg: " + obj);
-//        }
         try {
             if (useProbeArgs) {
                 //We can use the args as it is
@@ -132,7 +129,7 @@ public class ReflectiveClientInvoker
                 method.invoke(target, args);
         } catch (Exception ex) {
             System.out.println("Error while invoking client: " +
-                    hasComputedParams + " ==> " + ex);
+                    "hasComputedParams=" + hasComputedParams + " ==> " + ex);
         }
     }
 }

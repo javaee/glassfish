@@ -65,11 +65,6 @@ public class FlashlightUtils {
 
         dt = null;
 
-        // AS_DTRACE check is temporary...
-        if(!Boolean.parseBoolean(System.getenv("AS_DTRACE"))) {
-            return;
-        }
-
         dt = habitat.getByContract(DTraceContract.class);
 
         if(dt == null)
@@ -105,6 +100,53 @@ public class FlashlightUtils {
         return paramNames;
     }
 
+    public static boolean isLegalDtraceParam(Class clazz) {
+        return isIntegral(clazz) || String.class.equals(clazz);
+    }
+    
+    public static boolean isIntegral(Class clazz) {
+        for(Class c : INTEGRAL_CLASSES) {
+            if(c.equals(clazz))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * return true if they are the same -- ignoring boxing/unboxing
+     * AND if they are "integrals"
+     *
+     * @param c1
+     * @param c2
+     * @return
+     */
+    public static boolean compareIntegral(Class c1, Class c2) {
+        // first make sure they are both in the 12 element array of legal classes
+        if(!isIntegral(c1) || !isIntegral(c2))
+            return false;
+
+        // next a sanity check -- they ought to be different classes but let's check anyways!
+        if(c1.equals(c2))
+            return true;
+        
+        if(c1.equals(short.class))  { return c2.equals(Short.class); }
+        if(c1.equals(long.class))  { return c2.equals(Long.class); }
+        if(c1.equals(int.class))  { return c2.equals(Integer.class); }
+        if(c1.equals(byte.class))  { return c2.equals(Byte.class); }
+        if(c1.equals(char.class))  { return c2.equals(Character.class); }
+        if(c1.equals(boolean.class))  { return c2.equals(Boolean.class); }
+        if(c2.equals(short.class))  { return c1.equals(Short.class); }
+        if(c2.equals(long.class))  { return c1.equals(Long.class); }
+        if(c2.equals(int.class))  { return c1.equals(Integer.class); }
+        if(c2.equals(byte.class))  { return c1.equals(Byte.class); }
+        if(c2.equals(char.class))  { return c1.equals(Character.class); }
+        if(c2.equals(boolean.class))  { return c1.equals(Boolean.class); }
+        
+        // can't get here!!!
+        return false;
+    }
+
+
     private static void ok() {
         if(habitat == null || monConfig == null)
             throw new RuntimeException("Internal Error: habitat was not set in " + FlashlightUtils.class);
@@ -114,4 +156,8 @@ public class FlashlightUtils {
     private static              MonitoringService   monConfig;
     private static              DTraceContract      dt;
     private final static        Object              LOCK                = new Object();
+    private final static        Class[]             INTEGRAL_CLASSES    = new Class[] {
+        int.class, long.class, short.class, boolean.class, char.class, byte.class,
+        Integer.class, Long.class, Short.class, Boolean.class, Character.class, Byte.class,
+    };
 }
