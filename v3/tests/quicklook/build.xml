@@ -64,25 +64,39 @@
     <target name="all_wd_security" depends="clean">
         <record name="allrun.output" action="start"/>
         <property name="env.security_manager" value="ON"/>
-        <antcall target="add-quicklook-policy-grants" />
-        <antcall target="start-derby"/>        
-        <antcall target="start-server-felix"/>
-	<antcall target="enable-security-manager"/>
-        <antcall target="stop-server"/>
-        <antcall target="start-server-felix"/>
+
+        <antcall target="start_server_with_security_manager_enabled" />
+
 	<antcall target="build-deploy"/>
         <antcall target="runtest">
             <param name="testng.xml" value="testng.xml"/> </antcall>
         <antcall target="undeploy"/>
         <antcall target="quicklook-summary"/>
-	<antcall target="disable-security-manager"/>
-        <antcall target="stop-server"/>
-        <antcall target="stop-derby"/>
-        <antcall target="remove-quicklook-policy-grants"/>
+
+        <antcall target="stop_server_with_security_manager_enabled" />
+
         <antcall target="testng-summary"/>
 	<copy file="test-output/emailable-report.html" tofile="test-output/QL-WP-report.html"/>
         <record name="allrun.output" action="stop"/>
     </target>
+
+    <target name="start_server_with_security_manager_enabled">
+        <property name="env.security_manager" value="ON"/>
+        <antcall target="start-derby"/>        
+        <antcall target="start-server-felix"/>
+	<antcall target="enable-security-manager"/>
+        <antcall target="stop-server"/>
+        <antcall target="start-server-felix"/>
+    </target>
+
+    <target name="stop_server_with_security_manager_enabled">
+        <property name="env.security_manager" value="ON"/>
+	<antcall target="disable-security-manager"/>
+        <antcall target="stop-server"/>
+        <antcall target="stop-derby"/>
+
+    </target>
+
 
     <!-- Target for testing glassfish distribution (containing EJB)  -->
     <target name="all" depends="clean">
@@ -108,7 +122,6 @@
     <target name="all_gd_security" depends="clean">
         <record name="allrun.output" action="start"/>
         <property name="env.security_manager" value="ON"/>
-        <antcall target="add-quicklook-policy-grants" />
         <antcall target="start-derby"/>
         <antcall target="start-server-felix"/>
         <antcall target="enable-security-manager"/>
@@ -124,7 +137,6 @@
         <antcall target="disable-security-manager"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
-        <antcall target="remove-quicklook-policy-grants"/>
         <copy file="test-output/emailable-report.html" tofile="test-output/QL-GP-report.html" failonerror="false"/>
         <antcall target="testng-summary"/>
         <record name="allrun.output" action="stop"/>

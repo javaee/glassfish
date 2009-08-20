@@ -77,6 +77,14 @@
                             	    <ant dir="." antfile="build.xml" target="all_wd_security"/>
                                     <property name="glassfish.home" value="${glassfish.home}"/>
                         	</if>
+                         	<if test="${start.wd.security}">
+                            	    <ant dir="." antfile="build.xml" target="start_server_with_security_manager_enabled"/>
+                                    <property name="glassfish.home" value="${glassfish.home}"/>
+                        	</if>
+                         	<if test="${stop.wd.security}">
+                            	    <ant dir="." antfile="build.xml" target="stop_server_with_security_manager_enabled"/>
+                                    <property name="glassfish.home" value="${glassfish.home}"/>
+                        	</if>
                          	<if test="${test.gd.security}">
                             	    <ant dir="." antfile="build.xml" target="all_gd_security"/>
                                     <property name="glassfish.home" value="${glassfish.home}"/>
@@ -161,6 +169,18 @@
             <id>test_wd_security</id>
             <properties>
                 <test.wd.security>true</test.wd.security>
+            </properties>
+        </profile>
+        <profile>
+            <id>start_wd_security</id>
+            <properties>
+                <start.wd.security>true</start.wd.security>
+            </properties>
+        </profile>
+        <profile>
+            <id>stop_wd_security</id>
+            <properties>
+                <stop.wd.security>true</stop.wd.security>
             </properties>
         </profile>
         <profile>

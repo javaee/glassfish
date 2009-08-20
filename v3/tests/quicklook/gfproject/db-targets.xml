@@ -95,22 +95,6 @@
     </exec>
 </target>
 
-<target name="add-quicklook-policy-grants">
-  <move file="${glassfish.home}/domains/domain1/config/server.policy"
-        tofile="${glassfish.home}/domains/domain1/config/server_policy.orig"/>
-  <concat append="true"
-          destfile="${glassfish.home}/domains/domain1/config/server.policy">
-    <fileset file="${glassfish.home}/domains/domain1/config/server_policy.orig"/>
-    <fileset file="${basedir}/bean-validator/simple-bv-servlet/simple-bv-servlet.policy"/>
-  </concat>
-</target>
-
-<target name="remove-quicklook-policy-grants">
-  <delete file="${glassfish.home}/domains/domain1/config/server.policy"/>
-  <move file="${glassfish.home}/domains/domain1/config/server_policy.orig"
-        tofile="${glassfish.home}/domains/domain1/config/server.policy"/>
-</target>
-
 <target name="disable-security-manager" depends="setOSConditions">
     <antcall target="disable-security-manager-unix"/>
     <antcall target="disable-security-manager-windows"/>
