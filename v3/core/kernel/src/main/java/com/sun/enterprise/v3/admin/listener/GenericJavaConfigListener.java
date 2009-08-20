@@ -6,6 +6,7 @@
 package com.sun.enterprise.v3.admin.listener;
 
 import com.sun.enterprise.config.serverbeans.JavaConfig;
+import com.sun.enterprise.config.serverbeans.Profiler;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,20 +74,32 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         final UnprocessedChangeEvents unp = ConfigSupport.sortAndDispatch(events, new Changed() {
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tc, T t) {
-                JavaConfig njc = (JavaConfig) t; //this must not throw ClassCastException
-                logFine(type, njc);
-                
                 NotProcessed result = null;
-                if ( oldProps.size() == njc.getJvmOptions().size() )
+                
+                if ( t instanceof Profiler )
                 {
-                    // the JavaConfig itself has changed 
-                    result = new NotProcessed("A java-config attribute was changed, restart required");
+                    result = new NotProcessed("Creation or changes to a profiler require restart");
                 }
-                else
+                else if ( t instanceof JavaConfig )
                 {
-                    result = handle(oldProps, njc.getJvmOptions());
-                    oldProps = new ArrayList<String>(((JavaConfig)t).getJvmOptions()); //defensive copy, required step
+                    JavaConfig njc = (JavaConfig) t; //this must not throw ClassCastException
+                    logFine(type, njc);
+                    
+                    if ( oldProps.size() == njc.getJvmOptions().size() )
+                    {
+                        // the JavaConfig itself has changed 
+                        result = new NotProcessed("A java-config attribute was changed, restart required");
+                    }
+                    else
+                    {
+                        result = handle(oldProps, njc.getJvmOptions());
+                        oldProps = new ArrayList<String>(((JavaConfig)t).getJvmOptions()); //defensive copy, required step
+                    }
                 }
+                else {
+                    throw new IllegalArgumentException( "Unknown interface: " + tc.getName() );
+                }
+
                 return result;
             }
         }
