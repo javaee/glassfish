@@ -39,6 +39,7 @@ import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
+import com.sun.enterprise.util.net.URLPattern;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
@@ -167,7 +168,7 @@ public class WebServletHandler extends AbstractWebHandler {
             if (urlPatterns != null && urlPatterns.length > 0) {
                 validUrlPatterns = true;
                 for (String up : urlPatterns) {
-                    if (up == null || up.length() == 0) {
+                    if (!URLPattern.isValid(up)) {
                         validUrlPatterns = false;
                         break;
                     }
