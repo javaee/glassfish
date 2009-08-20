@@ -106,6 +106,7 @@ public class SynchronizationImpl extends SynchronizationPOA
                 }
 		_logger.log(Level.WARNING,
 		    "jts.unexpected_error_occurred_in_after_completion",rex);
+                throw rex;
             } catch (Exception ex) {
 				_logger.log(Level.WARNING,
 						"jts.unexpected_error_occurred_in_after_completion",ex);
@@ -125,6 +126,7 @@ public class SynchronizationImpl extends SynchronizationPOA
                 }
 		_logger.log(Level.WARNING,
 		    "jts.unexpected_error_occurred_in_after_completion",rex);
+                throw rex;
             } catch (Exception ex) {
 				_logger.log(Level.WARNING,
 						"jts.unexpected_error_occurred_in_after_completion",ex);

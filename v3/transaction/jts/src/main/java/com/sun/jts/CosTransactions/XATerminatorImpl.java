@@ -177,7 +177,7 @@ public class XATerminatorImpl implements XATerminator {
             } else {
                 Thread thread = RecoveryManager.removeFromTxMap(tid);
                 if (thread == null || (thread != Thread.currentThread())) { // error
-                    if (!exceptionFlag) {
+                    if (!exceptionFlag) { // no exception yet
                         throw new XAException(XAException.XAER_RMERR);
                     }
                 }     

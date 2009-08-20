@@ -39,6 +39,7 @@ package com.sun.ejb.containers;
 import java.util.*;
 
 import javax.transaction.*;
+import javax.ejb.EJBException;
 
 import java.util.logging.*;
 import com.sun.logging.*;
@@ -147,16 +148,13 @@ final class ContainerSynchronization implements Synchronization
                     _logger.log(Level.FINE, "context with empty container in " +
                                 " ContainerSynchronization.beforeCompletion");
                 }
+            } catch ( RuntimeException ex ) {
+                logAndRollbackTransaction(ex);
+                throw ex;
             } catch ( Exception ex ) {
-                // rollback the Tx. The client will get
-                // a EJB/RemoteException or a TransactionRolledbackException.
-                _logger.log(Level.SEVERE,"ejb.remote_or_txnrollback_exception",ex);
-                try {
-                    tx.setRollbackOnly();
-                } catch ( SystemException e ) {
-                    _logger.log(Level.FINE, "", ex);
-                }
-                return; // no need to call remaining beforeCompletions
+                logAndRollbackTransaction(ex);
+                // no need to call remaining beforeCompletions
+                throw new EJBException("Error during beforeCompletion.", ex);
             }
         }
 
@@ -165,17 +163,26 @@ final class ContainerSynchronization implements Synchronization
             Synchronization sync = (Synchronization)pmSyncs.elementAt(i);
             try {
                 sync.beforeCompletion();
+            } catch ( RuntimeException ex ) {
+                logAndRollbackTransaction(ex);
+                throw ex;
             } catch ( Exception ex ) {
-                // rollback the Tx. The client will get
-                // a EJB/RemoteException or a TransactionRolledbackException.
-                _logger.log(Level.SEVERE,"ejb.remote_or_txnrollback_exception",ex);
-                try {
-                    tx.setRollbackOnly();
-                } catch ( SystemException e ) {
-                    _logger.log(Level.FINE, "", ex);
-                }
-                return; // no need to call remaining beforeCompletions
+                logAndRollbackTransaction(ex);
+                // no need to call remaining beforeCompletions
+                throw new EJBException("Error during beforeCompletion.", ex);
             }
+        }
+    }
+
+    private void logAndRollbackTransaction(Exception ex)
+    {
+        // rollback the Tx. The client will get
+        // a EJB/RemoteException or a TransactionRolledbackException.
+        _logger.log(Level.SEVERE,"ejb.remote_or_txnrollback_exception",ex);
+        try {
+            tx.setRollbackOnly();
+        } catch ( SystemException e ) {
+            _logger.log(Level.FINE, "", ex);
         }
     }
 

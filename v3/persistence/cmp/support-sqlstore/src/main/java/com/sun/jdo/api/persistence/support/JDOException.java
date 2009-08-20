@@ -83,7 +83,7 @@ public class JDOException extends java.lang.RuntimeException {
    * @param nested the nested <code>Exception</code>.
    */
   public JDOException(String msg, Exception nested) {
-    super(msg);
+    super(msg, nested);
     this.nested = nested;
   }
 
@@ -104,7 +104,7 @@ public class JDOException extends java.lang.RuntimeException {
    * @param failed the failed object array.
    */
   public JDOException(String msg, Exception nested, Object[] failed) {
-    super(msg);
+    super(msg, nested);
     this.nested = nested;
     this.failed = failed;
   }

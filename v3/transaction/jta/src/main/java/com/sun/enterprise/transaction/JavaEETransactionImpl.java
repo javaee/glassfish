@@ -386,6 +386,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
             }
 
         } else { // local tx
+            Exception caughtException = null;
             try {
                 if ( isTimedOut ) {
                     // rollback nonXA resource
@@ -412,8 +413,11 @@ public final class JavaEETransactionImpl extends TimerTask implements
                     } catch ( RuntimeException ex ) { 
                         _logger.log(Level.WARNING, "enterprise_distributedtx.before_completion_excep", ex);
                         setRollbackOnly();
+                        caughtException = ex;
+                        break;
                     } catch (Exception ex) { 
                         _logger.log(Level.WARNING, "enterprise_distributedtx.before_completion_excep", ex);
+                        // XXX-V2 no setRollbackOnly() ???
                     } 
 
                 }
@@ -425,8 +429,11 @@ public final class JavaEETransactionImpl extends TimerTask implements
                     } catch ( RuntimeException ex ) {
                         _logger.log(Level.WARNING, "enterprise_distributedtx.before_completion_excep", ex);
                         setRollbackOnly();  
+                        caughtException = ex;
+                        break;
                     } catch (Exception ex) { 
                         _logger.log(Level.WARNING, "enterprise_distributedtx.before_completion_excep", ex);
+                        // XXX-V2 no setRollbackOnly() ???
                     }
 
                 }
@@ -435,19 +442,25 @@ public final class JavaEETransactionImpl extends TimerTask implements
                 // calls marked it for rollback.
                 if ( isRollbackOnly()) {
                     //Check if it is a Local Transaction
+                    RollbackException rbe = null;
                     if(jtsTx == null) {
                         if ( nonXAResource != null )
                             nonXAResource.getXAResource().rollback(xid);
                         localTxStatus = Status.STATUS_ROLLEDBACK;
-                        throw new RollbackException(sm.getString("enterprise_distributedtx.mark_rollback"));
+                        rbe = new RollbackException(sm.getString("enterprise_distributedtx.mark_rollback"));
 
                     // else it is a global transaction
                     } else {
                         jtsTx.rollback();
                         localTxStatus = Status.STATUS_ROLLEDBACK;
-                        throw new RollbackException(sm.getString("enterprise_distributedtx.mark_rollback"));
+                        rbe = new RollbackException(sm.getString("enterprise_distributedtx.mark_rollback"));
                     }
 
+                    // RollbackException doesn't have a constructor that takes a Throwable.
+                    if (caughtException != null) {
+                        rbe.initCause(caughtException);
+                    }
+                    throw rbe;
                 }
 
                 // check if there is a jtsTx active, in case any of the
