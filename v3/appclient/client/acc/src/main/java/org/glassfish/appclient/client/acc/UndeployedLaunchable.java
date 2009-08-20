@@ -52,6 +52,8 @@ import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.IOException;
 import java.net.URI;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.component.Habitat;
 import org.xml.sax.SAXParseException;
@@ -181,22 +183,25 @@ public class UndeployedLaunchable implements Launchable {
 
     private UndeployedLaunchable(final Habitat habitat,
             final ReadableArchive clientRA,
-            final ApplicationClientDescriptor acd,
-            final String callerSuppliedMainClass) {
+            final String callerSuppliedMainClass) throws IOException, SAXParseException {
+        this.habitat = habitat;
         this.callerSuppliedMainClassName = callerSuppliedMainClass;
         this.clientRA = clientRA;
+    }
+    private UndeployedLaunchable(final Habitat habitat,
+            final ReadableArchive clientRA,
+            final ApplicationClientDescriptor acd,
+            final String callerSuppliedMainClass) throws IOException, SAXParseException {
+        this(habitat, clientRA, callerSuppliedMainClass);
         this.acDesc = acd;
-        this.habitat = habitat;
     }
 
     private UndeployedLaunchable(final Habitat habitat,
             final ReadableArchive clientRA,
             final AppClientArchivist archivist,
             final String callerSuppliedMainClass) throws IOException, SAXParseException {
-        this.clientRA = clientRA;
+        this(habitat, clientRA, callerSuppliedMainClass);
         this.archivist = completeInit(archivist);
-        this.callerSuppliedMainClassName = callerSuppliedMainClass;
-        this.habitat = habitat;
     }
 
     public Class getMainClass() throws ClassNotFoundException {
@@ -217,14 +222,22 @@ public class UndeployedLaunchable implements Launchable {
 
     private String mainClassNameToLaunch() throws IOException, SAXParseException {
         return (callerSuppliedMainClassName != null ? callerSuppliedMainClassName :
-            getDescriptor(getClassLoader()).getMainClassName());
+            extractMainClassFromArchive(clientRA));
+    }
+
+    private String extractMainClassFromArchive(final ReadableArchive clientRA) throws IOException  {
+        final Manifest mf = clientRA.getManifest();
+        if (mf == null) {
+            return null;
+        }
+        return mf.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
     }
 
     public ApplicationClientDescriptor getDescriptor(ClassLoader loader) throws IOException, SAXParseException {
         this.classLoader = loader;
         if (acDesc == null) {
-            final AppClientArchivist archivist = getArchivist(loader);
-            acDesc = archivist.open(clientRA);
+            final AppClientArchivist _archivist = getArchivist(loader);
+            acDesc = _archivist.open(clientRA);
             Application.createApplication(habitat, null, acDesc.getModuleDescriptor());
             acDesc.getApplication().setAppName(getDefaultApplicationName(clientRA));
         }

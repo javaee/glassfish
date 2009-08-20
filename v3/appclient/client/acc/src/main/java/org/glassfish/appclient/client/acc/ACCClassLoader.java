@@ -63,7 +63,7 @@ public class ACCClassLoader extends URLClassLoader {
     private ACCClassLoader shadow = null;
 
     private boolean shouldTransform = false;
-
+    
     private final List<ClassFileTransformer> transformers =
             Collections.synchronizedList(
                 new ArrayList<ClassFileTransformer>());
@@ -80,12 +80,12 @@ public class ACCClassLoader extends URLClassLoader {
     public static ACCClassLoader instance() {
         return instance;
     }
-    
+
     public ACCClassLoader(ClassLoader parent, final boolean shouldTransform) {
         super(new URL[0], parent);
         this.shouldTransform = shouldTransform;
     }
-
+    
     public ACCClassLoader(URL[] urls) {
         super(urls);
     }
@@ -112,7 +112,7 @@ public class ACCClassLoader extends URLClassLoader {
     synchronized ACCClassLoader shadow() {
         if (shadow == null) {
             shadow = new ACCClassLoader( getURLs(), getParent());
-        }
+            }
         return shadow;
     }
 
@@ -123,6 +123,11 @@ public class ACCClassLoader extends URLClassLoader {
         }
         final ACCClassLoader s = shadow();
         final Class<?> c = s.findClassUnshadowed(name);
+        return copyClass(c);
+    }
+
+    private Class<?> copyClass(final Class c) throws ClassNotFoundException {
+        final String name = c.getName();
         final ProtectionDomain pd = c.getProtectionDomain();
         byte[] bytecode = readByteCode(name);
 

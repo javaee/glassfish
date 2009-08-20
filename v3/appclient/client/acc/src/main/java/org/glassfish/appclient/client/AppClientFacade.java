@@ -204,8 +204,7 @@ public class AppClientFacade {
          * Handle the legacy env. variable APPCPATH.
          */
         ACCClassLoader loader = initClassLoader(
-                System.getenv("APPCPATH"), (inst == null));
-//            ACCModulesManager.initialize(loader);
+                (inst == null));
         Thread.currentThread().setContextClassLoader(loader);
 
         isJWS = Boolean.getBoolean("appclient.is.jws");
@@ -326,17 +325,11 @@ public class AppClientFacade {
         return result;
     }
 
-    private static ACCClassLoader initClassLoader(final String appcPath,
+    private static ACCClassLoader initClassLoader(
             final boolean loaderShouldTransform) throws MalformedURLException {
         ACCClassLoader newLoader = ACCClassLoader.newInstance(
                 Thread.currentThread().getContextClassLoader(),
                 loaderShouldTransform);
-        if (appcPath != null) {
-            for (String elt : appcPath.split(File.pathSeparator)) {
-                File f = new File(elt);
-                newLoader.appendURL(f.toURI().toURL());
-            }
-        }
         return newLoader;
     }
 

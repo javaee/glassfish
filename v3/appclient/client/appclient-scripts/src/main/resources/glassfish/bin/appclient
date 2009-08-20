@@ -103,6 +103,9 @@ builtinEndorsedDirsValue=$AS_INSTALL/lib/endorsed:$AS_INSTALL_MOD/endorsed
 userEndorsedDirsSetting=
 
 jvmArgs=-Djava.system.class.loader=org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader
+if [ "$APPCPATH" != "" ]; then
+    jvmArgs=$jvmArgs\ -Xbootclasspath/a:$APPCPATH
+fi
 if [ "$VMARGS" != "" ]; then
     jvmArgs=$jvmArgs\ $VMARGS
 fi
