@@ -149,7 +149,7 @@ public class PendingConfigBeans implements CageBuilder, PostConstruct, Transacti
 
     public PendingConfigBeanJob add(final ConfigBean cb, final CountDownLatch latch)
     {
-        //debug( "ADD: " + cb.getProxyType().getName() );
+        //debug( "PendingConfigBeans.add():  " + cb.getProxyType().getName() );
         return addJob(new PendingConfigBeanJob(cb, latch));
     }
 
