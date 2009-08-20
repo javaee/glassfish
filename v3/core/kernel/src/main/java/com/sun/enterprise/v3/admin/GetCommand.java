@@ -59,6 +59,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.glassfish.external.statistics.Statistic;
+import org.glassfish.external.statistics.Stats;
 import org.glassfish.external.statistics.impl.StatisticImpl;
 
 /**
@@ -177,12 +178,8 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         TreeMap map = new TreeMap();
         List<org.glassfish.flashlight.datatree.TreeNode> ltn = tn.getNodes(pattern);
         for (org.glassfish.flashlight.datatree.TreeNode tn1 : sortTreeNodesByCompletePathName(ltn)) {
-//            if ((! tn1.hasChildNodes()) &&
-//                    ((tn1 instanceof Statistic) || (tn1 instanceof MethodInvoker))) {
-                //Counter c = (Counter)tn1;
             if (!tn1.hasChildNodes()) {
                 insertNameValuePairs(map, tn1);
-                //map.put(tn1.getCompletePathName(), tn1.getValue());
             }
         }
         Iterator it = map.keySet().iterator();
@@ -198,7 +195,18 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
     private void insertNameValuePairs(TreeMap map, org.glassfish.flashlight.datatree.TreeNode tn1){
         String name = tn1.getCompletePathName();
         Object value = tn1.getValue();
-        if (value instanceof Statistic) {
+        if (value instanceof Stats) {
+            for (Statistic s: ((Stats)value).getStatistics()) {
+                addStatisticInfo(s, name+"."+s.getName(), map);
+            }
+        } else if (value instanceof Statistic) {
+            addStatisticInfo(value, name, map);
+        } else {
+            map.put(name, value);
+        }
+    }
+
+    private void addStatisticInfo(Object value, String name, TreeMap map) {
             Map<String,Object> statsMap;
             // Most likely we will get the proxy of the StatisticImpl,
             // reconvert that so you can access getStatisticAsMap method
@@ -211,8 +219,5 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
                 Object attrValue = statsMap.get(attrName);
                 map.put(name + "-" + attrName, attrValue);
             }
-        } else {
-            map.put(name, value);
-        }
     }
 }
