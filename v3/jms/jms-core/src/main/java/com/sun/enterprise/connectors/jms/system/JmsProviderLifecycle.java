@@ -38,11 +38,16 @@
 package com.sun.enterprise.connectors.jms.system;
 
 import org.glassfish.api.Startup;
+import org.glassfish.api.monitoring.MonitoringItem;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.jms.admin.monitor.config.JmsServiceMI;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 
@@ -52,7 +57,9 @@ import com.sun.logging.LogDomains;
 import com.sun.hk2.component.Holder;
 import com.sun.enterprise.config.serverbeans.JmsHost;
 import com.sun.enterprise.config.serverbeans.JmsService;
+import com.sun.enterprise.config.serverbeans.MonitoringService;
 
+import java.beans.PropertyVetoException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
@@ -64,10 +71,14 @@ public class JmsProviderLifecycle implements Startup, PostConstruct{
     public static final String EMBEDDED="EMBEDDED";
     public static final String LOCAL="LOCAL";
     public static final String REMOTE="REMOTE";
-    //static Logger logger = LogDomains.getLogger(JmsProviderLifecycle.class, LogDomains.RSR_LOGGER);
+    public static final String JMS_SERVICE = "jms-service";
+    static Logger logger = LogDomains.getLogger(JmsProviderLifecycle.class, LogDomains.RSR_LOGGER);
 
     @Inject
     Habitat habitat;
+
+    @Inject
+    MonitoringService monitoringService;
 
    public Lifecycle getLifecycle() {
         return Lifecycle.SERVER;
@@ -87,6 +98,8 @@ public class JmsProviderLifecycle implements Startup, PostConstruct{
                    e.printStackTrace();
                }
        }
+
+       createMonitoringConfig();
 
     }
 
@@ -118,5 +131,38 @@ public class JmsProviderLifecycle implements Startup, PostConstruct{
         private JmsService getJmsService(){
             return habitat.getComponent(JmsService.class);
         }
+    
+    /**
+     * Creates jms-service config element for monitoring.
+     *
+     * Check if the jms-service monitoring config has been created.
+     * If it has not, then add it.
+     */
+    private void createMonitoringConfig() {
+        List<MonitoringItem> itemList = monitoringService.getMonitoringItems();
+        boolean hasMonitorConfig = false;
+        for (MonitoringItem mi : itemList) {
+            if (mi.getName().equals(JMS_SERVICE)) {
+                hasMonitorConfig = true;
+            }
+        }
 
+        try {
+            if (!hasMonitorConfig) {
+                ConfigSupport.apply(new SingleConfigCode<MonitoringService>() {
+
+                    public Object run(MonitoringService param) throws PropertyVetoException, TransactionFailure {
+
+                        MonitoringItem newItem = param.createChild(JmsServiceMI.class);
+                        newItem.setName(JMS_SERVICE);
+                        newItem.setLevel(MonitoringItem.LEVEL_OFF);
+                        param.getMonitoringItems().add(newItem);
+                        return newItem;
+                    }
+                }, monitoringService);
+            }
+        } catch (TransactionFailure tfe) {
+            logger.log(Level.SEVERE, "Exception adding jms-service MonitoringItem", tfe);
+        }
+    }
 }
