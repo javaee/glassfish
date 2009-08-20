@@ -126,6 +126,9 @@ public class TokenResolver {
      */
     public String resolve(String s)
     {
+        if(s == null || s.length() <= 0)
+            return s;
+        
         if (hasWindowsToken(s)) {
             s = windowsToUnixTokens(s);
         }
