@@ -94,13 +94,12 @@ public class StartDomainCommand extends LocalDomainCommand {
         String gfejar = System.getenv("GFE_JAR");
 
         if (gfejar != null && gfejar.length() > 0)
-            runCommandEmbedded();
+            return runCommandEmbedded();
         else
-            runCommandNotEmbedded();
-        return 0;
+            return runCommandNotEmbedded();
     }
 
-    private void runCommandNotEmbedded() throws CommandException {
+    private int runCommandNotEmbedded() throws CommandException {
         try {
             GFLauncher launcher = GFLauncherFactory.getInstance(
                     GFLauncherFactory.ServerType.domain);
@@ -131,7 +130,7 @@ public class StartDomainCommand extends LocalDomainCommand {
                 if (!NetUtils.isPortFree(port)) {
                     String msg = strings.get("ServerRunning", port.toString());
                     logger.printWarning(msg);
-                    return;
+                    return ERROR;
                 }
             }
 
@@ -157,6 +156,7 @@ public class StartDomainCommand extends LocalDomainCommand {
                 waitForDAS(info.getAdminPorts());
                 report(info);
             }
+            return SUCCESS;
         } catch (GFLauncherException gfle) {
             throw new CommandException(gfle.getMessage());
         } catch (MiniXmlParserException me) {
@@ -205,7 +205,7 @@ public class StartDomainCommand extends LocalDomainCommand {
 
 
 
-    private void runCommandEmbedded() throws CommandException {
+    private int runCommandEmbedded() throws CommandException {
         try {
             GFLauncher launcher;
 
@@ -253,6 +253,7 @@ public class StartDomainCommand extends LocalDomainCommand {
                 waitForDAS(ports);
                 report(info);
             //}
+            return SUCCESS;
         } catch (GFLauncherException gfle) {
             throw new CommandException(gfle.getMessage());
         } catch (MiniXmlParserException me) {
