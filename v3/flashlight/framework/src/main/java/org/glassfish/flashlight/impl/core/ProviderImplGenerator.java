@@ -152,6 +152,7 @@ public class ProviderImplGenerator {
             // the path is horribly long.  Let's just write t directly into the
             // lib dir.  It is not for loading as a class but just for us humans
             // to decompile to figure out what is going on.  No need to make it even harder!
+            clsName = clsName.replace('.', '/');
             clsName = clsName.replace('\\', '/'); // just in case Windows?  unlikely...
             index = clsName.lastIndexOf("/");
 
@@ -214,3 +215,96 @@ public class ProviderImplGenerator {
         mg.returnValue();
     }
 }
+/*************
+ *
+ * Example of generated file
+ *
+ * package org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider_core_Flashlight_threadpool_Probe_org.glassfish.kernel.admin.monitor;
+
+import org.glassfish.flashlight.provider.FlashlightProbe;
+import org.glassfish.flashlight.provider.ProbeRegistry;
+
+public final class ThreadPoolProbeProvider
+  implements org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider
+{
+  public FlashlightProbe _flashlight_threadReturnedToPoolEvent;
+  public FlashlightProbe _flashlight_threadDispatchedFromPoolEvent;
+  public FlashlightProbe _flashlight_newThreadsAllocatedEvent;
+  public FlashlightProbe _flashlight_maxNumberOfThreadsReachedEvent;
+
+  public void threadReturnedToPoolEvent(String paramString1, String paramString2)
+  {
+    FlashlightProbe localFlashlightProbe = this._flashlight_threadReturnedToPoolEvent;
+    if (localFlashlightProbe.isEnabled() != true)
+      return;
+    localFlashlightProbe.fireProbe(new Object[] { paramString1, paramString2 });
+  }
+
+  public void threadDispatchedFromPoolEvent(String paramString1, String paramString2)
+  {
+    FlashlightProbe localFlashlightProbe = this._flashlight_threadDispatchedFromPoolEvent;
+    if (localFlashlightProbe.isEnabled() != true)
+      return;
+    localFlashlightProbe.fireProbe(new Object[] { paramString1, paramString2 });
+  }
+
+  public void newThreadsAllocatedEvent(String paramString, int paramInt, boolean paramBoolean)
+  {
+    FlashlightProbe localFlashlightProbe = this._flashlight_newThreadsAllocatedEvent;
+    if (localFlashlightProbe.isEnabled() != true)
+      return;
+    localFlashlightProbe.fireProbe(new Object[] { paramString, new Integer(paramInt), new Boolean(paramBoolean) });
+  }
+
+  public void maxNumberOfThreadsReachedEvent(String paramString, int paramInt)
+  {
+    FlashlightProbe localFlashlightProbe = this._flashlight_maxNumberOfThreadsReachedEvent;
+    if (localFlashlightProbe.isEnabled() != true)
+      return;
+    localFlashlightProbe.fireProbe(new Object[] { paramString, new Integer(paramInt) });
+  }
+
+  public ThreadPoolProbeProvider()
+  {
+    ThreadPoolProbeProvider tmp5_4 = this;
+    tmp5_4._flashlight_threadReturnedToPoolEvent = ProbeRegistry.getProbeById(4);
+    ThreadPoolProbeProvider tmp13_5 = tmp5_4;
+    tmp13_5._flashlight_threadDispatchedFromPoolEvent = ProbeRegistry.getProbeById(3);
+    ThreadPoolProbeProvider tmp21_13 = tmp13_5;
+    tmp21_13._flashlight_newThreadsAllocatedEvent = ProbeRegistry.getProbeById(1);
+    ThreadPoolProbeProvider tmp29_21 = tmp21_13;
+    tmp29_21._flashlight_maxNumberOfThreadsReachedEvent = ProbeRegistry.getProbeById(2);
+    tmp29_21;
+  }
+}
+ ***********************************************************************
+ * Another example
+ * package com.sun.enterprise.v3.admin.ListContractsProbeProvider_admin-commands_Flashlight_glassfish_Probe_com.sun.enterprise.v3.admin;
+
+import org.glassfish.flashlight.provider.FlashlightProbe;
+import org.glassfish.flashlight.provider.ProbeRegistry;
+
+public final class ListContractsProbeProvider
+  implements com.sun.enterprise.v3.admin.ListContractsProbeProvider
+{
+  public FlashlightProbe _flashlight_listContractsEvent;
+
+  public void listContractsEvent(String paramString, boolean paramBoolean)
+  {
+    FlashlightProbe localFlashlightProbe = this._flashlight_listContractsEvent;
+    if (localFlashlightProbe.isEnabled() != true)
+      return;
+    localFlashlightProbe.fireProbe(new Object[] { paramString, new Boolean(paramBoolean) });
+  }
+
+  public ListContractsProbeProvider()
+  {
+    ListContractsProbeProvider tmp5_4 = this;
+    tmp5_4._flashlight_listContractsEvent = ProbeRegistry.getProbeById(113);
+    tmp5_4;
+  }
+}
+
+ */
+
+

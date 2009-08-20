@@ -26,26 +26,29 @@ import org.glassfish.flashlight.provider.FlashlightProbe;
  *
  * TODO:I believe we should disallow such overloads when the DTrace object is being produced rather than
  * worrying about it in this class.
- * 
- * TODO: float and double are handled OK???
  *
  * @author bnevins
  */
+
 public class DTraceClientInvoker implements ProbeClientInvoker{
     public DTraceClientInvoker(int ID, FlashlightProbe p) {
-        probe = p;
-        id = ID;
+        id          = ID;
+        method      = p.getDTraceMethod();
+        targetObj   = p.getDTraceProviderImpl();
     }
 
     public void invoke(Object[] args) {
-        if(FlashlightUtils.isDtraceEnabled()) {
+        // PERFORMANCE-ONLY change
+        // do not check if dtrace is enabled.  We would not be called if DTrace 
+        // was *not* enabled when the server started.
+        //if(FlashlightUtils.isDtraceEnabled()) {
             try {
-                probe.getDTraceMethod().invoke(probe.getDTraceProviderImpl(), fixArgs(args));
+                method.invoke(targetObj, fixArgs(args));
             }
             catch(Exception e) {
                 Logger.getAnonymousLogger().warning(e.getMessage());
             }
-        }
+        //}
     }
 
     public int getId() {
@@ -77,7 +80,8 @@ public class DTraceClientInvoker implements ProbeClientInvoker{
         return fixedArgs;
     }
 
-    private final   FlashlightProbe probe;
     private final   int             id;
+    private final   Method          method;
+    private final   Object          targetObj;
 }
 
