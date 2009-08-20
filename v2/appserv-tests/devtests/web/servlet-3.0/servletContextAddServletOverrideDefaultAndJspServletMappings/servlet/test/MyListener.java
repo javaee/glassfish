@@ -53,8 +53,13 @@ public class MyListener implements ServletContextListener {
             "test.NewServlet");
         Set<String> conflicts = sr.addMapping("/");
         if (conflicts != null && !conflicts.isEmpty()) {
-            throw new RuntimeException("Unable to override servlet mapping " +
+            throw new RuntimeException("Unable to add servlet mapping " +
                 "for '/'");
+        }
+        conflicts = sr.addMapping("*.jsp", "*.jspx");
+        if (conflicts != null && !conflicts.isEmpty()) {
+            throw new RuntimeException("Unable to add servlet mapping " +
+                "for '*.jsp' or '*.jspx'");
         }
     }
 

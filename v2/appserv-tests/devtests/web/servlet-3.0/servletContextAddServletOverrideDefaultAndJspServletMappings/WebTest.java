@@ -40,10 +40,12 @@ import com.sun.ejte.ccl.reporter.*;
 /*
  * Unit test for https://glassfish.dev.java.net/issues/show_bug.cgi?id=9181
  * ("Impossible for Servlets added via ServletContext#addServlet to override
- * the mappings of the container's Default- or JspServlet"):
+ * the mappings of the container's Default- and JspServlet"):
  *
  * Make sure that Servlet added via ServletContext#addServlet may be mapped
- * to "/", which is the URL pattern mapped to the container's DefaultServlet.
+ * to '/', which is the URL pattern mapped to the container's DefaultServlet,
+ * and "*.jsp(x)", which is the URL pattern mapped to the container's
+ * JspServlet.
  */
 public class WebTest {
 
@@ -71,7 +73,9 @@ public class WebTest {
         WebTest webTest = new WebTest(args);
 
         try {
-            webTest.doTest();
+            webTest.doTest("/");
+            webTest.doTest("/abc.jsp");
+            webTest.doTest("/abc.jspx");
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -81,8 +85,8 @@ public class WebTest {
 	stat.printSummary();
     }
 
-    public void doTest() throws Exception {
-        URL url = new URL("http://" + host  + ":" + port + contextRoot + "/");
+    public void doTest(String path) throws Exception {
+        URL url = new URL("http://" + host  + ":" + port + contextRoot + path);
         System.out.println("Connecting to: " + url.toString());
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
