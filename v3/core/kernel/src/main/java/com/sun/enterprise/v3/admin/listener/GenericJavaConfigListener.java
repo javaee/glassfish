@@ -90,7 +90,7 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
                 return result;
             }
         }
-        , null);
+        , logger);
          return unp;
     }
     
