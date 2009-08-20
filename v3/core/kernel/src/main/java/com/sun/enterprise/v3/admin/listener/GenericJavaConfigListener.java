@@ -7,6 +7,8 @@ package com.sun.enterprise.v3.admin.listener;
 
 import com.sun.enterprise.config.serverbeans.JavaConfig;
 import com.sun.enterprise.config.serverbeans.Profiler;
+import org.glassfish.api.admin.config.Property;
+
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +81,10 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
                 if ( t instanceof Profiler )
                 {
                     result = new NotProcessed("Creation or changes to a profiler require restart");
+                }
+                else if ( t instanceof Property )
+                {
+                    result = new NotProcessed("Addition of properties to JavaConfig requires restart");
                 }
                 else if ( t instanceof JavaConfig )
                 {
