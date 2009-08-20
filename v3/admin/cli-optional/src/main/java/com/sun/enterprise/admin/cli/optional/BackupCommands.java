@@ -137,6 +137,7 @@ public final class BackupCommands extends LocalDomainCommand {
             programOpts.setEcho(getBooleanOption("echo"));
         if (options.containsKey("terse"))
             programOpts.setTerse(getBooleanOption("terse"));
+        initializeLogger();     // in case program options changed
     }
  
     /**

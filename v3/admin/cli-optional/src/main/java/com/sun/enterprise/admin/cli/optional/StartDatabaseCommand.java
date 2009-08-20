@@ -102,6 +102,7 @@ public final class StartDatabaseCommand extends DatabaseCommand {
             programOpts.setEcho(getBooleanOption("echo"));
         if (options.containsKey("terse"))
             programOpts.setTerse(getBooleanOption("terse"));
+        initializeLogger();     // in case program options changed
     }
 
     /**
