@@ -53,6 +53,9 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.internal.data.ApplicationInfo;
 import javax.security.jacc.PolicyConfigurationFactory;
 import javax.security.jacc.PolicyContextException;
+import org.glassfish.api.invocation.ComponentInvocation.ComponentInvocationType;
+import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.api.invocation.RegisteredComponentInvocationHandler;
 
 
 /**
@@ -74,6 +77,9 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     
     @Inject 
     private WebSecurityManagerFactory wsmf;
+    
+    @Inject
+    private InvocationManager invManager;
     
     private EventListener listener = null;
     
@@ -224,6 +230,11 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         if (params.origin != OpsParams.Origin.deploy) {
             return;
         }
+        //Register the WebSecurityComponentInvocationHandler
+        
+        RegisteredComponentInvocationHandler handler = habitat.getComponent(RegisteredComponentInvocationHandler.class,"webSecurityCIH");
+        handler.register();
+        
         String appName = params.name();
         
         //Monitoring - calling probes

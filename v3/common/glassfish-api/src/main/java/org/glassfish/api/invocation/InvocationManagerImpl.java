@@ -40,6 +40,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Collection;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import org.glassfish.api.invocation.ComponentInvocation.ComponentInvocationType;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -60,6 +64,10 @@ public class InvocationManagerImpl
     // the stack of invocations on this thread. Accesses to the ArrayList
     // dont need to be synchronized because each thread has its own ArrayList.
     private InheritableThreadLocal<InvocationArray<ComponentInvocation>> frames;
+    
+    private Map<ComponentInvocationType,Set<RegisteredComponentInvocationHandler>>  regCompInvHandlerMap
+            = new HashMap<ComponentInvocationType, Set<RegisteredComponentInvocationHandler>>();
+
 
     @Inject
     Habitat habitat;
@@ -139,6 +147,15 @@ public class InvocationManagerImpl
                 handler.beforePreInvoke(invType, prevInv, inv);
             }
         }
+        
+       
+        Set<RegisteredComponentInvocationHandler> setCIH = regCompInvHandlerMap.get(invType);
+        if (setCIH != null) {
+            for (RegisteredComponentInvocationHandler handler : setCIH) {
+                handler.getComponentInvocationHandler().beforePreInvoke(invType, prevInv, inv);
+            }
+        }
+  
 
         //push this invocation on the stack
         v.add(inv);
@@ -146,6 +163,12 @@ public class InvocationManagerImpl
         if (handlers!=null) {
             for (ComponentInvocationHandler handler : handlers) {
                 handler.afterPreInvoke(invType, prevInv, inv);
+            }
+        }
+        
+        if (setCIH != null) {
+            for (RegisteredComponentInvocationHandler handler : setCIH) {
+                handler.getComponentInvocationHandler().afterPreInvoke(invType, prevInv, inv);
             }
         }
 
@@ -183,6 +206,17 @@ public class InvocationManagerImpl
                     handler.beforePostInvoke(invType, prevInv, curInv);
                 }
             }
+            
+            
+
+            Set<RegisteredComponentInvocationHandler> setCIH = regCompInvHandlerMap.get(invType);
+            if (setCIH != null) {
+                for (RegisteredComponentInvocationHandler handler : setCIH) {
+                    handler.getComponentInvocationHandler().beforePostInvoke(invType, prevInv, curInv);
+                }
+            }
+              
+            
 
         } finally {
             // pop the stack
@@ -193,6 +227,16 @@ public class InvocationManagerImpl
                     handler.afterPostInvoke(inv.getInvocationType(), prevInv, inv);
                 }
             }
+            ComponentInvocationType invType = inv.getInvocationType();
+            
+
+            Set<RegisteredComponentInvocationHandler> setCIH = regCompInvHandlerMap.get(invType);
+            if (setCIH != null) {
+                for (RegisteredComponentInvocationHandler handler : setCIH) {
+                    handler.getComponentInvocationHandler().afterPostInvoke(invType, prevInv, curInv);
+                }
+            }
+
         }
 
     }
@@ -251,6 +295,16 @@ public class InvocationManagerImpl
             return getInvocationAttribute()
                     != ComponentInvocationType.SERVICE_STARTUP;
         }
+    }
+
+    public void registerComponentInvocationHandler(ComponentInvocationType type, RegisteredComponentInvocationHandler handler) {
+        Set<RegisteredComponentInvocationHandler> setRegCompInvHandlers = regCompInvHandlerMap.get(type);
+        if (setRegCompInvHandlers == null) {
+            setRegCompInvHandlers = new HashSet<RegisteredComponentInvocationHandler>();
+        }
+        setRegCompInvHandlers.add(handler);
+        regCompInvHandlerMap.put(type, setRegCompInvHandlers);
+  
     }
 }
 

@@ -23,6 +23,7 @@
 package org.glassfish.api.invocation;
 
 
+import org.glassfish.api.invocation.ComponentInvocation.ComponentInvocationType;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -73,5 +74,11 @@ public interface InvocationManager {
     public boolean isInvocationStackEmpty();
 
     public java.util.List<? extends ComponentInvocation> getAllInvocations();
+   
+
+    public void registerComponentInvocationHandler(ComponentInvocationType type, 
+            RegisteredComponentInvocationHandler handler);
+    
+
 
 }

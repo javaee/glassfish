@@ -42,54 +42,74 @@ import java.util.logging.Logger;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.ComponentInvocation.ComponentInvocationType;
 import org.glassfish.api.invocation.ComponentInvocationHandler;
+import org.glassfish.api.invocation.RegisteredComponentInvocationHandler;
 import org.glassfish.api.invocation.InvocationException;
+import org.glassfish.api.invocation.InvocationManager;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 
-@Service
+@Service(name="ejbSecurityCIH")
 @Scoped(Singleton.class)
-public class EjbSecurityComponentInvocationHandler implements ComponentInvocationHandler {
+public class EjbSecurityComponentInvocationHandler implements  RegisteredComponentInvocationHandler {
 
     private static Logger _logger = null;
+    
+    @Inject
+    private InvocationManager invManager;
     
 
     static {
         _logger = LogDomains.getLogger(EJBSecurityManager.class, LogDomains.EJB_LOGGER);
     }
+    
+    private ComponentInvocationHandler ejbSecurityCompInvHandler = new ComponentInvocationHandler() {
 
-    public void beforePreInvoke(ComponentInvocationType invType,
-            ComponentInvocation prevInv, ComponentInvocation newInv) throws InvocationException {
-        if (invType == ComponentInvocationType.EJB_INVOCATION) {
-            try {
-                if (!newInv.isPreInvokeDone()) {
-                    ((EjbInvocation) newInv).getEjbSecurityManager().preInvoke(newInv);
+        public void beforePreInvoke(ComponentInvocationType invType,
+                ComponentInvocation prevInv, ComponentInvocation newInv) throws InvocationException {
+            if (invType == ComponentInvocationType.EJB_INVOCATION) {
+                try {
+                    if (!newInv.isPreInvokeDone()) {
+                        ((EjbInvocation) newInv).getEjbSecurityManager().preInvoke(newInv);
+                    }
+                } catch (Exception ex) {
+                    _logger.log(Level.SEVERE, "ejb.preinvoke_exception", ex);
+                    throw new InvocationException(ex);
                 }
-            } catch (Exception ex) {
-                _logger.log(Level.SEVERE, "ejb.preinvoke_exception", ex);
-                throw new InvocationException(ex);
             }
         }
-    }
 
-    public void afterPreInvoke(ComponentInvocationType invType,
-            ComponentInvocation prevInv, ComponentInvocation curInv) throws InvocationException {
-    }
+        public void afterPreInvoke(ComponentInvocationType invType,
+                ComponentInvocation prevInv, ComponentInvocation curInv) throws InvocationException {
+        }
 
-    public void beforePostInvoke(ComponentInvocationType invType,
-            ComponentInvocation prevInv, ComponentInvocation curInv) throws InvocationException {
-    }
+        public void beforePostInvoke(ComponentInvocationType invType,
+                ComponentInvocation prevInv, ComponentInvocation curInv) throws InvocationException {
+        }
 
-    public void afterPostInvoke(ComponentInvocationType invType,
-            ComponentInvocation prevInv, ComponentInvocation curInv) throws InvocationException {
-        if (invType == ComponentInvocationType.EJB_INVOCATION) {
-            try {
-                ((EjbInvocation) curInv).getEjbSecurityManager().postInvoke(curInv);
-            } catch (Exception ex) {
-                _logger.log(Level.FINE, "ejb.postinvoketx_exception", ex);
+        public void afterPostInvoke(ComponentInvocationType invType,
+                ComponentInvocation prevInv, ComponentInvocation curInv) throws InvocationException {
+            if (invType == ComponentInvocationType.EJB_INVOCATION) {
+                try {
+                    ((EjbInvocation) curInv).getEjbSecurityManager().postInvoke(curInv);
+                } catch (Exception ex) {
+                    _logger.log(Level.FINE, "ejb.postinvoketx_exception", ex);
 
-                ((EjbInvocation) curInv).exception = ex;
+                    ((EjbInvocation) curInv).exception = ex;
+                }
             }
         }
+    };
+
+
+    
+    public ComponentInvocationHandler getComponentInvocationHandler() {
+        return ejbSecurityCompInvHandler;
     }
+
+    public void register() {
+        invManager.registerComponentInvocationHandler(ComponentInvocationType.EJB_INVOCATION, this);
+    }
+
 }

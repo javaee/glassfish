@@ -53,6 +53,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
+import org.glassfish.api.invocation.RegisteredComponentInvocationHandler;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 
 /**
@@ -83,6 +84,7 @@ public class EjbDeployer
 
     @Inject
     private ComponentEnvManager compEnvManager;
+    
 
     protected CMPDeployer cmpDeployer;
 
@@ -242,6 +244,11 @@ public class EjbDeployer
         if (params.origin != OpsParams.Origin.deploy) {
             return;
         }
+        
+        //Register the EjbSecurityComponentInvocationHandler
+        
+        RegisteredComponentInvocationHandler handler = habitat.getComponent(RegisteredComponentInvocationHandler.class,"ejbSecurityCIH");
+        handler.register();
 
         EjbBundleDescriptor bundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
         policyLoader.loadPolicy();

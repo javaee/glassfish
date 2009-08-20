@@ -35,6 +35,7 @@
  */
 package com.sun.web.security;
 
+
 import com.sun.logging.LogDomains;
 import java.util.logging.Logger;
 import org.apache.catalina.Realm;
@@ -42,53 +43,73 @@ import org.apache.catalina.core.ContainerBase;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.ComponentInvocation.ComponentInvocationType;
 import org.glassfish.api.invocation.ComponentInvocationHandler;
+import org.glassfish.api.invocation.RegisteredComponentInvocationHandler;
 import org.glassfish.api.invocation.InvocationException;
+import org.glassfish.api.invocation.InvocationManager;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 
-@Service
+@Service(name="webSecurityCIH")
 @Scoped(Singleton.class)
-public class WebSecurityComponentInvocationHandler implements ComponentInvocationHandler {
+public class WebSecurityComponentInvocationHandler implements RegisteredComponentInvocationHandler {
 
     private static Logger _logger = null;
     
-
+    @Inject
+    private InvocationManager invManager;
+    
     static {
         _logger = LogDomains.getLogger(WebSecurityComponentInvocationHandler.class, LogDomains.EJB_LOGGER);
     }
 
-    public void beforePreInvoke(ComponentInvocationType invType,
-            ComponentInvocation prevInv, ComponentInvocation newInv) throws InvocationException {
-        if (invType == ComponentInvocationType.SERVLET_INVOCATION) {
-            Object cont = newInv.getContainer();
-            if (cont instanceof ContainerBase) {
-                Realm realm = ((ContainerBase)cont).getRealm();
-                if (realm instanceof RealmAdapter) {
-                    ((RealmAdapter)realm).preSetRunAsIdentity(newInv);
+    private ComponentInvocationHandler webSecurityCompInvHandler = new ComponentInvocationHandler() {
+
+        public void beforePreInvoke(ComponentInvocationType invType,
+                ComponentInvocation prevInv, ComponentInvocation newInv) throws InvocationException {
+            if (invType == ComponentInvocationType.SERVLET_INVOCATION) {
+                Object cont = newInv.getContainer();
+                if (cont instanceof ContainerBase) {
+                    Realm realm = ((ContainerBase) cont).getRealm();
+                    if (realm instanceof RealmAdapter) {
+                        ((RealmAdapter) realm).preSetRunAsIdentity(newInv);
+                    }
                 }
             }
         }
-    }
 
-    public void afterPreInvoke(ComponentInvocationType invType,
-            ComponentInvocation prevInv, ComponentInvocation curInv) throws InvocationException {
-    }
+        public void afterPreInvoke(ComponentInvocationType invType,
+                ComponentInvocation prevInv, ComponentInvocation curInv) throws InvocationException {
+        }
 
-    public void beforePostInvoke(ComponentInvocationType invType,
-            ComponentInvocation prevInv, ComponentInvocation curInv) throws InvocationException {
-    }
+        public void beforePostInvoke(ComponentInvocationType invType,
+                ComponentInvocation prevInv, ComponentInvocation curInv) throws InvocationException {
+        }
 
-    public void afterPostInvoke(ComponentInvocationType invType,
-            ComponentInvocation prevInv, ComponentInvocation curInv) throws InvocationException {
-        if (invType == ComponentInvocationType.SERVLET_INVOCATION) {
-            Object cont = curInv.getContainer();
-            if (cont instanceof ContainerBase) {
-                Realm realm = ((ContainerBase)cont).getRealm();
-                if (realm instanceof RealmAdapter) {
-                    ((RealmAdapter)realm).postSetRunAsIdentity(curInv);
+        public void afterPostInvoke(ComponentInvocationType invType,
+                ComponentInvocation prevInv, ComponentInvocation curInv) throws InvocationException {
+            if (invType == ComponentInvocationType.SERVLET_INVOCATION) {
+                Object cont = curInv.getContainer();
+                if (cont instanceof ContainerBase) {
+                    Realm realm = ((ContainerBase) cont).getRealm();
+                    if (realm instanceof RealmAdapter) {
+                        ((RealmAdapter) realm).postSetRunAsIdentity(curInv);
+                    }
                 }
             }
         }
+    };
+
+    
+    public ComponentInvocationHandler getComponentInvocationHandler() {
+        return webSecurityCompInvHandler;
     }
+    
+    public void register() {
+        invManager.registerComponentInvocationHandler(ComponentInvocationType.SERVLET_INVOCATION, this);
+    }
+    
+    
+
 }

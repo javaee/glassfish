@@ -57,6 +57,7 @@ import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.Realm;
 import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.security.common.Util;
 
 /**
  * Create File User Command
@@ -204,7 +205,12 @@ public class CreateFileUser implements AdminCommand {
             CreateFileUser.handleAdminRealm(authRealmName, groups);
             String[] groups1 = groups.toArray(new String[groups.size()]); 
             fr.addUser(userName, password, groups1);
-            fr.writeKeyFile(keyFile);
+            if(Util.isEmbeddedServer()) {
+                fr.writeKeyFile(Util.writeConfigFileToTempDir(keyFile).getAbsolutePath());
+            }
+            else {
+                fr.writeKeyFile(keyFile);
+            }
             refreshRealm(authRealmName);
         } catch (Exception e) {
             e.printStackTrace();
