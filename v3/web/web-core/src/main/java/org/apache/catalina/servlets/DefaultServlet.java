@@ -86,8 +86,9 @@ import org.apache.naming.resources.ResourceAttributes;
 // START SJSAS 6231069
 import org.apache.catalina.core.ApplicationHttpResponse;
 // END SJSAS 6231069
-import org.apache.catalina.core.AlternateDocBase;
 import org.glassfish.web.loader.*;
+
+import com.sun.grizzly.util.http.mapper.AlternateDocBase;
 
 /**
  * The default resource-serving servlet for most web applications,
@@ -708,7 +709,7 @@ public class DefaultServlet
             AlternateDocBase match = AlternateDocBase.findMatch(
                                             path, alternateDocBases);
             if (match != null) {
-                cacheEntry = match.getResources().lookupCache(path);
+                cacheEntry = ((ProxyDirContext) match.getResources()).lookupCache(path);
             } else {
                 // None of the url patterns for alternate docbases matched
                 cacheEntry = resources.lookupCache(path);

@@ -606,7 +606,8 @@ public class MapperListener
         String[] welcomeFiles = context.getWelcomeFiles();
 
         mapper.addContext(hostName, contextName, context, 
-                          welcomeFiles, resources);
+                          welcomeFiles, resources,
+                          context.getAlternateDocBases());
     }
 
 

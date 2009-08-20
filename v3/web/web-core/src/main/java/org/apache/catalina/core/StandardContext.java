@@ -91,6 +91,7 @@ import org.apache.tomcat.util.modeler.Registry;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.loader.ServletContainerInitializerUtil;
 import org.glassfish.web.valve.GlassFishValve;
+import com.sun.grizzly.util.http.mapper.AlternateDocBase;
 import com.sun.grizzly.util.http.mapper.Mapper;
 
 /**
