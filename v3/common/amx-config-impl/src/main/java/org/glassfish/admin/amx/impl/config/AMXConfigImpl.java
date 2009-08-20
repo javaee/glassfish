@@ -779,7 +779,6 @@ public class AMXConfigImpl extends AMXImplBase
             return null;
         }
 
-//why is it failing?
         return remove(child);
     }
 
@@ -816,6 +815,7 @@ public class AMXConfigImpl extends AMXImplBase
             final UnregistrationListener myListener = new UnregistrationListener(getMBeanServer(), childObjectName);
             final long TIMEOUT_MILLIS = 10 * 1000;
             final boolean unregisteredOK = myListener.waitForUnregister(TIMEOUT_MILLIS);
+            //cdebug( "Waiting for child to be unregistered: " + childObjectName );
             if (!unregisteredOK)
             {
                 throw new RuntimeException("Something went wrong unregistering MBean " + JMXUtil.toString(childObjectName));
