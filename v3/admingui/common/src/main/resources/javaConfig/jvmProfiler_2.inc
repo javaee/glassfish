@@ -51,7 +51,7 @@
                         result => $attribute{objStr});
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    saveJvmOptionValues(objectNameStr="amx:pp=/domain/configs/config[server-config]/java-config,type=profiler,name=#{pageSession.valueMap['Name']}" options="$attribute{newList}");    
+                    saveJvmOptionValues(objectNameStr="amx:pp=/domain/configs/config[server-config]/java-config,type=profiler}" options="$attribute{newList}");    
                     prepareSuccessfulMsg();
                     redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}");
                 />
