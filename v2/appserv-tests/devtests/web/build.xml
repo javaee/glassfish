@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="476"/>
+    <property name="TOTAL_EXPECTED" value="477"/>
 
     &commonSetup;
     &commonBuild;
@@ -210,6 +210,7 @@
         <ant dir="servlet-3.0/servletContextAddServletAndFilterByClass" target="all"/>
         <ant dir="servlet-3.0/servletContextAddServletAndFilterByInstance" target="all"/>
         <ant dir="servlet-3.0/servletContextAddListenerByClassName" target="all"/>
+        <ant dir="servlet-3.0/servletContextAddServletOverrideDefaultAndJspServletMappings" target="all"/>
         <ant dir="servlet-3.0/servletContextCreateServletAndFilter" target="all"/>
         <ant dir="servletContextAttributeEventAttributeRemoved" target="all"/>
         <ant dir="servletGetServerPort" target="all"/>
