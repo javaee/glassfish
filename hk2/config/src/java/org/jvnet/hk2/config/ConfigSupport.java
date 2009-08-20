@@ -255,6 +255,8 @@ public class ConfigSupport {
      * @param logger to log any issues.
      */
     public static UnprocessedChangeEvents sortAndDispatch(PropertyChangeEvent[] events, Changed target, Logger logger) {
+        if ( logger == null ) throw new IllegalArgumentException();
+        
         List<UnprocessedChangeEvent> unprocessed = new ArrayList<UnprocessedChangeEvent>();
         List<Dom> added = new ArrayList<Dom>();
         List<Dom> changed = new ArrayList<Dom>();
