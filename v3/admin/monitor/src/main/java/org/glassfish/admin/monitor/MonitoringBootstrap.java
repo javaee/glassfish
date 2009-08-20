@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.external.probe.provider.StatsProviderManager;
-import org.glassfish.api.Startup;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 
@@ -44,13 +43,14 @@ import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
+import org.glassfish.internal.api.Init;
 /**
  *
  * @author abbagani
  */
 @Service
 @Scoped(Singleton.class)
-public class MonitoringBootstrap implements Startup, PostConstruct, EventListener, ModuleLifecycleListener, ConfigListener {
+public class MonitoringBootstrap implements Init, PostConstruct, EventListener, ModuleLifecycleListener, ConfigListener {
 
     @Inject
     private MonitoringRuntimeDataRegistry mrdr;
@@ -119,11 +119,6 @@ public class MonitoringBootstrap implements Startup, PostConstruct, EventListene
 
         // Register listener for AMX DomainRoot loaded
         MBeanListener.listenForDomainRoot(ManagementFactory.getPlatformMBeanServer(), spmd);
-    }
-
-    public Lifecycle getLifecycle() {
-        // This service stays running for the life of the app server, hence SERVER.
-        return Lifecycle.SERVER;
     }
 
     public void moduleResolved(Module module) {
