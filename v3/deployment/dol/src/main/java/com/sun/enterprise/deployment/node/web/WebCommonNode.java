@@ -215,8 +215,6 @@ public abstract class WebCommonNode<T extends WebBundleDescriptor> extends Bundl
                         for (Iterator mapping = mappings.iterator();mapping.hasNext();) {                    
                             servlet.addUrlPattern((String) mapping.next());
                         }
-                    } else {
-                        throw new RuntimeException("There is no web component by the name of " + servletName + " here.");                    
                     } 
                 }
             }
