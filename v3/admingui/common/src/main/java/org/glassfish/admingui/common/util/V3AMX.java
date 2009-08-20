@@ -190,14 +190,7 @@ public class V3AMX {
 
     public static void setAttribute(ObjectName objectName, Attribute attribute) {
 	try {
-    
-System.out.println( "V3AMX(): setAttribute: " + attribute.getName() + " on " + objectName + " at " + System.currentTimeMillis() );
-final MBeanServerConnection conn = V3AMX.getInstance().getMbeanServerConnection();
-if ( ! conn.isRegistered(objectName) )
-{
-System.out.println( "V3AMX(): setAttribute: MBean " + objectName + " is not registered at " + System.currentTimeMillis() );
-}
-
+        final MBeanServerConnection conn = V3AMX.getInstance().getMbeanServerConnection();
 	    conn.setAttribute(objectName, attribute);
 	} catch (Exception  ex) {
             throw new RuntimeException(ex);
