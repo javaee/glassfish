@@ -5,10 +5,16 @@
 
 package org.glassfish.admin.monitor.jvm;
 
+import com.sun.enterprise.config.serverbeans.MonitoringService;
+import com.sun.logging.LogDomains;
+import java.beans.PropertyVetoException;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.glassfish.admin.monitor.jvm.config.JvmMI;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 //import org.glassfish.api.event.Events;
@@ -16,8 +22,12 @@ import org.jvnet.hk2.annotations.Service;
 //import org.glassfish.api.event.EventListener.Event;
 //import org.glassfish.api.event.EventTypes;
 //import org.glassfish.api.event.RestrictTo;
+import org.glassfish.api.monitoring.MonitoringItem;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.api.Startup;
 
@@ -29,10 +39,13 @@ import org.glassfish.api.Startup;
 //@Scoped(Singleton.class)
 public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/ PostConstruct/*, EventListener */{
 
-    //@Inject
-    //Logger logger;
-
     //@Inject Events events;
+
+    @Inject
+    MonitoringService monitoringService;
+
+    protected static final Logger _logger = LogDomains.getLogger(
+            JVMStatsProviderBootstrap.class, LogDomains.MONITORING_LOGGER);
 
     private JVMClassLoadingStatsProvider clStatsProvider = new JVMClassLoadingStatsProvider();
     private JVMCompilationStatsProvider compileStatsProvider = new JVMCompilationStatsProvider();
@@ -40,6 +53,7 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
     private JVMOSStatsProvider osStatsProvider = new JVMOSStatsProvider();
     private JVMRuntimeStatsProvider runtimeStatsProvider = new JVMRuntimeStatsProvider();
     private List<JVMGCStatsProvider> jvmStatsProviderList = new ArrayList();
+    public static final String JVM = "jvm";
 
     public void postConstruct(){
         //System.out.println (" In JVMStatsProviderBootstrap.PostConstruct ********");
@@ -55,6 +69,8 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
         //logger.finest("[Monitor]In the JVMTelemetry bootstrap ************");
         //Build the top level monitoring tree   
         //buildTopLevelMonitoringTree();
+
+        createMonitoringConfig();
 
         /* register with monitoring */
         StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/class-loading-system", clStatsProvider);
@@ -73,6 +89,40 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
 
     public Lifecycle getLifecycle() {
         return Startup.Lifecycle.SERVER;
+    }
+
+    /**
+     * Creates web-container config element for monitoring.
+     *
+     * Check if the web-container monitoring config has been created.
+     * If it has not, then add it.
+     */
+    private void createMonitoringConfig() {
+        List<MonitoringItem> itemList = monitoringService.getMonitoringItems();
+        boolean hasMonitorConfig = false;
+        for (MonitoringItem mi : itemList) {
+            if (mi.getName().equals(JVM)) {
+                hasMonitorConfig = true;
+            }
+        }
+
+        try {
+            if (!hasMonitorConfig) {
+                ConfigSupport.apply(new SingleConfigCode<MonitoringService>() {
+
+                    public Object run(MonitoringService param) throws PropertyVetoException, TransactionFailure {
+
+                        MonitoringItem newItem = param.createChild(JvmMI.class);
+                        newItem.setName(JVM);
+                        newItem.setLevel(MonitoringItem.LEVEL_OFF);
+                        param.getMonitoringItems().add(newItem);
+                        return newItem;
+                    }
+                }, monitoringService);
+            }
+        } catch (TransactionFailure tfe) {
+            _logger.log(Level.SEVERE, "Exception adding jvm MonitoringItem", tfe);
+        }
     }
 
     /*public void event(Event event) {
