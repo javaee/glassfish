@@ -200,11 +200,11 @@ public class WebComponentDescriptor extends Descriptor {
 
                 @Override
                 public boolean remove(Object o) {
-                    Map<String, String> up2sname = getUrlPatternToServletNameMap();
-                    if (up2sname != null) {
-                        up2sname.remove((String)o);
-                    }   
-                    return super.remove(o);
+                    boolean result = super.remove(o);
+                    if (getWebBundleDescriptor() != null) {
+                        getWebBundleDescriptor().resetUrlPatternToServletNameMap();
+                    }
+                    return result;
                 }
 
                 private Map<String, String> getUrlPatternToServletNameMap() {

@@ -140,36 +140,35 @@ public class WebBundleDescriptor extends BundleDescriptor
     public void addWebBundleDescriptor(WebBundleDescriptor webBundleDescriptor) {
         super.addBundleDescriptor(webBundleDescriptor);
 
-        // need to check if there are more than one servlets mapping to the same url pattern
-        Map<String, String> otherUrlPattern2ServletName  = webBundleDescriptor.urlPattern2ServletName;
         for (WebComponentDescriptor webComponentDesc :webBundleDescriptor.getWebComponentDescriptors())
         {
             // don't modify the original one
             WebComponentDescriptor webComponentDescriptor =
                 new WebComponentDescriptor(webComponentDesc);
-            webComponentDescriptor.setWebBundleDescriptor(this);
+            // set web bundle to null so that the urlPattern2ServletName
+            // of the others will not be changed,
+            // see WebComponentDescriptor.getUrlPatternsSet()
+            webComponentDescriptor.setWebBundleDescriptor(null);
 
-            if (otherUrlPattern2ServletName != null) { // should not be null here
-                List<String> removeUrlPatterns = null;
-                for (String urlPattern: webComponentDescriptor.getUrlPatternsSet()) {
-                    String servletName = null;
-                    if (urlPattern2ServletName != null) {
-                        servletName = urlPattern2ServletName.get(urlPattern);
-                    }
-                    if (servletName != null &&
-                            (!servletName.equals(webComponentDescriptor.getCanonicalName()))) {
-                        // url pattern already exists in current bundle
-                        // need to remove the url pattern in current bundle servlet
-                        if (removeUrlPatterns == null) {
-                            removeUrlPatterns = new ArrayList<String>();
-                        }
-                        removeUrlPatterns.add(urlPattern);
-                    }
+            List<String> removeUrlPatterns = null;
+            for (String urlPattern: webComponentDescriptor.getUrlPatternsSet()) {
+                String servletName = null;
+                if (urlPattern2ServletName != null) {
+                    servletName = urlPattern2ServletName.get(urlPattern);
                 }
+                if (servletName != null &&
+                        (!servletName.equals(webComponentDescriptor.getCanonicalName()))) {
+                    // url pattern already exists in current bundle
+                    // need to remove the url pattern in current bundle servlet
+                    if (removeUrlPatterns == null) {
+                        removeUrlPatterns = new ArrayList<String>();
+                    }
+                    removeUrlPatterns.add(urlPattern);
+                }
+            }
 
-                if (removeUrlPatterns != null) {
-                    webComponentDescriptor.getUrlPatternsSet().removeAll(removeUrlPatterns);
-                }
+            if (removeUrlPatterns != null) {
+                webComponentDescriptor.getUrlPatternsSet().removeAll(removeUrlPatterns);
             }
 
             addWebComponentDescriptor(webComponentDescriptor);
@@ -406,6 +405,7 @@ public class WebBundleDescriptor extends BundleDescriptor
     public void removeWebComponentDescriptor(WebComponentDescriptor webComponentDescriptor) {
         webComponentDescriptor.setWebBundleDescriptor(null);
         getWebComponentDescriptors().remove(webComponentDescriptor);
+        resetUrlPatternToServletNameMap();
     }
 
     public SessionConfig getSessionConfig() {
@@ -1653,8 +1653,25 @@ public class WebBundleDescriptor extends BundleDescriptor
     Map<String, String> getUrlPatternToServletNameMap() {
         if (urlPattern2ServletName == null) {
             urlPattern2ServletName = new HashMap<String, String>();
+            for (WebComponentDescriptor wc : getWebComponentDescriptors()) {
+                String name = wc.getCanonicalName();
+                for (String up : wc.getUrlPatternsSet()) {
+                    String oldName = urlPattern2ServletName.put(up, name);
+                    if (oldName != null && (!oldName.equals(name))) {
+                        throw new RuntimeException(localStrings.getLocalString(
+                                "enterprise.deployment.exceptionsameurlpattern",
+                                "Servlet [{0}] and Servlet [{1}] have the same url pattern: [{2}]",
+                                new Object[] { oldName, name, up }));
+                    }
+                }
+            }
         }
+
         return urlPattern2ServletName;
+    }
+
+    void resetUrlPatternToServletNameMap() {
+        urlPattern2ServletName = null;
     }
 
     public List<String> getOrderedLibs() {
