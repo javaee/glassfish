@@ -38,6 +38,7 @@
 
 <antlib>
     <taskdef name="glassfish-embedded-deploy" classname="org.glassfish.ant.embedded.tasks.DeployTask"/>
+    <taskdef name="glassfish-embedded-deploy-scattered" classname="org.glassfish.ant.embedded.tasks.DeployScatteredTask"/>
     <taskdef name="glassfish-embedded-stop"   classname="org.glassfish.ant.embedded.tasks.StopServerTask"/>
     <taskdef name="glassfish-embedded-web-start"   classname="org.glassfish.ant.embedded.tasks.StartWebTask"/>
     <taskdef name="glassfish-embedded-start"  classname="org.glassfish.ant.embedded.tasks.StartServerTask"/>
