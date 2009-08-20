@@ -43,16 +43,14 @@ import java.util.logging.Level;
 
 import com.sun.jts.pi.InterceptorImpl;
 import com.sun.jts.jta.TransactionManagerImpl;
+import com.sun.jts.jta.TransactionServiceProperties;
 import com.sun.jts.CosTransactions.Configuration;
 
 import org.glassfish.enterprise.iiop.api.IIOPInterceptorFactory;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
-import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.api.admin.config.Property;
-import com.sun.enterprise.config.serverbeans.TransactionService;
-import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
@@ -68,6 +66,7 @@ import org.omg.PortableInterceptor.IORInterceptor;
 import org.omg.PortableInterceptor.ORBInitInfo;
 import org.omg.PortableInterceptor.ServerRequestInterceptor;
 
+import com.sun.corba.ee.spi.costransactions.TransactionService;
 import com.sun.corba.ee.spi.orbutil.ORBConstants;
 import com.sun.corba.ee.spi.orbutil.closure.ClosureFactory;
 import com.sun.corba.ee.spi.legacy.interceptor.ORBInitInfoExt;
@@ -88,11 +87,6 @@ public class TransactionIIOPInterceptorFactory implements IIOPInterceptorFactory
     private static StringManager localStrings =
             StringManager.getManager(InterceptorImpl.class);
 
-    private static final String JTS_XA_SERVER_NAME = "com.sun.jts.xa-servername";
-    private static final String J2EE_SERVER_ID_PROP = "com.sun.enterprise.J2EEServerId";
-    private static final String JTS_SERVER_ID = "com.sun.jts.persistentServerId";
-    private static final int DEFAULT_SERVER_ID = 100 ;
-
     private static String jtsClassName = "com.sun.jts.CosTransactions.DefaultTransactionService";
 
     private static Properties jtsProperties = new Properties();
@@ -101,7 +95,6 @@ public class TransactionIIOPInterceptorFactory implements IIOPInterceptorFactory
     private InterceptorImpl interceptor = null;
 
     @Inject private Habitat habitat;
-    @Inject private ServerContext ctx;
     @Inject private ProcessEnvironment processEnv;
 
     public ClientRequestInterceptor createClientRequestInterceptor(ORBInitInfo info, Codec codec) {
@@ -155,8 +148,7 @@ public class TransactionIIOPInterceptorFactory implements IIOPInterceptorFactory
 
                 if (theJTSClass != null) {
                         try {
-                        com.sun.corba.ee.spi.costransactions.TransactionService jts = 
-                                (com.sun.corba.ee.spi.costransactions.TransactionService)theJTSClass.newInstance();
+                        TransactionService jts = (TransactionService)theJTSClass.newInstance();
                         jts.identify_ORB(theORB, tsIdent, jtsProperties ) ;
                         interceptor.setTSIdentification(tsIdent);
 
@@ -198,140 +190,11 @@ public class TransactionIIOPInterceptorFactory implements IIOPInterceptorFactory
 
     private void initJTSProperties(boolean lateRegistration) {
         if (habitat != null) {
-            TransactionService txnService = habitat.getComponent(TransactionService.class);
-
-            if (txnService != null) {
-                jtsProperties.put(Configuration.HEURISTIC_DIRECTION, txnService.getHeuristicDecision());
-                jtsProperties.put(Configuration.KEYPOINT_COUNT, txnService.getKeypointInterval());
-
-                String automaticRecovery = txnService.getAutomaticRecovery();
-                boolean isAutomaticRecovery = 
-                        (isValueSet(automaticRecovery) && "true".equals(automaticRecovery));
-                if (isAutomaticRecovery) {
-                    _logger.log(Level.FINE,"Recoverable J2EE Server");
-                    jtsProperties.put(Configuration.MANUAL_RECOVERY, "true");
-                }
-    
-                boolean disable_distributed_transaction_logging = false;
-                String dbLoggingResource = null;
-                for (Property prop : txnService.getProperty()) {
-                    String name = prop.getName();
-                    String value = prop.getValue();
-
-                    if (name.equals("disable-distributed-transaction-logging")) {
-                        if (isValueSet(value) && "true".equals(value)) {
-                            disable_distributed_transaction_logging = true;
-                        } 
-    
-                    } else if (name.equals("xaresource-txn-timeout")) {
-                        if (isValueSet(value)) {
-                            _logger.log(Level.FINE,"XAResource transaction timeout is"+value);
-                            TransactionManagerImpl.setXAResourceTimeOut(Integer.parseInt(value));
-                        }
-    
-                    } else if (name.equals("db-logging-resource")) {
-                        dbLoggingResource = value;
-                        _logger.log(Level.FINE,
-                                "Transaction DB Logging Resource Name" + dbLoggingResource);
-                        if (dbLoggingResource != null 
-                                && (" ".equals(dbLoggingResource) || "".equals(dbLoggingResource))) {
-                            dbLoggingResource = "jdbc/TxnDS";
-                        }
-        
-                    } else if (name.equals("xa-servername")) {
-                        if (isValueSet(value)) {
-                            jtsProperties.put(JTS_XA_SERVER_NAME, value);
-                        }
-                    }
-                }
-
-                if (dbLoggingResource != null) {
-                    disable_distributed_transaction_logging = true;
-                    jtsProperties.put(Configuration.DB_LOG_RESOURCE, dbLoggingResource);
-                }
-    
-                /**
-                   JTS_SERVER_ID needs to be unique for each for server instance.
-                   This will be used as recovery identifier along with the hostname
-                   for example: if the hostname is 'tulsa' and iiop-listener-port is 3700
-                   recovery identifier will be tulsa,P3700
-                **/
-                int jtsServerId = habitat.getComponent(GlassFishORBHelper.class).getORBInitialPort();
-                if (jtsServerId == 0) {
-                    // XXX Can this ever happen?
-                    jtsServerId = DEFAULT_SERVER_ID; // default value
-                }
-                jtsProperties.put(JTS_SERVER_ID, String.valueOf(jtsServerId));
-    
-                /* ServerId is an J2SE persistent server activation
-                   API.  ServerId is scoped at the ORBD.  Since
-                   There is no ORBD present in J2EE the value of
-                   ServerId is meaningless - except it must have
-                   SOME value if persistent POAs are created. 
-                 */
-    
-                // For clusters - all servers in the cluster MUST
-                // have the same ServerId so when failover happens
-                // and requests are delivered to a new server, the
-                // ServerId in the request will match the new server.
-    
-                String serverId = String.valueOf(DEFAULT_SERVER_ID);
-                System.setProperty(J2EE_SERVER_ID_PROP, serverId);
-    
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.log(Level.FINE,
-                                "++++ Server id: "
-                                + jtsProperties.getProperty(ORBConstants.ORB_SERVER_ID_PROPERTY));
-                }
-    
-                /**
-                 * if the auto recovery is true, always transaction logs will be written irrespective of
-                 * disable_distributed_transaction_logging.
-                 * if the auto recovery is false, then disable_distributed_transaction_logging will be used
-                 * to write transaction logs are not.If disable_distributed_transaction_logging is set to
-                 * false(by default false) logs will be written, set to true logs won't be written.
-                 **/
-                if (!isAutomaticRecovery && disable_distributed_transaction_logging) {
-                    Configuration.disableFileLogging();
-                }
-
-                String instanceName = ctx.getInstanceName();
-                if (dbLoggingResource == null) {
-                    String logdir = txnService.getTxLogDir();
-                    if(logdir == null){
-                        Domain domain = habitat.getComponent(Domain.class);
-                        logdir = domain.getLogRoot();
-                        if(logdir == null){
-                            // logdir = FileUtil.getAbsolutePath(".." + File.separator + "logs");
-                            logdir = ".." + File.separator + "logs";
-                        }
-                    } else if( ! (new File(logdir)).isAbsolute()) {
-                        if(_logger.isLoggable(Level.FINE)) {
-                            _logger.log(Level.FINE, 
-                                "Relative pathname specified for transaction log directory : " 
-                                + logdir);
-                        }
-                        Domain domain = habitat.getComponent(Domain.class);;
-                        String logroot = domain.getLogRoot();
-                        if(logroot != null){
-                            logdir = logroot + File.separator + logdir;
-                        } else {
-                            // logdir = FileUtil.getAbsolutePath(".." + File.separator + "logs"
-                            // + File.separator + logdir);
-                            logdir = ".." + File.separator + "logs" + File.separator + logdir;
-                        }
-                    }
-                    logdir += File.separator + instanceName + File.separator + "tx";
-    
-                    _logger.log(Level.FINE,"JTS log directory: " + logdir);
-                    _logger.log(Level.FINE,"JTS Server id " + jtsServerId);
-
-                    (new File(logdir)).mkdirs();
-                    jtsProperties.put(Configuration.LOG_DIRECTORY, logdir);
-                }
-                jtsProperties.put(Configuration.COMMIT_RETRY, txnService.getRetryTimeoutInSeconds());
-                jtsProperties.put(Configuration.INSTANCE_NAME, instanceName);
-
+            jtsProperties = TransactionServiceProperties.getJTSProperties(habitat, true);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE,
+                            "++++ Server id: "
+                            + jtsProperties.getProperty(ORBConstants.ORB_SERVER_ID_PROPERTY));
             }
             Configuration.setProperties(jtsProperties);
         }

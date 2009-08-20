@@ -69,6 +69,8 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import com.sun.logging.LogDomains;
 import com.sun.jts.utils.LogFormatter;
+import org.glassfish.internal.api.Globals;
+
 /**
  * An implementation of javax.transaction.TransactionManager using JTA.
  *
@@ -189,7 +191,8 @@ public class TransactionManagerImpl implements TransactionManager {
                     narrow(orb.resolve_initial_references("TransactionCurrent"/*#Frozen*/));
             else {
                 DefaultTransactionService dts = new DefaultTransactionService();
-                dts.identify_ORB(null, null, new Properties());
+                dts.identify_ORB(null, null, 
+                        TransactionServiceProperties.getJTSProperties(Globals.getDefaultHabitat(), false));
                 current = dts.get_current();
              }
             // V2-commented-out transactionStates = new Hashtable();
