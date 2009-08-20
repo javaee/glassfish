@@ -166,7 +166,7 @@
 	    <artifactId>gmbal</artifactId>
         </dependency>
 
-        <dependency>
+<!--        <dependency>
             <groupId>org.glassfish.jdbc</groupId>
             <artifactId>jdbc-admin</artifactId>
             <version>${project.version}</version>
@@ -176,7 +176,7 @@
             <groupId>org.glassfish.connectors</groupId>
             <artifactId>connectors-admin</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
 
     </dependencies>
 </project>

@@ -37,7 +37,7 @@ package com.sun.enterprise.resource.pool.monitor;
 
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import com.sun.enterprise.config.serverbeans.MonitoringService;
+//import com.sun.enterprise.config.serverbeans.MonitoringService;
 import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.listener.PoolLifeCycle;
@@ -45,23 +45,23 @@ import com.sun.enterprise.resource.pool.ConnectionPoolEmitterImpl;
 import com.sun.enterprise.resource.pool.PoolLifeCycleListenerRegistry;
 import com.sun.enterprise.resource.pool.PoolLifeCycleRegistry;
 import com.sun.enterprise.resource.pool.PoolManager;
-import java.beans.PropertyVetoException;
+//import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
+//import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
-import org.glassfish.api.monitoring.MonitoringItem;
-import org.glassfish.jdbc.admin.monitor.config.JdbcConnectionPoolMI;
-import org.glassfish.connectors.admin.monitor.config.ConnectorConnectionPoolMI;
+//import org.jvnet.hk2.config.ConfigSupport;
+//import org.jvnet.hk2.config.SingleConfigCode;
+//import org.jvnet.hk2.config.TransactionFailure;
+//import org.glassfish.api.monitoring.MonitoringItem;
+//import org.glassfish.jdbc.admin.monitor.config.JdbcConnectionPoolMI;
+//import org.glassfish.connectors.admin.monitor.config.ConnectorConnectionPoolMI;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
 
@@ -91,11 +91,11 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
     @Inject
     private PoolManager poolManager;
 
-    @Inject
-    MonitoringService monitoringService;
+    //@Inject
+    //MonitoringService monitoringService;
 
-    public static final String JDBC_CONNECTION_POOL = "jdbc-connection-pool";
-    public static final String CONNECTOR_CONNECTION_POOL = "connector-connection-pool";
+    //public static final String JDBC_CONNECTION_POOL = "jdbc-connection-pool";
+    //public static final String CONNECTOR_CONNECTION_POOL = "connector-connection-pool";
 
     //List of all jdbc pool stats providers that are created and stored.
     private List<JdbcConnPoolStatsProvider> jdbcStatsProviders = null;
@@ -121,7 +121,7 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
     public void postConstruct() {
         logger.finest("[Monitor]In the JDBCPoolStatsProviderBootstrap");
 
-        createMonitoringConfig();
+       //createMonitoringConfig();
     }
 
     /**
@@ -286,10 +286,10 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
      * Creates jdbc-connection-pool, connector-connection-pool, connector-service
      * config elements for monitoring.
      */
-    private void createMonitoringConfig() {
-       createMonitoringConfig(JDBC_CONNECTION_POOL, JdbcConnectionPoolMI.class);
-       createMonitoringConfig(CONNECTOR_CONNECTION_POOL, ConnectorConnectionPoolMI.class);
-    }
+    //private void createMonitoringConfig() {
+    //   createMonitoringConfig(JDBC_CONNECTION_POOL, JdbcConnectionPoolMI.class);
+    //   createMonitoringConfig(CONNECTOR_CONNECTION_POOL, ConnectorConnectionPoolMI.class);
+    //}
 
     /**
      * Creates config elements for monitoring.
@@ -297,7 +297,7 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
      * Check if the monitoring config has been created.
      * If it has not, then add it.
      */
-    private void createMonitoringConfig(final String name, final Class monitoringItemClass) {
+    /*private void createMonitoringConfig(final String name, final Class monitoringItemClass) {
         if (monitoringService == null) {
             logger.log(Level.SEVERE, "monitoringService is null. " +
                     "jdbc-connection-pool and connector-connection-pool monitoring config not created");
@@ -328,5 +328,5 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
         } catch (TransactionFailure tfe) {
             logger.log(Level.SEVERE, "Exception adding " + name + " MonitoringItem", tfe);
         }
-    }
+    }*/
 }

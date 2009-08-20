@@ -5,29 +5,29 @@
 
 package org.glassfish.admin.monitor.jvm;
 
-import com.sun.enterprise.config.serverbeans.MonitoringService;
-import com.sun.logging.LogDomains;
-import java.beans.PropertyVetoException;
+//import com.sun.enterprise.config.serverbeans.MonitoringService;
+//import com.sun.logging.LogDomains;
+//import java.beans.PropertyVetoException;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.admin.monitor.jvm.config.JvmMI;
-import org.jvnet.hk2.annotations.Inject;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
+//import org.glassfish.admin.monitor.jvm.config.JvmMI;
+//import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 //import org.glassfish.api.event.Events;
 //import org.glassfish.api.event.EventListener;
 //import org.glassfish.api.event.EventListener.Event;
 //import org.glassfish.api.event.EventTypes;
 //import org.glassfish.api.event.RestrictTo;
-import org.glassfish.api.monitoring.MonitoringItem;
+//import org.glassfish.api.monitoring.MonitoringItem;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
+//import org.jvnet.hk2.config.ConfigSupport;
+//import org.jvnet.hk2.config.SingleConfigCode;
+//import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.api.Startup;
 
@@ -41,11 +41,11 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
 
     //@Inject Events events;
 
-    @Inject
-    MonitoringService monitoringService;
+    //@Inject
+    //MonitoringService monitoringService;
 
-    protected static final Logger _logger = LogDomains.getLogger(
-            JVMStatsProviderBootstrap.class, LogDomains.MONITORING_LOGGER);
+    //protected static final Logger _logger = LogDomains.getLogger(
+    //        JVMStatsProviderBootstrap.class, LogDomains.MONITORING_LOGGER);
 
     private JVMClassLoadingStatsProvider clStatsProvider = new JVMClassLoadingStatsProvider();
     private JVMCompilationStatsProvider compileStatsProvider = new JVMCompilationStatsProvider();
@@ -70,7 +70,7 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
         //Build the top level monitoring tree   
         //buildTopLevelMonitoringTree();
 
-        createMonitoringConfig();
+        //createMonitoringConfig();
 
         /* register with monitoring */
         StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/class-loading-system", clStatsProvider);
@@ -97,7 +97,7 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
      * Check if the jvm monitoring config has been created.
      * If it has not, then add it.
      */
-    private void createMonitoringConfig() {
+    /*private void createMonitoringConfig() {
         if (monitoringService == null) {
             _logger.log(Level.SEVERE, "monitoringService is null. jvm monitoring config not created");
             return;
@@ -127,7 +127,7 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
         } catch (TransactionFailure tfe) {
             _logger.log(Level.SEVERE, "Exception adding jvm MonitoringItem", tfe);
         }
-    }
+    }*/
 
     /*public void event(Event event) {
         if (event.name().equals(EventTypes.PREPARE_SHUTDOWN_NAME)) {
