@@ -3062,22 +3062,34 @@ public class StandardContext
                                          String[] urlPatterns) {
         Set<String> conflicts = null;
 
-        for (String urlPattern : urlPatterns) {
-            if (hasServletMapping(urlPattern)) {
-                if (conflicts == null) {
-                    conflicts = new HashSet<String>();
+        synchronized (servletMappings) {
+            for (String pattern : urlPatterns) {
+                pattern = adjustURLPattern(RequestUtil.URLDecode(pattern));
+                if (!validateURLPattern(pattern)) {
+                    throw new IllegalArgumentException(sm.getString(
+                        "standardContext.servletMap.pattern", pattern));
                 }
-                conflicts.add(urlPattern);
-            }
-        }
 
-        if (conflicts == null) {
-            for (String urlPattern : urlPatterns) {
-                addServletMapping(urlPattern, name, false);
+                // Ignore any conflicts with the DefaultServlet
+                String existingServlet = servletMappings.get(pattern);
+                if (existingServlet != null &&
+                        !existingServlet.equals(Constants.DEFAULT_SERVLET_NAME) &&
+                        !name.equals(Constants.DEFAULT_SERVLET_NAME)) {
+                    if (conflicts == null) {
+                        conflicts = new HashSet<String>();
+                    }
+                    conflicts.add(pattern);
+                }
             }
-            return Collections.EMPTY_SET;
-        } else {
-            return conflicts;   
+
+            if (conflicts == null) {
+                for (String urlPattern : urlPatterns) {
+                    addServletMapping(urlPattern, name, false);
+                }
+                return Collections.EMPTY_SET;
+            } else {
+                return conflicts;   
+            }
         }
     }
 
@@ -3110,30 +3122,40 @@ public class StandardContext
     public void addServletMapping(String pattern, String name,
                                   boolean jspWildCard) {
         // Validate the proposed mapping
-        if (findChild(name) == null)
+        if (findChild(name) == null) {
             throw new IllegalArgumentException
                 (sm.getString("standardContext.servletMap.name", name));
+        }
+
         pattern = adjustURLPattern(RequestUtil.URLDecode(pattern));
-        if (!validateURLPattern(pattern))
+        if (!validateURLPattern(pattern)) {
             throw new IllegalArgumentException
                 (sm.getString("standardContext.servletMap.pattern", pattern));
+        }
 
         /*
-         * Add this mapping to our registered set, unless it is already
-         * present and the DefaultServlet is trying to override it (this
-         * is to prevent the DefaultServlet from hijacking "/")
+         * Add this mapping to our registered set. Make sure that it is 
+         * possible to override the mappings of the DefaultServlet, and that
+         * the DefaultServlet must not be able to override any user-defined
+         * mappings. This is to prevent the DefaultServlet from hijacking "/".
          */
         synchronized (servletMappings) {
-            String name2 = servletMappings.get(pattern);
-            if (name2 != null &&
-                    !name.equals(Constants.DEFAULT_SERVLET_NAME)) {
-                // Don't allow more than one servlet on the same pattern
-                Wrapper wrapper = (Wrapper) findChild(name2);
-                wrapper.removeMapping(pattern);
-                mapper.removeWrapper(pattern);
-            }
-            if (name2 == null ||
-                    !name.equals(Constants.DEFAULT_SERVLET_NAME)) {
+            String existingServlet = servletMappings.get(pattern);
+            if (existingServlet != null) {
+                if (!existingServlet.equals(Constants.DEFAULT_SERVLET_NAME) &&
+                        !name.equals(Constants.DEFAULT_SERVLET_NAME)) {
+                    throw new IllegalArgumentException(sm.getString(
+                        "standardContext.duplicateServletMapping",
+                        name, pattern, existingServlet));
+                }
+                if (existingServlet.equals(Constants.DEFAULT_SERVLET_NAME)) {
+                    // Override the mapping of the DefaultServlet
+                    Wrapper wrapper = (Wrapper) findChild(existingServlet);
+                    wrapper.removeMapping(pattern);
+                    mapper.removeWrapper(pattern);
+                    servletMappings.put(pattern, name);
+                }
+            } else {
                 servletMappings.put(pattern, name);
             }
         }
@@ -3147,14 +3169,6 @@ public class StandardContext
         if (notifyContainerListeners) {
             fireContainerEvent("addServletMapping", pattern);
         }
-    }
-
-    /**
-     * @return true if a Servlet mapping for the given URL pattern already
-     * exists in this Context, false otherwise
-     */
-    private boolean hasServletMapping(String pattern) {
-        return servletMappings.get(pattern) != null;
     }
 
     /*
