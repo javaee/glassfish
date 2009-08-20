@@ -196,7 +196,8 @@
                 <module>jdbc</module>
                 <module>persistence</module>
                 <module>extras</module>
-                <module>admingui</module>
+		<module>admingui</module>
+		<module>extras/embedded/shell</module>
                 <module>packager</module>
                 <module>distributions</module>
                 <module>security</module>
@@ -304,7 +305,8 @@
                 <module>jdbc</module>
                 <module>persistence</module>
                 <module>extras</module>
-                <module>admingui</module>
+		<module>admingui</module>
+		<module>extras/embedded/shell</module>
                 <module>packager</module>
                 <module>distributions</module>
                 <module>security</module>
@@ -350,7 +352,8 @@
                 <module>jdbc</module>
                 <module>persistence</module>
                 <module>extras</module>
-                <module>admingui</module>
+		<module>admingui</module>
+		<module>extras/embedded/shell</module>
                 <module>packager</module>
                 <module>distributions</module>
                 <module>security</module>

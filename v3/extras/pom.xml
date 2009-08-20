@@ -52,7 +52,7 @@
     <modules>
         <module>grizzly-container</module>
         <module>osgi-container</module>
-        <module>embedded-shell</module>
+        <!--module>embedded-shell</module-->
         <!--module>php</module-->
         <module>upgrade</module>
     </modules>
