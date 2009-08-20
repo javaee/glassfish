@@ -164,9 +164,9 @@ public class WebServletHandler extends AbstractWebHandler {
                 urlPatterns = webServletAn.value();
             }
 
-            boolean validUrlPatterns = false;
+            // no url patterns is accepted as it may be defined in top level xml
+            boolean validUrlPatterns = true;
             if (urlPatterns != null && urlPatterns.length > 0) {
-                validUrlPatterns = true;
                 for (String up : urlPatterns) {
                     if (!URLPattern.isValid(up)) {
                         validUrlPatterns = false;
