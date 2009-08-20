@@ -298,6 +298,11 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
      * If it has not, then add it.
      */
     private void createMonitoringConfig(final String name, final Class monitoringItemClass) {
+        if (monitoringService == null) {
+            logger.log(Level.SEVERE, "monitoringService is null. " +
+                    "jdbc-connection-pool and connector-connection-pool monitoring config not created");
+            return;
+        }
         List<MonitoringItem> itemList = monitoringService.getMonitoringItems();
         boolean hasMonitorConfig = false;
         for (MonitoringItem mi : itemList) {

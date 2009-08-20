@@ -139,6 +139,10 @@ public class JmsProviderLifecycle implements Startup, PostConstruct{
      * If it has not, then add it.
      */
     private void createMonitoringConfig() {
+        if (monitoringService == null) {
+            logger.log(Level.SEVERE, "monitoringService is null. jms-service monitoring config not created");
+            return;
+        }
         List<MonitoringItem> itemList = monitoringService.getMonitoringItems();
         boolean hasMonitorConfig = false;
         for (MonitoringItem mi : itemList) {

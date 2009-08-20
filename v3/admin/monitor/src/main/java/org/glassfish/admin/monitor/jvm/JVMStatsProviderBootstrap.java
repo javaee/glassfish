@@ -92,12 +92,16 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
     }
 
     /**
-     * Creates web-container config element for monitoring.
+     * Creates jvm config element for monitoring.
      *
-     * Check if the web-container monitoring config has been created.
+     * Check if the jvm monitoring config has been created.
      * If it has not, then add it.
      */
     private void createMonitoringConfig() {
+        if (monitoringService == null) {
+            _logger.log(Level.SEVERE, "monitoringService is null. jvm monitoring config not created");
+            return;
+        }
         List<MonitoringItem> itemList = monitoringService.getMonitoringItems();
         boolean hasMonitorConfig = false;
         for (MonitoringItem mi : itemList) {

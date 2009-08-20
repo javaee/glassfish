@@ -3144,6 +3144,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * If it has not, then add it.
      */
     private void createMonitoringConfig(final String name, final Class monitoringItemClass) {
+        if (monitoringService == null) {
+            _logger.log(Level.SEVERE, "monitoringService is null. web-container, " +
+                    "http-service, and thread-pool monitoring config not created");
+            return;
+        }
         List<MonitoringItem> itemList = monitoringService.getMonitoringItems();
         boolean hasMonitorConfig = false;
         for (MonitoringItem mi : itemList) {
