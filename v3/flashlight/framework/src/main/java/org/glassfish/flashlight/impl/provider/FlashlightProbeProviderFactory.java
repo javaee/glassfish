@@ -38,6 +38,7 @@ package org.glassfish.flashlight.impl.provider;
 
 import com.sun.enterprise.config.serverbeans.MonitoringService;
 import com.sun.enterprise.util.ObjectAnalyzer;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
 import org.glassfish.api.monitoring.DTraceContract;
@@ -192,10 +193,16 @@ public class FlashlightProbeProviderFactory
 
     // bnevins TODO add support in here for DTrace -- it follows a different code path from
     // getProbeProvider
-    public void processXMLProbeProviders(ClassLoader cl, String xml) {
+    public void processXMLProbeProviders(ClassLoader cl, String xml, boolean inBundle) {
         mprint("processProbeProviderXML for " + xml);
         try {
             InputStream is = cl.getResourceAsStream(xml);
+            if (inBundle) {
+                is = cl.getResourceAsStream(xml);
+            } else {
+                is = new FileInputStream(xml);
+            }
+            mprint("InputStream = " + is);
             ProbeProviderXMLParser providerXMLParser = new ProbeProviderXMLParser(is);
             List<ProbeProviderXMLParser.Provider> providers = providerXMLParser.getProviders();
             for (ProbeProviderXMLParser.Provider provider : providers) {
