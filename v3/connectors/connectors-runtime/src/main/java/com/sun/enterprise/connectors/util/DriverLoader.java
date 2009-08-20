@@ -1,6 +1,8 @@
-package com.sun.enterprise.connectors;
+package com.sun.enterprise.connectors.util;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 
 import java.io.BufferedReader;
@@ -9,14 +11,10 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -35,14 +33,15 @@ import org.jvnet.hk2.annotations.Service;
  * 
  * @author Shalini M
  */
-public class DriverLoader implements ConnectorConstants,
-        com.sun.appserv.connectors.internal.api.DriverLoader {
+public class DriverLoader implements ConnectorConstants {
 
     private static Logger logger =
     LogDomains.getLogger(DriverLoader.class, LogDomains.RSR_LOGGER);
 
     private static final String DRIVER_INTERFACE_NAME="java.sql.Driver";
     private static final String SERVICES_DRIVER_IMPL_NAME = "META-INF/services/java.sql.Driver";
+    private static final String DATABASE_VENDOR_DERBY = "DERBY";
+    private static final String DATABASE_VENDOR_JAVADB = "JAVADB";
 
     /**
      * Gets a set of driver or datasource classnames for the particular vendor.
@@ -54,16 +53,26 @@ public class DriverLoader implements ConnectorConstants,
         //Map of all jar files with the set of driver implementations. every file
         // that is a jdbc jar will have a set of driver impls.
         Set<String> implClassNames = new TreeSet<String>();
-
-        String systemLibLocation = getSystemLibLocation();
-        File gfLib = new File(systemLibLocation);
-
-        File[] allJars = gfLib.listFiles(new JarFileFilter());
-
+        List<File> jarFileLocations = getJdbcDriverLocations();
+        Set<File> allJars = new HashSet<File>();
+        
+        if(jarFileLocations != null) {
+            for(File lib : jarFileLocations) {
+                if(lib.isDirectory()) {
+                    for(File file : lib.listFiles(new JarFileFilter())) {
+                        allJars.add(file);
+                    }
+                }            
+            }
+        }
         for (File file : allJars) {
             if (file.isFile()) {
                 //Introspect jar and get classnames.
-                implClassNames = introspectAndLoadJar(file, resType, dbVendor);
+                if(dbVendor!= null && dbVendor.equalsIgnoreCase(DATABASE_VENDOR_JAVADB)) {
+                    implClassNames = introspectAndLoadJar(file, resType, DATABASE_VENDOR_DERBY);
+                } else {
+                    implClassNames = introspectAndLoadJar(file, resType, dbVendor);
+                }
                 //Found the impl classnames for the particular dbVendor. 
                 //Hence no need to search in other jar files.
                 if(!implClassNames.isEmpty()) {
@@ -322,15 +331,18 @@ public class DriverLoader implements ConnectorConstants,
         return isVendorSpecific;
     }
 
-    private String getSystemLibLocation() {
-        //TODO add domains lib also to the locations where jdbc drivers are
-        //introspected.
-        String systemLibLocation = System.getProperty(ConnectorConstants.INSTALL_ROOT) +
-                File.separator + "lib";
-        return systemLibLocation;
+    private List<File> getJdbcDriverLocations() {
+	List<File> jarFileLocations = new ArrayList<File>();
+        jarFileLocations.add(getLocation(SystemPropertyConstants.DERBY_ROOT_PROPERTY));
+        jarFileLocations.add(getLocation(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
+        jarFileLocations.add(getLocation(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY));
+        return jarFileLocations;
     }
-    //TODO need to add support for which driver vendor it belongs.
 
+    private File getLocation(String property) {
+        return new File(System.getProperty(property) + File.separator + "lib");    
+    }
+    
     private static class JarFileFilter implements FilenameFilter {
 
         private final String JAR_EXT = ".jar";

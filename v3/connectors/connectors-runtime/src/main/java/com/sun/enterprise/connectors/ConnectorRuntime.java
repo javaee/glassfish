@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.connectors;
 
+import com.sun.enterprise.connectors.util.DriverLoader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
