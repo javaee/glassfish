@@ -39,22 +39,16 @@ package com.sun.enterprise.admin.cli.optional;
 import java.util.*;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.admin.launcher.GFLauncher;
-import com.sun.enterprise.admin.launcher.GFLauncherException;
-import com.sun.enterprise.admin.launcher.GFLauncherFactory;
-import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.DomainsManager;
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
-import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
 
 /**
  *  This is a local command that deletes a domain.
  */
 @Service(name = "delete-domain")
-public final class DeleteDomainCommand extends CLICommand {
+public final class DeleteDomainCommand extends LocalDomainCommand {
 
     private static final String DOMAINDIR = "domaindir";
 
@@ -105,12 +99,10 @@ public final class DeleteDomainCommand extends CLICommand {
     protected int executeCommand()
             throws CommandException, CommandValidationException {
 
-	String domainName = null;
         try {            
             // XXX - could allow more than one domain name operand
-	    domainName = operands.get(0);
             DomainConfig domainConfig =
-                new DomainConfig(domainName, getDomainsRoot());
+                new DomainConfig(domainName, domainsDir.getPath());
             DomainsManager manager = new PEDomainsManager();
             manager.deleteDomain(domainConfig);
             deleteLoginInfo();
@@ -122,19 +114,6 @@ public final class DeleteDomainCommand extends CLICommand {
 
 	logger.printDetailMessage(strings.get("DomainDeleted", domainName));
         return 0;
-    }
-
-    protected String getDomainsRoot() throws CommandException {
-        String domainDir = getOption(DOMAINDIR);
-        if (domainDir == null) {
-            domainDir = getSystemProperty(
-                SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
-        }
-        if (domainDir == null) {
-            throw new CommandException(
-                        strings.get("InvalidDomainPath", domainDir));
-        }
-        return domainDir;
     }
 
     /**
