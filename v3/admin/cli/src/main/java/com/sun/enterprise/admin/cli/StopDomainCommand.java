@@ -38,20 +38,11 @@ package com.sun.enterprise.admin.cli;
 
 import java.io.*;
 import java.util.*;
-import java.net.Socket;
-import java.util.logging.Level;
 import org.jvnet.hk2.annotations.Service;
-import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.cli.remote.DASUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.universal.io.SmartFile;
-import com.sun.enterprise.universal.xml.MiniXmlParser;
-import com.sun.enterprise.universal.xml.MiniXmlParserException;
 
 /**
  * The stop-domain command.
@@ -87,7 +78,7 @@ public class StopDomainCommand extends LocalDomainCommand {
     @Override
     protected int executeCommand()
             throws CommandException, CommandValidationException {
-        int adminPort = getAdminPort();
+        int adminPort = getAdminPort(getDomainXml());
         programOpts.setPort(adminPort);
 
         // Verify that the DAS is running and reachable

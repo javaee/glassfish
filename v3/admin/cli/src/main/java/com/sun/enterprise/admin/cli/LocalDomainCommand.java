@@ -109,7 +109,7 @@ public abstract class LocalDomainCommand extends CLICommand {
         domainRootDir = SmartFile.sanitize(domainRootDir);
         domainsDir    = SmartFile.sanitize(domainsDir);
 
-        initializeLocalPassword();
+        initializeLocalPassword(domainRootDir);
     }
     
     private File getTheOneAndOnlyDomain(File parent)
@@ -157,7 +157,7 @@ public abstract class LocalDomainCommand extends CLICommand {
      * If there's a local-password file, use the local password so the
      * user never has to enter a password.
      */
-    protected void initializeLocalPassword() {
+    protected void initializeLocalPassword(File domainRootDir) {
         // root-dir/config/local-password
         File localPassword = new File(new File(domainRootDir, "config"),
                                     "local-password");
@@ -241,16 +241,17 @@ public abstract class LocalDomainCommand extends CLICommand {
      * be called only when you own the domain that is available on accessible
      * file system.
      *
+     * @param domainXml the domain.xml file
      * @return an integer that represents admin port
      * @throws CommandException in case of parsing errors
      * @throws CommandValidationException in case of parsing errors 
      */
-    protected int getAdminPort()
+    protected int getAdminPort(File domainXml)
                         throws CommandValidationException, CommandException {
         Integer[] ports;
 
         try {
-            MiniXmlParser parser = new MiniXmlParser(this.getDomainXml());
+            MiniXmlParser parser = new MiniXmlParser(domainXml);
             Set<Integer> portsSet = parser.getAdminPorts();
             ports = portsSet.toArray(new Integer[portsSet.size()]);
             return ports[0];

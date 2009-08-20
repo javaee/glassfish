@@ -55,7 +55,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
  *  This is a local command that lists the domains.
  */
 @Service(name = "list-domains")
-public final class ListDomainsCommand extends CLICommand {
+public final class ListDomainsCommand extends LocalDomainCommand {
 
     private static final String DOMAINDIR = "domaindir";
 
@@ -79,6 +79,13 @@ public final class ListDomainsCommand extends CLICommand {
 
         processProgramOptions();
     }
+
+    /**
+     * Override superclass version to do nothing, since this command
+     * doesn't operate on just a single domain.
+     */
+    protected void initDomain() {
+    }
  
     /**
      */
@@ -90,6 +97,7 @@ public final class ListDomainsCommand extends CLICommand {
                 getDomainsRoot());
             DomainsManager manager = new PEDomainsManager();
             String[] domainsList = manager.listDomains(domainConfig);
+            programOpts.setInteractive(false);  // no prompting for passwords
             if (domainsList.length > 0) {
                 for (int i = 0; i < domainsList.length; i++) {
                     String dn = domainsList[i];
@@ -130,23 +138,21 @@ public final class ListDomainsCommand extends CLICommand {
             String parent = getOption(DOMAINDIR);
             if (parent != null)
                 li.setDomainParentDir(parent);            
-            launcher.getInfo().setDomainName(dn);
+            li.setDomainName(dn);
             launcher.setup(); //admin ports are not available otherwise
-            Set<Integer> adminPorts = launcher.getInfo().getAdminPorts();
-            boolean status = isServerAlive(adminPorts.iterator().next());
+            initializeLocalPassword(li.getInstanceRootDir());
+            Set<Integer> adminPorts = li.getAdminPorts();
+            boolean status = isRunning(adminPorts.iterator().next());
             if (status)
                 return strings.get("list.domains.StatusRunning");
             else
                 return strings.get("list.domains.StatusNotRunning");
         } catch (GFLauncherException gf) {
+            logger.printExceptionStackTrace(gf);
             return strings.get("list.domains.StatusUnknown");
         } catch (MiniXmlParserException me) {
+            logger.printExceptionStackTrace(me);
             return strings.get("list.domains.StatusUnknown");
         }
-    }
-
-    private boolean isServerAlive(int port) {
-        programOpts.setPort(port);
-        return DASUtils.pingDASQuietly(programOpts, env);
     }
 }
