@@ -39,19 +39,20 @@
 
 package org.glassfish.appclient.server.core.jws;
 
-import com.sun.enterprise.deployment.runtime.JnlpDocDescriptor;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
 import java.util.Map;
-import java.util.Properties;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -61,8 +62,14 @@ import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.SimpleDynamicContentImpl;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 
 /**
@@ -74,12 +81,13 @@ import org.xml.sax.InputSource;
 public class DeveloperContentHandler {
 
     private final ClassLoader loader;
-    private final String jnlpDoc;
     private final Map<String,StaticContent> staticContent;
     private final Map<String,DynamicContent> dynamicContent;
     private final TokenHelper tHelper;
     private final File appRootDir;
     private final URI appRootURI;
+
+    private LSSerializer lsSerializer = null;
     
     private static DocumentBuilderFactory dbf = null;
 
@@ -195,9 +203,9 @@ public class DeveloperContentHandler {
         new CombinedXPath.DefaultedXPath(xPath, "/jnlp", "/@spec"),
         new CombinedXPath.DefaultedXPath(xPath, "/jnlp", "/@version"),
         new CombinedXPath.DefaultedXPath(xPath, "/jnlp", "/information"),
-        new CombinedXPath.DefaultedXPath(xPath, "/jnlp", "/resources/javase"),
-        new CombinedXPath.DefaultedXPath(xPath, "/jnlp", "/resources/javase/@version"),
-        new CombinedXPath.DefaultedXPath(xPath, "/jnlp", "/resources/javase/@java-vm-args"),
+        new CombinedXPath.DefaultedXPath(xPath, "/jnlp", "/resources/java"),
+        new CombinedXPath.DefaultedXPath(xPath, "/jnlp/resources/java", "/@version"),
+        new CombinedXPath.DefaultedXPath(xPath, "/jnlp/resources/java", "/@java-vm-args"),
 
         new CombinedXPath.MergedXPath(xPath, "/jnlp/resources", "/jar"),
         new CombinedXPath.MergedXPath(xPath, "/jnlp/resources", "/property"),
@@ -205,41 +213,30 @@ public class DeveloperContentHandler {
     };
 
 
-    public static DeveloperContentHandler addDeveloperContent(
+    DeveloperContentHandler(
             final ClassLoader loader,
-            final String jnlpDoc,
             final TokenHelper tHelper,
             final File appRootDir,
             final Map<String,StaticContent> staticContent,
             final Map<String,DynamicContent> dynamicContent) {
 
-        DeveloperContentHandler h = new DeveloperContentHandler(loader, jnlpDoc,
-                tHelper, appRootDir, staticContent, dynamicContent);
-        h.process();
-        return h;
-    }
-
-    private DeveloperContentHandler(ClassLoader loader, String jnlpDoc,
-            final TokenHelper tHelper, 
-            final File appRootDir,
-            final Map<String,StaticContent> staticContent,
-            final Map<String,DynamicContent> dynamicContent) {
         this.loader = loader;
-        this.jnlpDoc = jnlpDoc;
         this.tHelper = tHelper;
         this.appRootDir = appRootDir;
         this.appRootURI = appRootDir.toURI();
         this.staticContent = staticContent;
         this.dynamicContent = dynamicContent;
-    }
+     }
 
-    private void processDeveloperJNLP() {
+    String processDeveloperJNLP(
+            final String jnlpDoc,
+            final String generatedJNLPTemplate) {
         /*
          * There is no work to do unless the developer specified a JNLP
          * document.
          */
         if (jnlpDoc == null || (jnlpDoc.length() == 0)) {
-            return;
+            return generatedJNLPTemplate;
         }
 
         /*
@@ -247,16 +244,14 @@ public class DeveloperContentHandler {
          */
         final InputStream devJNLPStream = loader.getResourceAsStream(jnlpDoc);
         if (devJNLPStream == null) {
-            return;
+            return generatedJNLPTemplate;
         }
 
         /*
          * Get the generated main JNLP document.
          */
-        final String generatedJNLP = dynamicContent.get(tHelper.mainJNLP())
-                .getOrCreateInstance(new Properties())
-                .getText();
-        final InputSource generatedJNLPSource = new InputSource(new StringReader(generatedJNLP));
+        final InputSource generatedJNLPSource = new InputSource(
+                new StringReader(generatedJNLPTemplate));
 
         /*
          * Start with the developer-provided document, then override the parts
@@ -274,6 +269,7 @@ public class DeveloperContentHandler {
             for (CombinedXPath combinedXPath : xPaths) {
                 combinedXPath.process(developerDOM, gfDOM);
             }
+            return toXML(developerDOM);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -283,7 +279,33 @@ public class DeveloperContentHandler {
 
     }
 
-    private void process() {
+    private String toXML(final Document dom)
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+
+        Writer writer = new StringWriter();
+        writeXML(dom, writer);
+        return writer.toString();
+    }
+
+    private LSOutput lsOutput = null;
+
+
+
+    private synchronized void writeXML(final Node node, final Writer writer)
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        if (lsSerializer == null) {
+            final DOMImplementation domImpl = DOMImplementationRegistry.newInstance().
+                    getDOMImplementation("");
+            final DOMImplementationLS domLS = (DOMImplementationLS) domImpl.getFeature("LS", "3.0");
+            lsOutput = domLS.createLSOutput();
+            lsOutput.setEncoding("UTF-8");
+            lsSerializer = domLS.createLSSerializer();
+        }
+        lsOutput.setCharacterStream(writer);
+        lsSerializer.write(node, lsOutput);
+    }
+
+    void addDeveloperContent(final String jnlpDoc) {
         /*
          * There is no work to do unless the developer specified a JNLP
          * document.
@@ -325,10 +347,17 @@ public class DeveloperContentHandler {
 
     }
     
-    private synchronized static DocumentBuilderFactory getDocumentBuilderFactory() {
+    private synchronized static DocumentBuilderFactory getDocumentBuilderFactory() 
+            throws ParserConfigurationException {
         if (dbf == null) {
             dbf = DocumentBuilderFactory.newInstance();
-        }
+            /*
+             * Must turn off deferred expansion or the adoptNode method - which
+             * we use to migrate parts of the generated document into the
+             * result document - are not copied correctly.
+             */
+            dbf.setFeature("http://apache.org/xml/features/dom/defer-node-expansion", false);
+         }
         return dbf;
     }
 

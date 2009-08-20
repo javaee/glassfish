@@ -111,6 +111,9 @@ public class JavaWebStartInfo implements ConfigListener {
 
     private Logger logger;
 
+    final private Map<String,StaticContent> staticContent = new HashMap<String,StaticContent>();
+    final private Map<String,DynamicContent> dynamicContent = new HashMap<String,DynamicContent>();
+
     private static final String JNLP_MIME_TYPE = "application/x-java-jnlp-file";
     private static final String HTML_MIME_TYPE = "text/html";
     private static final String XML_MIME_TYPE = "application/xml";
@@ -160,6 +163,10 @@ public class JavaWebStartInfo implements ConfigListener {
 
     private ApplicationClientDescriptor acDesc;
 
+    private String jnlpDoc;
+
+    private DeveloperContentHandler dch;
+
     private static class SignedSystemContentFromApp {
         private final String tokenName;
         private final String relativePath;
@@ -202,12 +209,18 @@ public class JavaWebStartInfo implements ConfigListener {
         helper = acServerApp.helper();
         acDesc = acServerApp.getDescriptor();
         this.logger = LogDomains.getLogger(AppClientServerApplication.class,
-                LogDomains.ACC_LOGGER);dc = acServerApp.dc();
+                LogDomains.ACC_LOGGER);
+        dc = acServerApp.dc();
         isJWSEligible = acDesc.getJavaWebStartAccessDescriptor().isEligible();
         isJWSEnabledAtApp = isJWSEnabled(dc.getAppProps());
         isJWSEnabledAtModule = isJWSEnabled(dc.getModuleProps());
         tHelper = TokenHelper.newInstance(helper);
-
+        jnlpDoc = acDesc.getJavaWebStartAccessDescriptor().getJnlpDocument();
+        dch = new DeveloperContentHandler(dc.getClassLoader(),
+                    tHelper,
+                    dc.getSourceDir(),
+                    staticContent,
+                    dynamicContent);
     }
 
     /**
@@ -363,17 +376,12 @@ public class JavaWebStartInfo implements ConfigListener {
          * assigns some properties that can appear as placeholders in the
          * dynamic content.
          */
-        final Map<String,StaticContent> staticContent =
-                initClientStaticContent();
+        initClientStaticContent();
 
-        final Map<String,DynamicContent> dynamicContent =
-                initClientDynamicContent();
+        initClientDynamicContent();
 
-        final String jnlpDoc = acDesc.getJavaWebStartAccessDescriptor().getJnlpDocument();
         if (jnlpDoc != null && jnlpDoc.length() > 0) {
-            DeveloperContentHandler.addDeveloperContent(dc.getClassLoader(),
-                    jnlpDoc, tHelper,
-                    dc.getSourceDir(), staticContent, dynamicContent);
+            dch.addDeveloperContent(jnlpDoc);
         }
         
         Set<Content> result = new HashSet<Content>(staticContent.values());
@@ -385,19 +393,18 @@ public class JavaWebStartInfo implements ConfigListener {
         return result;
     }
 
-    private Map<String,StaticContent> initClientStaticContent()
+    private void initClientStaticContent()
             throws IOException, EndpointRegistrationException {
-        final Map<String,StaticContent> result = new HashMap<String,StaticContent>();
 
         /*
          * The client-level adapter's static content is the app client JAR and
          * the app client facade.
          */
-        createAndAddStaticContent(result, helper.appClientServerURI(dc),
+        createAndAddStaticContent(staticContent, helper.appClientServerURI(dc),
                 helper.appClientUserURI(dc),
                 CLIENT_JAR_PATH_PROPERTY_NAME);
 
-        createAndAddSignedStaticContentFromGeneratedFile(result, helper.facadeServerURI(dc),
+        createAndAddSignedStaticContentFromGeneratedFile(staticContent, helper.facadeServerURI(dc),
                 helper.facadeUserURI(dc),
                 CLIENT_FACADE_JAR_PATH_PROPERTY_NAME);
 
@@ -415,14 +422,14 @@ public class JavaWebStartInfo implements ConfigListener {
          * JAR will point to and reuse the same signed JAR, rather than
          * re-sign it each time an app needed it is started.
          */
-        addSignedSystemContent(result);
+        addSignedSystemContent(staticContent);
 
         /*
          * The developer might have used the sun-application-client.xml
          * java-web-start-support/vendor setting to communicate icon and/or
          * splash screen images URIs.
          */
-        prepareImageInfo(result, tHelper.tokens());
+        prepareImageInfo(staticContent, tHelper.tokens());
 
         /*
          * Make sure that all the EAR-level JARs that this client refers to
@@ -432,12 +439,11 @@ public class JavaWebStartInfo implements ConfigListener {
          */
         for (FullAndPartURIs artifact : helper.earLevelDownloads()) {
             final String uriString = artifact.getPart().toASCIIString();
-            result.put(uriString, new FixedContent(new File(artifact.getFull())));
+            staticContent.put(uriString, new FixedContent(new File(artifact.getFull())));
         }
 
         // TODO: needs to be expanded to handle signed library JARS, perhap signed by different certs
         tHelper.setProperty(APP_LIBRARY_EXTENSION_PROPERTY_NAME, "");
-        return result;
     }
 
     private void addSignedSystemContent(
@@ -515,42 +521,48 @@ public class JavaWebStartInfo implements ConfigListener {
         return new File(signedFileURI);
     }
 
-    private Map<String,DynamicContent> initClientDynamicContent() throws IOException {
+    private void initClientDynamicContent() throws IOException {
 
-
-        final Map<String,DynamicContent> result = new HashMap<String,DynamicContent>();
-
-        // TODO: needs to be expanded to pass any args we need to pass to the ACC (maybe all via agent args?)
         tHelper.setProperty(APP_CLIENT_MAIN_CLASS_ARGUMENTS_PROPERTY_NAME, "");
 
-        createAndAddDynamicContent(result, tHelper.mainJNLP(), MAIN_DOCUMENT_TEMPLATE);
+//        final String mainDocument = textFromURL(MAIN_DOCUMENT_TEMPLATE);
+        final String mainDocument = dch.processDeveloperJNLP(
+                    jnlpDoc,
+                    textFromURL(MAIN_DOCUMENT_TEMPLATE));
+        createAndAddDynamicContentFromTemplateText(
+                dynamicContent, tHelper.mainJNLP(), mainDocument);
 
         /*
          * Add the main JNLP again but with an empty URI string so the user
          * can launch the app client by specifying only the context root.
          */
-        createAndAddDynamicContent(result, "", MAIN_DOCUMENT_TEMPLATE);
-        createAndAddDynamicContent(result, tHelper.clientJNLP(), CLIENT_DOCUMENT_TEMPLATE);
-
-
-        // more templates and jnlps to come
-
-        return result;
+        createAndAddDynamicContentFromTemplateText(dynamicContent, "", mainDocument);
+//        createAndAddDynamicContentFromTemplateText(dynamicContent, "", mainDocument);
+        createAndAddDynamicContent(dynamicContent, tHelper.clientJNLP(), CLIENT_DOCUMENT_TEMPLATE);
     }
 
-    private void createAndAddDynamicContent(final Map<String,DynamicContent> content,
-            final String uriStringForContent, final String uriStringForTemplate) throws IOException {
+    private void createAndAddDynamicContent(
+            final Map<String,DynamicContent> content,
+            final String uriStringForContent,
+            final String uriStringForTemplate) throws IOException {
+        createAndAddDynamicContentFromTemplateText(
+                content, uriStringForContent,
+                textFromURL(uriStringForTemplate));
+    }
+
+    private void createAndAddDynamicContentFromTemplateText(
+            final Map<String,DynamicContent> content,
+            final String uriStringForContent,
+            final String templateText) throws IOException {
         final String processedTemplate = Util.replaceTokens(
-                textFromURL(uriStringForTemplate), tHelper.tokens());
+                templateText, tHelper.tokens());
         content.put(uriStringForContent, newDynamicContent(processedTemplate,
                 JNLP_MIME_TYPE));
         logger.fine("Adding dyn content " + uriStringForContent + System.getProperty("line.separator") +
                 (logger.isLoggable(Level.FINER) ? processedTemplate : ""));
-
-
     }
 
-private static DynamicContent newDynamicContent(final String template,
+    private static DynamicContent newDynamicContent(final String template,
             final String mimeType) {
         return new SimpleDynamicContentImpl(template, mimeType);
     }

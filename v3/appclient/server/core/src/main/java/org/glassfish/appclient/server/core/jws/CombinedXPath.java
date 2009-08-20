@@ -43,7 +43,9 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -109,6 +111,38 @@ abstract class CombinedXPath {
      */
     abstract void process(final Document developerDOM, final Document generatedDOM) throws XPathExpressionException;
 
+    protected void insert(
+            final Document originalDOM,
+            final Node insertionPoint,
+            final Node newNode) throws XPathExpressionException {
+        if (newNode instanceof Attr) {
+            setAttr(originalDOM, insertionPoint, (Attr) newNode);
+        } else {
+            insertNode(originalDOM, insertionPoint, newNode);
+        }
+    }
+
+    private void setAttr(
+            final Document originalDOM,
+            final Node insertionPoint,
+            final Attr newAttr) throws XPathExpressionException {
+        final Element parent = (insertionPoint == null) ?
+            (Element) parentExpr().evaluate(originalDOM, XPathConstants.NODE) :
+            ((Attr) insertionPoint).getOwnerElement();
+
+        parent.setAttribute(newAttr.getName(), newAttr.getValue());
+    }
+
+    private void insertNode(
+            final Document originalDOM,
+            final Node insertionPoint,
+            final Node newNode) throws XPathExpressionException {
+        final Node parentNode = (insertionPoint == null) ?
+            (Node) parentExpr().evaluate(originalDOM, XPathConstants.NODE) :
+            insertionPoint.getParentNode();
+        parentNode.insertBefore(originalDOM.adoptNode(newNode), insertionPoint);
+    }
+
     /**
      * Represents a node in the document which we completely determine,
      * overriding any corresponding node from the developer's DOM.
@@ -124,28 +158,73 @@ abstract class CombinedXPath {
 
         @Override
         void process(Document developerDOM, Document generatedDOM) throws XPathExpressionException {
-            NodeList developerNodes = (NodeList) targetExpr().evaluate(developerDOM, XPathConstants.NODESET);
-            NodeList generatedNodes = (NodeList) targetExpr().evaluate(generatedDOM, XPathConstants.NODESET);
+            final NodeList originalNodes = (NodeList) targetExpr().evaluate(developerDOM, XPathConstants.NODESET);
+            final NodeList replacementNodes = (NodeList) targetExpr().evaluate(generatedDOM, XPathConstants.NODESET);
 
             /*
-             * Replace each original developer child (if any) with the counterpart
-             * generated one.
+             * Replace all the matching original children (if any) with the
+             * replacement ones.
              */
-            for (int i = 0; i < generatedNodes.getLength(); i++) {
-                final Node generatedNode = generatedNodes.item(i);
-                Node developerParent;
-                if (developerNodes.getLength() > 0) {
-                    developerParent = developerNodes.item(1).getParentNode();
-                    developerParent.replaceChild(
-                            developerNodes.item(i),
-                            developerDOM.adoptNode(generatedNode));
-                } else {
-                    developerParent = (Node) parentExpr().evaluate(developerDOM, XPathConstants.NODE);
-                    developerParent.appendChild(developerDOM.adoptNode(
-                            generatedNode));
-                }
+            final Node insertionPoint = (originalNodes.getLength() > 0) ?
+                originalNodes.item(0).getPreviousSibling() : null;
+
+            /*
+             * Remove the old nodes first.  They could be attributes and, if so,
+             * we need to remove them first before setting them with the
+             * replacement values.  Otherwise, if we removed the old nodes
+             * after setting the new ones, we could accidentally erase new
+             * settings that were intended to replace old settings.
+             */
+
+            for (int i = 0; i < originalNodes.getLength(); i++) {
+                remove(originalNodes.item(i));
+            }
+            
+            for (int i = 0; i < replacementNodes.getLength(); i++) {
+                insert(developerDOM, insertionPoint, replacementNodes.item(i));
             }
         }
+
+        private void remove(final Node originalNode) {
+            if (originalNode instanceof Attr) {
+                removeAttr((Attr) originalNode);
+            } else {
+                removeNode(originalNode);
+            }
+        }
+
+        private void removeNode(final Node originalNode) {
+            originalNode.getParentNode().removeChild(originalNode);
+        }
+
+        private void removeAttr(final Attr originalAttr) {
+            final Element parent = originalAttr.getOwnerElement();
+            parent.removeAttribute(originalAttr.getName());
+        }
+
+        
+//        private void replaceNode(final Node existingNode, final Node replacementNode) {
+//            /*
+//             * If the node is an attribute we have to use different APIs.
+//             */
+//            if (existingNode instanceof Attr) {
+//                replace((Attr) existingNode, (Attr) replacementNode);
+//            } else {
+//                replace(existingNode, replacementNode);
+//            }
+//        }
+//
+//        private void replace(final Attr existingAttr, final Attr replacementAttr) {
+//            Element parent = existingAttr.getOwnerElement();
+//            parent.setAttribute(existingAttr.getName(), replacementAttr.getValue());
+//        }
+//
+//        private void replace(final Node existingNode, final Node replacementNode) {
+//            Node developerParent = existingNode.getParentNode();
+//            developerParent.replaceChild(
+//                    existingNode,
+//                    existingNode.getOwnerDocument().adoptNode(replacementNode));
+//        }
     }
 
     /**
@@ -166,26 +245,14 @@ abstract class CombinedXPath {
             NodeList developerNodes = (NodeList) targetExpr().evaluate(developerDOM, XPathConstants.NODESET);
             NodeList generatedNodes = (NodeList) targetExpr().evaluate(generatedDOM, XPathConstants.NODESET);
 
-            Node firstOriginalChild;
-            Node developerParent;
-            if (developerNodes.getLength() > 0) {
-                firstOriginalChild = developerNodes.item(1);
-                developerParent = firstOriginalChild.getParentNode();
-            } else {
-                firstOriginalChild = null;
-                developerParent = (Node) parentExpr().evaluate(developerDOM, XPathConstants.NODE);
-            }
+            final Node insertionPoint = (developerNodes.getLength() > 0) ?
+                developerNodes.item(0) : null;
 
-            /*
-             * Insert each generated node in front of the developer-provided
-             * one(s).
-             */
             for (int i = 0; i < generatedNodes.getLength(); i++) {
-                final Node generatedNode = generatedNodes.item(i);
-                developerParent.insertBefore(developerDOM.adoptNode(generatedNode),
-                        firstOriginalChild);
+                insert(developerDOM, insertionPoint, generatedNodes.item(i));
             }
         }
+        
     }
 
     /**
@@ -214,7 +281,15 @@ abstract class CombinedXPath {
             Node developerParent = (Node) parentExpr().evaluate(developerDOM, XPathConstants.NODE);
 
             for (int i = 0; i < generatedNodes.getLength(); i++) {
-                developerParent.appendChild(developerDOM.adoptNode(generatedNodes.item(i)));
+                append(developerParent, developerDOM.adoptNode(generatedNodes.item(i)));
+            }
+        }
+
+        private void append(final Node parent, final Node newNode) {
+            if (newNode instanceof Attr) {
+                ((Element) parent).setAttributeNode((Attr) newNode);
+            } else {
+                parent.appendChild(parent.getOwnerDocument().importNode(newNode, true /* deep */));
             }
         }
     }
