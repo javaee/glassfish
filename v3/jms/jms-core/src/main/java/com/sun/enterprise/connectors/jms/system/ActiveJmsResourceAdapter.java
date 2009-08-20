@@ -200,7 +200,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     //MCF properties
     private static final String MCFADDRESSLIST = "MessageServiceAddressList";
 
-    private static final String XA_JOIN_ALLOWED= "imq.jmsra.isXAJoinAllowed";
+    //private static final String XA_JOIN_ALLOWED= "imq.jmsra.isXAJoinAllowed";
 
     private StringManager sm =
         StringManager.getManager(ActiveJmsResourceAdapter.class);
@@ -328,7 +328,8 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                             public Object run() throws
                                     ResourceAdapterInternalException {
                                 //set the JMSRA system property to enable XA JOINS
-                                System.setProperty(XA_JOIN_ALLOWED, "true");
+                                //disabling this due to issue - 8727
+                                //System.setProperty(XA_JOIN_ALLOWED, "true");
                                 resourceadapter_.start(bootStrapContextImpl);
                                 return null;
                             }
