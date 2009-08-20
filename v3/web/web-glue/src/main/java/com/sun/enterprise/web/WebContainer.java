@@ -62,6 +62,7 @@ import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.DasConfig;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.MonitoringService;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Servers;
@@ -81,6 +82,7 @@ import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
+import com.sun.enterprise.v3.services.impl.monitor.config.ThreadPoolMI;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.logger.FileLoggerHandler;
 import com.sun.enterprise.web.logger.IASLogger;
@@ -92,6 +94,7 @@ import org.glassfish.api.admin.config.Property;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.hk2.component.ConstructorWomb;
 import com.sun.logging.LogDomains;
+import java.beans.PropertyVetoException;
 import org.apache.catalina.Connector;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
@@ -111,6 +114,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
+import org.glassfish.api.monitoring.MonitoringItem;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.data.ApplicationRegistry;
@@ -122,6 +126,8 @@ import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
 import org.glassfish.web.admin.monitor.WebModuleProbeProvider;
 import org.glassfish.web.admin.monitor.WebStatsProviderBootstrap;
+import org.glassfish.web.admin.monitor.config.HttpServiceMI;
+import org.glassfish.web.admin.monitor.config.WebContainerMI;
 import org.glassfish.web.valve.GlassFishValve;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -129,6 +135,8 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.ObservableBean;
 import org.xml.sax.EntityResolver;
 
@@ -150,6 +158,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     public static final String JWS_APPCLIENT_EAR_NAME = "__JWSappclients";
     public static final String JWS_APPCLIENT_WAR_NAME = "sys";
+    public static final String WEB_CONTAINER = "web-container";
+    public static final String HTTP_SERVICE = "http-service";
+    public static final String THREAD_POOL = "thread-pool";
     private static final String JWS_APPCLIENT_MODULE_NAME = JWS_APPCLIENT_EAR_NAME + ":" + JWS_APPCLIENT_WAR_NAME + ".war";
 
     private static final String DOL_DEPLOYMENT =
@@ -201,6 +212,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     LoggingConfigImpl logConfig;
+
+    @Inject
+    MonitoringService monitoringService;
 
     @Inject
     JavaEEObjectStreamFactory javaEEObjectStreamFactory;
@@ -377,6 +391,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         createProbeProviders();
 
         habitat = _serverContext.getDefaultHabitat();
+
+        createMonitoringConfig();
 
         createStatsProviders();
 
@@ -3108,6 +3124,52 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return true;
     }
 
+
+    /**
+     * Creates web-container, http-service, thread-pool config elements for monitoring.
+     *
+     * Check if the monitoring config has been created.
+     * If it has not, then add it.
+     */
+    private void createMonitoringConfig() {
+       createMonitoringConfig(WEB_CONTAINER, WebContainerMI.class);
+       createMonitoringConfig(HTTP_SERVICE, HttpServiceMI.class);
+       createMonitoringConfig(THREAD_POOL, ThreadPoolMI.class);
+    }
+
+    /**
+     * Creates web-container, http-service, thread-pool config elements for monitoring.
+     *
+     * Check if the monitoring config has been created.
+     * If it has not, then add it.
+     */
+    private void createMonitoringConfig(final String name, final Class monitoringItemClass) {
+        List<MonitoringItem> itemList = monitoringService.getMonitoringItems();
+        boolean hasMonitorConfig = false;
+        for (MonitoringItem mi : itemList) {
+            if (mi.getName().equals(name)) {
+                hasMonitorConfig = true;
+            }
+        }
+
+        try {
+            if (!hasMonitorConfig) {
+                ConfigSupport.apply(new SingleConfigCode<MonitoringService>() {
+
+                    public Object run(MonitoringService param) throws PropertyVetoException, TransactionFailure {
+
+                        MonitoringItem newItem = (MonitoringItem) param.createChild(monitoringItemClass);
+                        newItem.setName(name);
+                        newItem.setLevel(MonitoringItem.LEVEL_OFF);
+                        param.getMonitoringItems().add(newItem);
+                        return newItem;
+                    }
+                }, monitoringService);
+            }
+        } catch (TransactionFailure tfe) {
+            _logger.log(Level.SEVERE, "Exception adding " + name + " MonitoringItem", tfe);
+        }
+    }
 
     /**
      * Creates probe providers for Servlet, JSP, Session, and
