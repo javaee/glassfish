@@ -53,7 +53,7 @@ public class TestBean implements SessionBean {
         try {
            a1bean = a1Home.create("A1");
         } catch (CreateException e) {
-           throw new RuntimeException (e.getMessage());
+           throw new RuntimeException (e.getMessage(), e);
         }
 
 //PG->       a1bean.setName("A12345678901234567890"); 

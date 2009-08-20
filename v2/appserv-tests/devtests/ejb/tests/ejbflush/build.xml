@@ -32,7 +32,7 @@
             <param name="ejbjar.classes" 
               value="**/**.class" />
             <param name="appclientjar.classes" 
-              value="**/*Client*.class" />
+              value="**/TestHome.class,**/Test.class,**/*Client*.class" />
         </antcall>
     </target> 
     

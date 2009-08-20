@@ -68,6 +68,7 @@ public class Client {
             t.testA1();
             System.out.println("A1 OK");
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("A1 FAILED");
             stat.addStatus("ejbclient checkCmp11Bean", stat.FAIL);
             return;
@@ -95,6 +96,41 @@ public class Client {
             System.out.println("A2 FAILED");
             stat.addStatus("ejbclient checkCmp20Bean", stat.FAIL);
             return;
+        }
+
+        try {
+            t.testA2();
+            System.out.println("A2 FAILED");
+            stat.addStatus("ejbclient checkCmp20Bean", stat.FAIL);
+            return;
+        } catch (Exception e) {
+            Throwable t = e;
+            boolean ok = false;
+            while (t != null) {
+                System.out.println("Nested: " + t);
+                if (t instanceof java.sql.SQLException) {
+                    java.sql.SQLException se = (java.sql.SQLException) t;
+                    System.out.println("ErrorCode: " + se.getErrorCode());
+                    System.out.println("SQLState: " + se.getSQLState());
+                    java.sql.SQLException nse = se.getNextException();
+                    if (nse != null) {
+                        System.out.println("Nested SQLException: " + nse);
+                        System.out.println("ErrorCode: " + nse.getErrorCode());
+                        System.out.println("SQLState: " + nse.getSQLState());
+                    }
+                    ok = true;
+                } else {
+                    System.out.println("Not a java.sql.SQLException");
+                }
+                t = t.getCause();
+            }
+
+            if (ok)  {
+                System.out.println("A2 SQLException OK");
+            } else {
+                System.out.println("A2 FAILED - no SQLException detected");
+                stat.addStatus("ejbclient checkCmp20Bean", stat.FAIL);
+            }
         }
 
         try {
