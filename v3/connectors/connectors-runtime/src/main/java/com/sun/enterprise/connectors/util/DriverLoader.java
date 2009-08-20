@@ -220,7 +220,9 @@ public class DriverLoader implements ConnectorConstants {
         //classloader as the parent.
         } catch (Exception ex) {
             cls = null;
-        }
+        } catch (Throwable t) {
+            cls = null;
+        } 
         return (isResType(cls, resType));
     }
     
