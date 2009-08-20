@@ -69,6 +69,9 @@ public class WebBuilder implements ContainerBuilder<EmbeddedWebContainer> {
     }
 
     public URL getDefaultWebXml() {
+        if (defaultWebXml == null) {
+            defaultWebXml = getClass().getClassLoader().getResource("org/glassfish/web/embed/default-web.xml");
+        }
         return defaultWebXml;
     }
 
