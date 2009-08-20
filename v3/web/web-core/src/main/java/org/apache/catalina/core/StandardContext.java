@@ -3070,11 +3070,14 @@ public class StandardContext
                         "standardContext.servletMap.pattern", pattern));
                 }
 
-                // Ignore any conflicts with the DefaultServlet
-                String existingServlet = servletMappings.get(pattern);
-                if (existingServlet != null &&
-                        !existingServlet.equals(Constants.DEFAULT_SERVLET_NAME) &&
-                        !name.equals(Constants.DEFAULT_SERVLET_NAME)) {
+                // Ignore any conflicts with the container provided
+                // Default- and JspServlet 
+                String existing = servletMappings.get(pattern);
+                if (existing != null &&
+                        !existing.equals(Constants.DEFAULT_SERVLET_NAME) &&
+                        !existing.equals(Constants.JSP_SERVLET_NAME) &&
+                        !name.equals(Constants.DEFAULT_SERVLET_NAME) &&
+                        !name.equals(Constants.JSP_SERVLET_NAME)) {
                     if (conflicts == null) {
                         conflicts = new HashSet<String>();
                     }
@@ -3135,22 +3138,30 @@ public class StandardContext
 
         /*
          * Add this mapping to our registered set. Make sure that it is 
-         * possible to override the mappings of the DefaultServlet, and that
-         * the DefaultServlet must not be able to override any user-defined
-         * mappings. This is to prevent the DefaultServlet from hijacking "/".
+         * possible to override the mappings of the container provided
+         * Default- and JspServlet, and that these servlets are prevented
+         * from overriding any user-defined mappings (depending on the order
+         * in which the contents of the default-web.xml are merged with those
+         * of the app's deployment descriptor).
+         * This is to prevent the DefaultServlet from hijacking '/', and the
+         * JspServlet from hijacking *.jsp(x).
          */
         synchronized (servletMappings) {
-            String existingServlet = servletMappings.get(pattern);
-            if (existingServlet != null) {
-                if (!existingServlet.equals(Constants.DEFAULT_SERVLET_NAME) &&
-                        !name.equals(Constants.DEFAULT_SERVLET_NAME)) {
+            String existing = servletMappings.get(pattern);
+            if (existing != null) {
+                if (!existing.equals(Constants.DEFAULT_SERVLET_NAME) &&
+                        !existing.equals(Constants.JSP_SERVLET_NAME) &&
+                        !name.equals(Constants.DEFAULT_SERVLET_NAME) &&
+                        !name.equals(Constants.JSP_SERVLET_NAME)) {
                     throw new IllegalArgumentException(sm.getString(
                         "standardContext.duplicateServletMapping",
-                        name, pattern, existingServlet));
+                        name, pattern, existing));
                 }
-                if (existingServlet.equals(Constants.DEFAULT_SERVLET_NAME)) {
-                    // Override the mapping of the DefaultServlet
-                    Wrapper wrapper = (Wrapper) findChild(existingServlet);
+                if (existing.equals(Constants.DEFAULT_SERVLET_NAME) ||
+                        existing.equals(Constants.JSP_SERVLET_NAME)) {
+                    // Override the mapping of the container provided
+                    // Default- or JspServlet
+                    Wrapper wrapper = (Wrapper) findChild(existing);
                     wrapper.removeMapping(pattern);
                     mapper.removeWrapper(pattern);
                     servletMappings.put(pattern, name);
