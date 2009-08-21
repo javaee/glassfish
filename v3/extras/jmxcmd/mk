@@ -105,6 +105,8 @@ echo "Copying various GlassFish V3 jars from assumed location: " + $JARS_LOC
 
 echo "Copying" $JARS_LOC/amx-core.jar
 cp $JARS_LOC/amx-core.jar $PUBLISH_DIR/jars
+cp $JARS_LOC/glassfish-api.jar $PUBLISH_DIR/jars
+cp $JARS_LOC/management-api.jar $PUBLISH_DIR/jars
 
 echo "Copying" $JARS_LOC/jmxremote_optional-repackaged.jar
 cp $JARS_LOC/jmxremote_optional-repackaged.jar $PUBLISH_DIR/jars/jmxremote_optional.jar

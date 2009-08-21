@@ -62,7 +62,7 @@ fi
 # 'D' is simply an abbreviation to keep things compact.
 JARS_DIR=$SCRIPT_DIR/jars
 OPTIONAL_JARS=$D/mx-optional.jar
-USER_JARS=$JARS_DIR/amx-core.jar${CPS}$JARS_DIR/jmxremote_optional.jar${CPS}$JARS_DIR/javax.management.j2ee.jar
+USER_JARS=$JARS_DIR/amx-core.jar${CPS}$JARS_DIR/glassfish-api.jar${CPS}$JARS_DIR/management-api.jar${CPS}$JARS_DIR/jmxremote_optional.jar${CPS}$JARS_DIR/javax.management.j2ee.jar
 
 #
 # Support jars are usually already incorporated, but can be separated out.
