@@ -72,6 +72,17 @@
         <sun:staticText text="$resource{i18n.tree.grizzly.protocols}" />
     </sun:hyperlink>
 </sun:property>
+
+<sun:property>
+    <sun:hyperlink
+        toolTip="$resource{i18n.tree.grizzly.transports.tooltip}"
+        url="/web/grizzly/transports.jsf?configName=#{configName}"
+        >
+        <sun:image url="/resource/web/images/http.gif" />
+        <sun:staticText text="$resource{i18n.tree.grizzly.transports}" />
+    </sun:hyperlink>
+</sun:property>
+
 </sun:propertySheetSection>
 </sun:propertySheet>
 
