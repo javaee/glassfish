@@ -85,6 +85,11 @@ public class WebTest {
             invoke();
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
+            System.out.println("Test failed. In order for this test " +
+                "to pass, it is required that the web container has been " +
+                "started prior to running this test, so that the dummy " +
+                "web module of the virtual server can be configured with " +
+                "the virtual server's alternate docroots");
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
         }
