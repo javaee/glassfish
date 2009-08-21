@@ -78,6 +78,8 @@ public class RemoteCommand extends CLICommand {
     // return output string rather than printing it
     private boolean                         returnOutput = false;
     private String                          output;
+    private boolean                         returnAttributes = false;
+    private Map<String, String>             attrs;
     private boolean                         doUpload = false;
     private boolean                         addedUploadOption = false;
     private boolean                         doHelp = false;
@@ -343,6 +345,21 @@ public class RemoteCommand extends CLICommand {
     }
 
     /**
+     * Execute the command and return the main attributes from the manifest
+     * instead of writing out the output.
+     */
+    public Map<String, String> executeAndReturnAttributes(String... args)
+            throws CommandException, CommandValidationException {
+        /*
+         * Tell the low level output processing to just save the attributes
+         * instead of writing out the output.  Yes, this is pretty gross.
+         */
+        returnAttributes = true;
+        execute(args);
+        return attrs;
+    }
+
+    /**
      * Set up an HTTP connection, call cmd.doCommand to do all the work,
      * and handle common exceptions.
      *
@@ -569,6 +586,8 @@ public class RemoteCommand extends CLICommand {
         } catch (RemoteSuccessException rse) {
             if (returnOutput)
                 output = rse.getMessage();
+            else if (returnAttributes)
+                attrs = rrm.getMainAtts();
             else
                 logger.printMessage(rse.getMessage());
             return;

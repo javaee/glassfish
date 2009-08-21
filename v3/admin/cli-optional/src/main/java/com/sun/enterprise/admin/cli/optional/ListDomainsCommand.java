@@ -36,10 +36,11 @@
 
 package com.sun.enterprise.admin.cli.optional;
 
+import java.io.File;
 import java.util.*;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.admin.cli.remote.DASUtils;
+import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.launcher.GFLauncher;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
@@ -49,6 +50,7 @@ import com.sun.enterprise.admin.servermgmt.DomainsManager;
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 /**
@@ -58,6 +60,10 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 public final class ListDomainsCommand extends LocalDomainCommand {
 
     private static final String DOMAINDIR = "domaindir";
+
+    // the key for the Domain Root in the main attributes of the
+    // manifest returned by the __locations command
+    private static final String DOMAIN_ROOT_KEY = "Domain-Root_value";
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ListDomainsCommand.class);
@@ -142,7 +148,9 @@ public final class ListDomainsCommand extends LocalDomainCommand {
             launcher.setup(); //admin ports are not available otherwise
             initializeLocalPassword(li.getInstanceRootDir());
             Set<Integer> adminPorts = li.getAdminPorts();
-            boolean status = isRunning(adminPorts.iterator().next());
+            programOpts.setPort(adminPorts.iterator().next());
+            boolean status =
+                isThisDAS(SmartFile.sanitize(li.getInstanceRootDir()));
             if (status)
                 return strings.get("list.domains.StatusRunning");
             else
@@ -153,6 +161,31 @@ public final class ListDomainsCommand extends LocalDomainCommand {
         } catch (MiniXmlParserException me) {
             logger.printExceptionStackTrace(me);
             return strings.get("list.domains.StatusUnknown");
+        }
+    }
+
+
+    /**
+     * See if DAS is alive and is the one at the specified domain directory.
+     *
+     * @return true if it's the DAS at this domain directory
+     */
+    private boolean isThisDAS(File domainDir) {
+        logger.printDebugMessage("Check if server is at location " + domainDir);
+        try {
+            RemoteCommand cmd =
+                new RemoteCommand("__locations", programOpts, env);
+            Map<String, String> attrs =
+                cmd.executeAndReturnAttributes(new String[] { "__locations" });
+            String rdr = attrs.get(DOMAIN_ROOT_KEY);
+            logger.printDebugMessage("Remote server has domain root " + rdr);
+            if (rdr != null) {
+                File rf = SmartFile.sanitize(new File(rdr));
+                return rf.equals(domainDir);
+            }
+            return false;
+        } catch (Exception ex) {
+            return false;
         }
     }
 }

@@ -90,7 +90,7 @@ public class DASUtils {
      * See if DAS is alive, but insist that athentication is correct.
      * Do not print out the results of the version command from the server.
      *
-     * @throws CommandException on failure
+     * @return Error code indicating status
      */
     public static Error pingDASWithAuth(ProgramOptions programOpts,
             Environment env) throws CommandException {
