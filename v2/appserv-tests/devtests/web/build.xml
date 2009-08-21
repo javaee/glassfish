@@ -212,6 +212,9 @@
         <ant dir="servlet-3.0/servletContextAddListenerByClassName" target="all"/>
         <ant dir="servlet-3.0/servletContextAddServletOverrideDefaultAndJspServletMappings" target="all"/>
         <ant dir="servlet-3.0/servletContextCreateServletAndFilter" target="all"/>
+<!-- XXX temporarily commented out, see IT 9199
+        <ant dir="servlet-3.0/servletContextCompletePreliminaryServletRegistration" target="all"/>
+-->
         <ant dir="servletContextAttributeEventAttributeRemoved" target="all"/>
         <ant dir="servletGetServerPort" target="all"/>
         <ant dir="servletAnnotationPreDestroy" target="all"/>
