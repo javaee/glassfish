@@ -54,11 +54,11 @@
                 redirect(page="connectorConnectionPoolProperty.jsf?name=#{pageSession.Name}");
             />
         </sun:tab>
-        <!--<sun:tab id="securityMapTab" immediate="$boolean{true}" text="$resource{i18njca.connectorSecurityMaps.tabTitle}">
+        <sun:tab id="securityMapTab" immediate="$boolean{true}" text="$resource{i18njca.connectorSecurityMaps.tabTitle}">
             <!command
                 setSessionAttribute(key="connectorPoolTabs" value="securityMapTab");
                 redirect(page="connectorSecurityMaps.jsf?name=#{pageSession.Name}");
             />
-        </sun:tab>-->
+        </sun:tab>
 </sun:tabSet>
 

@@ -43,7 +43,6 @@
 <!define name="content">
 <event>
     <!beforeCreate
-    setSessionAttribute(key="resEditTabs" value="general");
     setPageSessionAttribute(key="edit" value="#{true}" );
     getRequestValue(key="configName" value=>$page{configName} default="server-config");
     getRequestValue(key="name" value="#{pageSession.Name}");

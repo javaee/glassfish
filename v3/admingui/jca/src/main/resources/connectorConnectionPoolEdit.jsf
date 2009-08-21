@@ -43,7 +43,7 @@
 <!define name="content">
 <event>
     <!beforeCreate
-    setPageSessionAttribute(key="connectorPoolTabs" value="general");
+    setSessionAttribute(key="connectorPoolTabs" value="general");
     getRequestValue(key="configName" value=>$page{configName} default="server-config");
     getRequestValue(key="name" value="#{pageSession.Name}");
     setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorConnectionPoolEdit.jsf");
