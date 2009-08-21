@@ -2743,17 +2743,6 @@ public abstract class BaseContainer
                             valid = true;
                         } else if( bothFuture ) {
                             valid = true;
-                        } else if( intfMethodReturnTypeFuture ) {
-
-                            // If method is exposed through a local or remote business interface,
-                            // it's valid if the interface declares Future<V> return type and
-                            // the method impl returns V.
-                            Type intfMethodReturnType = intfMethod.getGenericReturnType();
-                            Type beanMethodReturnType = beanMethod.getGenericReturnType();
-
-                            valid = (beanMethodReturnType.equals(
-                                ((ParameterizedType)intfMethodReturnType).getActualTypeArguments()[0]));
-
                         }
 
                         if( !valid ) {

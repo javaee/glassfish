@@ -53,7 +53,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.RemoteHome;
 import javax.ejb.LocalHome;
 import javax.ejb.Stateless;
-import javax.ejb.Asynchronous;
+
 
 import org.jvnet.hk2.component.Habitat;
 
@@ -438,11 +438,6 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
         }
 
 
-        processAsyncInterfaces(remoteBusIntfs, ejbDesc, MethodDescriptor.EJB_REMOTE);
-
-        processAsyncInterfaces(localBusIntfs, ejbDesc, MethodDescriptor.EJB_LOCAL);
-
-
         // Do Adapted @Home / Adapted @LocalHome processing here too since
         // they are logically part of the structural @Stateless/@Stateful info.
         RemoteHome remoteHomeAnn = (RemoteHome) 
@@ -561,35 +556,4 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
         
     }
 
-    private void processAsyncInterfaces(Set<Class> intfs, EjbDescriptor ejbDesc, String methodIntf)
-        throws AnnotationProcessorException {
-
-        for(Class next : intfs) {
-            processAsynchronousAnnotation(next, ejbDesc, methodIntf);
-            // Recursively call super-interfaces if there are any
-            Class[] superintfs = next.getInterfaces();
-            for(Class c : superintfs) {
-                processAsynchronousAnnotation(c, ejbDesc, methodIntf);
-            }
-        }
-
-    }
-
-    private void processAsynchronousAnnotation(Class intf, 
-            EjbDescriptor ejbDesc, String methodIntf) throws AnnotationProcessorException {
-        if (logger.isLoggable(Level.FINE)) {            
-            logger.fine("Looking for @Asynchronous annotation on " + intf);
-        }
-
-        // XXX Inject instead?
-        AsynchronousHandler asHandler = new AsynchronousHandler();
-
-        boolean definedOnIntf = (intf.getAnnotation(Asynchronous.class) != null);
-        Method[] methods = intf.getDeclaredMethods();
-        for (Method m0 : methods) {
-            if (definedOnIntf || m0.getAnnotation(Asynchronous.class) != null) {
-                asHandler.setAsynchronous(m0, ejbDesc, methodIntf);
-            }
-        }
-    }
 }

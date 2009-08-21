@@ -136,17 +136,28 @@ public class ComponentEnvManagerImpl
 
         Collection<JNDIBinding> bindings = new ArrayList<JNDIBinding>();
 
-        // Add all java:comp, java:module, and java:app dependencies for the specified environment
+        // Add all java:comp, java:module, and java:app(except for app clients) dependencies
+        // for the specified environment
         addJNDIBindings(env, ScopeType.COMPONENT, bindings);
         addJNDIBindings(env, ScopeType.MODULE, bindings);
-        addJNDIBindings(env, ScopeType.APP, bindings);
+
+        if (!(env instanceof ApplicationClientDescriptor)) {
+            addJNDIBindings(env, ScopeType.APP, bindings);
+        }
 
         if( env instanceof Application) {
+            Application app = (Application) env;
+            // Add any java:app entries defined by any app clients.  These must
+            // live in the server so they are accessible by other modules in the .ear.  Likewise,
+            // those same entries will not be registered within the app client JVM itself.
+            for(JndiNameEnvironment next : app.getApplicationClientDescriptors()) {
+                addJNDIBindings(next, ScopeType.APP, bindings);
+            }
+
             namingManager.bindToAppNamespace(getApplicationName(env), bindings);
         } else {
             
             boolean treatComponentAsModule = getTreatComponentAsModule(env);
-
 
             // Bind dependencies to the namespace for this component
             namingManager.bindToComponentNamespace(getApplicationName(env), getModuleName(env),
@@ -155,13 +166,25 @@ public class ComponentEnvManagerImpl
 
         }
 
-        // Publish any dependencies with java:global names defined by the current env
-        // to the global namespace
-        Collection<JNDIBinding> globalBindings = new ArrayList<JNDIBinding>();
-        addJNDIBindings(env, ScopeType.GLOBAL, globalBindings);
+        if (!(env instanceof ApplicationClientDescriptor)) {
+            // Publish any dependencies with java:global names defined by the current env
+            // to the global namespace
+            Collection<JNDIBinding> globalBindings = new ArrayList<JNDIBinding>();
+            addJNDIBindings(env, ScopeType.GLOBAL, globalBindings);
 
-        for(JNDIBinding next : globalBindings) {
-            namingManager.publishObject(next.getName(), next.getValue(), true);
+            if( env instanceof Application ) {
+                Application app = (Application) env;
+                // Add any java:global entries defined by any app clients.  These must
+                // live in the server so they are accessible by other modules in the .ear.  Likewise,
+                // those same entries will not be registered within the app client JVM itself.
+                for(JndiNameEnvironment next : app.getApplicationClientDescriptors()) {
+                    addJNDIBindings(next, ScopeType.GLOBAL, globalBindings);
+                }
+            }
+
+            for(JNDIBinding next : globalBindings) {
+                namingManager.publishObject(next.getName(), next.getValue(), true);
+            }
         }
 
         // If the app contains any application client modules (and the given env isn't
@@ -169,8 +192,8 @@ public class ComponentEnvManagerImpl
         // internal portion of the global namespace based on the application name.  This
         // will allow app client access to application-wide objects within the server.
         Application app = getApplicationFromEnv(env);
-        if( !(env instanceof ApplicationClientDescriptor ) &&
-            (app.getBundleDescriptors(ApplicationClientDescriptor.class).size() > 0) ) {
+        if( !(env instanceof ApplicationClientDescriptor) &&
+            app.getBundleDescriptors(ApplicationClientDescriptor.class).size() > 0 ) {
             for(JNDIBinding next : bindings) {
                 if( dependencyAppliesToScope(next.getName(), ScopeType.APP) ) {
                     String internalGlobalJavaAppName =

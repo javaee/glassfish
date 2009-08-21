@@ -38,6 +38,7 @@ package com.sun.enterprise.container.common.impl.util;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.enterprise.container.common.spi.ManagedBeanManager;
 import com.sun.enterprise.deployment.InjectionCapable;
 import com.sun.enterprise.deployment.InjectionInfo;
 import com.sun.enterprise.deployment.InjectionTarget;
@@ -61,13 +62,22 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.ManagedBean;
+import java.lang.reflect.Constructor;
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+
+import org.jvnet.hk2.component.Habitat;
+
+import org.jvnet.hk2.component.PostConstruct;
+
 /**
  * Implementation of InjectionManager.
  *
  * @author Kenneth Saks
  */
 @Service
-public class InjectionManagerImpl implements InjectionManager {
+public class InjectionManagerImpl implements InjectionManager, PostConstruct {
 
     @Inject
     private Logger _logger;
@@ -83,6 +93,29 @@ public class InjectionManagerImpl implements InjectionManager {
 
     @Inject
     private GlassfishNamingManager glassfishNamingManager;
+
+    @Inject
+    private Habitat habitat;
+
+    @Inject
+    private ProcessEnvironment processEnv;
+
+    public void postConstruct() {
+
+        // When in the server, register in JNDI to allow container code without
+        // compile-time dependency on GlassFish to use injection services.
+        // We know GlassFishNaming manager is available because it's an injected field.
+
+        if( processEnv.getProcessType().isServer() ) {
+            try {
+                glassfishNamingManager.publishObject("com.sun.enterprise.container.common.spi.util.InjectionManager",
+                    this, true);
+            } catch(NamingException ne) {
+                throw new RuntimeException(ne);
+            }
+        }
+
+    }
 
 
     public void injectInstance(Object instance)
@@ -207,6 +240,91 @@ public class InjectionManagerImpl implements InjectionManager {
         throws InjectionException
     {
         invokePreDestroy(clazz, null, componentEnv);
+    }
+
+
+    /**
+     * Create a managed object for the given class.  The object will be
+     * injected and any PostConstruct methods will be called.  The returned
+     * object can be cast to the clazz type but is not necessarily a direct
+     * reference to the managed instance.  All invocations on the returned
+     * object should be on its public methods.
+     *
+     * It is the responsibility of the caller to destroy the returned object
+     * by calling destroyManagedObject(Object managedObject).
+     *
+     * @param clazz  Class to be instantiated
+     * @return managed object
+     * @throws InjectionException
+     */
+    public Object createManagedObject(Class clazz)
+        throws InjectionException {
+
+        Object managedObject = null;
+
+        try {
+
+            // TODO if ( 299 enabled app ) Use 299 SPI to create/inject managed bean
+
+            ManagedBean managedBeanAnn = (ManagedBean) clazz.getAnnotation(ManagedBean.class);
+
+            if( managedBeanAnn != null ) {
+
+                ManagedBeanManager managedBeanMgr = habitat.getByContract(ManagedBeanManager.class);
+
+                // Create , inject, and call PostConstruct via managed bean manager
+                managedObject = managedBeanMgr.createManagedBean(clazz);
+
+            } else {
+
+                Constructor noArgCtor = clazz.getConstructor();
+
+                managedObject = noArgCtor.newInstance();
+
+                // Inject and call PostConstruct
+                injectInstance(managedObject);
+
+            }
+
+        } catch(Exception e) {
+            throw new InjectionException("Error creating managed object for " + clazz, e);
+        }
+
+        return managedObject;
+    }
+
+    /**
+     * Destroy a managed object that was created via createManagedObject.  Any
+     * PreDestroy methods will be called.
+     *
+     * @param managedObject
+     * @throws InjectionException
+     */
+    public void destroyManagedObject(Object managedObject)
+        throws InjectionException {
+
+        // TODO if ( 299 enabled app ) Use 299 SPI to destroy managed bean
+                      
+        Class managedObjectClass = managedObject.getClass();
+
+        ManagedBean managedBeanAnn = (ManagedBean) managedObjectClass.getAnnotation(ManagedBean.class);
+
+        ManagedBeanManager managedBeanMgr = habitat.getByContract(ManagedBeanManager.class);
+
+        // If the object's class has @ManagedBean it's a managed bean.  Otherwise, ask
+        // managed bean manager.
+        boolean isManagedBean = (managedBeanAnn != null) ||
+                managedBeanMgr.isManagedBean(managedObject);
+
+        if( isManagedBean ) {
+
+            managedBeanMgr.destroyManagedBean(managedObject);
+
+        } else {
+
+            this.invokeInstancePreDestroy(managedObject);
+        }
+
     }
 
     /**

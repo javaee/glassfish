@@ -107,6 +107,16 @@ public class JavaEEInterceptorBuilderFactoryImpl implements JavaEEInterceptorBui
 
     }
 
+    /**
+      * Tests if a given object is a client proxy associated with an interceptor invoker.
+      */
+    public boolean isClientProxy(Object obj) {
+
+        Class clazz = obj.getClass();
+
+        return (OptionalLocalInterfaceProvider.class.isAssignableFrom(clazz));
+    }
+    
 
 }
 

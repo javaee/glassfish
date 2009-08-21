@@ -380,6 +380,15 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, Post
 
     }
 
+    public boolean isManagedBean(Object object) {
+
+        JavaEEInterceptorBuilderFactory interceptorBuilderFactory =
+                            habitat.getByContract(JavaEEInterceptorBuilderFactory.class);
+
+        return interceptorBuilderFactory.isClientProxy(object);
+
+    }
+
     private void inject(Object instance, ManagedBeanDescriptor managedBeanDesc)
         throws Exception {
         BundleDescriptor bundle = managedBeanDesc.getBundle();

@@ -51,4 +51,8 @@ public class InjectionException extends Exception {
         super(s);
     }
 
+    public InjectionException(String s, Throwable t) {
+        super(s, t);
+    }
+
 }

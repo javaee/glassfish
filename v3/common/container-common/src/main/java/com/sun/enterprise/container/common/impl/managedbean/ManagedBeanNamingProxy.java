@@ -37,6 +37,8 @@ package com.sun.enterprise.container.common.impl.managedbean;
 
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.deployment.ManagedBeanDescriptor;
+
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.container.common.spi.ManagedBeanManager;
 
 
@@ -59,6 +61,8 @@ public class ManagedBeanNamingProxy implements org.glassfish.api.naming.NamingOb
         Object managedBean = null;
         try {
 
+            // TODO need to ensure that if 299 is enabled bean is created through 299 spi
+            InjectionManager injectionMgr = habitat.getByContract(InjectionManager.class);
             ManagedBeanManager managedBeanMgr = habitat.getByContract(ManagedBeanManager.class);
 
             ClassLoader loader = Thread.currentThread().getContextClassLoader();

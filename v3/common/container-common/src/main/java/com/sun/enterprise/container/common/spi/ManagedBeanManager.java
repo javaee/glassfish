@@ -52,6 +52,8 @@ public interface ManagedBeanManager {
 
     public Object createManagedBean(ManagedBeanDescriptor managedBeanDesc, Class managedBeanClass) throws Exception;
 
+    public boolean isManagedBean(Object object);
+
     public void destroyManagedBean(Object managedBean);
 
     /**

@@ -275,7 +275,7 @@ public class EJBHandler extends AbstractResourceHandler {
         }
 
 
-        String ejbAnLookup = annotation.lookupName();
+        String ejbAnLookup = annotation.lookup();
         if (ejbAnLookup != null && ejbAnLookup.length() > 0) {
             if( !ejbRef.hasLookupName() ) {
                 ejbRef.setLookupName(ejbAnLookup);

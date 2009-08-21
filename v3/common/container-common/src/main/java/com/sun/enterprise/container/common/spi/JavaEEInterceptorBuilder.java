@@ -47,4 +47,5 @@ public interface JavaEEInterceptorBuilder {
 
     public void addRuntimeInterceptor(Object interceptor);
 
+
 }

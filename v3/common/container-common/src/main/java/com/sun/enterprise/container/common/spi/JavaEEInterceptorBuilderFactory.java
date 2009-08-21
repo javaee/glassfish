@@ -52,4 +52,10 @@ public interface JavaEEInterceptorBuilderFactory {
 
     public JavaEEInterceptorBuilder createBuilder(InterceptorInfo info) throws Exception;
 
+    /**
+     * Tests if a given object is a client proxy associated with an interceptor invoker.
+     */
+    public boolean isClientProxy(Object obj);
+    
+
 }

@@ -64,9 +64,7 @@ import org.jvnet.hk2.annotations.Service;
 
 /**
  * This handler is responsible for handling the javax.ejb.Asynchronous
- * annotation on the Bean class. Annotation on the interfaces or specific 
- * methods on the interfaces are processed by the AbstractEjbHandler (with
- * the calls to the same #setAsynchronous() method call here.
+ * annotation on the Bean class.
  *
  * @author Marina Vatkina
  */
@@ -150,7 +148,7 @@ public class AsynchronousHandler extends AbstractAttributeHandler
      *                    set to the remote/local client view of the associated interface
      * @throws AnnotationProcessorException
      */
-    protected void setAsynchronous(Method m0, EjbDescriptor ejbDesc, String methodIntf)
+    private void setAsynchronous(Method m0, EjbDescriptor ejbDesc, String methodIntf)
             throws AnnotationProcessorException {
 
         if( !ejbDesc.getType().equals(EjbSessionDescriptor.TYPE)) {
