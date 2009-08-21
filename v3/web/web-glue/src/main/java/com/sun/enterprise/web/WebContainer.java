@@ -900,6 +900,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // proxyHandler property
         connector.setProxyHandler(new ProxyHandlerImpl());
 
+        globalSSOEnabled = ConfigBeansUtilities.toBoolean(httpService.getSsoEnabled());
         globalAccessLoggingEnabled = ConfigBeansUtilities.toBoolean(httpService.getAccessLoggingEnabled());
         globalAccessLogWriteInterval = httpService.getAccessLog().getWriteIntervalSeconds();
         globalAccessLogBufferSize = httpService.getAccessLog().getBufferSizeBytes();
