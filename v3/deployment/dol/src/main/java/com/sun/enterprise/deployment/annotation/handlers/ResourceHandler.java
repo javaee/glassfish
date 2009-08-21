@@ -444,6 +444,7 @@ public class ResourceHandler extends AbstractResourceHandler {
 
             desc.setType(resourceType.getName());
             desc.setMappedName(annotation.mappedName());
+            desc.setLookupName(annotation.lookup());
 
         } else if( dependencyType == DependencyType.MESSAGE_DESTINATION_REF ) {
 
@@ -451,12 +452,14 @@ public class ResourceHandler extends AbstractResourceHandler {
                 (MessageDestinationReferenceDescriptor) desc;
             msgDestRef.setDestinationType(resourceType.getName());
             msgDestRef.setMappedName(annotation.mappedName());
+            msgDestRef.setLookupName(annotation.lookup());
         } else if( dependencyType == DependencyType.RESOURCE_ENV_REF ) {
 
             JmsDestinationReferenceDescriptor jmsDestRef =
                 (JmsDestinationReferenceDescriptor) desc;
             jmsDestRef.setRefType(resourceType.getName());
             jmsDestRef.setMappedName(annotation.mappedName());
+            jmsDestRef.setLookupName(annotation.lookup());
         } else if( dependencyType == DependencyType.RESOURCE_REF ) {
             
             desc.setType(resourceType.getName());
@@ -478,6 +481,7 @@ public class ResourceHandler extends AbstractResourceHandler {
             
             resRef.setSharingScope(sharable);
             resRef.setMappedName(annotation.mappedName());
+            resRef.setLookupName(annotation.lookup());
         }
         
         return;

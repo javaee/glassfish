@@ -44,6 +44,7 @@ own identifying information: Portions Copyright [yyyy]
 
       <move file="target/stage/${install.dir.name}/glassfish/modules/jaxb-api-osgi.jar" todir="target/stage/${install.dir.name}/glassfish/modules/endorsed" failonerror="false"/>
 
+      <move file="target/stage/${install.dir.name}/glassfish/modules/javax.annotation.jar" todir="target/stage/${install.dir.name}/glassfish/modules/endorsed" failonerror="false"/>
 
        <if test="${compression}">
 	       <antcall target="pack.compression" />

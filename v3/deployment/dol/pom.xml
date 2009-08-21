@@ -49,6 +49,54 @@
     <packaging>hk2-jar</packaging>
     <name>Deployment Object Library</name>
 
+   <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.glassfish</groupId>
+                                    <artifactId>javax.annotation</artifactId>
+                                    <outputDirectory>${project.build.directory}/endorsed</outputDirectory>
+                                    <version>${project.version}</version>
+
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                   </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <compilerArguments>
+                        <!-- also adding the classes.jar in the bootclasspath as rt.jar is not available on Mac -->
+                        <bootclasspath>${project.build.directory}/endorsed/javax.annotation-${project.version}.jar${path.separator}${java.home}/../Classes/classes.jar${path.separator}${java.home}/lib/rt.jar</bootclasspath>
+                    </compilerArguments>
+                    <fork>true</fork>
+                </configuration>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+
     <developers>
         <developer>
             <id>hzhang</id>
@@ -88,16 +136,6 @@
             </roles>
         </developer>
     </developers>
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-            </resource>
-        </resources>
-    </build>
     <dependencies>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
