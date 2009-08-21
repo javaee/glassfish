@@ -21,6 +21,7 @@
 
     <target name="compile" depends="prepare">
         <javac srcdir="ejb" destdir="${build}" debug="on" failonerror="true">
+          <compilerarg line="-endorseddirs ${inst}/modules/endorsed"/>
           <classpath refid="gfv3.classpath"/>
          </javac>
         <javac srcdir="client" destdir="${build}" debug="on" failonerror="true">
