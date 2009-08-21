@@ -715,24 +715,23 @@ public final class CreateDomainCommand extends CLICommand {
             defaultPortUsed = true;
         }
         if (checkPorts && !NetUtils.isPortFree(port)) {
-            port = NetUtils.getFreePort();
-            // don't understand why this is a printMessage not an Exception??
-            // maybe there will always be a port ??
+            int newport = NetUtils.getFreePort();
             if (portNotSpecified) {
                 if (defaultPortUsed) {
                     logger.printDetailMessage(strings.get("DefaultPortInUse",
-                            name, defaultPort, Integer.toString(port)));
+                            name, defaultPort, Integer.toString(newport)));
                 } else {
                     logger.printDetailMessage(strings.get("PortNotSpecified",
-                            name, Integer.valueOf(port)));
+                            name, Integer.toString(newport)));
                 }
             } else if (invalidPortSpecified) {
                 logger.printDetailMessage(strings.get("InvalidPortRangeMsg",
-                        name, Integer.valueOf(port)));
+                        name, Integer.toString(newport)));
             } else {
-                logger.printDetailMessage(strings.get("PortInUseError",
-                        name, Integer.valueOf(port)));
+                logger.printDetailMessage(strings.get("PortInUse",
+                    name, Integer.toString(port), Integer.toString(newport)));
             }
+            port = newport;
         } else if (defaultPortUsed) {
             logger.printDetailMessage(strings.get("UsingDefaultPort",
                     name, Integer.toString(port)));
