@@ -68,9 +68,12 @@ public class EmbeddedInhabitantsParser implements InhabitantsParserDecorator {
         parser.drop(LogManagerService.class);
 
         parser.drop(AdminConsoleAdapter.class);
-        parser.drop(PublicAdminAdapter.class);
-        parser.drop(PrivateAdminAdapter.class);
 
+        String enableCLI = System.getenv("GF_EMBEDDED_ENABLE_CLI");
+        if (enableCLI == null || !enableCLI.equalsIgnoreCase("true")) {
+            parser.drop(PublicAdminAdapter.class);
+            parser.drop(PrivateAdminAdapter.class);
+        }
         parser.replace(GFDomainXml.class, EmbeddedDomainXml.class);
         
         parser.replace(DomainXmlPersistence.class, EmbeddedDomainPersistence.class);
