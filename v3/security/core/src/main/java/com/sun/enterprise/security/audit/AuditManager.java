@@ -240,7 +240,8 @@ public final class AuditManager {
     private AuditModule loadAuditModule(String classname,
             Properties props) throws Exception {
         AuditModule auditModule = null;
-        Class am = Class.forName(classname);
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        Class am = Class.forName(classname, true, loader);
         Object obj =  am.newInstance();
         auditModule = (AuditModule) obj;
         auditModule.init(props);

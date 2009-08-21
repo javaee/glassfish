@@ -49,6 +49,7 @@ import org.jvnet.hk2.component.PreDestroy;
 
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.security.audit.AuditManager;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.auth.realm.RealmConfig;
 import com.sun.enterprise.security.auth.realm.RealmStatsProvider;
@@ -65,8 +66,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.glassfish.api.Startup.Lifecycle;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
+import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -106,6 +111,9 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     
     @Inject(name="MessageSecurityConfigListener", optional=true)
     private ConfigListener msgSecurityConfigListener;
+
+    @Inject
+    private Habitat habitat;
     
     private static Map statsProviders = new HashMap();
     
@@ -115,6 +123,8 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
         
     private static final LocalStringManagerImpl _localStrings =
 	new LocalStringManagerImpl(SecurityLifecycle.class);
+
+    private EventListener listener = null;
  
     private static final Logger _logger = LogDomains.getLogger(SecurityLifecycle.class, LogDomains.SECURITY_LOGGER);
 
@@ -190,7 +200,11 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             // which will init ORB prematurely
             createRealms();
             // start the audit mechanism
-            secServUtil.getAuditManager().loadAuditModules();
+            AuditManager auditManager = secServUtil.getAuditManager();
+            auditManager.loadAuditModules();
+
+            //Audit the server started event
+            auditManager.serverStarted();
             
             // initRoleMapperFactory is in J2EEServer.java and not moved to here
             // this is because a DummyRoleMapperFactory is register due
@@ -254,6 +268,10 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
 
     public void postConstruct() {
         onInitialization();
+        listener = new AuditServerShutdownListener();
+        Events events = habitat.getByContract(Events.class);
+        events.register(listener);
+
     }
 
     public void preDestroy() {
@@ -298,5 +316,14 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
         } catch (Exception e) {
             _logger.log(Level.SEVERE, "realmconfig.nogood", e);
         }
-    } 
+    }
+
+    //To audit the server shutdown event
+    public class AuditServerShutdownListener implements EventListener {
+        public void event(Event event) {
+            if (EventTypes.SERVER_SHUTDOWN.equals(event.type())) {
+                secServUtil.getAuditManager().serverShutdown();
+            }
+        }
+    }
 }
