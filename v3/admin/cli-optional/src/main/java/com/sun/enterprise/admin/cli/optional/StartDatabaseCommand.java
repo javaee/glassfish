@@ -75,7 +75,7 @@ public final class StartDatabaseCommand extends DatabaseCommand {
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, DB_HOST, '\0', "STRING", false, DB_HOST_DEFAULT);
         addOption(opts, DB_PORT, '\0', "STRING", false, DB_PORT_DEFAULT);
-        addOption(opts, DB_HOME, '\0', "STRING", false, null);
+        addOption(opts, DB_HOME, '\0', "FILE", false, null);
         // not a remote command so have to process --terse and --echo ourselves
         addOption(opts, "terse", '\0', "BOOLEAN", false, "false");
         addOption(opts, "echo", '\0', "BOOLEAN", false, "false");
