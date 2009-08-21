@@ -145,8 +145,8 @@
         <uc-pkg-bootstrap.version>1.111-30.2164</uc-pkg-bootstrap.version>
         <webservices.version>2.0-b17</webservices.version>
         <jaxb.version>2.2-promoted-b48</jaxb.version>
-        <javax-persistence-api.version>2.0.0-M6</javax-persistence-api.version>
-        <eclipselink.version>2.0.0-M6</eclipselink.version>
+        <javax-persistence-api.version>2.0.0-M7</javax-persistence-api.version>
+        <eclipselink.version>2.0.0-M7</eclipselink.version>
         <dbschema.version>RELEASE60</dbschema.version>
         <!-- osgi version string must start with a number. Manually mapping above dbschema.version to osgi.version here -->
         <dbschema.osgi.version>6.0</dbschema.osgi.version>
