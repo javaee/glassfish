@@ -20,9 +20,10 @@ public class SingletonBean {
 
     }
 
-    public String hello(String name) {
+    @Asynchronous
+    public Future<String> hello(String name) {
 	System.out.println("In SingletonBean::hello( " + name + ")");
-	return "Hello, " + name;
+	return new AsyncResult<String>("Hello, " + name);
     }
 
 

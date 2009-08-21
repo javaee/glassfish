@@ -43,15 +43,17 @@ public class HelloBean {
 	return "hello, world\n";
     }
 
-    public String helloAsync() {
+    @Asynchronous
+    public Future<String> helloAsync() {
 	System.out.println("In HelloBean::helloAsync()");
-	return "helo, async world!\n";
+	return new AsyncResult<String>("helo, async world!\n");
     }
 
-    public String asyncBlock(int seconds) {
+    @Asynchronous
+    public Future<String> asyncBlock(int seconds) {
 	System.out.println("In HelloBean::asyncBlock");
 	sleep(seconds);
-	return "blocked successfully";
+	return new AsyncResult<String>("blocked successfully");
     }
 
     @Asynchronous 
@@ -60,20 +62,22 @@ public class HelloBean {
 	sleep(5);
     }
 	
-    public String asyncThrowException(String exceptionType) {
+    @Asynchronous
+    public Future<String> asyncThrowException(String exceptionType) {
 	System.out.println("In HelloBean::asyncThrowException");
 	throwException(exceptionType);
-	return "should have thrown exception";
+	return new AsyncResult<String>("should have thrown exception");
     }
 
-    public String asyncCancel(int seconds) throws Exception
+    @Asynchronous
+    public Future<String> asyncCancel(int seconds) throws Exception
     {
 	System.out.println("In HelloBean::asyncCancel");
 	sleep(seconds);
 	if( sessionCtx.wasCancelCalled() ) {
 	    throw new Exception("Canceled after " + seconds + " seconds");
 	}
-	return "asyncCancel() should have been cancelled";
+	return new AsyncResult<String>("asyncCancel() should have been cancelled");
     }
 
     public void throwException(String exceptionType) {

@@ -20,11 +20,26 @@ public class Client {
 
     @EJB static Hello hello;
 
-    @EJB(lookupName="java:app/env/forappclient") 
+    @EJB(lookup="java:app/env/forappclient") 
     static Hello hello3;
 
     @EJB(mappedName="java:app/ejb-ejb31-security-simple-ejb/SingletonBean!com.acme.Hello") 
     static Hello hello4;
+
+    @EJB(name="java:app/env/appclientdefinedejbref1") 
+    static Hello hello5;
+
+    @EJB(name="java:app/appclientdefinedejbref2") 
+    static Hello hello6;
+
+    @EJB(name="java:global/appclientdefinedejbref3") 
+    static Hello hello7;
+
+    @Resource(name="java:app/env/enventry1")
+    static String envEntry1;
+
+    @Resource(name="java:global/enventry2")
+    static String envEntry2;
 
  @PostConstruct
 	public static void init() {
@@ -32,7 +47,10 @@ public class Client {
 	    System.out.println("In init()");
 	Integer envEntry = (Integer)
 	    new InitialContext().lookup("java:app/env/value1");
-	System.out.println("java:ap/env/value1 = " + envEntry);
+	System.out.println("java:app/env/value1 = " + envEntry);
+
+	System.out.println("java:app/env/enventry1 = " + envEntry1);
+	System.out.println("java:global/enventry2 = " + envEntry2);
 	} catch(Exception e) {
 	    e.printStackTrace();
 	}

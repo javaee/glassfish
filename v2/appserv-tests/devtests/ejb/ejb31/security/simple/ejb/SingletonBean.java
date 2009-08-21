@@ -29,6 +29,25 @@ public class SingletonBean {
 	if( orb == null ) {
 	    throw new EJBException("null ORB");
 	}
+
+	Hello meViaAppClientDefinedDependency = (Hello)
+	    sessionCtx.lookup("java:app/env/appclientdefinedejbref1");
+	System.out.println("meViaAppClientDefinedDependency =" +
+			   meViaAppClientDefinedDependency);
+	Hello meViaAppClientDefinedDependency2 = (Hello)
+	    sessionCtx.lookup("java:app/appclientdefinedejbref2");
+
+	Hello meViaAppClientDefinedDependency3 = (Hello)
+	    sessionCtx.lookup("java:global/appclientdefinedejbref3");
+
+	String appLevelEnvEntry = (String)
+	    sessionCtx.lookup("java:app/env/enventry1");
+	System.out.println("appLevelEnvEntry = " + appLevelEnvEntry);
+
+	String globalLevelEnvEntry = (String)
+	    sessionCtx.lookup("java:global/enventry2");
+	System.out.println("globalLevelEnvEntry = " + globalLevelEnvEntry);
+
     }
 
     @RolesAllowed("foo")

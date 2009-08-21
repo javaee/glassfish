@@ -28,6 +28,24 @@ public class ContextListener implements ServletContextListener {
 	    System.out.println("register interceptor method = " + m);
 
 	    m.invoke(jaxrsEjbGlue, new com.sun.jersey.JerseyInterceptor());
+
+
+	    // Test InjectionManager managed bean functionality
+	    Object injectionMgr = new InitialContext().lookup("com.sun.enterprise.container.common.spi.util.InjectionManager");
+	    Method createManagedMethod = injectionMgr.getClass().getMethod("createManagedObject", java.lang.Class.class);
+	    System.out.println("create managed object method = " + createManagedMethod);
+	    FooManagedBean f2 = (FooManagedBean) createManagedMethod.invoke(injectionMgr, FooManagedBean.class);
+	    f2.hello();
+	    f2.assertInterceptorBinding();
+
+	    Method destroyManagedMethod = injectionMgr.getClass().getMethod("destroyManagedObject", java.lang.Object.class);
+	    System.out.println("destroy managed object method = " + destroyManagedMethod);
+	    destroyManagedMethod.invoke(injectionMgr, f2);
+
+	     FooNonManagedBean nonF = (FooNonManagedBean) createManagedMethod.invoke(injectionMgr, FooNonManagedBean.class);
+	     System.out.println("FooNonManagedBean = " + nonF);
+	     nonF.hello();
+	     destroyManagedMethod.invoke(injectionMgr, nonF);
 	    
 	} catch(Exception e) {
 	    e.printStackTrace();

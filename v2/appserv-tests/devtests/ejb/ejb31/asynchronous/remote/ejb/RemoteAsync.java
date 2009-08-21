@@ -8,7 +8,6 @@ public interface RemoteAsync {
 
     void startTest();
 
-    @Asynchronous
     void fireAndForget();
     
     public int getFireAndForgetCount();

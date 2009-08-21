@@ -30,6 +30,7 @@ public class SingletonBean implements RemoteAsync {
 	return;
     }
 
+    @Asynchronous
     public void fireAndForget() {
 	System.out.println("In SingletonBean::fireAndForget()");
 	fireAndForgetCount.incrementAndGet();
