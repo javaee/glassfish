@@ -3,7 +3,7 @@
 <console-config id="jms">
     <integration-point  id="jms_resources_nodes"
                         type="org.glassfish.admingui:navNode"
-                        priority="200"
+                        priority="300"
                         parentId="resources"
                         content="resourcesNodes.jsf" />
 

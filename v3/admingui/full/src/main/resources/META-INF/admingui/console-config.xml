@@ -4,7 +4,7 @@
     <integration-point
         id="full_jmailNodes"
         type="org.glassfish.admingui:navNode"
-        priority="200"
+        priority="400"
         parentId="resources"
         content="jmailTreeNode.jsf"
     />
