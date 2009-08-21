@@ -194,15 +194,15 @@ public class TransactionState {
             res.rollback(xid);
             break;
         case ASSOCIATION_SUSPENDED:
-            res.end(xid, XAResource.TMSUCCESS);
-            setXAState(res, NOT_ASSOCIATED_INTEGER);
-            res.rollback(xid);
-            break;
         case ASSOCIATED:
-            res.end(xid, XAResource.TMSUCCESS);
+            try {
+                res.end(xid, XAResource.TMSUCCESS);
+            } catch (Exception ex) {
+                _logger.log(Level.WARNING,"jts.delist_exception",ex);
+            }
             setXAState(res, NOT_ASSOCIATED_INTEGER);
             res.rollback(xid);
-            /**
+            /** was in ASSOCIATED:
             // rollback is deferred until delistment
             setXAState(res, ROLLING_BACK);
             activeResources++;
