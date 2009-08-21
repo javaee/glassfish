@@ -43,19 +43,8 @@ import javax.servlet.DispatcherType;
 /** Servlet filter objects */
 public interface ServletFilterMapping {
 
-    public static String TARGET_TYPE_URLPATTERN = "URLPattern";
-    public static String TARGET_TYPE_SERVLET    = "Servlet";
-
     public void setName(String name);
     public String getName();
-
-    public void setTargetType(String type);
-    public String getTargetType();
-    public boolean isURLPatternTarget();
-    public boolean isServletNameTarget();
-
-    public void setTarget(String type);
-    public String getTarget();
 
     public void addDispatcher(String dispatcher);
     public Set<DispatcherType> getDispatchers();

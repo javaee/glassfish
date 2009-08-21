@@ -49,19 +49,8 @@ public final class ServletFilterMappingDescriptor
     implements com.sun.enterprise.deployment.web.ServletFilterMapping
 {
 
-    public static final String TARGET_TYPE_URLPATTERN = 
-	ServletFilterMapping.TARGET_TYPE_URLPATTERN;
-    public static final String TARGET_TYPE_SERVLET = 
-	ServletFilterMapping.TARGET_TYPE_SERVLET;
-
     private static EnumSet allowed_dispatchers;
     
-    /** target type ("URLPattern", "Servlet") */
-    private String targetType = TARGET_TYPE_URLPATTERN;
-
-    /** the target URL or Servlet name */
-    private String target = "";
-
     private EnumSet dispatchers;
     private List<String> servletNames;
     private List<String> urlPatterns;
@@ -74,64 +63,10 @@ public final class ServletFilterMappingDescriptor
     /** copy constructor */
     public ServletFilterMappingDescriptor(ServletFilterMappingDescriptor other) {
         super(other);
-        targetType = other.targetType;
-        target = other.target;
         dispatchers = (other.dispatchers != null)?
             EnumSet.copyOf(other.dispatchers) : null;
     }
 
-    /** constructor specifying the name & target */
-    public ServletFilterMappingDescriptor(String dispName,
-        String targetType, String target) {
-        super(dispName, ""/*description*/);
-        this.setTargetType(targetType);
-        this.setTarget(target);
-    }
-
-    /** set the target type */
-    public void setTargetType(String type) {
-        if (TARGET_TYPE_SERVLET.equals(type)) {
-            this.targetType = TARGET_TYPE_SERVLET;
-        } else {
-            this.targetType = TARGET_TYPE_URLPATTERN;
-        }
-    }
-
-    /** get the target type */
-    public String getTargetType() {
-        if (! getServletNames().isEmpty()) {
-            return TARGET_TYPE_SERVLET;
-        } else {
-            return TARGET_TYPE_URLPATTERN;
-        }
-    }
-
-    /** 'true' if URL-Pattern target type */
-    public boolean isURLPatternTarget() {
-        return TARGET_TYPE_URLPATTERN.equals(getTargetType());
-    }
-
-    /** 'true' if Servlet target type */
-    public boolean isServletNameTarget() {
-        return TARGET_TYPE_SERVLET.equals(getTargetType());
-    }
-
-    /** set the target name */
-    public void setTarget(String target) {
-        this.target = target;
-    }
-
-    /** get the target name */
-    public String getTarget() {
-        if (! getServletNames().isEmpty()) {
-            Iterator i = servletNames.iterator();
-            return (String) i.next();
-        } else {
-            Iterator i = urlPatterns.iterator();
-            return (String) i.next();
-        }
-    }
-    
     public void addServletName(String servletName) {
         getServletNames().add(servletName);
     }

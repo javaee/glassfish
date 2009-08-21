@@ -53,7 +53,9 @@ import javax.servlet.DispatcherType;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebInitParam;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -120,6 +122,7 @@ public class WebFilterHandler extends AbstractWebHandler {
         if (servletFilterDesc == null) {
             servletFilterDesc = new ServletFilterDescriptor();
             servletFilterDesc.setName(filterName);
+            webBundleDesc.addServletFilter(servletFilterDesc);
         } else {
             String filterImpl = servletFilterDesc.getClassName();
             if (filterImpl != null && filterImpl.length() > 0 &&
@@ -166,27 +169,32 @@ public class WebFilterHandler extends AbstractWebHandler {
         }
 
         ServletFilterMapping servletFilterMappingDesc = null;
+        boolean hasUrlPattern = false;
+        boolean hasServletName = false;
+
         for (ServletFilterMapping sfm : webBundleDesc.getServletFilterMappings()) {
             if (filterName.equals(sfm.getName())) {
                 servletFilterMappingDesc = sfm;
-                break;
+                hasUrlPattern = hasUrlPattern || (sfm.getURLPatterns().size() > 0);
+                hasServletName = hasServletName || (sfm.getServletNames().size() > 0);
             }
         }
 
         if (servletFilterMappingDesc == null) {
             servletFilterMappingDesc = new ServletFilterMappingDescriptor();
             servletFilterMappingDesc.setName(filterName);
+            webBundleDesc.addServletFilterMapping(servletFilterMappingDesc);
         }
 
-        if (servletFilterMappingDesc.getURLPatterns().size() == 0) {
+        if (!hasUrlPattern) {
             String[] urlPatterns = webFilterAn.urlPatterns();
             if (urlPatterns == null || urlPatterns.length == 0) {
                 urlPatterns = webFilterAn.value();
             }
 
-            boolean validUrlPatterns = false;
+            // accept here as url patterns may be defined in top level xml
+            boolean validUrlPatterns = true;
             if (urlPatterns != null && urlPatterns.length > 0) {
-                validUrlPatterns = true;
                 for (String up : urlPatterns) {
                     if (!URLPattern.isValid(up)) {
                         validUrlPatterns = false;
@@ -207,7 +215,7 @@ public class WebFilterHandler extends AbstractWebHandler {
             }
         }
 
-        if (servletFilterMappingDesc.getServletNames().size() == 0) {
+        if (!hasServletName) {
             String[] servletNames = webFilterAn.servletNames();
             if (servletNames != null && servletNames.length > 0) {
                 for (String sn : servletNames) {
@@ -225,8 +233,6 @@ public class WebFilterHandler extends AbstractWebHandler {
             }
         }
 
-        webBundleDesc.addServletFilter(servletFilterDesc);
-        webBundleDesc.addServletFilterMapping(servletFilterMappingDesc);
 
         return getDefaultProcessedResult();
     }
