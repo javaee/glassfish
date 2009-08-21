@@ -33,21 +33,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package test;
+
 import java.io.IOException;
-import java.util.Enumeration;
 
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebInitParam;
 
-@WebServlet(name="testServ", urlPatterns={"/mytest"})
-public class TestServlet extends HttpServlet {
-    public void service(HttpServletRequest req, HttpServletResponse res)
-            throws IOException, ServletException {
+@WebFilter(servletNames={"testServ"}, initParams={ @WebInitParam(name="mesg", value="my filter2") })
+public class TestFilter2 implements Filter {
+    String mesg = null;
 
-        res.getWriter().write("filterMessage=" + req.getAttribute("filterMessage") +
-                ", filterMessage2=" + req.getAttribute("filterMessage2"));
+    public void init(FilterConfig filterConfig) throws ServletException {
+        System.out.println(">>> filter2.init");
+        mesg = filterConfig.getInitParameter("mesg");
+    }   
+
+    public void doFilter(ServletRequest req, ServletResponse res,
+            FilterChain chain) throws IOException, ServletException {
+
+        System.out.println(">>> filter2.doFilter");
+        req.setAttribute("filterMessage2", mesg);
+        chain.doFilter(req, res);
+    }
+
+    public void destroy() {
+        System.out.println(">>> filter2.destroy");
     }
 }

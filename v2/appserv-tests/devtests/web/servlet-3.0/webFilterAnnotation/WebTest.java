@@ -45,7 +45,7 @@ public class WebTest {
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
     private static final String TEST_NAME = "servlet-filter-annotation";
-    private static final String EXPECTED_RESPONSE = "filterMessage=my filter";
+    private static final String EXPECTED_RESPONSE = "filterMessage=my filter, filterMessage2=my filter2";
 
     private String host;
     private String port;
