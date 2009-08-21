@@ -82,6 +82,7 @@ public class DeployedEndpointData extends StatisticImpl {
         this.tester = address+"?Tester";
         this.implType = endpoint.implementedByEjbComponent() ? "EJB" : "SERVLET";
         this.deploymentType = "109";
+        fillStatMap();
     }
 
     // sun-jaxws.xml deployed endpoint
@@ -100,10 +101,15 @@ public class DeployedEndpointData extends StatisticImpl {
         this.tester = "";
         this.implType = "SERVLET";
         this.deploymentType = "RI";
+        fillStatMap();
     }
 
     @Override
-    public synchronized Map getStaticAsMap() {
+    public Map getStaticAsMap() {
+        return statMap;
+    }
+
+    private void fillStatMap() {
         Map m = super.getStaticAsMap();
 
         m.put("appName", appName);
@@ -118,7 +124,6 @@ public class DeployedEndpointData extends StatisticImpl {
         m.put("implType", implType);
         m.put("deploymentType", deploymentType);
 
-        return m;
     }
 
 }
