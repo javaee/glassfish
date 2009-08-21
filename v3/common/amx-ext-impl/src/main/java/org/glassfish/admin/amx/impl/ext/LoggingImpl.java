@@ -617,18 +617,17 @@ public final class LoggingImpl extends AMXImplBase
         public String[]
     getDiagnosticCauses( final String messageID, final String moduleName )
     {
-        /*
+
     	final List<String>	causes	= msgIdCatalog.getDiagnosticCausesForMessageId( messageID , moduleName );
     	
     	String[]	result = null;
     	if ( causes != null )
     	{
-    	    result  = causes.toArray( new String[causes.size()] );
+    	    result  = CollectionUtil.toArray( causes, String.class );
     	}
     	
         return result;
-*/
-        return null;
+
         
     }
 

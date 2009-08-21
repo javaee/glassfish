@@ -330,7 +330,7 @@ public class LogViewHandlers {
                         // NOTE: Image name/location is hard-coded
                         oneRow.put("levelImage", GuiUtil.getMessage("common.errorGif"));
                         oneRow.put(SHOW_LEVEL_IMAGE, new Boolean(true));
-//                        oneRow.put("diagnosticCauses", getDiagnosticCauses(handlerCtx, msgId, moduleName));
+                        oneRow.put("diagnosticCauses", getDiagnosticCauses(handlerCtx, msgId, moduleName));
                         oneRow.put("diagnosticChecks", getDiagnosticChecks(handlerCtx, msgId, moduleName));
 //                        oneRow.put("diagnosticURI", getDiagnosticURI(handlerCtx, msgId));
                     } else {
@@ -498,7 +498,7 @@ public class LogViewHandlers {
     /**
      * * This method get the diagnostic based on the message id
      */
-    /*
+
     private static String getDiagnosticCauses(HandlerContext handlerCtx, String msgId, String moduleName) {
 
         if (msgId == null || "".equals(msgId)) {
@@ -510,7 +510,7 @@ public class LogViewHandlers {
         String res = formatArrayForDisplay(results);
         return res;
     }
-       */
+       
      public static String getLogFilesDirectory(String instanceName){
         if (GuiUtil.isEmpty(instanceName))
             return "";
