@@ -39,6 +39,9 @@ package org.glassfish.flashlight.client;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.util.Collection;
+import java.util.List;
+
+import org.glassfish.flashlight.provider.FlashlightProbe;
 
 /**
  * @author Mahesh Kannan
@@ -49,4 +52,5 @@ public interface ProbeClientMediator {
 
     public Collection<ProbeClientMethodHandle> registerListener(Object listener);
 
+    public void transformProbes(Object listener, List<FlashlightProbe> probes);
 }

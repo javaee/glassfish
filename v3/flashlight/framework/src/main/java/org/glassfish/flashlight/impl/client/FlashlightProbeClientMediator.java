@@ -200,7 +200,7 @@ public class FlashlightProbeClientMediator
         return listener;
     }
 
-    private void transformProbes(Object listener, List<FlashlightProbe> probes) {
+    public void transformProbes(Object listener, List<FlashlightProbe> probes) {
         int clientID = clientIdGenerator.incrementAndGet();
         clients.put(clientID, listener);
 
