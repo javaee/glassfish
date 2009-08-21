@@ -44,7 +44,11 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;  
 
+import java.util.HashMap;
+import javax.management.Attribute;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 
 /**
@@ -72,4 +76,52 @@ public class WebHandlers {
         String ports = (sb.length() == 0) ? "" : sb.substring(0, sb.length()-2);
         handlerCtx.setOutputValue("ports", ports);
     }
+
+    @Handler(id="createNetworkListener",
+        input={
+            @HandlerInput(name="configName", type=String.class),
+            @HandlerInput(name="attrMap", type=Map.class, required=true)})
+    public static void createNetworkListener(HandlerContext handlerCtx){
+        Map attrMap = (Map) handlerCtx.getInputValue("attrMap");
+        String protocolChoice = (String)attrMap.get("protocolChoice");
+        String protocolName = "";
+        String securityEnabled = attrMap.get("SecurityEnabled") ==null ? "false" : "true";
+
+        // Take care protocol first.
+        Map aMap = new HashMap();
+        if ("create".equals(protocolChoice)){
+            aMap.put("Name",  attrMap.get("newProtocolName"));
+            aMap.put("SecurityEnabled",  securityEnabled);
+            AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getConfig("server-config").getNetworkConfig().child("protocols");
+            AMXProxy pp = amx.createChild("protocol",  aMap);
+            protocolName = pp.getName();
+        }else{
+            protocolName = (String) attrMap.get("existingProtocolName");
+            AMXProxy amx = V3AMX.getInstance().getConfig("server-config").getNetworkConfig().child("protocols").childrenMap("protocol").get(protocolName);
+            V3AMX.setAttribute(amx.objectName(), new Attribute("SecurityEnabled", securityEnabled ));
+        }
+
+        Map nMap = new HashMap();
+        putA(nMap,  attrMap, "Name" );
+        putA(nMap,  attrMap, "Address");
+        putA(nMap,  attrMap, "Port" );
+        putA(nMap,  attrMap, "Transport");
+        putA(nMap,  attrMap, "ThreadPool");
+        putA(nMap,  attrMap, "Enabled");
+        putA(nMap,  attrMap, "JkEnabled");
+        nMap.put("Protocol", protocolName);
+
+        AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getConfig("server-config").getNetworkConfig().child("network-listeners");
+        amx.createChild("network-listener", nMap);
+    }
+
+    
+    private static void putA(Map nMap, Map attrMap, String key){
+        String val = (String) attrMap.get(key);
+        if (! GuiUtil.isEmpty(val)){
+            nMap.put(key, val);
+        }
+    }
+
+
 }

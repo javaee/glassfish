@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -66,16 +66,72 @@
         //#include treeBreadcrumbs.inc
 #include "/common/shared/alertMsg.inc"
 
-                <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkListenerNewPageTitle}" helpText="$resource{i18n_web.grizzly.networkListenerNewPageTitleHelp}">
-#include "/common/shared/editPageButtons.inc"
-                    </sun:title>
-                    "<br><br>
+    <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkListenerNewPageTitle}" helpText="$resource{i18n_web.grizzly.networkListenerNewPageTitleHelp}">
+    <!facet pageButtonsTop>
+        <sun:panelGroup id="topButtons">
+            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
+                    onClick="return checkRequired();  " >
+                <!command
+                    createNetworkListener(attrMap="#{pageSession.valueMap}")
+                    redirect(page="#{pageSession.parentPage}?configName=#{configName}")
+                />
+            </sun:button>
+            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
+                <!command
+                    redirect(page="#{parentPage}?configName=#{configName}");
+                />
+            </sun:button>
+        </sun:panelGroup>
+    </facet>
+        </sun:title>
+        "<br><br>
 
 #include "/web/grizzly/networkListenerAttr.inc"
 
 
 	<sun:hidden id="helpKey" value="$resource{help_web.networkListenerNew}" />
-            </sun:form>
+    </sun:form>
+
+<f:verbatim>
+    <script type="text/javascript">
+
+    function radioBtnAction(choice) {
+        var compt = getTextElement('#{pageSession.protocolChoiceId}');
+        compt.value = choice;
+        if (choice == 'create'){
+            webui.suntheme.field.setDisabled("$pageSession{PdropDownId}", true);
+            webui.suntheme.field.setDisabled("$pageSession{pNameId}", false);
+        }else{
+            webui.suntheme.field.setDisabled("$pageSession{PdropDownId}", false);
+            webui.suntheme.field.setDisabled("$pageSession{pNameId}", true);
+        }
+    }
+    
+    function setProtocolName(){
+        var currentChoice = getTextElement('#{pageSession.protocolChoiceId}').value;
+        if (currentChoice == 'create'){
+            getTextElement('#{pageSession.pNameId}').value = getTextElement('#{pageSession.listenerId}').value+"$resource{i18n_web.grizzly.protocolExtension}";
+        }
+    }
+
+    function checkRequired(){
+        var currentChoice = getTextElement('#{pageSession.protocolChoiceId}').value;
+        if (currentChoice == 'create'){
+            var component = getTextElement('#{pageSession.pNameId}');
+            if (component.value==''){
+                component.select();
+                component.focus();
+                return showAlert('#{reqMsg}' + ' ' + getLabel(component));
+            }
+        }
+        return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}');
+    }
+    
+    function disableProtocolNameField() {
+        var methodType = document.getElementById("$pageSession{protocolChoice}");
+        webui.suntheme.field.setDisabled("$pageSession{protocolNmField}", methodType.getSelectedValue() != '__create__');
+    }
+    </script>
+</f:verbatim>
 </define>
 </composition>

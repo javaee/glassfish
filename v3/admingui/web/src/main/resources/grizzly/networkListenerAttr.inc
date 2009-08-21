@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -40,16 +40,63 @@
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
 
-        <sun:property id="nameNew"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}" helpText="$resource{i18n_web.common.nameHelp}">
-            <sun:textField id="name"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['Name']}" />
+        <sun:property id="nameNew"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}" helpText="$resource{i18n_web.common.nameHelp}">
+            <sun:textField id="name"  required="#{true}" columns="$int{50}" text="#{pageSession.valueMap['Name']}"
+                onChange="setProtocolName()" >
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{listenerId});
+                />
+            </sun:textField>
         </sun:property>
 
-        <sun:property id="name"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.listenerName}">
-            <sun:staticText id="name" text="#{pageSession.Name}"  rendered="#{edit}" />
+
+    <sun:property id="prop1" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.protocol}">
+    <sun:radioButton id="rdBtn" name="rdBtn"  label="$resource{i18n_web.grizzly.networkListener.createNewProtocol}"
+        selected="#{pageSession.rdBtn}"  selectedValue="create"  onClick="radioBtnAction('create');"  >
+      <!beforeCreate
+            setPageSessionAttribute(key="rdBtn", value="create");
+      />
+   </sun:radioButton>
+
+   <sun:textField id="pName" required="#{false}" text="#{pageSession.valueMap['newProtocolName']}" submitForm="false" style="margin-left: 4pt" columns="$int{50}"  >
+        <!afterCreate
+            getClientId(component="$this{component}" clientId=>$page{pNameId});
+        />
+    </sun:textField>
+   "<br/><br/>
+
+    <sun:radioButton id="existingRdBtn" name="rdBtn"  label="$resource{i18n_web.grizzly.networkListener.useExistingProtocol}"
+        selected="#{pageSession.rdBtn}"  selectedValue="existing"  onClick="radioBtnAction('existing')"/>
+        <sun:dropDown id="protocoldw" selected="#{pageSession.valueMap['existingProtocolName']}"  disabled="true"  labels="$pageSession{protocolListLabel}" >
+            <!beforeCreate
+                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols" type="protocol" result="#{pageSession.protocolListLabel}");
+            />
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{PdropDownId});
+            />
+        </sun:dropDown>
+
+        <sun:textField  id="protocolChoice" visible="$boolean{false}" text="#{pageSession.valueMap['protocolChoice']}">
+            <!beforeCreate
+                mapPut(map="#{pageSession.valueMap}" value="create"  key="protocolChoice")
+            />
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{protocolChoiceId});
+            />
+        </sun:textField>
+        "<br/><br/>
         </sun:property>
 
-        <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.status}" >
+        <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.status}"  helpText="$resource{i18n_web.grizzly.networkListener.statusHelp}" >
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" />
+        </sun:property>
+
+        <sun:property id="security"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.security}" helpText="$resource{i18n_web.grizzly.networkListener.securityHelp}" >
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['SecurityEnabled']}" selectedValue="true" />
+        </sun:property>
+
+        <sun:property id="JkEnabled"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.JkEnabled}" helpText="$resource{i18n_web.grizzly.networkListener.JkEnabledHelp}">
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['JkEnabled']}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="port"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.port}" helpText="$resource{i18n_web.grizzly.networkListener.portHelp}">
@@ -60,13 +107,6 @@
             <sun:textField id="addr" columns="$int{20}" text="#{pageSession.valueMap['Address']}"  />
         </sun:property>
 
-        <sun:property id="protocol"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.protocol}" helpText="$resource{i18n_web.grizzly.networkListener.protocolHelp}">
-            <sun:dropDown id="protocol" selected="#{pageSession.valueMap['Protocol']}" labels="$pageSession{protocolList}"  values="$pageSession{protocolList}" >
-            <!beforeCreate
-                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols" type="protocol" result="#{pageSession.protocolList}");
-/>
-           </sun:dropDown>
-        </sun:property>
         <sun:property id="threadpool"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.threadPool}" helpText="$resource{i18n_web.grizzly.networkListener.threadPoolHelp}">
             <sun:dropDown id="threadpool" selected="#{pageSession.valueMap['ThreadPool']}" labels="$pageSession{threadPoolList}"  values="$pageSession{threadPoolList}" >
             <!beforeCreate
@@ -82,5 +122,32 @@
             />
            </sun:dropDown>
         </sun:property>
+
+<!--
+        <sun:property id="protocol"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.protocol}" helpText="$resource{i18n_web.grizzly.networkListener.protocolHelp}">
+            <sun:dropDown id="protocolChoice" selected="#{pageSession.valueMap['Protocol']}" 
+                labels="$pageSession{protocolListLabel}"  values="$pageSession{protocolListValue}"
+                onChange="javascript: disableProtocolNameField();" >
+            <!beforeCreate
+                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols" type="protocol" result="#{pageSession.protocolListLabel}");
+                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols" type="protocol" result="#{pageSession.protocolListValue}");
+                listAdd(list="#{pageSession.protocolListLabel}" value="$resource{i18n_web.grizzly.createNewProtocol}" index="0")
+                listAdd(list="#{pageSession.protocolListValue}" value="__create__" index="0")
+            />
+            <!afterCreate
+                getClientId(component="$this{component}" clientId="#{pageSession.protocolChoice}");
+            />
+           </sun:dropDown>
+        </sun:property>
+
+        <sun:property id="protocolNm"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18_web.grizzly.protocol.protocolName}" helpText="$resource{i18n_web.grizzly.protocol.protocolNameHelp}">
+            <sun:textField id="protocolNm"  columns="$int{55}" text="#{pageSession.valueMap['newProtocolName']}" >
+            <!afterCreate
+                getClientId(component="$this{component}" clientId="#{pageSession.protocolNmField}");
+            />
+            </sun:textField>
+        </sun:property>
+-->
+
     </sun:propertySheetSection>
 </sun:propertySheet>
