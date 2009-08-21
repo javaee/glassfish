@@ -246,9 +246,20 @@ public class ApplicationLifecycle implements Deployment {
                     return null;
                 }
 
+                final String appName = commandParams.name();
+
+                // create a temporary application info to hold metadata
+                // so the metadata could be accessed at classloader 
+                // construction time through ApplicationInfo
+                ApplicationInfo tempAppInfo = new ApplicationInfo(events, 
+                    context.getSource(), appName);
+                for (Object m : context.getModuleMetadata()) {
+                    tempAppInfo.addMetaData(m);
+                }
+                appRegistry.add(appName, tempAppInfo);
+
                 context.createApplicationClassLoader(clh, handler);
 
-                final String appName = commandParams.name();
 
                     // this is a first time deployment as opposed as load following an unload event,
                     // we need to create the application info
@@ -279,6 +290,9 @@ public class ApplicationLifecycle implements Deployment {
                         }
                     }
 
+                    // remove the temp application info from the registry
+                    // first, then register the real one
+                    appRegistry.remove(appName);
                     appRegistry.add(appName, appInfo);
 
                 if (events!=null) {
