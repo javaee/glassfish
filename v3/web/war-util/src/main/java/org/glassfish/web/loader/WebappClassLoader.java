@@ -937,10 +937,11 @@ public class WebappClassLoader
                 throw new UnsupportedClassVersionError(msg);
             } catch(AccessControlException ace) {
                 throw new ClassNotFoundException(name, ace);
-            } catch (RuntimeException e) {
-                if (logger.isLoggable(Level.FINER))
-                    logger.log(Level.FINER, "      -->RuntimeException Rethrown", e);
-                throw e;
+            } catch (Throwable t) {
+                String msg = rb.getString(
+                    "webappClassLoader.unableToFindClass");
+                msg = MessageFormat.format(msg, name);
+                throw new RuntimeException(msg, t);
             }
             if ((clazz == null) && hasExternalRepositories) {
                 try {
