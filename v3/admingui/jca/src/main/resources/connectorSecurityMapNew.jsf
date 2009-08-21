@@ -44,7 +44,6 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        setPageSessionAttribute(key="connectorPoolTabs" value="securityMapTab");
         setAttribute(key="usersOptionU" value="users" );
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
