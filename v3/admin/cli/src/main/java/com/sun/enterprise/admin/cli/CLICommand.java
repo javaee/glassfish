@@ -351,42 +351,44 @@ public abstract class CLICommand implements PostConstruct {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name).append(' ');
-        if (ok(programOpts.getHost()))
-            sb.append("--host ").append(programOpts.getHost()).append(' ');
-        if (programOpts.getPort() > 0)
-            sb.append("--port ").append(programOpts.getPort()).append(' ');
-        if (ok(programOpts.getUser()))
-            sb.append("--user ").append(programOpts.getUser()).append(' ');
-        if (ok(programOpts.getPasswordFile()))
-            sb.append("--passwordfile ").
-                append(programOpts.getPasswordFile()).append(' ');
-        if (programOpts.isSecure())
-            sb.append("--secure ");
-        sb.append("--interactive=").
-            append(Boolean.toString(programOpts.isInteractive())).append(' ');
-        sb.append("--echo=").
-            append(Boolean.toString(programOpts.isEcho())).append(' ');
-        sb.append("--terse=").
-            append(Boolean.toString(programOpts.isTerse())).append(' ');
 
+        // first, the program options
+        sb.append("asadmin ");
+        sb.append(programOpts.toString()).append(' ');
+
+        // now the subcommand options and operands
+        sb.append(name).append(' ');
+
+        // have we parsed any options yet?
         if (options != null && operands != null) {
-            Set<String> optionKeys = options.keySet();
-            for (String key : optionKeys) {
-                String value = options.get(key);
-                sb.append("--").append(key);
-                if (ok(value)) {
-                    sb.append('=').append(value);
+            for (ValidOption opt : commandOpts) {
+                if (opt.getType().equals("PASSWORD"))
+                    continue;       // don't print passwords
+                // include every option that was specified on the command line
+                // and every option that has a default value
+                String value = getOption(opt.getName());
+                if (value == null)
+                    value = opt.getDefaultValue();
+                if (value != null) {
+                    sb.append("--").append(opt.getName());
+                    if (opt.getType().equals("BOOLEAN")) {
+                        if (Boolean.parseBoolean(value))
+                            sb.append("=").append("true");
+                        else
+                            sb.append("=").append("false");
+                    } else {    // STRING or FILE
+                        sb.append(" ").append(value);
+                    }
+                    sb.append(' ');
                 }
-                sb.append(' ');
             }
-            for (Object o : operands)
-                sb.append(o).append(' ');
         } else if (argv != null) {
+            // haven't parsed any options, include raw arguments, if any
             for (String arg : argv)
                 sb.append(arg).append(' ');
         }
 
+        sb.setLength(sb.length() - 1);  // strip trailing space
         return sb.toString();
     }
 

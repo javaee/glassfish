@@ -492,4 +492,34 @@ public class ProgramOptions {
     public void setClassName(String className) {
         this.className = className;
     }
+
+    /**
+     * String representation of the asadmin program options.
+     * Included in the --echo output.
+     */
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (ok(getHost()))
+            sb.append("--host ").append(getHost()).append(' ');
+        if (getPort() > 0)
+            sb.append("--port ").append(getPort()).append(' ');
+        if (ok(getUser()))
+            sb.append("--user ").append(getUser()).append(' ');
+        else
+            sb.append("--user ").
+                append(SystemPropertyConstants.DEFAULT_ADMIN_USER).append(' ');
+        if (ok(getPasswordFile()))
+            sb.append("--passwordfile ").
+                append(getPasswordFile()).append(' ');
+        if (isSecure())
+            sb.append("--secure ");
+        sb.append("--interactive=").
+            append(Boolean.toString(isInteractive())).append(' ');
+        sb.append("--echo=").
+            append(Boolean.toString(isEcho())).append(' ');
+        sb.append("--terse=").
+            append(Boolean.toString(isTerse())).append(' ');
+        sb.setLength(sb.length() - 1);  // strip trailing space
+        return sb.toString();
+    }
 }
