@@ -123,6 +123,10 @@ public interface RuntimeRoot extends AMXProxy, Utility, Singleton
     
     @ChildGetter
     public Map<String,ServerRuntime>   getServerRuntime();
+    
+    @ManagedAttribute
+    @Description("Whether the server was started with --debug")
+    public boolean isStartedInDebugMode();
 }
 
 

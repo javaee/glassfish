@@ -377,8 +377,33 @@ public final class RuntimeRootImpl extends AMXImplBase
         }
         return result;
     }
+    
+    public boolean isStartedInDebugMode()
+    {
+        boolean inDebugMode = false;
 
+        final String s = System.getProperty("hk2.startup.context.args");
+        if ( s != null )
+        {
+            final String prefix = "-debug=";
+            final String[] ss = s.split("\n");
+
+            for( final String opt : ss)
+            {
+                if( opt.startsWith(prefix) )
+                {
+                    final String value = opt.substring( prefix.length() ).toLowerCase();
+                    //System.out.println( "RuntimeRootImpl.isRunningInDebugMode(): found: " + prefix + value );
+                    inDebugMode = Boolean.valueOf(value );
+                    break;
+                }
+            }
+        }
+        return inDebugMode;
+    }
 }
+
+
 
 
 
