@@ -1,4 +1,9 @@
 #!/bin/bash
+
+echo "Out of date, do not use"
+
+exit
+
 setEnv()
 {
 	export PUBLISH_ROOT=/llc/docroot
