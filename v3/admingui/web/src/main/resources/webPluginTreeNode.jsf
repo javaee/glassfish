@@ -122,11 +122,21 @@
         </facet>
     </dynamicTreeNode>
 
-    <sun:treeNode
-        id="transport"
-        text="$resource{i18n.tree.grizzly.transport}"
-        imageURL="/resource/web/images/httpservice.gif"
-        url="/web/grizzly/transportEdit.jsf?configName=server-config&name=tcp"
-     />
+    <dynamicTreeNode id="transport"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:pp=/domain/configs/config[$pageSession{configName}]/network-config,type=transports"
+        useV3AMX="true"
+        attributeName="name"
+        childImageURL="/resource/web/images/http.gif"
+        childExpanded="$boolean{false}"
+        childURL="/web/grizzly/transportEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
+        text="$resource{i18n.tree.grizzly.transports}"
+        url="/web/grizzly/transports.jsf?configName=#{configName}"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/transports.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+        </facet>
+    </dynamicTreeNode>
+
 </sun:treeNode>
 

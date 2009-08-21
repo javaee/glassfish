@@ -36,34 +36,76 @@
 -->
 <!-- grizzly/transports.jsf -->
 
-
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.grizzly.transportsPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.transport.listPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        getTransports(configName="$pageSession{configName}", result=>$attribute{listOfRows} );
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=transports");
+        setPageSessionAttribute(key="childType" value="transport");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteTransport}");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/grizzly/networkListenerNew.jsf?configName=#{configName}");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/grizzly/transportNew.jsf?configName=#{configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/transports.jsf?configName=#{configName}");
-        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?configName=#{configName}");
-        setPageSessionAttribute(key="type" value="networkListener");
-        setPageSessionAttribute(key="tableTitle" value="networkListener");
+        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/grizzly/transportEdit.jsf?configName=#{configName}");
+        setPageSessionAttribute(key="tableTitle"  value="$resource{i18n_web.transport.tableName}");
     />
     </event>
-#include "/common/shared/restart.inc"    
+#include "/common/shared/restart.inc"
 
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.transportsPageTitle}"
-                 helpText="$resource{i18n_web.grizzly.transportsPageTitleHelp}" />
+                 <sun:title id="propertyContentPage" title="$resource{i18n_web.transport.listPageTitle}"
+                 helpText="$resource{i18n_web.transport.listPageTitleHelp}" />
 		 "<br /> <br />
-#include "/web/grizzly/transportsTable.inc"
+<sun:table id="configs" title="#{tableTitle}"
+            deselectMultipleButton="$boolean{true}"
+            deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
+            selectMultipleButton="$boolean{true}"
+            selectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)" >
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{tableId});
+            />
+
+#include "/common/shared/listTableButtons.inc"
+
+    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
+     <!afterCreate
+         getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
+        />
+    <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
+            <sun:checkbox id="select"
+                selected="#{td.value.selected}"
+                selectedValue="$boolean{true}"
+                onClick="setTimeout('initAllRows(); changeOneTableButton()', 0)"
+            />
+    </sun:tableColumn>
+
+    <sun:tableColumn headerText="$resource{i18n_web.transport.nameCol}" sort="Name" rowHeader="$boolean{true}" id="col1">
+        <sun:hyperlink id="link" text="#{td.value.Name}"  url="#{pageSession.editLink}&name=#{td.value.Name}" />
+    </sun:tableColumn>
+
+    <sun:tableColumn headerText="$resource{i18n_web.transport.classnameCol}" sort="Classname"  rowHeader="$boolean{true}" id="classname">
+        <staticText id="classname" value="#{td.value.Classname}" />
+    </sun:tableColumn>
+
+
+    <sun:tableColumn headerText="$resource{i18n_web.transport.byteBufferTypeCol}" sort="ByteBufferType" rowHeader="$boolean{true}" id="byteType">
+        <staticText id="byteType" value="#{td.value.ByteBufferType}" />
+    </sun:tableColumn>
+
+  </sun:tableRowGroup>
+
+</sun:table>
+
 	<sun:hidden id="helpKey" value="$resource{help_web.transports}" />
             </sun:form>
+#include "/common/shared/changeButtonsJS.inc"
+
 </define>
 </composition>
+

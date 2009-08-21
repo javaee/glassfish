@@ -33,18 +33,45 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- grizzly/networkListenerNew.jsf -->
+<!-- grizzly/transportNew.jsf -->
+
 
 <!initPage
-    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings")
+    setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.httpService.accesslog.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.transport.newPageTitle}" >
 <!define name="content">
+    <event>
+    <!beforeCreate
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/transportNew.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/transports.jsf");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[server-config]/network-config,type=transports");
+        setPageSessionAttribute(key="childType" value="transport");
+        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        setPageSessionAttribute(key="convertToFalseList" value={"DisplayConfiguration", "EnableSnoop", "TcpNoDelay"});
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{false}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
+    />
+    </event>
+
+    //#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
-                " Create Transport (TBD)
-            </sun:form>
+
+        <!-- Page Title -->
+        <sun:title id="propertyContentPage" title="$resource{i18n_web.transport.newPageTitle}" helpText="$resource{i18n_web.transport.newPageTitleHelp}">
+#include "/common/shared/editPageButtons.inc"
+        </sun:title>
+        "<br><br>
+#include "transportAttr.inc"
+	<sun:hidden id="helpKey" value="$resource{help_web.transportNew}" />
+</sun:form>
 </define>
 </composition>
 
