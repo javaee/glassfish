@@ -101,7 +101,7 @@ cp target/mx.jar $PUBLISH_DIR/jars
 
 export JARS_LOC=/v3/glassfishv3/glassfish/modules
 echo ""
-echo "Copying various GlassFish V3 jars from assumed location: " + $JARS_LOC
+echo "Copying various GlassFish V3 jars from assumed location: " $JARS_LOC
 
 echo "Copying" $JARS_LOC/amx-core.jar
 cp $JARS_LOC/amx-core.jar $PUBLISH_DIR/jars
