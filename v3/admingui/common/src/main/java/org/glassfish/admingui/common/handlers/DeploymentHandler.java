@@ -360,6 +360,9 @@ public class DeploymentHandler {
     public static void getDeploymentDesciptor(HandlerContext handlerCtx) {
         String appName = (String) handlerCtx.getInputValue("appName");
         String moduleName = (String) handlerCtx.getInputValue("moduleName");
+        if (moduleName == null){
+            moduleName = "";   //for application.xml and sun-application.xml  where it is at top leverl, with a module name.
+        }
         String descriptorName = (String) handlerCtx.getInputValue("descriptorName");
         RuntimeRoot runtimeMgr = V3AMX.getInstance().getRuntime();
         List<Map<String, String>> ddList = runtimeMgr.getDeploymentConfigurations(appName);
