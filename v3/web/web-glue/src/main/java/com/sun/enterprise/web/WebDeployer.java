@@ -210,8 +210,8 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
      * @throws DeploymentException if JSPCompiler is unsuccessful.
      */
     void runJSPC(final DeploymentContext dc) throws DeploymentException {
-        final WebBundleDescriptor wbd = (WebBundleDescriptor)dc.getModuleMetaData(
-              Application.class).getStandaloneBundleDescriptor();
+        final WebBundleDescriptor wbd = dc.getModuleMetaData(
+            WebBundleDescriptor.class);
         try {
             final File outDir = dc.getScratchDir(env.kCompileJspDirName);
             final File inDir  = dc.getSourceDir();
