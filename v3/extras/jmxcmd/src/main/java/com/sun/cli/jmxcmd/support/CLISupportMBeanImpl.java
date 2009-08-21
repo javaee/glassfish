@@ -1555,10 +1555,7 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 		final InspectResult	result	= new InspectResult( instance );
 		result.includeDescription	= request.includeDescription;
 		
-		if ( request.includeMBeanInfo )
-		{
-			result.mbeanInfo	= info;
-		}
+		result.mbeanInfo	= info;
 		
 		final MBeanAttributeInfo []		attrs			= info.getAttributes();
 		final MBeanOperationInfo []		ops				= info.getOperations();

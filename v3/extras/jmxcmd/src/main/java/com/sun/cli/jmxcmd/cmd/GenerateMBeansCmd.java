@@ -41,7 +41,7 @@ import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;
 import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
 
-import com.sun.cli.jmxcmd.util.MBeanGenerator;
+import org.glassfish.admin.amx.util.jmx.MBeanInterfaceGenerator;
 
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 
@@ -110,7 +110,7 @@ public class GenerateMBeansCmd extends JMXCmd
 		return( new CmdInfos( CMD_INFO ) );
 	}
 	
-	private static final class MyBeanGenerator	extends MBeanGenerator
+	private static final class MyBeanGenerator	extends MBeanInterfaceGenerator
 	{
 		private final ObjectName[]	mObjectNames;
 		
@@ -250,7 +250,7 @@ public class GenerateMBeansCmd extends JMXCmd
 			final ObjectName[]	sharedNames	=
 				(ObjectName[])objectNameSet.toArray( new ObjectName[ objectNameSet.size() ] );
 
-			final MBeanGenerator	generator	= new MyBeanGenerator( sharedNames );
+			final MBeanInterfaceGenerator	generator	= new MyBeanGenerator( sharedNames );
 			final MBeanInfo	info	= (MBeanInfo)infosMap.get( sharedNames[ 0 ] );
 			
 			if ( info.getAttributes().length != 0 || info.getOperations().length != 0 )

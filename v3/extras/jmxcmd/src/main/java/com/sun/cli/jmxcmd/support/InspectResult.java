@@ -2,14 +2,6 @@
  * Copyright 2003 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
- 
-/*
- * $Header: /m/jws/jmxcmd/src/com/sun/cli/jmxcmd/support/InspectResult.java,v 1.2 2004/01/26 21:20:43 llc Exp $
- * $Revision: 1.2 $
- * $Date: 2004/01/26 21:20:43 $
- */
- 
-
 package com.sun.cli.jmxcmd.support;
 
 import java.io.Serializable;

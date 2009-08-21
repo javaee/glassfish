@@ -21,11 +21,11 @@ import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.util.CollectionUtil;
+import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 import static com.sun.cli.jmxcmd.cmd.NavInfo.*;
 
 /**
@@ -44,8 +44,8 @@ public class NavCmd extends JMXCmd
         {
             super(getCmdInfos());
         }
-        private final static String SYNOPSIS = "file system analogy for MBeans";
-        private final static String TARGET_TEXT = "file system analogy for MBeans.";
+        private final static String SYNOPSIS = "navigate through the MBean hierarchy";
+        private final static String TARGET_TEXT = "Target MBeans, and navigate like a file system";
 
 
         public String getSynopsis()
@@ -65,6 +65,12 @@ public class NavCmd extends JMXCmd
     {
         return (new NavCmdHelp());
     }
+    private final static String TARGET_NAME = "target";
+    private final static String CLEAR_TARGET_NAME = "clear-target";
+    private final static CmdInfo TARGET_INFO =
+        new CmdInfoImpl(TARGET_NAME, TARGETS_OPERAND_INFO);
+    private final static CmdInfo CLEAR_TARGET_INFO =
+        new CmdInfoImpl(CLEAR_TARGET_NAME);
     private final static String CD_NAME = "cd";
     private final static String PWD_NAME = "pwd";
     private final static String CAT_NAME = "cat";
@@ -84,7 +90,7 @@ public class NavCmd extends JMXCmd
     {
         return new CmdInfos(new CmdInfo[]
             {
-                CD_INFO, LS_INFO, PWD_INFO, PUSHD_INFO, POPD_INFO, CAT_INFO
+                CD_INFO, LS_INFO, PWD_INFO, PUSHD_INFO, POPD_INFO, CAT_INFO, TARGET_INFO, CLEAR_TARGET_INFO
             });
     }
     public static final String NAV_INFO_KEY = "NavCmd.NavInfo";
@@ -94,11 +100,11 @@ public class NavCmd extends JMXCmd
     {
         return getNavInfo().resolve();
     }
-    
-    
+
+
     private AMXProxy targetProxy()
     {
-        return ProxyFactory.getInstance( getConnection() ).getProxy( target() );
+        return ProxyFactory.getInstance(getConnection()).getProxy(target());
     }
 
 
@@ -106,47 +112,48 @@ public class NavCmd extends JMXCmd
     {
         final NavInfo info = getNavInfo();
         info.cd(dest);
-        println( info.getCurrentDir() + " = " + info.resolve());
+        setTargets( new String[] { info.resolve().toString() } );
+        println(info.getCurrentDir() + " = " + info.resolve());
     }
 
 
     private void ls()
     {
         final AMXProxy amx = targetProxy();
-        
+
         final String delim = ", ";
-        
+
         final Set<AMXProxy> childrenSet = amx.childrenSet();
         //final Map<String,Object> attrs = amx.attributesMap();
-        
-        final String attrNamesStr = CollectionUtil.toString( amx.attributeNames(), delim );
-        
+
+        final String attrNamesStr = CollectionUtil.toString(amx.attributeNames(), delim);
+
         final List<String> childItems = new ArrayList<String>();
-        for( final AMXProxy child : childrenSet)
+        for (final AMXProxy child : childrenSet)
         {
             final String nameProp = child.nameProp();
-            childItems.add( child.type() + (nameProp == null ? "" : "=" + nameProp) );
+            childItems.add(child.type() + (nameProp == null ? "" : "[" + nameProp + "]"));
         }
-        final String childrenStr = CollectionUtil.toString( childItems, delim );
-        
-        println( attrNamesStr );
-        println( "" );
-        if ( childrenSet.size() != 0 )
+        final String childrenStr = CollectionUtil.toString(childItems, delim);
+
+        println(attrNamesStr);
+        println("");
+        if (childrenSet.size() != 0)
         {
-            println( childrenStr );
+            println(childrenStr);
         }
-        
+
         /*
         try
         {
-            final MBeanInfo info = getConnection().getMBeanInfo( target() );
-            println( info );
+        final MBeanInfo info = getConnection().getMBeanInfo( target() );
+        println( info );
         }
         catch( final Exception e )
         {
-            e.printStackTrace();
+        e.printStackTrace();
         }
-        */
+         */
     }
 
 
@@ -185,14 +192,59 @@ public class NavCmd extends JMXCmd
         try
         {
             establishProxy();
-            getNavInfo().setMBeanServerConnection( getConnection() );
+            getNavInfo().setMBeanServerConnection(getConnection());
+        }
+        catch (final Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
+    void displayExistingTarget()
+    {
+        println("Targets:\n" + envGet(JMXCmdEnvKeys.TARGETS));
+    }
+
+
+    void warnEmptyTargets(final String[] targets)
+        throws Exception
+    {
+        // issue warning if some targets could not be resolved to anything
+        for (int i = 0; i < targets.length; ++i)
+        {
+            final String target = targets[i];
+
+            final ObjectName[] objects =
+                resolveTargets(getProxy(), new String[]
+                {
+                    target
+                });
+
+            if (objects.length == 0)
+            {
+                println("WARNING: target " + target + " does not resolve to any objects");
+            }
+        }
+    }
+
+
+    void setTargets(final String[] targets)
+    {
+        try
+        {
+            putEnvTargets(targets);
+            warnEmptyTargets(targets);
+
+            getAliasMgr().deleteAlias(JMXCmdEnvKeys.TARGETS_ALIAS);
+            getAliasMgr().createAlias(JMXCmdEnvKeys.TARGETS_ALIAS, ArrayStringifier.stringify(targets, " "));
         }
         catch( final Exception e )
         {
             e.printStackTrace();
         }
     }
-    
+
 
     /**
     Commands are stubbed out,
@@ -227,7 +279,7 @@ public class NavCmd extends JMXCmd
         else if (cmd.equals(PWD_NAME))
         {
             connect();
-            println(navInfo.getCurrentDir() + " = " + target() );
+            println(navInfo.getCurrentDir() + " = " + target());
         }
         else if (cmd.equals(PUSHD_NAME))
         {
@@ -252,6 +304,28 @@ public class NavCmd extends JMXCmd
                 println("Directory stack empty");
             }
             println(navInfo.getCurrentDir());
+        }
+        else if (cmd.equals(CLEAR_TARGET_NAME))
+        {
+            if (operands.length != 0)
+            {
+                throw new IllegalUsageException(CLEAR_TARGET_NAME + " takes no operands");
+            }
+
+            envRemove(JMXCmdEnvKeys.TARGETS);
+            getAliasMgr().deleteAlias(JMXCmdEnvKeys.TARGETS_ALIAS);
+        }
+        else if (cmd.equals(TARGET_NAME))
+        {
+            if (operands.length == 0)
+            {
+                displayExistingTarget();
+            }
+            else
+            {
+                connect();
+                setTargets(operands);
+            }
         }
         else
         {
