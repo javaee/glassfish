@@ -4,17 +4,19 @@
  */
 package com.sun.s1asdev.ejb.ejb31.aroundtimeout;
 
-
+import java.util.Collection;
 import javax.ejb.Stateless;
 import javax.ejb.Schedule;
 import javax.ejb.Timer;
+import javax.ejb.TimerService;
 import javax.ejb.EJBException;
 import javax.interceptor.Interceptors;
 import javax.interceptor.ExcludeDefaultInterceptors;
 import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
-
+import javax.naming.InitialContext;
+import javax.annotation.Resource;
 
 // Exclude default aroundtimeout, but re-add one of them at class-level
 @Stateless
@@ -22,6 +24,8 @@ import javax.interceptor.InvocationContext;
 @Interceptors({InterceptorC.class, InterceptorB.class, InterceptorD.class})
 public class SlessEJB4 implements Sless4
 {
+    @Resource TimerService timerSvc;
+
     private boolean aroundTimeoutCalled = false;
 
     private final static int EXPECTED = 5;
@@ -79,6 +83,9 @@ public class SlessEJB4 implements Sless4
     
     public void verify() {
         Common.checkResults("SlessEJB4", EXPECTED);
+        Collection<Timer> timers = timerSvc.getTimers();
+        for (Timer t : timers)
+            t.cancel();
         aroundTimeoutCalled = false;
     }
 }
