@@ -939,8 +939,8 @@ public class WebappClassLoader
                 throw new ClassNotFoundException(name, ace);
             } catch (Throwable t) {
                 String msg = rb.getString(
-                    "webappClassLoader.unableToFindClass");
-                msg = MessageFormat.format(msg, name);
+                    "webappClassLoader.unableToLoadClass");
+                msg = MessageFormat.format(msg, name, t.toString());
                 throw new RuntimeException(msg, t);
             }
             if ((clazz == null) && hasExternalRepositories) {
