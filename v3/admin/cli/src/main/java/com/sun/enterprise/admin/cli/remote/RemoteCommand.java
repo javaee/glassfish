@@ -71,7 +71,7 @@ public class RemoteCommand extends CLICommand {
     private static final String QUERY_STRING_SEPARATOR = "&";
     private static final String ADMIN_URI_PATH = "/__asadmin/";
     private static final String COMMAND_NAME_REGEXP =
-                                    "^[a-zA-Z][-a-zA-Z0-9_]*$";
+                                    "^[a-zA-Z_][-a-zA-Z0-9_]*$";
 
     private String                          responseFormatType = "hk2-agent";
     private OutputStream                    userOut;
