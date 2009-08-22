@@ -36,11 +36,16 @@
 -->
 
 <!-- logViewer/logViewer.jsf -->
+
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+
+/>
 <sun:page id="page1">
     <event>
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
     setPageSessionAttribute(key="instanceName" value="server");
     getRequestValue(key="instanceName" value=>$attribute{instanceName});
     getLoggingAttributes(attrs="#{pageSession.valueMap}");
@@ -90,14 +95,14 @@
         />   
     </event>
 <sun:html id="html2">    
-<sun:head id="propertyhead" title="$resource{i18n.logViewer.PageTitle}" debug="false" parseOnLoad="false">
+<sun:head id="propertyhead" title="$resource{i18nc.logViewer.PageTitle}" debug="false" parseOnLoad="false">
     <sun:script url="/resource/common/js/adminjsf.js" />
 </sun:head>
 <sun:body onLoad="javascript: checkHiddenElements(); setFocusTableResults('#{hasResults}');" id="body3">
 <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"    
     <!-- Page Title -->
-    <sun:title id="propertyContentPage" title="$resource{i18n.logViewer.PageTitle}" helpText="$resource{i18n.logViewer.PageHelp}">
+    <sun:title id="propertyContentPage" title="$resource{i18nc.logViewer.PageTitle}" helpText="$resource{i18nc.logViewer.PageHelp}">
             <!-- Buttons  -->                    
     <!facet pageButtonsTop>
     <sun:panelGroup id="topButtons">
@@ -138,7 +143,7 @@
     "<br />
                  "<a name="thetop"></a>
                  "&nbsp;&nbsp;&nbsp;&nbsp;
-                 <sun:hyperlink rendered="#{!showAdvanced}" id="advancedlink" text="$resource{i18n.logViewer.advancedSearch}">
+                 <sun:hyperlink rendered="#{!showAdvanced}" id="advancedlink" text="$resource{i18nc.logViewer.advancedSearch}">
                  <!command      
                     
                     setSessionAttribute(key="showAdvanced" value="#{true}");
@@ -146,7 +151,7 @@
                     navigate(page="#{request.contextPath}/common/logViewer/logViewer.jsf");
                  />
                  </sun:hyperlink> 
-                 <sun:hyperlink rendered="#{showAdvanced}" id="basiclink" text="$resource{i18n.logViewer.basicSearch}">
+                 <sun:hyperlink rendered="#{showAdvanced}" id="basiclink" text="$resource{i18nc.logViewer.basicSearch}">
                  <!command      
                     
                     setSessionAttribute(key="showAdvanced" value="#{false}");
@@ -170,24 +175,24 @@
         </event>
         
         <!-- Text Field section -->           
-        <sun:propertySheetSection id="propertSectionTextField" label="$resource{i18n.logViewer.searchCriteriaLabel}">
+        <sun:propertySheetSection id="propertSectionTextField" label="$resource{i18nc.logViewer.searchCriteriaLabel}">
             <!--    Removing instance name and log file name since there is only one
-            <sun:property id="instanceNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logViewer.serverNameLabel}">
+            <sun:property id="instanceNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.serverNameLabel}">
                 <sun:staticText id="instanceName" text="#{instanceName}"/> "&nbsp;&nbsp; 
-                <sun:label text="$resource{i18n.logViewer.logFile}" />
+                <sun:label text="$resource{i18nc.logViewer.logFile}" />
                 <sun:staticText id="logFileName" text="#{logFile}"/>                              
             </sun:property>      -->                                                       
-            <sun:property id="timeStampProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logViewer.dateTimeLabel}">                           
+            <sun:property id="timeStampProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.dateTimeLabel}">
                 "<table cellspacing="0" cellpadding="0">
                     "<tr valign="bottom"><td nowrap valign="top">                                 
-                            <sun:radioButton id="optA"  name="dateEnabledGrp" label="$resource{i18n.logViewer.dateDisabled}" selected="#{requestScope.dateDisabled}" selectedValue="disabled" onClick='javascript: 
+                            <sun:radioButton id="optA"  name="dateEnabledGrp" label="$resource{i18nc.logViewer.dateDisabled}" selected="#{requestScope.dateDisabled}" selectedValue="disabled" onClick='javascript:
                                 checkHiddenElements();  ' >                              
                                 <!afterCreate
                                 getClientId(component="$this{component}" clientId=>$session{dateDisabledButton});
                                 />                            
                             </sun:radioButton>
                             "<br /> 
-                            <sun:radioButton id="optB"  name="dateEnabledGrp" label="$resource{i18n.logViewer.dateEnabled}" selected="#{requestScope.dateEnabled}" selectedValue="enabled"  onClick='javascript: 
+                            <sun:radioButton id="optB"  name="dateEnabledGrp" label="$resource{i18nc.logViewer.dateEnabled}" selected="#{requestScope.dateEnabled}" selectedValue="enabled"  onClick='javascript:
                                 checkHiddenElements();  ' >                              
                                 <!afterCreate
                                 getClientId(component="$this{component}" clientId=>$session{dateEnabledButton});
@@ -202,19 +207,19 @@
                                     "<tr valign="bottom"><td nowrap>
                                                                         "<td nowrap></td>
                                         "<td nowrap align="center">
-                                            <sun:label text="$resource{i18n.logViewer.dateLabel}" />
+                                            <sun:label text="$resource{i18nc.logViewer.dateLabel}" />
                                         "</td>
                                         "<td nowrap>&nbsp;&nbsp;&nbsp;</td>
                                         "<td nowrap align="center">
-                                            <sun:label text="$resource{i18n.logViewer.timeLabel}" />
+                                            <sun:label text="$resource{i18nc.logViewer.timeLabel}" />
                                     "</td></tr>
                                     "<tr valign="top"><td nowrap></td>
                                         "<td nowrap>
-                                            <sun:label text="$resource{i18n.logViewer.fromDateLabel}" />
+                                            <sun:label text="$resource{i18nc.logViewer.fromDateLabel}" />
                                         "</td>
                                         "<td nowrap>
                                             <sun:textField id="fromDate" columns="$int{20}" text="#{requestScope.fromDate}"/>
-                                            <sun:helpInline id="fromDateHelp" text="$resource{i18n.logViewer.fromDateHelp, #{requestScope.fromDate}}" />
+                                            <sun:helpInline id="fromDateHelp" text="$resource{i18nc.logViewer.fromDateHelp, #{requestScope.fromDate}}" />
                                         "</td>
                                         "<td nowrap>&nbsp;</td>
                                         "<td nowrap>
@@ -225,30 +230,30 @@
                                         "<td nowrap>
                                                     "</td>
                                         "<td nowrap>
-                                            <sun:label text="$resource{i18n.logViewer.toDateLabel}" />
+                                            <sun:label text="$resource{i18nc.logViewer.toDateLabel}" />
                                         "</td>
                                         "<td nowrap>
                                             <sun:textField id="toDate" columns="$int{20}" text="#{requestScope.toDate}"/>
-                                            <sun:helpInline id="toDateHelp" text="$resource{i18n.logViewer.toDateHelp, #{requestScope.fromDate}}" />
+                                            <sun:helpInline id="toDateHelp" text="$resource{i18nc.logViewer.toDateHelp, #{requestScope.fromDate}}" />
                                         "</td>
                                         "<td nowrap>&nbsp;</td>
                                         "<td nowrap>
                                             <sun:textField id="toTime" columns="$int{20}" text="#{requestScope.toTime}"/>
-                                            <sun:helpInline id="toTimeHelp" text="$resource{i18n.logViewer.toTimeHelp, #{toTime}}" />
+                                            <sun:helpInline id="toTimeHelp" text="$resource{i18nc.logViewer.toTimeHelp, #{toTime}}" />
                                     "</td></tr>
                                 "</table>
                 "</span>	</td></tr></table>
             </sun:property>  
-            <sun:property id="logLevelProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logViewer.levelLabel}" helpText="$resource{i18n.logViewer.levelLabelHelp}">
-                <sun:dropDown id="logLevel" selected="#{logLevel}" labels={"$resource{i18n.logging.Default}" "$resource{i18n.logging.Finest}" "$resource{i18n.logging.Finer}" "$resource{i18n.logging.Fine}" "$resource{i18n.logging.Config}" "$resource{i18n.logging.Info}" "$resource{i18n.logging.Warning}" "$resource{i18n.logging.Severe}"} >
+            <sun:property id="logLevelProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.levelLabel}" helpText="$resource{i18nc.logViewer.levelLabelHelp}">
+                <sun:dropDown id="logLevel" selected="#{logLevel}" labels={"$resource{i18nc.logging.Default}" "$resource{i18nc.logging.Finest}" "$resource{i18nc.logging.Finer}" "$resource{i18nc.logging.Fine}" "$resource{i18nc.logging.Config}" "$resource{i18nc.logging.Info}" "$resource{i18nc.logging.Warning}" "$resource{i18nc.logging.Severe}"} >
                  </sun:dropDown>
-                 <sun:checkbox label="$resource{i18n.logViewer.noSevereMessages}" selected="#{requestScope.onlyLevel}" > 
+                 <sun:checkbox label="$resource{i18nc.logViewer.noSevereMessages}" selected="#{requestScope.onlyLevel}" >
                 </sun:checkbox>
             </sun:property>     
            "<br /><br />
         </sun:propertySheetSection>
-        <sun:propertySheetSection id="advanced" rendered="#{showAdvanced}" label="$resource{i18n.logViewer.advancedSearch}">
-            <sun:property id="LoggerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logViewer.loggerLabel}" helpText="$resource{i18n.logViewer.numberToDisplayLabelHelp}">                
+        <sun:propertySheetSection id="advanced" rendered="#{showAdvanced}" label="$resource{i18nc.logViewer.advancedSearch}">
+            <sun:property id="LoggerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.loggerLabel}" helpText="$resource{i18nc.logViewer.numberToDisplayLabelHelp}">
                 <sun:listbox id="logger" immediate="#{true}" multiple="#{true}"  rows="$int{4}"
                 labels="$pageSession{availableLoggers}"
                 selected="$session{logentries}" >
@@ -264,21 +269,21 @@
                     />  
                 </sun:listbox>
                 
-                <sun:staticText id="displayNumHelp"text="$resource{i18n.logViewer.moduleHelp}"/>
+                <sun:staticText id="displayNumHelp"text="$resource{i18nc.logViewer.moduleHelp}"/>
             </sun:property>
-           <sun:property id="CustomLoggerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logViewer.customLoggerLabel}" helpText="$resource{i18n.logViewer.customLoggerLabelHelp}">
+           <sun:property id="CustomLoggerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.customLoggerLabel}" helpText="$resource{i18nc.logViewer.customLoggerLabelHelp}">
                 <sun:textArea id="customLogger" rows="$int{8}" columns="$int{30}" text="#{requestScope.customLogger}">
-                </sun:textArea><sun:staticText id="displayNumHelp"text="$resource{i18n.logViewer.customLoggerHelp}"/> 
+                </sun:textArea><sun:staticText id="displayNumHelp"text="$resource{i18nc.logViewer.customLoggerHelp}"/>
             </sun:property>            
-          <sun:property id="nameValueProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logViewer.nvpLabel}" helpText="$resource{i18n.logViewer.nvpHelp}">
+          <sun:property id="nameValueProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.nvpLabel}" helpText="$resource{i18nc.logViewer.nvpHelp}">
                 <sun:textArea id="nameValue" rows="$int{8}" columns="$int{30}" text="#{requestScope.nvp}">
                 </sun:textArea>
             </sun:property>              
-         <sun:property id="displayProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logViewer.numberToDisplayLabel}" helpText="$resource{i18n.logViewer.truncateMessageHelp}">
+         <sun:property id="displayProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.numberToDisplayLabel}" helpText="$resource{i18nc.logViewer.truncateMessageHelp}">
                  <sun:dropDown id="display" selected="#{requestScope.numToDisplay}" labels={"40" "100" "250" "1000"} >
-                 </sun:dropDown><sun:staticText id="displayNumHelp"text="$resource{i18n.logViewer.numberToDisplayLabelRight}"/> 
-                 <sun:helpInline id="displayHelp" text="$resource{i18n.logViewer.numberToDisplayLabelHelp}" />
-                 <sun:checkbox label="$resource{i18n.logViewer.truncateMessageLabel}" selected="#{requestScope.truncate}" > 
+                 </sun:dropDown><sun:staticText id="displayNumHelp"text="$resource{i18nc.logViewer.numberToDisplayLabelRight}"/>
+                 <sun:helpInline id="displayHelp" text="$resource{i18nc.logViewer.numberToDisplayLabelHelp}" />
+                 <sun:checkbox label="$resource{i18nc.logViewer.truncateMessageLabel}" selected="#{requestScope.truncate}" >
                 </sun:checkbox>
             </sun:property>               
         </sun:propertySheetSection>            
@@ -287,21 +292,21 @@
 </sun:title> 
 "<a name="#options"></a>
 "&nbsp;&nbsp;
-<sun:hyperlink rendered="#{hasResults}" url="#thetop" name="thebottom"><sun:staticText  text="$resource{i18n.logViewer.modifySearch}" /></sun:hyperlink>
+<sun:hyperlink rendered="#{hasResults}" url="#thetop" name="thebottom"><sun:staticText  text="$resource{i18nc.logViewer.modifySearch}" /></sun:hyperlink>
 <!-- appServer/propertyTable.inc -->
 <sun:propertySheet id="propertySheetLogResults">
     <sun:propertySheetSection id="propertSectionLogResults">
-        <sun:property id="instanceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logViewer.instanceLabel}">
+        <sun:property id="instanceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.instanceLabel}">
             <staticText id="instance" value="#{instanceName}"/>                                
         </sun:property> 
-        <sun:property id="levelProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logViewer.logFileDirectoryLabel}">
+        <sun:property id="levelProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.logFileDirectoryLabel}">
             <staticText id="level" value="#{pageSession.valueMap['file']}"/>         
         </sun:property> 
     </sun:propertySheetSection>
     
 </sun:propertySheet>
 <!-- Table .... -->
-<sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18n.logViewer.title}" sortPanelToggleButton="#{true}" 
+<sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18nc.logViewer.title}" sortPanelToggleButton="#{true}"
             deselectMultipleButton="$boolean{false}"
             deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
             selectMultipleButton="$boolean{false}"
@@ -311,7 +316,7 @@
             <!afterCreate
                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
             />
-            <sun:button id="button1" rendered="#{hasResults}" text="$resource{i18n.logViewer.RecordsBefore, #{first}}" disabled="#{false}">
+            <sun:button id="button1" rendered="#{hasResults}" text="$resource{i18nc.logViewer.RecordsBefore, #{first}}" disabled="#{false}">
             <!command 
                 setAttribute(key="afterRecord" value="#{false}");
                 setAttribute(key="fromRecord" value="#{first}");
@@ -319,9 +324,9 @@
             />
             </sun:button>
             "&nbsp;&nbsp;&nbsp;
-            <staticText id="recNumCol" rendered="#{hasResults}" value="$resource{i18n.logViewer.PaginationText, #{first}, #{last}}"/>
+            <staticText id="recNumCol" rendered="#{hasResults}" value="$resource{i18nc.logViewer.PaginationText, #{first}, #{last}}"/>
             "&nbsp;&nbsp;&nbsp;
-            <sun:button id="button2" rendered="#{hasResults}" text="$resource{i18n.logViewer.RecordsAfter, #{last}}" disabled="#{false}">
+            <sun:button id="button2" rendered="#{hasResults}" text="$resource{i18nc.logViewer.RecordsAfter, #{last}}" disabled="#{false}">
             <!command 
                 setAttribute(key="afterRecord" value="#{true}");                
                 setAttribute(key="fromRecord" value="#{last}");
@@ -334,32 +339,32 @@
         <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{propertyTableRowGroupId});
         />        
-        <sun:tableColumn headerText="$resource{i18n.logViewer.recordNumberLabel}" rowHeader="$boolean{true}" sort="#{td.value.recNumber}"  id="col1">
+        <sun:tableColumn headerText="$resource{i18nc.logViewer.recordNumberLabel}" rowHeader="$boolean{true}" sort="#{td.value.recNumber}"  id="col1">
             <staticText id="recNumCol" value="#{td.value.recNumber}"/>
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{i18n.logViewer.colLogLevel}" rowHeader="$boolean{true}" sort="#{td.value.level}" id="col2">
+        <sun:tableColumn headerText="$resource{i18nc.logViewer.colLogLevel}" rowHeader="$boolean{true}" sort="#{td.value.level}" id="col2">
             <staticText id="levelCol" value="#{td.value.level}"/>
         </sun:tableColumn>  
-        <sun:tableColumn headerText="$resource{i18n.logViewer.messageLabel}" rowHeader="$boolean{true}" sort="#{td.value.message}" id="col3">
+        <sun:tableColumn headerText="$resource{i18nc.logViewer.messageLabel}" rowHeader="$boolean{true}" sort="#{td.value.message}" id="col3">
             <staticText id="messageCol" value="#{td.value.message}"/>
-            <sun:hyperlink id="logDetail" text="$resource{i18n.logViewer.moreInfoLinkText}" 
+            <sun:hyperlink id="logDetail" text="$resource{i18nc.logViewer.moreInfoLinkText}"
             onClick="javascript:
             var logDetailWin = window.open('logEntryDetail.jsf?instanceName=#{instanceName}&logLevel=#{td.value.level}&logFile=#{logFile}&recNumber=#{td.value.recNumber}','LogDetail','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');
             logDetailWin.focus();return false;" />
         </sun:tableColumn>        
-        <sun:tableColumn headerText="$resource{i18n.logViewer.loggerLabel}" rowHeader="$boolean{true}" sort="#{td.value.logger}" id="col4">
+        <sun:tableColumn headerText="$resource{i18nc.logViewer.loggerLabel}" rowHeader="$boolean{true}" sort="#{td.value.logger}" id="col4">
             <staticText id="loggerCol" value="#{td.value.logger}"/>
         </sun:tableColumn>     
-        <sun:tableColumn headerText="$resource{i18n.logViewer.dateTimeLabel}" rowHeader="$boolean{true}" sort="#{td.value.dateTime}" id="col5">
+        <sun:tableColumn headerText="$resource{i18nc.logViewer.dateTimeLabel}" rowHeader="$boolean{true}" sort="#{td.value.dateTime}" id="col5">
             <staticText id="dateTimeCol" value="#{td.value.dateTime}"/>
         </sun:tableColumn>      
-        <sun:tableColumn headerText="$resource{i18n.logViewer.nvpLabel}" rowHeader="$boolean{true}" sort="#{td.value.nvp}" id="col6">
+        <sun:tableColumn headerText="$resource{i18nc.logViewer.nvpLabel}" rowHeader="$boolean{true}" sort="#{td.value.nvp}" id="col6">
             <staticText id="dateTimeCol" value="#{td.value.nvp}"/>
         </sun:tableColumn>              
         "<br/>
     </sun:tableRowGroup>
 </sun:table>                       
-<sun:hidden id="helpKey" value="$resource{help.logViewer}" />
+<sun:hidden id="helpKey" value="$resource{help_common.logViewer}" />
 </sun:form>
 "<SCRIPT language = "Javascript" >
 "function checkHiddenElements() {

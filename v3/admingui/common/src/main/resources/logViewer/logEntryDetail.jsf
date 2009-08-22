@@ -36,11 +36,16 @@
 -->
 
 <!-- logViewer/logEntryDetail.jsf -->
+
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+/>
+
 <sun:page id="page1">
     <event>
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
     setPageSessionAttribute(key="instanceName" value="server");
     getRequestValue(key="instanceName" value=>$attribute{instanceName});
     getRequestValue(key="logFile" value=>$attribute{logFile});        
@@ -50,14 +55,14 @@
     />   
     </event>
 <sun:html id="html2">    
-<sun:head id="propertyhead" title="$resource{i18n.logDetail.PageTitle}" debug="false" parseOnLoad="false">
+<sun:head id="propertyhead" title="$resource{i18nc.logDetail.PageTitle}" debug="false" parseOnLoad="false">
     <sun:script url="/resource/common/js/adminjsf.js" />
 </sun:head>
 <sun:body id="body3">
 <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"    
     <!-- Page Title -->
-    <sun:title id="propertyContentPage" title="$resource{i18n.logDetail.PageTitle}">
+    <sun:title id="propertyContentPage" title="$resource{i18nc.logDetail.PageTitle}">
             <!-- Buttons  -->                    
             <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
@@ -71,27 +76,27 @@
                     <sun:propertySheet id="propertySheet">	                     
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
-                            <sun:property id="timestampProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logDetail.timeStampLabel}" >                         
+                            <sun:property id="timestampProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logDetail.timeStampLabel}" >
                             <foreach key="instance" list="#{listOfInstances}">                                            
                                 <sun:staticText id="Timestamp"text="#{instance.dateTime}" required="#{true}"/>                               
                             </foreach>
                             </sun:property>                       
-                            <sun:property id="logLevelProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logDetail.levelLabel}">                           
+                            <sun:property id="logLevelProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logDetail.levelLabel}">
                                 <sun:staticText id="LogLevel" text="#{requestScope.logLevel}"/>     
                             </sun:property> 
-                            <sun:property id="loggerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logDetail.loggerLabel}">                           
+                            <sun:property id="loggerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logDetail.loggerLabel}">
                                 <foreach key="instance" list="#{listOfInstances}"><sun:staticText id="Logger" text="#{instance.logger}"/>  </foreach>   
                             </sun:property>
-                            <sun:property id="nvpProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logDetail.nvpLabel}">                           
+                            <sun:property id="nvpProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logDetail.nvpLabel}">
                                 <foreach key="instance" list="#{listOfInstances}"><sun:staticText id="Nvp" text="#{instance.nvp}"/></foreach>     
                             </sun:property>
-                            <sun:property id="numProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logDetail.recordNumberLabel}">                           
+                            <sun:property id="numProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logDetail.recordNumberLabel}">
                                 <foreach key="instance" list="#{listOfInstances}"><sun:staticText id="Num" text="#{instance.recNumber}"/></foreach>     
                             </sun:property> 
-                            <sun:property id="messageIdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logDetail.messageIDLabel}">                           
+                            <sun:property id="messageIdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logDetail.messageIDLabel}">
                                 <foreach key="instance" list="#{listOfInstances}"><sun:staticText id="MessageId" text="#{instance.messageID}"/> </foreach>    
                             </sun:property> 
-                            <sun:property id="completeMessageProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.logDetail.messageLabel}">                           
+                            <sun:property id="completeMessageProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logDetail.messageLabel}">
                                 <foreach key="instance" list="#{listOfInstances}"><sun:staticText id="CompleteMessage" text="#{instance.message}"/></foreach>     
                             </sun:property>
                             "<br /><br />
@@ -101,7 +106,7 @@
     
 </sun:title> 
                     
-<sun:hidden id="helpKey" value="$resource{help.logEntryDetail}" />
+<sun:hidden id="helpKey" value="$resource{help_common.logEntryDetail}" />
 </sun:form>
 </sun:body>
 </sun:html>
