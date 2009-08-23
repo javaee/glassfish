@@ -43,6 +43,7 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.universal.collections.ManifestUtils;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.glassfish.api.ActionReport;
@@ -52,6 +53,7 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.PerLookup;
 
 
 /**
@@ -64,6 +66,7 @@ import org.jvnet.hk2.annotations.Inject;
  */
 
 @Service(name="list-contracts", metadata="mode=debug")
+@Scoped(PerLookup.class)
 public class ListContracts implements AdminCommand {
 
     @Inject
@@ -77,7 +80,7 @@ public class ListContracts implements AdminCommand {
 
     @Param(optional=true)
     String started = "false";
-    
+
     public void execute(AdminCommandContext context) {
         StringBuilder sb = new StringBuilder();
         if (contract==null) {
@@ -129,6 +132,7 @@ public class ListContracts implements AdminCommand {
              sb.append("\n-----------------------------\n");
              for (Inhabitant i : habitat.getInhabitantsByContract(cn)) {
              sb.append("Inhabitant-Metadata: "+i.metadata().toCommaSeparatedString());
+             sb.append("\n");
              boolean isStarted = Boolean.parseBoolean(started);
              if (isStarted) {
                  sb.append((i.isInstantiated()?" started": " not started"));
