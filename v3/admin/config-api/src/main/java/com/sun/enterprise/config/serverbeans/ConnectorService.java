@@ -41,10 +41,16 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.component.Injectable;
+import org.glassfish.quality.ToDo;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.admin.config.PropertyBag;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
+import java.util.List;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
@@ -57,7 +63,7 @@ import javax.validation.constraints.Min;
 /* @XmlType(name = "") */
 
 @Configured
-public interface ConnectorService extends ConfigBeanProxy, Injectable  {
+public interface ConnectorService extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the shutdownTimeoutInSeconds property.
@@ -77,6 +83,17 @@ public interface ConnectorService extends ConfigBeanProxy, Injectable  {
      */
     public void setShutdownTimeoutInSeconds(String value) throws PropertyVetoException;
 
-
+    /**
+     *	Properties as per {@link org.glassfish.api.admin.config.PropertyBag}
+     *
+     *  Properties are used to override the ManagedConnectionFactory  javabean
+     * configuration settings. When one or more of these properties are
+     * specified, they are passed as is using set<Name>(<Value>) methods to the
+     * Resource Adapter's ManagedConnectionfactory class (specified in ra.xml).
+     *
+     */
+    @PropertiesDesc(props={})
+    @Element
+    List<Property> getProperty();
 
 }

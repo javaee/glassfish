@@ -38,7 +38,7 @@ package org.glassfish.admin.amx.intf.config;
 /**
 Configuration for the &lt;connector-service&gt; element.
  */
-public interface ConnectorService extends ConfigElement
+public interface ConnectorService extends ConfigElement, PropertiesAccess
 {
     
     public String getShutdownTimeoutInSeconds();
