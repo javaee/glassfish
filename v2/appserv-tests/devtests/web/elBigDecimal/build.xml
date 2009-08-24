@@ -62,7 +62,7 @@
         <java classname="WebTest">
           <classpath>
            <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
-           <pathelement location="${env.S1AS_HOME}/modules/el-api.jar"/>
+           <pathelement location="${env.S1AS_HOME}/modules/javax.servlet.jsp.jar"/>
            <pathelement location="${env.S1AS_HOME}/modules/el-impl.jar"/>
            <pathelement location="."/>
          </classpath>
