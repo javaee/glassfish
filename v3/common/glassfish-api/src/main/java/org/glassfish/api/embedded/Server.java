@@ -182,7 +182,7 @@ public class Server {
 
             // not pretty, revisit when more time is available.
             if (builder.fileSystem!=null) {
-                fsBuilder.setInstallRoot(builder.fileSystem.installRoot);
+                fsBuilder.setInstallRoot(builder.fileSystem.installRoot, builder.fileSystem.cookedMode);
                 fsBuilder.setConfigurationFile(builder.fileSystem.configFile);
             }
 

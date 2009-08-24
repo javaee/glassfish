@@ -504,7 +504,14 @@ public class ApplicationLifecycle implements Deployment {
             if (deployer.getMetaData()!=null) {
                 for (Class dependency : deployer.getMetaData().requires()) {
                     if (!typeByDeployer.containsKey(dependency) && !typeByProvider.containsKey(dependency)) {
-                        report.failure(logger, "Deployer " + dependency + " requires " + deployer + " but no other deployer provides it", null);
+                        Service s = deployer.getClass().getAnnotation(Service.class);
+                        String serviceName;
+                        if (s!=null && s.name()!=null && s.name().length()>0) {
+                            serviceName = s.name();
+                        } else {
+                            serviceName = deployer.getClass().getSimpleName();
+                        }
+                        report.failure(logger, serviceName + " deployer requires " + dependency + " but no other deployer provides it", null);
                         return null;
                     }
                 }

@@ -39,7 +39,7 @@ public class EmbeddedWebAPITest {
         }
         try {
             EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-            efsb.setInstallRoot(f);
+            efsb.setInstallRoot(f, true);
             Server.Builder builder = new Server.Builder("inplanted");
             builder.setEmbeddedFileSystem(efsb.build());
             server = builder.build();

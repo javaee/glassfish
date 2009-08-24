@@ -92,6 +92,17 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>kernel</artifactId>
+            <version>${project.version}</version>
+        </dependency>        
+        <dependency>
+                <groupId>org.glassfish.security</groupId>
+                <artifactId>inmemory.jacc.provider</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+        </dependency>        
+        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>config-api</artifactId>
             <version>${project.version}</version>
@@ -108,6 +119,19 @@
             <version>4.3.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>webtier-all</artifactId>
+            <type>pom</type>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>  
+        <dependency>
+                <groupId>org.glassfish.transaction</groupId>
+                <artifactId>jta</artifactId>
+                <version>3.0-SNAPSHOT</version>
+                <scope>test</scope>
+        </dependency>        
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>web-embed-impl</artifactId>

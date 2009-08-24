@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.annotation.Resource;
 
 
 @WebServlet(urlPatterns={"/hello"})
@@ -14,7 +13,7 @@ public class HelloWeb extends HttpServlet {
     public HelloWeb() {
         System.out.println("Servlet WEB-HELLO initialized");
     }
-
+   
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
