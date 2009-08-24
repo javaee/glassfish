@@ -272,11 +272,10 @@ public abstract class CLICommand implements PostConstruct {
      */
     public String getUsage() {
         StringBuilder usageText = new StringBuilder();
-        usageText.append("Usage: ");
-        usageText.append("asadmin [asadmin-program-options] ");
+        usageText.append(strings.get("Usage", strings.get("Usage.asadmin")));
         // could include all the asadmin options like this...
         //addOptionUsage(ProgramOptions.getValidOptions(), usageText);
-        //usageText.append(" ");
+        usageText.append(" ");
         usageText.append(getName());
         usageText.append(" ");
         addOptionUsage(usageOptions(), usageText);
