@@ -33,17 +33,11 @@
 
 package org.glassfish.deployment.admin;
 
-import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.config.Named;
-import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Module;
 
 /**
  *
@@ -54,49 +48,7 @@ import com.sun.enterprise.config.serverbeans.Module;
 @Scoped(PerLookup.class)
 public class ListApplicationsCommand extends ListComponentsCommand {
 
-    @Param(optional=true)
-    String type = null;
-
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployDirCommand.class);
-
     public void execute(AdminCommandContext context) {
-        final ActionReport report = context.getActionReport();
-
-        ActionReport.MessagePart part = report.getTopMessagePart();        
-        int numOfApplications = 0;
-        for (Named module : applications.getModules()) {
-            if (module instanceof Application) {
-                final Application app = (Application)module;
-                if (app.getObjectType().equals("user")) {
-                    if (type==null || isApplicationOfThisType(app, type)) {
-                        ActionReport.MessagePart childPart = part.addChild();
-                        childPart.setMessage(app.getName() + " " +
-                                             getSnifferEngines(app.getModule().get(0), true));
-                            //this is a kludge so that NB Plugin can get these information
-                            //the "nb-" prefix indicates that it's a kludge for NB plugin
-                        childPart.addProperty("nb-name", app.getName());
-                        childPart.addProperty("nb-location", app.getLocation());
-                        if (app.getModule().size()>1) {
-                            for (Module bundle : app.getModule()) {
-                                ActionReport.MessagePart modulePart = childPart.addChild();
-                                modulePart.setMessage(bundle.getName());
-                                modulePart.addProperty("nb-engine", getSnifferEngines(bundle, false));
-                            }
-                        }
-                        childPart.addProperty("nb-engine", getSnifferEngines(app.getModule().get(0), false));
-                        childPart.addProperty("nb-enabled", app.getEnabled());
-                        childPart.addProperty("nb-directory-deployed", app.getDirectoryDeployed());
-                        childPart.addProperty("nb-context-root", (app.getContextRoot()==null)?"":
-                                                                  app.getContextRoot());
-                        
-                        numOfApplications++;
-                    }
-                }
-            }
-        }
-        if (numOfApplications == 0) {
-            part.setMessage(localStrings.getLocalString("list.components.no.elements.to.list", "Nothing to List."));            
-        }
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        super.execute(context);
     }
 }
