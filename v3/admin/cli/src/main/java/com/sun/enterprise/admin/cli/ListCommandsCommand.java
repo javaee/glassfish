@@ -114,7 +114,16 @@ public class ListCommandsCommand extends CLICommand {
             printLocalCommands();
         }
         if (!localOnly) {
-            remoteCommands = CLIUtil.getRemoteCommands(programOpts, env);
+            try {
+                remoteCommands = CLIUtil.getRemoteCommands(programOpts, env);
+            } catch (CommandException ce) {
+                /*
+                 * Hide the real cause of the remote failure (almost certainly
+                 * a ConnectException) so that asadmin doesn't try to find the
+                 * closest matching local command (it's "list-commands", duh!).
+                 */
+                throw new CommandException(ce.getMessage());
+            }
             printRemoteCommands();
         }
         logger.printMessage("");
