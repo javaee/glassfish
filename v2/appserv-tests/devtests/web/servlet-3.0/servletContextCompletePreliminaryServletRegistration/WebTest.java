@@ -41,7 +41,9 @@ import com.sun.ejte.ccl.reporter.*;
  * Unit test for
  *  https://glassfish.dev.java.net/issues/show_bug.cgi?id=9199
  *  ("Add support for "Servlet mapping in web.xml, servlet declared in
- *  ServletContainerInitializer" use case (JAX-RS requirement)")
+ *  ServletContainerInitializer" use case (JAX-RS requirement)"):
+ *
+ * Note the missing <servlet-class> in the <servlet> declaration in web.xml.
  */
 public class WebTest {
 
