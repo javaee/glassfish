@@ -51,6 +51,7 @@ import org.glassfish.deployment.client.DFDeploymentProperties;
 
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.net.URI;
+import javax.enterprise.deploy.spi.Target;
 
 /**
  *
@@ -102,8 +103,8 @@ public class DeployUtil {
         DFDeploymentStatus.parseDeploymentStatus(status, pw);
         byte[] statusBytes = bos.toByteArray();
         String statusString = new String(statusBytes);
-        
-         if (status!=null && status.getStatus() == DFDeploymentStatus.Status.FAILURE){ 
+
+         if (status!=null && status.getStatus() == DFDeploymentStatus.Status.FAILURE){
             if (stopProcessing) 
                 GuiUtil.handleError(handlerCtx, statusString);
             else
@@ -135,6 +136,19 @@ public class DeployUtil {
                 progressObject = df.deleteAppRef(df.createTargets(targetNames), appName, dProps);
             DFDeploymentStatus status = df.waitFor(progressObject);
             checkDeployStatus(status, handlerCtx, true);
+        }
+    }
+
+    static public void restartApplication(String appName){
+        String[] targetNames = new String[]{"server"};
+        try {
+            DeploymentFacility df = GuiUtil.getDeploymentFacility();
+            Target[] targets = df.createTargets(targetNames);
+            df.disable(targets, appName);
+            df.enable(targets, appName);
+        } catch (Exception ex) {
+            throw new RuntimeException("Cannot Restart Application : "+ appName, ex);
+            
         }
     }
  

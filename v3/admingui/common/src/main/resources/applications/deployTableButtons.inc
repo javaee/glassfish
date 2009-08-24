@@ -33,7 +33,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- applications/listTableButtons.inc -->
+<!-- applications/depoyTableButtons.inc -->
 
 <!facet actionsTop>
      <sun:panelGroup id="topActionsGroup1">

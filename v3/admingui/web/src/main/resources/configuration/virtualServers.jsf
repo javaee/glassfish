@@ -54,7 +54,8 @@
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/configuration/virtualServers.jsf?configName=#{configName}");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/configuration/virtualServerEdit.jsf?configName=#{configName}");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18n_web.vs.TableTitle}");
-        setPageSessionAttribute(key="tableTitle" value="$resource{i18n_web.vs.TableTitle}");
+        setPageSessionAttribute(key="additionalDeleteHandler" value="checkVsOfAppRef");
+        setPageSessionAttribute(key="additionalDeleteHandlerArgs" value="");
     />
     </event>
 #include "/common/shared/restart.inc"    

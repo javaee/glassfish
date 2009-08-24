@@ -50,6 +50,7 @@
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}"
                     );
+                    EnsureDefaultWebModule(vsObjStr="#{pageSession.objectNameStr}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
@@ -69,6 +70,7 @@
                         attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}"
                         result => $attribute{objStr});
+                    EnsureDefaultWebModule(vsObjStr="#{requestScope.objStr}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );

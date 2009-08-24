@@ -61,20 +61,20 @@ import java.util.Map;
 
 import java.util.Set;
 import java.util.TreeSet;
-import javax.enterprise.deploy.spi.Target;
 import javax.management.Attribute;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.intf.config.Application;
-import org.glassfish.admin.amx.intf.config.Engine;
+import org.glassfish.admin.amx.intf.config.ApplicationRef;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.AppUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.V3AMXUtil;
 import org.glassfish.admin.amx.intf.config.Property;
+import org.glassfish.admin.amx.intf.config.VirtualServer;
+import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.deployment.client.DFDeploymentProperties;
-import org.glassfish.deployment.client.DeploymentFacility;
 
 public class WebAppHandlers {
 
@@ -425,16 +425,10 @@ public class WebAppHandlers {
         input = {
             @HandlerInput(name = "appName", type = String.class, required = true)
         })
-    // TODO: This may have issues with multiple VS/targets.  See DeploymentHandler.changeAppStatus()
     public static void restartApplication(HandlerContext handlerCtx) {
         String appName = (String) handlerCtx.getInputValue("appName");
-        String[] targetNames = new String[]{"server"};
-        try {
-            DeploymentFacility df = GuiUtil.getDeploymentFacility();
-            Target[] targets = df.createTargets(targetNames);
-            df.disable(targets, appName);
-            df.enable(targets, appName);
-            // Mimic behavior in DeploymentHandler.changeAppStatus
+        try{
+            DeployUtil.restartApplication(appName);
             if (V3AMX.getInstance().isEE()) {
                 GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("org.glassfish.web.admingui.Strings", "restart.success"), null);
             } else {
@@ -445,6 +439,69 @@ public class WebAppHandlers {
         }
 
     }
+
+   //This is called when user change the default web module of a VS.
+   //Need to ensure this VS is in the application-ref virtual server list. If not add it and restart the app for
+   //change to take into effect.  refer to issue#8671
+   @Handler(id = "EnsureDefaultWebModule",
+        input = {
+            @HandlerInput(name = "vsObjStr", type = String.class, required = true),
+            @HandlerInput(name = "vsName", type = String.class, required = true)
+        })
+    public static void EnsureDefaultWebModule(HandlerContext handlerCtx) {
+        String vsObjStr = (String) handlerCtx.getInputValue("vsObjStr");
+        String webModule= (String) V3AMX.getAttribute(vsObjStr, "DefaultWebModule");
+        String vsName = (String) V3AMX.getAttribute(vsObjStr, "Name");
+        if (GuiUtil.isEmpty(webModule))
+            return;
+        String appName = webModule;
+        int index = webModule.indexOf("#");
+        if (index != -1){
+            appName=webModule.substring(0, index);
+        }
+        ApplicationRef appRef = V3AMX.getInstance().getApplicationRef("server", appName);
+        String vsStr = appRef.getVirtualServers();
+        List vsList = GuiUtil.parseStringList(vsStr, ",");
+        if (vsList.contains(vsName)){
+            return;   //the default web module app is already deployed to this vs, no action needed
+        }
+        //Add to the vs list of this application-ref, then restart the app.
+        vsStr=vsStr+","+vsName;
+        appRef.setVirtualServers(vsStr);
+        try{
+            DeployUtil.restartApplication(appName);
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+   }
+
+
+   //This handler is called after user deleted one more more VS from the VS table.
+   //We need to go through all the application-ref to see if the VS specified still exist.  If it doesn't, we need to
+   //remove that from the vs list.
+   @Handler(id = "checkVsOfAppRef")
+    public static void checkVsOfAppRef(HandlerContext handlerCtx) {
+       Map<String, ApplicationRef> appRefMap = V3AMX.getInstance().getServer("server").getApplicationRef();
+       Map<String, VirtualServer> vsMap = V3AMX.getInstance().getConfig("server-config").getHttpService().getVirtualServer();
+       for(ApplicationRef appRef: appRefMap.values()){
+           String vsStr = appRef.getVirtualServers();
+           List<String> vsList = GuiUtil.parseStringList(vsStr, ",");
+           boolean changed = false;
+           String newVS = "";
+           for(String oneVs: vsList ){
+               if (! vsMap.containsKey(oneVs)){
+                   changed = true;
+                   continue;
+               }
+               newVS = newVS+","+oneVs;
+           }
+           if (changed){
+               newVS = newVS.substring(1);
+               appRef.setVirtualServers(newVS);
+           }
+       }
+   }
+
 
     private static String calContextRoot(String contextRoot) {
         //If context root is not specified or if the context root is "/", ensure that we don't show two // at the end.

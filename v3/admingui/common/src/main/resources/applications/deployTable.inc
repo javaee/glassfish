@@ -46,7 +46,7 @@
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
 
-#include "/common/applications/listTableButtons.inc"
+#include "/common/applications/deployTableButtons.inc"
 
    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
     <!afterCreate

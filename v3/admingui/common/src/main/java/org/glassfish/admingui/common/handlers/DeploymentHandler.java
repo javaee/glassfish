@@ -66,6 +66,7 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.intf.config.VirtualServer;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
@@ -239,12 +240,13 @@ public class DeploymentHandler {
 //                dProps.put(DFDeploymentProperties.CASCADE, "true");
 //        }
 
+        List errorList = new ArrayList();
+        List undeployedAppList = new ArrayList();
         List selectedRows = (List) obj;
         DFProgressObject progressObject = null;
         DeploymentFacility df = GuiUtil.getDeploymentFacility();
         //Hard coding to server, fix me for actual targets in EE.
         String[] targetNames = new String[]{"server"};
-
         for (int i = 0; i < selectedRows.size(); i++) {
             Map oneRow = (Map) selectedRows.get(i);
             String appName = (String) oneRow.get("name");
@@ -266,9 +268,33 @@ public class DeploymentHandler {
             //successfully.  If we stopProcessing, the table data is stale and still shows the
             //app that has been gone.
             if (DeployUtil.checkDeployStatus(status, handlerCtx, false)) {
-                String mesg = GuiUtil.getMessage("msg.deploySuccess", new Object[]{appName, "undeployed"});
-                //we need to fix cases where more than 1 app is undeployed before putting this msg.                
-                //GuiUtil.prepareAlert(handlerCtx, "success", mesg, null); 
+                undeployedAppList.add(appName);
+            }else{
+                errorList.add(appName);
+            }
+        }
+        removeFromDefaultWebModule(undeployedAppList);
+        if (errorList.size() > 0){
+            GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), GuiUtil.getMessage("msg.deploy.UndeployError") + " " + GuiUtil.listToString(errorList, ","));
+        }
+    }
+
+
+    //For any undeployed applications, we need to ensure that it is no longer specified as the
+    //default web module of any VS.
+    static private void  removeFromDefaultWebModule(List<String> undeployedAppList){
+        Map<String, VirtualServer> vsMap = V3AMX.getInstance().getConfig("server-config").getHttpService().getVirtualServer();
+        for(VirtualServer vs : vsMap.values()){
+            String appName = vs.getDefaultWebModule();
+            if (GuiUtil.isEmpty(appName)){
+                continue;
+            }
+            int index = appName.indexOf("#");
+            if (index != -1){
+                appName = appName.substring(0, index);
+            }
+            if (undeployedAppList.contains(appName)){
+                vs.setDefaultWebModule("");
             }
         }
     }

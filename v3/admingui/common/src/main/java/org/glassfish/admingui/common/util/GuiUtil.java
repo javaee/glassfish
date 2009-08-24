@@ -453,8 +453,9 @@ public class GuiUtil {
      *             the input string was split into.
      */
     public static List parseStringList(String line, String sep) {
+         List tokens = new ArrayList();
         if (line == null) {
-            return null;
+            return tokens;
         }
 
         StringTokenizer st;
@@ -465,8 +466,6 @@ public class GuiUtil {
         }
 
         String token;
-
-        List tokens = new Vector();
         while (st.hasMoreTokens()) {
             token = st.nextToken().trim();
             if (token.length() > 0) {
