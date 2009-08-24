@@ -61,7 +61,8 @@ public class MyListener implements ServletContextListener {
             "MyServlet", "test.MyServlet");
         if (srPrelim != srComplete) {
             throw new RuntimeException("Preliminary and complete " +
-                "ServletRegistrations for MyServlet are different");
+                "ServletRegistrations for MyServlet are different: " +
+                "Preliminary=" + srPrelim + ", Complete=" + srComplete);
         }
 
         srComplete.setInitParameter("servletInitName", "servletInitValue");
