@@ -152,7 +152,3 @@ public interface Resources extends ConfigBeanProxy, Injectable  {
         }
     }
 }
-
-
-
-
