@@ -80,6 +80,14 @@
                             <sun:staticText text="$resource{i18n.tree.connectorConnectionPools}" />
                             </sun:hyperlink>
                         </sun:property>
+                        <sun:property>
+                        <sun:hyperlink
+                            toolTip="$resource{i18n.tree.workSecurityMaps.tooltip}"
+                            url="/jca/workSecurityMaps.jsf" >
+                            <sun:image url="/resource/jca/images/connector.png" />
+                            <sun:staticText text="$resource{i18n.tree.workSecurityMaps}" />
+                            </sun:hyperlink>
+                        </sun:property>
                     </sun:propertySheetSection>
                 </sun:propertySheet>
                 <sun:hidden id="helpKey" value="$resource{help_jca.connectors}" />

@@ -35,15 +35,12 @@
 -->
 
 
-    <!facet pageButtonsTop>
+   <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                     onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
                 <!command
-                convertSecurityMapPropsToStringArray(edit="true", userGroups="#{pageSession.valueMap['UserGroup']}", principals="#{pageSession.valueMap['Principal']}", usersOptions="#{usersOptionU}", principalsSA =>$attribute{principalsSA}  usersSA =>$attribute{usersSA});
-                mapPut(map="#{pageSession.valueMap}" key="UserGroup" value="#{usersSA}")
-                mapPut(map="#{pageSession.valueMap}" key="Principal" value="#{principalsSA}")
-                if(#{pageSession.hasRadioButtons}){
+               if(#{pageSession.hasRadioButtons}){
                     forLoop(end="#{pageSession.radioButtonCount}" varName="i"){
                         setValueExpression(expression="#{pageSession.valueMap[requestScope.attrNames[i]]}"   value="#{param[requestScope.RadioButtonNames[i]]}");
                     }
@@ -58,11 +55,41 @@
                         forceCreate="#{pageSession.forceCreate}"
                         childType="#{pageSession.childType}"
                     );
-                    if(#{pageSession.has2Objects}){
-                        saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}"  attrs="#{pageSession.valueMap2}"
+                    if(#{usersOptionG}){
+                        if(#{pexist}) {
+                            deleteChild(objectNameStr="#{pageSession.objectNameStr}", type="principal-map", name="#{null}");
+                        }
+                        if(#{gexist}) {
+                            saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}" attrs="#{pageSession.valueMap2}"
+                                skipAttrs="#{pageSession.skipAttrsList2}"
+                                convertToFalse="#{pageSession.convertToFalseList2}"
+                            );
+                        }
+                        if(!#{gexist}) {
+                            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="group-map"
+                                attrs="#{pageSession.valueMap2}"
+                                convertToFalse="#{pageSession.convertToFalseList2}"
+                                result => $attribute{objStr2});
+                        }
+
+                    }
+                    if(#{usersOptionP}){
+                        if(#{gexist}) {
+                            deleteChild(objectNameStr="#{pageSession.objectNameStr}", type="group-map", name="#{null}");
+                        }
+                        if(#{pexist}) {
+                            saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr3}" attrs="#{pageSession.valueMap3}"
                             skipAttrs="#{pageSession.skipAttrsList2}"
                             convertToFalse="#{pageSession.convertToFalseList2}"
-                        );
+                            );
+                        }
+                        if(!#{pexist}) {
+                            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="principal-map"
+                                attrs="#{pageSession.valueMap3}"
+                                convertToFalse="#{pageSession.convertToFalseList3}"
+                                result => $attribute{objStr3});
+                        }
+                        
                     }
                 }
                 prepareSuccessfulMsg();
@@ -72,22 +99,21 @@
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                     onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
                 <!command
-                convertSecurityMapPropsToStringArray(edit="false", userGroups="#{pageSession.valueMap['UserGroup']}", principals="#{pageSession.valueMap['Principal']}", usersOptions="#{usersOptionU}",  principalsSA =>$attribute{principalsSA} usersSA =>$attribute{usersSA});
-                if($attribute{usersSA}){
-                   mapPut(map="#{pageSession.valueMap}" key="UserGroup" value="#{usersSA}")
-                }
-                if($attribute{principalsSA}) {
-                    mapPut(map="#{pageSession.valueMap}" key="Principal" value="#{principalsSA}")
-                }
-                   createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
+                 createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}"
                         result => $attribute{objStr});
                     setPageSessionAttribute(key="parentObjectNameStr2", value="$attribute{objStr}");
                     if(#{pageSession.has2Objects}){
-                        if (#{pageSession.parentObjectNameStr2}){
+                        if(#{usersOptionG}){
                             createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="#{pageSession.childType2}"
                                 attrs="#{pageSession.valueMap2}"
+                                convertToFalse="#{pageSession.convertToFalseList2}"
+                                result => $attribute{objStr2});
+                        }
+                        if(#{usersOptionP}){
+                            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="#{pageSession.childType3}"
+                                attrs="#{pageSession.valueMap3}"
                                 convertToFalse="#{pageSession.convertToFalseList2}"
                                 result => $attribute{objStr2});
                         }

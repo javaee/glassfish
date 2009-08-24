@@ -48,6 +48,21 @@
         <!facet image>
             <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/adminObjectResources.jsf"  border="$int{0}" immediate="$boolean{true}" />
         </facet>
-    </dynamicTreeNode>        
+        </dynamicTreeNode>  
+        <dynamicTreeNode id="workSecurityMaps"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:pp=/domain,type=resources"
+        amxChildType="work-security-map"
+        attributeName="name"
+        childImageURL="/resource/jca/images/connector.png"
+        childExpanded="$boolean{false}"
+        childURL="/jca/workSecurityMapEdit.jsf?mapName=#{$this{valueBinding}.text}"
+        text="$resource{i18n.tree.workSecurityMaps}"
+        url="/jca/workSecurityMaps.jsf"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/workSecurityMaps.jsf"  border="$int{0}" immediate="$boolean{true}" />
+        </facet>
+        </dynamicTreeNode>
  </sun:treeNode> 
 

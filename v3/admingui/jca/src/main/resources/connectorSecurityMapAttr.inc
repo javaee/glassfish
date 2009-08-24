@@ -56,7 +56,7 @@
 
         <sun:property id="groupProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.userGroups}"  helpText="$resource{i18njca.connectorSecurityMap.userGroupsHelp}">
                 <sun:radioButton id="optA"  name="usersOption" selected="#{requestScope.usersOptionU}" selectedValue="users"
-                    onClick="enableClassnameFields('users'); "
+                    onClick="enableSecurityMapFields('users'); "
                 />         
             <sun:textField id="group" columns="$int{55}" text="#{pageSession.valueMap['UserGroup']}" >
                     <!afterCreate
@@ -70,7 +70,7 @@
 
         <sun:property id="principalsProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.principals}"  helpText="$resource{i18njca.connectorSecurityMap.principalsHelp}">
                    <sun:radioButton id="optB"  name="usersOption" selected="#{requestScope.usersOptionP}" selectedValue="principals"
-                    onClick="javascript: enableClassnameFields('principals');"
+                    onClick="javascript: enableSecurityMapFields('principals');"
                 />      
             <sun:textField id="principals" columns="$int{55}" text="#{pageSession.valueMap['Principal']}" >
                     <!afterCreate
@@ -85,16 +85,10 @@
     </sun:propertySheetSection>
 
     <sun:propertySheetSection id="propertSectionTextField2" label="$resource{i18njca.connectorSecurityMap.backendPrincipal}">
-        <sun:property id="userName" rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.userName}">
-            <sun:textField id="userName" styleClass="required" columns="$int{55}" text="#{pageSession.userName}" required="#{true}" />
-        </sun:property>
-        <sun:property id="userNameEdit" rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.userName}">
+        <sun:property id="userNameEdit" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.userName}">
             <sun:textField id="userNameEdit" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap2['UserName']}" required="#{true}" />
         </sun:property>
-        <sun:property id="password" rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.password}">
-            <sun:textField id="password" styleClass="required" columns="$int{55}" text="#{pageSession.password}" required="#{true}" />
-        </sun:property>
-        <sun:property id="passwordEdit" rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.password}">
+        <sun:property id="passwordEdit" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.password}">
             <sun:textField id="passwordEdit" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap2['Password']}" required="#{true}" />
         </sun:property>
     </sun:propertySheetSection>

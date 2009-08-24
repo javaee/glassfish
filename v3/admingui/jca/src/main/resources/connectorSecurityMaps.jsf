@@ -66,56 +66,7 @@
                  helpText="$resource{i18njca.connectorSecurityMaps.pageTitleHelp}" />
 		 "<br /> <br />
 
-<sun:table id="resourcesTable" title="#{tableTitle}"
-            deselectMultipleButton="$boolean{true}"
-            deselectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)"
-            selectMultipleButton="$boolean{true}"
-            selectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)" >
-         <!afterCreate
-            getClientId(component="$this{component}" clientId=>$page{tableId});
-        />
-
-<!facet actionsTop>
-     <sun:panelGroup id="topActionsGroup1">
-        <sun:button id="newButton" text="$resource{i18n.button.New}" >
-            <!command redirect(page="#{pageSession.createLink}?name=#{pageSession.Name}") />
-        </sun:button>
-
-        <sun:button id="deleteButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}"
-            onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
-            { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
-            else {return false;} "
-        >
-        <!command
-            getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
-            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
-            deleteChildren(objectNameStr="amx:pp=/domain/servers,type=server,name=server", type="resource-ref", selectedRows="${selectedRows}");
-            redirect(page="#{pageSession.listLink}?name=#{pageSession.Name}");
-        />
-        </sun:button>
-     </sun:panelGroup>
- </facet>
-
-   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
-     <!afterCreate
-         getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
-        />
-   <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
-            <sun:checkbox id="select"
-                selected="#{td.value.selected}"
-                selectedValue="$boolean{true}"
-                onClick="setTimeout('initAllRows(); changeThreeTableButtons()', 0)"
-            />
-    </sun:tableColumn>
-
-    <sun:tableColumn headerText="$resource{i18n.common.name.header}" sort="Name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.Name}"
-            url="#{pageSession.editLink}?name=#{pageSession.Name}&mapName=#{td.value.Name}" />
-    </sun:tableColumn>
-  </sun:tableRowGroup>
-
-</sun:table>
+#include "/jca/securityMapsTable.inc"
 
 	<sun:hidden id="helpKey" value="$resource{help_jca.connectorSecurityMaps}" />
             </sun:form>

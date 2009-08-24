@@ -34,43 +34,41 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- jca/jcaResourceNew.jsf -->
+<!-- jca/workSecurityMapEdit.jsf -->
 
 <!initPage
     setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
     setResourceBundle(key="help_jca" bundle="org.glassfish.jca.admingui.Helplinks")
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njca.connectorSecurityMap.editPageTitle}" guiOnLoad="enableSecurityMapFields('#{usersOptionP}'); " >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njca.workSecurityMap.editPageTitle}" guiOnLoad="enableWorkSecurityMapFields('#{usersOptionP}'); " >
 <!define name="content">
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
         getRequestValue(key="mapName" value="#{pageSession.mapName}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorSecurityMapEdit.jsf");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorSecurityMaps.jsf");
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources/connector-connection-pool[#{pageSession.Name}],type=security-map,name=#{pageSession.mapName}");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
-        setPageSessionAttribute(key="childType" value="security-map");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/workSecurityMapEdit.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/workSecurityMaps.jsf");
+        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=work-security-map,name=#{pageSession.mapName}");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
+        setPageSessionAttribute(key="childType" value="work-security-map");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        getProxyAttribute(objectNameStr="#{pageSession.objectNameStr}", attrName="UserGroup", value="#{pageSession.tempAttr}");
-        convertArrayToCommaString(array="#{pageSession.tempAttr}"  commaString="#{requestScope.tmpUG}");
-        mapPut(map="#{pageSession.valueMap}" key="UserGroup" value="$attribute{tmpUG}");
-        getProxyAttribute(objectNameStr="#{pageSession.objectNameStr}", attrName="Principal", value="#{pageSession.tempPAttr}");
-        convertArrayToCommaString(array="#{pageSession.tempPAttr}"  commaString="#{requestScope.tmpP}");
-        mapPut(map="#{pageSession.valueMap}" key="Principal" value="$attribute{tmpP}");
-        getProxyAttribute(objectNameStr="#{pageSession.objectNameStr}", attrName="BackendPrincipal", value="#{pageSession.tempAttrBE}");
+        setPageSessionAttribute(key="parentObjectNameStr2", value="amx:pp=/domain/resources,type=work-security-map,name=#{pageSession.mapName}");
+        setPageSessionAttribute(key="objectNameStr2", value="amx:pp=/domain/resources/work-security-map[#{pageSession.mapName}],type=group-map");
+        setPageSessionAttribute(key="objectNameStr3", value="amx:pp=/domain/resources/work-security-map[#{pageSession.mapName}],type=principal-map");
         setPageSessionAttribute(key="has2Objects" value="#{true}" );  //for editPageButtons.inc
-        setPageSessionAttribute(key="objectNameStr2", value="#{pageSession.tempAttrBE}");
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
-       if(#{tmpP}) {
+        proxyExist(objectNameStr="#{pageSession.objectNameStr2}" exist="#{pageSession.gexist}")
+        proxyExist(objectNameStr="#{pageSession.objectNameStr3}" exist="#{pageSession.pexist}")
+        if(#{pexist}) {
            setAttribute(key="usersOptionP" value="principals" );
-           setPageSessionAttribute(key="myOption" value="principals");
+           getProxyAttrs(objectNameStr="#{pageSession.objectNameStr3}" valueMap="#{pageSession.valueMap3}");
+           createMap(result="#{pageSession.valueMap2}");
 
         }
-        if(#{tmpUG}) {
-            setAttribute(key="usersOptionU" value="users" );
-            setPageSessionAttribute(key="myOption" value="users");
+        if(#{gexist}) {
+            setAttribute(key="usersOptionG" value="users" );
+            getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
+            createMap(result="#{pageSession.valueMap3}");
         }
          //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
@@ -83,18 +81,16 @@
     </event>
 #include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
-#include "/jca/connectorConnectionPoolTabs.inc"
 #include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18njca.connectorSecurityMap.editPageTitle}" helpText="$resource{i18njca.connectorSecurityMap.editPageTitleHelp}">
-#include "/jca/securityMapButtons.inc"
+                <sun:title id="propertyContentPage" title="$resource{i18njca.workSecurityMap.editPageTitle}" helpText="$resource{i18njca.workSecurityMap.editPageTitleHelp}">
+#include "/jca/workSecurityMapButtons.inc"
                     </sun:title>
                     "<br><br>
+#include "/jca/workSecurityMapAttr.inc"
 
-#include "/jca/connectorSecurityMapAttr.inc"
-
-	<sun:hidden id="helpKey" value="$resource{help_jca.connectorSecurityMapNew}" />
+	<sun:hidden id="helpKey" value="$resource{help_jca.workSecurityMapEdit}" />
             </sun:form>
                         "<br/>
 #include "/jca/securityMapjs.inc"

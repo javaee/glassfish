@@ -217,28 +217,23 @@ public class ConnectorsHandlers {
     /**
      *	<p> This handler determines whether usergroups or principals will be used and returns appropriate string array
      */
-    @Handler(id="updateSecurityMapProps",
+    @Handler(id="convertSecurityMapPropsToStringArray",
          input={
             @HandlerInput(name="usersOptions", type=String.class),
             @HandlerInput(name="edit", type=String.class),
             @HandlerInput(name="userGroups", type=String.class),
-            @HandlerInput(name="username", type=String.class),
-            @HandlerInput(name="password", type=String.class),
             @HandlerInput(name="principals", type=String.class)
             },
         output = {
             @HandlerOutput(name = "principalsSA", type = String[].class),
-            @HandlerOutput(name = "usersSA", type = String[].class),
-            @HandlerOutput(name = "valueMap2", type = Map.class)
+            @HandlerOutput(name = "usersSA", type = String[].class)
             })
-    public static void updateSecurityMapProps(HandlerContext handlerCtx) {
+    public static void convertSecurityMapPropsToStringArray(HandlerContext handlerCtx) {
 
         String option = (String) handlerCtx.getInputValue("usersOptions");
         String edit = (String) handlerCtx.getInputValue("edit");
         String userGroups = (String) handlerCtx.getInputValue("userGroups");
         String principals = (String) handlerCtx.getInputValue("principals");
-        String username = (String) handlerCtx.getInputValue("username");
-        String password = (String) handlerCtx.getInputValue("password");
         String value = null;
         String[] str = null;
         Object emptyVal = null;
@@ -258,16 +253,15 @@ public class ConnectorsHandlers {
             str = new String[1];
             str[0] = value;
         }
-        Map pMap = new HashMap();
-        pMap.put("UserName", username);
-        pMap.put("Password", password);
+        
         if(edit.equals("true"))
             emptyVal = new String[1];
-        handlerCtx.setOutputValue("valueMap2", pMap);
         handlerCtx.setOutputValue("principalsSA", (usePrincipals)? str : emptyVal);
         handlerCtx.setOutputValue("usersSA", (usePrincipals)? emptyVal : str);
 
     }
+
+
     
     public static final String CONNECTION_DEFINITION_NAMES_KEY = "ConnectionDefinitionNamesKey";
     public static final String MCF_CONFIG_PROPS_KEY = "McfConfigPropsKey";
