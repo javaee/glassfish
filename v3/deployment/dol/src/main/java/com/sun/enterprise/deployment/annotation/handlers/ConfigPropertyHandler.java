@@ -44,7 +44,6 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 import java.util.List;
 import java.util.Iterator;
@@ -235,7 +234,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
             processActivation(element, desc, ep, declaringClass);
         } else if (declaringClass.getAnnotation(AdministeredObject.class) != null
                 || isAdminObjectJavaBean(declaringClass, desc) ) {
-            proecessAdministeredObject(element, desc, ep, declaringClass);
+            processAdministeredObject(element, desc, ep, declaringClass);
         }
     }
 
@@ -253,7 +252,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
         return isAdminObject;
     }
 
-    private void proecessAdministeredObject(AnnotationInfo element, ConnectorDescriptor desc,
+    private void processAdministeredObject(AnnotationInfo element, ConnectorDescriptor desc,
                                                            ConnectorConfigProperty ep, Class declaringClass) {
 
         if (declaringClass.getAnnotation(AdministeredObject.class) != null) {
