@@ -2238,19 +2238,33 @@ public class StandardContext
      * @param filterDef The filter definition to be added
      */
     public void addFilterDef(FilterDef filterDef) {
-        addFilterDef(filterDef, false);
+        addFilterDef(filterDef, false, true);
     }
 
-    public void addFilterDef(FilterDef filterDef, boolean isProgrammatic) {
-        FilterRegistrationImpl regis = null;
-        if (isProgrammatic) {
-            regis = new DynamicFilterRegistrationImpl(filterDef, this);
-        } else {
-            regis = new FilterRegistrationImpl(filterDef, this);
+    public void addFilterDef(FilterDef filterDef, boolean isProgrammatic,
+            boolean createRegistration) {
+        if (createRegistration) {
+            FilterRegistrationImpl regis = null;
+            if (isProgrammatic || null == filterDef.getFilterClassName() ||
+                    filterDef.getFilterClassName().isEmpty()) {
+                regis = new DynamicFilterRegistrationImpl(filterDef, this);
+            } else {
+                regis = new FilterRegistrationImpl(filterDef, this);
+            }
+            filterRegisMap.put(filterDef.getFilterName(), regis);
+            if (null == filterDef.getFilterClassName() ||
+                    filterDef.getFilterClassName().isEmpty()) {
+                /*
+                 * Preliminary registration for Filter that was declared
+                 * without any filter-class. Once the registration is
+                 * completed via ServletContext#addFilter, addFilterDef will
+                 * be called again, and 'filterDef' will have been configured
+                 * with a proper class name at that time
+                 */
+                return;
+            }
         }
 
-        filterRegisMap.put(filterDef.getFilterName(), regis);
-  
         synchronized (filterDefs) {
             filterDefs.put(filterDef.getFilterName(), filterDef);
         }
@@ -2323,21 +2337,25 @@ public class StandardContext
         String filterName = filterMap.getFilterName();
         String servletName = filterMap.getServletName();
         String urlPattern = filterMap.getURLPattern();
-        if (findFilterDef(filterName) == null)
+        if (null == filterRegisMap.get(filterName)) {
             throw new IllegalArgumentException
                 (sm.getString("standardContext.filterMap.name", filterName));
-        if ((servletName == null) && (urlPattern == null))
+        }
+        if ((servletName == null) && (urlPattern == null)) {
             throw new IllegalArgumentException
                 (sm.getString("standardContext.filterMap.either"));
-        if ((servletName != null) && (urlPattern != null))
+        }
+        if ((servletName != null) && (urlPattern != null)) {
             throw new IllegalArgumentException
                 (sm.getString("standardContext.filterMap.either"));
+        }
         // Because filter-pattern is new in 2.3, no need to adjust
         // for 2.2 backwards compatibility
-        if ((urlPattern != null) && !validateURLPattern(urlPattern))
+        if ((urlPattern != null) && !validateURLPattern(urlPattern)) {
             throw new IllegalArgumentException
                 (sm.getString("standardContext.filterMap.pattern",
                               urlPattern));
+        }
 
         // Add this filter mapping to our registered set
         if (isMatchAfter) {
@@ -2396,13 +2414,28 @@ public class StandardContext
             if (findFilterDef(filterName) != null) {
                 return null;
             }
-            FilterDef filterDef = new FilterDef();
+
+            DynamicFilterRegistrationImpl regis =
+                (DynamicFilterRegistrationImpl) filterRegisMap.get(
+                    filterName);
+            FilterDef filterDef = null;
+            if (null == regis) {
+                filterDef = new FilterDef();
+            } else {
+                // Complete preliminary filter registration
+                filterDef = regis.getFilterDefinition();
+            }
+
             filterDef.setFilterName(filterName);
             filterDef.setFilterClassName(className);
-            addFilterDef(filterDef, true);
 
-            return (FilterRegistration.Dynamic)
-                filterRegisMap.get(filterName);
+            addFilterDef(filterDef, true, (regis == null));
+            if (null == regis) {
+                regis = (DynamicFilterRegistrationImpl)
+                    filterRegisMap.get(filterName);
+            }
+
+            return regis;
         }
     }
 
@@ -2444,13 +2477,28 @@ public class StandardContext
                     return null;
                 }
             }
-            FilterDef filterDef = new FilterDef();
+
+            DynamicFilterRegistrationImpl regis =
+                (DynamicFilterRegistrationImpl) filterRegisMap.get(
+                    filterName);
+            FilterDef filterDef = null;
+            if (null == regis) {
+                filterDef = new FilterDef();
+            } else {
+                // Complete preliminary filter registration
+                filterDef = regis.getFilterDefinition();
+            }
+
             filterDef.setFilterName(filterName);
             filterDef.setFilter(filter);
-            addFilterDef(filterDef, true);
 
-            return (FilterRegistration.Dynamic)
-                filterRegisMap.get(filterName);
+            addFilterDef(filterDef, true, (regis == null));
+            if (null == regis) {
+                regis = (DynamicFilterRegistrationImpl)
+                    filterRegisMap.get(filterName);
+            }
+
+            return regis;
         }
     }
 
@@ -2477,13 +2525,27 @@ public class StandardContext
                 return null;
             }
 
-            FilterDef filterDef = new FilterDef();
+            DynamicFilterRegistrationImpl regis =
+                (DynamicFilterRegistrationImpl) filterRegisMap.get(
+                    filterName);
+            FilterDef filterDef = null;
+            if (null == regis) {
+                filterDef = new FilterDef();
+            } else {
+                // Complete preliminary filter registration
+                filterDef = regis.getFilterDefinition();
+            }
+
             filterDef.setFilterName(filterName);
             filterDef.setFilterClass(filterClass);
-            addFilterDef(filterDef, true);
 
-            return (FilterRegistration.Dynamic)
-                filterRegisMap.get(filterName);
+            addFilterDef(filterDef, true, (regis == null));
+            if (null == regis) {
+                regis = (DynamicFilterRegistrationImpl)
+                    filterRegisMap.get(filterName);
+            }
+
+            return regis;
         }
     }
 
@@ -3208,12 +3270,16 @@ public class StandardContext
                 if (regis == null) {
                     wrapper = createWrapper();
                 } else {
-                    // Preliminary Servlet registration
+                    // Complete preliminary servlet registration
                     wrapper = regis.getWrapper();
                 }
                 wrapper.setName(servletName);
                 wrapper.setServletClassName(className);
                 addChild(wrapper, true, (null == regis));
+                if (null == regis) {
+                    regis = (DynamicServletRegistrationImpl)
+                        servletRegisMap.get(servletName);
+                }
                 return regis;
             } else {
                 return null;
@@ -3246,12 +3312,16 @@ public class StandardContext
                 if (regis == null) {
                     wrapper = createWrapper();
                 } else {
-                    // Preliminary Servlet registration
+                    // Complete preliminary servlet registration
                     wrapper = regis.getWrapper();
                 }
                 wrapper.setName(servletName);
                 wrapper.setServletClass(servletClass);
                 addChild(wrapper, true, (null == regis));
+                if (null == regis) {
+                    regis = (DynamicServletRegistrationImpl)
+                        servletRegisMap.get(servletName);
+                }
                 return regis;
             } else {
                 return null;
@@ -3341,20 +3411,23 @@ public class StandardContext
             if (regis == null) {
                 wrapper = (StandardWrapper) createWrapper();
             } else {
-                // Preliminary Servlet registration
+                // Complete preliminary servlet registration
                 wrapper = regis.getWrapper();
             }
                          
+            wrapper.setName(servletName);
+            wrapper.setServlet(servlet);
             if (initParams != null) {
                 for (Map.Entry<String, String> e : initParams.entrySet()) {
                     wrapper.addInitParameter(e.getKey(), e.getValue());
                 }
             }
 
-            wrapper.setName(servletName);
-            wrapper.setServlet(servlet);
-
             addChild(wrapper, true, (null == regis));
+            if (null == regis) {
+                regis = (DynamicServletRegistrationImpl)
+                    servletRegisMap.get(servletName);
+            }
 
             if (urlPatterns != null) {
                 for (String urlPattern : urlPatterns) {

@@ -426,7 +426,9 @@
       <xsd:element name="filter-name"
                    type="javaee:filter-nameType"/>
       <xsd:element name="filter-class"
-                   type="javaee:fully-qualified-classType">
+                   type="javaee:fully-qualified-classType"
+                   minOccurs="0"
+                   maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation>
 
