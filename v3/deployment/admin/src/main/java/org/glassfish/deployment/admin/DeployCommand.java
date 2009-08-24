@@ -417,8 +417,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             Properties props = new Properties();
             props.setProperty("file-xfer-root", targetLocalDir);
             for (DownloadableArtifacts.FullAndPartURIs uriPair : downloadableArtifacts.getArtifacts(appName)) {
-                if(logger.isLoggable(Level.INFO)) {
-                    logger.log(Level.INFO, "About to download artifact " + uriPair.getFull());
+                if(logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, "About to download artifact " + uriPair.getFull());
                 }
                 outboundPayload.attachFile("application/octet-stream",
                         uriPair.getPart(),"files",props,
