@@ -23,11 +23,10 @@ own identifying information: Portions Copyright [yyyy]
     <import file="${basedir}/../common-targets.xml"/>
     <target name="create.package">
 
-	<mkdir dir="target/stage/${install.dir.name}/glassfish/modules"/>
+        <if test="${compression}">
+               <antcall target="pack.compression" />
+        </if>
 
-	<resolveArtifact property="sun-javaee-engine.zip" groupID="org.glassfish" artifactID="sun-javaee-engine" type="jar" />
-       
-       <copy file="${sun-javaee-engine.zip}" todir="target/stage/${install.dir.name}/glassfish/modules" />
        <zip file="target/sun-javaee-engine.zip" basedir="target/stage"/>
            
        <attachArtifact file="target/sun-javaee-engine.zip"/>

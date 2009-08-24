@@ -38,7 +38,6 @@
 
 import imp
 
-conf = imp.load_source("pkg_conf", "../pkg_conf.py")
 
 pkg = {
     "name"          : "sun-javaee-engine",
