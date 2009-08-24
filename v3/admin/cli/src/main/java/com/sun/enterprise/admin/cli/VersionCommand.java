@@ -79,11 +79,13 @@ public class VersionCommand extends CLICommand {
     @Override
     protected int executeCommand() throws CommandException {
         try {
-            CLICommand cmd = new RemoteCommand("version", programOpts, env);
+            RemoteCommand cmd = new RemoteCommand("version", programOpts, env);
+            String version;
             if (getBooleanOption("verbose"))
-                cmd.execute("version", "--verbose");
+                version = cmd.executeAndReturnOutput("version", "--verbose");
             else
-                cmd.execute("version");
+                version = cmd.executeAndReturnOutput("version");
+            logger.printMessage(strings.get("version.remote", version));
         } catch (Exception e) {
             // suppress all output and infer that the server is not running
             printRemoteException(e);
@@ -93,17 +95,13 @@ public class VersionCommand extends CLICommand {
     }
 
     private void invokeLocal() {
-        String fv = Version.getFullVersion();
-        String cn = Version.class.getName();
-        String msg = strings.get("version.local", cn, fv);
-        logger.printMessage(msg);
+        logger.printMessage(
+            strings.get("version.local", Version.getFullVersion()));
     }
 
     private void printRemoteException(Exception e) {
-        String host = programOpts.getHost();
-        String port = programOpts.getPort() + "";
-        String msg = strings.get("remote.version.failed", host, port);
-        logger.printMessage(msg);
+        logger.printMessage(strings.get("remote.version.failed", 
+                programOpts.getHost(), programOpts.getPort() + ""));
         logger.printDebugMessage(e.getMessage());        
     }
 }
