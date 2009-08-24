@@ -41,7 +41,6 @@ import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.listener.PoolLifeCycle;
-import com.sun.enterprise.resource.pool.ConnectionPoolEmitterImpl;
 import com.sun.enterprise.resource.pool.PoolLifeCycleListenerRegistry;
 import com.sun.enterprise.resource.pool.PoolLifeCycleRegistry;
 import com.sun.enterprise.resource.pool.PoolManager;
@@ -132,7 +131,7 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
      */
     private PoolLifeCycleListenerRegistry registerPool(String poolName) {
         PoolLifeCycleListenerRegistry poolRegistry = new PoolLifeCycleListenerRegistry(poolName);
-        poolRegistry.registerPoolLifeCycleListener(new ConnectionPoolEmitterImpl(poolName));
+        poolRegistry.registerPoolLifeCycleListener(new com.sun.enterprise.resource.pool.monitor.ConnectionPoolEmitterImpl(poolName));
         return poolRegistry;
     }
 

@@ -33,7 +33,7 @@
 * only if the new code is made subject to such option by the copyright
 * holder.
 */
-package com.sun.enterprise.resource.pool;
+package com.sun.enterprise.resource.pool.monitor;
 
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.listener.PoolLifeCycleListener;
