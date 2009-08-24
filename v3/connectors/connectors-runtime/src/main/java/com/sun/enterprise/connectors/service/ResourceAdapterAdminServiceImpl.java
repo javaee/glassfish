@@ -183,14 +183,15 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         // (standalone + embedded) 
         if (loader == null && ConnectorsUtil.belongsToSystemRA(moduleName)) {
             if (connectorRuntime.isServer()) {
-                loader = connectorRuntime.createConnectorClassLoader(moduleDir, null);
+                loader = connectorRuntime.getConnectorClassLoader(moduleName); 
+/*
+                loader = connectorRuntime.createConnectorClassLoader(moduleDir, null,moduleName);
                 // create a classloader for system rar and add it to connector class loader
                 // this is different than v2 as we dont add system rars to class loader chain
-                DelegatingClassLoader ccl = connectorRuntime.getConnectorClassLoader();
-                boolean systemRarCLAdded = ccl.addDelegate((ConnectorClassFinder)loader);
+                connectorRuntime.addSystemRAToConnectorClassLoader((ConnectorClassFinder)loader);
                 if(_logger.isLoggable(Level.FINE)){
                     _logger.log(Level.FINE, "System RAR [ "+moduleName+" ] added to " +
-                        "classloader chain : " + systemRarCLAdded);
+                        "classloader chain " );
                 }
 
                 if (loader == null) {
@@ -200,6 +201,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                     _logger.log(Level.SEVERE, "", cre);
                     throw cre;
                 }
+*/
             }
         } else {
             connectorDescriptor.setClassLoader(null);
@@ -323,7 +325,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             moduleDir = ConnectorsUtil.getSystemModuleLocation(moduleName);
         }
 
-        ConnectorDescriptor connectorDescriptor = ConnectorDDTransformUtils.getConnectorDescriptor(moduleDir);
+        ConnectorDescriptor connectorDescriptor = ConnectorDDTransformUtils.getConnectorDescriptor(moduleDir, moduleName);
 
         if (connectorDescriptor == null) {
             ConnectorRuntimeException cre = new ConnectorRuntimeException("Failed to obtain the connectorDescriptor");

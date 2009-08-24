@@ -92,6 +92,7 @@ import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.DelegatingClassLoader;
+import org.glassfish.internal.api.ConnectorClassLoaderService;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -179,6 +180,9 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
     @Inject
     private ConnectorJavaBeanValidator connectorBeanValidator;
+
+    @Inject
+    private ConnectorClassLoaderService connectorClassLoaderService;
 
     /**
      * Returns the ConnectorRuntime instance.
@@ -951,8 +955,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         adminObjectAdminService.deleteAdminObject(jndiName);
     }
 
-    public ClassLoader getConnectorClassLoader(String rarName){
-        return clh.getConnectorClassLoader(rarName);
+    public ClassLoader getConnectorClassLoader(String rarName) throws ConnectorRuntimeException{
+        return cclUtil.getSystemRARClassLoader(rarName);
     }
 
     /**
@@ -964,9 +968,9 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * For embedded rars, parent is necessary<br>
      * @return classloader created for the module
      */
-    public ClassLoader createConnectorClassLoader(String moduleDirectory, ClassLoader parent)
-        throws ConnectorRuntimeException{
-        return cclUtil.createRARClassLoader(moduleDirectory, parent);
+    public ClassLoader createConnectorClassLoader(String moduleDirectory, ClassLoader parent, String rarModuleName)
+            throws ConnectorRuntimeException{
+        return cclUtil.createRARClassLoader(moduleDirectory, parent, rarModuleName);
     }
 
     public ResourceDeployer getResourceDeployer(Object resource){

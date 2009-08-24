@@ -45,11 +45,13 @@ import org.jvnet.hk2.component.Singleton;
 
 import java.io.File;
 import java.net.MalformedURLException;
-
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
 
 import com.sun.enterprise.loader.EJBClassLoader;
 import com.sun.logging.LogDomains;
@@ -67,10 +69,12 @@ public class ConnectorsClassLoaderUtil {
     @Inject
     private ClassLoaderHierarchy clh;
 
+    private static List<ConnectorClassFinder> systemRARClassLoaders;
+
     private Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
 
-    public ConnectorClassFinder createRARClassLoader(String moduleDir, ClassLoader deploymentParent) 
-        throws ConnectorRuntimeException {
+    public ConnectorClassFinder createRARClassLoader(String moduleDir, ClassLoader deploymentParent, String moduleName)
+            throws ConnectorRuntimeException {
 
         ClassLoader parent = null;
 
@@ -85,18 +89,17 @@ public class ConnectorsClassLoaderUtil {
         }else{
             parent = deploymentParent;
         }
-        return createRARClassLoader(parent, moduleDir);
+        return createRARClassLoader(parent, moduleDir, moduleName);
     }
 
-    private ConnectorClassFinder createRARClassLoader(final ClassLoader parent, String moduleDir) 
-        throws ConnectorRuntimeException{
+    private ConnectorClassFinder createRARClassLoader(final ClassLoader parent, String moduleDir, final String moduleName)
+            throws ConnectorRuntimeException{
         ConnectorClassFinder cl = null;
 
         try{
         cl = (ConnectorClassFinder)AccessController.doPrivileged(new PrivilegedExceptionAction() {
             public Object run() throws Exception {
-                    return new ConnectorClassFinder(parent);
-
+                    return new ConnectorClassFinder(parent, moduleName);
             }
         });
         } catch (Exception ex) {
@@ -105,7 +108,6 @@ public class ConnectorsClassLoaderUtil {
             cre.initCause(ex);
             throw cre;
         }
-
 
         File file = new File(moduleDir);
         try {
@@ -116,6 +118,30 @@ public class ConnectorsClassLoaderUtil {
         }
         return cl;
     }
+
+    public Collection<ConnectorClassFinder> getSystemRARClassLoaders() throws ConnectorRuntimeException {
+        if(systemRARClassLoaders == null){
+            List<ConnectorClassFinder> classLoaders = new ArrayList<ConnectorClassFinder>();
+            for(String rarName : ConnectorConstants.systemRarNames){
+                String location = ConnectorsUtil.getSystemModuleLocation(rarName);
+                ConnectorClassFinder ccf = createRARClassLoader(location, null, rarName);
+                classLoaders.add(ccf);
+            }
+            systemRARClassLoaders = classLoaders;
+        }
+        return systemRARClassLoaders;
+    }
+
+    public ConnectorClassFinder getSystemRARClassLoader(String rarName) throws ConnectorRuntimeException {
+        Collection<ConnectorClassFinder> systemRarCLs = getSystemRARClassLoaders();
+        for(ConnectorClassFinder ccf : systemRarCLs){
+            if(ccf.getResourceAdapterName().equals(rarName)){
+                return ccf;
+            }
+        }
+        throw new ConnectorRuntimeException("No Classloader found for RA [ "+ rarName +" ]");
+    }
+
 
     //TODO V3 handling "unexploded jars" for now, V2 deployment module used to explode the jars also
     private void appendJars(File moduleDir, EJBClassLoader cl) throws MalformedURLException {

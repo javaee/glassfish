@@ -36,10 +36,7 @@
 package com.sun.enterprise.resource.recovery;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
@@ -54,10 +51,7 @@ import javax.transaction.xa.XAResource;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsClassLoaderUtil;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.serverbeans.ConnectorResource;
-import com.sun.enterprise.config.serverbeans.Resource;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
@@ -84,7 +78,7 @@ import org.jvnet.hk2.component.Habitat;
 public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandler {
 
     @Inject
-    private ResourcesHelper resourcesHelper;
+    private Resources resources;
 
     @Inject
     private ConnectorsClassLoaderUtil cclUtil;
@@ -106,10 +100,9 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
     private void loadAllConnectorResources() {
 
         try {
-            List<Resource> connResources = getConnectorResources();
+            Collection<ConnectorResource> connResources = resources.getResources(ConnectorResource.class);
             InitialContext ic = new InitialContext();
-            for (Resource resource : connResources) {
-                ConnectorResource connResource = (ConnectorResource) resource;
+            for (ConnectorResource connResource : connResources) {
                 if (isEnabled(connResource)) {
                     try {
                         ic.lookup(connResource.getJndiName());
@@ -160,9 +153,8 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
      */
     private ConnectorConnectionPool getConnectorConnectionPoolByName(String poolName) {
         ConnectorConnectionPool result = null;
-        List<Resource> ccPools = resourcesHelper.getAllResourcesOfType(ConnectorConnectionPool.class);
-        for (Resource resource : ccPools) {
-            ConnectorConnectionPool ccp = (ConnectorConnectionPool) resource;
+        Collection<ConnectorConnectionPool> ccPools = resources.getResources(ConnectorConnectionPool.class);
+        for (ConnectorConnectionPool ccp : ccPools) {
             if (ccp.getName().equals(poolName)) {
                 result = ccp;
                 break;
@@ -172,20 +164,11 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
     }
 
     /**
-     * get all connector connection pools
-     * @return list of all connector resources
-     */
-    private List<Resource> getConnectorResources() {
-        return resourcesHelper.getAllResourcesOfType(ConnectorResource.class);
-    }
-
-
-    /**
      * {@inheritDoc}
      */
     public void loadXAResourcesAndItsConnections(List xaresList, List connList) {
 
-        List<Resource> connectorResources = getConnectorResources();
+        Collection<ConnectorResource> connectorResources = resources.getResources(ConnectorResource.class);
 
         if (connectorResources == null || connectorResources.size() == 0) {
             return;
@@ -428,7 +411,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
              cr.createActiveResourceAdapterForEmbeddedRar(rarModuleName);
         } else {
             String moduleDir = ConfigBeansUtilities.getLocation(rarModuleName);
-            ClassLoader loader = cr.createConnectorClassLoader(moduleDir, null);
+            ClassLoader loader = cr.createConnectorClassLoader(moduleDir, null, rarModuleName);
             cr.createActiveResourceAdapter(moduleDir, rarModuleName, loader);
         }
     }

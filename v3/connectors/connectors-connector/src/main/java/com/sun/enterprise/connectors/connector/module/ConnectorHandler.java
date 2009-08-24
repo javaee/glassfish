@@ -36,8 +36,10 @@
 package com.sun.enterprise.connectors.connector.module;
 
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
+import com.sun.enterprise.deployment.Application;
 import com.sun.appserv.connectors.internal.api.ConnectorsClassLoaderUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -89,11 +91,14 @@ public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveH
     public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
         try {
             String moduleDir = context.getSource().getURI().getPath();
+            String moduleName = context.getSource().getName();
 
             if (isEmbedded(context)) {
-                return loader.createRARClassLoader(moduleDir, parent);
+                String applicationName = ConnectorsUtil.getApplicationName(context);
+                String embeddedRarName = ConnectorsUtil.getEmbeddedRarModuleName(applicationName, moduleName);
+                return loader.createRARClassLoader(moduleDir, parent, embeddedRarName);
             } else {
-                return loader.createRARClassLoader(moduleDir, null);
+                return loader.createRARClassLoader(moduleDir, null, moduleName);
             }
         } catch (ConnectorRuntimeException e) {
             throw new RuntimeException(e);

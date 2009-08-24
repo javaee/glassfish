@@ -404,6 +404,7 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
             String poolName = connectorRuntime_.getDefaultPoolName(moduleName_, connectionDefName);
 
             connectorRuntime_.createConnectorResource(resourceName, poolName, null);
+            desc_.addDefaultResourceName(resourceName);
 
             _logger.log(Level.FINE, "Created default connector resource : ", resourceName);
         }

@@ -931,8 +931,8 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
                 ConnectorConnectionPool connectorConnectionPool = getConnectorConnectionPool(poolName);
                 ActiveResourceAdapter activeResourceAdapter = getResourceAdapter(connectorConnectionPool);
-                ClassLoader loader = ConnectorRuntime.getRuntime().
-                        getConnectorClassLoader(activeResourceAdapter.getModuleName());
+                ClassLoader loader = activeResourceAdapter.getClassLoader();
+                //ClassLoader loader = ConnectorRuntime.getRuntime().getConnectorClassLoader();
                 ManagedConnectionFactory mcf = activeResourceAdapter.
                         createManagedConnectionFactory(connectorConnectionPool, loader);
                 if (mcf != null) {

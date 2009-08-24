@@ -142,7 +142,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         String sourcePath = sourceDir.getAbsolutePath();
         String moduleName = sourceDir.getName();
 
-        boolean isEmbedded = isEmbedded(context);
+        boolean isEmbedded = ConnectorsUtil.isEmbedded(context);
         ClassLoader classLoader = null;
         //this check is not needed as system-rars are never deployed, just to be safe.
         if (!ConnectorsUtil.belongsToSystemRA(moduleName)) {
@@ -152,7 +152,8 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 classLoader = ccf;
                 //for embedded .rar, compute the embedded .rar name
                 if (isEmbedded) {
-                    moduleName = getEmbeddedRarModuleName(getApplicationName(context), moduleName);
+                    moduleName = ConnectorsUtil.getEmbeddedRarModuleName(
+                            ConnectorsUtil.getApplicationName(context), moduleName);
                 }
 
                 //don't add the class-finder to the chain if its embedded .rar
@@ -165,7 +166,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 registerBeanValidator(moduleName, context.getSource());
 
                 ConnectorDescriptor cd = context.getModuleMetaData(ConnectorDescriptor.class);
-                runtime.createActiveResourceAdapter(cd, moduleName, sourcePath, classLoader);
+                runtime.createActiveResourceAdapter(cd, moduleName, sourcePath, ccf);
                 //runtime.createActiveResourceAdapter(sourcePath, moduleName, ccf);
 
             } catch (Exception cre) {
@@ -180,31 +181,10 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 return null;
             }
         }
-        return new ConnectorApplication(moduleName, getApplicationName(context), resourceManager,
+        return new ConnectorApplication(moduleName, ConnectorsUtil.getApplicationName(context), resourceManager,
                 classLoader, runtime, events);
     }
 
-    private String getEmbeddedRarModuleName(String applicationName, String moduleName) {
-        String embeddedRarName = moduleName.substring(0,
-                moduleName.indexOf(ConnectorConstants.EXPLODED_EMBEDDED_RAR_EXTENSION));
-
-        moduleName = applicationName + ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER + embeddedRarName;
-        return moduleName;
-    }
-
-    private boolean isEmbedded(DeploymentContext context) {
-        ReadableArchive archive = context.getSource();
-        return (archive != null && archive.getParentArchive() != null);
-    }
-
-    private String getApplicationName(DeploymentContext context) {
-        String applicationName = null;
-        ReadableArchive parentArchive = context.getSource().getParentArchive();
-        if (parentArchive != null) {
-            applicationName = parentArchive.getName();
-        }
-        return applicationName;
-    }
 
 
     /**
@@ -220,9 +200,9 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         String moduleName = sourceDir.getName();
 
         try {
-            if (isEmbedded(context)) {
-                String applicationName = getApplicationName(context);
-                moduleName = getEmbeddedRarModuleName(applicationName, moduleName);
+            if (ConnectorsUtil.isEmbedded(context)) {
+                String applicationName = ConnectorsUtil.getApplicationName(context);
+                moduleName = ConnectorsUtil.getEmbeddedRarModuleName(applicationName, moduleName);
             }
             runtime.destroyActiveResourceAdapter(moduleName);
         } catch (ConnectorRuntimeException e) {
@@ -230,7 +210,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         } finally {
 
             //remove it only if it is not embedded
-            if (!isEmbedded(context)) {
+            if (!ConnectorsUtil.isEmbedded(context)) {
                 //remove the class-finder (class-loader) from connector-class-loader chain
                 clh.getConnectorClassLoader(null).removeDelegate(ccf);
             }

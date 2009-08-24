@@ -116,6 +116,9 @@ public class ConnectorDescriptor extends BundleDescriptor {
 
     private transient Map<String, Set<AnnotationInfo>> configPropertyAnnotations ;
 
+    //default resource names for this resource-adpater
+    private Set<String> defaultResourceNames;
+
     public ConnectorDescriptor() {
         this.configProperties = new OrderedSet();
 	this.authMechanisms = new OrderedSet();
@@ -128,6 +131,7 @@ public class ConnectorDescriptor extends BundleDescriptor {
 
     this.connectorAnnotations = new OrderedSet<AnnotationInfo>();
     this.configPropertyAnnotations = new HashMap<String, Set<AnnotationInfo>>();
+    this.defaultResourceNames = new OrderedSet<String>();
     }
 
 
@@ -939,5 +943,23 @@ public class ConnectorDescriptor extends BundleDescriptor {
         return configPropertyAnnotations;
     }
 
+
+    /**
+     * names of default resources created for this resource-adapter
+     * computed at runtime (during RAR start)
+     * Used while detecting RARs referred by deployed applications
+     * @return default resources' names
+     */
+    public Collection<String> getDefaultResourcesNames(){
+        return defaultResourceNames;
+    }
+
+    /**
+     * add a default resource to list of default resource names
+     * @param resourceName resource-name
+     */
+    public void addDefaultResourceName(String resourceName){
+        defaultResourceNames.add(resourceName);
+    }
 }
 

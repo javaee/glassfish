@@ -305,7 +305,7 @@ public class InboundRecoveryHandler implements RecoveryResourceHandler {
             cr.createActiveResourceAdapterForEmbeddedRar(rarModuleName);
         } else {
             String moduleDir = ConfigBeansUtilities.getLocation(rarModuleName);
-            ClassLoader loader = cr.createConnectorClassLoader(moduleDir, null);
+            ClassLoader loader = cr.createConnectorClassLoader(moduleDir, null, rarModuleName);
             cr.createActiveResourceAdapter(moduleDir, rarModuleName, loader);
         }
     }

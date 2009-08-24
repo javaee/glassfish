@@ -68,17 +68,12 @@ import java.net.URISyntaxException;
  *
  * @author Srikanth P
  */
-//TODO V3 can this be a service ?
 public class ConnectorService implements ConnectorConstants {
     protected static final Logger _logger = LogDomains.getLogger(ConnectorService.class, LogDomains.RSR_LOGGER);
 
     protected static final ConnectorRegistry _registry =
             ConnectorRegistry.getInstance();
 
-/*
-    private boolean debug = true;
-    protected static int environment = SERVER;
-*/
     protected ConnectorRuntime _runtime;
 
     /**
@@ -87,38 +82,6 @@ public class ConnectorService implements ConnectorConstants {
     public ConnectorService() {
         _runtime = ConnectorRuntime.getRuntime();
     }
-
-/*
-    */
-/**
-     * Initializes the execution environment. If the execution environment
-     * is appserv runtime it is set to ConnectorConstants.SERVER else
-     * it is set ConnectorConstants.CLIENT
-     *
-     * @param environ set to ConnectorConstants.SERVER if execution
-     *                environment is appserv runtime else set to
-     *                ConnectorConstants.CLIENT
-     */
-/*
-    public void initialize(int environ) {
-        environment = environ;
-    }
-*/
-
-/*
-    */
-/**
-     * Returns the execution environment.
-     *
-     * @return ConnectorConstants.SERVER if execution environment is
-     *         appserv runtime
-     *         else it returns ConnectorConstants.CLIENT
-     */
-/*
-    public static int getEnviron() {
-        return environment;
-    }
-*/
 
     /**
      * Returns the generated default connection poolName for a
@@ -150,25 +113,6 @@ public class ConnectorService implements ConnectorConstants {
         String resourceJNDIName = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForResource(moduleName);
         return resourceJNDIName + RESOURCENAME_APPENDER + connectionDefName;
     }
-
-/*
-    */
-/**
-     * Checks whether the executing environment is application server
-     *
-     * @return true if execution environment is server
-     *         false if it is client
-     */
-/*
-
-    public static boolean isServer() {
-        if (getEnviron() == SERVER) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-*/
 
     public boolean checkAndLoadResource(Object resource, Object pool, String resourceType, String resourceName,
                                         String raName)
@@ -218,7 +162,7 @@ public class ConnectorService implements ConnectorConstants {
                 //Do this only for System RA
                 if (ConnectorsUtil.belongsToSystemRA(rarModuleName)) {
                     _runtime.createActiveResourceAdapter(ConnectorsUtil.getSystemModuleLocation(rarModuleName), rarModuleName, null);
-                } /* TODO V3 not needed as long as standalone + embedded rars are loaded before recovery
+                } /* not needed as long as standalone + embedded rars are loaded before recovery
                 else if (rarModuleName.indexOf(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER) != -1) {
                     createActiveResourceAdapterForEmbeddedRar(rarModuleName);
                 } else{
@@ -249,8 +193,8 @@ public class ConnectorService implements ConnectorConstants {
             use.printStackTrace();
             ConnectorRuntimeException cre = new ConnectorRuntimeException("Invalid path");
             cre.setStackTrace(use.getStackTrace());
+            _logger.log(Level.WARNING, cre.getMessage(), cre);
             throw cre;
-            //TODO V3 log exception
         }
         // start RA
         _runtime.createActiveResourceAdapter(cdesc, rarModuleName, path);
@@ -318,7 +262,7 @@ public class ConnectorService implements ConnectorConstants {
             moduleDir = ConnectorsUtil.getLocation(rarName);
         }
         if (moduleDir != null) {
-            desc = ConnectorDDTransformUtils.getConnectorDescriptor(moduleDir);
+            desc = ConnectorDDTransformUtils.getConnectorDescriptor(moduleDir, rarName);
         } else {
             _logger.log(Level.SEVERE,
                     "rardeployment.no_module_deployed", rarName);

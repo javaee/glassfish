@@ -51,6 +51,9 @@ import java.util.logging.Logger;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
 
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+
 /**
  * Util class for connector related classes
  */
@@ -773,4 +776,27 @@ public class ConnectorsUtil {
         }
         return getReservePrefixedJNDIName(prefix, resourceName);
     }
+
+    public static String getEmbeddedRarModuleName(String applicationName, String moduleName) {
+        String embeddedRarName = moduleName.substring(0,
+                moduleName.indexOf(ConnectorConstants.EXPLODED_EMBEDDED_RAR_EXTENSION));
+
+        moduleName = applicationName + ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER + embeddedRarName;
+        return moduleName;
+    }
+
+    public static boolean isEmbedded(DeploymentContext context) {
+        ReadableArchive archive = context.getSource();
+        return (archive != null && archive.getParentArchive() != null);
+    }
+
+    public static String getApplicationName(DeploymentContext context) {
+        String applicationName = null;
+        ReadableArchive parentArchive = context.getSource().getParentArchive();
+        if (parentArchive != null) {
+            applicationName = parentArchive.getName();
+        }
+        return applicationName;
+    }
+
 }

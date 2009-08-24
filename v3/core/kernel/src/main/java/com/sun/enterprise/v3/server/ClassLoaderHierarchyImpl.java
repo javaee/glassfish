@@ -42,9 +42,11 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.TranslationException;
 import org.jvnet.hk2.config.VariableResolver;
 import org.glassfish.internal.api.DelegatingClassLoader;
+import org.glassfish.internal.api.ConnectorClassLoaderService;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
 
@@ -77,7 +79,8 @@ public class ClassLoaderHierarchyImpl implements ClassLoaderHierarchy {
 
     @Inject CommonClassLoaderServiceImpl commonCLS;
 
-    @Inject ConnectorClassLoaderServiceImpl connectorCLS;
+    //For distributions where connector module is not available.
+    @Inject(optional = true) ConnectorClassLoaderService connectorCLS;
 
     @Inject AppLibClassLoaderServiceImpl applibCLS;
 
@@ -105,7 +108,12 @@ public class ClassLoaderHierarchyImpl implements ClassLoaderHierarchy {
     }
 
     public DelegatingClassLoader getConnectorClassLoader(String application) {
-        return connectorCLS.getConnectorClassLoader(application);
+        // For distributions where connector module (connector CL) is not available, use empty classloader with parent
+        if(connectorCLS != null){
+            return connectorCLS.getConnectorClassLoader(application);
+        }else{
+            return new DelegatingClassLoader(commonCLS.getCommonClassLoader());
+        }
     }
 
     public ClassLoader getAppLibClassLoader(String application, List<URI> libURIs) throws MalformedURLException {

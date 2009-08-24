@@ -38,8 +38,10 @@
 package com.sun.enterprise.v3.server;
 
 import org.glassfish.internal.api.DelegatingClassLoader;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -68,7 +70,7 @@ public class AppLibClassLoaderServiceImpl {
      */
 
     @Inject
-    ConnectorClassLoaderServiceImpl connectorCLS;
+    Habitat habitat;
 
     @Inject
     CommonClassLoaderServiceImpl commonCLS;
@@ -78,17 +80,19 @@ public class AppLibClassLoaderServiceImpl {
 
     public ClassLoader getAppLibClassLoader(String application, List<URI> libURIs)
             throws MalformedURLException {
-        final DelegatingClassLoader connectorCL =
-                connectorCLS.getConnectorClassLoader(application);
-        if (libURIs == null || libURIs.isEmpty()) {
-            // Optimization: when there are no libraries, why create an empty
-            // class loader in the hierarchy? Instead return the parent.
-            return connectorCL;
-        }
 
-        DelegatingClassLoader applibCL =
-                new DelegatingClassLoader(commonCLS.getCommonClassLoader(),
-                        connectorCL.getDelegates());
+        ClassLoaderHierarchy clh = habitat.getComponent(ClassLoaderHierarchy.class);
+        DelegatingClassLoader connectorCL = clh.getConnectorClassLoader(application);
+
+            if (libURIs == null || libURIs.isEmpty()) {
+                // Optimization: when there are no libraries, why create an empty
+                // class loader in the hierarchy? Instead return the parent.
+                return connectorCL;
+            }
+
+        DelegatingClassLoader applibCL ;
+                applibCL = new DelegatingClassLoader(connectorCL.getParent(), connectorCL.getDelegates());
+        
         for (URI libURI : libURIs) {
             synchronized (this) {
                 DelegatingClassLoader.ClassFinder libCF =

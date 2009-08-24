@@ -36,10 +36,7 @@
 
 package com.sun.enterprise.resource.recovery;
 
-import com.sun.enterprise.config.serverbeans.TransactionService;
-import com.sun.enterprise.config.serverbeans.JdbcResource;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import com.sun.enterprise.config.serverbeans.Resource;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deployment.ResourcePrincipal;
 import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
@@ -76,7 +73,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
     private TransactionService txService;
 
     @Inject
-    private ResourcesHelper resourcesHelper;
+    private Resources resources;
 
     @Inject
     private Habitat connectorRuntimeHabitat;
@@ -86,7 +83,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
     private void loadAllJdbcResources() {
 
         try {
-            List<Resource> jdbcResources = getJdbcResources();
+            Collection<JdbcResource> jdbcResources = getJdbcResources();
             InitialContext ic = new InitialContext();
             for (Resource resource : jdbcResources) {
                 JdbcResource jdbcResource = (JdbcResource) resource;
@@ -110,12 +107,8 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
         }
     }
 
-    /**
-     * get all jdbc-resources
-     * @return list of jdbc-resources
-     */
-    private List<Resource> getJdbcResources() {
-        return resourcesHelper.getAllResourcesOfType(JdbcResource.class);
+    private Collection<JdbcResource> getJdbcResources() {
+        return resources.getResources(JdbcResource.class);
     }
 
     /**
@@ -123,7 +116,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
      */
     public void loadXAResourcesAndItsConnections(List xaresList, List connList) {
 
-        List<Resource> jdbcres = getJdbcResources();
+        Collection<JdbcResource> jdbcres = getJdbcResources();
 
         if (jdbcres == null || jdbcres.size() == 0) {
             return;
@@ -245,9 +238,8 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
 
     private JdbcConnectionPool getJdbcConnectionPoolByName(String poolName) {
         JdbcConnectionPool result = null;
-        List<Resource> jdbcPools = resourcesHelper.getAllResourcesOfType(JdbcConnectionPool.class);
-        for (Resource resource : jdbcPools) {
-            JdbcConnectionPool jdbcPool = (JdbcConnectionPool) resource;
+        Collection<JdbcConnectionPool> jdbcPools = resources.getResources(JdbcConnectionPool.class);
+        for (JdbcConnectionPool jdbcPool : jdbcPools) {
             if (jdbcPool.getName().equals(poolName)) {
                 result = jdbcPool;
                 break;
@@ -277,7 +269,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
 
     /**
      * gets the user-name & password for the jdbc-connection-pool
-     * @param jdbc connection pool
+     * @param jdbcConnectionPool connection pool
      * @return user, password
      */
     public String[] getdbUserPasswordOfJdbcConnectionPool(

@@ -34,13 +34,9 @@
  * holder.
  */
 
+package org.glassfish.internal.api;
 
-package com.sun.enterprise.v3.server;
-
-import org.glassfish.internal.api.DelegatingClassLoader;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * We support two policies:
@@ -52,52 +48,14 @@ import org.jvnet.hk2.component.PostConstruct;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-@Service
-public class ConnectorClassLoaderServiceImpl implements PostConstruct{
-
-    /*
-    * TODO(Sahoo):
-    * 1. https://glassfish.dev.java.net/issues/show_bug.cgi?id=5380
-    * 3. Decide whether we can retrieve all the desired information from
-    * ApplicationsRegistry by using just the name of the application. If not,
-    * then revisit the signature of getConnectorClassLoader(String appName)
-    *
-    * COMPLETED
-    * 2. Listen to standalone RAR lifecycle events and add or remove
-    * corresponding classloader from this chain.
-    */
-
-    @Inject
-    CommonClassLoaderServiceImpl ccls;
-
-    /**
-     * This class loader is used when we have just a single connector
-     * class loader for all applications. In other words, we make every
-     * standalone RARs available to all applications.
-     */
-    DelegatingClassLoader globalConnectorCL;
-
-    public void postConstruct() {
-        globalConnectorCL =
-                new DelegatingClassLoader(ccls.getCommonClassLoader());
-    }
+@Contract
+public interface ConnectorClassLoaderService {
 
     /**
      * provides connector-class-loader for the specified application
      * If application is null, global connector class loader will be provided
-     * @param application application-name
+     * @param appName application-name
      * @return class-loader
      */
-    public DelegatingClassLoader getConnectorClassLoader(String application) {
-         DelegatingClassLoader loader = null;
-
-        //if(application == null){
-            assert (globalConnectorCL != null);
-            loader = globalConnectorCL;
-        //}else{
-            //TODO V3   need to maintain a rar->class-finder mapping such that
-            //TODO V3   applications can refer to only required .rars
-        //}
-        return loader;
-    }
+    DelegatingClassLoader getConnectorClassLoader(String appName);
 }

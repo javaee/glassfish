@@ -193,6 +193,8 @@ public class Application extends BundleDescriptor
     private Set<DataSourceDefinitionDescriptor> datasourceDefinitionDescs =
             new HashSet<DataSourceDefinitionDescriptor>();
 
+    private Set<String> resourceAdapters = new HashSet<String>();
+
     public Application(Habitat habitat) {
         super("", localStrings.getLocalString(
                 "enterprise.deployment.application.description",
@@ -1856,5 +1858,23 @@ public class Application extends BundleDescriptor
 
     public List<Resource> getResourceList() {
         return resourceList;
+    }
+
+    //resource-adapters referred by application via :
+    //resource-ref, resource-env-ref, ra-mid
+    /**
+     * add a resource-adapter to referred resource-adapters list
+     * @param raName resource-adapter name
+     */
+    public void addResourceAdapter(String raName){
+        resourceAdapters.add(raName);
+    }
+
+    /**
+     * get the list of resource-adapters referred by the application
+     * @return resource-adapters list
+     */
+    public Set<String> getResourceAdapters(){
+        return resourceAdapters;
     }
 }

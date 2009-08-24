@@ -54,42 +54,41 @@ public interface ConnectorConstants {
      * Represents the connector container module name / type
      */
     public static final String CONNECTOR_MODULE = "connector";
+
      /**
      *  JAXR  system resource adapter name.
      */
-
     public static final String JAXR_RA_NAME = "jaxr-ra";
 
     /** 
      *  JDBC datasource  system resource adapter name.
      */
-
     public static final String JDBCDATASOURCE_RA_NAME = "__ds_jdbc_ra";
     
     /** 
      *  JDBC connectionpool datasource  system resource adapter name.
      */
-
     public static final String JDBCCONNECTIONPOOLDATASOURCE_RA_NAME = "__cp_jdbc_ra";
     
     /** 
      *  JDBC XA datasource  system resource adapter name.
      */
-
     public static final String JDBCXA_RA_NAME = "__xa_jdbc_ra";
-    
+
+    /**
+     *  JDBC Driver Manager system resource adapter name.
+     */
+    public static final String JDBCDRIVER_RA_NAME = "__dm_jdbc_ra";
+
     /** 
      *  JMS datasource  system resource adapter name.
      */
-
     public static final String DEFAULT_JMS_ADAPTER = "jmsra";
 
-    public static final String JDBCDRIVER_RA_NAME = "__dm_jdbc_ra";
-    
+
     /**
      * List of system resource adapter names 
      */
-    
     public static final List<String> systemRarNames = Collections.unmodifiableList(
             Arrays.asList(
                 JAXR_RA_NAME,
@@ -116,27 +115,23 @@ public interface ConnectorConstants {
      *  Subcontext for connector descriptors bounding is also done under 
      *  this context.
      */
-
     public static String RESERVE_PREFIX = "__SYSTEM";
-    
+
     /**
      * Sub context for binding connector descriptors.
      */
-
-    public static final String DD_PREFIX= RESERVE_PREFIX+"/descriptors/";    
+    public static final String DD_PREFIX= RESERVE_PREFIX+"/descriptors/";
 
     /**
      * Constant used to determine whether execution environment is appserver
      * runtime. 
      */
-   
     public static final int SERVER = 1;
 
     /**
      * Constant used to determine whether execution environment is application
      * client container. 
      */
-
     public static final int CLIENT = 2;
 
     /** 
@@ -149,7 +144,6 @@ public interface ConnectorConstants {
      * POOLS_JNDINAME_PREFIX/rarName+POOLNAME_APPENDER+connectionDefName
      * +SUN_RA_POOL
      */
-
     public static final String SUN_RA_POOL = "sunRAPool";
     public static final String ADMINISTERED_OBJECT_FACTORY =
         "com.sun.enterprise.resource.naming.AdministeredObjectFactory";
@@ -157,7 +151,6 @@ public interface ConnectorConstants {
     /**
      * Meta char for mapping the security for connection pools
      */
-
     public static String SECURITYMAPMETACHAR="*";
 
     /** 
@@ -168,7 +161,6 @@ public interface ConnectorConstants {
      * should be 
      * POOLS_JNDINAME_PREFIX/rarName+POOLNAME_APPENDER+connectionDefName
      */
-
     public static String POOLNAME_APPENDER="#";
 
     /** 
@@ -177,7 +169,6 @@ public interface ConnectorConstants {
      * RESOURCE_JNDINAME_PREFIX+rarName+RESOURCENAME_APPENDER+connectionDefName
      * This name should be used to lookup connector resource.
      */
-
     public static String RESOURCENAME_APPENDER="#";
 
 
@@ -191,6 +182,7 @@ public interface ConnectorConstants {
      * eg: server.connector-service.&lt;RA-NAME&gt;.work-management<br>
      */
     public static String MONITORING_CONNECTOR_SERVICE = "connector-service";
+    public static String MONITORING_JMS_SERVICE = "jms-service";
     public static String MONITORING_WORK_MANAGEMENT = "work-management";
     public static String MONITORING_SEPARATOR = "/";
 
@@ -210,7 +202,8 @@ public interface ConnectorConstants {
      */
     public static String RESOURCE_JNDINAME_PREFIX=RESERVE_PREFIX+"/resource/";
     public static String USERGROUPDISTINGUISHER="#";
-    public static String CAUTION_MESSAGE="Please add the following permissions to the server.policy file and restart the appserver.";
+    public static String CAUTION_MESSAGE="Please add the following permissions to the " +
+            "server.policy file and restart the appserver.";
     
     /**
      * Token used for generating the name to refer to the embedded rars.
@@ -326,50 +319,40 @@ public interface ConnectorConstants {
     public static final String RA = "ResourceAdapter";
     public static final String JDBC = "Jdbc";
 
+    public static final String INSTALL_ROOT = "com.sun.aas.installRoot";
 
-    //TODO V3 should be taken from ResourceDeployEvent
     /**
      * Constant to denote external jndi resource type.
      */
     public static final String RES_TYPE_EXTERNAL_JNDI = "external-jndi";
 
-    //TODO V3 use SystemPropertyConstants later
-    public static final String INSTALL_ROOT = "com.sun.aas.installRoot";
-
-    //TODO V3 should be taken from ResourceDeployEvent
     public static final String RES_TYPE_JDBC = "jdbc";
 
     /**
      * Constant to denote jdbc connection pool resource type.
      */
-    //TODO V3 should be taken from ResourceDeployEvent
     public static final String RES_TYPE_JCP = "jcp";
 
     /**
      * Constant to denote connector connection pool  resource type.
      */
-    //TODO V3 should be taken from ResourceDeployEvent
     public static final String RES_TYPE_CCP = "ccp";
 
     /**
      * Constant to denote connector resource type.
      */
-    //TODO V3 should be taken from ResourceDeployEvent
     public static final String RES_TYPE_CR = "cr";
 
     /**
      * Constant to denote custom resource type.
      */
-    //TODO V3 should be taken from ResourceDeployEvent
     public static final String RES_TYPE_CUSTOM = "custom";
 
-    //TODO V3 should be taken from ResourceDeployEvent
     /**
      * Constant to denote admin object resource type.
      */
     public static final String RES_TYPE_AOR = "aor";
 
-    //TODO V3 should be taken from ResourceDeployEvent
     /**
      * Constant to denote resource adapter config type.
      */
@@ -380,21 +363,11 @@ public interface ConnectorConstants {
      */
     public static final String RES_TYPE_CWSM = "cwsm";
 
-/*  TODO V3 unused ?
-
-    //TODO V3 should be taken from IASJ2EEResourceFactoryImpl
-    public static final String JDBC_RES_TYPE = "jdbc-resource";
-*/
-
-
-
     /**
      * Constant to denote mail resource type.
      */
-    //TODO V3 should be taken from ResourceDeployEvent
     public static final String RES_TYPE_MAIL = "mail";
 
-    //TODO V3 should be taken from IASJ2EEResourceFactoryImpl
     public static final String JMS_QUEUE = "javax.jms.Queue";
     public static final String JMS_TOPIC = "javax.jms.Topic";
     public static final String JMS_QUEUE_CONNECTION_FACTORY = "javax.jms.QueueConnectionFactory";
@@ -409,7 +382,8 @@ public interface ConnectorConstants {
     public static final String EXPLODED_EMBEDDED_RAR_EXTENSION="_rar";
 
     public static final String JAVA_BEAN_FACTORY_CLASS = "org.glassfish.resources.custom.factory.JavaBeanFactory";
-    public static final String PRIMITIVES_AND_STRING_FACTORY_CLASS = "org.glassfish.resources.custom.factory.PrimitivesAndStringFactory";
+    public static final String PRIMITIVES_AND_STRING_FACTORY_CLASS =
+            "org.glassfish.resources.custom.factory.PrimitivesAndStringFactory";
     public static final String URL_OBJECTS_FACTORY = "org.glassfish.resources.custom.factory.URLObjectFactory";
     public static final String PROPERTIES_FACTORY = "org.glassfish.resources.custom.factory.PropertiesFactory";
 }

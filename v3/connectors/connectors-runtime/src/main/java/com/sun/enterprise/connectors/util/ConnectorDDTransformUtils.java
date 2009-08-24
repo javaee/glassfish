@@ -172,7 +172,7 @@ public class ConnectorDDTransformUtils {
      *                                   invalid this exception is thrown. For 1.5 type rar sun-ra.xml
      *                                   should not be  present.
      */
-    public static ConnectorDescriptor getConnectorDescriptor(String moduleDir)
+    public static ConnectorDescriptor getConnectorDescriptor(String moduleDir, String rarModuleName)
             throws ConnectorRuntimeException {
 
         try {
@@ -182,7 +182,7 @@ public class ConnectorDDTransformUtils {
             FileArchive fileArchive = new FileArchive();
             fileArchive.open(module.toURI());  // directory where rar is exploded
             ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
-            ClassLoader loader = runtime.createConnectorClassLoader(moduleDir, null);
+            ClassLoader loader = runtime.createConnectorClassLoader(moduleDir, null, rarModuleName);
 
             ConnectorArchivist connectorArchivist = runtime.getConnectorArchvist();
             //TODO V3 what happens to embedded .rar ? as its parent classloader should be application CL

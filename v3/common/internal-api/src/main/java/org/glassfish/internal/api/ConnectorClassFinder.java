@@ -45,8 +45,10 @@ import com.sun.enterprise.loader.EJBClassLoader;
  */
 public class ConnectorClassFinder extends EJBClassLoader implements DelegatingClassLoader.ClassFinder {
 
-        public ConnectorClassFinder(ClassLoader parent){
+        private String raName;
+        public ConnectorClassFinder(ClassLoader parent, String raName){
             super(parent);
+            this.raName = raName;
         }
 
         public Class<?> findClass(String name) throws ClassNotFoundException {
@@ -55,5 +57,13 @@ public class ConnectorClassFinder extends EJBClassLoader implements DelegatingCl
 
         public Class<?> findExistingClass(String name) {
             return super.findLoadedClass(name);
+        }
+
+        public String getResourceAdapterName(){
+            return raName;
+        }
+
+        public void setResourceAdapterName(String raName){
+            this.raName = raName;
         }
     }
