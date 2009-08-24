@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
@@ -33,33 +32,13 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
- -->
+-->
 
-<console-config id="corba">
-        <integration-point 
-                id="corba_container"
-                type="org.glassfish.admingui:navNode" 
-                priority="650"
-                parentId="configuration" 
-                content="pluginTreeNodeCorba.jsf"
-        />
+<!-- pluginTreeNodeAdminService.jsf -->
 
-        <!-- add the http ports to the Server General page -->
-        <integration-point
-                id="serverGeneral"
-                type="org.glassfish.admingui:serverInstGeneralPe"
-                priority="300"
-                parentId=""
-                content="iiopServerPageNode.jsf"
-        />
+<sun:treeNode id="adminService"
+    text="$resource{i18n.tree.adminService}"
+    url="/common/configuration/jmxConnectorEdit.jsf?configName=#{configName}"
+    imageURL="/resource/images/connector.png"
+/>
 
-         <!-- Add a link under the Configuration Page  -->
-        <integration-point
-                id="commonConfigurationLink"
-                type="org.glassfish.admingui:configuration"
-                priority="250"
-                parentId="propSheetSection"
-                content="configurationLink.jsf"
-        />
-
-</console-config>

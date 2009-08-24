@@ -2,11 +2,11 @@
 
 <console-config id="ejb-lite">
         <integration-point 
-                id="ejb" 
+                id="ejb-lite_container"
                 type="org.glassfish.admingui:navNode" 
-                priority="200"
+                priority="250"
                 parentId="configuration" 
-                content="ejbLitePluginTreeNode.jsf"
+                content="PluginTreeNodeEjbLite.jsf"
         />
         
         <!-- Add a link under the Configuration Page -->

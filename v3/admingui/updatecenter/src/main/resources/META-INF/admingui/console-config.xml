@@ -2,14 +2,14 @@
 
 <console-config id="updateCenter">
         <integration-point
-                id="uc"
+                id="updateCenter_node"
                 type="org.glassfish.admingui:navNode"
-                priority="100"
+                priority="800"
                 parentId="tree"
-                content="updateCenterNode.jsf"
+                content="pluginTreeNodeUC.jsf"
         />
        <integration-point
-                id="ucCommonTask"
+                id="updateCenter_CommonTask"
                 type="org.glassfish.admingui:commonTask"
                 priority="100"
                 parentId="commonTasksSection"

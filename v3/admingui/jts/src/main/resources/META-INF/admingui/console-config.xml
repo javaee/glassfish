@@ -4,8 +4,8 @@
         <integration-point 
                 id="jts_node"
                 type="org.glassfish.admingui:navNode" 
-                priority="500"
+                priority="400"
                 parentId="configuration" 
-                content="jtsTreeNode.jsf"
+                content="pluginTreeNodeJts.jsf"
         />
 </console-config>

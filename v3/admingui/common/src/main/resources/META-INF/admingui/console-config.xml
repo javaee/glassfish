@@ -62,11 +62,44 @@
 
         <!-- Add a link under the Configuration Page  -->
         <integration-point
-                id="commonConfigurationLink"
+                id="common_ConfigurationLink"
                 type="org.glassfish.admingui:configuration" 
                 priority="100"
                 parentId="propSheetSection"
                 content="configuration/configurationLink.jsf"
+        />
+
+
+        <integration-point
+                id="common_jvm"
+                type="org.glassfish.admingui:navNode"
+                priority="100"
+                parentId="configuration"
+                content="pluginTreeNodeJVM.jsf"
+        />
+
+        <integration-point
+                id="common_logger"
+                type="org.glassfish.admingui:navNode"
+                priority="150"
+                parentId="configuration"
+                content="pluginTreeNodeLogger.jsf"
+        />
+
+        <integration-point
+                id="common_security"
+                type="org.glassfish.admingui:navNode"
+                priority="350"
+                parentId="configuration"
+                content="pluginTreeNodeSecurity.jsf"
+        />
+
+        <integration-point
+                id="common_adminService"
+                type="org.glassfish.admingui:navNode"
+                priority="700"
+                parentId="configuration"
+                content="pluginTreeNodeAdminService.jsf"
         />
 
 </console-config>

@@ -2,11 +2,51 @@
 
 <console-config id="web">
         <integration-point 
-                id="web" 
+                id="web_container"
                 type="org.glassfish.admingui:navNode" 
-                priority="300" 
+                priority="200"
                 parentId="configuration" 
-                content="webPluginTreeNode.jsf"
+                content="configuration/pluginTreeNodeWebContainer.jsf"
+        />
+
+        <integration-point
+                id="web_httpService"
+                type="org.glassfish.admingui:navNode"
+                priority="450"
+                parentId="configuration"
+                content="configuration/pluginTreeNodeHttpService.jsf"
+        />
+
+        <integration-point
+                id="web_virtualServer"
+                type="org.glassfish.admingui:navNode"
+                priority="500"
+                parentId="configuration"
+                content="configuration/pluginTreeNodeVS.jsf"
+        />
+
+        <integration-point
+                id="web_grizzly"
+                type="org.glassfish.admingui:navNode"
+                priority="550"
+                parentId="configuration"
+                content="grizzly/pluginTreeNodeGrizzly.jsf"
+        />
+
+        <integration-point
+                id="web_threadPool"
+                type="org.glassfish.admingui:navNode"
+                priority="600"
+                parentId="configuration"
+                content="configuration/pluginTreeNodeThreadPool.jsf"
+        />
+
+        <integration-point
+                id="monitor"
+                type="org.glassfish.admingui:navNode"
+                priority="750"
+                parentId="configuration"
+                content="monitor/monitoringNode.jsf"
         />
 
         <!-- Add a link under the Configuration Page  -->
@@ -39,15 +79,6 @@
         />
 
 
-       
-        <integration-point 
-                id="monitor" 
-                type="org.glassfish.admingui:navNode" 
-                priority="350"
-                parentId="configuration" 
-                content="monitor/monitoringNode.jsf"
-        />
-        
         <!-- add the http ports to the Server General page -->
         <integration-point
                 id="serverGeneral"

@@ -79,5 +79,7 @@
 #include "/common/shared/editPageBottomButtons.inc"
 	<sun:hidden id="helpKey" value="$resource{help.serverInstAppsConfig}" />
             </sun:form>
+#include "/common/shared/changeButtonsJS.inc"
+
 </define>
 </composition>

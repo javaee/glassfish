@@ -5,9 +5,9 @@
     <integration-point
         id="jruby_container"
         type="org.glassfish.admingui:navNode"
-        priority="200"
+        priority="280"
         parentId="configuration"
-        content="jrubyPluginTreeNode.jsf"
+        content="pluginTreeNodeJruby.jsf"
     />
 
 
