@@ -127,6 +127,9 @@ public class WebBundleDescriptor extends BundleDescriptor
 
     private List<String> orderedLibs = new ArrayList<String>();
 
+    // conflict resolution checking
+    protected boolean conflictLoginConfig = false;
+
     /**
      * Constrct an empty web app [{0}].
      */
@@ -223,9 +226,8 @@ public class WebBundleDescriptor extends BundleDescriptor
             setSessionConfig(webBundleDescriptor.getSessionConfig());
         }
 
-        if (getLoginConfiguration() == null) {
-            setLoginConfiguration(webBundleDescriptor.getLoginConfiguration());
-        }
+        // combine login config with conflict resolution check
+        combineLoginConfiguration(webBundleDescriptor);
 
         Boolean otherIsDistributable = webBundleDescriptor.isDistributable();
         if (otherIsDistributable != null) {
@@ -390,7 +392,7 @@ public class WebBundleDescriptor extends BundleDescriptor
         for (String up : resultDesc.getUrlPatternsSet()) {
             String oldName = getUrlPatternToServletNameMap().put(up, name);
             if (oldName != null && (!oldName.equals(name))) {
-                throw new RuntimeException(localStrings.getLocalString(
+                throw new IllegalArgumentException(localStrings.getLocalString(
                     "enterprise.deployment.exceptionsameurlpattern",
                     "Servlet [{0}] and Servlet [{1}] have the same url pattern: [{2}]",
                     new Object[] { oldName, name, up }));
@@ -1305,6 +1307,18 @@ public class WebBundleDescriptor extends BundleDescriptor
         setLoginConfiguration((LoginConfiguration) loginConfiguration);
     }
 
+    protected void combineLoginConfiguration(WebBundleDescriptor webBundleDescriptor) {
+        if (getLoginConfiguration() == null) {
+            if (webBundleDescriptor.isConflictLoginConfiguration()) {
+                throw new IllegalArgumentException(localStrings.getLocalString(
+                        "enterprise.deployment.exceptionconflictloginconfig",
+                        "There are more than one login config defined in web fragments with different values"));
+            } else {
+                setLoginConfiguration(webBundleDescriptor.getLoginConfiguration());
+            }
+        }
+    }
+
     /**
      * Search for a web component that I have by name.
      */
@@ -1680,6 +1694,10 @@ public class WebBundleDescriptor extends BundleDescriptor
 
     public void addOrderedLib(String libName) {
         orderedLibs.add(libName);
+    }
+
+    public boolean isConflictLoginConfiguration() {
+        return conflictLoginConfig;
     }
 
     /* ----

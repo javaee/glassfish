@@ -138,10 +138,22 @@ public class LoginConfigurationImpl extends Descriptor implements LoginConfigura
     public void setFormErrorPage(String formErrorPage) {
 	this.formErrorPage = formErrorPage;
     }
+
     /** My representation as a formatted String.*/
     public void print(StringBuffer toStringBuffer) {
 	toStringBuffer.append("LoginConfig:(").append(authenticationMethod).append(" ").append(
             realmName).append(" ").append(formLoginPage).append(" ").append(formErrorPage).append(")");
     }
 
+    public boolean equals(Object obj) {
+        boolean result = false;
+        if (obj instanceof LoginConfigurationImpl) {
+            LoginConfigurationImpl other = (LoginConfigurationImpl)obj;
+            result = getAuthenticationMethod().equals(other.getAuthenticationMethod()) &&
+                    getRealmName().equals(other.getRealmName()) &&
+                    getFormLoginPage().equals(other.getFormLoginPage()) &&
+                    getFormErrorPage().equals(other.getFormErrorPage());
+        } 
+        return result;
+    }
 }

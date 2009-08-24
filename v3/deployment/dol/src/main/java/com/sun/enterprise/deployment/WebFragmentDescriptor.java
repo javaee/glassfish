@@ -82,6 +82,15 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
         firstScSet.addAll(secondScSet);
     }
 
+    @Override
+    protected void combineLoginConfiguration(WebBundleDescriptor webBundleDescriptor) {
+        if (getLoginConfiguration() == null) {
+            setLoginConfiguration(webBundleDescriptor.getLoginConfiguration());
+        } else if (!getLoginConfiguration().equals(webBundleDescriptor.getLoginConfiguration())) {
+            conflictLoginConfig = true;
+        }
+    }
+
     /**
      * Return a formatted version as a String.
      */

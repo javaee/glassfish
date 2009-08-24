@@ -189,7 +189,7 @@ public class WebComponentDescriptor extends Descriptor {
                         String name = getCanonicalName();
                         String oldName = up2sname.put(s, getCanonicalName());
                         if (oldName != null && (!oldName.equals(name))) {
-                            throw new RuntimeException(localStrings.getLocalString(
+                            throw new IllegalArgumentException(localStrings.getLocalString(
                                 "enterprise.deployment.exceptionsameurlpattern",
                                 "Servlet [{0}] and Servlet [{1}] have the same url pattern: [{2}]",
                                 new Object[] { oldName, name, s }));
