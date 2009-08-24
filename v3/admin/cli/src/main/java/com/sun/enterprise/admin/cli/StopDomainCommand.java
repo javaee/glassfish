@@ -38,7 +38,8 @@ package com.sun.enterprise.admin.cli;
 
 import java.io.*;
 import java.util.*;
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.cli.remote.DASUtils;
@@ -51,6 +52,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Bill Shannon
  */
 @Service(name = "stop-domain")
+@Scoped(PerLookup.class)
 public class StopDomainCommand extends LocalDomainCommand {
 
     private final static long WAIT_FOR_DAS_TIME_MS = 60000;

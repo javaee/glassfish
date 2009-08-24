@@ -41,8 +41,7 @@ import java.util.*;
 import java.lang.reflect.*;
 
 import org.jvnet.hk2.annotations.*;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.*;
 
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
@@ -69,6 +68,7 @@ import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
  * @author Bill Shannon
  */
 @Contract
+@Scoped(PerLookup.class)
 public abstract class CLICommand implements PostConstruct {
     public static final int ERROR = 1;
     public static final int CONNECTION_ERROR = 2;

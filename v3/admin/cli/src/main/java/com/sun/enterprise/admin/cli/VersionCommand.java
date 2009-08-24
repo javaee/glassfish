@@ -37,7 +37,8 @@
 package com.sun.enterprise.admin.cli;
 
 import java.util.*;
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
 import com.sun.appserv.server.util.Version;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.*;
@@ -56,6 +57,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Bill Shannon
  */
 @Service(name = "version")
+@Scoped(PerLookup.class)
 public class VersionCommand extends CLICommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(VersionCommand.class);

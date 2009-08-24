@@ -38,7 +38,8 @@ package com.sun.enterprise.admin.cli.optional;
 
 import java.io.File;
 import java.util.*;
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.launcher.GFLauncher;
@@ -57,6 +58,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
  *  This is a local command that lists the domains.
  */
 @Service(name = "list-domains")
+@Scoped(PerLookup.class)
 public final class ListDomainsCommand extends LocalDomainCommand {
 
     private static final String DOMAINDIR = "domaindir";

@@ -37,7 +37,8 @@
 package com.sun.enterprise.admin.cli.optional;
 
 import java.util.*;
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.DomainsManager;
@@ -48,6 +49,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  *  This is a local command that deletes a domain.
  */
 @Service(name = "delete-domain")
+@Scoped(PerLookup.class)
 public final class DeleteDomainCommand extends LocalDomainCommand {
 
     private static final String DOMAINDIR = "domaindir";

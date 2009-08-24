@@ -38,6 +38,8 @@ package com.sun.enterprise.admin.cli.optional;
 
 import java.io.*;
 import java.util.*;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.servermgmt.services.ServiceFactory;
 import com.sun.enterprise.admin.servermgmt.services.Service;
@@ -51,6 +53,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
  * automatically.
  */
 @org.jvnet.hk2.annotations.Service(name = "create-service")
+@Scoped(PerLookup.class)
 public final class CreateServiceCommand extends CLICommand {
 
     private static final String DOMAIN_PARENT_DIR = "domaindir";

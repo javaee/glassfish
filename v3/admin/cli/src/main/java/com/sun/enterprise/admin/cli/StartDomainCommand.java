@@ -36,7 +36,8 @@
 
 package com.sun.enterprise.admin.cli;
 
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
 import com.sun.enterprise.admin.cli.CLIConstants;
 import com.sun.enterprise.util.net.NetUtils;
 import static com.sun.enterprise.admin.cli.CLIConstants.*;
@@ -60,6 +61,7 @@ import java.util.*;
  * @author Bill Shannon
  */
 @Service(name = "start-domain")
+@Scoped(PerLookup.class)
 public class StartDomainCommand extends LocalDomainCommand {
 
     private GFLauncherInfo info;

@@ -45,8 +45,8 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 import org.glassfish.api.embedded.Server;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DomDocument;
@@ -60,6 +60,7 @@ import org.jvnet.hk2.config.DomDocument;
  * @author Nandini Ektare
  */
 @Service(name = "verify-domain-xml")
+@Scoped(PerLookup.class)
 public final class VerifyDomainXmlCommand extends LocalDomainCommand {
 
     private static final String DOMAINDIR = "domaindir";

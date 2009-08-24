@@ -39,7 +39,8 @@ package com.sun.enterprise.admin.cli.optional;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
@@ -57,6 +58,7 @@ import com.sun.enterprise.util.OS;
  *  @author Bill Shannon
  */
 @Service(name = "start-database")
+@Scoped(PerLookup.class)
 public final class StartDatabaseCommand extends DatabaseCommand {
     private final static String DB_HOME         = "dbhome";
     private final static String DATABASE_DIR_NAME = "databases";

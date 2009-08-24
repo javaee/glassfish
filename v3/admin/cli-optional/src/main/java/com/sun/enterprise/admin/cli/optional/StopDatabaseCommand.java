@@ -38,7 +38,8 @@ package com.sun.enterprise.admin.cli.optional;
 
 import java.io.File;
 import java.util.*;
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.OS;
@@ -52,6 +53,7 @@ import com.sun.enterprise.util.OS;
  *  @author Bill Shannon
  */
 @Service(name = "stop-database")
+@Scoped(PerLookup.class)
 public final class StopDatabaseCommand extends DatabaseCommand {
 
     private static final LocalStringsImpl strings =

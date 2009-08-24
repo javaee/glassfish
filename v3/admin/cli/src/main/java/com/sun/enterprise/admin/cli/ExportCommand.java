@@ -37,7 +37,8 @@
 package com.sun.enterprise.admin.cli;
 
 import java.util.*;
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
@@ -47,6 +48,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Bill Shannon
  */
 @Service(name = "export")
+@Scoped(PerLookup.class)
 public class ExportCommand extends CLICommand {
 
     private static final LocalStringsImpl strings =

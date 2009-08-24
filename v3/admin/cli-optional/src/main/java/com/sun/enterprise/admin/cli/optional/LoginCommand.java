@@ -38,7 +38,8 @@ package com.sun.enterprise.admin.cli.optional;
 
 import java.io.Console;
 import java.util.*;
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
 import com.sun.appserv.management.client.prefs.LoginInfo;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
@@ -55,6 +56,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Bill Shannon
  */
 @Service(name = "login")
+@Scoped(PerLookup.class)
 public class LoginCommand extends CLICommand {
 
     private String adminUser = null;

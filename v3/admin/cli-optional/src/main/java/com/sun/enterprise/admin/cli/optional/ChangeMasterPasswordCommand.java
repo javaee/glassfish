@@ -48,12 +48,14 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
 
 /** Class that implements the change-master-password command.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
 @Service(name = "change-master-password")
+@Scoped(PerLookup.class)
 public class ChangeMasterPasswordCommand extends LocalDomainCommand {
     private String savemp = "savemasterpassword";
 

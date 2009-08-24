@@ -39,7 +39,8 @@ package com.sun.enterprise.admin.cli;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.admin.cli.remote.*;
@@ -63,6 +64,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Bill Shannon
  */
 @Service(name = "restart-domain")
+@Scoped(PerLookup.class)
 public class RestartDomainCommand extends CLICommand {
 
     private static final LocalStringsImpl strings =

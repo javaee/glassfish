@@ -1,24 +1,37 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
- * (the License).  You may not use this file except in
- * compliance with the License.
- * 
- * You can obtain a copy of the license at 
- * https://glassfish.dev.java.net/public/CDDLv1.0.html or
- * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
- * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
- * "Portions Copyrighted [year] [name of copyright owner]"
- * 
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
  */
 
 package com.sun.enterprise.admin.cli;
@@ -29,6 +42,8 @@ import java.io.*;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
 import java.util.UUID;
 
 /** Establishes a connection with Comet server (Provided by servlet)
@@ -37,6 +52,8 @@ import java.util.UUID;
  * @author Prashanth Abbagani
  */
 
+@Service(name = "run-script-local")
+@Scoped(PerLookup.class)
 public final class RunScriptLocalCommand extends RemoteCommand {
 
     public static final String TERSE = "terse";
@@ -113,7 +130,7 @@ public final class RunScriptLocalCommand extends RemoteCommand {
     protected int executeCommand() throws CommandException, CommandValidationException {
         DataInputStream in = null;
         boolean isContinue = true;
-        CLILogger.getInstance().printDebugMessage("In the run-script command");
+        logger.printDebugMessage("In the run-script command");
         try {
             String scriptID = scriptName+UUID.randomUUID();
             //Adding an option on the fly for the remote version of the command
@@ -123,7 +140,7 @@ public final class RunScriptLocalCommand extends RemoteCommand {
             super.executeCommand();
             String urlStr = "http://" + programOpts.getHost() + ":" +
                         httpPort + "/comet/cometServlet";
-            CLILogger.getInstance().printDebugMessage("URL = " + urlStr);
+            logger.printDebugMessage("URL = " + urlStr);
             
             URL url1 = new URL(urlStr);
             HttpURLConnection conn = (HttpURLConnection) url1.openConnection();
@@ -145,11 +162,11 @@ public final class RunScriptLocalCommand extends RemoteCommand {
                     System.out.print((char)c);
             } catch (ConnectException ce) {
                 //ce.printStackTrace();
-                CLILogger.getInstance().printMessage("\nConnection terminated by server");
+                logger.printMessage("\nConnection terminated by server");
                 return 1;
             } catch (IOException ioe) {
                 //ioe.printStackTrace();
-                CLILogger.getInstance().printMessage("\nConnection terminated by server");
+                logger.printMessage("\nConnection terminated by server");
                 return 1;
             }
             //rd.close();
@@ -212,9 +229,9 @@ public final class RunScriptLocalCommand extends RemoteCommand {
 
     private void printRemoteException(Exception e) {
         //e.printStackTrace();
-        CLILogger.getInstance().printMessage("Command " + this.name + " is not supported");
-        CLILogger.getInstance().printDebugMessage(e.getMessage());
-        CLILogger.getInstance().printExceptionStackTrace(e);
+        logger.printMessage("Command " + this.name + " is not supported");
+        logger.printDebugMessage(e.getMessage());
+        logger.printExceptionStackTrace(e);
     }
 
 }

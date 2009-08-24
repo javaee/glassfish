@@ -38,9 +38,8 @@ package com.sun.enterprise.admin.cli;
 
 import java.io.*;
 import java.util.*;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
 import com.sun.enterprise.admin.cli.util.CLIUtil;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
@@ -51,6 +50,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Bill Shannon
  */
 @Service(name = "multimode")
+@Scoped(PerLookup.class)
 public class MultimodeCommand extends CLICommand {
     @Inject
     private Habitat habitat;
@@ -202,6 +202,9 @@ public class MultimodeCommand extends CLICommand {
                 po.setProgramArguments(programOpts.getProgramArguments());
                 po.setClassPath(programOpts.getClassPath());
                 po.setClassName(programOpts.getClassName());
+                // remote the old one and replace it
+                habitat.remove(
+                    habitat.getInhabitantByType(ProgramOptions.class));
                 habitat.addComponent("program-options", po);
                 cmd = CLICommand.getCommand(habitat, command);
                 rc = cmd.execute(args);
@@ -237,6 +240,8 @@ public class MultimodeCommand extends CLICommand {
             } finally {
                 // restore the original program options
                 // XXX - is this necessary?
+                habitat.remove(
+                    habitat.getInhabitantByType(ProgramOptions.class));
                 habitat.addComponent("program-options", programOpts);
             }
 
