@@ -23,16 +23,13 @@
 
 package com.sun.enterprise.admin.cli;
 
-import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.*;
 import java.net.*;
 import java.io.*;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.jvnet.hk2.annotations.Service;
+import java.util.UUID;
 
 /** Establishes a connection with Comet server (Provided by servlet)
  *  and also initiates a server execution of the deployed javascript.
@@ -40,20 +37,27 @@ import org.jvnet.hk2.annotations.Service;
  * @author Prashanth Abbagani
  */
 
-@Service(name = "run-script-local")
 public final class RunScriptLocalCommand extends RemoteCommand {
 
     public static final String TERSE = "terse";
     public static final String HTTP_PORT = "httpport";
     public static final String UPLOAD = "upload";
+    public static final String SCRIPT_ID = "scriptid";
 
     //private String host = "localhost";
     private boolean upload = true;
     private int httpPort = 8080;
     private String scriptName;
 
-    public RunScriptLocalCommand() throws CommandException {
-        super();
+    /**
+     * Constructor used by subclasses to save the name, program options,
+     * and environment information into corresponding protected fields.
+     * Finally, this constructor calls the initializeLogger method.
+     */
+    public RunScriptLocalCommand(String name, ProgramOptions programOpts, Environment env)
+                throws CommandException {
+        super(name, programOpts, env);
+        //logger.printMessage("In the RunScriptLocalCommand.constructor()");
     }
 
     /**
@@ -63,16 +67,6 @@ public final class RunScriptLocalCommand extends RemoteCommand {
     
     @Override
     protected void prepare() throws CommandException {
-        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, TERSE, '\0', "BOOLEAN", false, "true");
-        addOption(opts, UPLOAD, '\0', "BOOLEAN", false, "true");
-        addOption(opts, HTTP_PORT, '\0', "STRING", false, "8080");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandName = "script";
-        operandType = "FILE";
-        operandMin = 1;
-        operandMax = 1;
-
         if (!isValidCommand()) {
             throw new CommandException("Command " + this.name + " is not supported");
         }
@@ -81,6 +75,17 @@ public final class RunScriptLocalCommand extends RemoteCommand {
         } catch (Exception e) {
             throw new CommandException(e.getMessage());
         }
+
+        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
+        addOption(opts, TERSE, '\0', "BOOLEAN", false, "true");
+        addOption(opts, UPLOAD, '\0', "BOOLEAN", false, "true");
+        addOption(opts, HTTP_PORT, '\0', "STRING", false, "8080");
+        //Need to add an option on the fly for the remote version of the command
+        commandOpts = Collections.synchronizedSet(opts);
+        operandName = "script";
+        operandType = "FILE";
+        operandMin = 1;
+        operandMax = 1;
     }
     
 
@@ -110,6 +115,11 @@ public final class RunScriptLocalCommand extends RemoteCommand {
         boolean isContinue = true;
         CLILogger.getInstance().printDebugMessage("In the run-script command");
         try {
+            String scriptID = scriptName+UUID.randomUUID();
+            //Adding an option on the fly for the remote version of the command
+            commandOpts.add(new ValidOption(SCRIPT_ID, "STRING", ValidOption.OPTIONAL,
+                                            scriptID));
+            options.put(SCRIPT_ID, scriptID);
             super.executeCommand();
             String urlStr = "http://" + programOpts.getHost() + ":" +
                         httpPort + "/comet/cometServlet";
@@ -121,16 +131,27 @@ public final class RunScriptLocalCommand extends RemoteCommand {
             conn.setDoInput(true);
             //conn.setReadTimeout(100);
             String data = URLEncoder.encode("script", "UTF-8") + "=" +
-                URLEncoder.encode(scriptName, "UTF-8");
+                URLEncoder.encode(scriptID, "UTF-8");
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
             wr.write(data);
             wr.flush();
             wr.close();
 
-            BufferedReader rd = new BufferedReader( new InputStreamReader(conn.getInputStream()));
-            int c;
-            while ((c = rd.read()) >= 0)
-                System.out.print((char)c);
+            try {
+                BufferedReader rd = new BufferedReader(
+                                        new InputStreamReader(conn.getInputStream()));
+                int c;
+                while ((c = rd.read()) >= 0)
+                    System.out.print((char)c);
+            } catch (ConnectException ce) {
+                //ce.printStackTrace();
+                CLILogger.getInstance().printMessage("\nConnection terminated by server");
+                return 1;
+            } catch (IOException ioe) {
+                //ioe.printStackTrace();
+                CLILogger.getInstance().printMessage("\nConnection terminated by server");
+                return 1;
+            }
             //rd.close();
             return 0;
         } catch(Exception e) {
