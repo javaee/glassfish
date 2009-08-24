@@ -165,10 +165,15 @@ public final class AMXConfigLoader extends MBeanImplBase
         
         if ( changed )
         {
-            //debug( "issueAttributeChange: " + xmlAttrName + ": {" + oldValue + " => " + newValue + "}");
-            // FIXME
-            //final AMXConfigImpl amx = AMXConfigImpl.class.cast( AMXImplBase.__getObjectRef__(mServer, objectName) );
-            //amx.issueAttributeChangeForXmlAttrName( xmlAttrName, oldValue, newValue, whenChanged );
+            debug( "AMXConfigLoader.issueAttributeChange(): " + xmlAttrName + ": {" + oldValue + " => " + newValue + "}");
+            final Object impl = mRegistry.getImpl(cb);
+            if ( ! (impl instanceof AMXConfigImpl) )
+            {
+                throw new IllegalStateException("impossible");
+            }
+            final AMXConfigImpl amx = (AMXConfigImpl)impl;
+            final String message = cb.getProxyType().getName() + "." + xmlAttrName + ": " + oldValue + " => " + newValue;
+            amx.issueAttributeChangeForXmlAttrName( xmlAttrName, message, oldValue, newValue, whenChanged );
         }
     }
     
@@ -632,7 +637,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         {
             final ObjectInstance instance = mServer.registerMBean( impl, objectNameIn );
             objectName = instance.getObjectName();
-            mRegistry.add( cb, objectName );
+            mRegistry.add( cb, objectName, impl);
 
             //System.out.println( "AMXConfigLoader.createAndRegister(): REGISTERED: " + objectName + " at " + System.currentTimeMillis() );
             //System.out.println( JMXUtil.toString( mServer.getMBeanInfo(objectName) ) );

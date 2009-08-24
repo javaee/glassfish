@@ -13,21 +13,31 @@ import org.glassfish.external.arc.Taxonomy;
 import org.jvnet.hk2.config.ConfigBean;
 
 /**
- * Temporary registry mapping ConfigBean to ObjectName and vice-versa
- * until the earlier implementation is removed, freeing up the ObjectName
- * field of the ConfigBean.
- * @author llc
+ * Registry mapping ConfigBean to ObjectName and vice-versa.
  */
 @Taxonomy( stability=Stability.NOT_AN_INTERFACE )
 public final class ConfigBeanRegistry {
     private static void debug( final String s ) { System.out.println(s); }
     
-    private final ConcurrentMap<ConfigBean,ObjectName> mToObjectName;
-    private final ConcurrentMap<ObjectName, ConfigBean> mToConfigBean;
+    public static final class MBeanInstance
+    {
+        public final ConfigBean mConfigBean;
+        public final ObjectName mObjectName;
+        public final Object     mImpl;
+        public MBeanInstance( final ConfigBean cb, final ObjectName on, final Object impl )
+        {
+            mConfigBean = cb;
+            mObjectName = on;
+            mImpl = impl;
+        }
+    }
+    
+    private final ConcurrentMap<ConfigBean,MBeanInstance> mFromConfigBean;
+    private final ConcurrentMap<ObjectName, MBeanInstance> mFromObjectName;
     
     private ConfigBeanRegistry() {
-        mToObjectName = new ConcurrentHashMap<ConfigBean,ObjectName>();
-        mToConfigBean = new ConcurrentHashMap<ObjectName, ConfigBean>();
+        mFromConfigBean = new ConcurrentHashMap<ConfigBean,MBeanInstance>();
+        mFromObjectName = new ConcurrentHashMap<ObjectName, MBeanInstance>();
     }
     
     private static final ConfigBeanRegistry INSTANCE = new ConfigBeanRegistry();
@@ -35,20 +45,31 @@ public final class ConfigBeanRegistry {
         return INSTANCE;
     }
 
-    public synchronized void  add(final ConfigBean cb, final ObjectName objectName)
+    private MBeanInstance getMBeanInstance(final ObjectName objectName)
     {
-        mToObjectName.put(cb, objectName);
-        mToConfigBean.put(objectName, cb);
+        return mFromObjectName.get(objectName);
+    }
+
+    private MBeanInstance getMBeanInstance(final ConfigBean cb)
+    {
+        return mFromConfigBean.get(cb);
+    }
+
+    public synchronized void  add(final ConfigBean cb, final ObjectName objectName, final Object impl)
+    {
+        final MBeanInstance mb = new MBeanInstance(cb, objectName, impl);
+        mFromConfigBean.put(cb, mb );
+        mFromObjectName.put(objectName, mb);
         //debug( "ConfigBeanRegistry.add(): " + objectName );
     }
 
     public synchronized void  remove(final ObjectName objectName)
     {
-        final ConfigBean cb = mToConfigBean.get(objectName);
-        mToObjectName.remove(objectName);
-        if ( cb != null )
+        final MBeanInstance mb = mFromObjectName.get(objectName);
+        if ( mb != null )
         {
-            mToConfigBean.remove(cb);
+            mFromObjectName.remove(objectName);
+            mFromConfigBean.remove(mb.mConfigBean);
         }
         //debug( "ConfigBeanRegistry.remove(): " + objectName );
 
@@ -56,13 +77,29 @@ public final class ConfigBeanRegistry {
 
     public ConfigBean getConfigBean(final ObjectName objectName)
     {
-        return mToConfigBean.get(objectName);
+        final MBeanInstance mb = getMBeanInstance(objectName);
+        return mb == null ? null: mb.mConfigBean;
     }
-
-
+    
     public ObjectName getObjectName(final ConfigBean cb)
     {
-        return mToObjectName.get(cb);
+        final MBeanInstance mb = getMBeanInstance(cb);
+        return mb == null ? null: mb.mObjectName;
     }
-
+    
+    public Object getImpl(final ObjectName objectName)
+    {
+        final MBeanInstance mb = getMBeanInstance(objectName);
+        return mb == null ? null: mb.mImpl;
+    }
+    
+    public Object getImpl(final ConfigBean cb)
+    {
+        final MBeanInstance mb = getMBeanInstance(cb);
+        return cb == null ? null: mb.mImpl;
+    }
 }
+
+
+
+

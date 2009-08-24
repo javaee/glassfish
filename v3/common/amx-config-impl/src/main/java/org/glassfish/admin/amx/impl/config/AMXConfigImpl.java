@@ -51,6 +51,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicLong;
+
 import javax.management.*;
 
 import org.glassfish.external.arc.Stability;
@@ -1527,70 +1529,35 @@ public class AMXConfigImpl extends AMXImplBase
 
                 transactions.removeTransactionsListener(myListener);
             }
-
-        // determine later the best way to handle AttributeChangeNotification
-        // It can get ugly at this level; the config code will issue a different event
-        // for every single <jvm-options> element (for example)
-            /*
-        if ( successfulAttrs.size() != 0 )
-        {
-        // verify that the size of the PropertyChangeEvent list matches
-        final List<PropertyChangeEvent> changeEvents = myListener.getChangeEvents();
-        if ( successfulAttrs.size() != changeEvents.size() )
-        {
-        throw new IllegalStateException( "List<PropertyChangeEvent> size=" + changeEvents.size() +
-        " does not match the number of Attributes, size = " + successfulAttrs.size() );
-        }
-
-        //
-        // provide details on old values for the caller. Note that config always returns
-        // type 'String' which no ability to map back to 'Integer', etc, so the MBeanInfo info
-        // of the MBean should not be using anything but String.
-        //
-        final Map<String,PropertyChangeEvent> eventsMap = makePropertyChangeEventMap( changeEvents );
-        final Map<String, String> attrsS = JMXUtil.attributeListToStringMap( successfulAttrs );
-
-        // supply all the old values to caller using the AMX attribute name
-        for( final String amxAttrName : attrsS.keySet() )
-        {
-        final PropertyChangeEvent changeEvent = eventsMap.get( mNameMappingHelper.getXMLName( amxAttrName ) );
-        oldValues.put( amxAttrName, changeEvent.getOldValue() );
-        }
-        }
-         */
         }
 
         return successfulAttrs;
     }
-
-    /*
-    public MBeanNotificationInfo[] getNotificationInfo()
+    
+    /** share one sequence number for all Config MBeans to keep overhead low */
+    private static final AtomicLong sSequenceNumber = new AtomicLong(0);
+    
+        void
+    issueAttributeChangeForXmlAttrName(
+        final String xmlAttrName,
+        final String message,
+        final Object oldValue,
+        final Object newValue,
+        final long   whenChanged )
     {
-    final MBeanNotificationInfo[] superInfos = super.getNotificationInfo();
-
-    // create a NotificationInfo for AttributeChangeNotification
-    final String description = "";
-    final String[] notifTypes = new String[]
-    {
-    AttributeChangeNotification.ATTRIBUTE_CHANGE
-    };
-    final MBeanNotificationInfo attributeChange = new MBeanNotificationInfo(
-    notifTypes,
-    AttributeChangeNotification.class.getName(),
-    description);
-
-    final MBeanNotificationInfo[] selfInfos =
-    new MBeanNotificationInfo[]
-    {
-    attributeChange
-    };
-
-    final MBeanNotificationInfo[] allInfos =
-    JMXUtil.mergeMBeanNotificationInfos(superInfos, selfInfos);
-
-    return allInfos;
+        if ( getListenerCount() == 0 ) return;
+        
+        final String attributeName = xmlAttrName;
+        final String attributeType = String.class.getName();
+        
+        final long sequenceNumber = sSequenceNumber.getAndIncrement();
+		final AttributeChangeNotification	notif =
+            new AttributeChangeNotification( getObjectName(), sequenceNumber, whenChanged, message, attributeName, attributeType, oldValue, newValue);
+			
+		sendNotification( notif );
+        
+        //System.out.println( "AMXConfigImpl.issueAttributeChangeForXmlAttrName(): sent: " + notif );
     }
-     */
 }
 
 
