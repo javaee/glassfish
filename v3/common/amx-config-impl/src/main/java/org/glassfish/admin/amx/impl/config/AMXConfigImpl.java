@@ -221,8 +221,7 @@ public class AMXConfigImpl extends AMXImplBase
         final AttributeList attrList = new AttributeList();
         attrList.add(attr);
 
-        final Map<String, Object> oldValues = new HashMap<String, Object>();
-        final AttributeList successList = setAttributesInConfigBean(attrList, oldValues);
+        final AttributeList successList = setAttributesInConfigBean(attrList);
         if (successList.size() == 0)
         {
             throw new AttributeNotFoundException(attr.getName());
@@ -238,8 +237,7 @@ public class AMXConfigImpl extends AMXImplBase
     {
         final AttributeList successList = new AttributeList();
 
-        final Map<String, Object> oldValues = new HashMap<String, Object>();
-        final AttributeList delegateSuccess = setAttributesInConfigBean(attrs, oldValues);
+        final AttributeList delegateSuccess = setAttributesInConfigBean(attrs);
         successList.addAll(delegateSuccess);
 
         return (successList);
@@ -1482,10 +1480,8 @@ public class AMXConfigImpl extends AMXImplBase
         return xmlAttrs;
     }
 
-    public AttributeList setAttributesInConfigBean(final AttributeList attrsIn, final Map<String, Object> oldValues)
+    public AttributeList setAttributesInConfigBean(final AttributeList attrsIn)
     {
-        oldValues.clear();
-
         // now map the AMX attribute names to xml attribute names
         final Map<String, Object> amxAttrs = JMXUtil.attributeListToValueMap(attrsIn);
         final Map<String, Object> notMatched = new HashMap<String, Object>();
@@ -1495,6 +1491,8 @@ public class AMXConfigImpl extends AMXImplBase
         {
             cdebug("setAttributes: failed to map these AMX attributes: {" + CollectionUtil.toString(notMatched.keySet(), ", ") + "}");
         }
+        
+        //System.out.println( "setAttributesInConfigBean: " + CollectionUtil.toString(notMatched.keySet(), ", ") );
 
         final AttributeList successfulAttrs = new AttributeList();
 

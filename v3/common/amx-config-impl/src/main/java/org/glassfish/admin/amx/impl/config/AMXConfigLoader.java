@@ -231,7 +231,7 @@ public final class AMXConfigLoader extends MBeanImplBase
                 final Object newValue = event.getNewValue();
                 final Object source   = event.getSource();
                 final String propertyName = event.getPropertyName();
-                final String sourceString = (source instanceof ConfigBeanProxy) ? ConfigSupport.proxyType((ConfigBeanProxy)source).getName() : "" + source;
+                //final String sourceString = (source instanceof ConfigBeanProxy) ? ConfigSupport.proxyType((ConfigBeanProxy)source).getName() : "" + source;
                 
                 //debug( "AMXConfigLoader.sortAndDispatch (ATTR change): name = " + propertyName +
                 //        ", oldValue = " + oldValue + ", newValue = " + newValue + ", source = " + sourceString );
@@ -240,7 +240,7 @@ public final class AMXConfigLoader extends MBeanImplBase
                     // CHANGE
                     final ConfigBeanProxy cbp = (ConfigBeanProxy)source;
                     final ConfigBean cb = asConfigBean( ConfigBean.unwrap( cbp ) );
-                    final Class<? extends ConfigBeanProxy> proxyClass = ConfigSupport.proxyType(cbp);
+                    //final Class<? extends ConfigBeanProxy> proxyClass = ConfigSupport.proxyType(cbp);
                     
                     // change events without prior add
                     // we shouldn't have to check for this, but it's a bug in the caller: no even for
