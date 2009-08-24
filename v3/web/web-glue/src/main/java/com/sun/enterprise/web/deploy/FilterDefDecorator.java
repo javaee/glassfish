@@ -86,9 +86,19 @@ public class FilterDefDecorator extends FilterDef {
     }
   
     public String getFilterClassName() {
-        return decoree.getClassName();
+        String className = decoree.getClassName();
+        if (null == className || className.isEmpty()) {
+            return null;
+        } else {
+            return className;
+        }
     }
-  
+
+    public void setFilterClassName(String filterClassName) {
+        super.setFilterClassName(filterClassName);
+        decoree.setClassName(filterClassName);
+    }
+
     public String getFilterName() {
         return decoree.getName();
     }

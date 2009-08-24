@@ -2245,15 +2245,13 @@ public class StandardContext
             boolean createRegistration) {
         if (createRegistration) {
             FilterRegistrationImpl regis = null;
-            if (isProgrammatic || null == filterDef.getFilterClassName() ||
-                    filterDef.getFilterClassName().isEmpty()) {
+            if (isProgrammatic || null == filterDef.getFilterClassName()) {
                 regis = new DynamicFilterRegistrationImpl(filterDef, this);
             } else {
                 regis = new FilterRegistrationImpl(filterDef, this);
             }
             filterRegisMap.put(filterDef.getFilterName(), regis);
-            if (null == filterDef.getFilterClassName() ||
-                    filterDef.getFilterClassName().isEmpty()) {
+            if (null == filterDef.getFilterClassName()) {
                 /*
                  * Preliminary registration for Filter that was declared
                  * without any filter-class. Once the registration is
