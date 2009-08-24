@@ -63,6 +63,7 @@ import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.appclient.server.core.AppClientDeployerHelper;
 import org.glassfish.appclient.server.core.AppClientServerApplication;
+import org.glassfish.appclient.server.core.jws.ExtensionFileManager.Extension;
 import org.glassfish.appclient.server.core.jws.servedcontent.ASJarSigner;
 import org.glassfish.appclient.server.core.jws.servedcontent.AutoSignedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.Content;
@@ -101,6 +102,12 @@ public class JavaWebStartInfo implements ConfigListener {
     @Inject
     private ASJarSigner jarSigner;
 
+    @Inject
+    private DeveloperContentHandler dch;
+
+    @Inject
+    private ExtensionFileManager extensionFileManager;
+
     private AppClientServerApplication acServerApp;
 
     private Set<Content> myContent = null;
@@ -115,12 +122,10 @@ public class JavaWebStartInfo implements ConfigListener {
     final private Map<String,DynamicContent> dynamicContent = new HashMap<String,DynamicContent>();
 
     private static final String JNLP_MIME_TYPE = "application/x-java-jnlp-file";
-    private static final String HTML_MIME_TYPE = "text/html";
-    private static final String XML_MIME_TYPE = "application/xml";
 
     private static final String DOC_TEMPLATE_PREFIX = "/org/glassfish/appclient/server/core/jws/templates/";
-//    private static final String DOC_TEMPLATE_PREFIX = "jws/templates/";
-    static final String MAIN_DOCUMENT_TEMPLATE =
+
+    private static final String MAIN_DOCUMENT_TEMPLATE =
             DOC_TEMPLATE_PREFIX + "appclientMainDocumentTemplate.jnlp";
     private static final String CLIENT_DOCUMENT_TEMPLATE =
             DOC_TEMPLATE_PREFIX + "appclientClientDocumentTemplate.jnlp";
@@ -164,8 +169,6 @@ public class JavaWebStartInfo implements ConfigListener {
     private ApplicationClientDescriptor acDesc;
 
     private String jnlpDoc;
-
-    private DeveloperContentHandler dch;
 
     private static class SignedSystemContentFromApp {
         private final String tokenName;
@@ -215,12 +218,16 @@ public class JavaWebStartInfo implements ConfigListener {
         isJWSEnabledAtApp = isJWSEnabled(dc.getAppProps());
         isJWSEnabledAtModule = isJWSEnabled(dc.getModuleProps());
         tHelper = TokenHelper.newInstance(helper);
-        jnlpDoc = acDesc.getJavaWebStartAccessDescriptor().getJnlpDocument();
-        dch = new DeveloperContentHandler(dc.getClassLoader(),
+        final String devJNLPDoc = acDesc.getJavaWebStartAccessDescriptor().getJnlpDocument();
+        final File sourceDir = acDesc.getApplication().isVirtual() ?
+            dc.getSourceDir() : new File(dc.getSource().getParentArchive().getURI());
+        this.jnlpDoc = devJNLPDoc;
+        dch.init(dc.getClassLoader(),
                     tHelper,
-                    dc.getSourceDir(),
+                    sourceDir,
                     staticContent,
-                    dynamicContent);
+                    dynamicContent,
+                    devJNLPDoc);
     }
 
     /**
@@ -289,9 +296,9 @@ public class JavaWebStartInfo implements ConfigListener {
     
     private void startJWSServices() throws EndpointRegistrationException, IOException {
         if (myContent == null) {
+            processExtensionReferences();
             myContent = addClientContentToHTTPAdapters();
         }
-//        jwsAdapterManager.addContributor(acServerApp.deployedAppName(), acServerApp);
 
         /*
          * Currently, we implement the ability to disable or enable app clients
@@ -308,6 +315,25 @@ public class JavaWebStartInfo implements ConfigListener {
             JWSAdapterManager.userFriendlyContextRoot(acServerApp)});
     }
 
+    private void processExtensionReferences() throws IOException {
+        
+        // TODO: needs to be expanded to handle signed library JARS, perhap signed by different certs
+
+        tHelper.setProperty(APP_LIBRARY_EXTENSION_PROPERTY_NAME, 
+                jarElementsForExtensions(extensionFileManager.findExtensionTransitiveClosure(
+                new File(helper.appClientServerURI(dc)), 
+                dc.getSource().getManifest().getMainAttributes())));
+
+    }
+
+    private String jarElementsForExtensions(final Set<Extension> exts) {
+        final StringBuilder sb = new StringBuilder();
+        for (Extension e : exts) {
+            sb.append("<jar href=" + JWSAdapterManager.publicExtensionHref(e) + "/>");
+        }
+        return sb.toString();
+    }
+    
     private void stopJWSServices() throws EndpointRegistrationException {
         /*
          * Mark all this client's content as stopped so the Grizzly adapter
@@ -380,9 +406,7 @@ public class JavaWebStartInfo implements ConfigListener {
 
         initClientDynamicContent();
 
-        if (jnlpDoc != null && jnlpDoc.length() > 0) {
-            dch.addDeveloperContent(jnlpDoc);
-        }
+        dch.addDeveloperContent(jnlpDoc);
         
         Set<Content> result = new HashSet<Content>(staticContent.values());
         result.addAll(dynamicContent.values());
@@ -441,9 +465,6 @@ public class JavaWebStartInfo implements ConfigListener {
             final String uriString = artifact.getPart().toASCIIString();
             staticContent.put(uriString, new FixedContent(new File(artifact.getFull())));
         }
-
-        // TODO: needs to be expanded to handle signed library JARS, perhap signed by different certs
-        tHelper.setProperty(APP_LIBRARY_EXTENSION_PROPERTY_NAME, "");
     }
 
     private void addSignedSystemContent(
@@ -525,9 +546,7 @@ public class JavaWebStartInfo implements ConfigListener {
 
         tHelper.setProperty(APP_CLIENT_MAIN_CLASS_ARGUMENTS_PROPERTY_NAME, "");
 
-//        final String mainDocument = textFromURL(MAIN_DOCUMENT_TEMPLATE);
-        final String mainDocument = dch.processDeveloperJNLP(
-                    jnlpDoc,
+        final String mainDocument = dch.combineJNLP(
                     textFromURL(MAIN_DOCUMENT_TEMPLATE));
         createAndAddDynamicContentFromTemplateText(
                 dynamicContent, tHelper.mainJNLP(), mainDocument);
@@ -537,7 +556,6 @@ public class JavaWebStartInfo implements ConfigListener {
          * can launch the app client by specifying only the context root.
          */
         createAndAddDynamicContentFromTemplateText(dynamicContent, "", mainDocument);
-//        createAndAddDynamicContentFromTemplateText(dynamicContent, "", mainDocument);
         createAndAddDynamicContent(dynamicContent, tHelper.clientJNLP(), CLIENT_DOCUMENT_TEMPLATE);
     }
 
@@ -606,37 +624,6 @@ public class JavaWebStartInfo implements ConfigListener {
         if (sc != null) {
             staticContent.put(imageURI, sc);
         }
-    }
-
-    private String ensureLeadingSlash(String s) {
-        if ( ! s.startsWith("/")) {
-            return "/" + s;
-        } else {
-            return s;
-        }
-    }
-    
-    /**
-     * Returns the client's contextRoot as specified by the developer or,
-     * otherwise, in the format appName (for a stand-alone
-     * client) and appName/moduleName (for a client in an EAR).  moduleName is
-     * the URI to the client JAR.
-     * @return
-     */
-    private String clientContextRoot() {
-        String contextRoot;
-        final String contextRootInDesc = developerSpecifiedContextRoot();
-
-        if (contextRootInDesc != null && ! contextRootInDesc.equals("")) {
-            contextRoot = contextRootInDesc;
-        } else {
-            contextRoot = acServerApp.moduleExpression();
-        }
-        return "/" + contextRoot;
-    }
-
-private String developerSpecifiedContextRoot() {
-        return acDesc.getJavaWebStartAccessDescriptor().getContextRoot();
     }
 
     private VendorInfo getVendorInfo() {

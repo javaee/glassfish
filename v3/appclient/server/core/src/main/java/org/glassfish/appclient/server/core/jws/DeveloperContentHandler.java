@@ -39,7 +39,6 @@
 
 package org.glassfish.appclient.server.core.jws;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,21 +46,19 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLConnection;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
+import org.glassfish.appclient.server.core.jws.XPathToDeveloperProvidedContentRefs;
 import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
-import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
-import org.glassfish.appclient.server.core.jws.servedcontent.SimpleDynamicContentImpl;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -71,6 +68,7 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * Processes developer-provided content in (or directly or indirectly
@@ -78,147 +76,38 @@ import org.xml.sax.InputSource;
  *
  * @author tjquinn
  */
+@Service
+@Scoped(PerLookup.class)
 public class DeveloperContentHandler {
 
-    private final ClassLoader loader;
-    private final Map<String,StaticContent> staticContent;
-    private final Map<String,DynamicContent> dynamicContent;
-    private final TokenHelper tHelper;
-    private final File appRootDir;
-    private final URI appRootURI;
+    @Inject
+    DeveloperContentService dcs;
+
+    private ClassLoader loader;
+    private Map<String,StaticContent> staticContent;
+    private Map<String,DynamicContent> dynamicContent;
+    private TokenHelper tHelper;
+    private File appRootDir;
+    private URI appRootURI;
 
     private LSSerializer lsSerializer = null;
-    
-    private static DocumentBuilderFactory dbf = null;
+    private LSOutput lsOutput = null;
 
-    private final static XPathFactory xPathFactory = XPathFactory.newInstance();
-    
-    private final static XPath xPath = xPathFactory.newXPath();
+    private static DocumentBuilderFactory dbf = documentBuilderFactory();
+    private static DocumentBuilder db = documentBuilder();
 
-    private abstract class XPathToDeveloperProvidedContent {
+    private Document developerDOM = null;
+    private boolean noDeveloperDOM = false;
 
-        private final XPathExpression xPathExpr;
+    private String jnlpDoc;
 
-        XPathToDeveloperProvidedContent(final String path) {
-            try {
-                xPathExpr = xPath.compile(path);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        XPathExpression xPathExpr() {
-            return xPathExpr;
-        }
-
-        abstract void addToContentIfInApp(
-                URI codebase, 
-                String pathToContent,
-                ClassLoader loader) 
-                throws URISyntaxException, IOException;
-    }
-
-    private class XPathToStaticContent extends XPathToDeveloperProvidedContent {
-
-        XPathToStaticContent(final String path) {
-            super(path);
-        }
-
-        @Override
-        void addToContentIfInApp(
-                final URI codebase, 
-                final String pathToContent,
-                final ClassLoader loader) throws URISyntaxException {
-            final URI uriToContent = new URI(pathToContent);
-            final URI absURI = codebase.resolve(uriToContent);
-            if (absURI.equals(uriToContent)) {
-                return;
-            }
-            final URI fileURI = appRootURI.resolve(pathToContent);
-            final File f = new File(fileURI);
-            staticContent.put(pathToContent, new FixedContent(f));
-        }
-    }
-    
-    private class XPathToDynamicContent extends XPathToDeveloperProvidedContent {
-
-        XPathToDynamicContent(final String path) {
-            super(path);
-        }
-
-        @Override
-        void addToContentIfInApp(
-                final URI codebase, 
-                final String pathToContent,
-                final ClassLoader loader) throws URISyntaxException, IOException {
-            final URI uriToContent = new URI(pathToContent);
-            final URI absURI = codebase.resolve(uriToContent);
-            if (absURI.equals(uriToContent)) {
-                return;
-            }
-            /*
-             * Find the developer-provided content.
-             */
-            
-            InputStream is = loader.getResourceAsStream(pathToContent);
-            if (is == null) {
-                return;
-            }
-            
-            final byte[] buffer = new byte[1024];
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            int bytesRead;
-            
-            while ((bytesRead = is.read(buffer)) != -1) {
-                baos.write(buffer, 0, bytesRead);
-            }
-            is.close();
-            dynamicContent.put(pathToContent,
-                    new SimpleDynamicContentImpl(
-                        baos.toString(), 
-                        URLConnection.guessContentTypeFromName(pathToContent)));
-        }
-        
-    }
-
-    private final XPathToDeveloperProvidedContent[] xPathsToDevContent = new XPathToDeveloperProvidedContent[] {
-        new XPathToStaticContent("jnlp/information/homepage/@href"),
-        new XPathToStaticContent("jnlp/information/icon/@href"),
-        new XPathToStaticContent("jnlp/resources/java/resources/jar/@href"),
-        new XPathToStaticContent("jnlp/resources/jar/@href"),
-        new XPathToStaticContent("jnlp/resources/nativelib/@href"),
-        new XPathToStaticContent("jnlp/related-content/@href"),
-        
-        new XPathToDynamicContent("jnlp/resources/extension/@href")
-    };
-    
-
-    
-    private final static CombinedXPath[] xPaths = new CombinedXPath[] {
-        new CombinedXPath.OwnedXPath(xPath, "/jnlp", "/@codebase"),
-        new CombinedXPath.OwnedXPath(xPath, "/jnlp", "/@href"),
-        new CombinedXPath.OwnedXPath(xPath, "/jnlp", "/security"),
-        new CombinedXPath.OwnedXPath(xPath, "/jnlp", "/application-desc"),
-
-        new CombinedXPath.DefaultedXPath(xPath, "/jnlp", "/@spec"),
-        new CombinedXPath.DefaultedXPath(xPath, "/jnlp", "/@version"),
-        new CombinedXPath.DefaultedXPath(xPath, "/jnlp", "/information"),
-        new CombinedXPath.DefaultedXPath(xPath, "/jnlp", "/resources/java"),
-        new CombinedXPath.DefaultedXPath(xPath, "/jnlp/resources/java", "/@version"),
-        new CombinedXPath.DefaultedXPath(xPath, "/jnlp/resources/java", "/@java-vm-args"),
-
-        new CombinedXPath.MergedXPath(xPath, "/jnlp/resources", "/jar"),
-        new CombinedXPath.MergedXPath(xPath, "/jnlp/resources", "/property"),
-        new CombinedXPath.MergedXPath(xPath, "/jnlp/resources", "/extension")
-    };
-
-
-    DeveloperContentHandler(
+    public void init(
             final ClassLoader loader,
             final TokenHelper tHelper,
             final File appRootDir,
             final Map<String,StaticContent> staticContent,
-            final Map<String,DynamicContent> dynamicContent) {
+            final Map<String,DynamicContent> dynamicContent,
+            final String jnlpDoc) {
 
         this.loader = loader;
         this.tHelper = tHelper;
@@ -226,24 +115,28 @@ public class DeveloperContentHandler {
         this.appRootURI = appRootDir.toURI();
         this.staticContent = staticContent;
         this.dynamicContent = dynamicContent;
+        this.jnlpDoc = jnlpDoc;
      }
 
-    String processDeveloperJNLP(
-            final String jnlpDoc,
+    /**
+     * Combines the developer-provided JNLP in the client with the JNLP
+     * generated by the server.
+     *
+     * @param generatedJNLPTemplate JNLP generated by the server
+     * @return combined JNLP; if the developer provided no customized JNLP then
+     * the generated JNLP, unchanged
+     */
+    String combineJNLP(
             final String generatedJNLPTemplate) {
-        /*
-         * There is no work to do unless the developer specified a JNLP
-         * document.
-         */
-        if (jnlpDoc == null || (jnlpDoc.length() == 0)) {
-            return generatedJNLPTemplate;
+
+        final Document devDOM;
+        try {
+            devDOM = developerDOM();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
 
-        /*
-         * Find the developer's JNLP.
-         */
-        final InputStream devJNLPStream = loader.getResourceAsStream(jnlpDoc);
-        if (devJNLPStream == null) {
+        if (devDOM == null) {
             return generatedJNLPTemplate;
         }
 
@@ -254,29 +147,50 @@ public class DeveloperContentHandler {
                 new StringReader(generatedJNLPTemplate));
 
         /*
-         * Start with the developer-provided document, then override the parts
-         * that we insist on providing ourselves, then merge in other parts that
-         * we add to the developer's corresponding parts.
+         * The result document starts as the developer-provided document.  Then
+         * override the parts that the server insists on providing itself,
+         * then merge in other parts that the server wants to add to
+         * whatever the developer provided there.
          */
-        DocumentBuilder db;
-        Document developerDOM;
-        Document gfDOM;
+        Document generatedJNLPDOM;
         try {
-            db = getDocumentBuilderFactory().newDocumentBuilder();
-            developerDOM = db.parse(devJNLPStream);
-            gfDOM = db.parse(generatedJNLPSource);
+            generatedJNLPDOM = db.parse(generatedJNLPSource);
 
-            for (CombinedXPath combinedXPath : xPaths) {
-                combinedXPath.process(developerDOM, gfDOM);
+            /*
+             * Each CombinedXPath object knows how to combine the generated and
+             * the developer-provided content whether defaulted, overridden, or
+             * merged.
+             */
+            for (CombinedXPath combinedXPath : dcs.xPathsToCombinedContent()) {
+                combinedXPath.process(devDOM, generatedJNLPDOM);
             }
-            return toXML(developerDOM);
+            return toXML(devDOM);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
 
+    private synchronized Document developerDOM() throws ParserConfigurationException, SAXException, IOException {
+        Document result= null;
+        if (! noDeveloperDOM) {
+            if (jnlpDoc == null) {
+                noDeveloperDOM = true;
+            } else {
+                result = developerDOM(jnlpDoc);
+            }
+        }
+        return result;
+    }
 
-
-
+    private synchronized Document developerDOM(final String devJNLPDoc) throws SAXException, IOException {
+        Document result = null;
+        if (devJNLPDoc != null) {
+            final InputStream devJNLPStream = loader.getResourceAsStream(devJNLPDoc);
+            if (devJNLPStream != null) {
+                result = db.parse(devJNLPStream);
+            }
+        }
+        return result;
     }
 
     private String toXML(final Document dom)
@@ -286,10 +200,6 @@ public class DeveloperContentHandler {
         writeXML(dom, writer);
         return writer.toString();
     }
-
-    private LSOutput lsOutput = null;
-
-
 
     private synchronized void writeXML(final Node node, final Writer writer)
             throws ClassNotFoundException, InstantiationException, IllegalAccessException {
@@ -305,39 +215,40 @@ public class DeveloperContentHandler {
         lsSerializer.write(node, lsOutput);
     }
 
-    void addDeveloperContent(final String jnlpDoc) {
+    /**
+     * Adds all developer-provided content that falls within the code base to
+     * the static or dynamic content.
+     * <p>
+     * We need to do this so that the Grizzly adapter that serves the content
+     * knows that it is OK to serve this content.  Otherwise a hostile user or
+     * app could conduct "fishing expeditions" for content on the server that
+     * should not be exposed simply by using the Java Web Start-related URLs
+     * and varying the path part to browse for files.
+     */
+    void addDeveloperContent(final String devJNLPDoc) {
         /*
          * There is no work to do unless the developer specified a JNLP
          * document.
          */
-        if (jnlpDoc == null || (jnlpDoc.length() == 0)) {
+        if (devJNLPDoc == null || (devJNLPDoc.length() == 0)) {
             return;
         }
 
-        /*
-         * Find the developer's JNLP.
-         */
-        final InputStream devJNLPStream = loader.getResourceAsStream(jnlpDoc);
-        if (devJNLPStream == null) {
-            return;
-        }
-
-        DocumentBuilder db;
-        Document developerDOM;
+        Document devDOM;
         try {
             final URI codebaseURI = new URI(tHelper.appCodebasePath());
-            db = getDocumentBuilderFactory().newDocumentBuilder();
-            developerDOM = db.parse(devJNLPStream);
+            devDOM = developerDOM(devJNLPDoc);
             /*
-             * Search for hrefs to static content.  Add each that falls within
-             * the codebase to the static content.
+             * Search for hrefs to other content.  Add each that falls within
+             * the codebase to the relevant content.
              */
-             for (XPathToDeveloperProvidedContent c : xPathsToDevContent) {
-                 NodeList nodes = (NodeList) c.xPathExpr().evaluate(developerDOM, XPathConstants.NODESET);
+             for (XPathToDeveloperProvidedContentRefs c : dcs.xPathsToDevContentRefs()) {
+                 NodeList nodes = (NodeList) c.xPathExpr().evaluate(devDOM, XPathConstants.NODESET);
                  if (nodes.getLength() > 0) {
                      for (int i = 0; i < nodes.getLength(); i++) {
                          final String href = nodes.item(i).getNodeValue();
-                         c.addToContentIfInApp(codebaseURI, href, loader);
+                         c.addToContentIfInApp(this, devJNLPDoc, codebaseURI, href, loader, staticContent,
+                                 dynamicContent, appRootURI);
                      }
                  }
              }
@@ -347,18 +258,28 @@ public class DeveloperContentHandler {
 
     }
     
-    private synchronized static DocumentBuilderFactory getDocumentBuilderFactory() 
-            throws ParserConfigurationException {
-        if (dbf == null) {
-            dbf = DocumentBuilderFactory.newInstance();
+    private static DocumentBuilderFactory documentBuilderFactory() {
+        final DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
+        try {
             /*
-             * Must turn off deferred expansion or the adoptNode method - which
+             * Turn off deferred expansion or the adoptNode method - which
              * we use to migrate parts of the generated document into the
-             * result document - are not copied correctly.
+             * result document - will copy the unexpanded content!
              */
-            dbf.setFeature("http://apache.org/xml/features/dom/defer-node-expansion", false);
-         }
-        return dbf;
+            f.setFeature("http://apache.org/xml/features/dom/defer-node-expansion", false);
+        } catch (ParserConfigurationException ex) {
+            throw new RuntimeException(ex);
+        }
+        return f;
+    }
+
+    private static DocumentBuilder documentBuilder() {
+        try {
+            final DocumentBuilder b = dbf.newDocumentBuilder();
+            return b;
+        } catch (ParserConfigurationException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
 }

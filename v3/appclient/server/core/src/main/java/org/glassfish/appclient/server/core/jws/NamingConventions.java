@@ -53,6 +53,9 @@ public class NamingConventions {
     public static final String JWSAPPCLIENT_SYSTEM_PREFIX =
             JWSAPPCLIENT_PREFIX + "/___system";
 
+    public static final String JWSAPPCLIENT_EXT_PREFIX =
+            JWSAPPCLIENT_SYSTEM_PREFIX + "/___ext";
+
     private  static final String JWSAPPCLIENT_APP_PREFIX =
             JWSAPPCLIENT_PREFIX + "/___app";
 

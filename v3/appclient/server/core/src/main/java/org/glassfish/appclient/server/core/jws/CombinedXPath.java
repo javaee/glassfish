@@ -39,10 +39,14 @@
 
 package org.glassfish.appclient.server.core.jws;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -62,11 +66,40 @@ import org.w3c.dom.NodeList;
  * <p>
  * This is the abstract superclass for the various types of combinations of
  * generated and developer-provided elements.
+ * <p>
+ * The client-jnlp-config.properties file contains properties which define
+ * which JNLP elements will be combined, one property for each of the types of
+ * combinations supported.  Each property's value is a comma-separated list of
+ * this form:
+ * <p>
+ * <code>parent-path:path-within-parent</code>
+ * <p>
+ * Both the parent-path and the path-within-parent are valid XPath expressions.
+ * We need to separate them like this because if the node is not present we
+ * need to insert it into the parent, so we need the parent piece separate.
+ * For example, the setting
+ * <p>
+ * <code>/jnlp:/@codebase</code>
+ * <p>
+ * refers to the codebase attribute within the jnlp element, while
+ * <p><code>/jnlp/resources:/property</code><p>
+ * refers to the property element within the resources element within the
+ * jnlp element.
  *
  * @author tjquinn
  */
 abstract class CombinedXPath {
 
+    /** property names for the types of combined JNLP content */
+    private static final String OWNED_PROPERTY_NAME = "owned";
+    private static final String DEFAULTED_PROPERTY_NAME = "defaulted";
+    private static final String MERGED_PROPERTY_NAME = "merged";
+    
+    private final static XPathFactory xPathFactory = XPathFactory.newInstance();
+
+    private final static XPath xPath = xPathFactory.newXPath();
+    
+    
     /** xpath expression for the target node in the DOM for the developer's XML */
     private final XPathExpression targetExpr;
     
@@ -74,6 +107,65 @@ abstract class CombinedXPath {
      * create a new child.
      */
     private final XPathExpression parentExpr;
+
+    private static enum Type {
+        OWNED(OWNED_PROPERTY_NAME),
+        DEFAULTED(DEFAULTED_PROPERTY_NAME),
+        MERGED(MERGED_PROPERTY_NAME);
+        
+        private String propertyName;
+        
+        Type(final String propName) {
+            propertyName = propName;
+        }
+        
+    }
+
+    static List<CombinedXPath> parse(final Properties p) {
+        List<CombinedXPath> result = new ArrayList<CombinedXPath>();
+        result.addAll(CombinedXPath.parse(p, CombinedXPath.Type.OWNED));
+        result.addAll(CombinedXPath.parse(p, CombinedXPath.Type.DEFAULTED));
+        result.addAll(CombinedXPath.parse(p, CombinedXPath.Type.MERGED));
+        return result;
+    }
+
+    /**
+     * For the given combination type fetch the corresponding property value
+     * from the config properties and then parse it into the separate
+     * parent:with-parent pairs, creating for each pair the correct type of
+     * CombinedXPath object and returning a List of them.
+     * @param p
+     * @param type
+     * @return
+     */
+    private static List<CombinedXPath> parse(
+                final Properties p,
+                Type type) {
+            
+            final List<CombinedXPath> result = new
+                    ArrayList<CombinedXPath>();
+            final String refs = p.getProperty(type.propertyName);
+            for (String ref : refs.split(",")) {
+                final String paths[] = ref.split(":");
+                if (paths.length != 2) {
+                    throw new IllegalArgumentException(ref);
+                }
+                switch (type) {
+                    case OWNED:
+                        result.add(new OwnedXPath(xPath, paths[0], paths[1]));
+                        break;
+
+                    case MERGED:
+                        result.add(new MergedXPath(xPath, paths[0], paths[1]));
+                        break;
+
+                    case DEFAULTED:
+                        result.add(new DefaultedXPath(xPath, paths[0], paths[1]));
+                        break;
+                }
+            }
+            return result;
+        }
 
     /**
      * Creates a new combined XPath.

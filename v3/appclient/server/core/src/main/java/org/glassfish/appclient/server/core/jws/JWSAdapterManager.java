@@ -65,6 +65,8 @@ import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.appclient.server.core.AppClientDeployer;
 import org.glassfish.appclient.server.core.AppClientServerApplication;
+import org.glassfish.appclient.server.core.jws.ExtensionFileManager.Extension;
+import org.glassfish.appclient.server.core.jws.ExtensionFileManager.ExtensionKey;
 import org.glassfish.appclient.server.core.jws.servedcontent.ASJarSigner;
 import org.glassfish.appclient.server.core.jws.servedcontent.AutoSignedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
@@ -106,6 +108,9 @@ public class JWSAdapterManager implements PostConstruct {
 
     @Inject(name="server-config") // for now
     private Config config;
+
+    @Inject
+    private ExtensionFileManager extensionFileManager;
 
     private static final String LINE_SEP = System.getProperty("line.separator");
 
@@ -239,7 +244,24 @@ public class JWSAdapterManager implements PostConstruct {
                 systemJARRelativeURIs.add(relativeSystemPath(uri));
             }
         }
+
+        /*
+         * Add the installed extension JARs to the system content.
+         */
+        for (Map.Entry<ExtensionKey,Extension> e : extensionFileManager.getExtensionFileEntries().entrySet()) {
+            final File extFile = e.getValue().getFile();
+            final URI uri = extFile.toURI();
+            final String extPath = publicExtensionHref(e.getValue());
+            result.put(extPath, new FixedContent(extFile));
+            systemJARRelativeURIs.add(relativeSystemPath(uri));
+        }
         return result;
+    }
+
+    static String publicExtensionHref(final Extension ext) {
+        return NamingConventions.JWSAPPCLIENT_EXT_PREFIX + "/" +
+                ext.getExtDirectoryNumber() + "/" +
+                ext.getFile().getName();
     }
 
     private Map<String,DynamicContent> initDynamicContent(final List<String> systemJARRelativeURIs) throws IOException {
