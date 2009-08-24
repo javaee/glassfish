@@ -191,7 +191,7 @@ public abstract class ContainerBase
     /**
      * The child Containers belonging to this Container, keyed by name.
      */
-    protected Map<String, Container> children = new HashMap<String, Container>();
+    protected Map<String, Container> children = new LinkedHashMap<String, Container>();
 
 
     /**
