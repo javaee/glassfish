@@ -233,6 +233,29 @@ public class ASClassLoaderUtil {
      */
     public static URL[] getURLs(File[] dirs, File[] jarDirs,
         boolean ignoreZip) throws IOException {
+        return convertURLListToArray(getURLsAsList(dirs, jarDirs, ignoreZip));
+    }
+
+    /**
+     * Returns a list of urls that contains ..
+     * <pre>
+     *    i.   all the valid directories from the given directory (dirs) array
+     *    ii.  all jar files from the given directory (jarDirs) array
+     *    iii. all zip files from the given directory (jarDirs) array if
+     *         not ignoring zip file (ignoreZip is false).
+     * </pre>
+     *
+     * @param    dirs     array of directory path names
+     * @param    jarDirs  array of path name to directories that contains
+     *                    JAR & ZIP files.
+     * @param    ignoreZip whether to ignore zip files
+     * @return   an array of urls that contains all the valid dirs,
+     *           *.jar & *.zip
+     *
+     * @throws  IOException  if an i/o error while constructing the urls
+     */
+    public static List<URL> getURLsAsList(File[] dirs, File[] jarDirs,
+        boolean ignoreZip) throws IOException {
         List<URL> list = new ArrayList<URL>();
 
         // adds all directories
@@ -276,7 +299,7 @@ public class ASClassLoaderUtil {
                 }
             }
         }
-        return convertURLListToArray(list);
+        return list;
     }
   
     public static URL[] convertURLListToArray(List<URL> list) {
@@ -404,15 +427,18 @@ public class ASClassLoaderUtil {
      *
      * @param appRoot the application root
      * @param appLibDir the Application library directory
+     * @param compatibilityProp the version of the release that we need to
+     *        maintain backward compatibility 
      * @return an array of URL
      */
-    public static URL[] getAppLibDirLibraries(File appRoot, String appLibDir) 
+    public static URL[] getAppLibDirLibraries(File appRoot, String appLibDir, 
+        String compatibilityProp) 
         throws IOException {
         return convertURLListToArray(
-            getAppLibDirLibrariesAsList(appRoot, appLibDir));
+            getAppLibDirLibrariesAsList(appRoot, appLibDir, compatibilityProp));
     }
 
-    public static List<URL> getAppLibDirLibrariesAsList(File appRoot, String appLibDir)
+    public static List<URL> getAppLibDirLibrariesAsList(File appRoot, String appLibDir, String compatibilityProp)
         throws IOException {
         URL[] libDirLibraries = new URL[0];
         // first get all the app lib dir libraries
@@ -438,6 +464,14 @@ public class ASClassLoaderUtil {
                     jarFile.close();
                 }
             }
+        }
+
+        // if the compatibility property is set to "v2", we should add all the 
+        // jars under the application root to maintain backward compatibility 
+        // of v2 jar visibility
+        if (compatibilityProp != null && compatibilityProp.equals("v2")) {
+            List<URL> appRootLibraries = getURLsAsList(null, new File[] {appRoot}, true);
+            allLibDirLibraries.addAll(appRootLibraries);
         }
         return allLibDirLibraries;
     }

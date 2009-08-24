@@ -55,6 +55,7 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.ActionReport;
+import org.glassfish.deployment.common.DeploymentProperties;
 
 import java.util.*;
 import java.util.jar.*;
@@ -242,7 +243,11 @@ public class UpgradeStartup implements ModuleStartup {
         // remove the marker properties so they don't get carried over 
         // through redeployment
         deployParams.properties.remove(MODULE_TYPE);
-
+        // add the compatibility property so the applications are 
+        // upgraded/redeployed in a backward compatible way
+        deployParams.properties.setProperty(
+            DeploymentProperties.COMPATIBILITY, "v2");
+      
         // now override the ones needed for the upgrade
         deployParams.force = true;
         deployParams.dropandcreatetables = false;

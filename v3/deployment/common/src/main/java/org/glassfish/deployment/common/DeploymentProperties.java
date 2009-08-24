@@ -463,6 +463,7 @@ public class DeploymentProperties extends Properties {
     public static final String UPLOAD = "upload";
     public static final String EXTERNALLY_MANAGED = "externallyManaged";
     public static final String PATH = "path";
+    public static final String COMPATIBILITY = "compatibility";
     
     ////////////////////////////////////////////////
     // list of properties from server to client

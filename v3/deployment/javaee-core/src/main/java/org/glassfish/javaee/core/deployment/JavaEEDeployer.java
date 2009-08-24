@@ -35,6 +35,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import org.glassfish.deployment.common.DeploymentException;
+import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
@@ -104,9 +105,14 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
             if (!app.isVirtual()) {
                 ReadableArchive parentArchive = 
                     ctx.getSource().getParentArchive();
+
+                String compatProp = ctx.getAppProps().getProperty(
+                    DeploymentProperties.COMPATIBILITY);
+
                 List<URL> earLibURLs = 
                     ASClassLoaderUtil.getAppLibDirLibrariesAsList(new File(
-                        parentArchive.getURI()), app.getLibraryDirectory());  
+                        parentArchive.getURI()), app.getLibraryDirectory(), 
+                        compatProp);  
 
                 for (URL url : earLibURLs) { 
                     classpath.append(url.toURI().getPath());

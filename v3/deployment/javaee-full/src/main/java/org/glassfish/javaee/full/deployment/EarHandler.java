@@ -48,6 +48,7 @@ import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.deployment.common.DeploymentContextImpl;
+import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.javaee.core.deployment.ApplicationHolder;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.glassfish.internal.deployment.Deployment;
@@ -170,7 +171,9 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         EarClassLoader cl;
         // add the libraries packaged in the application library directory
         try {
-            cl = new EarClassLoader(ASClassLoaderUtil.getAppLibDirLibraries(context.getSourceDir(), holder.app.getLibraryDirectory()), parent);
+            String compatProp = context.getAppProps().getProperty(
+                DeploymentProperties.COMPATIBILITY);
+            cl = new EarClassLoader(ASClassLoaderUtil.getAppLibDirLibraries(context.getSourceDir(), holder.app.getLibraryDirectory(), compatProp), parent);
         } catch (IOException e) {
             _logger.log(Level.SEVERE, strings.get("errAddLibs") ,e);
             throw new RuntimeException(e);

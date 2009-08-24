@@ -264,7 +264,7 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
 
             // add libraries jars inside application lib directory
             libraryURLs.addAll(ASClassLoaderUtil.getAppLibDirLibrariesAsList(
-                appRoot, app.getLibraryDirectory()));
+                appRoot, app.getLibraryDirectory(), null));
             
             // add libraries referenced through manifest
             Manifest manifest = ASClassLoaderUtil.getManifest(moduleArchive.getURI().getPath());
