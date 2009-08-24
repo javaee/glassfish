@@ -39,6 +39,8 @@ import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
+import javax.management.MBeanNotificationInfo;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +49,7 @@ import java.util.ArrayList;
 import javax.management.Descriptor;
 import org.glassfish.admin.amx.util.ClassUtil;
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.util.jmx.stringifier.MBeanNotificationInfoStringifier;
 
 /**
 Generate an MBean ".java" file.
@@ -539,7 +542,6 @@ public class MBeanInterfaceGenerator
             {
                 buf.append(nvp(fieldName, d.getFieldValue(fieldName)) + NL);
             }
-            buf.append(NL);
         }
         else
         {
@@ -587,11 +589,26 @@ public class MBeanInterfaceGenerator
 
     public String getInterfaceComment(final MBeanInfo info)
     {
-        final String comment =
-                "Implementing class: " + info.getClassName() + NEWLINE +
-                toString(info.getDescriptor());
+        final StringBuilder buf = new StringBuilder();
+        
+        buf.append( "Implementing class: " + info.getClassName() + NEWLINE);
+        
+        buf.append( NEWLINE + "Descriptor: " + NEWLINE);
+        buf.append( toString(info.getDescriptor()) );
+        
+        final MBeanNotificationInfo[] notifs = info.getNotifications();
+        if ( notifs != null && notifs.length != 0 )
+        {
+            buf.append( NEWLINE + "MBeanNotificationInfo: " + NEWLINE);
+            for( final MBeanNotificationInfo notifInfo : notifs )
+            {
+                buf.append( MBeanNotificationInfoStringifier.toString(notifInfo) + NEWLINE );
+            }
+        }
 
-        return (makeJavadocComment(comment));
+        final String comment = buf.toString();
+        
+        return makeJavadocComment(comment);
     }
 
     public String getPackageName(final MBeanInfo info)
