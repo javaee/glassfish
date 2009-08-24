@@ -23,6 +23,7 @@ import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanConstructorInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanNotificationInfo;
+import javax.management.AttributeChangeNotification;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 import javax.management.ObjectName;
@@ -283,6 +284,13 @@ class ConfigBeanJMXSupport
     {
         return mMBeanInfo;
     }
+    
+    // create only one of these, it's always the same
+    private static final MBeanNotificationInfo ATTRIBUTE_CHANGE_NOTIF_INFO = 
+        new MBeanNotificationInfo(
+            new String[] { AttributeChangeNotification.ATTRIBUTE_CHANGE},
+            AttributeChangeNotification.class.getName(),
+            "attribute change");
 
     private MBeanInfo _getMBeanInfo()
     {
@@ -308,8 +316,8 @@ class ConfigBeanJMXSupport
         final String description = "ConfigBean " + mIntf.getName();
         final MBeanConstructorInfo[] constructors = null;
         final MBeanOperationInfo[] operations = toMBeanOperationInfos();
-        final MBeanNotificationInfo[] notifications = null;
         final Descriptor descriptor = descriptor();
+        final MBeanNotificationInfo[] notifications = new MBeanNotificationInfo[] {ATTRIBUTE_CHANGE_NOTIF_INFO};
 
         final MBeanInfo info = new MBeanInfo(
                 classname,
