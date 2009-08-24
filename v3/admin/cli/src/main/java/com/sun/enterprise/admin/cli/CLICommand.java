@@ -210,8 +210,9 @@ public abstract class CLICommand implements PostConstruct {
      * @param type  option type (STRING, BOOLEAN, etc.)
      * @param req   is option required?
      * @param def   default value for option
+     * @return the ValidOption created for the option
      */
-    protected static void addOption(Set<ValidOption> opts, String name,
+    protected static ValidOption addOption(Set<ValidOption> opts, String name,
             char sname, String type, boolean req, String def) {
         ValidOption opt = new ValidOption(name, type,
                 req ? ValidOption.REQUIRED : ValidOption.OPTIONAL, def);
@@ -220,6 +221,7 @@ public abstract class CLICommand implements PostConstruct {
             opt.setShortName(abbr);
         }
         opts.add(opt);
+        return opt;
     }
 
     /**

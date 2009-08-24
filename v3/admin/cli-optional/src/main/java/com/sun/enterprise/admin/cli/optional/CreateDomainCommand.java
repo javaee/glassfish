@@ -131,6 +131,8 @@ public final class CreateDomainCommand extends CLICommand {
             "PASSWORD", ValidOption.REQUIRED, strings.get("MasterPassword"));
     private ValidOption adminPasswordOption = new ValidOption(ADMIN_PASSWORD,
             "PASSWORD", ValidOption.REQUIRED, strings.get("AdminPassword"));
+    private ValidOption adminPortOption;
+    private ValidOption instancePortOption;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CreateDomainCommand.class);
@@ -143,13 +145,14 @@ public final class CreateDomainCommand extends CLICommand {
     protected void prepare()
             throws CommandException, CommandValidationException {
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, ADMIN_PORT, '\0', "STRING", false,
-                Integer.toString(CLIConstants.DEFAULT_ADMIN_PORT));
+        adminPortOption =
+            addOption(opts, ADMIN_PORT, '\0', "STRING", false, null);
         addOption(opts, PORTBASE_OPTION, '\0', "STRING", false, null);
         addOption(opts, PROFILE_OPTION, '\0', "STRING", false, null);
         addOption(opts, TEMPLATE, '\0', "STRING", false, null);
         addOption(opts, DOMAINDIR, '\0', "STRING", false, null);
-        addOption(opts, INSTANCE_PORT, '\0', "STRING", false, null);
+        instancePortOption =
+            addOption(opts, INSTANCE_PORT, '\0', "STRING", false, null);
         addOption(opts, SAVE_MASTER_PASSWORD, '\0', "BOOLEAN", false, "false");
         addOption(opts, DOMAIN_PROPERTIES, '\0', "STRING", false, null);
         addOption(opts, KEYTOOLOPTIONS, '\0', "STRING", false, null);
@@ -169,11 +172,20 @@ public final class CreateDomainCommand extends CLICommand {
     /**
      * Add --user as a required option in the usage message,
      * since that's how we handle it below in validate().
+     * Also add --adminport and --instanceport options with
+     * proper default values.  (Can't set default values above
+     * because it conflicts with --portbase option processing.)
      */
     protected Set<ValidOption> usageOptions() {
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, "user", '\0', "STRING", true, null);
+        addOption(opts, ADMIN_PORT, '\0', "STRING", false,
+            Integer.toString(CLIConstants.DEFAULT_ADMIN_PORT));
+        addOption(opts, INSTANCE_PORT, '\0', "STRING", false,
+            Integer.toString(DEFAULT_INSTANCE_PORT));
         opts.addAll(commandOpts);
+        opts.remove(adminPortOption);
+        opts.remove(instancePortOption);
         return opts;
     }
 
