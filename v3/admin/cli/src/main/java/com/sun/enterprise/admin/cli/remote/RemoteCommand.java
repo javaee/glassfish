@@ -72,6 +72,8 @@ public class RemoteCommand extends CLICommand {
     private static final String ADMIN_URI_PATH = "/__asadmin/";
     private static final String COMMAND_NAME_REGEXP =
                                     "^[a-zA-Z_][-a-zA-Z0-9_]*$";
+    private static final String READ_TIMEOUT = "AS_ADMIN_READTIMEOUT";
+    private static final int readTimeout;       // read timeout for URL conns
 
     private String                          responseFormatType = "hk2-agent";
     private OutputStream                    userOut;
@@ -84,6 +86,19 @@ public class RemoteCommand extends CLICommand {
     private boolean                         addedUploadOption = false;
     private boolean                         doHelp = false;
     private Payload.Outbound                outboundPayload;
+
+    /*
+     * Set a default read timeout for URL connections.
+     */
+    static {
+        String rt = System.getProperty(READ_TIMEOUT);
+        if (rt == null)
+            rt = System.getenv(READ_TIMEOUT);
+        if (rt != null)
+            readTimeout = Integer.parseInt(rt);
+        else
+            readTimeout = 10 * 60 * 1000;       // 10 minutes
+    }
 
     /**
      * content-type used for each file-transfer part of a payload to or from
@@ -393,6 +408,7 @@ public class RemoteCommand extends CLICommand {
                     HttpConnectorAddress.AUTHORIZATION_KEY,
                     url.getBasicAuthString());
             urlConnection.setRequestMethod(httpMethod);
+            urlConnection.setReadTimeout(readTimeout);
             cmd.doCommand(urlConnection);
 
         } catch (ConnectException ce) {
