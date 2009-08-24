@@ -47,9 +47,6 @@
             <sun:textField id="ServerName" styleClass="required" required="#{true}"  columns="$int{50}" text="#{pageSession.httpMap['ServerName']}" />
         </sun:property>
 
-        <sun:property id="adapter"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.Adapter}" helpText="$resource{i18n_web.http.AdapterHelp}" >
-            <sun:textField id="adapter"   columns="$int{50}" text="#{pageSession.httpMap['Adapter']}" />
-        </sun:property>
 
         <sun:property id="DefaultVirtServersProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.defVirtualServerLabel}" helpText="$resource{i18n_web.http.defVirtualServerLabelHelp}">
             <sun:dropDown id="vs" selected="#{pageSession.httpMap['DefaultVirtualServer']}" labels="$pageSession{vsList}"  values="$pageSession{vsList}" >
@@ -59,12 +56,34 @@
            </sun:dropDown>
         </sun:property>
 
+
+        <sun:property id="RedirectPortProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.redirectPortLabel}" helpText="$resource{i18n_web.http.redirectPortLabelHelp}" >
+            <sun:textField id="RedirectPort" styleClass="port" columns="$int{20}" text="#{pageSession.httpMap['RedirectPort']}" />
+        </sun:property>
+
+
         <sun:property id="maxC"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.maxConnections}" helpText="$resource{i18n_web.http.maxConnectionsHelp}" >
             <sun:textField id="maxC" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['MaxConnections']}" />
         </sun:property>
 
-        <sun:property id="RedirectPortProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.redirectPortLabel}" helpText="$resource{i18n_web.http.redirectPortLabelHelp}" >
-            <sun:textField id="RedirectPort" styleClass="port" columns="$int{20}" text="#{pageSession.httpMap['RedirectPort']}" />
+
+        <sun:property id="TimeoutSeconds"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.TimeoutSeconds}" helpText="$resource{i18n_web.http.TimeoutSecondsHelp}" >
+            <sun:textField id="TimeoutSeconds" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['TimeoutSeconds']}" />
+            <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
+        </sun:property>
+
+        <sun:property id="DisableUploadTimeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.DisableUploadTimeout}" helpText="$resource{i18n_web.http.DisableUploadTimeoutHelp}">
+            <sun:checkbox label="$resource{i18n_web.common.disabled}" selected="#{pageSession.httpMap['DisableUploadTimeout']}" selectedValue="true" />
+        </sun:property>
+
+          <sun:property id="connectionUploadTimeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.ConnectionUploadTimeout}" helpText="$resource{i18n_web.http.ConnectionUploadTimeoutHelp}" >
+            <sun:textField id="connectionUploadTimeout" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['ConnectionUploadTimeoutMillis']}" />
+            <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
+        </sun:property>
+
+        <sun:property id="RequestTimeoutSeconds"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.RequestTimeoutSeconds}" helpText="$resource{i18n_web.http.RequestTimeoutSecondsHelp}" >
+            <sun:textField id="RequestTimeoutSeconds" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['RequestTimeoutSeconds']}" />
+            <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 
         <sun:property id="sendBsize"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.SendBufferSize}" helpText="$resource{i18n_web.http.SendBufferSizeHelp}" >
@@ -82,36 +101,6 @@
             <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
         </sun:property>
 
-        <sun:property id="compressableMime"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.CompressionMinSizeBytes}" helpText="$resource{i18n_web.http.CompressionMinSizeBytesHelp}" >
-            <sun:textField id="compressableMime"  styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['CompressionMinSizeBytes']}" />
-            <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
-        </sun:property>
-
-
-        <sun:property id="connectionUploadTimeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.ConnectionUploadTimeout}" helpText="$resource{i18n_web.http.ConnectionUploadTimeoutHelp}" >
-            <sun:textField id="connectionUploadTimeout" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['ConnectionUploadTimeoutMillis']}" />
-            <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
-        </sun:property>
-
-
-        <sun:property id="RequestTimeoutSeconds"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.RequestTimeoutSeconds}" helpText="$resource{i18n_web.http.RequestTimeoutSecondsHelp}" >
-            <sun:textField id="RequestTimeoutSeconds" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['RequestTimeoutSeconds']}" />
-            <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
-        </sun:property>
-
-        <sun:property id="TimeoutSeconds"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.TimeoutSeconds}" helpText="$resource{i18n_web.http.TimeoutSecondsHelp}" >
-            <sun:textField id="TimeoutSeconds" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['TimeoutSeconds']}" />
-            <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
-        </sun:property>
-
-        <sun:property id="NoCompressionUserAgents"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.NoCompressionUserAgents}" helpText="$resource{i18n_web.http.NoCompressionUserAgentsHelp}" >
-            <sun:textField id="NoCompressionUserAgents" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['NoCompressionUserAgents']}" />
-        </sun:property>
-
-        <sun:property id="RestrictedUserAgents"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.RestrictedUserAgents}" helpText="$resource{i18n_web.http.RestrictedUserAgentsHelp}" >
-            <sun:textField id="RestrictedUserAgents"  columns="$int{50}" text="#{pageSession.httpMap['RestrictedUserAgents']}" />
-        </sun:property>
-
         <sun:property id="UriEncoding"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.UriEncoding}" helpText="$resource{i18n_web.http.UriEncodingHelp}" >
             <sun:textField id="UriEncoding"  columns="$int{50}" text="#{pageSession.httpMap['UriEncoding']}" />
         </sun:property>
@@ -120,25 +109,45 @@
             <sun:textField id="Version"  columns="$int{50}" text="#{pageSession.httpMap['Version']}" />
         </sun:property>
 
+       <sun:property id="Compression"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.Compression}" helpText="$resource{i18n_web.http.CompressionHelp}">
+            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['Compression']}" selectedValue="true" />
+        </sun:property>
+
+
         <sun:property id="CompressableMimeType"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.CompressableMimeType}" helpText="$resource{i18n_web.http.CompressableMimeTypeHelp}" >
             <sun:textField id="CompressableMimeType"  columns="$int{50}" text="#{pageSession.httpMap['CompressableMimeType']}" />
+        </sun:property>
+
+        <sun:property id="compressableMime"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.CompressionMinSizeBytes}" helpText="$resource{i18n_web.http.CompressionMinSizeBytesHelp}" >
+            <sun:textField id="compressableMime"  styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['CompressionMinSizeBytes']}" />
+            <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
+        </sun:property>
+
+
+        <sun:property id="NoCompressionUserAgents"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.NoCompressionUserAgents}" helpText="$resource{i18n_web.http.NoCompressionUserAgentsHelp}" >
+            <sun:textField id="NoCompressionUserAgents" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['NoCompressionUserAgents']}" />
+        </sun:property>
+
+
+        <sun:property id="RestrictedUserAgents"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.RestrictedUserAgents}" helpText="$resource{i18n_web.http.RestrictedUserAgentsHelp}" >
+            <sun:textField id="RestrictedUserAgents"  columns="$int{50}" text="#{pageSession.httpMap['RestrictedUserAgents']}" />
         </sun:property>
 
         <sun:property id="DefaultResponseType"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.DefaultResponseType}" helpText="$resource{i18n_web.http.DefaultResponseTypeHelp}" >
             <sun:textField id="DefaultResponseType"  columns="$int{50}" text="#{pageSession.httpMap['DefaultResponseType']}" />
         </sun:property>
 
-
         <sun:property id="ForcedResponseType"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.ForcedResponseType}" helpText="$resource{i18n_web.http.ForcedResponseTypeHelp}" >
             <sun:textField id="ForcedResponseType"  columns="$int{50}" text="#{pageSession.httpMap['ForcedResponseType']}" />
         </sun:property>
 
-        <sun:property id="Comet"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.CometSupport}" helpText="$resource{i18n_web.http.CometSupportHelp}">
-            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['EnableCometSupport']}" selectedValue="true" />
+        <sun:property id="adapter"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.Adapter}" helpText="$resource{i18n_web.http.AdapterHelp}" >
+            <sun:textField id="adapter"   columns="$int{50}" text="#{pageSession.httpMap['Adapter']}" />
         </sun:property>
 
-        <sun:property id="DisableUploadTimeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.DisableUploadTimeout}" helpText="$resource{i18n_web.http.DisableUploadTimeoutHelp}">
-            <sun:checkbox label="$resource{i18n_web.common.disabled}" selected="#{pageSession.httpMap['DisableUploadTimeout']}" selectedValue="true" />
+
+        <sun:property id="Comet"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.CometSupport}" helpText="$resource{i18n_web.http.CometSupportHelp}">
+            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['EnableCometSupport']}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="DnsLookup"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.DnsLookup}" helpText="$resource{i18n_web.http.DnsLookupHelp}">
@@ -151,10 +160,6 @@
 
         <sun:property id="Trace"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.Trace}" helpText="$resource{i18n_web.http.TraceHelp}">
             <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['TraceEnabled']}" selectedValue="true" />
-        </sun:property>
-
-        <sun:property id="Compression"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.Compression}" helpText="$resource{i18n_web.http.CompressionHelp}">
-            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['Compression']}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="AuthPassThrough"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.AuthPassThrough}" helpText="$resource{i18n_web.http.AuthPassThroughHelp}">
