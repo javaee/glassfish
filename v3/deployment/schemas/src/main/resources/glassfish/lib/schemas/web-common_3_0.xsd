@@ -761,7 +761,8 @@
       <xsd:group ref="javaee:descriptionGroup"/>
       <xsd:element name="servlet-name"
                    type="javaee:servlet-nameType"/>
-      <xsd:choice>
+      <xsd:choice minOccurs="0"
+                  maxOccurs="1">
         <xsd:element name="servlet-class"
                      type="javaee:fully-qualified-classType">
           <xsd:annotation>

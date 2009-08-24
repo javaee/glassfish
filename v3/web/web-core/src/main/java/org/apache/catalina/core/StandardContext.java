@@ -1997,24 +1997,28 @@ public class StandardContext
      */
     @Override
     public void addChild(Container child) {
-        addChild(child, false);
+        addChild(child, false, true);
     }
 
     /**
-     * Adds the given child Container to this context.
+     * Adds the given child (Servlet) to this context.
      *
-     * @param child the child Container to add
-     * @param isProgrammatic true if the given child is added through
-     * one of the programmatic interfaces, and false if the child is 
+     * @param child the child (Servlet) to add
+     * @param isProgrammatic true if the given child (Servlet) is being
+     * added via one of the programmatic interfaces, and false if it is
      * declared in the deployment descriptor
+     * @param createRegistration true if a ServletRegistration needs to be
+     * created for the given child, and false if a (preliminary)
+     * ServletRegistration had already been created (which would be the
+     * case if the Servlet had been declared in the deployment descriptor
+     * without any servlet-class, and the servlet-class was later provided
+     * via ServletContext#addServlet)
      *
      * @exception IllegalArgumentException if the given child Container is
      * not an instance of Wrapper
      */
-    protected void addChild(Container child, boolean isProgrammatic) {
-
-        // Global JspServlet
-        Wrapper oldJspServlet = null;
+    protected void addChild(Container child, boolean isProgrammatic,
+            boolean createRegistration) {
 
         if (!(child instanceof Wrapper)) {
             throw new IllegalArgumentException
@@ -2024,10 +2028,36 @@ public class StandardContext
         Wrapper wrapper = (Wrapper) child;
         String wrapperName = child.getName();
 
+        if (createRegistration) {
+            ServletRegistrationImpl regis = null;
+            if (isProgrammatic || null == wrapper.getServletClassName()) {
+                regis = new DynamicServletRegistrationImpl(
+                    (StandardWrapper) wrapper, this);
+            } else {
+                regis = new ServletRegistrationImpl(
+                    (StandardWrapper) wrapper, this);
+            }
+            servletRegisMap.put(wrapperName, regis);
+            if (null == wrapper.getServletClassName() &&
+                    null == wrapper.getJspFile()) {
+                /*
+                 * Preliminary registration for Servlet that was declared
+                 * without any servlet-class. Once the registration is
+                 * completed via ServletContext#addServlet, addChild will
+                 * be called again, and 'wrapper' will have been configured
+                 * with a proper class name at that time
+                 */
+                return;
+            }
+        }
+
         if ("javax.faces.webapp.FacesServlet".equals(
                 wrapper.getServletClassName())) {
             isJsfApplication = true;
         }
+
+        // Global JspServlet
+        Wrapper oldJspServlet = null;
 
         // Allow webapp to override JspServlet inherited from global web.xml.
         boolean isJspServlet = "jsp".equals(wrapperName);
@@ -2053,16 +2083,6 @@ public class StandardContext
         }
 
         super.addChild(child);
-
-        /*
-         * If the given wrapper contains any mappings (this would be required
-         * if it was being added to a context that was already started),
-         * call addServletMapping for each.
-         */
-        String[] mappings = wrapper.findMappings();
-        for (String mapping : mappings) {
-            addServletMapping(mapping, wrapperName, false);
-        }
 
         // START SJSAS 6342808
         /* SJSWS 6362207
@@ -2093,17 +2113,6 @@ public class StandardContext
                 addServletMapping(jspMappings[i], wrapperName);
             }
         }
-
-        ServletRegistrationImpl regis = null;
-        if (isProgrammatic) {
-            regis = new DynamicServletRegistrationImpl(
-                (StandardWrapper) wrapper, this);
-        } else {
-            regis = new ServletRegistrationImpl(
-                (StandardWrapper) wrapper, this);
-        }
-      
-        servletRegisMap.put(wrapperName, regis);
     }
 
     /**
@@ -3126,7 +3135,8 @@ public class StandardContext
     public void addServletMapping(String pattern, String name,
                                   boolean jspWildCard) {
         // Validate the proposed mapping
-        if (findChild(name) == null) {
+        ServletRegistrationImpl regis = servletRegisMap.get(name);
+        if (null == regis) {
             throw new IllegalArgumentException
                 (sm.getString("standardContext.servletMap.name", name));
         }
@@ -3172,7 +3182,7 @@ public class StandardContext
             }
         }
 
-        Wrapper wrapper = (Wrapper) findChild(name);
+        Wrapper wrapper = regis.getWrapper();
         wrapper.addMapping(pattern);
 
         // Update context mapper
@@ -3191,12 +3201,20 @@ public class StandardContext
             String servletName, String className) {
         synchronized (children) {
             if (findChild(servletName) == null) {
-                Wrapper wrapper = createWrapper();
+                DynamicServletRegistrationImpl regis =
+                    (DynamicServletRegistrationImpl)
+                        servletRegisMap.get(servletName);
+                Wrapper wrapper = null;
+                if (regis == null) {
+                    wrapper = createWrapper();
+                } else {
+                    // Preliminary Servlet registration
+                    wrapper = regis.getWrapper();
+                }
                 wrapper.setName(servletName);
                 wrapper.setServletClassName(className);
-                addChild(wrapper, true);
-                return (ServletRegistration.Dynamic)
-                    servletRegisMap.get(servletName);
+                addChild(wrapper, true, (null == regis));
+                return regis;
             } else {
                 return null;
             }
@@ -3221,12 +3239,20 @@ public class StandardContext
         // Make sure servlet name is unique for this context
         synchronized (children) {
             if (findChild(servletName) == null) {
-                Wrapper wrapper = createWrapper();
+                DynamicServletRegistrationImpl regis =
+                    (DynamicServletRegistrationImpl)
+                        servletRegisMap.get(servletName);
+                Wrapper wrapper = null;
+                if (regis == null) {
+                    wrapper = createWrapper();
+                } else {
+                    // Preliminary Servlet registration
+                    wrapper = regis.getWrapper();
+                }
                 wrapper.setName(servletName);
                 wrapper.setServletClass(servletClass);
-                addChild(wrapper, true);
-                return (ServletRegistration.Dynamic)
-                    servletRegisMap.get(servletName);
+                addChild(wrapper, true, (null == regis));
+                return regis;
             } else {
                 return null;
             }
@@ -3307,9 +3333,18 @@ public class StandardContext
                     return null;
                 }
             }
-                         
-            StandardWrapper wrapper = (StandardWrapper) createWrapper();
 
+            DynamicServletRegistrationImpl regis =
+                (DynamicServletRegistrationImpl)
+                    servletRegisMap.get(servletName);
+            StandardWrapper wrapper = null;
+            if (regis == null) {
+                wrapper = (StandardWrapper) createWrapper();
+            } else {
+                // Preliminary Servlet registration
+                wrapper = regis.getWrapper();
+            }
+                         
             if (initParams != null) {
                 for (Map.Entry<String, String> e : initParams.entrySet()) {
                     wrapper.addInitParameter(e.getKey(), e.getValue());
@@ -3319,16 +3354,15 @@ public class StandardContext
             wrapper.setName(servletName);
             wrapper.setServlet(servlet);
 
+            addChild(wrapper, true, (null == regis));
+
             if (urlPatterns != null) {
                 for (String urlPattern : urlPatterns) {
-                    wrapper.addMapping(urlPattern);
+                    addServletMapping(urlPattern, servletName, false);
                 }
             }
 
-            addChild(wrapper, true);
-
-            return (ServletRegistration.Dynamic)
-                servletRegisMap.get(servletName);
+            return regis;
         }
     }
 

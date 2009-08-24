@@ -424,12 +424,13 @@ public class TomcatDeploymentConfig {
             wrapper = (StandardWrapper)webModule.createWrapper();
             wrapper.setName(webComponentDesc.getCanonicalName());
 
-            if (webComponentDesc.isServlet()){
-                wrapper.setServletClassName(
-                    webComponentDesc.getWebComponentImplementation());
-            } else {
-                wrapper.setJspFile(
-                    webComponentDesc.getWebComponentImplementation());
+            String impl = webComponentDesc.getWebComponentImplementation();
+            if (impl != null && !impl.isEmpty()) {
+                if (webComponentDesc.isServlet()){
+                    wrapper.setServletClassName(impl);
+                } else {
+                    wrapper.setJspFile(impl);
+                }
             }
 
             /*
