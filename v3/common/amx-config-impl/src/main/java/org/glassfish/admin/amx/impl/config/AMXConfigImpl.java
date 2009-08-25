@@ -351,6 +351,11 @@ public class AMXConfigImpl extends AMXImplBase
             mChildren = ListUtil.newList();
             mType     = type;
             
+            if ( values == null )
+            {
+                return; // null is legal, no attributes
+            }
+            
             for (final String nameAsProvided : values.keySet())
             {
                 final String xmlName = ConfigBeanJMXSupport.toXMLName(nameAsProvided);  // or type
