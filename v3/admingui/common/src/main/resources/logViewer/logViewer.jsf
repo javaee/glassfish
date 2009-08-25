@@ -253,7 +253,7 @@
            "<br /><br />
         </sun:propertySheetSection>
         <sun:propertySheetSection id="advanced" rendered="#{showAdvanced}" label="$resource{i18nc.logViewer.advancedSearch}">
-            <sun:property id="LoggerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.loggerLabel}" helpText="$resource{i18nc.logViewer.numberToDisplayLabelHelp}">
+            <sun:property id="LoggerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.loggerLabel}" helpText="$resource{i18nc.logViewer.moduleLabelHelp}">
                 <sun:listbox id="logger" immediate="#{true}" multiple="#{true}"  rows="$int{4}"
                 labels="$pageSession{availableLoggers}"
                 selected="$session{logentries}" >

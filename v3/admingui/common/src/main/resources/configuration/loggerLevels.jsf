@@ -86,7 +86,7 @@
         />
         </sun:button>
 
-        <sun:dropDown id="change" selected="#{changeValue}" label="$resource{i18n.log.levelLabel}" submitForm="#{false}" immediate="#{false}" labels="$pageSession{newLevelList}">
+        <sun:dropDown id="change" selected="#{changeValue}" label="$resource{i18nc.log.levelLabel}" submitForm="#{false}" immediate="#{false}" labels="$pageSession{newLevelList}">
             <!beforeCreate
                 addEmptyFirstElement(in="#{pageSession.levelList}"  out="#{pageSession.newLevelList}")
             />
