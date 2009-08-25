@@ -271,6 +271,8 @@
         <ant dir="servlet-3.0/xmlOverrideAnnotation" target="all"/>
         <ant dir="servlet-3.0/webFragment" target="all"/>
         <ant dir="servlet-3.0/multiWebFragments" target="all"/>
+        <ant dir="servlet-3.0/webFragmentWithLoginConfig" target="all"/>
+        <ant dir="servlet-3.0/webFragmentWithLoginConfigOverrided" target="all"/>
         <ant dir="servlet-3.0/absoluteOrderingWebFragments" target="all"/>
         <ant dir="servlet-3.0/javaxServletContextOrderedLibs" target="all"/>
         <ant dir="servlet-3.0/relativeOrderingWebFragments" target="all"/>
