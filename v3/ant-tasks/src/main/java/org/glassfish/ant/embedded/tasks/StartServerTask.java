@@ -64,27 +64,18 @@ public class StartServerTask extends Task {
     }
 
     public void execute() throws BuildException {
-        Server.Builder builder = new Server.Builder(serverID);
-
         log ("Starting server - all containers");
-        Server server = new Server.Builder(serverID).build();
-        server.addContainer(ContainerBuilder.Type.all);
 
-        ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
-        for (EmbeddedContainer c : server.getContainers()) {
-            sniffers.addAll(c.getSniffers());
-        }
-
-        // FIXME - this should be improved..
-        File docroot = new File(server.getFileSystem().instanceRoot, "docroot");
-        ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
-        ((WebBuilder)b).setDocRootDir(docroot);
-        EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
-        embedded.setConfiguration((WebBuilder)b);
-
+        Server.Builder builder = new Server.Builder(serverID);
         try {
+            Server server = builder.build();
             server.createPort(port);
-            server.start();
+            server.addContainer(ContainerBuilder.Type.all);
+
+            ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
+            for (EmbeddedContainer c : server.getContainers()) {
+                sniffers.addAll(c.getSniffers());
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }

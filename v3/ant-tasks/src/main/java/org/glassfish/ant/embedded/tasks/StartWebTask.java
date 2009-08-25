@@ -70,7 +70,6 @@ public class StartWebTask extends Task {
 
 
     public void execute() throws BuildException {
-        System.setProperty("jaxp.debug", "true");
         log ("Starting server [web]");
         Server.Builder builder = new Server.Builder(serverID);
         try {
