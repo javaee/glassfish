@@ -70,19 +70,19 @@ public class UnitTest {
 
         String gf = System.getenv().get("GF_HOME");
         if (gf != null) {
-            System.err.println("+++GF location: " + gf);
+            System.err.println("===GF location: " + gf);
             p.put("glassfish.ejb.embedded.glassfish.installation", gf);
         } else {
             // Try from -D option
             gf = System.getProperty("GF_HOME");
             if (gf != null) {
-                System.err.println("+++GF location: " + gf);
-                p.put("glassfish.ejb.embedded.glassfish.installation", gf);
+                System.err.println("===GF location: " + gf);
+                p.put("org.glassfish.ejb.embedded.glassfish.installation.root", gf);
             } 
 
             if (gf == null) {
                 // Still null
-                System.err.println("+++GF location NOT specified via GF_HOME");
+                System.err.println("===GF location NOT specified via GF_HOME");
             }
         }
 

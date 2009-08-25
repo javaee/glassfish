@@ -38,6 +38,7 @@ package org.glassfish.ejb.embedded;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
@@ -79,6 +80,9 @@ import com.sun.enterprise.module.bootstrap.Which;
 public class EJBContainerProviderImpl implements EJBContainerProvider {
 
     private static final String GF_PROVIDER_NAME = EJBContainerProviderImpl.class.getName();
+    private static final String GF_INSTALLATION_ROOT = "org.glassfish.ejb.embedded.glassfish.installation.root";
+    private static final String GF_INSTANCE_ROOT = "org.glassfish.ejb.embedded.glassfish.instance.root";
+    private static final String GF_DOMAIN_FILE = "org.glassfish.ejb.embedded.glassfish.configuration.file";
     private static final String JAR_FILE_EXT = ".jar";
     private static final Attributes.Name ATTRIBUTE_NAME_SKIP = new Attributes.Name("Bundle-SymbolicName");
     private static final String[] ATTRIBUTE_VALUES_SKIP = 
@@ -133,28 +137,13 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             // if (container == null || !container.isOpen()) {
                 Server.Builder builder = new Server.Builder("GFEJBContainerProviderImpl");
 
-                String gf_location = null;
-                if (properties != null) {
-                    gf_location = (String) properties.get(
-                            "glassfish.ejb.embedded.glassfish.installation");
-                }
-                if (gf_location == null) {
-                    // calculate
-                    try {
-                        gf_location = Which.jarFile(getClass()).
-                                getParentFile().getParentFile().getAbsolutePath();
-                    } catch (Exception e) {
-                        _logger.log(Level.SEVERE, "Cannot determine installation location");
-                        _logger.log(Level.FINE, e.getMessage(), e);
-                    }
-                }
-
-                Result rs = getLocations(gf_location);
+                Result rs = getLocations(properties);
                 if (rs == null) {
                     server = builder.build();
                 } else {
                     EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
                     efsb.setConfigurationFile(rs.domain_file);
+                    efsb.setInstallRoot(rs.installed_root, true);
                     efsb.setInstanceRoot(rs.instance_root);
 
                     builder.setEmbeddedFileSystem(efsb.build());
@@ -226,7 +215,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     private boolean isRequestedEJBModule(File file, Set<String> moduleNames) 
             throws Exception {
         String fileName = file.getName();
-        System.err.println("... Testing ... " + fileName);
+        _logger.info("... Testing ... " + fileName);
         ReadableArchive archive = null;
         InputStream is = null;
         try {
@@ -248,9 +237,9 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                     new GenericAnnotationDetector(ejbAnnotations);
                 handles = detector.hasAnnotationInArchive(archive);
             }
-System.err.println("... is EJB module: " + handles);
+_logger.info("... is EJB module: " + handles);
 if (handles)
-System.err.println("... is Requested EJB module [" + moduleName + "]: " + (moduleNames.isEmpty() || moduleNames.contains(moduleName)));
+_logger.info("... is Requested EJB module [" + moduleName + "]: " + (moduleNames.isEmpty() || moduleNames.contains(moduleName)));
 
             return handles && (moduleNames.isEmpty() || moduleNames.contains(moduleName));
         } finally {
@@ -285,23 +274,35 @@ System.err.println("... is Requested EJB module [" + moduleName + "]: " + (modul
             return false; // probably a directory
         }
 
-        JarFile jf = new JarFile(file);
-        Manifest m = jf.getManifest();
-        if (m != null) {
-            java.util.jar.Attributes attributes = m.getMainAttributes();
-            String value = attributes.getValue(ATTRIBUTE_NAME_SKIP);
-            if (value != null) {
-                for (String skipValue : ATTRIBUTE_VALUES_SKIP) {
-                    if (value.startsWith(skipValue)) {
-                        for (String okValue : ATTRIBUTE_VALUES_OK) {
-                            if (value.indexOf(okValue) > 0) {
-                                // Still OK
-                                return false;
+        JarFile jf = null;
+        try {
+            jf = new JarFile(file);
+            Manifest m = jf.getManifest();
+            if (m != null) {
+                java.util.jar.Attributes attributes = m.getMainAttributes();
+                String value = attributes.getValue(ATTRIBUTE_NAME_SKIP);
+                if (value != null) {
+                    for (String skipValue : ATTRIBUTE_VALUES_SKIP) {
+                        if (value.startsWith(skipValue)) {
+                            for (String okValue : ATTRIBUTE_VALUES_OK) {
+                                if (value.indexOf(okValue) > 0) {
+                                    // Still OK
+                                    return false;
+                                }
                             }
+                            // Not OK - skip it
+                            return true;
                         }
-                        // Not OK - skip it
-                        return true;
                     }
+                }
+            }
+        } finally {
+            if (jf != null) {
+                try {
+                    jf.close();
+                } catch (IOException ex) {
+                    _logger.log(Level.FINE, "Exception while closing JarFile "
+                            + jf.getName() + ": ", ex);
                 }
             }
         }
@@ -326,30 +327,56 @@ System.err.println("... is Requested EJB module [" + moduleName + "]: " + (modul
     /**
      * Create File objects corresponding to instance root and domain.xml location.
      */
-    private Result getLocations(String installed_root_location) {
+    private Result getLocations(Map<?, ?> properties) {
         Result rs = null;
-System.err.println("+++ installed_root_location : " + installed_root_location);
+        String installed_root_location = null;
+        String instance_root_location = null;
+        String domain_file_location = null;
+
+        if (properties != null) {
+            // Check if anything is set
+            installed_root_location = (String) properties.get(GF_INSTALLATION_ROOT);
+            instance_root_location = (String) properties.get(GF_INSTANCE_ROOT);
+            domain_file_location = (String) properties.get(GF_DOMAIN_FILE);
+        }
+
+        if (installed_root_location == null) {
+            // Try to calculate installation location relative to 
+            // the jar that contains this class
+            try {
+                installed_root_location = Which.jarFile(getClass()).
+                        getParentFile().getParentFile().getAbsolutePath();
+            } catch (Exception e) {
+                _logger.log(Level.SEVERE, "Cannot determine installation location");
+                _logger.log(Level.FINE, e.getMessage(), e);
+            }
+        }
+
+        _logger.info("+++ installed_root_location : " + installed_root_location);
         if (installed_root_location != null) {
-System.err.println("+++ version 3");
             File installed_root = getValidFile(installed_root_location);
             if (installed_root != null) {
-                // TODO - support a separate location for the domain
-                String instance_root_location = installed_root_location 
-                        + File.separatorChar + "domains" 
-                        + File.separatorChar + "domain1";
+                if (instance_root_location == null) {
+                    // Calculate location for the domain relative to GF install
+                    instance_root_location = installed_root_location 
+                            + File.separatorChar + "domains" 
+                            + File.separatorChar + "domain1";
+                }
 
+                _logger.info("+++ instance_root_location: " + instance_root_location);
                 File instance_root = getValidFile(instance_root_location);
                 if (instance_root != null) {
-                    String domain_file_location = instance_root_location
-                            + File.separatorChar + "config" 
-                            + File.separatorChar + "domain.xml";
-System.err.println("+++ domain_file_location : " + domain_file_location);
-                    File domain_file = getValidFile(domain_file_location);
+                    if (domain_file_location == null) {
+                        // Calculate location for the domain.xml relative to GF instance
+                        domain_file_location = instance_root_location
+                                + File.separatorChar + "config" 
+                                + File.separatorChar + "domain.xml";
+                    }
 
-System.err.println("+++ instance_root: " + instance_root);
-System.err.println("+++ domain_file: " + domain_file);
+                    _logger.info("+++ domain_file_location : " + domain_file_location);
+                    File domain_file = getValidFile(domain_file_location);
                     if (domain_file != null) {
-                        rs = new Result(instance_root, domain_file);
+                        rs = new Result(installed_root, instance_root, domain_file);
                     }
                 }
             }
@@ -359,10 +386,12 @@ System.err.println("+++ domain_file: " + domain_file);
     }
 
     private class Result {
+        File installed_root;
         File instance_root;
         File domain_file;
 
-        Result (File instance_root, File domain_file) {
+        Result (File installed_root, File instance_root, File domain_file) {
+            this.installed_root  = installed_root;
             this.instance_root  = instance_root;
             this.domain_file  = domain_file;
         }
