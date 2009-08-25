@@ -36,6 +36,9 @@
 package com.sun.enterprise.container.common;
 
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
+import com.sun.enterprise.security.auth.realm.file.FileRealmUser;
+import com.sun.enterprise.security.auth.realm.NoSuchUserException;
+import com.sun.enterprise.admin.util.AdminConstants;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
@@ -106,8 +109,15 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             if (FileRealm.class.getName().equals(ar.getClassname())) {
                 String adminKeyFilePath = ar.getPropertyValue("file");
                 FileRealm fr = new FileRealm(adminKeyFilePath);
-                return fr.authenticate(user, password) != null;
+                FileRealmUser fru = (FileRealmUser)fr.getUser(user);
+                for (String group : fru.getGroups()) {
+                    if (group.equals(AdminConstants.DOMAIN_ADMIN_GROUP_NAME))
+                        return fr.authenticate(user, password) != null;
+                }
+                return false;
             }
+        } catch(NoSuchUserException ue) {
+            return false;       // if fr.getUser fails to find the user name
         } catch(Exception e) {
             LoginException le =  new LoginException (e.getMessage());
             le.initCause(e);
