@@ -165,7 +165,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         
         if ( changed )
         {
-            debug( "AMXConfigLoader.issueAttributeChange(): " + xmlAttrName + ": {" + oldValue + " => " + newValue + "}");
+            //debug( "AMXConfigLoader.issueAttributeChange(): " + xmlAttrName + ": {" + oldValue + " => " + newValue + "}");
             final Object impl = mRegistry.getImpl(cb);
             if ( ! (impl instanceof AMXConfigImpl) )
             {

@@ -1492,7 +1492,7 @@ public class AMXConfigImpl extends AMXImplBase
             cdebug("setAttributes: failed to map these AMX attributes: {" + CollectionUtil.toString(notMatched.keySet(), ", ") + "}");
         }
         
-        //System.out.println( "setAttributesInConfigBean: " + CollectionUtil.toString(notMatched.keySet(), ", ") );
+        //System.out.println( "setAttributesInConfigBean: " + amxAttrs);
 
         final AttributeList successfulAttrs = new AttributeList();
 
@@ -1532,7 +1532,10 @@ public class AMXConfigImpl extends AMXImplBase
         return successfulAttrs;
     }
     
-    /** share one sequence number for all Config MBeans to keep overhead low */
+    /**
+        Share one sequence number for *all* Config MBeans to keep overhead low
+        instead of 
+     */
     private static final AtomicLong sSequenceNumber = new AtomicLong(0);
     
         void
@@ -1543,10 +1546,18 @@ public class AMXConfigImpl extends AMXImplBase
         final Object newValue,
         final long   whenChanged )
     {
-        if ( getListenerCount() == 0 ) return;
+        final Map<String,String>  m = getConfigBeanJMXSupport().getFromXMLNameMapping();
+        final String attributeName = m.containsKey(xmlAttrName) ?  m.get(xmlAttrName) : xmlAttrName;
+        if ( attributeName.equals(xmlAttrName) )    // will *always* be different due to camel case
+        {
+            cdebug( "issueAttributeChangeForXmlAttrName(): MBean attribute name not found for xml name, using xml name: " + xmlAttrName );
+        }
         
-        final String attributeName = xmlAttrName;
         final String attributeType = String.class.getName();
+        
+        getLogger().info( getObjectName() + " -- " + attributeName + " = " + newValue + " <== " + oldValue );
+        
+        // if ( getListenerCount() == 0 ) return;
         
         final long sequenceNumber = sSequenceNumber.getAndIncrement();
 		final AttributeChangeNotification	notif =
@@ -1554,7 +1565,7 @@ public class AMXConfigImpl extends AMXImplBase
 			
 		sendNotification( notif );
         
-        //System.out.println( "AMXConfigImpl.issueAttributeChangeForXmlAttrName(): sent: " + notif );
+        //cdebug( "AMXConfigImpl.issueAttributeChangeForXmlAttrName(): sent: " + notif );
     }
 }
 
