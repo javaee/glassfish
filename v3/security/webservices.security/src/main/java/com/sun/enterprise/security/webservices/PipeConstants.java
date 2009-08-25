@@ -58,5 +58,5 @@ public interface PipeConstants {
     static final String WSDL_MODEL = "WSDL_MODEL";
     static final String WSDL_SERVICE = "WSDL_SERVICE";
     static final String CONTAINER = "CONTAINER";
-    static final String ASSEMBLER_CONTEXT = "WRAPPED_CONTEXT";
+    static final String ASSEMBLER_CONTEXT = "ASSEMBLER_CONTEXT";
 }
