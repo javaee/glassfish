@@ -96,20 +96,21 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
         // so far I assume we always want to change one attribute so I am removing the
         // last element from the target pattern which is supposed to be the
         // attribute name
-        if (target.lastIndexOf('.')==-1) {
+        int lastDotIndex = trueLastIndexOf(target, '.');
+        if (lastDotIndex==-1) {
             // error.
             context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
             context.getActionReport().setMessage("Invalid target " + target);
             return;
         }
-        String attrName = target.substring(target.lastIndexOf('.')+1);
-        String pattern =  target.substring(0, target.lastIndexOf('.'));
+        String attrName = target.substring(lastDotIndex+1);
+        String pattern =  target.substring(0, lastDotIndex);
         boolean isProperty = false;
-         if ("property".equals(pattern.substring(pattern.lastIndexOf('.')+1))) {
-             // we are looking for a property, let's look it it exists already...
-             pattern = target;
-             isProperty = true;
-         }
+        if ("property".equals(pattern.substring(pattern.lastIndexOf('.')+1))) {
+            // we are looking for a property, let's look it it exists already...
+            pattern = target.replaceAll("\\\\\\.", "\\.");
+            isProperty = true;
+        }
         
         // now
         // first let's get the parent for this pattern.
@@ -252,5 +253,28 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
             }
         }
 
+    }
+
+    /**
+     * Find the rightmost unescaped occurrence of specified character in target
+     * string.
+     *
+     * XXX Doesn't correctly interpret escaped backslash characters, e.g. foo\\.bar
+     * 
+     * @param target string to search
+     * @param ch a character
+     * @return index index of last unescaped occurrence of specified character
+     *   or -1 if there are no unescaped occurrences of this character.
+     */
+    private static int trueLastIndexOf(String target, char ch) {
+        int i = target.lastIndexOf(ch);
+        while(i > 0) {
+            if(target.charAt(i-1) == '\\') {
+                i = target.lastIndexOf(ch, i-1);
+            } else {
+                break;
+            }
+        }
+        return i;
     }
 }
