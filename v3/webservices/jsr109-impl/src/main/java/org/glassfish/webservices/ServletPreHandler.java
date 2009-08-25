@@ -72,16 +72,18 @@ public class ServletPreHandler extends GenericHandler {
         try {
             WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
             InvocationManager invManager = wscImpl.getInvocationManager();
-            inv = (EJBInvocation) invManager.getCurrentInvocation();
-            Method method = wsUtil.getInvMethod(
+            if(inv instanceof EJBInvocation) {
+                inv = (EJBInvocation) invManager.getCurrentInvocation();
+                Method method = wsUtil.getInvMethod(
                     (com.sun.xml.rpc.spi.runtime.Tie)inv.getWebServiceTie(),
                                                 context);
-            // Result can be null for some error cases.  This will be
-            // handled by jaxrpc runtime so we don't treat it as an exception.
-            if( method != null ) {
-                inv.setWebServiceMethod(method);
-            } else {
-                inv.setWebServiceMethod(null);
+                // Result can be null for some error cases.  This will be
+                // handled by jaxrpc runtime so we don't treat it as an exception.
+                if( method != null ) {
+                    inv.setWebServiceMethod(method);
+                } else {
+                    inv.setWebServiceMethod(null);
+                }
             }
         } catch(Exception e) {
             logger.log(Level.WARNING, "preWebHandlerError", e);

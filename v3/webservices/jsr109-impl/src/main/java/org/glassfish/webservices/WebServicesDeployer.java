@@ -163,8 +163,8 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                         throw new DeploymentException(rb.getString("jaxrpc.codegen.fail")) ;
                     }
                 }
-                doWebServicesDeployment(app,dc);
             }
+            doWebServicesDeployment(app,dc);
             Thread.currentThread().setContextClassLoader(oldCl);
             return true;
         } catch (Exception ex) {

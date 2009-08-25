@@ -78,19 +78,21 @@ public class ServletPostHandler extends GenericHandler {
         try {
             WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
             InvocationManager invManager = wscImpl.getInvocationManager();
-            inv = (EJBInvocation) invManager.getCurrentInvocation();
-            Method webServiceMethodInPreHandler = inv.getWebServiceMethod();
-            if( webServiceMethodInPreHandler != null ) {
-                Method postHandlerMethod = 
-                    wsUtil.getInvMethod(
-                            (com.sun.xml.rpc.spi.runtime.Tie)inv.getWebServiceTie(), context);
-            
-                if( !webServiceMethodInPreHandler.equals(postHandlerMethod) ) {
-                    throw new UnmarshalException
-                        ("Original method " + webServiceMethodInPreHandler 
-                         + " does not match post-handler method " + 
-                         postHandlerMethod);
-                } 
+            if(inv instanceof EJBInvocation) {
+                inv = (EJBInvocation) invManager.getCurrentInvocation();
+                Method webServiceMethodInPreHandler = inv.getWebServiceMethod();
+                if( webServiceMethodInPreHandler != null ) {
+                    Method postHandlerMethod =
+                        wsUtil.getInvMethod(
+                                (com.sun.xml.rpc.spi.runtime.Tie)inv.getWebServiceTie(), context);
+
+                    if( !webServiceMethodInPreHandler.equals(postHandlerMethod) ) {
+                        throw new UnmarshalException
+                            ("Original method " + webServiceMethodInPreHandler
+                             + " does not match post-handler method " +
+                             postHandlerMethod);
+                    }
+                }
             }
         } catch(Exception e) {
             logger.log(Level.WARNING, "postWebHandlerError", e);

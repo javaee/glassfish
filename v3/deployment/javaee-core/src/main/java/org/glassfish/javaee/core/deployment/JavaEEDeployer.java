@@ -196,7 +196,6 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
             }
 */
 
-            generateArtifacts(dc);
              //In jaxrpc it was required to run
              //Wscompile to generate the artifacts for clients too.
              //service-ref element can be in client in web.xml,  application-client.xml, sun-ejb-jar.xml
@@ -207,6 +206,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
                     jaxrpcCodeGenFacade.run(habitat,dc,getModuleClassPath(dc)) ;
                 }
             }
+            generateArtifacts(dc);
             return true;
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions
