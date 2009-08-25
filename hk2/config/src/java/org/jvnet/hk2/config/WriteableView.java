@@ -65,6 +65,8 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
     Transaction currentTx;
     private static Validator beanValidator=null;
     
+    public Transaction getTransaction() { return currentTx; }
+    
     public WriteableView(ConfigBeanProxy readView) {
         this.bean = (ConfigBean) ((ConfigView) Proxy.getInvocationHandler(readView)).getMasterView();
         this.defaultView = bean.createProxy();
