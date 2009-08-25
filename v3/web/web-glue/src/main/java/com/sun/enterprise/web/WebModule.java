@@ -36,14 +36,7 @@
 
 package com.sun.enterprise.web;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -51,7 +44,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.Servlet;
+import javax.servlet.*;
 import javax.servlet.http.HttpSession;
 
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
@@ -501,9 +494,12 @@ public class WebModule extends PwcWebModule {
             }
             webFragmentMap = webBundleDescriptor.getJarNameToWebFragmentNameMap();
         }
-        this.setServletContainerInitializerInterestList(
-            ServletContainerInitializerUtil.getInterestList(webFragmentMap,
-                orderingList, hasOthers, wmInfo.getAppClassLoader()));
+
+        Iterable<ServletContainerInitializer> allInitializers =
+            ServletContainerInitializerUtil.getServletContainerInitializers(
+                webFragmentMap, orderingList, hasOthers,
+                wmInfo.getAppClassLoader());
+        setServletContainerInitializerInterestList(allInitializers);
 
         // Start and register Tomcat mbeans
         super.start();

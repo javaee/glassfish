@@ -62,15 +62,13 @@ public class ServletContainerInitializerUtil {
 
     /**
      * Given a class loader, check for ServletContainerInitializer
-     * implementations in any JAR file in the classpath, and build an
-     * interest list of which initializer is interested in what class
-     * implementations / annotations
+     * implementations in any JAR file in the classpath
      *
      * @param cl The ClassLoader to be used to find JAR files
-     * @return Map of classes with list of ServletContainerInitializers
-     * interested in them
+     *
+     * @return Iterable over all ServletContainerInitializers that were found
      */
-    public static Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> getInterestList(
+    public static Iterable<ServletContainerInitializer> getServletContainerInitializers(
             Map<String, String> webFragmentMap, List<String> absoluteOrderingList,
             boolean hasOthers, ClassLoader cl) {
         /*
@@ -124,12 +122,31 @@ public class ServletContainerInitializerUtil {
                     webAppCl.getParent());
         }
 
-        ServiceLoader<ServletContainerInitializer> frameworks =
-                ServiceLoader.load(ServletContainerInitializer.class, cl);
+        return ServiceLoader.load(ServletContainerInitializer.class, cl);
+    }
+
+
+    /**
+     * Builds a mapping of classes to the list of ServletContainerInitializers
+     * interested in them
+     *
+     * @param initializers an Iterable over all ServletContainerInitializers
+     * that need to be considered
+     *
+     * @return Mapping of classes to list of ServletContainerInitializers
+     * interested in them
+     */
+    public static Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> getInterestList(Iterable<ServletContainerInitializer> initializers) {
+
+        if (null == initializers) {
+            return null;
+        }
+
         Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList = null;
+
         // Build a list of the classes / annotations in which the
-        // initializers are interested in
-        for(ServletContainerInitializer sc : frameworks) {
+        // initializers are interested
+        for (ServletContainerInitializer sc : initializers) {
             if(interestList == null) {
                 interestList = new HashMap<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>>();
             }
@@ -166,6 +183,7 @@ public class ServletContainerInitializerUtil {
                 }
             }
         }
+
         return interestList;
     }
 
@@ -173,24 +191,29 @@ public class ServletContainerInitializerUtil {
      * Given an interestlist that was built above, and a class loader, scan the entire web app's classes and libraries
      * looking for classes that extend/implement/use the annotations of a class present in the interest list
      *
-     * @param interestList The interestList build by the previous util method
+     * @param initializers Iterable over all ServletContainerInitializers that
+     * were discovered
+     * @param interestList The interestList built by the previous util method
      * @param cl The classloader to be used to load classes in WAR
      * @return Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>>
      *                          A Map of ServletContainerInitializer classes to be called and arguments to be passed
      *                          to them
      */
     public  static Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> getInitializerList(
+            Iterable<ServletContainerInitializer> initializers,
             Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList,
             ClassLoader cl) {
-        if(interestList == null)
+
+        if (interestList == null) {
             return null;
+        }
 
         // This contains the final list of initializers and the set of
         // classes to be passed to them as arg
         Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList = null;
 
-        //If an initializer was present without @HandleTypes, that initializer
-        // should always be called
+        // If an initializer was present without any @HandleTypes, it 
+        // must be called with a null set of classes
         if(interestList.containsKey(ServletContainerInitializerUtil.class)) {
             initializerList = new HashMap<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>>();
             ArrayList<Class<? extends ServletContainerInitializer>> initializersWithoutHandleTypes =
@@ -257,6 +280,18 @@ public class ServletContainerInitializerUtil {
                 }
             }
         }
+
+        /*
+         * If a ServletContainerInitializer was annotated with HandlesTypes,
+         * but none of the application classes match, we must still invoke
+         * it at its onStartup method, passing in a null Set of classes
+         */ 
+        for (ServletContainerInitializer initializer : initializers) {
+            if (!initializerList.containsKey(initializer.getClass())) {
+                initializerList.put(initializer.getClass(), null);
+            }
+        }
+
         return initializerList;
     }
 

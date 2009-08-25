@@ -720,7 +720,8 @@ public class StandardContext
      */
     private transient MySecurityManager mySecurityManager;
 
-    private Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> servletContainerInitializerInterestList = null;
+    // Iterable over all ServletContainerInitializers that were discovered
+    private Iterable<ServletContainerInitializer> servletContainerInitializers = null;
 
     // The major Servlet spec version of the web.xml
     private int effectiveMajorVersion = 0;
@@ -5432,13 +5433,15 @@ public class StandardContext
 
     private boolean callServletContainerInitializers() {
 
-        // Get a list of ServletContainerInitializers present, if any,
-        // in this app's lib. If list is still null, it means we did not
-        // find any ServletContainerInitializers, so return immediately
+        // Get the list of ServletContainerInitializers and the classes
+        // they are interested in
+        Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList =
+            ServletContainerInitializerUtil.getInterestList(
+                servletContainerInitializers);
         Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList =
-                ServletContainerInitializerUtil.getInitializerList(
-                        servletContainerInitializerInterestList,
-                        getClassLoader());
+            ServletContainerInitializerUtil.getInitializerList(
+                servletContainerInitializers, interestList,
+                getClassLoader());
         if (initializerList == null) {
             return true;
         }
@@ -5475,8 +5478,9 @@ public class StandardContext
     }
 
     public void setServletContainerInitializerInterestList(
-            Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList) {
-        servletContainerInitializerInterestList = interestList;
+            Iterable<ServletContainerInitializer> initializers)
+ {
+        servletContainerInitializers = initializers;
     }
 
     /**
