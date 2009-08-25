@@ -51,7 +51,7 @@ import java.beans.PropertyVetoException;
  *  Preferences for AMX MBean behavior.
  */
 @Configured
-public interface AMXPrefs extends ConfigBeanProxy, Injectable, PropertyBag, SystemPropertyBag  {
+public interface AmxPref extends ConfigBeanProxy, Injectable, PropertyBag, SystemPropertyBag  {
     /** Possible value for {@link #getValidationLevel} */
     public static final String VALIDATION_LEVEL_OFF    = "off";
     /** Possible value for {@link #getValidationLevel} */

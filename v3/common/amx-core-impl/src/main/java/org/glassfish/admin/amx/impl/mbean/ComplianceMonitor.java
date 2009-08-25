@@ -52,7 +52,7 @@ import org.glassfish.admin.amx.core.AMXValidator;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
-import com.sun.enterprise.config.serverbeans.AMXPrefs;
+import com.sun.enterprise.config.serverbeans.AmxPref;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 
 /**
@@ -80,8 +80,8 @@ public final class ComplianceMonitor implements NotificationListener
 
         mServer = (MBeanServer) domainRoot.extra().mbeanServerConnection();
         
-        final AMXPrefs amxPrefs = InjectedValues.getInstance().getAMXPrefs();
-        mValidationLevel = amxPrefs == null ? AMXPrefs.VALIDATION_LEVEL_FULL : amxPrefs.getValidationLevel();
+        final AmxPref amxPrefs = InjectedValues.getInstance().getAMXPrefs();
+        mValidationLevel = amxPrefs == null ? AmxPref.VALIDATION_LEVEL_FULL : amxPrefs.getValidationLevel();
         mUnregisterNonCompliant = amxPrefs == null ?  true : Boolean.valueOf(amxPrefs.getUnregisterNonCompliant());
 
         mValidatorThread = new ValidatorThread(mServer, mValidationLevel, mUnregisterNonCompliant);
@@ -115,7 +115,7 @@ public final class ComplianceMonitor implements NotificationListener
         }
     }
     
-    boolean shouldValidate() { return ! AMXPrefs.VALIDATION_LEVEL_OFF.equals(mValidationLevel); }
+    boolean shouldValidate() { return ! AmxPref.VALIDATION_LEVEL_OFF.equals(mValidationLevel); }
 
     private void validate(final ObjectName objectName)
     {

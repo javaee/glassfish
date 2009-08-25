@@ -49,7 +49,7 @@ import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.module.ModulesRegistry;
 
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.AMXPrefs;
+import com.sun.enterprise.config.serverbeans.AmxPref;
 
 /**
 Utility class that gets various useful values injected into it for use
@@ -84,9 +84,9 @@ public class InjectedValues
     }
 
     /** might return null */
-    public AMXPrefs getAMXPrefs()
+    public AmxPref getAMXPrefs()
     {
-        final AMXPrefs prefs = mDomain.getAMXPrefs();
+        final AmxPref prefs = mDomain.getAmxPref();
         if ( prefs == null )
         {
             // create one?

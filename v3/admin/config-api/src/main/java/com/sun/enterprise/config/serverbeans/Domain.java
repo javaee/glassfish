@@ -279,9 +279,9 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     void setLoadBalancers(LoadBalancers value) throws PropertyVetoException;
     
     @Element
-    public AMXPrefs  getAMXPrefs();
+    public AmxPref  getAmxPref();
     
-    public void  setAMXPrefs(final AMXPrefs amxPrefs) throws PropertyVetoException;
+    public void  setAmxPref(final AmxPref amxPrefs) throws PropertyVetoException;
 
     /**
      * Gets the value of the systemProperty property.
