@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.Util;
@@ -33,6 +35,10 @@ import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.DomDocument;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.WriteableView;
+import org.jvnet.hk2.config.Transaction;
+
+import java.lang.reflect.Proxy;
 
 /**
  * TODO: fix the duplication of code for Property/SystemProperty by refactoring the config bean interfaces.
@@ -105,6 +111,16 @@ public class ConfigToolsImpl extends AMXImplBase
 
             return _run(parent, configSupport);
         }
+        
+        protected Set<String> propNames()
+        {
+            final Set<String>   names = new HashSet<String>();
+            for (final Map<String, String> newProp : mNewProps)
+            {
+                names.add( newProp.get("Name") );
+            }
+            return names;
+        }
 
         abstract Object _run(final ConfigBeanProxy parent, final ConfigSupport spt) throws PropertyVetoException, TransactionFailure;
 
@@ -122,37 +138,55 @@ public class ConfigToolsImpl extends AMXImplBase
         {
             final PropertyBag bag = (PropertyBag) parent;
             final List<Property> props = bag.getProperty();
-            if (mClearAll)
+            
+            if ( mClearAll)
             {
-                props.clear();
+                // remove all item that aren't in the new ones
+                final Set<String>   newPropNames = propNames();
+                final List<Property> toRemove = new ArrayList<Property>();
+                for( final Property existing : props )
+                {
+                    if ( ! newPropNames.contains(existing.getName()) )
+                    {
+                       toRemove.add(existing);
+                    }
+                }
+                props.removeAll( toRemove );
             }
 
+            final WriteableView parentW = (WriteableView)Proxy.getInvocationHandler(parent);
+            final Transaction t = parentW.getTransaction();
+                    
             for (final Map<String, String> newProp : mNewProps)
             {
                 final String name = newProp.get("Name");
                 final String value = newProp.get("Value");
                 final String description = newProp.get("Description");
 
-                // Better to modify the existing property, but how to join the transaction?
-                // Remove conflicting Property first
                 Property prop = findProperty(props, name);
                 if (prop != null)
                 {
-                    props.remove(prop);
+                    final Property propW = configSupport.getWriteableView(prop);
+                    ((WriteableView)Proxy.getInvocationHandler(propW)).join( t );
+                    prop = propW;
+                    //debug("Updated system-property: " + prop.getName());
                 }
-                prop = parent.createChild(Property.class);
+                else
+                {
+                    prop = parent.createChild(Property.class);
+                    props.add(prop);
+                    //debug("Create new system-property: " + prop.getName());
+                }
+                
                 prop.setName(name);
                 prop.setValue(value);
                 prop.setDescription(description);
-                props.add(prop);
-                debug("Created/updated property: " + name);
             }
-
             return null;
         }
-
     }
 
+    
     private static final class SystemPropsSetter extends AnyPropsSetter
     {
         public SystemPropsSetter(List<Map<String, String>> newProps, final boolean clearAll)
@@ -165,35 +199,53 @@ public class ConfigToolsImpl extends AMXImplBase
         {
             final SystemPropertyBag bag = (SystemPropertyBag) parent;
             final List<SystemProperty> props = bag.getSystemProperty();
-            if (mClearAll)
+            
+            // it's important to *modify* existing items, not remove then and re-add them
+            if ( mClearAll)
             {
-                props.clear();
+                // remove all item that aren't in the new ones
+                final Set<String>   newPropNames = propNames();
+                final List<SystemProperty> toRemove = new ArrayList<SystemProperty>();
+                for( final SystemProperty existing : props )
+                {
+                    if ( ! newPropNames.contains(existing.getName()) )
+                    {
+                       toRemove.add(existing);
+                    }
+                }
+                props.removeAll( toRemove );
             }
 
+            final WriteableView parentW = (WriteableView)Proxy.getInvocationHandler(parent);
+            final Transaction t = parentW.getTransaction();
+                    
             for (final Map<String, String> newProp : mNewProps)
             {
                 final String name = newProp.get("Name");
                 final String value = newProp.get("Value");
                 final String description = newProp.get("Description");
 
-                // Better to modify the existing property, but how to join the transaction?
-                // Remove conflicting Property first
                 SystemProperty prop = findSystemProperty(props, name);
                 if (prop != null)
                 {
-                    props.remove(prop);
+                    final SystemProperty propW = configSupport.getWriteableView(prop);
+                    ((WriteableView)Proxy.getInvocationHandler(propW)).join( t );
+                    prop = propW;
+                    //debug("Updated system-property: " + prop.getName());
                 }
-                prop = parent.createChild(SystemProperty.class);
+                else
+                {
+                    prop = parent.createChild(SystemProperty.class);
+                    props.add(prop);
+                    //debug("Create new system-property: " + prop.getName());
+                }
+                
                 prop.setName(name);
                 prop.setValue(value);
                 prop.setDescription(description);
-                props.add(prop);
-                debug("Created/updated system property: " + name);
             }
-
             return null;
         }
-
     }
 
     /*
