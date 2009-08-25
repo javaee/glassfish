@@ -46,7 +46,7 @@
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="setup,build,deploy,run,undeploy"/>
+    <target name="all" depends="setup,build,deploy,run,undeploy,restore"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -75,9 +75,6 @@
     <target name="build-publish-war" depends="build, publish-war-common" />
 
     <target name="setup">
-      <antcall target="delete-user-common">
-        <param name="user" value="j2ee"/>
-      </antcall>
         <antcall target="create-user-common">
             <param name="user" value="j2ee"/>
             <param name="password" value="j2ee"/>
@@ -104,6 +101,12 @@
     <target name="undeploy" depends="init-common">
         <antcall target="undeploy-war-common"/>
     </target>   
+
+    <target name="restore">
+        <antcall target="delete-user-common">
+            <param name="user" value="j2ee"/>
+        </antcall>
+    </target>
 
     <target name="usage">
         <antcall target="usage-common"/>
