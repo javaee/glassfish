@@ -31,6 +31,16 @@ import org.glassfish.flashlight.provider.FlashlightProbe;
  */
 
 public class DTraceClientInvoker implements ProbeClientInvoker{
+
+    public static synchronized void setEnabled(boolean b) {
+        enabled = b;
+    }
+
+    // bn: yes you *do* need synchronization here!
+    public static synchronized boolean getEnabled() {
+        return enabled;
+    }
+
     public DTraceClientInvoker(int ID, FlashlightProbe p) {
         id          = ID;
         method      = p.getDTraceMethod();
@@ -38,17 +48,14 @@ public class DTraceClientInvoker implements ProbeClientInvoker{
     }
 
     public void invoke(Object[] args) {
-        // PERFORMANCE-ONLY change
-        // do not check if dtrace is enabled.  We would not be called if DTrace 
-        // was *not* enabled when the server started.
-        //if(FlashlightUtils.isDtraceEnabled()) {
+        if(enabled) {
             try {
                 method.invoke(targetObj, fixArgs(args));
             }
             catch(Exception e) {
                 Logger.getAnonymousLogger().warning(e.getMessage());
             }
-        //}
+        }
     }
 
     public int getId() {
@@ -83,5 +90,6 @@ public class DTraceClientInvoker implements ProbeClientInvoker{
     private final   int             id;
     private final   Method          method;
     private final   Object          targetObj;
+    private static boolean          enabled     = FlashlightUtils.isDtraceEnabled();
 }
 

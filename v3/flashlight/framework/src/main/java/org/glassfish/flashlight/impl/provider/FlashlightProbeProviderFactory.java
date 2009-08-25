@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.util.*;
 import org.glassfish.api.monitoring.DTraceContract;
 import org.glassfish.flashlight.FlashlightUtils;
+import org.glassfish.flashlight.impl.client.DTraceClientInvoker;
 import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 import org.glassfish.flashlight.provider.*;
 import org.glassfish.flashlight.impl.core.*;
@@ -80,7 +81,7 @@ public class FlashlightProbeProviderFactory
     @Inject
     Habitat habitat;
 
-    private ConcurrentHashMap<String, Object> providerInfo = new ConcurrentHashMap<String, Object>();
+    private final static Set<FlashlightProbeProvider> allProbeProviders = new HashSet<FlashlightProbeProvider>();
     private boolean debug = false;
     private final static Logger logger = Logger.getLogger(FlashlightProbeProviderFactory.class.getName());
     private final HashMap<String, String> primTypes = new HashMap() {
@@ -116,8 +117,9 @@ public class FlashlightProbeProviderFactory
     		Class<T> providerClazz)
             throws InstantiationException, IllegalAccessException {
 
+        FlashlightProbeProvider provider = null;
         try {
-            FlashlightProbeProvider provider = new FlashlightProbeProvider(
+            provider = new FlashlightProbeProvider(
             		moduleProviderName, moduleName, probeProviderName, providerClazz);
             //System.out.println("ModuleProviderName= " + moduleProviderName + " \tModule= " + moduleName
             //		+ "\tProbeProviderName= " + probeProviderName + "\tProviderClazz= " + providerClazz.toString());
@@ -188,11 +190,14 @@ public class FlashlightProbeProviderFactory
                         return null;
                     }
                 });
-        }        
+        }
+
+        finally {
+            if(provider != null)
+                allProbeProviders.add(provider);
+        }
     }
 
-    // bnevins TODO add support in here for DTrace -- it follows a different code path from
-    // getProbeProvider
     public void processXMLProbeProviders(ClassLoader cl, String xml, boolean inBundle) {
         mprint("processProbeProviderXML for " + xml);
         try {
@@ -215,6 +220,7 @@ public class FlashlightProbeProviderFactory
 
     }
 
+    @Override
 	public String toString() {
 		return ObjectAnalyzer.toString(this);
 	}
@@ -230,32 +236,42 @@ public class FlashlightProbeProviderFactory
         // We set the DTrace Method object inside the probe just this once to avoid
         // having to discover it anew over and over and over again at runtime...
 
-        DTraceContract dt = FlashlightUtils.getDtraceEngine();
+        // the try is here exclusively for the finally block...
+        boolean dtraceEnabled = false;
 
-        // is DTrace available and enabled?
-        if(dt == null)
-            return;
+        try {
+            DTraceContract dt = FlashlightUtils.getDtraceEngine();
 
-        // here is a way to do the same thing but you get the intermediate interface class
-        //Class dtraceProviderInterface = dt.getInterface(provider);
-        //Object dtraceProviderImpl = dt.getProvider(dtraceProviderInterface);
+            // is DTrace available and enabled?
+            if(dt == null)
+                return;
 
-        Object dtraceProviderImpl = dt.getProvider(provider);
+            // here is a way to do the same thing but you get the intermediate interface class
+            //Class dtraceProviderInterface = dt.getInterface(provider);
+            //Object dtraceProviderImpl = dt.getProvider(dtraceProviderInterface);
 
-        // something is wrong with the provider class
-        if(dtraceProviderImpl == null)
-            return;
+            Object dtraceProviderImpl = dt.getProvider(provider);
 
-         Collection<FlashlightProbe> probes = provider.getProbes();
+            // something is wrong with the provider class
+            if(dtraceProviderImpl == null)
+                return;
 
-         for(FlashlightProbe probe : probes) {
-             // mf will either find a method or throw an Exception
-             DTraceMethodFinder mf = new DTraceMethodFinder(probe, dtraceProviderImpl);
-             probe.setDTraceMethod(mf.matchMethod());
-             probe.setDTraceProviderImpl(dtraceProviderImpl);
-         }
+             Collection<FlashlightProbe> probes = provider.getProbes();
 
-         FlashlightProbeClientMediator.getInstance().registerDTraceListener(provider);
+             for(FlashlightProbe probe : probes) {
+                 // mf will either find a method or throw an Exception
+                 DTraceMethodFinder mf = new DTraceMethodFinder(probe, dtraceProviderImpl);
+                 probe.setDTraceMethod(mf.matchMethod());
+                 probe.setDTraceProviderImpl(dtraceProviderImpl);
+             }
+
+             FlashlightProbeClientMediator.getInstance().registerDTraceListener(provider);
+             dtraceEnabled = true;
+             // It gets called 23 times or so currently -- big deal it only takes a few nanoseconds...
+        }
+        finally {
+             DTraceClientInvoker.setEnabled(dtraceEnabled);
+        }
     }
 
     private void registerProvider(ClassLoader cl, ProbeProviderXMLParser.Provider provider) {
@@ -326,7 +342,7 @@ public class FlashlightProbeProviderFactory
             return;
 
         handleDTrace(flProvider);
-
+        allProbeProviders.add(flProvider);
         ProbeProviderRegistry.getInstance().registerProbeProvider(
                 flProvider, providerClazz);
         mprint (" Provider registered successfully - " + probeProviderName);
