@@ -7,10 +7,13 @@
         childImageURL="/resource/jca/images/connector.png"
         childExpanded="$boolean{false}"
         childURL="/jca/resourceAdapterConfigEdit.jsf?name=#{$this{valueBinding}.text}"
-        text="$resource{i18n.tree.resourceAdapterConfigs}"
+        text="$resource{i18njca.tree.resourceAdapterConfigs}"
         url="/jca/resourceAdapterConfigs.jsf"
         >
         <!facet image>
             <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/resourceAdapterConfigs.jsf"  border="$int{0}" immediate="$boolean{true}" />
         </facet>
-        </dynamicTreeNode>
+        <!beforeCreate
+            setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
+        />
+    </dynamicTreeNode>

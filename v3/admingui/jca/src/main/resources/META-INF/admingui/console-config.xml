@@ -11,7 +11,7 @@
     <integration-point
             id="raconfigNode"
             type="org.glassfish.admingui:navNode"
-            priority="200"
+            priority="220"
             parentId="resources"
             content="raconfigTreeNode.jsf"
     />
