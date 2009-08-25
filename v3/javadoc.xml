@@ -12,9 +12,9 @@
 
   <path id="src.dir">
     <dirset dir="${basedir}">
-
+<!--
       <include name="**/javax/**"/>
-
+-->
       <!-- adding the subdirectories that includes "javax." since ant include does not pickup the "javax." subdirectories -->
       <include name="javaee-api/**/src/main/java/**"/>
       <include name="ejb/**/src/main/java/**"/>
@@ -458,7 +458,7 @@ fileset refid of artifact:dependencies does not work in unjar
     <javadoc sourcepathref="src.dir"
              destdir="${build.javadocs}"
 	     excludepackagenames="com.*,org.*,sample.*,killer.*,net.*,testing.*,java.*,javax.xml.messaging.*,javax.xml.registry.samples.*,javax.xml.namespace.*,javax.faces.bean"
-             maxmemory="2048m"
+             maxmemory="16284m"
              author="true"
              version="true"
              source="1.6"
