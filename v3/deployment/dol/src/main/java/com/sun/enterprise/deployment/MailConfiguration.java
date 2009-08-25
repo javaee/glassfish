@@ -68,10 +68,8 @@ public class MailConfiguration implements Serializable {
     private static String PROTOCOL_TYPE_POP3 = "pop3";
     private static String PROTOCOL_TYPE_SMTP = "smtp";
 
-    private static String PROP_NAME_PREFIX = "mail-";
-    private static String PROP_NAME_SUFFIX_HOST = "-host";
-    private static String PROP_NAME_SUFFIX_USER = "-user";
-    private static char PROP_NAME_DELIM = '-';
+    private static String PROP_NAME_PREFIX_LEGACY = "mail-";
+    private static char PROP_NAME_DELIM_LEGACY = '-';
     
     private static String DEF_VAL_STORE_PROTOCOL = PROTOCOL_TYPE_IMAP;
     private static String DEF_VAL_STORE_PROTOCOL_CLASS =
@@ -216,10 +214,6 @@ public class MailConfiguration implements Serializable {
         String name = null;
         String value = null;
 
-        String protRelatedHostPropName = PROP_NAME_PREFIX + storeProtocol +
-            PROP_NAME_SUFFIX_HOST;
-        String protRelatedUserPropName = PROP_NAME_PREFIX + storeProtocol +
-            PROP_NAME_SUFFIX_USER;
         String protRelatedHostName = MAIL_PREFIX + storeProtocol +
                         MAIL_SUFFIX_HOST;
         String protRelatedUserName = MAIL_PREFIX + storeProtocol +
@@ -230,19 +224,17 @@ public class MailConfiguration implements Serializable {
             name = property.getName();
             value = (String)property.getValue();
 
-            if (name.startsWith(PROP_NAME_PREFIX)) {
-                if (name.equals(protRelatedHostPropName)) {
+            if(name.startsWith(PROP_NAME_PREFIX_LEGACY)) {
+                name = name.replace(PROP_NAME_DELIM_LEGACY, MAIL_DELIM);
+            }
+
+            if(name.startsWith(MAIL_PREFIX)) {
+                if(name.equals(protRelatedHostName)) {
                     mailHost = value;
-                    mailProperties.put(protRelatedHostName, value);
-                }
-                else if (name.equals(protRelatedUserPropName)) {
+                } else if(name.equals(protRelatedUserName)) {
                     username = value;
-                    mailProperties.put(protRelatedUserName, value);
                 }
-                else {
-                    name = name.replace(PROP_NAME_DELIM, MAIL_DELIM);
-                    mailProperties.put(name, value);
-                }
+                mailProperties.put(name, value);
             }
         }
 
