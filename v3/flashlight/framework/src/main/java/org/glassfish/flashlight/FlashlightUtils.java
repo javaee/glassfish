@@ -33,27 +33,39 @@ public class FlashlightUtils {
                 habitat = h;
                 monConfig = mc;
                 setDTraceAvailabilty();
+                setDTraceEnabled(Boolean.parseBoolean(monConfig.getDtraceEnabled()));
+                setMonitoringEnabled(Boolean.parseBoolean(monConfig.getMonitoringEnabled()));
             }
         }
     }
 
-    public static boolean isDtraceEnabled() {
+    public static void setDTraceEnabled(boolean b) {
+        ok();
+        dtraceEnabled = b;
+    }
+
+    public static void setMonitoringEnabled(boolean b) {
+        ok();
+        monitoringEnabled = b;
+    }
+
+    public static boolean isDtraceAvailable() {
         ok();
 
         if(dt == null)
             return false;
 
-        if(!Boolean.parseBoolean(monConfig.getMonitoringEnabled()))
+        if(!dtraceEnabled)
             return false;
 
-        if(!Boolean.parseBoolean(monConfig.getDtraceEnabled()))
+        if(!monitoringEnabled)
             return false;
 
         return true;
     }
 
     static public DTraceContract getDtraceEngine() {
-        return isDtraceEnabled() ? dt : null;
+        return isDtraceAvailable() ? dt : null;
     }
 
     private static void setDTraceAvailabilty() {
@@ -62,9 +74,6 @@ public class FlashlightUtils {
         // blocks of code.
 
         ok();
-
-        dt = null;
-
         dt = habitat.getByContract(DTraceContract.class);
 
         if(dt == null)
@@ -155,6 +164,8 @@ public class FlashlightUtils {
     private static              Habitat             habitat;
     private static              MonitoringService   monConfig;
     private static              DTraceContract      dt;
+    private static              boolean             dtraceEnabled;
+    private static              boolean             monitoringEnabled;
     private final static        Object              LOCK                = new Object();
     private final static        Class[]             INTEGRAL_CLASSES    = new Class[] {
         int.class, long.class, short.class, boolean.class, char.class, byte.class,

@@ -43,6 +43,9 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 public interface ProbeProviderFactory {
+    void dtraceEnabledChanged(boolean newValue);
+
+    void monitoringEnabledChanged(boolean newValue);
 
     public <T> T getProbeProvider(Class<T> providerClazz)
             throws InstantiationException, IllegalAccessException;

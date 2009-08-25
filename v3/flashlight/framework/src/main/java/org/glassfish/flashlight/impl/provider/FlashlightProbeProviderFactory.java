@@ -101,7 +101,22 @@ public class FlashlightProbeProviderFactory
     public void postConstruct() {
         FlashlightUtils.initialize(habitat, monitoringServiceConfig);
     }
-        
+
+    /** there are possible timing issues because we have PERFORMANCE ENHANCEMENTS
+     * in place.  Be careful in these 2 config-change methods!
+     */
+    public void dtraceEnabledChanged(boolean newValue) {
+        // TODO
+        FlashlightUtils.setDTraceEnabled(newValue);
+        System.out.println("ZZZZZZZZ  dtrace enable changed to " + newValue);
+    }
+
+    public void monitoringEnabledChanged(boolean newValue) {
+        //TODO
+        FlashlightUtils.setMonitoringEnabled(newValue);
+        System.out.println("ZZZZ  monitoring enable changed to " + newValue);
+    }
+    
     public <T> T getProbeProvider(Class<T> providerClazz)
             throws InstantiationException, IllegalAccessException {
         //TODO: check for null and generate default names
@@ -236,42 +251,32 @@ public class FlashlightProbeProviderFactory
         // We set the DTrace Method object inside the probe just this once to avoid
         // having to discover it anew over and over and over again at runtime...
 
-        // the try is here exclusively for the finally block...
-        boolean dtraceEnabled = false;
+        DTraceContract dt = FlashlightUtils.getDtraceEngine();
 
-        try {
-            DTraceContract dt = FlashlightUtils.getDtraceEngine();
+        // is DTrace available and enabled?
+        if(dt == null)
+            return;
 
-            // is DTrace available and enabled?
-            if(dt == null)
-                return;
+        // here is a way to do the same thing but you get the intermediate interface class
+        //Class dtraceProviderInterface = dt.getInterface(provider);
+        //Object dtraceProviderImpl = dt.getProvider(dtraceProviderInterface);
 
-            // here is a way to do the same thing but you get the intermediate interface class
-            //Class dtraceProviderInterface = dt.getInterface(provider);
-            //Object dtraceProviderImpl = dt.getProvider(dtraceProviderInterface);
+        Object dtraceProviderImpl = dt.getProvider(provider);
 
-            Object dtraceProviderImpl = dt.getProvider(provider);
+        // something is wrong with the provider class
+        if(dtraceProviderImpl == null)
+            return;
 
-            // something is wrong with the provider class
-            if(dtraceProviderImpl == null)
-                return;
+         Collection<FlashlightProbe> probes = provider.getProbes();
 
-             Collection<FlashlightProbe> probes = provider.getProbes();
+         for(FlashlightProbe probe : probes) {
+             // mf will either find a method or throw an Exception
+             DTraceMethodFinder mf = new DTraceMethodFinder(probe, dtraceProviderImpl);
+             probe.setDTraceMethod(mf.matchMethod());
+             probe.setDTraceProviderImpl(dtraceProviderImpl);
+         }
 
-             for(FlashlightProbe probe : probes) {
-                 // mf will either find a method or throw an Exception
-                 DTraceMethodFinder mf = new DTraceMethodFinder(probe, dtraceProviderImpl);
-                 probe.setDTraceMethod(mf.matchMethod());
-                 probe.setDTraceProviderImpl(dtraceProviderImpl);
-             }
-
-             FlashlightProbeClientMediator.getInstance().registerDTraceListener(provider);
-             dtraceEnabled = true;
-             // It gets called 23 times or so currently -- big deal it only takes a few nanoseconds...
-        }
-        finally {
-             DTraceClientInvoker.setEnabled(dtraceEnabled);
-        }
+         FlashlightProbeClientMediator.getInstance().registerDTraceListener(provider);
     }
 
     private void registerProvider(ClassLoader cl, ProbeProviderXMLParser.Provider provider) {

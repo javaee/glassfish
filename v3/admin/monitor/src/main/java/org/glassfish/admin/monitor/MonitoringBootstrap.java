@@ -42,6 +42,7 @@ import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.flashlight.client.ProbeClientMediator;
+import org.glassfish.flashlight.impl.provider.FlashlightProbeProviderFactory;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.glassfish.internal.api.Init;
 /**
@@ -289,48 +290,96 @@ public class MonitoringBootstrap implements Init, PostConstruct, EventListener, 
     }*/
 
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] propertyChangeEvents) {
-       for (PropertyChangeEvent event : propertyChangeEvents) {
-           if (event.getSource() instanceof ModuleMonitoringLevels) {
-                String propName = event.getPropertyName();
-                boolean enabled = getEnabledValue(event.getNewValue().toString());
-                StatsProviderRegistry spr = spmd.getStatsProviderRegistry();
-                if (spr != null) {
-                    spr.setConfigEnabled(propName, enabled);
-                    if (enabled) {
-                        spr.enableStatsProvider(propName);
-                    } else {
-                        spr.disableStatsProvider(propName);
-                    }
-                }
-           }
-           //For change in mbean-enabled attribute register/unregister gmbal for enabled config elements
-           if (event.getSource() instanceof MonitoringService) {
-                String propName = event.getPropertyName();
-                if (propName.equals("mbean-enabled")) {
-                    StatsProviderRegistry spr = spmd.getStatsProviderRegistry();
-                    if (event.getNewValue().toString().equals("true")) {
-                        spr.registerAllGmbal();
-                    } else {
-                        spr.unregisterAllGmbal();
-                    }
-                }
-                else if(propName.equals("dtrace-enabled")) {
-                    boolean newValue = Boolean.parseBoolean(event.getNewValue().toString());
-                    boolean oldValue = Boolean.parseBoolean(event.getOldValue().toString());
+        StatsProviderRegistry spr = spmd.getStatsProviderRegistry();
 
-                    if(newValue != oldValue)
-                        ;//TBD System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZ  dtrace-enabled changed!!!  ZZZZZZZZZZZZZZZZz");
-                }
-           }
-       }
+        for (PropertyChangeEvent event : propertyChangeEvents) {
+            // let's get out of here ASAP if it is not our stuff!!
+            if(event == null)
+                continue;
+
+            String propName = event.getPropertyName();
+            Object oldVal = event.getOldValue();
+            Object newVal = event.getNewValue();
+
+            if(newVal == null || newVal.equals(oldVal))
+                continue;   // no change!!
+
+            if(!ok(propName))
+                continue;
+
+            if (event.getSource() instanceof ModuleMonitoringLevels) {
+                boolean newEnabled = parseLevelsBoolean(newVal.toString());
+
+                // complications!  What if old is null? we fake out the rest of
+                // the logic to think it changed...
+                boolean oldEnabled = (oldVal == null) ? !newEnabled : parseLevelsBoolean(oldVal.toString());
+                
+                if((newEnabled != oldEnabled) && (spr != null)) // no spr -- means no work can be done.
+                    handleLevelChange(propName, newEnabled);
+            }
+            else if(event.getSource() instanceof MonitoringService) {
+                // we don't want to get fooled because config allows ANY string.
+                // e.g. "false" --> "foo" --> "fals" are all NOT changes!
+                // so we convert to boolean and then compare...
+                boolean newEnabled = Boolean.parseBoolean(newVal.toString());
+                boolean oldEnabled = (oldVal == null) ? !newEnabled : Boolean.parseBoolean(oldVal.toString());
+
+                if(newEnabled != oldEnabled)
+                    handleServiceChange(spr, propName, newEnabled);
+            }
+        }
+
        return null;
     }
 
-    private boolean getEnabledValue(String enabledStr) {
-        if ("OFF".equals(enabledStr)) {
-            return false;
-        }
-        return true;
+    private void handleLevelChange(String propName, boolean enabled) {
+        if(!ok(propName))
+            return;
+
+        StatsProviderRegistry spr = spmd.getStatsProviderRegistry();
+
+        if(spr == null)
+            return; // nothing to do!
+
+        spr.setConfigEnabled(propName, enabled);
+
+        if (enabled)
+            spr.enableStatsProvider(propName);
+        else
+            spr.disableStatsProvider(propName);
     }
 
+    private void handleServiceChange(StatsProviderRegistry spr, String propName, boolean enabled) {
+        if(!ok(propName))
+            return;
+
+        if (propName.equals("mbean-enabled")) {
+            if(spr == null) // required!
+                return;
+
+            if(enabled)
+                spr.registerAllGmbal();
+            else
+                spr.unregisterAllGmbal();
+        }
+        else if(propName.equals("dtrace-enabled")) {
+            //TODO
+            probeProviderFactory.dtraceEnabledChanged(enabled);
+        }
+        else if(propName.equals("monitoring-enabled")) {
+            // TODO
+            probeProviderFactory.monitoringEnabledChanged(enabled);
+        }
+    }
+    
+    private boolean ok(String s) {
+        return s != null && s.length() > 0;
+    }
+
+    private boolean parseLevelsBoolean(String s) {
+        if (ok(s) && s.equals("OFF"))
+            return false;
+
+        return true;
+    }
 }
