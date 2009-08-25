@@ -64,14 +64,18 @@ import org.glassfish.api.embedded.ScatteredArchive.Builder;
 
 public class RunScatteredArchive extends AbstractMojo
 {
+
+/**
+ * @parameter expression="${serverID}" default-value="maven"
+*/
+
+    protected String serverID;
+
 /**
  * @parameter expression="${port}" default-value="8080"
 */
     
     protected int port;
-/**
- * @parameter expression="${rootdirectory}"
- */
 /**
  * @parameter expression="${name}" default-value="test"
  */
@@ -113,16 +117,14 @@ public class RunScatteredArchive extends AbstractMojo
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        Server server = new Server.Builder("maven").build();
-        server.createPort(port);
-        System.out.println("Starting Web " + server);
-        ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
-        System.out.println("builder is " + b);
-        server.addContainer(b);
-        EmbeddedDeployer deployer = server.getDeployer();
-        System.out.println("Added Web");
-
         try {
+            Server server = new Server.Builder(serverID).build();
+            server.createPort(port);
+            System.out.println("Starting Web " + server);
+            ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
+            server.addContainer(b);
+            EmbeddedDeployer deployer = server.getDeployer();
+
             File f = new File(rootdirectory);
             ScatteredArchive.Builder builder = new ScatteredArchive.Builder("sampleweb", f);
             System.out.println("rootdir = " + f);
@@ -141,14 +143,24 @@ public class RunScatteredArchive extends AbstractMojo
             }
 
             DeployCommandParameters dp = new DeployCommandParameters(f);
-            deployer.deploy(builder.buildWar(), dp);
-            System.out.println("Deployed - ENTER to continue");
-            new BufferedReader(new InputStreamReader(System.in)).readLine();
+            dp.name = name;
+            dp.contextroot = contextRoot;
+
+            while(true) {
+                deployer.deploy(builder.buildWar(), dp);
+
+                System.out.println("Deployed Application " + name
+                        + " contextroot is " + contextRoot);
+                System.out.println("");
+                System.out.println("Hit ENTER to redeploy " + name
+                        + " <Ctrl-C> to exit");
+                // wait for enter
+                new BufferedReader(new InputStreamReader(System.in)).readLine();
+                deployer.undeploy(name);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-
-
 }
 

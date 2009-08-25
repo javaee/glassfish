@@ -58,6 +58,14 @@ import org.glassfish.api.embedded.ContainerBuilder;
 
 public class RunWarMojo extends AbstractMojo
 {
+
+
+/**
+ * @parameter expression="${serverID}" default-value="maven"
+*/
+
+    protected String serverID;
+
 /**
  * @parameter expression="${port}" default-value="8080"
 */
@@ -83,14 +91,14 @@ public class RunWarMojo extends AbstractMojo
     protected Boolean precompilejsp;
 
 /**
- * @parameter expression="${virtualservers}" default-value="virtualservers"
+ * @parameter expression="${virtualservers}" 
  */
     protected String virtualservers;
 
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         try {
-            Server server = new Server.Builder("First").build();
+            Server server = new Server.Builder(serverID).build();
             server.createPort(port);
             ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
             System.out.println("builder is " + b);
@@ -111,7 +119,7 @@ public class RunWarMojo extends AbstractMojo
                         + " <Ctrl-C> to exit");
                 // wait for enter
                 new BufferedReader(new InputStreamReader(System.in)).readLine();
-                deployer.undeployAll();
+                deployer.undeploy(name);
             }
         } catch(Exception e) {
            throw new MojoExecutionException(e.getMessage(),e);
