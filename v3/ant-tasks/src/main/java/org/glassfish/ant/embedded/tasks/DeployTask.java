@@ -140,10 +140,5 @@ public class DeployTask extends Task {
         Server server = new Server.Builder(serverID).build();
         EmbeddedDeployer deployer = server.getDeployer();
         deployer.deploy(new File(file), cmdParams);
-        log("Enter to CONTINUE");
-        Console cons = System.console();
-        cons.readLine();
-
-
     }
 }

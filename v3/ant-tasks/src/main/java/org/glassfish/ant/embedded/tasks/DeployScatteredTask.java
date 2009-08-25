@@ -81,7 +81,7 @@ public class DeployScatteredTask extends Task {
         try {
             File f = new File(rootdirectory);
             ScatteredArchive.Builder builder = new ScatteredArchive.Builder(name, f);
-            System.out.println("rootdir = " + f);
+            log("rootdir = " + f);
             if (resources == null)
                 resources = rootdirectory;
             builder.setResources(new File(resources));
@@ -98,17 +98,12 @@ public class DeployScatteredTask extends Task {
             Server server = new Server.Builder(serverID).build();
             EmbeddedDeployer deployer = server.getDeployer();
             DeployCommandParameters dp = new DeployCommandParameters(f);
+            dp.name = name;
             dp.contextroot = this.contextroot == null? name : this.contextroot;
             deployer.deploy(builder.buildWar(), dp);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        //remove this...
-        log("Enter to CONTINUE");
-        Console cons = System.console();
-        cons.readLine();
-
-
     }
 
 }

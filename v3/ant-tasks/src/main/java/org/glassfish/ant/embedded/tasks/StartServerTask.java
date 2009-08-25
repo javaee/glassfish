@@ -59,11 +59,13 @@ public class StartServerTask extends Task {
         this.serverID = serverID;
     }
 
-	public void setPort(int port) {
+    public void setPort(int port) {
         this.port = port;
     }
-    
-	public void execute() throws BuildException {
+
+    public void execute() throws BuildException {
+        Server.Builder builder = new Server.Builder(serverID);
+
         log ("Starting server - all containers");
         Server server = new Server.Builder(serverID).build();
         server.addContainer(ContainerBuilder.Type.all);
