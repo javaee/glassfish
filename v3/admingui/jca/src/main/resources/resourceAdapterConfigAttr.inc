@@ -49,11 +49,6 @@
             <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['ResourceAdapterName']}" />
         </sun:property>
 
-        <sun:property id="objectTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.ObjectType}" >
-            <sun:dropDown id="ObjectType" selected="#{pageSession.valueMap['ObjectType']}" labels={ "$resource{i18njca.connectors.User}"  "$resource{i18njca.connectors.systemAdmin}" } values={ "user" "system-admin" } >
-           
-           </sun:dropDown>
-        </sun:property>   
         <sun:property id="threadPoolsIdProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.resourceAdapterConfig.threadPoolId}">
             <sun:textField id="threadpoolsid" columns="$int{55}" text="#{pageSession.valueMap['ThreadPoolIds']}" />
         </sun:property>
