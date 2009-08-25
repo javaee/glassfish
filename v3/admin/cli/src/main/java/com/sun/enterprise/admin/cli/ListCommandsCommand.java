@@ -115,7 +115,8 @@ public class ListCommandsCommand extends CLICommand {
         }
         if (!localOnly) {
             try {
-                remoteCommands = CLIUtil.getRemoteCommands(programOpts, env);
+                remoteCommands =
+                    CLIUtil.getRemoteCommands(habitat, programOpts, env);
             } catch (CommandException ce) {
                 /*
                  * Hide the real cause of the remote failure (almost certainly

@@ -166,7 +166,7 @@ public class CLIUtil {
     public static String[] getAllCommands(Habitat habitat, ProgramOptions po,
                                 Environment env) {
         try {
-            String[] remoteCommands = getRemoteCommands(po, env);
+            String[] remoteCommands = getRemoteCommands(habitat, po, env);
             String[] localCommands = getLocalCommands(habitat);
             String[] allCommands =
                     new String[localCommands.length + remoteCommands.length];
@@ -206,8 +206,25 @@ public class CLIUtil {
      *
      * @return the commands as a String array, sorted
      */
-    public static String[] getRemoteCommands(ProgramOptions po, Environment env)
+    public static String[] getRemoteCommands(Habitat habitat,
+            ProgramOptions po, Environment env)
             throws CommandException, CommandValidationException {
+        /*
+         * In order to eliminate all local command names from the list
+         * of remote commands, we collect the local command names into
+         * a HashSet that we check later when collecting remote command
+         * names.
+         */
+        Set<String> localnames = new HashSet<String>();
+        String cname = CLICommand.class.getName();
+        for (Inhabitant<?> command : habitat.getInhabitantsByContract(cname)) {
+            for (String name : Inhabitants.getNamesFor(command, cname))
+                localnames.add(name);
+        }
+
+        /*
+         * Now get the list of remote commands.
+         */
         RemoteCommand cmd =
             new RemoteCommand("list-commands", po, env);
         String cmds = cmd.executeAndReturnOutput("list-commands");
@@ -231,7 +248,9 @@ public class CLIUtil {
                     if (i < 0)
                         continue;
                     String s = line.substring(i + 1).trim();
-                    rcmds.add(s);
+                    // add it if it's not a local command
+                    if (!localnames.contains(s))
+                        rcmds.add(s);
                 }
             }
         } catch (IOException ioex) {
