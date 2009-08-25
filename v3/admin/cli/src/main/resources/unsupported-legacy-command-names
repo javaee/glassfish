@@ -11,7 +11,6 @@ restore-domain L
 list-backups L
 install-addons L
 uninstall-addons L
-show-component-status R
 create-jndi-resource R
 delete-jndi-resource R
 list-jndi-resources R
