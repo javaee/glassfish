@@ -162,6 +162,8 @@
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <gmbal.version>3.0.0-b010</gmbal.version>
         <glassfish-management-api.version>3.0.0-b004</glassfish-management-api.version>
+        <mimepull.version>1.4</mimepull.version>
+        <jersey-multipart.version>1.1.1-ea</jersey-multipart.version>
     </properties>
 
 
@@ -934,6 +936,17 @@
                 <artifactId>webui-jsf-suntheme</artifactId>
                 <version>${woodstock.version}</version>
             </dependency>
+
+        <dependency>
+            <groupId>org.jvnet</groupId>
+            <artifactId>mimepull</artifactId>
+            <version>${mimepull.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <artifactId>jersey-multipart</artifactId>
+            <version>${jersey-multipart.version}</version>
+        </dependency>
         </dependencies>
     </dependencyManagement>
     <!--  End:   Dependency management -->

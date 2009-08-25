@@ -101,6 +101,19 @@
             <groupId>org.glassfish.external</groupId>
             <artifactId>management-api</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.jvnet</groupId>
+            <artifactId>mimepull</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <artifactId>jersey-multipart</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+
     </dependencies>
     <build>
         <resources>
