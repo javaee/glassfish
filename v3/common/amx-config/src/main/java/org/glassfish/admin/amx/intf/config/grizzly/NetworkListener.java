@@ -44,6 +44,8 @@ public interface NetworkListener extends NamedConfigElement
 {
     public Protocol findProtocol();
 
+    public Protocol findHttpProtocol();
+
     public Transport findTransport();
 }
 
