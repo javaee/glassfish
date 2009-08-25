@@ -83,6 +83,8 @@ public final class AMXConfigProxyTests extends AMXTestBase
     public AMXConfigProxyTests()
     {
     }
+    
+    Resources getResources() { return getDomainConfig().getResources(); }
 
      /** test all MBeans generically */
     @Test
@@ -463,11 +465,17 @@ public final class AMXConfigProxyTests extends AMXTestBase
         configParams.put("DynamicReconfigurationEnabled", false );
                 
         final Config child = configs.createChild( type, configParams ).as(Config.class);
-
-        
-        /*
+        assert child != null;
+    }
+    
+       @Test
+    public void connectorConnectionPoolTest()
+        throws Exception
+    {
         // create a new ConnectorConnectionPool with a SecurityMap containing a BackendPrincipal
         final Map<String,Object> params = new HashMap<String,Object>();
+        
+        final String NAME = "AMXConfigProxyTests.connectorConnectionPoolTest";
         params.put( "Name", NAME );
         params.put( "ResourceAdapterName", NAME );
         params.put( "ConnectionDefinitionName", NAME );
@@ -481,12 +489,17 @@ public final class AMXConfigProxyTests extends AMXTestBase
         backendParams.put( "UserName", "testUser" );
         backendParams.put( "Password", "testPassword" );
         securityParams.put( Util.deduceType(BackendPrincipal.class), backendParams );
+
+        final String type = Util.deduceType(ConnectorConnectionPool.class);
+        removeChildSilently( getResources(), type, NAME );
+        final AMXConfigProxy result = getResources().createChild( type, params);
+        assert result != null;
+        assert result.type().equals(type);
+        assert getResources().childrenMap(ConnectorConnectionPool.class).get(NAME) != null;
         
-        */
-        
-       //final AMXConfigProxy result = configs.createChild( Util.deduceType(Config.class), configMap);
-        
-       // return result.objectName();
+        final ObjectName objectName = getResources().removeChild( type, NAME );
+        assert objectName != null;
+        assert ! getMBeanServerConnection(). isRegistered(objectName);
     }
     
     @Test
