@@ -314,6 +314,13 @@ public class MonitoringBootstrap implements Init, PostConstruct, EventListener, 
                         spr.unregisterAllGmbal();
                     }
                 }
+                else if(propName.equals("dtrace-enabled")) {
+                    boolean newValue = Boolean.parseBoolean(event.getNewValue().toString());
+                    boolean oldValue = Boolean.parseBoolean(event.getOldValue().toString());
+
+                    if(newValue != oldValue)
+                        ;//TBD System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZ  dtrace-enabled changed!!!  ZZZZZZZZZZZZZZZZz");
+                }
            }
        }
        return null;
