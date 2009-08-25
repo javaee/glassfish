@@ -60,18 +60,17 @@
         <sun:dropDown id="ByteBufferType" selected="#{pageSession.valueMap['ByteBufferType']}" labels={"HEAP", "DIRECT"}  />
     </sun:property>
 
+    <sun:property id="BufferSizeBytes"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.BufferSizeBytes}"  helpText="$resource{i18n_web.transport.BufferSizeBytesHelp}">
+        <sun:textField id="BufferSizeBytes" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['BufferSizeBytes']}" />
+        <sun:staticText id="bytes" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
+    </sun:property>
+
     <sun:property id="AcceptorThreads"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.AcceptorThreads}" helpText="$resource{i18n_web.transport.AcceptorThreadsHelp}">
         <sun:textField id="AcceptorThreads" columns="$int{20}" styleClass="intAllowMinusOne" text="#{pageSession.valueMap['AcceptorThreads']}" />
     </sun:property>
 
     <sun:property id="MaxConnectionsCount"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.MaxConnectionsCount}"  helpText="$resource{i18n_web.transport.MaxConnectionsCountHelp}">
         <sun:textField id="MaxConnectionsCount" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['MaxConnectionsCount']}" />
-    </sun:property>
-
-
-    <sun:property id="BufferSizeBytes"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.BufferSizeBytes}"  helpText="$resource{i18n_web.transport.BufferSizeBytesHelp}">
-        <sun:textField id="BufferSizeBytes" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['BufferSizeBytes']}" />
-        <sun:staticText id="bytes" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
     </sun:property>
 
     <sun:property id="IdleKeyTimeoutSeconds"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.IdleKeyTimeoutSeconds}"  helpText="$resource{i18n_web.transport.IdleKeyTimeoutSecondsHelp}">
