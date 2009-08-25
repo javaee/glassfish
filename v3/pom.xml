@@ -160,7 +160,7 @@
         <jersey.version>1.1.1-ea</jersey.version>
         <jbi.version>1.0</jbi.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
-        <gmbal.version>3.0.0-b009</gmbal.version>
+        <gmbal.version>3.0.0-b010</gmbal.version>
         <glassfish-management-api.version>3.0.0-b004</glassfish-management-api.version>
     </properties>
 
