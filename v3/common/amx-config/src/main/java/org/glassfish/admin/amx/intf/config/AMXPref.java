@@ -38,52 +38,17 @@ package org.glassfish.admin.amx.intf.config;
 import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
-/**
-Configuration for the &lt;domain&gt; element.
-<p>
-All configuration resides in a tree rooted at this .
- */
-@AMXMBeanMetadata(globalSingleton=true)
-public interface Domain
-        extends PropertiesAccess, SystemPropertiesAccess, ConfigElement, Singleton
+public interface AMXPref extends PropertiesAccess, ConfigElement, Singleton
 {
-
-    /** @since Glassfish V3 */
-    public Resources getResources();
-
-    /** @since Glassfish V3 */
-    public Configs getConfigs();
-
-    /** @since Glassfish V3 */
-    public Applications getApplications();
-
-    /** @since Glassfish V3 */
-    public SystemApplications getSystemApplications();
-
-    /** @since Glassfish V3 */
-    public Servers getServers();
-
-    /** @since Glassfish V3 */
-    public Clusters getClusters();
-
-    /** @since Glassfish V3 */
-    public NodeAgents getNodeAgents();
+    /**
+        Validation level for AMX MBeans (validated when an MBean is registered).
+      */
+    public String getValidationLevel();
+    public void setValidationLevel(String level);
     
-    public AMXPref getAMXPref();
-
-
-    //---------------------------------------------------------------------------------------
-    public String getApplicationRoot();
-
-    public void setApplicationRoot(final String value);
-
-    public String getLocale();
-
-    public void setLocale(final String value);
-
-    public String getLogRoot();
-
-    public void setLogRoot(final String value);
+    /** Whether to unregister AMX MBeans not compliant to the AMX specification */
+    public String getUnregisterNonCompliant();
+    public void setUnregisterNonCompliant(String unregister);
 }
 
 

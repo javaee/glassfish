@@ -363,6 +363,23 @@ public final class AMXConfigProxyTests extends AMXTestBase
     }
     
     @Test
+    public void testAmxPref()
+    {
+        final Domain domain = getDomainConfig();
+        
+        if ( domain.getAMXPref() == null )
+        {
+            domain.createChild( Util.deduceType(AMXPref.class), null );
+        }
+        final AMXPref prefs = domain.getAMXPref();
+        assert prefs != null;
+        final String validationLevel = prefs.getValidationLevel();
+        assert validationLevel.equalsIgnoreCase("full") || validationLevel.equalsIgnoreCase("off");
+        
+        assert prefs.getUnregisterNonCompliant() != null;
+    }
+    
+    @Test
     public void testCreateProperties()
     {
         final Domain parent = getDomainConfig();
@@ -414,6 +431,7 @@ public final class AMXConfigProxyTests extends AMXTestBase
         Need to test this on a special @Configured which has both sub-elements and @Element List<String>
         */
         System.out.println( "SKIPPING test for String[] parameters due to HK2 bug #8923" );
+        //parentAttrs.put( "Foo",  new String[] { "hello", "world" } );   // test List<String> elements  xxx
         
         final AMXConfigProxy[] newChildren = parent.createChildren( childrenMaps, parentAttrs);
         final int numExpected = propMaps.length;
