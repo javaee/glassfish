@@ -9,13 +9,11 @@
   <property name="Name" value="Java&lt;sup&gt;&lt;font size=-2&gt;TM&lt;/font&gt;&lt;/sup&gt; Platform, Enterprise Edition 6 " />
   <property name="Title" value="Java EE 6 - DRAFT" />
   <property name="remote.repository" value="http://maven.glassfish.org/content/groups/glassfish/" />
+  <property name="maven.repo.local" value="${user.home}/.m2/repository" />
 
   <path id="src.dir">
     <dirset dir="${basedir}">
-<!--
-      <include name="**/javax/**"/>
--->
-      <!-- adding the subdirectories that includes "javax." since ant include does not pickup the "javax." subdirectories -->
+
       <include name="javaee-api/**/src/main/java/**"/>
       <include name="ejb/**/src/main/java/**"/>
       <include name="deployment/**/src/main/java/**"/>
@@ -27,7 +25,6 @@
 
       <include name="external/jaxr-api/**"/>
       <include name="external/jaxr-ri/**"/>
-      <include name="external/hk2/src/**"/>
       <include name="external/javamail/**"/>
       <include name="external/jaxrpc-api/src/**"/>
       <include name="external/jaxb-api/**"/>
@@ -74,10 +71,6 @@
 
   <target name="checkout.source" description="Checkout JavaEE6 source">
       <antcall target="init" />
-<!--
-      <antcall target="v3.checkout" />
--->
-      <antcall target="hk2.download" />
       <antcall target="jaxr-api.checkout" />
       <antcall target="javamail.download" />
       <antcall target="jaxrpc.checkout" />
@@ -113,33 +106,6 @@
           <arg line="v3" />
 	</exec>
   </target>
-
-
-  <target name="hk2.download" description="Download HK2" depends="initialize.maven">
-      <artifact:dependencies sourcesFilesetId="sources.dependency.hk2">
-          <dependency groupId="com.sun.enterprise" artifactId="hk2" version="0.3.67"/>
-          <dependency groupId="com.sun.enterprise" artifactId="hk2-core" version="0.3.67"/>
-          <dependency groupId="com.sun.enterprise" artifactId="hk2-maven" version="0.3.67"/>
-          <dependency groupId="com.sun.enterprise" artifactId="osgi-adapter" version="0.3.67"/>
-          <dependency groupId="com.sun.enterprise" artifactId="osgi-main" version="0.3.67"/>
-          <dependency groupId="com.sun.enterprise" artifactId="stax-osgi" version="0.3.67"/>
-          <remoteRepository refid="nexus.repository" />
-          <localRepository path="${maven.repo.local}"/>
-      </artifact:dependencies>
-      <mkdir dir="${external.dir}/hk2" />
-      <copy todir="${external.dir}/hk2" verbose="true">
-          <fileset refid="sources.dependency.hk2" />
-          <mapper type="flatten" />
-      </copy>
-      <unjar dest="${external.dir}/hk2"  >
-          <fileset dir="${external.dir}/hk2">
-              <include name="**/hk2*.jar"/>
-              <include name="**/osgi*.jar"/>
-              <include name="**/stax*.jar"/>
-          </fileset>
-      </unjar>
-  </target>
-
 
   <target name="jaxr-api.checkout" description="Checkout JAXR-API and JAXR-RI"> 
       <echo message="checkout jaxr-api and jaxr-ri from ${cvsroot}."/>
@@ -187,7 +153,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jaxrpc.checkout" description="Checkout JAXRPC-API"> 
       <echo message="checkout jaxrpc-api from ${cvsroot}."/>
-      <exec executable="cvs" dir="${external.dir}" failonerror="true" >
+      <exec executable="cvs" dir="${external.dir}"  >
 	  <arg line="-d" />
           <arg line="${sfbay.cvsroot}" />
           <arg line="co" />
@@ -204,7 +170,8 @@ fileset refid of artifact:dependencies does not work in unjar
            src="${jaxb-api.url}"
            dest="${external.dir}/jaxb-api/jaxb-api-src.zip"
            verbose="true"
-           usetimestamp="true"/>
+           usetimestamp="true"
+           ignoreerrors="true" />
       <unzip dest="${external.dir}/jaxb-api"  >
           <fileset dir="${external.dir}/jaxb-api">
               <include name="**/*.zip"/>
@@ -218,7 +185,8 @@ fileset refid of artifact:dependencies does not work in unjar
            src="${jaxr.url}"
            dest="${external.dir}/jaxr/jaxr-1_0-fr-apisrc.jar"
            verbose="true"
-           usetimestamp="true"/>
+           usetimestamp="true"
+           ignoreerrors="true" />
       <unjar dest="${external.dir}/jaxr"  >
           <fileset dir="${external.dir}/jaxr">
               <include name="**/*.jar"/>
@@ -232,7 +200,8 @@ fileset refid of artifact:dependencies does not work in unjar
            src="${jaxws-api.url}"
            dest="${external.dir}/jaxws-api/jaxws-api-src.zip"
            verbose="true"
-           usetimestamp="true"/>
+           usetimestamp="true"
+           ignoreerrors="true" />
       <unzip dest="${external.dir}/jaxws-api"  >
           <fileset dir="${external.dir}/jaxws-api">
               <include name="**/*.zip"/>
@@ -422,7 +391,7 @@ fileset refid of artifact:dependencies does not work in unjar
   <target name="bean-validator.checkout" description="Checkout BeanValidator workspace"> 
       <echo message="checkout UEL from ${bean-validator.svn.url}." />
       <!-- checkout BeanValidator source -->
-      <exec executable="svn" dir="${basedir}" failonerror="true" >
+      <exec executable="svn" dir="${basedir}" >
 	  <arg line="checkout" />
           <arg line="${bean-validator.svn.url}/api/checkout-source/src" />
           <arg line="external/validation-api/src" />
@@ -458,7 +427,7 @@ fileset refid of artifact:dependencies does not work in unjar
     <javadoc sourcepathref="src.dir"
              destdir="${build.javadocs}"
 	     excludepackagenames="com.*,org.*,sample.*,killer.*,net.*,testing.*,java.*,javax.xml.messaging.*,javax.xml.registry.samples.*,javax.xml.namespace.*,javax.faces.bean"
-             maxmemory="16284m"
+             maxmemory="2048m"
              author="true"
              version="true"
              source="1.6"
