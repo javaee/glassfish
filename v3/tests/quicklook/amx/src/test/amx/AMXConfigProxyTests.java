@@ -61,6 +61,7 @@ import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.ListUtil;
 import org.glassfish.admin.amx.util.MapUtil;
+import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.TypeCast;
 import org.glassfish.admin.amx.logging.Logging;
 import org.glassfish.admin.amx.annotation.*;
@@ -420,19 +421,6 @@ public final class AMXConfigProxyTests extends AMXTestBase
         parentAttrs.put( "Locale", "EN_US");
         parentAttrs.put( "LogRoot",  parent.getLogRoot() );
         
-        /*
-        ** FIXME: HK2 code broken, see bug 
-        ** https://glassfish.dev.java.net/issues/show_bug.cgi?id=8923
-        parentAttrs.put( "Foo",  new String[] { "hello", "world" } );   // test List<String> elements
-        @Element
-        List<String>  getFoo();
-        void setFoo( List<String> value) throws PropertyVetoException;
-        
-        Need to test this on a special @Configured which has both sub-elements and @Element List<String>
-        */
-        System.out.println( "SKIPPING test for String[] parameters due to HK2 bug #8923" );
-        //parentAttrs.put( "Foo",  new String[] { "hello", "world" } );   // test List<String> elements  xxx
-        
         final AMXConfigProxy[] newChildren = parent.createChildren( childrenMaps, parentAttrs);
         final int numExpected = propMaps.length;
         assert newChildren.length == numExpected : "Expected " + numExpected + ", got " + newChildren.length;
@@ -505,9 +493,7 @@ public final class AMXConfigProxyTests extends AMXTestBase
     public void createProfilerTest()
     {
         final JavaConfig javaConfig = getDomainConfig().getConfigs().getConfig().get("server-config").getJavaConfig();
-        
-        System.out.println( "WARNING: skipping createProfilerTest() because of HK2 problem with deleting profiler" );
-    /*
+
         final String profilerName = "AMXConfigProxyTests.TEST";
         final String type = Util.deduceType(Profiler.class);
         removeChildSilently( javaConfig, type, null);
@@ -526,9 +512,7 @@ public final class AMXConfigProxyTests extends AMXTestBase
         final String[] jvmOptions = profiler.getJvmOptions();
         
         final ObjectName removed = javaConfig.removeChild(type);
-        assert javaConfig.child(type)  == null : "Failed to remove profiler (null returned)";
         assert javaConfig.child(type)  == null : "Failed to remove profiler, child still exists";
-    */
     }
 }
 
