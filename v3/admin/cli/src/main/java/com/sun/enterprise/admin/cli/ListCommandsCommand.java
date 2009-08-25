@@ -39,6 +39,7 @@ package com.sun.enterprise.admin.cli;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
+import java.util.regex.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import com.sun.enterprise.admin.cli.util.CLIUtil;
@@ -46,7 +47,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import static com.sun.enterprise.admin.cli.CLIConstants.EOL;
 
 /**
- * A local ListCommands Command.
+ * A local list-commands command.
  *  
  * @author bnevins
  * @author Bill Shannon
@@ -59,20 +60,13 @@ public class ListCommandsCommand extends CLICommand {
 
     private String[] remoteCommands;
     private String[] localCommands;
+    private List<Pattern> patterns = new ArrayList<Pattern>();
     private boolean localOnly;
     private boolean remoteOnly;
     private static final String SPACES = "                                                            ";
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ListCommandsCommand.class);
-
-    public ListCommandsCommand() {
-        super();
-    }
-
-    public ListCommandsCommand(String name, ProgramOptions programOpts,
-            Environment env) throws CommandException {
-        super(name, programOpts, env);
-    }
 
     @Override
     protected void prepare()
@@ -88,8 +82,9 @@ public class ListCommandsCommand extends CLICommand {
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandType = "STRING";
+        operandName = "command-pattern";
         operandMin = 0;
-        operandMax = 0;
+        operandMax = Integer.MAX_VALUE;
 
         processProgramOptions();
     }
@@ -109,14 +104,21 @@ public class ListCommandsCommand extends CLICommand {
     @Override
     public int executeCommand()
             throws CommandException, CommandValidationException {
+
+        // convert the patterns to regular expressions
+        for (String pat : operands)
+            patterns.add(Pattern.compile(globToRegex(pat)));
+
         if (!remoteOnly) {
-            localCommands = CLIUtil.getLocalCommands(habitat);
+            localCommands = matchCommands(CLIUtil.getLocalCommands(habitat));
             printLocalCommands();
         }
+        if (!localOnly && !remoteOnly)
+            logger.printMessage("");            // a blank line between them
         if (!localOnly) {
             try {
-                remoteCommands =
-                    CLIUtil.getRemoteCommands(habitat, programOpts, env);
+                remoteCommands = matchCommands(
+                    CLIUtil.getRemoteCommands(habitat, programOpts, env));
             } catch (CommandException ce) {
                 /*
                  * Hide the real cause of the remote failure (almost certainly
@@ -131,7 +133,121 @@ public class ListCommandsCommand extends CLICommand {
         return 0;
     }
 
+    /**
+     * Filter the command list to only those matching the patterns.
+     */
+    private String[] matchCommands(String[] commands) {
+        if (patterns.size() == 0)
+            return commands;
+
+        // filter the commands
+        List<String> matched = new ArrayList<String>();
+        for (String cmd : commands)
+            for (Pattern re : patterns)
+                if (re.matcher(cmd).find())
+                    matched.add(cmd);
+
+        return matched.toArray(new String[matched.size()]);
+    }
+
+    /**
+     * Convert a shell style glob regular expression to a
+     * Java regular expression.
+     * Code from: http://stackoverflow.com/questions/1247772
+     */
+    private String globToRegex(String line) {
+        line = line.trim();
+        int strLen = line.length();
+        StringBuilder sb = new StringBuilder(strLen);
+        // Remove beginning and ending * globs because they're useless
+        if (line.startsWith("*")) {
+            line = line.substring(1);
+            strLen--;
+        }
+        if (line.endsWith("*")) {
+            line = line.substring(0, strLen-1);
+            strLen--;
+        }
+        boolean escaping = false;
+        int inCurlies = 0;
+        for (char currentChar : line.toCharArray()) {
+            switch (currentChar) {
+            case '*':
+                if (escaping)
+                    sb.append("\\*");
+                else
+                    sb.append(".*");
+                escaping = false;
+                break;
+            case '?':
+                if (escaping)
+                    sb.append("\\?");
+                else
+                    sb.append('.');
+                escaping = false;
+                break;
+            case '.':
+            case '(':
+            case ')':
+            case '+':
+            case '|':
+            case '^':
+            case '$':
+            case '@':
+            case '%':
+                sb.append('\\');
+                sb.append(currentChar);
+                escaping = false;
+                break;
+            case '\\':
+                if (escaping) {
+                    sb.append("\\\\");
+                    escaping = false;
+                } else
+                    escaping = true;
+                break;
+            case '{':
+                if (escaping) {
+                    sb.append("\\{");
+                } else {
+                    sb.append('(');
+                    inCurlies++;
+                }
+                escaping = false;
+                break;
+            case '}':
+                if (inCurlies > 0 && !escaping) {
+                    sb.append(')');
+                    inCurlies--;
+                } else if (escaping)
+                    sb.append("\\}");
+                else
+                    sb.append("}");
+                escaping = false;
+                break;
+            case ',':
+                if (inCurlies > 0 && !escaping)
+                    sb.append('|');
+                else if (escaping)
+                    sb.append("\\,");
+                else
+                    sb.append(",");
+                break;
+            default:
+                escaping = false;
+                sb.append(currentChar);
+            }
+        }
+        return sb.toString();
+    }
+
+
     void printLocalCommands() {
+        if (localCommands.length == 0) {
+            logger.printMessage(
+                            strings.get("listCommands.localCommandNoMatch"));
+            return;
+        }
         logger.printMessage(strings.get("listCommands.localCommandHeader"));
 
         for (String s : localCommands) {
@@ -140,6 +256,12 @@ public class ListCommandsCommand extends CLICommand {
     }
 
     void printRemoteCommands() {
+        if (remoteCommands.length == 0) {
+            logger.printMessage(
+                            strings.get("listCommands.remoteCommandNoMatch"));
+            return;
+        }
+
         logger.printMessage(strings.get("listCommands.remoteCommandHeader"));
         
         // there are a LOT of remote commands -- make 2 columns
