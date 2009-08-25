@@ -1,0 +1,5 @@
+<sun:treeNode id="RAConfigs"
+        text="$resource{i18n.tree.resourceAdapterConfigs}"
+        url="/jca/resourceAdapterConfigs.jsf"
+        imageURL="/resource/jca/images/connector.png"
+        />

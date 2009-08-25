@@ -8,6 +8,13 @@
             parentId="resources"
             content="jcaTreeNode.jsf"
     />
+    <integration-point
+            id="raconfigNode"
+            type="org.glassfish.admingui:navNode"
+            priority="200"
+            parentId="resources"
+            content="raconfigTreeNode.jsf"
+    />
 
         <!-- add the property sheet for deployment page, specific for app client app -->
     <integration-point
