@@ -43,7 +43,6 @@ import java.io.InputStream;
 import java.util.*;
 import org.glassfish.api.monitoring.DTraceContract;
 import org.glassfish.flashlight.FlashlightUtils;
-import org.glassfish.flashlight.impl.client.DTraceClientInvoker;
 import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 import org.glassfish.flashlight.provider.*;
 import org.glassfish.flashlight.impl.core.*;
@@ -52,9 +51,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.external.probe.provider.annotations.*;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.concurrent.ConcurrentHashMap;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
@@ -102,13 +99,38 @@ public class FlashlightProbeProviderFactory
         FlashlightUtils.initialize(habitat, monitoringServiceConfig);
     }
 
-    /** there are possible timing issues because we have PERFORMANCE ENHANCEMENTS
-     * in place.  Be careful in these 2 config-change methods!
-     */
     public void dtraceEnabledChanged(boolean newValue) {
-        // TODO
         FlashlightUtils.setDTraceEnabled(newValue);
-        System.out.println("ZZZZZZZZ  dtrace enable changed to " + newValue);
+
+        // if true->false we just need to set the enabled flag
+        // DTrace invoker will simply not call the already-built
+        // DTrace objects
+
+        if(newValue == false)
+            return;
+        
+        // if it still is not available -- return.  E.g. they set the flag
+        // but they don't have the native libs
+        
+        if(!FlashlightUtils.isDtraceAvailable())
+            return;
+        
+        // if false-> true we might need to create all the DTrace classes.  It 
+        // depends on whether the server started up with it true, etc.
+        // loop through all the Providers -- if any don't have DTrace then
+        // instrument with DTrace
+        Collection<FlashlightProbeProvider> pps = ProbeProviderRegistry.getInstance().getAllProbeProviders();
+
+
+        System.out.println("ZZZZZ Instrumenting DTrace after the fact!!!!");
+
+
+        for(FlashlightProbeProvider pp : pps) {
+            if(!pp.isDTraceInstrumented()) {
+                System.out.println("ZZZZZ DTrace Instrumenting: " + pp.getProbeProviderName());
+                handleDTrace(pp);
+            }
+        }
     }
 
     public void monitoringEnabledChanged(boolean newValue) {
@@ -208,8 +230,8 @@ public class FlashlightProbeProviderFactory
         }
 
         finally {
-            if(provider != null)
-                allProbeProviders.add(provider);
+            //if(provider != null)
+                //allProbeProviders.add(provider);
         }
     }
 
@@ -264,9 +286,13 @@ public class FlashlightProbeProviderFactory
         Object dtraceProviderImpl = dt.getProvider(provider);
 
         // something is wrong with the provider class
-        if(dtraceProviderImpl == null)
+        if(dtraceProviderImpl == null) {
+            provider.setDTraceInstrumented(false);
             return;
+        }
 
+        provider.setDTraceInstrumented(true);
+ 
          Collection<FlashlightProbe> probes = provider.getProbes();
 
          for(FlashlightProbe probe : probes) {

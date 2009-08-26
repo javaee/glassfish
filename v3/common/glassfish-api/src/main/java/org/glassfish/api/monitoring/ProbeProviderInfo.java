@@ -16,4 +16,6 @@ public interface ProbeProviderInfo {
     String      getModuleName();
     Class       getProviderClass();
     ProbeInfo[] getProbesInfo();
+    void        setDTraceInstrumented(boolean b);
+    boolean     isDTraceInstrumented();
 }

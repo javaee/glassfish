@@ -47,6 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Mahesh Kannan
  */
 public class FlashlightProbeProvider implements ProbeProviderInfo{
+    private boolean dtraceIsInstrumented;
 
     private String moduleProviderName;
 
@@ -104,4 +105,12 @@ public class FlashlightProbeProvider implements ProbeProviderInfo{
         }
         return infos;
     }
+
+    public boolean isDTraceInstrumented() {
+        return dtraceIsInstrumented;
+    }
+    public void setDTraceInstrumented(boolean b) {
+        dtraceIsInstrumented = b;
+    }
+
 }

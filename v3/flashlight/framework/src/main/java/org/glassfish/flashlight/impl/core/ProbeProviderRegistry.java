@@ -36,6 +36,7 @@
 
 package org.glassfish.flashlight.impl.core;
 
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -48,16 +49,10 @@ import java.util.concurrent.*;
  * Apparently it is used exclusively for making sure that 2 probes with the same name are not allowed?!?
  * look at the putIfAbsent for clues
  * This class has no business having any public members and should be moved to the only user's package
- * 
+ *
+ * I'm suspicious.  Maybe it is called by reflection from somewhere?!?
  */
 public class ProbeProviderRegistry {
-
-    private static ProbeProviderRegistry _me =
-            new ProbeProviderRegistry();
-
-    private ConcurrentMap<String, FlashlightProbeProvider> providerMap =
-            new ConcurrentHashMap<String, FlashlightProbeProvider>();
-
     private ProbeProviderRegistry() {
     }
 
@@ -65,18 +60,20 @@ public class ProbeProviderRegistry {
         return _me;
     }
 
+    public Collection<FlashlightProbeProvider> getAllProbeProviders() {
+        return Collections.unmodifiableCollection(providerMap.values());
+    }
 
     public FlashlightProbeProvider getProbeProvider(String moduleProviderName, String moduleName, String probeProviderName) {
-        String qname = moduleProviderName + ":" + moduleName + ":"
-        + ((probeProviderName == null) ? "" : probeProviderName);
+        if(probeProviderName == null)
+            probeProviderName = "";
 
-        return providerMap.get(qname);
+        return providerMap.get(makeName(moduleProviderName, moduleName, probeProviderName));
     }
 
     public FlashlightProbeProvider registerProbeProvider(FlashlightProbeProvider provider, Class clz) {
 
-        String qname = provider.getModuleProviderName() + ":" +
-                provider.getModuleName() + ":" + ((provider.getProbeProviderName()==null)?clz.getName():provider.getProbeProviderName());
+        String qname = makeName(provider, clz);
 
         // if there is an entry in the map for qname already -- it is an error
         // ConcurrentMap allows us to check and put with thread-safety!
@@ -88,4 +85,33 @@ public class ProbeProviderRegistry {
 
         return provider;
     }
+
+    private String makeName(FlashlightProbeProvider provider, Class clazz) {
+        String ppName = provider.getProbeProviderName();
+
+        if(ppName == null)
+            ppName = clazz.getName();
+
+        return makeName(provider.getModuleProviderName(),
+                        provider.getModuleName(),
+                        ppName);
+    }
+
+    private String makeName(String a, String b, String c) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(a);
+        sb.append(":");
+        sb.append(b);
+        sb.append(":");
+        sb.append(c);
+
+        return sb.toString();
+    }
+
+    private static ProbeProviderRegistry _me =
+            new ProbeProviderRegistry();
+
+    private ConcurrentMap<String, FlashlightProbeProvider> providerMap =
+            new ConcurrentHashMap<String, FlashlightProbeProvider>();
 }
