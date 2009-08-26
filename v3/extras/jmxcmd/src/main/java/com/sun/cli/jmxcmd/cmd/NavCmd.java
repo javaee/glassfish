@@ -114,6 +114,8 @@ public class NavCmd extends JMXCmd
         info.cd(dest);
         setTargets( new String[] { info.resolve().toString() } );
         println(info.getCurrentDir() + " = " + info.resolve());
+        
+        envPut(NAV_INFO_KEY, info.toString(), true);
     }
 
 
@@ -166,23 +168,25 @@ public class NavCmd extends JMXCmd
 
     private NavInfo getNavInfo()
     {
-        final Object o = envGet(NAV_INFO_KEY);
         NavInfo info = null;
+        final Object o = envGet(NAV_INFO_KEY);
         if (o instanceof String)
         {
-            info = new NavInfo(getConnection());
+            info = new NavInfo( getConnection() );
             info.setCurrentDir((String) o);
         }
         else if (o != null)
         {
             info = (NavInfo) o;
+            info.setMBeanServerConnection( getConnection() );
+            info.resolve();
         }
         else
         {
-            info = new NavInfo(getConnection());
+            info = new NavInfo( getConnection() );
+            println( "getNavInfo: made a new  NavInfo" );
         }
 
-        envPut(NAV_INFO_KEY, info, false);
         return info;
     }
 
@@ -257,7 +261,18 @@ public class NavCmd extends JMXCmd
 
         assert (operands != null);
 
-        final NavInfo navInfo = getNavInfo();
+        NavInfo navInfo;
+        try
+        {
+            navInfo = getNavInfo();
+        }
+        catch( final Exception e )
+        {
+            navInfo = new NavInfo( getConnection() );
+            println( "Exception getting NavInfo: " + e.getMessage() );
+            println( "Working MBean set to " + navInfo.getCurrentDir() );
+            envPut(NAV_INFO_KEY, navInfo.toString(), true);
+        }
 
         if (cmd.equals(CD_NAME))
         {

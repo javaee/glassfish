@@ -31,10 +31,16 @@ public final class NavInfo
     public NavInfo(final MBeanServerConnection conn)
     {
         mCurrentDir = DEFAULT_DIR;
-        mConn = conn;
+                
+        mConn = null;
+        setMBeanServerConnection(conn);
     }
 
-
+    public MBeanServerConnection getMBeanServerConnection()
+    {
+        return mConn;
+    }
+    
     public void setMBeanServerConnection(final MBeanServerConnection conn)
     {
         if (conn == mConn || conn == null)
@@ -195,7 +201,7 @@ public final class NavInfo
     {
         if (paths() == null)
         {
-            throw new IllegalStateException("NavInfo.resolve(): No MBeanServerConnection specified");
+            throw new IllegalStateException("NavInfo.resolve(): null paths()");
         }
 
         return paths().resolvePath(dir);
