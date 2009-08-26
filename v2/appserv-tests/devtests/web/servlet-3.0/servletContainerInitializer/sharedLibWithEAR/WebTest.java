@@ -45,7 +45,7 @@ public class WebTest {
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
     private static final String TEST_NAME = "pluggability-sharedlib-ear";
-    private static final String[] EXPECTED_RESPONSE = {"none","CALLED EARSHAREDLIB-1;CALLED EARSHAREDLIB-2;null;null;CALLED EARAPPLIB-1;null;","CALLED SHAREDLIB-1;CALLED SHAREDLIB-2;CALLED SHAREDLIB-3;null;null;CALLED APPLIB-2;"};
+    private static final String[] EXPECTED_RESPONSE = {"none","CALLED EARSHAREDLIB-1;CALLED EARSHAREDLIB-2;CALLED EARSHAREDLIB-3;null;CALLED EARAPPLIB-1;null","CALLED SHAREDLIB-1;CALLED SHAREDLIB-2;CALLED SHAREDLIB-3;null;null;CALLED APPLIB-2"};
 
     private String host;
     private String port;
@@ -82,6 +82,7 @@ public class WebTest {
         
         String url = "http://" + host + ":" + port + contextRoot
                      + root;
+        System.out.println("Invoking " + url);
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();
 
