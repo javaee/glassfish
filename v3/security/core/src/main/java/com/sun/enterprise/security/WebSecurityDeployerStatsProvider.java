@@ -23,46 +23,46 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
 @Description( "Web application Security Deployment statistics" )
 public class WebSecurityDeployerStatsProvider {
 
-    TimeStatisticImpl deploymentTime = new TimeStatisticImpl(0, 0, 0, 0, "deploymentTime", "milliseconds", "Deployment Time", 0, 0);
+    TimeStatisticImpl deploymentTime = new TimeStatisticImpl(0, 0, 0, 0, "DeploymentTime", "milliseconds", "Deployment Time", 0, 0);
 
-    TimeStatisticImpl generationTime = new TimeStatisticImpl(0, 0, 0, 0, "generationTime", "milliseconds", "Generation Time", 0, 0);
+    TimeStatisticImpl generationTime = new TimeStatisticImpl(0, 0, 0, 0, "GenerationTime", "milliseconds", "Generation Time", 0, 0);
 
-    TimeStatisticImpl undeploymentTime = new TimeStatisticImpl(0, 0, 0, 0, "undeploymentTime", "milliseconds", "Undeployment Time", 0, 0);
+    TimeStatisticImpl undeploymentTime = new TimeStatisticImpl(0, 0, 0, 0, "UndeploymentTime", "milliseconds", "Undeployment Time", 0, 0);
 
-    TimeStatisticImpl removalTime = new TimeStatisticImpl(0, 0, 0, 0, "removalTime", "milliseconds", "Removal Time", 0, 0);
+    TimeStatisticImpl removalTime = new TimeStatisticImpl(0, 0, 0, 0, "RemovalTime", "milliseconds", "Removal Time", 0, 0);
 
     CountStatisticImpl secMgrCount = new CountStatisticImpl("WebSecurityManagerCount", "count", "No of Web security managers");
 
     CountStatisticImpl policyConfCount= new CountStatisticImpl("WebPolicyConfigurationCount", "count", "No of Policy Configuration Objects");
 
-    @ManagedAttribute(id="DepolymentTime")
+    @ManagedAttribute(id="depolymenttime")
     public TimeStatistic getDeploymentTime() {
         return deploymentTime.getStatistic();
     }
 
-    @ManagedAttribute(id="GenerationTime")
+    @ManagedAttribute(id="generationtime")
     public TimeStatistic getGenerationTime() {
         return generationTime.getStatistic();
     }
 
-    @ManagedAttribute(id="UndepolymentTime")
+    @ManagedAttribute(id="undepolymenttime")
     public TimeStatistic getUndeploymentTime() {
         return undeploymentTime.getStatistic();
     }
 
 
-    @ManagedAttribute(id="RemovalTime")
+    @ManagedAttribute(id="removaltime")
     public TimeStatistic getRemovalTime() {
         return removalTime.getStatistic();
     }
 
-    @ManagedAttribute(id="WebSecurityManagerCount")
+    @ManagedAttribute(id="websecuritymanagercount")
     public CountStatistic getWebSMCount() {
         return secMgrCount.getStatistic();
 
     }
 
-    @ManagedAttribute(id="WebPolicyConfigurationCount")
+    @ManagedAttribute(id="webpolicyconfigurationcount")
     public CountStatistic getPCCount() {
         return policyConfCount.getStatistic();
     }

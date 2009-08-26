@@ -21,8 +21,8 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
 @Description( "Login Statistics" )
 public class LoginStatsProvider {
     
-    CountStatisticImpl successLoginCount = new CountStatisticImpl("successlogincount", "count", "No of successful logins");
-    CountStatisticImpl failedLoginCount = new CountStatisticImpl("failedlogincount", "count", "No of failed logins");
+    CountStatisticImpl successLoginCount = new CountStatisticImpl("SuccessLoginCount", "count", "No of successful logins");
+    CountStatisticImpl failedLoginCount = new CountStatisticImpl("FailedLoginCount", "count", "No of failed logins");
     
     @ManagedAttribute
     public CountStatistic getSuccessLoginCount() {

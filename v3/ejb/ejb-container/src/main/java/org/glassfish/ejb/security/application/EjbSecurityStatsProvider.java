@@ -23,23 +23,23 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
 @Description( "Ejb Security Deployment statistics" )
 public class EjbSecurityStatsProvider {
 
-    TimeStatisticImpl deploymentTime = new TimeStatisticImpl(0, 0, 0, 0, "deploymentTime", "milliseconds", "Deployment Time", 0, 0);
+    TimeStatisticImpl deploymentTime = new TimeStatisticImpl(0, 0, 0, 0, "DeploymentTime", "milliseconds", "Deployment Time", 0, 0);
     CountStatisticImpl ejbSMCount = new CountStatisticImpl("SecurityManagerCount", "count", "Count of EJB Security managers");
     CountStatisticImpl ejbPCCount = new CountStatisticImpl("PolicyConfigurationCount", "count", "Count of Policy Configuration");
 
 
 
-    @ManagedAttribute(id="DepolymentTime")
+    @ManagedAttribute(id="depolymenttime")
     public TimeStatistic getDeploymentTime() {
         return deploymentTime.getStatistic();
     }
 
-    @ManagedAttribute(id="SecurityManagerCount")
+    @ManagedAttribute(id="securitymanagercount")
     public CountStatistic getSecurityManagerCount() {
         return ejbSMCount.getStatistic();
     }
 
-    @ManagedAttribute(id="PolicyConfigurationCount")
+    @ManagedAttribute(id="policyconfigurationcount")
     public CountStatistic getPolicyConfigurationCount() {
         return ejbPCCount.getStatistic();
     }
