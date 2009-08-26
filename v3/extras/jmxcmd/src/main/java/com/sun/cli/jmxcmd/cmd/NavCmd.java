@@ -261,6 +261,7 @@ public class NavCmd extends JMXCmd
 
         assert (operands != null);
 
+        // validate the current dir
         NavInfo navInfo;
         try
         {
