@@ -36,62 +36,62 @@
 -->
 <!-- jdbc/poolPropertyNew.inc -->
 
-                    <!-- PropertySheet .... -->
-                    <sun:propertySheet id="sheet" requiredFields="true">
-                        <sun:propertySheetSection id="generalSheet" label="$resource{i18njdbc.jdbcPool.general}">
-                            <sun:property id="jndiProp" rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-                                <sun:staticText id="Jndi" text="#{wizardPoolExtra.Name}" rendered="#{!edit}"/>
-                            </sun:property>
-                            
-                            <sun:property id="name"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
-                            <sun:staticText id="name" text="#{pageSession.Name}"  rendered="#{Edit}" />
-                             </sun:property>
+<!-- PropertySheet .... -->
+<sun:propertySheet id="sheet" requiredFields="true">
+<sun:propertySheetSection id="generalSheet" label="$resource{i18njdbc.jdbcPool.general}">
+    <sun:property id="jndiProp" rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
+        <sun:staticText id="Jndi" text="#{wizardPoolExtra.Name}" rendered="#{!edit}"/>
+    </sun:property>
+
+    <sun:property id="name"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
+    <sun:staticText id="name" text="#{pageSession.Name}"  rendered="#{Edit}" />
+     </sun:property>
 
 
-                            <sun:property id="resTypeWizProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.resType}"  >
-                                <sun:staticText id="resType" text="#{wizardPoolExtra.ResType}" rendered="#{!edit}"  />
-                            </sun:property>
-                            <sun:property id="resTypeEditProp" rendered="#{edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}" helpText="$resource{i18njdbc.jdbcPool.resTypeHelp}" >
-                                <sun:dropDown id="resTypeVal" selected="#{valueMap.ResType}" labels={"" "javax.sql.DataSource"  "javax.sql.XADataSource"  "javax.sql.ConnectionPoolDataSource" "java.sql.Driver"}  rendered="#{edit}"  onChange="javascript: disableFields();">
-                                    <!afterCreate
-                                        getClientId(component="$this{component}" clientId=>$page{resTypeVal});
-                                    />
-                                </sun:dropDown>
-                            </sun:property>
-                            <sun:property id="dbProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.dbVendor}"  >
-                                <sun:staticText id="db" text="#{wizardPoolExtra.DBVendor}" rendered="#{!edit}"  />
-                            </sun:property>
+    <sun:property id="resTypeWizProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.resType}"  >
+        <sun:staticText id="resType" text="#{wizardPoolExtra.ResType}" rendered="#{!edit}"  />
+    </sun:property>
+    <sun:property id="resTypeEditProp" rendered="#{edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}" helpText="$resource{i18njdbc.jdbcPool.resTypeHelp}" >
+        <sun:dropDown id="resTypeVal" selected="#{valueMap.ResType}" labels={"" "javax.sql.DataSource"  "javax.sql.XADataSource"  "javax.sql.ConnectionPoolDataSource" "java.sql.Driver"}  rendered="#{edit}"  onChange="javascript: disableFields();">
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{resTypeVal});
+            />
+        </sun:dropDown>
+    </sun:property>
+    <sun:property id="dbProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.dbVendor}"  >
+        <sun:staticText id="db" text="#{wizardPoolExtra.DBVendor}" rendered="#{!edit}"  />
+    </sun:property>
 
-                            <sun:property id="dsProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.datasource}" helpText="$resource{i18njdbc.jdbcPool.datasourceHelp}">
-                                <sun:textField id="datasource"  columns="$int{60}" text="#{wizardPoolExtra.DatasourceClassname}" rendered="#{!edit}" disabled="#{!wizardPoolExtra.dsClassname}" />
-                            </sun:property>
-                            <sun:property id="ddsProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.ddatasource}" helpText="$resource{i18njdbc.jdbcPool.datasourceHelp}">
-                                <sun:textField id="ddatasource"  columns="$int{60}" text="#{wizardPoolExtra.DriverClassname}" rendered="#{!edit}" disabled="#{wizardPoolExtra.dsClassname}" />
-                            </sun:property>
+    <sun:property id="dsProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.datasource}" helpText="$resource{i18njdbc.jdbcPool.datasourceHelp}">
+        <sun:textField id="datasource"  columns="$int{60}" text="#{wizardPoolExtra.DatasourceClassname}" rendered="#{!edit}" disabled="#{!wizardPoolExtra.dsClassname}" />
+    </sun:property>
+    <sun:property id="ddsProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.driver}" helpText="$resource{i18njdbc.jdbcPool.driverHelp}">
+        <sun:textField id="ddatasource"  columns="$int{60}" text="#{wizardPoolExtra.DriverClassname}" rendered="#{!edit}" disabled="#{wizardPoolExtra.dsClassname}" />
+    </sun:property>
 
-                            <sun:property id="dSProp" rendered="#{edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.datasource}" helpText="$resource{i18njdbc.jdbcPool.datasourceHelp}">
-                                <sun:textField id="dsTextField" columns="$int{55}" text="#{valueMap.DatasourceClassname}" rendered="#{edit}" >      
-                                <!afterCreate
-                                    getClientId(component="$this{component}" clientId=>$page{dsTextField});
-                                />
-                                </sun:textField>
-                            </sun:property>
-                            <sun:property id="dDSProp" rendered="#{edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.ddatasource}" helpText="$resource{i18njdbc.jdbcPool.datasourceHelp}">
-                                <sun:textField id="ddsTextField"  columns="$int{60}" text="#{valueMap.DriverClassname}" rendered="#{edit}" >
-                                <!afterCreate
-                                    getClientId(component="$this{component}" clientId=>$page{ddsTextField});
-                                />
-                                </sun:textField>
-                            </sun:property>
-                             
-                            <sun:property id="pingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.ping}" helpText="$resource{i18njdbc.jdbcPool.pingHelp}">
-                                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{valueMap.Ping}" selectedValue="true" />
-                           </sun:property>
-                            <sun:property id="descProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.description}" >
-                                <sun:textField id="desc" columns="$int{60}" text="#{valueMap.Description}" />
-                            </sun:property>
-                            "<br /><br />
-                        </sun:propertySheetSection>
+    <sun:property id="dSProp" rendered="#{edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.datasource}" helpText="$resource{i18njdbc.jdbcPool.datasourceHelp}">
+        <sun:textField id="dsTextField" columns="$int{55}" text="#{valueMap.DatasourceClassname}" rendered="#{edit}" >      
+        <!afterCreate
+            getClientId(component="$this{component}" clientId=>$page{dsTextField});
+        />
+        </sun:textField>
+    </sun:property>
+    <sun:property id="dDSProp" rendered="#{edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.driver}" helpText="$resource{i18njdbc.jdbcPool.driverHelp}">
+        <sun:textField id="ddsTextField"  columns="$int{60}" text="#{valueMap.DriverClassname}" rendered="#{edit}" >
+        <!afterCreate
+            getClientId(component="$this{component}" clientId=>$page{ddsTextField});
+        />
+        </sun:textField>
+    </sun:property>
+
+    <sun:property id="pingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.ping}" helpText="$resource{i18njdbc.jdbcPool.pingHelp}">
+        <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{valueMap.Ping}" selectedValue="true" />
+   </sun:property>
+    <sun:property id="descProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.description}" >
+        <sun:textField id="desc" columns="$int{60}" text="#{valueMap.Description}" />
+    </sun:property>
+    "<br /><br />
+</sun:propertySheetSection>
 
 			<!-- -------------------- Pool Settings ------------ -->
                         <sun:propertySheetSection id="poolSettingsPropertySheet" label="$resource{i18njdbc.jdbcPool.poolSettings}">
