@@ -332,6 +332,17 @@ public class GSSUPToken {
                 }
             }
 	}
+        String targetNameRealm = null;
+        try {
+            if (target_name != null) {
+                targetNameRealm = new String(GSSUtils.importName(GSSUtils.GSSUP_MECH_OID, target_name));
+            }
+        } catch (IOException ex) {
+            _logger.log(Level.FINE, null, ex);
+        }
+        if (targetNameRealm != null && !DEFAULT_REALM_NAME.equals(targetNameRealm)) {
+            realm = targetNameRealm;
+        }
         pwdcred = new PasswordCredential(name, userpwd, realm, target_name);
         if(_logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE, pwdcred.toString());
