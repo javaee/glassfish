@@ -611,7 +611,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             if( !nextEndpoint.getWebService().hasFilePublishing() ) {
                 String publishingUri = nextEndpoint.getPublishingUri();
                 String publishingUrlPattern =
-                        (publishingUri.charAt(0) == '/') ?publishingUri : "/" + publishingUri + "*//*";
+                        (publishingUri.charAt(0) == '/') ?publishingUri : "/" + publishingUri + "/*";
                 webComp.addUrlPattern(publishingUrlPattern);
 
             }
