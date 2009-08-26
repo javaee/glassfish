@@ -940,7 +940,7 @@ public class PECoyoteConnector extends Connector {
         setDefaultHost(http.getDefaultVirtualServer());
         setDefaultResponseType(http.getDefaultResponseType());
         setForcedRequestType(http.getForcedResponseType());
-        setEnableLookups(ConfigBeansUtilities.toBoolean(http.getEnableDnsLookup()));
+        setEnableLookups(ConfigBeansUtilities.toBoolean(http.getDnsLookupEnabled()));
         
         setXpoweredBy(Boolean.valueOf(http.getXpoweredBy()));
         
@@ -1137,57 +1137,25 @@ public class PECoyoteConnector extends Connector {
     }
 
     public void configHttpProperties(Http http, Transport transport, Ssl ssl) {
-        if (http.getMaxConnections() != null) {
-            setMaxKeepAliveRequests(Integer.parseInt(http.getMaxConnections()));
-        }
-        if (http.getTimeoutSeconds() != null) {
-            setKeepAliveTimeoutInSeconds(Integer.parseInt(http.getTimeoutSeconds()));
-        }
-        if (http.getEnableAuthPassThrough() != null) {
-            setAuthPassthroughEnabled(ConfigBeansUtilities.toBoolean(
-                http.getEnableAuthPassThrough()));
-        }
-        if (http.getMaxPostSizeBytes() != null) {
-            setMaxPostSize(Integer.parseInt(http.getMaxPostSizeBytes()));
-        }
-        if (http.getCompression() != null) {
-            setProperty("compression", http.getCompression());
-        }
-        if (http.getCompressableMimeType() != null) {
-            setProperty("compressableMimeType", http.getCompressableMimeType());
-        }
+        setMaxKeepAliveRequests(Integer.parseInt(http.getMaxConnections()));
+        setKeepAliveTimeoutInSeconds(Integer.parseInt(http.getTimeoutSeconds()));
+        setAuthPassthroughEnabled(ConfigBeansUtilities.toBoolean(http.getAuthPassThroughEnabled()));
+        setMaxPostSize(Integer.parseInt(http.getMaxPostSizeBytes()));
+        setProperty("compression", http.getCompression());
+        setProperty("compressableMimeType", http.getCompressableMimeType());
         if (http.getNoCompressionUserAgents() != null) {
             setProperty("noCompressionUserAgents", http.getNoCompressionUserAgents());
         }
-        if (http.getCompressionMinSizeBytes() != null) {
-            setProperty("compressionMinSize", http.getCompressionMinSizeBytes());
-        }
+        setProperty("compressionMinSize", http.getCompressionMinSizeBytes());
         if (http.getRestrictedUserAgents() != null) {
             setProperty("restrictedUserAgents", http.getRestrictedUserAgents());
         }
-        if (http.getEnableCometSupport() != null) {
-            setProperty("cometSupport",ConfigBeansUtilities.toBoolean(
-                http.getEnableCometSupport()));
-        }
-        if (http.getEnableRcmSupport() != null) {
-            setProperty("rcmSupport",ConfigBeansUtilities.toBoolean(
-                http.getEnableRcmSupport()));
-        }
-        if (http.getConnectionUploadTimeoutMillis() != null) {
-            setConnectionUploadTimeout(Integer.parseInt(
-                http.getConnectionUploadTimeoutMillis()));
-        }
-        if (http.getDisableUploadTimeout() != null) {
-            setDisableUploadTimeout(ConfigBeansUtilities.toBoolean(
-                http.getDisableUploadTimeout()));
-        }
-        if (http.getUriEncoding() != null) {
-            setURIEncoding(http.getUriEncoding());
-        }
-        if (http.getChunkingDisabled() != null) {
-            setChunkingDisabled(ConfigBeansUtilities.toBoolean(
-                http.getChunkingDisabled()));
-        }
+        setProperty("cometSupport",ConfigBeansUtilities.toBoolean(http.getCometSupportEnabled()));
+        setProperty("rcmSupport",ConfigBeansUtilities.toBoolean(http.getRcmSupportEnabled()));
+        setConnectionUploadTimeout(Integer.parseInt(http.getConnectionUploadTimeoutMillis()));
+        setDisableUploadTimeout(!ConfigBeansUtilities.toBoolean(http.getUploadTimeoutEnabled()));
+        setURIEncoding(http.getUriEncoding());
+        setChunkingDisabled(!ConfigBeansUtilities.toBoolean(http.getChunkingEnabled()));
         configSslOptions(ssl);
     }
 

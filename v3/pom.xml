@@ -110,8 +110,8 @@
         <woodstock.version>4.4.0.1</woodstock.version>
         <deployment-api.version>1.2-rev-1</deployment-api.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
-        <grizzly.version>1.9.18-M1</grizzly.version>
-        <grizzly-config.version>1.9.18-M1</grizzly-config.version>
+        <grizzly.version>1.9.18-M2</grizzly.version>
+        <grizzly-config.version>1.9.18-M2</grizzly-config.version>
         <jaxb-api.version>2.1</jaxb-api.version>
         <jaxws-api.version>2.1</jaxws-api.version>
         <jsr250-api.version>1.0</jsr250-api.version>
