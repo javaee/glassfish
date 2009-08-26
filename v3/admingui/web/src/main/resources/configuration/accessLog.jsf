@@ -108,6 +108,10 @@
             <sun:textField id="Suffix" columns="$int{30}" text="#{pageSession.valueMap2['RotationSuffix']}" />
         </sun:property>
 
+        <sun:property id="MaxHistoryFiles"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.MaxHistoryFiles}" helpText="$resource{i18n_web.access.MaxHistoryFiles}">
+            <sun:textField id="MaxHistoryFiles" columns="$int{30}" text="#{pageSession.valueMap2['MaxHistoryFiles']}" />
+        </sun:property>
+
         <sun:property id="accessLogBufferSize"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.accessLogBufferSize}" helpText="$resource{i18n_web.access.accessLogBufferSizeHelp}">
         <sun:textField id="accessLogBufferSize" styleClass="intAllowMinus" columns="$int{30}" text="#{pageSession.valueMap2['BufferSizeBytes']}" />
         <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
