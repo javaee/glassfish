@@ -84,6 +84,7 @@ import com.sun.enterprise.web.deploy.SecurityConstraintDecorator;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Container;
 import org.apache.catalina.Globals;
+import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.deploy.ApplicationParameter;
@@ -119,7 +120,8 @@ public class TomcatDeploymentConfig {
      * Tomcat 5 internal deployment mechanism by re-using the DOL objects.
      */
     public static void configureWebModule(WebModule webModule, 
-                                          WebBundleDescriptor webModuleDescriptor) { 
+        WebBundleDescriptor webModuleDescriptor)
+            throws LifecycleException { 
 
         // When context root = "/"
         if ( webModuleDescriptor == null ){
@@ -196,7 +198,7 @@ public class TomcatDeploymentConfig {
 
     
     /**
-     * Configure application environment entry, as represented in
+     * Configure application environment entry, as represented by
      * an <code>&lt;env-entry&gt;</code> element in the deployment descriptor.
      */
     protected static void configureContextEnvironment(WebModule webModule,
@@ -210,7 +212,7 @@ public class TomcatDeploymentConfig {
     
     /**
      * Configure error page element for a web application,
-     * as represented in a <code>&lt;error-page&gt;</code> element in the
+     * as represented by a <code>&lt;error-page&gt;</code> element in the
      * deployment descriptor.
      */
     protected static void configureErrorPage(WebModule webModule,
@@ -226,10 +228,10 @@ public class TomcatDeploymentConfig {
     
     /**
      * Configure filter definition for a web application, as represented
-     * in a <code>&lt;filter&gt;</code> element in the deployment descriptor.
+     * by a <code>&lt;filter&gt;</code> element in the deployment descriptor.
      */
     protected static void configureFilterDef(WebModule webModule,
-                                      WebBundleDescriptor wmd) {
+                                             WebBundleDescriptor wmd) {
                                                         
        Vector vector = wmd.getServletFilters();
        
@@ -241,20 +243,18 @@ public class TomcatDeploymentConfig {
            filterDef = new FilterDefDecorator(servletFilter);
           
            webModule.addFilterDef(filterDef);          
-       }
-                                                                     
+       }                                                    
     }
         
     
     /**
      * Configure filter mapping for a web application, as represented
-     * in a <code>&lt;filter-mapping&gt;</code> element in the deployment
+     * by a <code>&lt;filter-mapping&gt;</code> element in the deployment
      * descriptor.  Each filter mapping must contain a filter name plus either
      * a URL pattern or a servlet name.    
      */
     protected static void configureFilterMap(WebModule webModule,
                                              WebBundleDescriptor wmd) {
-                                                        
         Vector vector = wmd.getServletFilterMappingDescriptors();
         for (int i=0; i < vector.size(); i++)  {
             webModule.addFilterMap((ServletFilterMapping)vector.get(i));
@@ -303,12 +303,11 @@ public class TomcatDeploymentConfig {
         
     /**
      * Configure a login configuration element for a web application,
-     * as represented in a <code>&lt;login-config&gt;</code> element in the
+     * as represented by a <code>&lt;login-config&gt;</code> element in the
      * deployment descriptor.
      */ 
     protected static void configureLoginConfig(WebModule webModule,
                                                WebBundleDescriptor wmd) {
-                                            
         LoginConfiguration loginConf = wmd.getLoginConfiguration();
         if ( loginConf == null ){
             return;
@@ -324,7 +323,6 @@ public class TomcatDeploymentConfig {
      */
     protected static void configureMimeMapping(WebModule webModule,
                                                WebBundleDescriptor wmd) {
-                                                        
         Enumeration enumeration = wmd.getMimeMappings();
         MimeMapping mimeMapping;
         while (enumeration.hasMoreElements()){
@@ -332,7 +330,6 @@ public class TomcatDeploymentConfig {
             webModule.addMimeMapping(mimeMapping.getExtension(),
                                      mimeMapping.getMimeType());            
         }
-                                                        
     }
     
     
@@ -376,7 +373,7 @@ public class TomcatDeploymentConfig {
     
     /**
      * Representation of a message destination reference for a web application,
-     * as represented in a <code>&lt;message-destination-ref&gt;</code> element
+     * as represented by a <code>&lt;message-destination-ref&gt;</code> element
      * in the deployment descriptor.
      */
     protected static void configureMessageDestinationRef(
@@ -548,11 +545,11 @@ public class TomcatDeploymentConfig {
     
     /**
      * Configure security constraint element for a web application,
-     * as represented in a <code>&lt;security-constraint&gt;</code> element in 
+     * as represented by a <code>&lt;security-constraint&gt;</code> element in 
      * the deployment descriptor.    
      *
      * Configure a web resource collection for a web application's security
-     * constraint, as represented in a
+     * constraint, as represented by a
      * <code>&lt;web-resource-collection&gt;</code>
      * element in the deployment descriptor.
      *

@@ -43,11 +43,13 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.*;
+import javax.naming.*;
 import org.apache.catalina.Authenticator;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
+import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
@@ -147,146 +149,116 @@ public class WebModuleContextConfig extends ContextConfig {
      *
      * @param event The lifecycle event that has occurred
      */
-    public void lifecycleEvent(LifecycleEvent event) {
+    public void lifecycleEvent(LifecycleEvent event)
+            throws LifecycleException {
         
         // Identify the context we are associated with
-        try {
-            context = (Context) event.getLifecycle();
-        } catch (ClassCastException e) {
-            return;
-        }
+        context = (Context) event.getLifecycle();
 
         // Called from ContainerBase.addChild() -> StandardContext.start()
         // Process the event that has occurred
         if (event.getType().equals(Lifecycle.START_EVENT)) {
             configureResource();
             start();
-        } else if (event.getType().equals(Lifecycle.STOP_EVENT))
+        } else if (event.getType().equals(Lifecycle.STOP_EVENT)) {
             stop();
-        else if (event.getType().equals(Lifecycle.INIT_EVENT)) {
+        } else if (event.getType().equals(Lifecycle.INIT_EVENT)) {
             super.init();
         }
     }
     
     
-    protected synchronized void configureResource() {
+    protected synchronized void configureResource()
+            throws LifecycleException {
         
-        try {
-            List<ApplicationParameter> appParams = 
-                context.findApplicationParameters();
-            ContextParameter contextParam;
-            synchronized (appParams) {
-                Iterator<ApplicationParameter> i = appParams.iterator(); 
-                while (i.hasNext()) {
-                    ApplicationParameter appParam = i.next();
-                    contextParam = new EnvironmentProperty(
-                        appParam.getName(), appParam.getValue(),
-                        appParam.getDescription());
-                    webBundleDescriptor.addContextParameter(contextParam);
-                }
+        List<ApplicationParameter> appParams = 
+            context.findApplicationParameters();
+        ContextParameter contextParam;
+        synchronized (appParams) {
+            Iterator<ApplicationParameter> i = appParams.iterator(); 
+            while (i.hasNext()) {
+                ApplicationParameter appParam = i.next();
+                contextParam = new EnvironmentProperty(
+                    appParam.getName(), appParam.getValue(),
+                    appParam.getDescription());
+                webBundleDescriptor.addContextParameter(contextParam);
             }
+        }
 
-            ContextEnvironment[] envs = context.findEnvironments();
-            EnvironmentProperty envEntry;
-            for (int i=0; i<envs.length; i++) {
-                envEntry = new EnvironmentProperty(
-                        envs[i].getName(), envs[i].getValue(),
-                        envs[i].getDescription(), envs[i].getType()); 
-                if (envs[i].getValue()!=null) {
-                    envEntry.setValue(envs[i].getValue());
-                }
-                webBundleDescriptor.addEnvironmentProperty(envEntry);
+        ContextEnvironment[] envs = context.findEnvironments();
+        EnvironmentProperty envEntry;
+        for (int i=0; i<envs.length; i++) {
+            envEntry = new EnvironmentProperty(
+                    envs[i].getName(), envs[i].getValue(),
+                    envs[i].getDescription(), envs[i].getType()); 
+            if (envs[i].getValue()!=null) {
+                envEntry.setValue(envs[i].getValue());
             }
+            webBundleDescriptor.addEnvironmentProperty(envEntry);
+        }
 
-            ContextResource[] resources = context.findResources();
-            ResourceReferenceDescriptor resourceReference;
-            SunWebApp iasBean = webBundleDescriptor.getSunDescriptor();
-            ResourceRef[] rr = iasBean.getResourceRef();
-            DefaultResourcePrincipal drp;
-            ResourcePrincipal rp;
+        ContextResource[] resources = context.findResources();
+        ResourceReferenceDescriptor resourceReference;
+        SunWebApp iasBean = webBundleDescriptor.getSunDescriptor();
+        ResourceRef[] rr = iasBean.getResourceRef();
+        DefaultResourcePrincipal drp;
+        ResourcePrincipal rp;
             
-            for (int i=0; i<resources.length; i++) {
-                resourceReference = new ResourceReferenceDescriptor(
-                        resources[i].getName(), resources[i].getDescription(),
-                        resources[i].getType());
-                resourceReference.setJndiName(resources[i].getName());
-                if (rr!=null) {
-                    for (int j=0; j<rr.length; j++) {
-                        if (resources[i].getName().equals(rr[j].getResRefName())) {
-                            resourceReference.setJndiName(rr[i].getJndiName());
-                            drp = rr[i].getDefaultResourcePrincipal();
-                            if (drp!=null) {
-                                rp = new ResourcePrincipal(drp.getName(), drp.getPassword());
-                                resourceReference.setResourcePrincipal(rp);
-                            }
+        for (int i=0; i<resources.length; i++) {
+            resourceReference = new ResourceReferenceDescriptor(
+                    resources[i].getName(), resources[i].getDescription(),
+                    resources[i].getType());
+            resourceReference.setJndiName(resources[i].getName());
+            if (rr!=null) {
+                for (int j=0; j<rr.length; j++) {
+                    if (resources[i].getName().equals(rr[j].getResRefName())) {
+                        resourceReference.setJndiName(rr[i].getJndiName());
+                        drp = rr[i].getDefaultResourcePrincipal();
+                        if (drp!=null) {
+                            rp = new ResourcePrincipal(drp.getName(), drp.getPassword());
+                            resourceReference.setResourcePrincipal(rp);
                         }
                     }
                 }
-                resourceReference.setAuthorization(resources[i].getAuth());
-                webBundleDescriptor
-                        .addResourceReferenceDescriptor(resourceReference);
-                
             }
-                            
-        } catch (Exception exception) { 
-            context.setAvailable(false);
-            String msg = rb.getString("webcontainer.webModuleDisabled");
-            msg = MessageFormat.format(msg,
-                                       new Object[] { context.getName() });
-            logger.log(Level.SEVERE, msg, exception);
-        }
-    
+            resourceReference.setAuthorization(resources[i].getAuth());
+            webBundleDescriptor
+                    .addResourceReferenceDescriptor(resourceReference);
+        }    
     }
 
 
     /**
      * Process a "start" event for this Context - in background
      */
-    protected synchronized void start() {
-
-        try {
-
-            ComponentEnvManager namingMgr = habitat.getComponent(
-                com.sun.enterprise.container.common.spi.util.ComponentEnvManager.class);
-            if (namingMgr!=null) {
-                String compEnvId = namingMgr.bindToComponentNamespace(webBundleDescriptor);
-                ((WebModule) context).setComponentId(compEnvId);    
-            }
-        
-            TomcatDeploymentConfig.configureWebModule((WebModule)context,
-                                                      webBundleDescriptor);
-        } catch (Throwable t){
-            context.setAvailable(false);
-            String msg = rb.getString(
-                "webModuleContextConfig.webModuleDisabled");
-            msg = MessageFormat.format(msg,context.getName());
-            logger.log(Level.SEVERE, msg, t);
-        }
-
+    protected synchronized void start() throws LifecycleException {
         context.setConfigured(false);
-        ok = true;
 
-        authenticatorConfig();
-        // XXX realm not ready yet
-        //if (ok) {
-            managerConfig();
-        //}
+        ComponentEnvManager namingMgr = habitat.getComponent(
+            com.sun.enterprise.container.common.spi.util.ComponentEnvManager.class);
+        if (namingMgr != null) {
+            try {
+                ((WebModule) context).setComponentId(
+                    namingMgr.bindToComponentNamespace(webBundleDescriptor));
+            } catch (NamingException ne) {
+                throw new LifecycleException(ne);
+            }
+        }
         
-        //if (ok) {
-            context.setConfigured(true);
-        //} else {
-        /*    context.setConfigured(false);
-            logger.log(Level.SEVERE,
-                       "webModuleContextConfig.webModuleDisabledNoException",
-                       new Object[] { context.getName() });
-        }*/
+        TomcatDeploymentConfig.configureWebModule(
+            (WebModule)context, webBundleDescriptor);
+        authenticatorConfig();
+        managerConfig();
+
+        context.setConfigured(true);
     }
     
     
     /**
      * Always sets up an Authenticator regardless of any security constraints.
      */
-    protected synchronized void authenticatorConfig() {
+    protected synchronized void authenticatorConfig()
+            throws LifecycleException {
         
         LoginConfig loginConfig = context.getLoginConfig();
         if (loginConfig == null) {
@@ -321,12 +293,7 @@ public class WebModuleContextConfig extends ContextConfig {
         Realm rlm = context.getRealm();
         if (rlm == null) {
         // END IASRI 4856062
-            String realmName = (context.getLoginConfig() != null) ? context.getLoginConfig().getRealmName() : null;
-            if (realmName != null && !"".equals(realmName)) {
-                logger.log(Level.SEVERE, "webModuleContextConfig.missingRealm");
-            }
-            ok = false;
-            return;
+            throw new LifecycleException("webModuleContextConfig.missingRealm");
         }
 
         // BEGIN IASRI 4856062
@@ -366,20 +333,23 @@ public class WebModuleContextConfig extends ContextConfig {
             */
 
             if (authenticatorName == null) {
-                logger.log(Level.SEVERE, "webModuleContextConfig.authenticatorMissing",
-                           loginConfig.getAuthMethod());
-                ok = false;
-                return;
+                String msg = rb.getString(
+                    "webModuleContextConfig.authenticatorMissing");
+                throw new LifecycleException(MessageFormat.format(msg,
+                    loginConfig.getAuthMethod()));
             }
 
             // Instantiate and install an Authenticator of the requested class
             try {
                 Class authenticatorClass = Class.forName(authenticatorName);
-                authenticator = (GlassFishValve) authenticatorClass.newInstance();
-            } catch (Throwable t) {
-                logger.log(Level.SEVERE, "webModuleContextConfig.authenticatorInstantiate", authenticatorName);
-                logger.log(Level.SEVERE, "webModuleContextConfig.authenticatorInstantiate", t);
-                ok = false;
+                authenticator = (GlassFishValve)
+                    authenticatorClass.newInstance();
+            } catch (Exception e) {
+                String msg = rb.getString(
+                    "webModuleContextConfig.authenticatorInstantiate");
+                throw new LifecycleException(
+                    MessageFormat.format(msg, authenticatorName),
+                    e);
             }
         }
 
@@ -388,8 +358,9 @@ public class WebModuleContextConfig extends ContextConfig {
             if (pipeline != null) {
                 ((ContainerBase) context).addValve(authenticator);
                 if (logger.isLoggable(Level.FINEST)) {
-                    logger.log(Level.FINEST, "webModuleContextConfig.authenticatorConfigured",
-                               loginConfig.getAuthMethod());
+                    logger.log(Level.FINEST,
+                        "webModuleContextConfig.authenticatorConfigured",
+                        loginConfig.getAuthMethod());
                 }
             }
         }

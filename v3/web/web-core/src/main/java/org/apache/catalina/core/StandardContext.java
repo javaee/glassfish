@@ -4665,7 +4665,7 @@ public class StandardContext
      * for this Context.  Return <code>true</code> if all listeners wre
      * initialized successfully, or <code>false</code> otherwise.
      */
-    public boolean listenerStart() {
+    public void listenerStart() {
 
         ServletContextEvent event =
             new ServletContextEvent(getServletContext());
@@ -4702,8 +4702,6 @@ public class StandardContext
         }
 
         isContextInitializedCalled = true;
-
-        return true;
     }
 
 
@@ -4869,12 +4867,10 @@ public class StandardContext
     /**
      * Starts this context's alternate doc base resources.
      */
-    public boolean alternateResourcesStart() {
-
-        boolean ok = true;
+    public void alternateResourcesStart() throws LifecycleException {
 
         if (alternateDocBases == null || alternateDocBases.isEmpty()) {
-            return ok;
+            return;
         }
 
         Hashtable env = new Hashtable();
@@ -4894,21 +4890,18 @@ public class StandardContext
                 alternateDocBase.setResources(proxyDirContext);
             } catch(Throwable t) {
                 if(log.isLoggable(Level.FINE)) {
-                    log.log(Level.SEVERE,
+                    throw new LifecycleException(
                         sm.getString("standardContext.resourcesStart",
                             getName()),
                         t);
                 } else {
-                    log.log(Level.SEVERE,
+                    throw new LifecycleException(
                         sm.getString("standardContext.resourcesStart",
                             getName()) +
                             ": " + t.getMessage());
                 }
-                ok = false;
             }
         }
-
-        return ok;
     }
 
     /**
@@ -4988,7 +4981,6 @@ public class StandardContext
         this.alternateDocBases = null;
 
         return (ok);
-
     }
 
     /**
@@ -5034,7 +5026,7 @@ public class StandardContext
                             getName()),
                             StandardWrapper.getRootCause(e));
                     // NOTE: load errors (including a servlet that throws
-                    // UnavailableException from tht init() method) are NOT
+                    // UnavailableException from the init() method) are NOT
                     // fatal to application startup
                     // START SJSAS 6377790
                     throw new LifecycleException(
@@ -5071,7 +5063,8 @@ public class StandardContext
             }
         }
         if (log.isLoggable(Level.FINE)) {
-            log.fine("Starting " + ("".equals(getName()) ? "ROOT" : getName()));
+            log.fine("Starting " +
+                ("".equals(getName()) ? "ROOT" : getName()));
         }
 
         // Set JMX object name for proper pipeline registration
@@ -5089,7 +5082,6 @@ public class StandardContext
 
         setAvailable(false);
         setConfigured(false);
-        boolean ok = true;
 
         // Set config file name
         File configBase = getConfigBase();
@@ -5112,7 +5104,8 @@ public class StandardContext
                         ((StandardServer) server).storeContext(this);
                     }
                 } catch (Exception e) {
-                    log.log(Level.WARNING, "Error storing config file", e);
+                    throw new LifecycleException(
+                        "Error storing config file", e);
                 }
             } else {
                 try {
@@ -5127,7 +5120,8 @@ public class StandardContext
                         }
                     }
                 } catch (Exception e) {
-                    log.log(Level.WARNING, "Error setting config file", e);
+                    throw new LifecycleException(
+                        "Error setting config file", e);
                 }
             }
         }
@@ -5146,8 +5140,9 @@ public class StandardContext
 
         // Add missing components as necessary
         if (webappResources == null) {   // (1) Required by Loader
-            if (log.isLoggable(Level.FINE))
+            if (log.isLoggable(Level.FINE)) {
                 log.fine("Configuring default Resources");
+            }
             try {
                 if ((docBase != null) && (docBase.endsWith(".war")) &&
                         (!(new File(docBase).isDirectory())))
@@ -5155,14 +5150,12 @@ public class StandardContext
                 else
                     setResources(new FileDirContext());
             } catch (IllegalArgumentException e) {
-                log.log(Level.SEVERE,
-                        sm.getString("standardContext.resourcesInit"), e);
-                ok = false;
+                throw new LifecycleException(
+                    sm.getString("standardContext.resourcesInit"), e);
             }
         }
-        if (ok) {
-            ok = resourcesStart();
-        }
+
+        resourcesStart();
 
         // Add alternate resources
         if (alternateDocBases != null && !alternateDocBases.isEmpty()) {
@@ -5181,20 +5174,17 @@ public class StandardContext
                             new FileDirContext());
                     }
                 } catch(IllegalArgumentException e) {
-                    log.log(Level.SEVERE,
-                        sm.getString("standardContext.resourcesInit"),
-                        e);
-                    ok = false;
+                    throw new LifecycleException(
+                        sm.getString("standardContext.resourcesInit"), e);
                 }
             }
-            if (ok) {
-                ok = alternateResourcesStart();
-            }
+
+            alternateResourcesStart();
         }
 
         // Look for a realm - that may have been configured earlier.
         // If the realm is added after context - it'll set itself.
-        if( realm == null ) {
+        if (realm == null) {
             ObjectName realmName=null;
             try {
                 realmName=new ObjectName( getEngineName() + ":type=Realm,host="
@@ -5223,30 +5213,22 @@ public class StandardContext
         postWorkDirectory();
 
         // Validate required extensions
-        boolean dependencyCheck = true;
         try {
-            dependencyCheck = ExtensionValidator.validateApplication
-                (getResources(), this);
+            ExtensionValidator.validateApplication(getResources(), this);
         } catch (IOException ioe) {
-            log.log(Level.SEVERE,
-                    sm.getString("standardContext.dependencyCheck", this),
-                    ioe);
-            dependencyCheck = false;
-        }
-
-        if (!dependencyCheck) {
-            // do not make application available if depency check fails
-            ok = false;
+            throw new LifecycleException(
+                sm.getString("standardContext.dependencyCheck", this),
+                ioe);
         }
 
         // Reading the "catalina.useNaming" environment variable
         String useNamingProperty = System.getProperty("catalina.useNaming");
-        if ((useNamingProperty != null)
-            && ("false".equals(useNamingProperty))) {
+        if ((useNamingProperty != null) &&
+                ("false".equals(useNamingProperty))) {
             useNaming = false;
         }
 
-        if (ok && isUseNaming()) {
+        if (isUseNaming()) {
             if (namingContextListener == null) {
                 namingContextListener = new NamingContextListener();
                 namingContextListener.setDebug(getDebug());
@@ -5261,81 +5243,67 @@ public class StandardContext
         ClassLoader oldCCL = null;
         // END OF SJSAS 8.1 6174179
 
-        // Standard container startup
-        if (log.isLoggable(Level.FINEST))
-            log.finest("Processing standard container startup");
-
-        boolean mainOk = false;
         try {
-            if (ok) {
+            started = true;
 
-                started = true;
+            // Start our subordinate components, if any
+            if ((loader != null) && (loader instanceof Lifecycle))
+                ((Lifecycle) loader).start();
+            if ((logger != null) && (logger instanceof Lifecycle))
+                ((Lifecycle) logger).start();
 
-                // Start our subordinate components, if any
-                if ((loader != null) && (loader instanceof Lifecycle))
-                    ((Lifecycle) loader).start();
-                if ((logger != null) && (logger instanceof Lifecycle))
-                    ((Lifecycle) logger).start();
+            // Unbinding thread
+            // START OF SJSAS 8.1 6174179
+            //unbindThread(oldCCL);
+            // END OF SJSAS 8.1 6174179
 
-                // Unbinding thread
-                // START OF SJSAS 8.1 6174179
-                //unbindThread(oldCCL);
-                // END OF SJSAS 8.1 6174179
+            // Binding thread
+            oldCCL = bindThread();
 
-                // Binding thread
-                oldCCL = bindThread();
+            if ((realm != null) && (realm instanceof Lifecycle))
+                ((Lifecycle) realm).start();
+            if ((resources != null) && (resources instanceof Lifecycle))
+                ((Lifecycle) resources).start();
 
-                if ((realm != null) && (realm instanceof Lifecycle))
-                    ((Lifecycle) realm).start();
-                if ((resources != null) && (resources instanceof Lifecycle))
-                    ((Lifecycle) resources).start();
-
-                // Start our child containers, if any
-                for (Container child : findChildren()) {
-                    if(child instanceof Lifecycle) {
-                        ((Lifecycle)child).start();
-                    }
+            // Start our child containers, if any
+            for (Container child : findChildren()) {
+                if(child instanceof Lifecycle) {
+                    ((Lifecycle)child).start();
                 }
-
-                // Start the Valves in our pipeline (including the basic),
-                // if any
-                if (pipeline instanceof Lifecycle)
-                    ((Lifecycle) pipeline).start();
-
-                // START SJSAS 8.1 5049111
-                // Notify our interested LifecycleListeners
-                lifecycle.fireLifecycleEvent(START_EVENT, null);
-                // END SJSAS 8.1 5049111
-
-                // START SJSAS 8.1 5049111
-                // Notify our interested LifecycleListeners
-                // lifecycle.fireLifecycleEvent(START_EVENT, null);
-                // END SJSAS 8.1 504911
-
-                mainOk = true;
             }
+
+            // Start the Valves in our pipeline (including the basic),
+            // if any
+            if (pipeline instanceof Lifecycle)
+                ((Lifecycle) pipeline).start();
+
+            // START SJSAS 8.1 5049111
+            // Notify our interested LifecycleListeners
+            lifecycle.fireLifecycleEvent(START_EVENT, null);
+            // END SJSAS 8.1 5049111
+
+            // START SJSAS 8.1 5049111
+            // Notify our interested LifecycleListeners
+            // lifecycle.fireLifecycleEvent(START_EVENT, null);
+            // END SJSAS 8.1 504911
+        } catch (Throwable t) {
+            throw new LifecycleException(t);
         } finally {
             // Unbinding thread
             unbindThread(oldCCL);
-            if (!mainOk) {
-                // An exception occurred
-                // Register with JMX anyway, to allow management
-                registerJMX();
-            }
         }
 
         if (!getConfigured()) {
-            ok = false;
+            throw new LifecycleException(
+                sm.getString("standardContext.startFailed", getName()));
         }
 
         // Store some required info as ServletContext attributes
-        if (ok) {
-            postResources();
-            if (orderedLibs != null && !orderedLibs.isEmpty()) {
-                getServletContext().setAttribute(ServletContext.ORDERED_LIBS,
-                    orderedLibs);
-                context.setAttributeReadOnly(ServletContext.ORDERED_LIBS);
-            }
+        postResources();
+        if (orderedLibs != null && !orderedLibs.isEmpty()) {
+            getServletContext().setAttribute(ServletContext.ORDERED_LIBS,
+                orderedLibs);
+            context.setAttributeReadOnly(ServletContext.ORDERED_LIBS);
         }
 
         // Initialize associated mapper
@@ -5345,65 +5313,49 @@ public class StandardContext
         oldCCL = bindThread();
 
         try {
-            if (ok) {
-                // Notify our interested LifecycleListeners
-                lifecycle.fireLifecycleEvent(AFTER_START_EVENT, null);
-            }
+            // Notify our interested LifecycleListeners
+            lifecycle.fireLifecycleEvent(AFTER_START_EVENT, null);
 
             // Support for pluggability : this has to be done before
             // listener events are fired
-            if (ok) {
-                ok = callServletContainerInitializers();
-            }
+            callServletContainerInitializers();
 
             // Configure and call application event listeners
-            if (ok) {
-                ok = listenerStart();
+            listenerStart();
+
+            // Start manager
+            if ((manager != null) && (manager instanceof Lifecycle)) {
+                ((Lifecycle) getManager()).start();
             }
 
-            try {
-                // Start manager
-                if ((manager != null) && (manager instanceof Lifecycle)) {
-                    ((Lifecycle) getManager()).start();
-                }
-
-                // Start ContainerBackgroundProcessor thread
-                super.threadStart();
-            } catch(Exception e) {
-                log.log(Level.SEVERE,
-                    sm.getString("standardContext.startManager.error"), e);
-                ok = false;
-            }
+            // Start ContainerBackgroundProcessor thread
+            super.threadStart();
 
             // Configure and call application filters
-            if (ok) {
-                ok = filterStart();
-            }
+            filterStart();
 
             // Load and initialize all "load on startup" servlets
-            if (ok) {
-                loadOnStartup(findChildren());
+            loadOnStartup(findChildren());
+        } catch (Throwable t) {
+            log.severe(sm.getString("standardContext.startFailed", getName()));
+            try {
+                stop();
+            } catch (Throwable tt) {
+                log.log(Level.SEVERE,
+                        sm.getString("standardContext.startCleanup"), tt);
             }
+            throw new LifecycleException(t);
         } finally {
             // Unbinding thread
             unbindThread(oldCCL);
         }
 
         // Set available status depending upon startup success
-        if (ok) {
-            if (log.isLoggable(Level.FINEST))
-                log.finest("Starting completed");
-            setAvailable(true);
-        } else {
-            log.severe(sm.getString("standardContext.startFailed", getName()));
-            try {
-                stop();
-            } catch (Throwable t) {
-                log.log(Level.SEVERE,
-                        sm.getString("standardContext.startCleanup"), t);
-            }
-            setAvailable(false);
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Startup successfully completed");
         }
+
+        setAvailable(true);
 
         // JMX registration
         registerJMX();
@@ -5412,10 +5364,10 @@ public class StandardContext
         startupTime = startTimeMillis - startupTimeStart;
 
         // Send j2ee.state.running notification
-        if (ok && (this.getObjectName() != null)) {
+        if (getObjectName() != null) {
             Notification notification =
                 new Notification("j2ee.state.running", this.getObjectName(),
-                                sequenceNumber++);
+                                 sequenceNumber++);
             broadcaster.sendNotification(notification);
         }
 
@@ -5424,14 +5376,10 @@ public class StandardContext
         if (getLoader() instanceof WebappLoader) {
             ((WebappLoader) getLoader()).closeJARs(true);
         }
-
-        // Reinitializing if something went wrong
-        if (!ok && started) {
-            stop();
-        }
     }
 
-    private boolean callServletContainerInitializers() {
+    private void callServletContainerInitializers()
+            throws LifecycleException {
 
         // Get the list of ServletContainerInitializers and the classes
         // they are interested in
@@ -5443,7 +5391,7 @@ public class StandardContext
                 servletContainerInitializers, interestList,
                 getClassLoader());
         if (initializerList == null) {
-            return true;
+            return;
         }
 
         // Allow programmatic registration of ServletContextListeners, but
@@ -5462,19 +5410,16 @@ public class StandardContext
                     iniInstance.onStartup(
                         initializerList.get(initializer), ctxt);
                 } catch (Throwable t) {
-                    log.log(Level.SEVERE, 
+                    throw new LifecycleException(
                         sm.getString(
                             "standardContext.servletContainerInitializer.error",
                             initializer.getCanonicalName()),
                         t);
-                    return false;
                 }
             }
         } finally {
             isProgrammaticServletContextListenerRegistrationAllowed = false;
         }
-
-        return true;
     }
 
     public void setServletContainerInitializerInterestList(
