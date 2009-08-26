@@ -34,8 +34,8 @@
  holder.
 -->
 <!initPage
-    setResourceBundle(key="i18njms" bundle="org.glassfish.admingui.plugin.jms.Strings");
-    //setResourceBundle(key="help" bundle="org.glassfish.admingui.plugin.jms.Helplinks")
+    setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
+    setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
 />
 
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.jmsPhysDestinations.EditPageTitle}" >
@@ -92,7 +92,7 @@
                     <h:outputText value="#{row['help']}" style="font-style: italic;"/>
                 </h:column>
         </h:dataTable>
-        <sun:hidden id="helpKey" value="$resource{help.jmsPhysicalDestinationStats}" />
+        <sun:hidden id="helpKey" value="$resource{helpjms.jmsPhysicalDestinationStats}" />
         <sun:title>
             <!facet pageButtonsBottom>
                 <sun:panelGroup id="bottomButtons">

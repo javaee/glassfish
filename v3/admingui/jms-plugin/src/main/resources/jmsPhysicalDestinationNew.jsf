@@ -34,8 +34,8 @@
  holder.
 -->
 <!initPage
-    setResourceBundle(key="i18njms" bundle="org.glassfish.admingui.plugin.jms.Strings");
-    //setResourceBundle(key="help" bundle="org.glassfish.admingui.plugin.jms.Helplinks")
+    setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
+    setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
     setAttribute(key="edit" value="#{false}" )
 />
 
@@ -59,7 +59,7 @@
     <sun:form id="jmsPhysDestForm">
 #include "jmsPhysicalDestinationSheet.inc"
 // #include "/common/shared/propertyDescTable.inc"
-        <sun:hidden id="helpKey" value="$resource{help.jmsPhysicalDestinationNew}" />
+        <sun:hidden id="helpKey" value="$resource{helpjms.jmsPhysicalDestinationNew}" />
     </sun:form>
     "<br/><br/>
 </define>

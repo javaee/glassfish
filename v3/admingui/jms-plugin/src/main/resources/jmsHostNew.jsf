@@ -34,8 +34,8 @@
  holder.
 -->
 <!initPage
-    setResourceBundle(key="i18njms" bundle="org.glassfish.admingui.plugin.jms.Strings");
-    //setResourceBundle(key="help" bundle="org.glassfish.admingui.plugin.jms.Helplinks")
+    setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
+    setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
     setAttribute(key="edit" value="#{false}" )
 />
 
@@ -55,7 +55,7 @@
 #include "/common/shared/restart.inc"
     <sun:form id="propertyForm">
 #include "/jms/jmsHost.inc"
-        <sun:hidden id="helpKey" value="$resource{help.jmsHostNew}" />
+        <sun:hidden id="helpKey" value="$resource{helpjms.jmsHostNew}" />
     </sun:form>
 </define>
 </composition>

@@ -35,8 +35,8 @@
 -->
 
 <!initPage
-    setResourceBundle(key="i18njms" bundle="org.glassfish.admingui.plugin.jms.Strings");
-    //setResourceBundle(key="help" bundle="org.glassfish.admingui.plugin.jms.Helplinks")
+    setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
+    setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
 />
 
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.jmsPhysDestinations.pageTitle}" >
@@ -111,7 +111,7 @@
                 </sun:tableColumn>
             </sun:tableRowGroup>
         </sun:table>
-        <sun:hidden id="helpKey" value="$attribute{helpKey}" />
+        <sun:hidden id="helpKey" value="$resource{helpjms.jmsPhysicalDestinations}" />
     </sun:form>
 </define>
 </composition>

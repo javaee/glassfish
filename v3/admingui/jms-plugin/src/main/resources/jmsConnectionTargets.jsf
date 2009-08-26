@@ -34,11 +34,12 @@
  holder.
 -->
 <!-- resourceNode/jmsConnectionTargets.jsf -->
-
+<!initPage
+    setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
+    setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
+/>
 <sun:page id="page1" >
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="com.sun.enterprise.tools.admingui.resources.Strings");
-        setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks");
         setSessionAttribute(key="resEditTabs" value="targetTab");
         setPageSessionAttribute(key="generalPage" value="jmsConnectionEdit.jsf");
         setPageSessionAttribute(key="targetPage" value="jmsConnectionTargets.jsf");
@@ -60,7 +61,7 @@
                  <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}"/>
                  "<br />
 #include "resourceNode/resourcesTargetTable.inc"
-                <sun:hidden id="helpKey" value="$resource{help.jmsConnectionTargets}" />
+                <sun:hidden id="helpKey" value="$resource{helpjms.jmsConnectionTargets}" />
             </sun:form>
         </sun:body>
 #include "/common/shared/changeButtonsJS.inc"

@@ -36,8 +36,8 @@
 -->
 
 <!initPage
-    setResourceBundle(key="i18njms" bundle="org.glassfish.admingui.plugin.jms.Strings");
-//    setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+    setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
+    setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
 />
 
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.jmsDestination.editPageTitle}" >
@@ -101,7 +101,7 @@
                 </sun:panelGroup>
             </facet>
         </sun:title>
-        <sun:hidden id="helpKey" value="$resource{help.jmsDestinationEdit}" />
+        <sun:hidden id="helpKey" value="$resource{helpjms.jmsDestinationEdit}" />
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 </define>

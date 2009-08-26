@@ -34,8 +34,8 @@
  holder.
 -->
 <!initPage
-    setResourceBundle(key="i18njms" bundle="org.glassfish.admingui.plugin.jms.Strings");
-    //setResourceBundle(key="help" bundle="org.glassfish.admingui.plugin.jms.Helplinks")
+    setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
+    setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
 />
 
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.connectionFactories.pageTitle}" >
@@ -75,7 +75,7 @@
         <sun:title id="propertyContentPage" title="$resource{i18njms.connectionFactories.pageTitle}" helpText="$resource{i18njms.connectionFactories.pageTitleHelp}"/>
         "<br /> <br />
 #include "/jms/shared/resourcesTable.inc"
-        <sun:hidden id="helpKey" value="$resource{help.jmsConnections}" />
+        <sun:hidden id="helpKey" value="$resource{helpjms.jmsConnections}" />
     </sun:form>
 </define>
 </composition>

@@ -35,7 +35,8 @@
 -->
 
 <!initPage
-    setResourceBundle(key="i18njms" bundle="org.glassfish.admingui.plugin.jms.Strings");
+    setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
+    setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
 />
 
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.jmsHosts.ListPageTitle}" >
@@ -76,7 +77,7 @@
         <sun:title id="propertyContentPage" title="$resource{i18njms.jmsHosts.ListPageTitle}" helpText="$resource{i18njms.jmsHosts.ListPageHelp}"/>
          "<br /> <br />
 #include "/jms/jmsHostsTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help.jmsHosts}" />
+	<sun:hidden id="helpKey" value="$resource{helpjms.jmsHosts}" />
     </sun:form>
 </define>
 </composition>
