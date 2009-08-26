@@ -49,7 +49,7 @@ public class CLIConstants {
 
     // sent in as a System Property for restarts
     public static final String  RESTART_FLAG                    = "AS_RESTART";
-    public static final long    WAIT_FOR_DAS_TIME_MS            = 90000;
+    public static final long    WAIT_FOR_DAS_TIME_MS            = 10 * 60 * 1000; // 10 minutes
     public static final int     RESTART_EXIT_VALUE              = 10;
     public static final String  WALL_CLOCK_START_PROP           = "WALL_CLOCK_START";
     public static final boolean debugMode;

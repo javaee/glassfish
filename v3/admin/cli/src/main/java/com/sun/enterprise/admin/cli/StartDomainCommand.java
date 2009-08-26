@@ -50,6 +50,7 @@ import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 
 import java.util.*;
@@ -65,6 +66,7 @@ import java.util.*;
 public class StartDomainCommand extends LocalDomainCommand {
 
     private GFLauncherInfo info;
+    private GFLauncher launcher;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartDomainCommand.class);
@@ -103,7 +105,7 @@ public class StartDomainCommand extends LocalDomainCommand {
 
     private int runCommandNotEmbedded() throws CommandException {
         try {
-            GFLauncher launcher = GFLauncherFactory.getInstance(
+            launcher = GFLauncherFactory.getInstance(
                     GFLauncherFactory.ServerType.domain);
             info = launcher.getInfo();
 
@@ -209,8 +211,6 @@ public class StartDomainCommand extends LocalDomainCommand {
 
     private int runCommandEmbedded() throws CommandException {
         try {
-            GFLauncher launcher;
-
             // bnevins nov 23 2008
             // Embedded is a new type of server
             // For now -- we ONLY start embedded
@@ -278,12 +278,36 @@ public class StartDomainCommand extends LocalDomainCommand {
 
         pinged:
         while (!timedOut(startWait)) {
+            // first, see if the admin port is responding
+            // if it is, the DAS is up
             for (int port : ports) {
                 if (isServerAlive(port)) {
                     alive = true;
                     break pinged;
                 }
             }
+
+            // check to make sure the DAS process is still running
+            // if it isn't, startup failed
+            try {
+                Process p = launcher.getProcess();
+                int exitCode = p.exitValue();
+                // uh oh, DAS died
+                ProcessStreamDrainer psd = launcher.getProcessStreamDrainer();
+                String output = psd.getOutErrString();
+                if (ok(output))
+                    throw new CommandException(strings.get("dasDiedOutput",
+                                    info.getDomainName(), exitCode, output));
+                else
+                    throw new CommandException(strings.get("dasDied",
+                                    info.getDomainName(), exitCode));
+            } catch (GFLauncherException ex) {
+                // should never happen
+            } catch (IllegalThreadStateException ex) {
+                // process is still alive
+            }
+
+            // wait before checking again
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
