@@ -158,8 +158,45 @@ public abstract class GFLauncher {
         setupCalledByClients = true;
     }
 
+    /**
+     * Returns the exit value of the process.  This only makes sense when we ran
+     * in verbose mode and waited for the process to exit in the wait() method.
+     * Caveat Emptor!
+     * @return the process' exit value if it completed and we waited.  Otherwise
+     * it returns -1
+     */
     public final int getExitValue() {
         return exitValue;
+    }
+    
+    /**
+     * You don't want to call this before calling launch because it would not 
+     * make sense.
+     * @return The Process object of the launched Server process. you will either get
+     * a valid Process object or an Exceptio will be thrown.  You are guaranteed not to get a null.
+     * @throws GFLauncherException if the Process has not been created yet - call launch()
+     * before calling this method.
+     */
+    public final Process getProcess() throws GFLauncherException {
+        if(process == null)
+                throw new GFLauncherException("invalid_process");
+
+        return process;
+    }
+
+    /**
+     * A ProcessStreamDrainer is always attached to every Process created here.
+     * It is handy for getting the stdin and stdout as a nice String.
+     *
+     * @return A valid ProcessStreamDrainer.  You are guaranteed to never get a null.
+     * @throws GFLauncherException if the process has not launched yet
+     * @see com.sun.enterprise.universal.process.ProcessStreamDrainer
+     */
+    public final ProcessStreamDrainer getProcessStreamDrainer() throws GFLauncherException {
+        if(psd == null)
+            throw new GFLauncherException("invalid_psd");
+
+        return psd;
     }
     
     ///////////////////////////////////////////////////////////////////////////
@@ -229,14 +266,13 @@ public abstract class GFLauncher {
 
         
         //run the process and attach Stream Drainers
-        Process process;
         try {
             process = pb.start();
             if (getInfo().isVerbose()) {
-                ProcessStreamDrainer.redirect(getInfo().getDomainName(), process);
+                psd = ProcessStreamDrainer.redirect(getInfo().getDomainName(), process);
             }
             else {
-                ProcessStreamDrainer.drain(getInfo().getDomainName(), process);
+                psd = ProcessStreamDrainer.save(getInfo().getDomainName(), process);
             }
             writeSecurityTokens(process.getOutputStream());
         }
@@ -588,7 +624,11 @@ public abstract class GFLauncher {
     private boolean setupCalledByClients = false; //handle with care
     private int     exitValue = -1;
     private ProcessWhacker  processWhacker;
+    private Process process;
+    private ProcessStreamDrainer    psd;
 
+    ///////////////////////////////////////////////////////////////////////////
+    
     private static class ProcessWhacker implements Runnable {
         ProcessWhacker(Process p, String msg) {
             message = msg;
