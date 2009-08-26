@@ -46,7 +46,6 @@
     </parent>  
     <groupId>org.glassfish</groupId>
     <artifactId>ant-tasks</artifactId>
-    <packaging>hk2-jar</packaging>
     <name>Ant tasks</name>
 
     <build>
