@@ -81,10 +81,8 @@ public class BtraceClientGenerator {
 
     private static void writeClass(byte[] classData, String generatedClassName) {
         // only do this if we are in "debug" mode
-        String debug = System.getenv("AS_DEBUG");
-        if (debug == null || !debug.equals("true")) {
+        if(Boolean.parseBoolean(System.getenv("AS_DEBUG")) == false)
             return;
-        }
 
         System.out.println("**** Generated BTRACE Client " + generatedClassName);
 
