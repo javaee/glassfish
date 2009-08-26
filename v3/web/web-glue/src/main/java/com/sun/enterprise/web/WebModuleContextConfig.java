@@ -293,7 +293,15 @@ public class WebModuleContextConfig extends ContextConfig {
         Realm rlm = context.getRealm();
         if (rlm == null) {
         // END IASRI 4856062
-            throw new LifecycleException("webModuleContextConfig.missingRealm");
+            String realmName = (context.getLoginConfig() != null) ?
+                context.getLoginConfig().getRealmName() : null;
+            if (realmName != null && !realmName.isEmpty()) {
+                String msg = rb.getString(
+                    "webModuleContextConfig.missingRealm");
+                throw new LifecycleException(
+                    MessageFormat.format(msg, realmName));
+            }
+            return;
         }
 
         // BEGIN IASRI 4856062
