@@ -66,7 +66,7 @@ public class Test2Servlet extends HttpServlet {
         attr = (String) context.getAttribute("APPLIB-1");
 	ret.append(attr +";");
 	attr = (String) context.getAttribute("APPLIB-2");
-	ret.append(attr +";");
+	ret.append(attr);
         res.getWriter().write(ret.toString());
     }
 }

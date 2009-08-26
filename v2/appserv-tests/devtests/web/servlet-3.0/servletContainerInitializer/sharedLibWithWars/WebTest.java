@@ -45,7 +45,7 @@ public class WebTest {
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
     private static final String TEST_NAME = "pluggable-sharedlibraries-war";
-    private static final String[] EXPECTED_RESPONSE = {"none","CALLED SHAREDLIB-1;CALLED SHAREDLIB-2;null;null;CALLED APPLIB-1;null;","CALLED SHAREDLIB-1;CALLED SHAREDLIB-2;CALLED SHAREDLIB-3;null;null;CALLED APPLIB-2;"};
+    private static final String[] EXPECTED_RESPONSE = {"none","CALLED SHAREDLIB-1;CALLED SHAREDLIB-2;CALLED SHAREDLIB-3;CALLED SHAREDLIB-4;CALLED APPLIB-1;null","CALLED SHAREDLIB-1;CALLED SHAREDLIB-2;CALLED SHAREDLIB-3;CALLED SHAREDLIB-4;null;CALLED APPLIB-2"};
 
     private String host;
     private String port;
@@ -86,6 +86,7 @@ public class WebTest {
         
         String url = "http://" + host + ":" + port + contextRoot
                      + root;
+        System.out.println("Invoking " + url);
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();
 
