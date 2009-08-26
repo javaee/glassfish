@@ -75,7 +75,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.chunking-disabled=true"/>
+                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.chunking-enabled=false"/>
         </antcall>
     </target>
 
@@ -105,7 +105,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.chunking-disabled=false"/>
+                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.chunking-enabled=true"/>
         </antcall>
     </target>
 

@@ -502,6 +502,7 @@
         </delete>
         
         <record name="web.output" action="start" />
+        <antcall target="stopDomain"/>
         <antcall target="startDomain"/>
         <antcall target="jsp"/>
         <antcall target="taglib"/>

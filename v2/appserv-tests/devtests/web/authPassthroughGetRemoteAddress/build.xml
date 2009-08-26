@@ -77,7 +77,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.enable-auth-pass-through=true"/>
+                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.auth-pass-through-enabled=true"/>
         </antcall>
     </target>
 
@@ -109,7 +109,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.enable-auth-pass-through="/>
+                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.auth-pass-through-enabled="/>
         </antcall>
     </target>
 
