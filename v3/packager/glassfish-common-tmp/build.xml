@@ -19,34 +19,33 @@ fields enclosed by brackets "[]" replaced with your
 own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
-<project name="glassfish common package creation" default="create.package" basedir=".">
+<project name="glassfish common tmp package creation" default="create.package" basedir=".">
     <import file="${basedir}/../common-targets.xml"/>
 
  <target name="create.package">
- <property name="package.name" value="glassfish-common"/> 
+ <property name="package.name" value="glassfish-common-tmp"/> 
 
         
+	<graphDef id="all-modules" tolerateBrokenPOMs="true">
+		<scope level="compile,runtime">
+			<subtract>
+			    <fullGraph/>
+		            <subGraph groupID="org.glassfish.packager" artifactID="glassfish-corba-omgapi">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			 </subtract>
+		</scope>					 
+       </graphDef>
 
-       <resolveArtifact property="glassfish-common-tmp.zip" groupID="org.glassfish.packager" artifactID="glassfish-common-tmp" type="zip" />
+       
+       <stage-module-jars graphid="all-modules" />
+       <stage-distribution-fragments graphid="all-modules" />
+       <mkdir dir="target/stage/${install.dir.name}/glassfish/modules/endorsed"/>
 
+      <move file="target/stage/${install.dir.name}/glassfish/modules/jaxb-api-osgi.jar" todir="target/stage/${install.dir.name}/glassfish/modules/endorsed" failonerror="false"/>
 
-       <unzip src="${glassfish-common-tmp.zip}"
-           dest="target/stage">
-          <patternset>
-		  <exclude name="META-INF/**"/>
-	  </patternset>
-       </unzip> 
+      <move file="target/stage/${install.dir.name}/glassfish/modules/javax.annotation.jar" todir="target/stage/${install.dir.name}/glassfish/modules/endorsed" failonerror="false"/>
 
-       <resolveArtifact property="embedded-fragment.zip" groupID="org.glassfish.extras" artifactID="glassfish-embedded-static-shell-frag" />
-
-
-       <unzip src="${embedded-fragment.zip}"
-           dest="target/stage/${install.dir.name}">
-          <patternset>
-		  <exclude name="META-INF/**"/>
-	  </patternset>
-       </unzip>  
-      
        <if test="${compression}">
 	       <antcall target="pack.compression" />
        </if>

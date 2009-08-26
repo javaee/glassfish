@@ -69,171 +69,24 @@
 
     <dependencies>
         <!--
-          modules to be included in this bundle
+	modules to be included in this bundle - embedded shell static
+	fragment plus intermediate glassfish-common package
         -->       
-      <dependency>
-           <groupId>org.glassfish.common</groupId>
-           <artifactId>annotation-framework</artifactId>
-           <version>${project.version}</version>
-       </dependency>
-       <dependency>
-           <groupId>org.glassfish.common</groupId>
-           <artifactId>container-common</artifactId>
-           <version>${project.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.common</groupId>
-           <artifactId>glassfish-naming</artifactId>
-           <version>${project.version}</version>
-   	</dependency>
-    	<dependency>
-           <groupId>org.glassfish.deployment</groupId>
-           <artifactId>dtds</artifactId>
-           <version>${project.version}</version>
-           <type>distribution-fragment</type>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.deployment</groupId>
-           <artifactId>schemas</artifactId>
-           <version>${project.version}</version>
-           <type>distribution-fragment</type>
-       </dependency>
-       <dependency>
-            <groupId>org.glassfish.extras</groupId>
-            <artifactId>osgi-container</artifactId>
-            <version>${project.version}</version>
-        </dependency>	
-        <dependency>
-    	    <groupId>org.glassfish.extras</groupId>
-            <artifactId>grizzly-container</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-    	    <groupId>org.glassfish.admin</groupId>
-            <artifactId>monitoring-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.ejb</groupId>
-            <artifactId>ejb-internal-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>cli-optional</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>admin-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!-- adding temporarily to glassfish-common, should be removed when
-	all dependencies to it get removed from the project -->
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>cli-framework</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-     <!-- moving from glassfish-amx package -->       
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>amx-core-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>amx-config-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>amx-ext-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>amx-j2ee-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-   <!--  moving stuff from killed glassfish-deployment package -->
-        <dependency>
-            <groupId>org.glassfish.deployment</groupId>
-            <artifactId>deployment-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.deployment</groupId>
-            <artifactId>dol</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.deployment</groupId>
-            <artifactId>deployment-client</artifactId>
-            <version>${project.version}</version>
-   	 </dependency>
-    	<dependency>
-            <groupId>org.glassfish.deployment</groupId>
-            <artifactId>deployment-javaee-core</artifactId>
-            <version>${project.version}</version>
-    	</dependency>
-    	<dependency>
-            <groupId>org.glassfish.deployment</groupId>
-            <artifactId>deployment-autodeploy</artifactId>
-            <version>${project.version}</version>
-      	</dependency>
-    	<dependency>
-            <groupId>org.glassfish.deployment</groupId>
-            <artifactId>deployment-admin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!-- moving stuff from killed glassfish-security package -->
-        <dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>security-all</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type> 
-        </dependency>
-           <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>ant</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!-- moving JAXB from Metro package -->
-        <dependency>
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-osgi</artifactId>
-       </dependency> 
-       <dependency>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api-osgi</artifactId>
-       </dependency>   
-       <!-- javahelp jar -->
-       <dependency>
-            <groupId>javax.help</groupId>
-            <artifactId>javahelp</artifactId>
-            <version>2.0.02</version>
-        </dependency>
+     
         <!-- embedded shell fragment -->
         <dependency>
            <groupId>org.glassfish.extras</groupId>
-           <artifactId>glassfish-embedded-shell-frag</artifactId>
+           <artifactId>glassfish-embedded-static-shell-frag</artifactId>
            <version>${project.version}</version>
            <type>distribution-fragment</type>
         </dependency>
-    
-      	<!-- now, listing package dependencies so that their content
-             can be excluded during staging -->	
-	<!-- package level dependency -->
-
  	<dependency>        
            <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-corba-omgapi</artifactId>
+           <artifactId>glassfish-common-tmp</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
-       </dependency>   
+        </dependency>   
+
     </dependencies>
     <profiles>
         <profile>

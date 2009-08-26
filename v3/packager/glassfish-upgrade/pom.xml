@@ -87,7 +87,7 @@
         list which brings all the others... -->	
         <dependency>        
            <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-common</artifactId>
+           <artifactId>glassfish-common-tmp</artifactId>
            <version>${project.version}</version>
 	   <type>zip</type>
        </dependency>

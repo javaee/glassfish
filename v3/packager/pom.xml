@@ -67,7 +67,7 @@
         <module>glassfish-nucleus</module>
         <module>glassfish-grizzly-full</module>
 	<module>glassfish-corba-omgapi</module>
-	<module>glassfish-common</module>
+	<module>glassfish-common-tmp</module>
 	<module>glassfish-upgrade</module>
 	<module>glassfish-registration</module>
 	<module>glassfish-management</module>
@@ -96,6 +96,7 @@
 	<module>jersey</module>
 	<module>glassfish-jcdi</module>
 	<module>mq</module>
+	<module>glassfish-common</module>
     </modules>
 
     <build>
