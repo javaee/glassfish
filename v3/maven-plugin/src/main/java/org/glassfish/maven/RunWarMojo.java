@@ -103,7 +103,7 @@ public class RunWarMojo extends AbstractMojo
             ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
             System.out.println("builder is " + b);
             server.addContainer(b);
-            server.start();
+
             EmbeddedDeployer deployer = server.getDeployer();
             DeployCommandParameters cmdParams = new DeployCommandParameters();
             cmdParams.name = name;
