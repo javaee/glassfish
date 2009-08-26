@@ -62,6 +62,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -97,6 +98,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      * any modules to see these classes.
      */
     protected final Map<String,Module> providers = new HashMap<String,Module>();
+    private Map<String, Habitat> habitats = new Hashtable<String, Habitat>();
 
     protected AbstractModulesRegistryImpl(AbstractModulesRegistryImpl parent) {
         this.parent = parent;
@@ -144,7 +146,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
             // default modules registry is the one that created the habitat
             habitat.addIndex(new ExistingSingletonInhabitant<ModulesRegistry>(this),
                     ModulesRegistry.class.getName(), null);
-            
+            habitats.put(name, habitat);
             return habitat;
         } catch (IOException e) {
             throw new ComponentException("Failed to create a habitat",e);
@@ -333,6 +335,18 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         for( ModuleMetadata.Entry spi : newModule.getMetadata().getEntries() ) {
             for( String name : spi.providerNames )
                 providers.put(name,newModule);
+        }
+        for (Map.Entry<String, Habitat> entry : habitats.entrySet()) {
+            String name = entry.getKey();
+            Habitat h = entry.getValue();
+            try
+            {
+                parseInhabitants(newModule, name, new InhabitantsParser(h));
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException("Not able to parse inhabitants information");
+            }
         }
     }
     

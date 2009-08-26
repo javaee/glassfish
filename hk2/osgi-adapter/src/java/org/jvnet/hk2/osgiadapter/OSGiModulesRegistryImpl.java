@@ -130,7 +130,8 @@ public class OSGiModulesRegistryImpl
                 case BundleEvent.INSTALLED :
                 {
                     // call add as it processes provider names
-                    add(makeModule(bundle));
+                    OSGiModuleImpl m = makeModule(bundle);
+                    add(m);
                     break;
                 }
                 case BundleEvent.UNINSTALLED :
@@ -157,10 +158,10 @@ public class OSGiModulesRegistryImpl
                         // We need to call remove as it processes provider names
                         // and updates the cache.
                         remove(m);
-                        add(m);
-                    } else {
-                        add(makeModule(bundle));
                     }
+
+                    // make a new module from the updated bundle data and add it
+                    add(makeModule(bundle));
                     break;
             }
         } catch (Exception e) {
@@ -170,9 +171,9 @@ public class OSGiModulesRegistryImpl
     }
 
     // Factory method
-    private Module makeModule(Bundle bundle) throws IOException, URISyntaxException {
+    private OSGiModuleImpl makeModule(Bundle bundle) throws IOException, URISyntaxException {
         final OSGiModuleDefinition md = makeModuleDef(bundle);
-        Module m = new OSGiModuleImpl(this, bundle, md);
+        OSGiModuleImpl m = new OSGiModuleImpl(this, bundle, md);
         return m;
     }
 
@@ -494,6 +495,7 @@ public class OSGiModulesRegistryImpl
     }
 
     public void register(final ModuleLifecycleListener listener) {
+        // This is purposefully made an asyncronous bundle listener
         BundleListener bundleListener = new BundleListener() {
             public void bundleChanged(BundleEvent event) {
                 switch (event.getType()) {
