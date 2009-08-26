@@ -45,6 +45,11 @@ public class LogDomains
     public static final String DOMAIN_ROOT = "javax.";
 
     /**
+     * Upgrade logger name.
+     */
+    public static final String UPGRADE_LOGGER = "upgradeLogger";
+
+    /**
      * PACKAGE_ROOT the prefix for the packages where logger resource 
      * bundles reside. This is public only so it can be accessed w/in 
      * the ias package space.

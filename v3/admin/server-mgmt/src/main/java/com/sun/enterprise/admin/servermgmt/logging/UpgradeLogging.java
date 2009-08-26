@@ -1,4 +1,39 @@
-package com.sun.enterprise.v3.services.impl;
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+package com.sun.enterprise.admin.servermgmt.logging;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -16,12 +51,14 @@ import com.sun.enterprise.admin.servermgmt.RepositoryConfig;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.common.util.logging.LoggingPropertyNames;
+import com.sun.logging.LogDomains;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.io.File;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Handler;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -45,7 +82,6 @@ public class UpgradeLogging implements ConfigurationUpgrade, PostConstruct {
     public void postConstruct() {
     	// v3 uses logging.properties to configure the logging facility.  
     	// move all log-service elements to logging.properties
-    	
     	final LogService logService = config.getLogService();
         
     	// check if null and exit
@@ -60,14 +96,14 @@ public class UpgradeLogging implements ConfigurationUpgrade, PostConstruct {
 	        PEFileLayout layout = new PEFileLayout(rc);
 	        File src = new File(layout.getTemplatesDir(), layout.LOGGING_PROPERTIES_FILE);
 	        File dest = new File (configDir, layout.LOGGING_PROPERTIES_FILE);
-
-	        FileUtils.copy(src, dest);
+            if  (!dest.exists())
+                FileUtils.copy(src, dest);
+             
 	    } catch (IOException ioe) {
             Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading log-service. Could not create logging.properties file. ", ioe);     
 	    }
 
         try {
-            
             //Get the logLevels
             ModuleLogLevels mll = logService.getModuleLogLevels();
 
