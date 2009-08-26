@@ -383,6 +383,8 @@ public abstract class CLICommand implements PostConstruct {
                     sb.append(' ');
                 }
             }
+            for (Object o : operands)
+                sb.append(o).append(' ');
         } else if (argv != null) {
             // haven't parsed any options, include raw arguments, if any
             for (String arg : argv)
