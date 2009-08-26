@@ -79,13 +79,13 @@ public class ServletContainerInitializerUtil {
          * loader's URL
          */
         if((absoluteOrderingList != null) && !hasOthers) {
-            if(!(cl instanceof WebappClassLoader)) {
+            if(!(cl instanceof URLClassLoader)) {
                 log.log(Level.WARNING,
                     "servletContainerInitializerUtil.wrongClassLoaderType",
                     cl.getClass().getCanonicalName());
                 return null;
             }
-            WebappClassLoader webAppCl = (WebappClassLoader) cl;
+            URLClassLoader webAppCl = (URLClassLoader) cl;
 
             // Create a new List of URLs with missing fragments removed from
             // the currentUrls
