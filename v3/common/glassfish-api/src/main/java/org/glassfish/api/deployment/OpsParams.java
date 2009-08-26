@@ -54,9 +54,9 @@ public abstract class OpsParams {
     public enum Origin { load, deploy, unload, undeploy }
 
     /**
-     * Type of deployment operation.
+     * Type of deployment operation, by default it's deployment
      */
-    public Origin origin; 
+    public Origin origin = Origin.deploy; 
 
     public abstract String name();
 

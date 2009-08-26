@@ -116,10 +116,10 @@ public class ASMainStatic extends ASMainNonOSGi {
         setSystemProperties();
 
         // our unique class loader.
-        ClassLoader singleClassLoader = null;
+        ClassLoader singleClassLoader = createTmpClassLoader(modulesDir);
 
         // set up the cache.
-        final File cacheDir = (System.getProperty("glassfish.static.cache.dir") != null)?new File(System.getProperty("glassfish.static.cache.dir"), getPreferedCacheDir()):new File(domainDir, getPreferedCacheDir());
+/*        final File cacheDir = (System.getProperty("glassfish.static.cache.dir") != null)?new File(System.getProperty("glassfish.static.cache.dir"), getPreferedCacheDir()):new File(domainDir, getPreferedCacheDir());
         out = new File(cacheDir, "glassfish.jar");
         final long lastModified = getLastModified(modulesDir, 0);
         Thread cacheThread = null;
@@ -149,6 +149,8 @@ public class ASMainStatic extends ASMainNonOSGi {
 
 
         }
+*/
+
         if (singleClassLoader==null) {
             throw new BootException("Could not create single class loader from the cache");
         }
@@ -212,7 +214,7 @@ public class ASMainStatic extends ASMainNonOSGi {
             logger.warning("main thread interrupted");
         }
         logger.fine("Framework successfully started");
-        if (cacheThread!=null) {
+/*        if (cacheThread!=null) {
             logger.info("Started cache creation");
             cacheThread.start();
             try {
@@ -221,7 +223,11 @@ public class ASMainStatic extends ASMainNonOSGi {
             }
             logger.info("Finished cache creation");
         }
+
+*/        
     }
+
+    
 
     @Override
     Logger getLogger() {

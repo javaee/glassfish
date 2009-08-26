@@ -233,7 +233,9 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         //Register the WebSecurityComponentInvocationHandler
         
         RegisteredComponentInvocationHandler handler = habitat.getComponent(RegisteredComponentInvocationHandler.class,"webSecurityCIH");
-        handler.register();
+        if (handler!=null) {
+            handler.register();
+        }
         
         String appName = params.name();
         

@@ -468,7 +468,7 @@ public class Server {
     private PlatformMain getMain() {
 
         String platformName = "Embedded";
-        if (fileSystem.get().installRoot!=null && fileSystem.get().instanceRoot.exists()) {
+        if (fileSystem.get().installRoot!=null && fileSystem.get().installRoot.exists()) {
             if (!fileSystem.get().cookedMode) {
                 platformName = "Static";
             }

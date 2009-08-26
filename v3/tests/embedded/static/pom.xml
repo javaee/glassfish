@@ -46,8 +46,8 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>inplanted</artifactId>
-    <name>Inplanted mode embedded testing</name>
+    <artifactId>static</artifactId>
+    <name>Static embedded testing</name>
 
   <build>
     <plugins>
@@ -98,14 +98,19 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-        	<groupId>net.sourceforge.htmlunit</groupId>
-        	<artifactId>htmlunit</artifactId>
-        	<version>1.14</version>
-        </dependency>
+        	<groupId>org.glassfish.admin</groupId>
+        	<artifactId>config-api</artifactId>
+        	<version>${project.version}</version>
+        </dependency> 
         <dependency>
-            <groupId>org.glassfish.tests.embedded</groupId>
-            <artifactId>utils</artifactId>
-            <version>${project.version}</version>
+        	<groupId>org.glassfish.core</groupId>
+        	<artifactId>kernel</artifactId>
+        	<version>${project.version}</version>
+        </dependency>            
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.3.1</version>
             <scope>test</scope>
         </dependency>
    </dependencies>

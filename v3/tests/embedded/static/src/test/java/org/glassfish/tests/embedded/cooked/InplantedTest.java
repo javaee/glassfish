@@ -1,4 +1,4 @@
-package org.glassfish.tests.embedded.inplanted;
+package org.glassfish.tests.embedded.cooked;
 
 import org.junit.Test;
 import org.junit.Assert;
@@ -9,14 +9,9 @@ import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.admin.*;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.tests.embedded.utils.EmbeddedServerUtils;
 
 import java.io.File;
 import java.util.Enumeration;
-
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 /**
  * @author Jerome Dochez
@@ -27,9 +22,28 @@ public class InplantedTest {
 
     @BeforeClass
     public static void setupServer() throws Exception {
-        EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-        efsb.setInstallRoot(EmbeddedServerUtils.getServerLocation());
-        server = EmbeddedServerUtils.createServer(efsb.build());
+        System.out.println("setup started with gf installation " + System.getProperty("basedir"));
+        File f = new File(System.getProperty("basedir"));
+        f = new File(f, "target");
+        f = new File(f, "dependency");
+        f = new File(f, "glassfishv3");
+        f = new File(f, "glassfish");
+        if (f.exists()) {
+            System.out.println("Using gf at " + f.getAbsolutePath());
+        } else {
+            System.out.println("GlassFish not found at " + f.getAbsolutePath());
+            Assert.assertTrue(f.exists());
+        }
+        try {
+            EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
+            efsb.setInstallRoot(f, true);
+            Server.Builder builder = new Server.Builder("inplanted");
+            builder.setEmbeddedFileSystem(efsb.build());
+            server = builder.build();
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @Test
@@ -51,10 +65,7 @@ public class InplantedTest {
         server.addContainer(server.getConfig(ContainerBuilder.Type.web));
         DeployCommandParameters dp = new DeployCommandParameters(f);
         String appName = server.getDeployer().deploy(war, dp);
-        WebClient webClient = new WebClient();
-        Page page =  webClient.getPage("http://localhost:8080/test-classes/hello");
-        System.out.println("Got response " + page.getWebResponse().getContentAsString());
-        Assert.assertTrue("Servlet returned wrong content", page.getWebResponse().getContentAsString().startsWith("Hello World"));
+        Thread.sleep(30000);
         server.getDeployer().undeploy(appName);
     }
 
@@ -70,6 +81,16 @@ public class InplantedTest {
 
     @AfterClass
     public static void shutdownServer() throws Exception {
-        EmbeddedServerUtils.shutdownServer(server);                
+        System.out.println("shutdown initiated");
+        if (server!=null) {
+            try {
+                server.stop();
+            } catch (LifecycleException e) {
+                e.printStackTrace();
+                throw e;
+            }
+        }
+        
+        
     }
 }

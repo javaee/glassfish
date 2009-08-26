@@ -2,16 +2,16 @@ package org.glassfish.tests.embedded.inplanted;
 
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedFileSystem;
+import org.glassfish.tests.embedded.utils.EmbeddedServerUtils;
 import org.junit.BeforeClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 
 import java.io.File;
 import java.util.Collection;
-
-import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.grizzly.config.dom.NetworkListener;
+import java.lang.reflect.Method;
 
 /**
  * @author Jerome Dochez
@@ -23,50 +23,44 @@ public class ExistingConfigurationTest {
 
         Server server=null;
 
-        System.out.println("setup started with gf installation " + System.getProperty("basedir"));
-        File f = new File(System.getProperty("basedir"));
-        f = new File(f, "target");
-        f = new File(f, "dependency");
-        f = new File(f, "glassfishv3");
-        f = new File(f, "glassfish");
-        if (f.exists()) {
-            System.out.println("Using gf at " + f.getAbsolutePath());
-        } else {
-            System.out.println("GlassFish not found at " + f.getAbsolutePath());
-            Assert.assertTrue(f.exists());
-        }
+        File f = EmbeddedServerUtils.getServerLocation();
         try {
             EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-            efsb.setInstallRoot(f, true);
+            efsb.setInstallRoot(f);
             // find the domain root.
-            f = new File(f,"domains");
-            f = new File(f, "domain1");
+            f = EmbeddedServerUtils.getDomainLocation(f);
             f = new File(f, "config");
             f = new File(f, "domain.xml");
             Assert.assertTrue(f.exists());
             efsb.setConfigurationFile(f);
-
-            Server.Builder builder = new Server.Builder("inplanted");
-            builder.setEmbeddedFileSystem(efsb.build());
-            server = builder.build();
+            server = EmbeddedServerUtils.createServer(efsb.build());
 
             Habitat habitat = server.getHabitat();
-            Collection<VirtualServer> vss = habitat.getAllByContract(VirtualServer.class);
+            Collection<Inhabitant<?>> vss = habitat.getInhabitantsByContract("com.sun.enterprise.config.serverbeans.VirtualServer");
             Assert.assertTrue(vss.size()>0);
-            for (VirtualServer vs : vss ) {
-                System.out.println("Virtual Server " + vs.getId());
+            for (Inhabitant<?> vs : vss ) {
+                Object virtualServer = vs.get();
+                Method m = virtualServer.getClass().getMethod("getId");
+                Assert.assertNotNull("Object returned does not implement getId, is it a virtual server ?", m);
+                String id = (String) m.invoke(virtualServer);
+                System.out.println("Virtual Server " + id);
+                Assert.assertNotNull("Got a null virtual server ID", id);
             }
-            Collection<NetworkListener> nls = habitat.getAllByContract(NetworkListener.class);
-            for (NetworkListener nl : nls) {
-                System.out.println("Network listener " + nl.getPort());
+            Collection<Inhabitant<?>> nls = habitat.getInhabitantsByContract("com.sun.grizzly.config.dom.NetworkListener");
+            Assert.assertTrue(nls.size()>1);
+            for (Inhabitant<?> nl : nls) {
+                Object networkListener = nl.get();
+                Method m = networkListener.getClass().getMethod("getPort");
+                Assert.assertNotNull("Object returned does not implement getPort, is it a networkListener ?", m);
+                String port = (String) m.invoke(networkListener);
+                System.out.println("Network Listener " + port);
+                Assert.assertNotNull("Got a null networkListener port", port);
             }
         } catch(Exception e) {
             e.printStackTrace();
             throw e;
         } finally {
-            if (server!=null) {
-                server.stop();
-            }
+            EmbeddedServerUtils.shutdownServer(server);
         }
     }
 }
