@@ -65,6 +65,7 @@ import java.util.Iterator;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  *
@@ -384,6 +385,36 @@ public class UtilHandlers {
 			commaString = GuiUtil.listToString(list, ",");
 		}
         handlerCtx.setOutputValue("commaString", commaString);
+    }
+
+   /**
+     *	<p> This handler takes in a string with delimiter and returns list
+     */
+    @Handler(id="convertStringtoList",
+         input={
+            @HandlerInput(name="str", type=String.class),
+            @HandlerInput(name="delimiter", type=String.class)
+            },
+        output = {
+            @HandlerOutput(name = "result", type = List.class)
+            })
+    public static void convertStringtoList(HandlerContext handlerCtx) {
+        List result = new ArrayList();
+        String str = (String) handlerCtx.getInputValue("str");
+        String delimiter = (String) handlerCtx.getInputValue("delimiter");
+        if (str != null) {
+            if (delimiter == null) {
+                delimiter = ",";
+            }
+            StringTokenizer tokens = new StringTokenizer(str, delimiter);
+            while (tokens.hasMoreTokens()) {
+                String token = tokens.nextToken().trim();
+                result.add(token);
+            }
+        }
+        
+        handlerCtx.setOutputValue("result", result);
+
     }
 
 

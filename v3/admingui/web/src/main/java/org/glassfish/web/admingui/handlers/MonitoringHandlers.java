@@ -65,6 +65,7 @@ import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.CompositeType;
 
 
+import javax.management.openmbean.TabularDataSupport;
 import org.glassfish.admin.amx.base.Query;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
@@ -116,7 +117,8 @@ public class MonitoringHandlers {
         @HandlerInput(name="type",   type=String.class, required=true),
         @HandlerInput(name="name",   type=String.class, required=true)},
     output={
-        @HandlerOutput(name="result",        type=List.class)})
+        @HandlerOutput(name="result",        type=List.class),
+        @HandlerOutput(name="hasStats",        type=Boolean.class)})
 
         public static void getStatsbyTypeName(HandlerContext handlerCtx) {
         String type = (String) handlerCtx.getInputValue("type");
@@ -141,8 +143,8 @@ public class MonitoringHandlers {
                         String last = "--";
                         String unit = "";
                         String current = "";
-                        String runtimes = "--";
-                        String queuesize = "--";
+                        Object runtimes = null;
+                        Object queuesize = null;
                         String thresholds = "--";
                         if (val instanceof CompositeDataSupport) {
                             CompositeDataSupport cds = ((CompositeDataSupport) val);
@@ -174,10 +176,10 @@ public class MonitoringHandlers {
                                 details = details + (GuiUtil.getMessage("monitoring.TotalTime")+": " + cds.get("totalTime") + " " + unit + "<br/>");
                             }
                             if(cds.containsKey("activeRuntimes")) {
-                                runtimes = (String)cds.get("activeRuntimes");
+                                runtimes = (Integer)cds.get("activeRuntimes");
                             }
                             if(cds.containsKey("queueSize")) {
-                                queuesize = (String)cds.get("queueSize");
+                                queuesize = cds.get("queueSize");
                             }
                             if(cds.containsKey("hardMaximum") && cds.get("hardMaximum") != null) {
                                 val = cds.get("hardMaximum") + " " + "hard max "+ "<br/>"+cds.get("hardMinimum") + " " + "hard min";
@@ -232,6 +234,7 @@ public class MonitoringHandlers {
                 }
             }
             handlerCtx.setOutputValue("result", result);
+            handlerCtx.setOutputValue("hasStats", (amxproxy.isEmpty()) ? false : true);
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -247,7 +250,31 @@ public class MonitoringHandlers {
         for(Map<String,String> oneRow : allRows){
              V3AMX.setAttribute(objectNameStr, new Attribute(oneRow.get("monCompName"), oneRow.get("level")));
         }
-     }    
+     }
+
+    /**
+     *	<p> Add list to new list
+     */
+    @Handler(id = "addListToApplications",
+        input = {
+            @HandlerInput(name = "oldList", type = List.class),
+            @HandlerInput(name = "newList", type = List.class)},
+        output = {
+            @HandlerOutput(name = "result", type = List.class)
+            })
+    public static void addListToApplications(HandlerContext handlerCtx) {
+       List<String> oldList = (List) handlerCtx.getInputValue("oldList");
+       List<String> newList = (List) handlerCtx.getInputValue("newList");
+        if (newList == null){
+            newList = new ArrayList();
+        }
+        if (oldList != null) {
+                for (String sk : oldList) {
+                    newList.add(sk);
+                }
+            }
+        handlerCtx.setOutputValue("result", newList);
+    }
     
     @Handler(id = "getValidMonitorLevels",
     output = {
@@ -271,7 +298,8 @@ public class MonitoringHandlers {
 
         }
         handlerCtx.setOutputValue("firstValue",  firstval);
-     }    
+     }
+    
     
     final private static List<String> levels= new ArrayList();
     static{
