@@ -351,7 +351,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
                 "less than 5120, a warning message is issued, and the value is set to 5120. To set this " +
                 "property for all virtual servers, set it as a property of the parent http-service"),
             
-        @PropertyDesc(name="accessLogWriterInterval", defaultValue="300", dataType=PositiveInteger.class,
+        @PropertyDesc(name="accessLogWriteInterval", defaultValue="300", dataType=PositiveInteger.class,
             description="Number of seconds before the log is written to the disk. The access log is written when " +
             "the buffer is full or when the interval expires. If the value is 0, the buffer is always written even if " +
             "it is not full. This means that each time the server is accessed, the log message is stored directly to the file. " +
