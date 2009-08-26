@@ -42,6 +42,7 @@ import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
 import com.sun.enterprise.deployment.deploy.shared.Util;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.FileFilter;
@@ -61,10 +62,13 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
+import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.deployment.common.DownloadableArtifacts.FullAndPartURIs;
 
 public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
+
+    private static final String V2_COMPATIBILITY = "v2";
 
     private Set<FullAndPartURIs> libraryAndClassPathJARs = new HashSet<FullAndPartURIs>();
 
@@ -119,6 +123,9 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          * the transitive closure of all JARs in the app client's Class-Path
          * and the JARs in the EAR's library-directory.
          *
+         * If the user has selected compatibility with v2 behavior, then also
+         * consider EJB submodules and JARs at the top level of the EAR.
+         *
          * Note that the EAR deployer will add the EAR-level facade as a download
          * for each of its submodule app clients.
          */
@@ -147,35 +154,134 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                 appClientURI);
 
         /*
-         * Now incorporate the library JARs.
+         * Now incorporate the library JARs and, if v2 compatibility is chosen,
+         * EJB JARs and top level JARs.
          */
+        addLibraryJARs(classPathForFacade, dependencyURIsProcessed);
+
+        if (useV2Compatibility() && ! appClientDesc().getApplication().isVirtual()) {
+            addEJBJARs(classPathForFacade, dependencyURIsProcessed);
+            addTopLevelJARs(classPathForFacade, dependencyURIsProcessed);
+        }
+    }
+
+    private boolean useV2Compatibility() {
+        final String compat = dc().getAppProps().getProperty(DeploymentProperties.COMPATIBILITY);
+        return (compat != null && compat.equals(V2_COMPATIBILITY));
+    }
+
+    /**
+     * Adds EJB JARs to the download set for this application.  For compat (if
+     * selected) with v2.
+     * @param cpForFacade accumulated class path for the generated facade
+     * @param dependencyURIsProcessed record of what URIs have been processed
+     * @throws IOException
+     */
+    private void addEJBJARs(final StringBuilder cpForFacade, final Set<URI> dependencyURIsProcessed) throws IOException {
+        final Application app = appClientDesc().getApplication();
+        for (ModuleDescriptor md : app.getModuleDescriptorsByType(XModuleType.EAR)) {
+            addJar(cpForFacade,
+                   new File(new File(earURI), md.getArchiveUri()).toURI(),
+                   dependencyURIsProcessed);
+        }
+    }
+
+    /**
+     * Adds top-level JARs in the EAR to the download set for this application.
+     * For compatibility with v2 (if selected).
+     *
+     * @param cpForFacade accumulated class path for the generated facade
+     * @param dependencyURIsProcessed record of what URIs have been processed
+     * @throws IOException
+     */
+    private void addTopLevelJARs(final StringBuilder cpForFacade,
+            final Set<URI> dependencyURIsProcessed) throws IOException {
+        /*
+         * Add top-level JARs only if they are not submodules.
+         */
+        final Set<URI> submoduleURIs = new HashSet<URI>();
+        for (ModuleDescriptor<BundleDescriptor> md : appClientDesc().getApplication().getModules()) {
+            submoduleURIs.add(URI.create(md.getArchiveUri()));
+        }
+
+        addJARsFromDir(cpForFacade, dependencyURIsProcessed,
+                new File(earURI).getParentFile(),
+                new FileFilter() {
+                    public boolean accept(final File pathname) {
+                        return pathname.getName().endsWith(".jar") && ! pathname.isDirectory()
+                                && ! submoduleURIs.contains(earURI.relativize(pathname.toURI()));
+                    }
+                  }
+                );
+    }
+
+    /**
+     * Adds all JARs that pass the filter to the download set for the application.
+     *
+     * @param cpForFacade accumulated class path for the generated facade
+     * @param dependencyURIsProcessed record of what URIs have beeen processed
+     * @param dirContainingJARs directory to scan for JARs
+     * @param filter file filter to apply to limit which JARs to accept
+     * @throws IOException
+     */
+    private void addJARsFromDir(final StringBuilder cpForFacade,
+            final Set<URI> dependencyURIsProcessed,
+            final File dirContainingJARs,
+            final FileFilter filter) throws IOException {
+        if (dirContainingJARs.exists() && dirContainingJARs.isDirectory()) {
+            for (File jar : dirContainingJARs.listFiles(filter)) {
+                addJar(cpForFacade, jar.toURI(), dependencyURIsProcessed);
+            }
+        }
+
+    }
+
+    private void addLibraryJARs(final StringBuilder cpForFacade,
+            final Set<URI> dependencyURIsProcessed) throws IOException {
         final String libDir = appClientDesc().getApplication().getLibraryDirectory();
         if (libDir != null) {
-            File libDirFile = new File(new File(earURI), libDir);
-            if (libDirFile.exists() && libDirFile.isDirectory()) {
-                for (File libJar : libDirFile.listFiles(new FileFilter() {
+            addJARsFromDir(cpForFacade, dependencyURIsProcessed,
+                new File(new File(earURI), libDir),
+                new FileFilter() {
                     public boolean accept(File pathname) {
                         return pathname.getName().endsWith(".jar") && ! pathname.isDirectory();
                     }
-                })) {
-                    final URI libJarURIForFacade = earURI.relativize(libJar.toURI());
-                    /*
-                     * Add a relative URI from where the facade will be to where
-                     * this library JAR will be, once they are both downloaded,
-                     * to the class path for the facade.
-                     */
-                    classPathForFacade.append(' ').append(libJarURIForFacade.toASCIIString());
-
-                    /*
-                     * Process this library JAR to record the need to download it
-                     * and any JARs or directories it depends on.
-                     */
-                    URI jarURI = URI.create("file:" + libJar.toURI().getRawSchemeSpecificPart());
-                    processDependencies(earURI, jarURI, earLevelDownloads, dependencyURIsProcessed,
-                            libJarURIForFacade);
                 }
-            }
+            );
         }
+    }
+
+    /**
+     * Adds a JAR to the download set for the app, adjusting the accumulated
+     * classpath for the facade in the process.
+     * @param cpForFacade accumulated class path for the facade JAR
+     * @param jarURI URI of the JAR to be added
+     * @param dependencyURIsProcessed record of which URIs have already been added for this app
+     * @throws IOException
+     */
+    private void addJar(
+            final StringBuilder cpForFacade,
+            final URI jarURI,
+            final Set<URI> dependencyURIsProcessed) throws IOException {
+        final URI jarURIForFacade = earURI.relativize(jarURI);
+        final URI fileURIForJAR = URI.create("file:" + jarURI.getRawSchemeSpecificPart());
+        if (dependencyURIsProcessed.contains(fileURIForJAR)) {
+            return;
+        }
+
+        /*
+         * Add a relative URI from where the facade will be to where
+         * this library JAR will be, once they are both downloaded,
+         * to the class path for the facade.
+         */
+        cpForFacade.append(' ').append(jarURIForFacade.toASCIIString());
+
+        /*
+         * Process this library JAR to record the need to download it
+         * and any JARs or directories it depends on.
+         */
+        processDependencies(earURI, fileURIForJAR, earLevelDownloads, dependencyURIsProcessed,
+                jarURIForFacade);
     }
 
     /**
@@ -378,9 +484,12 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                  * Ignore empty elements.
                  */
                 if (elt.trim().length() > 0) {
-                    processDependencies(dependencyFileURI, URI.create(elt),
-                            downloads, dependencyURIsProcessed,
-                            containingJARURI);
+                    final URI eltURI = URI.create(elt);
+                    if ( ! dependencyURIsProcessed.contains(eltURI)) {
+                        processDependencies(dependencyFileURI, URI.create(elt),
+                                downloads, dependencyURIsProcessed,
+                                containingJARURI);
+                    }
                 }
             }
         }
