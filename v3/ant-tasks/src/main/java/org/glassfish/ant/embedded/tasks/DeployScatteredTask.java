@@ -75,6 +75,23 @@ public class DeployScatteredTask extends Task {
         this.contextroot = contextroot;
     }
 
+    public void setWebxml(String path) {
+        metadata.put("web.xml", new File(path));
+    }
+
+    public void setSunWebxml(String path) {
+        metadata.put("sun-web.xml", new File(path));
+    }
+
+    public void setResourcesDirectory(String path) {
+        resources = path;
+    }
+    
+    public void setClasspath(String[] classpathArray) {
+        for (int i =0; i < classpathArray.length; i++)
+            this.classpath.add(classpathArray[i]);
+    }
+
     public void execute() throws BuildException {
         log("deploying " + rootdirectory);
 
@@ -85,6 +102,7 @@ public class DeployScatteredTask extends Task {
             if (resources == null)
                 resources = rootdirectory;
             builder.setResources(new File(resources));
+
             if (classpath.isEmpty())
                 classpath.add(rootdirectory);
             for (String cp : classpath) {
