@@ -96,14 +96,16 @@ public class EjbMonitoringStatsProvider {
     public void register() {
         String beanSubTreeNode = /** APPLICATION_NODE + **/
                 appName + NODE + moduleName + NODE + beanName;
-        beanSubTreeNode = beanSubTreeNode.replaceAll("\\.", "\\\\.").replaceAll("_", "\\\\.");
-System.err.println("BEAN NODE NAME: " + beanSubTreeNode);
+        beanSubTreeNode = beanSubTreeNode.replaceAll("\\.", "\\\\.").
+               replaceAll("_jar", "\\\\.jar").replaceAll("_war", "\\\\.war");
+
+        _logger.info("BEAN NODE NAME: " + beanSubTreeNode);
         StatsProviderManager.register(MONITORING_NODE, 
                     PluginPoint.APPLICATIONS, beanSubTreeNode, this);
 
         for ( Method m : methodMonitorMap.keySet()) {
             String subTreeNode = beanSubTreeNode + METHOD_NODE + stringify(m); 
-System.err.println("METHOD NODE NAME: " + subTreeNode);
+            _logger.info("METHOD NODE NAME: " + subTreeNode);
 
             EjbMethodStatsProvider monitor = methodMonitorMap.get(m);
             //StatsProviderManager.register(MONITORING_NODE, PluginPoint.APPLICATIONS, subTreeNode, monitor);
