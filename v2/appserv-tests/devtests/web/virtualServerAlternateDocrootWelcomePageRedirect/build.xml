@@ -48,7 +48,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="setup,build,run,restore"/>
+    <target name="all" depends="build,deploy,setup,run,undeploy,restore"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -71,6 +71,10 @@
                includes="WebTest.java"/>
     </target> 
     
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-war-common"/>
+    </target>
+
     <target name="setup" depends="init-common">
         <antcall target="create-alternate-resources"/>
         <antcall target="asadmin-common-ignore-fail">
@@ -102,6 +106,10 @@
            <pathelement location="."/>
          </classpath>
         </java>
+    </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-war-common"/>
     </target>
  
     <target name="restore" depends="setup">

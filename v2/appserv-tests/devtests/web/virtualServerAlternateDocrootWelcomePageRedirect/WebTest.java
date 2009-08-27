@@ -56,7 +56,13 @@ import com.sun.ejte.ccl.reporter.*;
  *
  * and ensures that a request with a URI of the form /mytest will first be
  * redirected to "/mytest/", before the contents of the welcome page located
- * in "/tmp/mytest/index.jsp" in the local filesystem will be served
+ * in "/tmp/mytest/index.jsp" in the local filesystem will be served.
+ *
+ * NOTE: This test relies on the web container to have been started
+ * (and therefore deploys a web application), so that the dummy web module
+ * of the virtual server can be configured with the specified alternate
+ * docroots. Hopefully, this limitation can be removed sometime in the
+ * future.
  */
 public class WebTest {
 
