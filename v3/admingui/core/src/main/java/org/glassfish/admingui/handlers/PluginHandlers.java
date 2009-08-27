@@ -118,6 +118,23 @@ public class PluginHandlers {
      *
      *	@param	handlerCtx	The <code>HandlerContext</code>.
      */
+    @Handler(id="getPluginResources",
+    	input={
+            @HandlerInput(name="name", type=String.class, required=true)},
+        output={
+            @HandlerOutput(name="resources", type=List.class)})
+    public static void getPluginResources(HandlerContext handlerCtx) {
+	String name = (String) handlerCtx.getInputValue("name");
+	ConsolePluginService cps = getPluginService(
+	    handlerCtx.getFacesContext());
+	handlerCtx.setOutputValue("resources", cps.getResources(name));
+    }
+
+    /**
+     *	<p> This handler provides access to {@link IntegrationPoint}s for the requested key.</p>
+     *
+     *	@param	handlerCtx	The <code>HandlerContext</code>.
+     */
     @Handler(id="getIntegrationPoints",
     	input={
             @HandlerInput(name="type", type=String.class, required=true)},
