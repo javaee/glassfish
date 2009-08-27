@@ -40,7 +40,7 @@
         </web-resource-collection>
         <auth-constraint>
             <description/>
-            <role-name>users</role-name>
+            <role-name>user</role-name>
         </auth-constraint>
     </security-constraint>
     <login-config>
@@ -48,7 +48,8 @@
         <realm-name>file</realm-name>
     </login-config>
     <security-role>
-        <role-name>users</role-name>
-    </security-role> 
+        <role-name>user</role-name>
+    </security-role>
+
 </web-app>
 

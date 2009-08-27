@@ -16,8 +16,8 @@ public class HelloEJB implements Hello {
     public String sayHello(String who) {
 	System.out.println("**** sayHello("+ who+")");
 	Principal p = ctx.getCallerPrincipal();
-	String principal = (p == null)? "NULL": p.toString();
+	String principal = (p == null)? "NULL": p.getName(); //p.toString();
 	System.out.println("****EJB: principal = " + principal);
-        return "JBI-SecurityTest " + who + " PrincipalGot="+principal;
+ 	return "JBI-SecurityTest " + who + " PrincipalGot="+principal;
     }
 }
