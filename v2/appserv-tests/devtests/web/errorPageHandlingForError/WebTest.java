@@ -73,7 +73,6 @@ public class WebTest {
             invoke("TestServlet",
                     "HTTP/1.1 500 ",
                     "Error page for NoClassDefFoundError");
-            stat.addStatus(TEST_NAME +"_servlet", stat.PASS);
 
             invoke("noClassDefFoundError.jsp",
                     "HTTP/1.1 500 ",
@@ -81,7 +80,7 @@ public class WebTest {
             invoke("illegalStateException.jsp",
                     "HTTP/1.1 500 ",
                     "Error page for Exception");
-            stat.addStatus(TEST_NAME + "_jsp", stat.PASS);
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();

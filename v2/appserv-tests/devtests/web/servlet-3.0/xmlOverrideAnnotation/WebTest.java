@@ -66,8 +66,9 @@ public class WebTest {
 
     public void doTest() {
         try { 
-            invoke("", "/mytest2", 200, EXPECTED_RESPONSE);
-            invoke("_ne", "/mytest", 404, null);
+            boolean ok = invoke("/mytest2", 200, EXPECTED_RESPONSE);
+            ok = ok && invoke("/mytest", 404, null);
+            stat.addStatus(TEST_NAME, ((ok)? stat.PASS : stat.FAIL));
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed");
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -75,23 +76,22 @@ public class WebTest {
         }
     }
 
-    private void invoke(String testPrefix, String urlPattern,
+    private boolean invoke(String urlPattern,
             int expectedCode, String expectedResponse) throws Exception {
         
         String url = "http://" + host + ":" + port + contextRoot
                      + urlPattern;
+        System.out.println("Accessing " + url);
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();
 
-        String testName = TEST_NAME + testPrefix;
         int code = conn.getResponseCode();
         if (code != expectedCode) {
             System.out.println("Unexpected return code: " + code);
-            stat.addStatus(testName, stat.FAIL);
+            return false;
         } else {
             if (expectedResponse == null) { // don't check body
-                stat.addStatus(testName, stat.PASS);
-                return;
+                return true;
             }
 
             InputStream is = null;
@@ -119,11 +119,11 @@ public class WebTest {
                 }
             }
             if (expectedResponse.equals(line)) {
-                stat.addStatus(testName, stat.PASS);
+                return true;
             } else {
                 System.out.println("Wrong response. Expected: " + 
                         expectedResponse + ", received: " + line);
-                stat.addStatus(testName, stat.FAIL);
+                return false;
             }
         }    
     }

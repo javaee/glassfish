@@ -47,6 +47,7 @@ public class WebTest {
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
+    private static final String TEST_NAME = "jsp-config-welcome-files";
 
     private String host;
     private String port;
@@ -61,19 +62,19 @@ public class WebTest {
     public static void main(String[] args) {
         stat.addDescription("Unit test for Bugzilla 27664");
         WebTest webTest = new WebTest(args);
-        webTest.doTest("http://" + webTest.host  + ":" + webTest.port
-                       + webTest.contextRoot + "/subdir1/subdir2/",
-                       "jsp-config-welcome-files");
-        webTest.doTest("http://" + webTest.host  + ":" + webTest.port
-                       + webTest.contextRoot + "/TestServlet",
-                       "jsp-config-welcome-files-request-dispatcher");
-	stat.printSummary();
+        boolean ok = webTest.doTest("http://" + webTest.host  + ":" + webTest.port
+                       + webTest.contextRoot + "/subdir1/subdir2/");
+        ok = ok && webTest.doTest("http://" + webTest.host  + ":" + webTest.port
+                       + webTest.contextRoot + "/TestServlet");
+        stat.addStatus(TEST_NAME, ((ok)? stat.PASS : stat.FAIL));
+	    stat.printSummary();
     }
 
-    public void doTest(String urlString, String testName) {
+    public boolean doTest(String urlString) {
 
         InputStream is = null;
         BufferedReader input = null;
+        boolean status = false;
         try { 
             URL url = new URL(urlString);
             System.out.println("Connecting to: " + url.toString());
@@ -83,7 +84,7 @@ public class WebTest {
             if (responseCode != 200) { 
                 System.err.println("Wrong response code. Expected: 200"
                                    + ", received: " + responseCode);
-                stat.addStatus(testName, stat.FAIL);
+                status = false;
             } else {
                 is = conn.getInputStream();
                 input = new BufferedReader(new InputStreamReader(is));
@@ -91,14 +92,14 @@ public class WebTest {
                 if (!"Welcome".equals(line)) {
                     System.err.println("Wrong response. Expected: Welcome"
                                        + ", received: " + line);
-                    stat.addStatus(testName, stat.FAIL);
+                    status = false;
                 } else {
-                    stat.addStatus(testName, stat.PASS);
+                    status = true;
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            stat.addStatus(testName, stat.FAIL);
+            status = false;
         } finally {
             try {
                 if (is != null) is.close();
@@ -107,6 +108,8 @@ public class WebTest {
                 if (input != null) input.close();
             } catch (IOException ex) {}
         }
+
+        return status;
     }
 
 }

@@ -44,7 +44,6 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
     
-    private static int count = 0;
     private static int EXPECTED_COUNT = 1;
     
     static SimpleReporterAdapter stat=
@@ -65,11 +64,10 @@ public class WebTest {
         String name;
         
         try {
-            goGet(host, port, "", contextRoot + "/" );
+            boolean ok = goGet(host, port, "", contextRoot + "/" );
             
-            if (count != EXPECTED_COUNT){
-                stat.addStatus("web-directoryListing", stat.FAIL);
-            }           
+            stat.addStatus("web-directoryListing",
+                    ((ok)? stat.PASS : stat.FAIL));
         } catch (Throwable t) {
             t.printStackTrace();
             stat.addStatus("web-directoryListing", stat.FAIL);
@@ -78,10 +76,10 @@ public class WebTest {
         stat.printSummary("web/directoryListing---> expect 1 PASS");
     }
 
-    private static void goGet(String host, int port,
+    private static boolean goGet(String host, int port,
                               String result, String contextPath)
-         throws Exception {
-        boolean ok = false;
+            throws Exception {
+        int count = 0;
         try{
             Socket s = new Socket(host, port);
             OutputStream os = s.getOutputStream();
@@ -100,8 +98,7 @@ public class WebTest {
             while ((line = bis.readLine()) != null) {
                 System.out.println(lineNum + ": " + line);
                 if (line.indexOf("Directory Listing") != -1){
-                    stat.addStatus("web-directoryListing", stat.PASS);
-                    ok = true;
+                    System.out.println("Getting a \"Directory Listing\"");
                     count++;
                     break;
                 }
@@ -112,10 +109,7 @@ public class WebTest {
             throw new Exception("Test UNPREDICTED-FAILURE");
         }
 
-        if (!ok){
-            count++;
-            stat.addStatus("web-directoryListing", stat.FAIL);
-        }
+        return (count == EXPECTED_COUNT);
    }
   
 }

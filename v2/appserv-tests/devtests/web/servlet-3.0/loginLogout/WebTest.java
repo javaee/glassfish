@@ -73,17 +73,19 @@ public class WebTest {
     }
 
     public void run() throws Exception {
-        doWebMethod("GET", host, port, contextRoot + "/myurl", false, "login-logout",
+        boolean ok = doWebMethod("GET", host, port, contextRoot + "/myurl", false,
                 200, null, "g:Hello, true, false, javaee, true, true, false");
 
-        doWebMethod("GET", host, port, contextRoot + "/myurl2", false, "authenticate-401",
+        ok = ok && doWebMethod("GET", host, port, contextRoot + "/myurl2", false,
                 401, "WWW-Authenticate", null);
-        doWebMethod("GET", host, port, contextRoot + "/myurl2", true, "authenticate-logout",
+        ok = ok && doWebMethod("GET", host, port, contextRoot + "/myurl2", true,
                 200, null, "g:Hello, true, false, javaee, true, true, false");
+
+        stat.addStatus(TEST_NAME, ((ok)? stat.PASS : stat.FAIL));
     }
 
-    private static void doWebMethod(String webMethod, String host, int port,
-            String contextPath, boolean sendAuthHeader, String testSuffix,
+    private static boolean doWebMethod(String webMethod, String host, int port,
+            String contextPath, boolean sendAuthHeader,
             int responseCode, String headerName, String expected) throws Exception {
 
         String urlStr = "http://" + host + ":" + port + contextPath;
@@ -139,6 +141,6 @@ public class WebTest {
             }
         }
 
-        stat.addStatus(TEST_NAME + ":" + testSuffix, ((ok)? stat.PASS : stat.FAIL));
+        return ok;
     }
 }

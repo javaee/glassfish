@@ -63,7 +63,8 @@ public class WebTest {
         WebTest webTest = new WebTest(args);
 
         try {
-            webTest.run();
+            boolean ok = webTest.run();
+            stat.addStatus(TEST_NAME, ((ok)? stat.PASS : stat.FAIL));
         } catch( Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -72,20 +73,21 @@ public class WebTest {
 	stat.printSummary();
     }
 
-    public void run() throws Exception {
+    public boolean run() throws Exception {
         String contextPath = contextRoot + "/myurl";
-        doWebMethod("TRACE", host, port, contextPath, true, "OverrideWithAuth", 200, "t:Hello, javaee");
-        doWebMethod("GET", host, port, contextPath, true, "OverrideWithDeny", 403, null);
-        doWebMethod("POST", host, port, contextPath, false, "OverrideWithNoCheck", 200, "p:Hello, null");
+        boolean ok = doWebMethod("TRACE", host, port, contextPath, true, 200, "t:Hello, javaee");
+        ok = ok && doWebMethod("GET", host, port, contextPath, true, 403, null);
+        ok = ok && doWebMethod("POST", host, port, contextPath, false, 200, "p:Hello, null");
 
         contextPath = contextRoot + "/myurl2";
-        doWebMethod("GET", host, port, contextPath, false, "@PermitAll", 200, "g:Hello");
-        doWebMethod("POST", host, port, contextPath, true, "@RolesAllowed", 200, "p:Hello, javaee");
-        doWebMethod("TRACE", host, port, contextPath, true, "@DenyAll", 403, null);
+        ok = ok && doWebMethod("GET", host, port, contextPath, false, 200, "g:Hello");
+        ok = ok && doWebMethod("POST", host, port, contextPath, true, 200, "p:Hello, javaee");
+        ok = ok && doWebMethod("TRACE", host, port, contextPath, true, 403, null);
+        return ok;
     }
 
-    private static void doWebMethod(String webMethod, String host, int port,
-            String contextPath, boolean requireAuthenticate, String testSuffix,
+    private boolean doWebMethod(String webMethod, String host, int port,
+            String contextPath, boolean requireAuthenticate,
             int responseCode, String expected) throws Exception {
 
         String urlStr = "http://" + host + ":" + port + contextPath;
@@ -138,6 +140,6 @@ public class WebTest {
             }
         }
 
-        stat.addStatus(TEST_NAME + ":" + testSuffix, ((ok)? stat.PASS : stat.FAIL));
+        return ok;
     }
 }

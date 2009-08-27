@@ -45,6 +45,7 @@ public class WebTest{
 
     static SimpleReporterAdapter stat=
            new SimpleReporterAdapter("appserv-tests");
+    private static final String TEST_NAME = "transportProtectedAnnotation";
     
     public static void main(String args[]) throws Exception{
         String host = args[0];
@@ -58,34 +59,36 @@ public class WebTest{
         try {
             SSLSocketFactory ssf = getSSLSocketFactory(trustStorePath);
 
-            testURL("GET", "https://" + host + ":" + httpsPort + "/" + contextRoot + "/myurl", ssf, false,
-                    "c:Hello:true", "transport-protected-class");
-            testURL("GET", "https://" + host + ":" + httpsPort + "/" + contextRoot + "/myurl2", ssf, false,
-                    "m:Hello:true", "transport-protected-method");
-            testURL("TRACE", "http://" + host + ":" + httpPort + "/" + contextRoot + "/myurl2", null, true,
-                    "mfr:Hello:javaee:false", "transport-protected-false-roleallowed-method");
-            testURL("GET", "https://" + host + ":" + httpsPort + "/" + contextRoot + "/myurl3", ssf, true,
-                    "g:Hello:javaee:true", "rolesallowed-transport-protected-method");
+            boolean ok = testURL("GET", "https://" + host + ":" + httpsPort + "/" + contextRoot + "/myurl",
+                    ssf, false, "c:Hello:true");
+            ok = ok && testURL("GET", "https://" + host + ":" + httpsPort + "/" + contextRoot + "/myurl2",
+                    ssf, false, "m:Hello:true");
+            ok = ok && testURL("TRACE", "http://" + host + ":" + httpPort + "/" + contextRoot + "/myurl2",
+                    null, true, "mfr:Hello:javaee:false");
+            ok = ok && testURL("GET", "https://" + host + ":" + httpsPort + "/" + contextRoot + "/myurl3",
+                    ssf, true, "g:Hello:javaee:true");
             
-            testURL("TRACE", "http://" + host + ":" + httpPort + "/" + contextRoot + "/myurl3", null, true,
-                    "t:Hello:javaee:false", "rolesallowed-transport-protected-false-method");
+            ok = ok && testURL("TRACE", "http://" + host + ":" + httpPort + "/" + contextRoot + "/myurl3",
+                    null, true, "t:Hello:javaee:false");
+            stat.addStatus(TEST_NAME, ((ok)? stat.PASS : stat.FAIL));
         } catch (Throwable t) {
-            stat.addStatus("@TransportProtected", stat.FAIL);
+            stat.addStatus(TEST_NAME, stat.FAIL);
             t.printStackTrace();
         }
         stat.printSummary();
     }
 
-    private static void testURL(String httpMethod, String url, SSLSocketFactory ssf,
-            boolean needAuthenticate, String expected, String testName)
+    private static boolean testURL(String httpMethod, String url, SSLSocketFactory ssf,
+            boolean needAuthenticate, String expected)
             throws Exception {
 
+        System.out.println("Accessing " + httpMethod + " " + url);
         HttpURLConnection connection = doHandshake(httpMethod, url, ssf, needAuthenticate);
-        if (checkStatus(connection, testName)) {
-            parseResponse(connection, expected, testName);
-        } else {
-            stat.addStatus(testName + "-responseCode", stat.FAIL);
+        boolean status = false;
+        if (checkStatus(connection)) {
+            status = parseResponse(connection, expected);
         }
+        return status;
     }
 
     private static SSLSocketFactory getSSLSocketFactory(String trustStorePath)
@@ -125,16 +128,16 @@ public class WebTest{
         return connection;
     }
 
-    private static boolean checkStatus(HttpURLConnection connection,
-            String testName) throws Exception{
+    private static boolean checkStatus(HttpURLConnection connection)
+            throws Exception{
 
         int responseCode =  connection.getResponseCode();
         System.out.println("Response code: " + responseCode + " Expected code: 200"); 
         return (connection.getResponseCode() == 200);
     }
 
-    private static void parseResponse(HttpURLConnection connection,
-            String expected, String testName) throws Exception {
+    private static boolean parseResponse(HttpURLConnection connection,
+            String expected) throws Exception {
 
         BufferedReader in = null;
         boolean ok = false;
@@ -160,11 +163,7 @@ public class WebTest{
             }
         }
 
-        if (ok) {
-            stat.addStatus(testName, stat.PASS);
-        } else {
-            stat.addStatus(testName, stat.FAIL);
-        }
+        return ok;
     }
 
     private static TrustManager[] getTrustManagers(String path)
