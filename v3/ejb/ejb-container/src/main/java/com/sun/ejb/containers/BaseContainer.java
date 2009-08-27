@@ -73,6 +73,11 @@ import org.glassfish.ejb.api.EjbEndpointFacade;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.deployment.common.DeploymentException;
 
+import com.sun.ejb.monitoring.stats.EjbMonitoringStatsProvider;
+import com.sun.ejb.monitoring.probes.EjbMonitoringProbeProvider;
+import org.glassfish.external.probe.provider.StatsProviderManager;
+import org.glassfish.external.probe.provider.PluginPoint;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.*;
@@ -373,12 +378,14 @@ public abstract class BaseContainer
     protected boolean			    monitorOn = false;
     protected MonitoringRegistryMediator    registryMediator;
     protected EJBMethodStatsManager	    ejbMethodStatsManager;
+    protected EjbMonitoringStatsProvider    probeListener;
+    protected EjbMonitoringProbeProvider    probeNotifier;
         
     private String _debugDescription;
 
     protected TimedObjectMonitorableProperties toMonitorProps = null;
     
-    protected Agent callFlowAgent;
+    //protected Agent callFlowAgent;
     
     protected CallFlowInfo callFlowInfo;
 
@@ -446,7 +453,7 @@ public abstract class BaseContainer
         try {
             this.loader = loader;
             this.ejbDescriptor = ejbDesc;
-            this.callFlowAgent = ejbContainerUtilImpl.getCallFlowAgent();
+            //this.callFlowAgent = ejbContainerUtilImpl.getCallFlowAgent();
             createMonitoringRegistryMediator();
 
             logParams = new Object[1];
@@ -814,8 +821,9 @@ public abstract class BaseContainer
 
     protected final void createCallFlowAgent(ComponentType compType) {
         /*TODO this.callFlowAgent = theSwitch.getCallFlowAgent();
+         */
         this.callFlowInfo = new CallFlowInfoImpl(
-                this, ejbDescriptor, compType);*/
+                this, ejbDescriptor, compType);
     }
 
     public String toString() {
@@ -3829,19 +3837,38 @@ public abstract class BaseContainer
     }
      
     final void onEnteringContainer() {
-        callFlowAgent.startTime(ContainerTypeOrApplicationType.EJB_CONTAINER);
+        probeNotifier.ejbContainerEnteringEvent(
+                callFlowInfo.getApplicationName(),
+                callFlowInfo.getModuleName(),
+                callFlowInfo.getComponentName());
+        //callFlowAgent.startTime(ContainerTypeOrApplicationType.EJB_CONTAINER);
     }
 
     final void onLeavingContainer() {
-        callFlowAgent.endTime();
+        probeNotifier.ejbContainerLeavingEvent(
+                callFlowInfo.getApplicationName(),
+                callFlowInfo.getModuleName(),
+                callFlowInfo.getComponentName());
+        //callFlowAgent.endTime();
     }
 
     final void onEjbMethodStart() {
-        callFlowAgent.ejbMethodStart(callFlowInfo);
+        probeNotifier.ejbMethodStartEvent(
+                callFlowInfo.getApplicationName(),
+                callFlowInfo.getModuleName(),
+                callFlowInfo.getComponentName(),
+                callFlowInfo.getMethod());
+        //callFlowAgent.ejbMethodStart(callFlowInfo);
     }
     
     final void onEjbMethodEnd() {
-        callFlowAgent.ejbMethodEnd(callFlowInfo);
+        probeNotifier.ejbMethodEndEvent(
+                callFlowInfo.getApplicationName(),
+                callFlowInfo.getModuleName(),
+                callFlowInfo.getComponentName(),
+                callFlowInfo.getException(),
+                callFlowInfo.getMethod());
+        //callFlowAgent.ejbMethodEnd(callFlowInfo);
     }
     
     Object invokeTargetBeanMethod(Method beanClassMethod, EjbInvocation inv, Object target,
@@ -4073,6 +4100,7 @@ public abstract class BaseContainer
 	        registryMediator = null;
 	        ejbMethodStatsManager = null;
 
+                probeListener.unregister();
             
         } finally {
             if(System.getSecurityManager() == null) {
@@ -5099,19 +5127,40 @@ public abstract class BaseContainer
 	    ejbName = ejbDescriptor.getName();
 	    this.registryMediator =
 		new MonitoringRegistryMediator( getEJBMonitoredObjectType(), ejbName, modName, appName);
-    
+
 	    this.ejbMethodStatsManager = registryMediator.getEJBMethodStatsManager();
+
+            probeListener = new EjbMonitoringStatsProvider(appName, modName, ejbName, 
+                    getMonitoringMethodsArray());
+
+            // This probe listener will register itself, so do it as the last step, 
+            // so that other settings still work if this step fails.
+            probeListener.register();
+
 	    _logger.log(Level.FINE, "Created MonitoringRegistryMediator: appName: "
                 + appName + "; modName: " + modName + "; ejbName: " + ejbName);
 	} catch (Exception ex) {
 	    _logger.log(Level.SEVERE, "[**BaseContainer**] Could not create MonitorRegistryMediator. appName: " + appName + "; modName: " + modName + "; ejbName: " + ejbName, ex);
 	    
 	}
+
+        // Always create to avoid NPE
+        probeNotifier = new EjbMonitoringProbeProvider();
     }
 
     protected void populateMethodMonitorMap() {
-        Method[] methods = null;
         boolean hasGeneratedClasses = (monitoredGeneratedClasses.size() > 0);
+        Method[] methods = getMonitoringMethodsArray(hasGeneratedClasses);
+        populateMethodMonitorMap(methods, hasGeneratedClasses);
+
+    }
+
+    protected Method[] getMonitoringMethodsArray() {
+        return getMonitoringMethodsArray((monitoredGeneratedClasses.size() > 0));
+    }
+
+    protected Method[] getMonitoringMethodsArray(boolean hasGeneratedClasses) {
+        Method[] methods = null;
         if (hasGeneratedClasses) {
             List<Method> methodList = new ArrayList<Method>();
             for (Class clz : monitoredGeneratedClasses) {
@@ -5128,8 +5177,8 @@ public abstract class BaseContainer
                 methods[i] = (Method) methodVec.get(i);
             }
         }
-        
-        populateMethodMonitorMap(methods, hasGeneratedClasses);
+
+        return methods;
     }
 
     protected void populateMethodMonitorMap(Method[] methods) {

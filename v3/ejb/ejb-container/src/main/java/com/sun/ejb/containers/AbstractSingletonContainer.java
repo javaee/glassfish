@@ -38,6 +38,7 @@ package com.sun.ejb.containers;
 import com.sun.ejb.ComponentContext;
 import com.sun.ejb.EjbInvocation;
 import com.sun.ejb.containers.util.pool.ObjectFactory;
+import com.sun.enterprise.admin.monitor.callflow.ComponentType;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.deployment.EjbDescriptor;
@@ -136,7 +137,7 @@ public abstract class AbstractSingletonContainer
 
         super.setMonitorOn(false); //TODO super.setMonitorOn(ejbContainer.isMonitoringEnabled());
 
-        //super.createCallFlowAgent(ComponentType.SLSB);
+        super.createCallFlowAgent(ComponentType.SLSB);
 
         Set<LifecycleCallbackDescriptor> postConstructDescriptors =
             ejbDescriptor.getPostConstructDescriptors();

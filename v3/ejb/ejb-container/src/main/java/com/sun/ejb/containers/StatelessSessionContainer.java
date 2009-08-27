@@ -42,6 +42,7 @@ import com.sun.ejb.containers.util.pool.NonBlockingPool;
 import com.sun.ejb.containers.util.pool.ObjectFactory;
 
 import com.sun.ejb.spi.stats.StatelessSessionBeanStatsProvider;
+import com.sun.enterprise.admin.monitor.callflow.ComponentType;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Server;
 
@@ -169,7 +170,7 @@ public class StatelessSessionContainer
 
         super.setMonitorOn(false); //TODO super.setMonitorOn(ejbContainer.isMonitoringEnabled());
 
-        //super.createCallFlowAgent(ComponentType.SLSB);
+        super.createCallFlowAgent(ComponentType.SLSB);
     }
 
     public String getMonitorAttributeValues() {

@@ -48,7 +48,9 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                                <probe-provider-class-names>org.glassfish.ejb.security.application.EjbSecurityProbeProvider</probe-provider-class-names>
+                            <probe-provider-class-names>
+                                org.glassfish.ejb.security.application.EjbSecurityProbeProvider,com.sun.ejb.monitoring.probes.EjbMonitoringProbeProvider
+                            </probe-provider-class-names>
                         </manifestEntries>
                     </archive>
                 </configuration>
