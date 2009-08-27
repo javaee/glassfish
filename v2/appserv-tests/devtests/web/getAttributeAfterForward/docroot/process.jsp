@@ -37,30 +37,20 @@
 <%@ page import="java.util.*" %>
 
 <%
-ArrayList attrNames = Collections.list(request.getAttributeNames());
-if (Boolean.valueOf(attrNames.contains("javax.servlet.include.request_uri")).booleanValue()){
-    out.println("javax.servlet.include.request_uri::PASS");
-} else {
-    out.println("javax.servlet.include.request_uri::FAIL");
-}
-                        
-if (Boolean.valueOf(attrNames.contains("javax.servlet.forward.request_uri")).booleanValue()){
-    out.println("javax.servlet.forward.request_uri::PASS");
-} else {
-    out.println("javax.servlet.forward.request_uri:FAIL");
+Object attrValue = request.getAttribute("javax.servlet.include.request_uri");
+if (!"/web-get-attribute-after-forward/process.jsp".equals(attrValue)) {
+    throw new Exception("Missing or wrong value for request attribute " +
+        "javax.servlet.include.request_uri_name. Expected: " +
+        "\"/web-get-attribute-after-forward/process.jsp\", received: " +
+        attrValue);
 }
 
-if (request.getAttribute("javax.servlet.include.request_uri").equals("/web-getAttributeAfterForward/process.jsp")){
-    out.println("javax.servlet.include.request_uri_name::PASS");
-} else {
-    out.println("javax.servlet.include.request_uri_name:FAIL");
-}
-
-
-if (request.getAttribute("javax.servlet.forward.request_uri").equals("/web-getAttributeAfterForward/forward.jsp")){
-    out.println("javax.servlet.forward.request_uri_name::PASS");
-} else {
-    out.println("javax.servlet.forward.request_uri_name:FAIL");
+attrValue = request.getAttribute("javax.servlet.forward.request_uri");
+if (!"/web-get-attribute-after-forward/forward.jsp".equals(attrValue)) {
+    throw new Exception("Missing or wrong value for request attribute " +
+        "javax.servlet.forward.request_uri_name. Expected: " +
+        "\"/web-get-attribute-after-forward/forward.jsp\", received: " +
+        attrValue);
 }
 %>
 
