@@ -200,6 +200,7 @@ public class JdbcTempHandler {
         } else {
 
             if (!GuiUtil.isEmpty(resType) && !GuiUtil.isEmpty(dbVendor)) {
+                List dsl = new ArrayList();
                 try {
                     String classname = "";
                     Map<String, Object> dcn = V3AMX.getInstance().getConnectorRuntime().getJdbcDriverClassNames(dbVendor, resType);
@@ -207,27 +208,30 @@ public class JdbcTempHandler {
                         Set keys = (Set) dcn.get(JDBC_DRIVER_CLASS_NAMES_KEY);
                         Iterator iter = keys.iterator();
                         while (iter.hasNext()) {
-                            classname = (String) iter.next();
+                            dsl.add((String) iter.next());
 
                         }
                     }
+                    dsl.add(dsl.size(), "");
                     if (resType.equals(DRIVER)) {
-                        extra.put("DriverClassname", classname);
-                        extra.put("DatasourceClassname", "");
+                        extra.put("DList", dsl);
+                        extra.put("DSList", "");
+                        extra.put("DatasourceClassnameField", "");
                         extra.put("dsClassname", Boolean.FALSE);
                     } else {
-                        extra.put("DatasourceClassname", classname);
-                        extra.put("DriverClassname", "");
+                        extra.put("DSList", dsl);
+                        extra.put("DList", "");
+                        extra.put("DriverClassnameField", "");
                         extra.put("dsClassname", Boolean.TRUE);
                     }
                     List<Map<String, String>> noprops = new ArrayList<Map<String, String>>();
-                    if (!GuiUtil.isEmpty(classname)) {
-                        Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionPropertiesAndDefaults(classname, resType);
+                    if (dsl != null && (dsl.size() > 0)) {
+                       Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionPropertiesAndDefaults((String)dsl.get(0), resType);
                         if (result != null) {
                             Map<String, String> props = (Map) result.get(CONN_DEFINITION_PROPS_KEY);
                             handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
-
-                        } 
+                        }
+                        
                     } else {
                         handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", noprops);
                     }
@@ -257,12 +261,22 @@ public class JdbcTempHandler {
         String classname = (String) extra.get("DatasourceClassname");
         String driver = (String) extra.get("DriverClassname");
         String name = (String) extra.get("Name");
-
+        String classnamefield = (String) extra.get("DatasourceClassnameField");
+        String driverfield = (String) extra.get("DriverClassnameField");
         attrs.put("Name", name);
-        attrs.put("DatasourceClassname", classname);
-        attrs.put("DriverClassname", driver);
         attrs.put("ResType", resType);
-    }   
+        if (!GuiUtil.isEmpty(classnamefield) || !GuiUtil.isEmpty(driverfield)) {
+            attrs.put("DatasourceClassname", classnamefield);
+            attrs.put("DriverClassname", driverfield);
+        } else if (!GuiUtil.isEmpty(classname) || !GuiUtil.isEmpty(driver)) {
+            attrs.put("DatasourceClassname", classname);
+            attrs.put("DriverClassname", driver);
+        } else {
+            GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("Classname Cannot be Empty"));
+            return;
+        }
+        
+    }
 
     
         public static final  String REASON_FAILED_KEY = "ReasonFailedKey";   

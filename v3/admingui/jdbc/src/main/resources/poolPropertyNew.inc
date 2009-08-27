@@ -62,11 +62,15 @@
         <sun:staticText id="db" text="#{wizardPoolExtra.DBVendor}" rendered="#{!edit}"  />
     </sun:property>
 
-    <sun:property id="dsProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.datasource}" helpText="$resource{i18njdbc.jdbcPool.datasourceHelp}">
-        <sun:textField id="datasource"  columns="$int{60}" text="#{wizardPoolExtra.DatasourceClassname}" rendered="#{!edit}" disabled="#{!wizardPoolExtra.dsClassname}" />
+    <sun:property id="dsProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.datasource}" helpText="$resource{i18njdbc.jdbcPool.datasourceHelpEnter}">
+        <sun:dropDown  id="datasource" selected="#{wizardPoolExtra.DatasourceClassname}" labels="$attribute{DSList}" rendered="#{!edit}" disabled="#{!wizardPoolExtra.dsClassname}" />
+        "<br/>
+        <sun:textField id="datasourceField"  columns="$int{60}" text="#{wizardPoolExtra.DatasourceClassnameField}" rendered="#{!edit}" disabled="#{!wizardPoolExtra.dsClassname}" />
     </sun:property>
-    <sun:property id="ddsProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.driver}" helpText="$resource{i18njdbc.jdbcPool.driverHelp}">
-        <sun:textField id="ddatasource"  columns="$int{60}" text="#{wizardPoolExtra.DriverClassname}" rendered="#{!edit}" disabled="#{wizardPoolExtra.dsClassname}" />
+    <sun:property id="ddsProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.driver}" helpText="$resource{i18njdbc.jdbcPool.driverHelpEnter}">
+        <sun:dropDown id="ddatasource"  selected="#{wizardPoolExtra.DriverClassname}" labels="$attribute{DList}"  rendered="#{!edit}" disabled="#{wizardPoolExtra.dsClassname}" />
+        "<br/>
+        <sun:textField id="ddatasourceField"  columns="$int{60}" text="#{wizardPoolExtra.DriverClassnameField}" rendered="#{!edit}" disabled="#{wizardPoolExtra.dsClassname}" />
     </sun:property>
 
     <sun:property id="dSProp" rendered="#{edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.datasource}" helpText="$resource{i18njdbc.jdbcPool.datasourceHelp}">
