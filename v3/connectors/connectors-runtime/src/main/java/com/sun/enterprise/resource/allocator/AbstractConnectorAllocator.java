@@ -118,6 +118,14 @@ public abstract class AbstractConnectorAllocator
             invalids = getInvalidConnections(conn);
         } catch (ResourceException re) {
             //ignore and continue??
+            //there's nothing the container can do but log it.
+            Object[] args = new Object[] {
+                    h.getResourceSpec().getConnectionPoolName(),
+                    re.getClass(),
+                    re.getMessage() };
+            _logger.log(Level.WARNING,
+                    "pool.get_invalid_connections_resourceexception", args);
+            _logger.log(Level.FINE, "", re);
         }
 
         if ((invalids != null && invalids.size() > 0) ||
