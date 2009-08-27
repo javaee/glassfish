@@ -7,18 +7,17 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/jbi ./jbi.xsd">
   <service-assembly>
     <identification>
-      <!--alias>SoapBinding Deployments</alias -->
-      <name>web_calculator_consumer_assembly</name>
-      <description>This is an AU for Soap Binding deployments</description>
+      <name>dummy_client_assembly</name>
+      <description>Dummy APP as Provider</description>
     </identification>
-    <service-unit>
+	<service-unit>
       <identification>
-         <name>consumer_for_web_calculator</name>
-         <description>consumer service to the soap binding</description>
+         <name>dummy_client_su</name>
+         <description>provider service</description>
       </identification>
       <target>
-         <artifacts-zip>web_calculator_consumer_su.jar</artifacts-zip>
-         <component-name>sun-http-binding</component-name>
+         <artifacts-zip>dummy_client_su.jar</artifacts-zip>
+         <component-name>sun-javaee-engine</component-name>
       </target>
     </service-unit>
    </service-assembly>

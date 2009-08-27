@@ -20,7 +20,7 @@
       <antcall target="clean-common"/>
     </target>
 
-    <target name="setup" depends="assemble-app, deploy-app, assemble-client"/>
+    <target name="setup" depends="assemble-app, deploy-app, deploy-dummy-app, assemble-client"/>
 
     <target name="compile">
       <antcall target="compile-common">
@@ -33,14 +33,26 @@
         <param name="war.classes" value="${build.classes.dir}"/>
         <param name="war.file" value="${assemble.dir}/${appname}-web.war"/>
       </antcall>
-      <jar jarfile="${assemble.dir}/${appname}-web.war" update="true">
-	<metainf file="jbi.xml"/>
-      </jar>
     </target>
 
     <target name="deploy-app">
-      <mkdir dir="./temp"/>
-      <copy file="${assemble.dir}/calculatorservice-web.war" todir="./temp"/>
+      <property name="app.war" value="${assemble.dir}/${appname}-web.war"/>
+      <echo message="Deploying ${appname}-web.war from ${assemble.dir}." level="verbose"/>
+      <exec executable="${ASADMIN}">
+        <arg line="--user ${admin.user}"/>
+        <arg line="--host ${admin.host}"/>
+        <arg line="--port ${admin.port}"/>
+        <arg line="deploy"/>
+        <arg line="${app.war}"/>
+      </exec>    
+    </target>
+
+    <target name="deploy-dummy-app">
+      <antcall target="deploy-jbi-component-su">
+        <param name="jbi-su-dir" value="${jbi-dummy-su-dir}"/>
+        <param name="jbi-component-su" value="${jbi-dummy-su}"/>
+        <param name="jbi-su-assembly" value="${jbi-dummy-su-assembly}"/>
+      </antcall>
     </target>
 
     <target name="deploy-jbi-component">
@@ -61,6 +73,7 @@
 
     <target name="undeploy">
       <antcall target="undeploy-app"/>
+      <antcall target="undeploy-dummy-app"/>
       <antcall target="undeploy-jbi-component"/>
     </target>
 
@@ -72,6 +85,12 @@
         <arg line="--port ${admin.port}"/>
         <arg line="${appname}-web"/>
       </exec>
+    </target>
+
+    <target name="undeploy-dummy-app">
+      <antcall target="undeploy-jbi-component-su">
+        <param name="jbi-su-assembly" value="${jbi-dummy-su-assembly}"/>
+      </antcall>
     </target>
 
     <target name="undeploy-jbi-component">

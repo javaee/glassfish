@@ -2,15 +2,17 @@ package client;
 import javax.xml.ws.WebServiceRef;
 import javax.xml.ws.Service;
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.soap.SOAPFaultException;
 import com.example.calculator.CalculatorService;
 import com.example.calculator.Calculator;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 public class SOAPWebConsumer {
-    @WebServiceRef(wsdlLocation="http://localhost:12011/calculatorendpoint/CalculatorService?WSDL")
-    static CalculatorService service;
+    //@WebServiceRef(wsdlLocation="http://localhost:12011/calculatorendpoint/CalculatorService?WSDL")
+    //static CalculatorService service;
+    CalculatorService service = new CalculatorService();
     private static SimpleReporterAdapter stat =
-                new SimpleReporterAdapter("appserv-tests");
+                new SimpleReporterAdapter("jbi");
 	private static String testId = "jbi-serviceengine/soapfault/se_provider";
 
     public static void main (String[] args) {
@@ -38,8 +40,8 @@ public class SOAPWebConsumer {
 		   	port.throwRuntimeException("bhavani");
 		} catch(Exception ex) {
 			System.out.println(ex);
-			if(!(ex instanceof RuntimeException) || 
-					!(ex.getMessage().equals("Calculator :: Threw Runtime Exception"))) {
+			if(!(ex instanceof SOAPFaultException) || 
+			!(ex.getMessage().equals("java.lang.RuntimeException: Calculator :: Threw Runtime Exception"))) {
 				failedMsg = "port.throwRuntimeException() did not receive RuntimeException 'Calculator :: Threw Runtime Exception'";
 			}
 		}

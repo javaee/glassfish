@@ -20,7 +20,7 @@
       <antcall target="clean-common"/>
     </target>
 
-    <target name="setup" depends="assemble-web, deploy-app, assemble-client"/>
+    <target name="setup" depends="assemble-web, deploy-app, deploy-dummy-app, assemble-client"/>
 
     <target name="compile">
       <antcall target="compile-common">
@@ -39,12 +39,20 @@
       <property name="app.war" value="${assemble.dir}/${appname}.war"/>
       <echo message="Deploying ${appname}.war from ${assemble.dir}." level="verbose"/>
       <exec executable="${ASADMIN}">
-        <arg line="deploy"/>
         <arg line="--user ${admin.user}"/>
         <arg line="--host ${admin.host}"/>
         <arg line="--port ${admin.port}"/>
+        <arg line="deploy"/>
         <arg line="${app.war}"/>
       </exec>
+    </target>
+
+    <target name="deploy-dummy-app">
+      <antcall target="deploy-jbi-component-su">
+        <param name="jbi-su-dir" value="${jbi-dummy-su-dir}"/>
+        <param name="jbi-component-su" value="${jbi-dummy-su}"/>
+        <param name="jbi-su-assembly" value="${jbi-dummy-su-assembly}"/>
+      </antcall>
     </target>
 
     <target name="assemble-client" >
@@ -64,6 +72,7 @@
 
     <target name="undeploy" >
       <antcall target="undeploy-app"/>
+      <antcall target="undeploy-dummy-app"/>
       <antcall target="undeploy-jbi-component"/>
     </target>
 
@@ -75,6 +84,12 @@
         <arg line="--port ${admin.port}"/>
         <arg line="${appname}"/>
       </exec>
+    </target>
+
+    <target name="undeploy-dummy-app">
+      <antcall target="undeploy-jbi-component-su">
+        <param name="jbi-su-assembly" value="${jbi-dummy-su-assembly}"/>
+      </antcall>
     </target>
 
     <target name="undeploy-jbi-component">
