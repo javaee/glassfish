@@ -281,7 +281,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
              */
             List<IiopListener> iiopListenerList = config.getIiopService().getIiopListener();
             for(IiopListener oneListener : iiopListenerList) {
-                if(Boolean.valueOf(oneListener.getEnabled()) && oneListener.getLazyInit()) {
+                if(Boolean.valueOf(oneListener.getEnabled()) && Boolean.valueOf(oneListener.getLazyInit())) {
                     NetworkListener dummy = new DummyNetworkListener();
                     dummy.setPort(oneListener.getPort());
                     dummy.setProtocol("light-weight-listener");
@@ -296,7 +296,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             if("EMBEDDED".equalsIgnoreCase(config.getJmsService().getType())) {
                 List<JmsHost> jmsHosts = config.getJmsService().getJmsHost();
                 for(JmsHost oneHost : jmsHosts) {
-                    if(oneHost.getLazyInit()) {
+                    if( Boolean.valueOf(oneHost.getLazyInit())) {
                         NetworkListener dummy = new DummyNetworkListener();
                         dummy.setPort(oneHost.getPort());
                         dummy.setProtocol("light-weight-listener");

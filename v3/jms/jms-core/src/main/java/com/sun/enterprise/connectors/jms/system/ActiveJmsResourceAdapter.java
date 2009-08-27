@@ -1229,7 +1229,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         setProperty(cd, envProp4);
 
         String integrationMode = getJmsService().getType();
-        boolean lazyInit = getJmsHost().getLazyInit();
+        boolean lazyInit = Boolean.valueOf(getJmsHost().getLazyInit());
         val= "true";
         if (EMBEDDED.equals(integrationMode) && lazyInit)
         val = "false";

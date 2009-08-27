@@ -138,7 +138,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return true or false
      */
     @Attribute(defaultValue="false", dataType=Boolean.class)
-    boolean getLazyInit();
+    String getLazyInit();
 
     /**
      * Sets the value of lazyInit property
@@ -147,7 +147,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      *
      * @param value true if the listener is to be started lazily; false otherwise
      */
-    void setLazyInit(boolean value);
+    void setLazyInit(String value);
 
     /**
      * Gets the value of the adminUserName property.
