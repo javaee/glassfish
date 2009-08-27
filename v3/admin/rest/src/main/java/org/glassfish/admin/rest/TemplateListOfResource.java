@@ -164,7 +164,8 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
     @OPTIONS 
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
     public OptionsResult options() {
-        OptionsResult optionsResult = new OptionsResult();
+        OptionsResult optionsResult = 
+            new OptionsResult(__resourceUtil.getResourceName(uriInfo));
         try {
             //GET meta data
             optionsResult.putMethodMetaData("GET", new MethodMetaData());
@@ -207,7 +208,6 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
         }*/
         return message;
     }
-
 
     private ResourceUtil __resourceUtil;
 }

@@ -88,7 +88,9 @@ public class OptionsResultJsonProvider extends ProviderUtil implements MessageBo
      //get json representation for the given OptionsResult object
      private String getJson(OptionsResult proxy) {
         String result;
-        result ="{" ;
+        result ="{" + quote(proxy.getName()) + ":";
+        result = result + "\n" + indent + "{";
+
         Set<String> methods = proxy.methods();
         Iterator<String> iterator = methods.iterator();
         String method;
@@ -96,34 +98,38 @@ public class OptionsResultJsonProvider extends ProviderUtil implements MessageBo
         while (iterator.hasNext()) {
            method = iterator.next();
            if (!first) {
-               result = result + "\n\n";
+               result = result + ",";
            }
-
-           //method name
-           result = result + getMethod(method);
-           //result = result + ",";
 
            MethodMetaData methodMetaData = proxy.getMethodMetaData(method);
 
-           //query params
-           result = result + getQueryParams(methodMetaData);
+           //get method representation
+           result = result + getMethod(method, methodMetaData);
 
-           //parameters (message parameters)
-           result = result + getMessageParams(methodMetaData);
            first = false;
         }
 
+        result = result + "\n" + indent + "}";
         result = result + "\n}";
         return result;
     }
 
 
     //get json representation for the given method name
-    private String getMethod(String method) {
-        String result = "\n" + indent;
-        result = result + quote("Method");
-        result = result + ":";
+    private String getMethod(String method, MethodMetaData methodMetaData) {
+        String result = "\n" + indent + indent;
+        result = result + quote("Method") + ":";
+        result = result + "{";
+        result = result + "\n" + indent + indent + indent + quote("Name") + ":";
         result = result + quote(method);
+
+        //query params
+        result = result + getQueryParams(methodMetaData);
+
+        //parameters (message parameters)
+        result = result + getMessageParams(methodMetaData);
+
+        result = result + "\n" + indent + indent + "}";
         return result;
     }
 
@@ -132,7 +138,7 @@ public class OptionsResultJsonProvider extends ProviderUtil implements MessageBo
     private String getQueryParams(MethodMetaData methodMetaData) {
         String result = "";
         if (methodMetaData.sizeQueryParamMetaData() > 0) {
-            result = result + "," + "\n" + indent;
+            result = result + "," + "\n" + indent + indent + indent;
             result = result + quote("Query Parameters") + ":{";
 
             Set<String> queryParams = methodMetaData.queryParams();
@@ -150,7 +156,7 @@ public class OptionsResultJsonProvider extends ProviderUtil implements MessageBo
                 result = result + getParameter(queryParam, parameterMetaData);
                 first = false;
             }
-            result = result + "\n" + indent + "}";
+            result = result + "\n" + indent + indent + indent + "}";
         }
         return result;
     }
@@ -160,7 +166,7 @@ public class OptionsResultJsonProvider extends ProviderUtil implements MessageBo
     private String getMessageParams(MethodMetaData methodMetaData) {
         String result = "";
         if (methodMetaData.sizeParameterMetaData() > 0) {
-            result = result + "," + "\n" + indent;
+            result = result + "," + "\n" + indent + indent + indent;
             result = result + quote("Message Parameters") + ":{";
 
             Set<String> parameters = methodMetaData.parameters();
@@ -177,7 +183,7 @@ public class OptionsResultJsonProvider extends ProviderUtil implements MessageBo
                result = result + getParameter(parameter, parameterMetaData);
                first = false;
             }
-            result = result + "\n" + indent + "}";
+            result = result + "\n" + indent + indent + indent + "}";
         }
         return result;
     }
@@ -186,7 +192,7 @@ public class OptionsResultJsonProvider extends ProviderUtil implements MessageBo
     //get json representation for the given parameter
     private String getParameter(String parameter,
         ParameterMetaData parameterMetaData) {
-        String result = "\n" + indent + indent;
+        String result = "\n" + indent + indent + indent + indent;
 
         result = result + quote(parameter) + ":{";
 

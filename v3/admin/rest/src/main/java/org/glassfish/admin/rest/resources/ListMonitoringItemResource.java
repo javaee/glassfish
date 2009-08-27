@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Tue Aug 11 16:09:04 PDT 2009
+* date=Wed Aug 26 14:38:42 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -19,12 +19,11 @@ import org.glassfish.api.monitoring.MonitoringItem;
 public class ListMonitoringItemResource extends TemplateListOfResource<MonitoringItem> {
 
 
-	@Path("{Level}/")
-	public MonitoringItemResource getMonitoringItemResource(@PathParam("Level") String id) {
+	@Path("{Name}/")
+	public MonitoringItemResource getMonitoringItemResource(@PathParam("Name") String id) {
 		MonitoringItemResource resource = resourceContext.getResource(MonitoringItemResource.class);
 		for (MonitoringItem c: entity){
-//THIS KEY IS THE FIRST Attribute ONE ludo
-			if(c.getLevel().equals(id)){
+			if(c.getName().equals(id)){
 				resource.setEntity(c);
 			}
 		}

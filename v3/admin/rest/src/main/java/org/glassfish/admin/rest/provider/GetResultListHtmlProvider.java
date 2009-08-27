@@ -120,7 +120,7 @@ public class GetResultListHtmlProvider extends ProviderUtil implements MessageBo
         String result = "";
         for (Dom proxy: proxyList) { //for each element
             try {
-                    result = result + "<a href=" + getElementLink(uriInfo, proxy.getKey()) + ">";
+                    result = result + "<a href=\"" + getElementLink(uriInfo, proxy.getKey()) + "\">";
                     result = result + proxy.getKey();
                     result = result + "</a>";
                     result = result +  "<br>";
@@ -132,7 +132,7 @@ public class GetResultListHtmlProvider extends ProviderUtil implements MessageBo
         //add command resources
         for (String[] commandResourcePath : commandResourcesPaths) {
             try {
-                result = result + "<a href=" + getElementLink(uriInfo, commandResourcePath[0]) + ">";
+                result = result + "<a href=\"" + getElementLink(uriInfo, commandResourcePath[0]) + "\">";
                 result = result + commandResourcePath[0];
                 result = result + "</a>";
                 result = result + "<br>";

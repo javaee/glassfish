@@ -134,7 +134,7 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
             if (node.hasChildNodes()) {
                 try {
                     elementName = node.getName();
-                    result = result + "<a href=" + getElementLink(uriInfo, elementName) + ">";
+                    result = result + "<a href=\"" + getElementLink(uriInfo, elementName) + "\">";
                     result = result + elementName;
                     result = result + "</a>";
                     result = result + "<br>";

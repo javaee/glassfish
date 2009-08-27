@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Tue Aug 11 16:09:03 PDT 2009
+* date=Wed Aug 26 14:38:41 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -75,7 +75,7 @@ throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 @OPTIONS
 @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
 public OptionsResult options() {
-OptionsResult optionsResult = new OptionsResult();
+OptionsResult optionsResult = new OptionsResult(resourceName);
 try {
 //command method metadata
 MethodMetaData methodMetaData = __resourceUtil.getMethodMetaData(

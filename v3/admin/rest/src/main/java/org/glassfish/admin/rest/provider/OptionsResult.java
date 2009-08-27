@@ -53,6 +53,13 @@ public class OptionsResult extends Result {
         __metaData = new HashMap<String, MethodMetaData>();
     }
 
+
+    public OptionsResult(String name) {
+        __name = name;
+        __metaData = new HashMap<String, MethodMetaData>();
+    }
+
+
     /**
      * Returns meta-data object for the given method
      */

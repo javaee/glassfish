@@ -88,20 +88,16 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
      //get xml representation for the given OptionsResult object
      private String getXml(OptionsResult proxy) {
         String result;
-        result ="" ;
+        result = "<" + proxy.getName() + ">" ;
         Set<String> methods = proxy.methods();
         Iterator<String> iterator = methods.iterator();
         String method;
         boolean first = true;
         while (iterator.hasNext()) {
            method = iterator.next();
-           if (!first) {
-               result = result + "\n\n\n";
-           }
 
-           //method name
+           //method
            result = result + getMethod(method);
-           //result = result + ",";
 
            MethodMetaData methodMetaData = proxy.getMethodMetaData(method);
 
@@ -111,17 +107,19 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
            //parameters (message parameters)
            result = result + getMessageParams(methodMetaData);
 
-           result = result + "\n";
+           result = result + "\n" + indent;
            result = result + getEndXmlElement("Method");
            first = false;
         }
+
+        result = result + "\n" + "</" + proxy.getName() + ">" ;
         return result;
     }
 
 
     //get xml representation for the given method name
     private String getMethod(String method) {
-        String result = "<";
+        String result = "\n" + indent + "<";
         result = result + "Method name=";
         result = result + quote(method);
         result = result + ">";
@@ -133,8 +131,8 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
     private String getQueryParams(MethodMetaData methodMetaData) {
         String result = "";
         if (methodMetaData.sizeQueryParamMetaData() > 0) {
-            result = result + "\n" + indent;
-            result = result + "<Query Parameters>";
+            result = result + "\n" + indent + indent;
+            result = result + "<Query-Parameters>";
 
             Set<String> queryParams = methodMetaData.queryParams();
             Iterator<String> iterator = queryParams.iterator();
@@ -145,8 +143,8 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
                     methodMetaData.getQureyParamMetaData(queryParam);
                 result = result + getParameter(queryParam, parameterMetaData);
             }
-            result = result + "\n" + indent;
-            result = result + "</Query Parameters>";
+            result = result + "\n" + indent + indent;
+            result = result + "</Query-Parameters>";
         }
         return result;
     }
@@ -156,8 +154,8 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
     private String getMessageParams(MethodMetaData methodMetaData) {
         String result = "";
         if (methodMetaData.sizeParameterMetaData() > 0) {
-            result = result + "\n" + indent;
-            result = result + "<Message Parameters>";
+            result = result + "\n" + indent + indent;
+            result = result + "<Message-Parameters>";
 
             Set<String> parameters = methodMetaData.parameters();
             Iterator<String> iterator = parameters.iterator();
@@ -168,8 +166,8 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
                    methodMetaData.getParameterMetaData(parameter);
                result = result + getParameter(parameter, parameterMetaData);
             }
-            result = result + "\n" + indent;
-            result = result + "</Message Parameters>";
+            result = result + "\n" + indent + indent;
+            result = result + "</Message-Parameters>";
         }
         return result;
     }
@@ -178,7 +176,7 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
     //get xml representation for the given parameter
     private String getParameter(String parameter,
         ParameterMetaData parameterMetaData) {
-        String result = "\n" + indent + indent;
+        String result = "\n" + indent + indent + indent;
 
         result = result + "<" + parameter;
 
@@ -199,6 +197,7 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
     //get xml representation for a give attribute of parameter
     private String getAttribute(String name, String value) {
         String result = " ";
+        name = name.replace(' ', '-');
         result = result + name + "=" + quote(value);
         return result;
     }

@@ -835,7 +835,7 @@ public class GeneratorResource {
         out.write("@OPTIONS\n");
         out.write("@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})\n");
         out.write("public OptionsResult options() {\n");
-        out.write("OptionsResult optionsResult = new OptionsResult();\n");
+        out.write("OptionsResult optionsResult = new OptionsResult(resourceName);\n");
         out.write("try {\n");
         out.write("//command method metadata\n");
         out.write("MethodMetaData methodMetaData = __resourceUtil.getMethodMetaData(\n");

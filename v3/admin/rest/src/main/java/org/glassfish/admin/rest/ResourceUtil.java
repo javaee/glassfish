@@ -62,7 +62,7 @@ import org.glassfish.api.Param;
  *
  * @author Rajeshwar Patil
  */
-public class ResourceUtil {
+public class ResourceUtil extends Util {
 
     /**
      * Adjust the input parameters. In case of POST and DELETE methods, user

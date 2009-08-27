@@ -39,10 +39,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
-import java.util.Set;
-
-import org.jvnet.hk2.config.Dom;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -53,28 +49,28 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
-/**
- *
- * @author Rajeshwar Patil
- * @author Ludovic Champenois ludo@dev.java.net
 
+/**
+ * @author Rajeshwar Patil
  */
 @Provider
 @Produces(MediaType.TEXT_HTML)
-public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWriter<GetResult> {
+public class ResponseResultHtmlProvider extends ProviderUtil
+        implements MessageBodyWriter<String> {
 
     @Context
     protected UriInfo uriInfo;
 
-    public long getSize(final GetResult proxy, final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType) {
+    public long getSize(final String proxy, final Class<?> type, final Type genericType,
+                final Annotation[] annotations, final MediaType mediaType) {
         return -1;
     }
+
 
     public boolean isWriteable(final Class<?> type, final Type genericType,
             final Annotation[] annotations, final MediaType mediaType) {
         try {
-            if (Class.forName("org.glassfish.admin.rest.provider.GetResult").equals(genericType)) {
+            if (Class.forName("java.lang.String").equals(genericType)) {
                 return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
             }
         } catch (java.lang.ClassNotFoundException e) {
@@ -83,85 +79,28 @@ public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWr
         return false;
     }
 
-    public void writeTo(final GetResult proxy, final Class<?> type, final Type genericType,
+
+    public void writeTo(final String proxy, final Class<?> type, final Type genericType,
             final Annotation[] annotations, final MediaType mediaType,
             final MultivaluedMap<String, Object> httpHeaders,
             final OutputStream entityStream) throws IOException, WebApplicationException {
         entityStream.write(getHtml(proxy).getBytes());
     }
 
-    private String getHtml(GetResult proxy) {
+
+    private String getHtml(String proxy) {
         String result = getHtmlHeader();
-        result = result + "<h1>" + getTypeKey(proxy.getDom()) + "</h1>";
-
-        String attributes = getHtmlRespresentationForAttributes(proxy.getDom(), uriInfo);
-        result = getHtmlForComponent(attributes, "Attributes", result);
-
-        String command = proxy.getDeleteCommand();
-        String deleteCommand = getHtmlRespresentationsForCommand(command, "delete", "Delete", uriInfo);
-        result = getHtmlForComponent(deleteCommand, "Delete " + getTypeKey(proxy.getDom()), result);
-
-        String childResourceLinks = getResourcesLinks(proxy.getDom(),
-            proxy.getCommandResourcesPaths());
-        result = getHtmlForComponent(childResourceLinks, "Child Resources", result);
-
-        result = result + "</body></html>";
-        return result;
-    }
-
-    private String getTypeKey(Dom proxy) {
         String uri = uriInfo.getAbsolutePath().toString();
-        return upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
-    }
+        String name = upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
+        String parentName =
+            upperCaseFirstLetter(eleminateHypen(getParentName(uri)));
 
+        result = result + "<h1>" + name + "</h1>";
+        result = result + proxy + "<br><br>";
+        result = result + "<a href=\"" + uri + "\">Back</a><br>";
 
-    private String getResourcesLinks(Dom proxy, String[][] commandResourcesPaths) {
-        String result = "";
-        Set<String> elementNames = proxy.getElementNames();
-        for (String elementName : elementNames) { //for each element
-            try {
-                result = result + "<a href=\"" + getElementLink(uriInfo, elementName) + "\">";
-                result = result + elementName;
-                result = result + "</a>";
-                result = result + "<br>";
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        //add command resources
-        for (String[] commandResourcePath : commandResourcesPaths) {
-            try {
-                result = result + "<a href=\"" +
-                    getElementLink(uriInfo, commandResourcePath[0]) + "\">";
-                result = result + commandResourcePath[0];
-                result = result + "</a>";
-                result = result + "<br>";
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (result != "") {
-            result = "<div>" + result + "</div>" + "<br>";
-        }
-        return result;
-    }
-
-    private String getStartHtmlElement(String name) {
-        assert ((name != null) && name.length() > 0);
-        String result = "<";
-        result = result + name;
-        result = result + ">";
-        return result;
-    }
-
-    private String getEndHtmlElement(String name) {
-        assert ((name != null) && name.length() > 0);
-        String result = "<";
-        result = result + "/";
-        result = result + name;
-        result = result + ">";
+        result = "<div>" + result + "</div>" + "<br>";
+        result = result + "</body></html>";
         return result;
     }
 }

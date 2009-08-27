@@ -51,6 +51,14 @@ public class Result {
 
 
     /**
+     * Returns name of the resource, this result object is for.
+     */
+    public String getName() {
+        return __name;
+    }
+
+
+    /**
      * Returns Http status code for the response.
      */
     public int getStatusCode() {
@@ -101,4 +109,5 @@ public class Result {
     int __statusCode;
     boolean __isError;
     String __errorMessage;
+    String __name;
 }

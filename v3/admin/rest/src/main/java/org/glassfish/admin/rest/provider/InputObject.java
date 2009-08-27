@@ -55,17 +55,6 @@ public abstract class InputObject extends ProviderUtil {
     public abstract Map initializeMap() throws InputException;
 
 
-    protected String getName(String typeName) {
-        if ((typeName != null) && (typeName.length() > 0)) {
-            int index = typeName.lastIndexOf('.');
-            if (index != -1) {
-                return typeName.substring(index + 1);
-            }
-        }
-        return typeName;
-    }
-
-
     /**
      * Get the value object associated with a key.
      *

@@ -43,7 +43,6 @@ import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.OPTIONS;
-import javax.ws.rs.PUT;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
@@ -210,16 +209,18 @@ public class TemplateResource<E extends ConfigBeanProxy> {
     @OPTIONS
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
     public OptionsResult options() {
-        OptionsResult optionsResult = new OptionsResult();
+        OptionsResult optionsResult =
+            new OptionsResult(__resourceUtil.getResourceName(uriInfo));
+
         try {
             //GET meta data
             optionsResult.putMethodMetaData("GET", new MethodMetaData());
 
-            //PUT meta data
+            //POST meta data
             //FIXME -- Get hold of meta-data for config bean attributes and
-            //set it in MethodMetaData object. For now, just provide PUT method
+            //set it in MethodMetaData object. For now, just provide POST method
             //without any message/entity information.
-            optionsResult.putMethodMetaData("PUT", new MethodMetaData());
+            optionsResult.putMethodMetaData("POST", new MethodMetaData());
 
             //DELETE meta data
             String command = getDeleteCommand();
