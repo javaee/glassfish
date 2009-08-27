@@ -158,6 +158,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
                 req.setNote(MAPPING_DATA, mappingData);
             } 
             Adapter adapter = null;
+            
             // Map the request without any trailling.
             ByteChunk uriBB = decodedURI.getByteChunk();
             int start = uriBB.getStart();
@@ -166,7 +167,13 @@ public class ContainerMapper extends StaticResourcesAdapter {
             if (semicolon > 0) {
                 decodedURI.setBytes(uriBB.getBuffer(), uriBB.getStart(), semicolon);
             }
-            HttpRequestURIDecoder.decode(decodedURI, urlDecoder, null, null);
+
+            String uriEncoding = (String) grizzlyEmbeddedHttp.getProperty("uriEncoding");
+            if (uriEncoding == null || uriEncoding.equals("")){
+                uriEncoding = "ISO-8859-1";
+            }
+
+            HttpRequestURIDecoder.decode(decodedURI, urlDecoder, uriEncoding, null);
             adapter = map(req, decodedURI, mappingData);
             if (adapter == null || adapter instanceof ContainerMapper) {
                 String ext = decodedURI.toString();
