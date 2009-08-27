@@ -166,7 +166,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
 
             String uriEncoding = (String) grizzlyEmbeddedHttp.getProperty("uriEncoding");
             if (uriEncoding == null || uriEncoding.equals("")){
-                uriEncoding = "ISO-8859-1";
+                uriEncoding = "UTF-8";
             }
 
             HttpRequestURIDecoder.decode(decodedURI, urlDecoder, uriEncoding, null);
