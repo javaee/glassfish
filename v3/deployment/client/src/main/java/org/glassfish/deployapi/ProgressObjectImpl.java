@@ -558,6 +558,9 @@ public class ProgressObjectImpl extends DFProgressObject {
         targetModuleIDs = tmids;
 //        fireProgressEvent(StateType.COMPLETED, i18nmsg, aTarget);
         for (TargetModuleIDImpl tmid : tmids) {
+            // initialize moduleID so the event can be populated with 
+            // the proper moduleID.
+            moduleID = tmid.getModuleID();
             fireProgressEvent(StateType.COMPLETED, message, tmid.getTargetImpl());
         }
         return;

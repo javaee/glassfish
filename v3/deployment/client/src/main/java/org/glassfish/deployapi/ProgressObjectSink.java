@@ -188,7 +188,7 @@ public class ProgressObjectSink extends DFProgressObject implements ProgressList
                         "All operations completed successfully"
                         ));
                 }
-                finalEvent = new ProgressEvent(this, null, status);
+                finalEvent = new ProgressEvent(this, progressEvent.getTargetModuleID(), status);
                 deliveredEvents.add(finalEvent);
             }
         }        
