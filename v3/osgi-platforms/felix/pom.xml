@@ -13,6 +13,8 @@
        org.apache.felix.shell.jar 
        org.apache.felix.shell.tui.jar 
        org.apache.felix.shell.remote.jar 
+       autostart/
+          org.apache.felix.scr.jar 
 
    This is more or less how the layout would look if one downloads the Felix
    distribution from Felix project and installs. The only difference being we keep
@@ -105,7 +107,7 @@
                                <artifactId>org.apache.felix.scr</artifactId>
                                <version>1.0.8</version>
                                <type>jar</type>
-                               <outputDirectory>${glassfish.modulesdir}</outputDirectory>
+                               <outputDirectory>${glassfish.modulesdir}/autostart/</outputDirectory>
                              </artifactItem>
                            </artifactItems>
                          </configuration>

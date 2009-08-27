@@ -97,15 +97,12 @@ public abstract class ASMainOSGi extends AbstractMain {
         // 1. We install fileinstall after osgi-adapter, as we don't
         // want fileinstall to start bundles from autodeploy-bundles dir
         // before kernel is started.
-        // 2. We install scr after osgi-adapter as scr can potentially affect
-        // start up time, as it is an extender.
         if (System.getProperty("org.jvnet.hk2.osgimain.autostartBundles") == null) {
             final String bundlePaths =
                     "org.apache.felix.shell.jar, " +
                     "org.apache.felix.shell.remote.jar, " +
-                    "org.apache.felix.configadmin.jar, " +
                     "osgi-adapter.jar, " +
-                    "org.apache.felix.scr.jar, " +
+                    "org.apache.felix.configadmin.jar, " +
                     "org.apache.felix.fileinstall.jar";
             System.setProperty("org.jvnet.hk2.osgimain.autostartBundles", bundlePaths);
         }
