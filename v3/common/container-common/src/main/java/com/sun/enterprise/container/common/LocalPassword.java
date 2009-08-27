@@ -45,6 +45,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
+import org.glassfish.internal.api.Init;
 import org.glassfish.api.admin.ServerEnvironment;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
@@ -59,7 +60,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
  */
 @Service
 @Scoped(Singleton.class)        // only want one local password
-public class LocalPassword implements PostConstruct {
+public class LocalPassword implements PostConstruct, Init {
 
     @Inject
     ServerEnvironment env;
