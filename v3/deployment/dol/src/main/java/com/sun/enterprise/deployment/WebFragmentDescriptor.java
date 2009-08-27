@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
+import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
 
 /**
@@ -86,8 +87,11 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
     protected void combineLoginConfiguration(WebBundleDescriptor webBundleDescriptor) {
         if (getLoginConfiguration() == null) {
             setLoginConfiguration(webBundleDescriptor.getLoginConfiguration());
-        } else if (!getLoginConfiguration().equals(webBundleDescriptor.getLoginConfiguration())) {
-            conflictLoginConfig = true;
+        } else {
+            LoginConfiguration lgConf = webBundleDescriptor.getLoginConfiguration();
+            if (lgConf != null && (!lgConf.equals(getLoginConfiguration()))) {
+                conflictLoginConfig = true;
+            }
         }
     }
 
