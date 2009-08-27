@@ -1,1 +1,0 @@
--exportcontents: com.sun.enterprise.php; version=${project.osgi.version}
