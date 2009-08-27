@@ -647,6 +647,8 @@ public class JSR88Deployer implements ProgressListener {
     public void handleProgressEvent(ProgressEvent event) {
         DeploymentStatus ds = event.getDeploymentStatus();
         System.out.println("Received Progress Event state " + ds.getState() + " msg = " + ds.getMessage());
+        TargetModuleID tmid = event.getTargetModuleID();
+        System.out.println("Received Progress Event target module id " + tmid.getModuleID());
         /*
          *Add this event to the vector collecting them.
          */
