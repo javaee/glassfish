@@ -180,7 +180,7 @@ public class GrizzlyProxy implements NetworkProxy {
                 "The endpoint adapter is null");
         }
         ((ContainerMapper)grizzlyListener.getEmbeddedHttp().getAdapter())
-            .register(contextRoot, vsServers, endpointAdapter, null, null);
+            .register(contextRoot, vsServers, endpointAdapter, container);
     }
 
     /**

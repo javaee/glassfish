@@ -23,8 +23,6 @@
 package com.sun.enterprise.v3.services.impl;
 
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.SocketChannel;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -33,20 +31,18 @@ import java.util.logging.Level;
 import com.sun.enterprise.v3.server.HK2Dispatcher;
 import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.config.GrizzlyEmbeddedHttp;
-import com.sun.grizzly.http.HttpWorkerThread;
-import com.sun.grizzly.http.ProcessorTask;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
 import com.sun.grizzly.tcp.StaticResourcesAdapter;
-import com.sun.grizzly.util.InputReader;
-import com.sun.grizzly.util.WorkerThread;
+import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.util.buf.ByteChunk;
 import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.buf.UDecoder;
 import com.sun.grizzly.util.http.HttpRequestURIDecoder;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.grizzly.util.http.mapper.MappingData;
+import java.io.IOException;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.internal.grizzly.V3Mapper;
@@ -116,7 +112,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
         mapper.setDefaultHostName(defaultHostName);
         mapper.addHost(defaultHostName,new String[]{},null);
         mapper.addContext(defaultHostName,ROOT,
-                new ContextRootInfo(this,null, null),
+                new ContextRootInfo(this,null),
                 new String[]{"index.html","index.htm"},null);
         // Container deployed have the right to override the default setting.
         Mapper.setAllowReplacement(true);
@@ -250,7 +246,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
                 if (match) {
                     adapter = grizzlyService.habitat.getComponent(SnifferAdapter.class);
                     ((SnifferAdapter)adapter).initialize(sniffer, this);
-                    ContextRootInfo c= new ContextRootInfo(adapter, null, null);
+                    ContextRootInfo c= new ContextRootInfo(adapter, null);
    
                     for (String pattern : sniffer.getURLPatterns()) {
                         for (String host: grizzlyService.hosts ){
@@ -326,8 +322,9 @@ public class ContainerMapper extends StaticResourcesAdapter {
         res.doWrite(chunk);
     }
 
-    public void register(String contextRoot, Collection<String> vs, Adapter adapter,
-        ApplicationContainer container, List<ProtocolFilter> contextProtocolFilters) {
+    public void register(String contextRoot, Collection<String> vs, Adapter adapter
+            ,ApplicationContainer container) {
+
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("MAPPER(" + this + ") REGISTER contextRoot: " + contextRoot +
                 " adapter: " + adapter + " container: " + container +
@@ -345,7 +342,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
         mapMultipleAdapter = true;
         for (String host : vs) {
             mapper.addContext(host, contextRoot,
-                new ContextRootInfo(adapter, container, contextProtocolFilters), new String[0], null);
+                new ContextRootInfo(adapter, container), new String[0], null);
         }
     }
 
@@ -358,158 +355,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
         }
     }
 
-    /**
-     * Based on the context-root, configure Grizzly's ProtocolChain with the proper ProtocolFilter, and if available,
-     * proper Adapter.
-     *
-     * @return true if the ProtocolFilter was properly set.
-     */
-    public boolean map(SelectionKey selectionKey, ByteBuffer byteBuffer, GlassfishProtocolChain protocolChain,
-        List<ProtocolFilter> defaultProtocolFilters,
-        ContextRootInfo fallbackContextRootInfo) throws Exception {
-        HttpParserState state = parserStates.poll();
-        if (state == null) {
-            state = new HttpParserState();
-        } else {
-            state.reset();
-        }
-        state.setBuffer(byteBuffer);
-        byte[] contextBytes = null;
-        byte[] hostBytes = null;
-        try {
-            // Read the request line, and parse the context root by removing
-            // all trailling // or ?
-            contextBytes = HttpUtils.readRequestLine(selectionKey, state,
-                InputReader.getDefaultReadTimeout());
-            if (contextBytes != null) {
-                state.setState(0);
-                // Read available bytes and try to find the host header.
-                hostBytes = HttpUtils.readHost(selectionKey, state,
-                    InputReader.getDefaultReadTimeout());
-            }
-        } finally {
-            parserStates.offer(state);
-        }
-        // No bytes then fail.
-        if (contextBytes == null) {
-            return false;
-        }
-        MessageBytes decodedURI = MessageBytes.newInstance();
-        decodedURI.setBytes(contextBytes, 0, contextBytes.length);
-        MessageBytes hostMB = MessageBytes.newInstance();
-        if (hostBytes != null) {
-            hostMB.setBytes(hostBytes, 0, hostBytes.length);
-        }
-        // Decode the request to make sure this is not an attack like
-        // a directory traversal vulnerability.
-        try {
-            HttpRequestURIDecoder.decode(decodedURI, urlDecoder,
-                (String) grizzlyEmbeddedHttp.getProperty("uriEncoding"), null);
-        } catch (Exception ex) {
-            // We fail to decode the request, hence we don't service it.
-            if (logger.isLoggable(Level.WARNING)) {
-                logger.log(Level.WARNING, "Invalid url", ex);
-            }
-            return false;
-        }
-        // Parse the host. If not found, add it based on the current host.
-        HttpUtils.parseHost(hostMB, ((SocketChannel) selectionKey.channel()).socket());
-        //TODO: Use ThreadAttachment instead.
-        MappingData mappingData = new MappingData();
-        // Map the request to its Adapter/Container and also it's Servlet if
-        // the request is targetted to the CoyoteAdapter.
-        mapper.map(hostMB, decodedURI, mappingData);
-        Adapter adapter = null;
-        ContextRootInfo contextRootInfo = null;
-        // First, let's see if the request is NOT for the CoyoteAdapter, but for
-        // another adapter like grail/rail.
-        if (mappingData.context != null && mappingData.context instanceof ContextRootInfo) {
-            contextRootInfo = (ContextRootInfo) mappingData.context;
-            adapter = contextRootInfo.getAdapter();
-        } else if (mappingData.context != null && mappingData.context.getClass()
-            .getName().equals("com.sun.enterprise.web.WebModule")) {
-            // Copy the decoded bytes so it can be later re-used by the CoyoteAdapter
-            MessageBytes fullDecodedUri = MessageBytes.newInstance();
-            fullDecodedUri.duplicate(decodedURI);
-            fullDecodedUri.toBytes();
-            // We bind the current information to the WorkerThread so CoyoteAdapter
-            // can read it and avoid trying to map. Note that we cannot re-use
-            // the object as Grizzly ARP might used them from a different Thread.
-            WorkerThread workerThread = (WorkerThread) Thread.currentThread();
-            workerThread.getAttachment().setAttribute("mappingData", mappingData);
-            workerThread.getAttachment().setAttribute("decodedURI", fullDecodedUri);
-            adapter = ((V3Mapper) mapper).getAdapter();
-        }
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("MAP (" + this + ") contextRoot: " + new String(contextBytes) +
-                " defaultProtocolFilters: " + defaultProtocolFilters +
-                " fallback: " + fallbackContextRootInfo
-                + " adapter: " + adapter +
-                " mappingData.context " + mappingData.context);
-        }
-        if (adapter == null && fallbackContextRootInfo != null) {
-            adapter = fallbackContextRootInfo.getAdapter();
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Fallback adapter is taken: " + adapter);
-            }
-        }
-        if (adapter == null) {
-            return false;
-        }
-        bindAdapter(adapter);
-        List<ProtocolFilter> filtersToInject = null;
-        // If we have a container, let the request flow throw the default http path
-        if (contextRootInfo != null && contextRootInfo.getContainer() != null) {
-            List<ProtocolFilter> contextRootProtocolFilters =
-                contextRootInfo.getProtocolFilters();
-            filtersToInject = contextRootProtocolFilters != null ? contextRootProtocolFilters : defaultProtocolFilters;
-            if (filtersToInject != null) {
-                protocolChain.setDynamicProtocolFilters(filtersToInject);
-            }
-        } else if (fallbackContextRootInfo != null) {
-            List<ProtocolFilter> fallbackProtocolFilters =
-                fallbackContextRootInfo.getProtocolFilters();
-            if (fallbackProtocolFilters != null && !fallbackProtocolFilters.isEmpty()) {
-                protocolChain.setDynamicProtocolFilters(fallbackProtocolFilters);
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Return the Container associated with the current context-root, null if not found. If the Adapter is found, bind
-     * it to the current ProcessorTask.
-     */
-    private Adapter bindAdapter(Adapter adapter) {
-        // If no Adapter has been found, add a default one. This is the equivalent
-        // of having virtual host.
-        bindProcessorTask(adapter);
-        return adapter;
-    }
-
     // -------------------------------------------------------------------- //
-    /**
-     * Bind to the current WorkerThread the proper instance of ProcessorTask.
-     *
-     * @param adapter The Adapter associated with the ProcessorTask
-     */
-    private void bindProcessorTask(Adapter adapter) {
-        HttpWorkerThread workerThread =
-                (HttpWorkerThread) Thread.currentThread();
-        ProcessorTask processorTask =
-                (ProcessorTask) workerThread.getProcessorTask();
-        if (processorTask == null) {
-            try {
-                //TODO: Promote setAdapter to ProcessorTask?
-                processorTask = (ProcessorTask) grizzlyEmbeddedHttp.getProcessorTask();
-            } catch (ClassCastException ex) {
-                logger.log(Level.SEVERE,
-                    "Invalid ProcessorTask instance", ex);
-            }
-            workerThread.setProcessorTask(processorTask);
-        }
-        processorTask.setAdapter(adapter);
-    }
 
     /**
      * Class represents context-root associated information
@@ -517,15 +363,13 @@ public class ContainerMapper extends StaticResourcesAdapter {
     public static class ContextRootInfo {
         protected Adapter adapter;
         protected ApplicationContainer container;
-        protected List<ProtocolFilter> protocolFilters;
 
         public ContextRootInfo() {
         }
 
-        public ContextRootInfo(Adapter adapter, ApplicationContainer container, List<ProtocolFilter> protocolFilters) {
+        public ContextRootInfo(Adapter adapter, ApplicationContainer container) {
             this.adapter = adapter;
             this.container = container;
-            this.protocolFilters = protocolFilters;
         }
 
         public Adapter getAdapter() {
@@ -542,14 +386,6 @@ public class ContainerMapper extends StaticResourcesAdapter {
 
         public void setContainer(ApplicationContainer container) {
             this.container = container;
-        }
-
-        public List<ProtocolFilter> getProtocolFilters() {
-            return protocolFilters;
-        }
-
-        public void setProtocolFilters(List<ProtocolFilter> protocolFilters) {
-            this.protocolFilters = protocolFilters;
         }
     }
 }
