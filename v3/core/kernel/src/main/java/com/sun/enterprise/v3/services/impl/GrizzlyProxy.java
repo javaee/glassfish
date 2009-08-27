@@ -74,11 +74,8 @@ public class GrizzlyProxy implements NetworkProxy {
 
 
     private GrizzlyService grizzlyService;
-    //TODO: This must be configurable.
-//    private final static boolean isWebProfile =
-//        Boolean.parseBoolean(System.getProperty("v3.grizzly.webProfile", "true"));
-    private static final List<String> nvVsMapper = new ArrayList<String>();
 
+    private static final List<String> nvVsMapper = new ArrayList<String>();
 
     // Those Adapter MUST not be mapped through a VirtualHostMapper, as our
     // WebContainer already supports it.
@@ -125,7 +122,7 @@ public class GrizzlyProxy implements NetworkProxy {
             mapper.setId(networkListener.getName());
 
             final GrizzlyEmbeddedHttp embeddedHttp = grizzlyListener.getEmbeddedHttp();
-            // TODO: This is not the right way to do.
+            // Issue 9284
             GrizzlyEmbeddedHttp.setWebAppRootPath(
                     System.getProperty("com.sun.aas.instanceRoot") + "/docroot");
 
