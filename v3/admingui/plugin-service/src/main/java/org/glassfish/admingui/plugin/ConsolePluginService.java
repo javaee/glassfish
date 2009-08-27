@@ -44,7 +44,10 @@ import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.DomDocument;
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,6 +143,89 @@ public class ConsolePluginService {
 	    }
 	}
     }
+
+    /**
+     *	<p> This method searches the classpath of all plugins for the requested
+     *	    resource and returns all instances of it (if any).  This method
+     *	    will NOT return <code>null</code>, but may return an empty
+     *	    <code>List</code>.</p>
+     */
+    public List<URL> getResources(String name) {
+	ArrayList<URL> result = new ArrayList<URL>();
+	if ((providers != null) && (providers.length > 0)) {
+	    // Get our parser...
+	    Enumeration<URL> urls = null;
+	    URL url = null;
+
+	    // Loop through the configs and add them all
+	    for (ConsoleProvider provider : providers) {
+		// Read the contents from the URL
+		ClassLoader loader = provider.getClass().getClassLoader();
+System.out.println("** CL: '" + loader + "'");
+		try {
+		    urls = loader.getResources(name);
+//		    url = loader.getResource(name);
+//System.out.println("URL " + provider.getClass().getName() + " == '" + url + "'");
+		} catch (IOException ex) {
+		    if (logger.isLoggable(Level.INFO)) {
+			logger.log(Level.INFO, "Error getting resource '"
+			    + name + "' from provider: '"
+			    + provider.getClass().getName() + "'. Skipping...",
+			    ex);
+		    }
+		    continue;
+		}
+		while (urls.hasMoreElements()) {
+		    // Found one... add it.
+		    url = urls.nextElement();
+System.out.println("URL " + provider.getClass().getName() + " == '" + url + "'");
+		    try {
+//System.out.println("\n\n########FILE: \n" + new String(readFromURL(url)) + "\n\n");
+			result.add(new URL(url, ""));
+		    } catch (Exception ex) {
+			// Ignore b/c this should not ever happen, we're not
+			// changing the URL
+			System.out.println(
+			    "ConsolePluginService: URL Copy Failed!");
+		    }
+		}
+	    }
+	}
+	return result;
+    }
+
+    /***********************************************************
+    public static byte[] readFromURL(URL url) throws IOException {
+        byte buffer[] = new byte[10000];
+        byte result[] = new byte[0];
+
+	int count = 0;
+	int offset = 0;
+	java.io.InputStream in = url.openStream();
+
+	// Attempt to read up to 10K bytes.
+	count = in.read(buffer);
+	while (count != -1) {
+	    // Make room for new content...
+	    //result = Arrays.copyOf(result, offset + count);  Java 6 only...
+	    // When I can depend on Java 6... replace the following 3 lines
+	    // with the line above.
+	    byte oldResult[] = result;
+	    result = new byte[offset + count];
+	    System.arraycopy(oldResult, 0, result, 0, offset);
+
+	    // Copy in new content...
+	    System.arraycopy(buffer, 0, result, offset, count);
+
+	    // Increment the offset
+	    offset += count;
+
+	    // Attempt to read up to 10K more bytes...
+	    count = in.read(buffer);
+	}
+        return result;
+    }
+    ***********************************************************/
 
     /**
      *	<p> This method allows new {@link IntegrationPoint}s to be added to
