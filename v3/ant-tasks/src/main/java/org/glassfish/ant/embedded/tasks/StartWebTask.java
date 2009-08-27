@@ -37,71 +37,13 @@
 package org.glassfish.ant.embedded.tasks;
 
 import org.glassfish.api.embedded.ContainerBuilder;
-
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.EmbeddedFileSystem;
-import org.glassfish.web.embed.EmbeddedWebContainer;
-import org.glassfish.web.embed.WebBuilder;
-import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.embedded.EmbeddedDeployer;
 
-import java.io.File;
-import java.io.Console;
-public class StartWebTask extends Task {
-
-    String serverID = Constants.DEFAULT_SERVER_ID;
-    int port = Constants.DEFAULT_HTTP_PORT;
-    String installRoot = null;
-
-    public void setServerID(String serverID) {
-        this.serverID = serverID;
-    }
-
-	public void setPort(int port) {
-        this.port = port;
-    }
-
-    public void setInstallRoot(String installRoot) {
-        this.installRoot = installRoot;
-    }
-
+public class StartWebTask extends StartServerTask {
 
     public void execute() throws BuildException {
-        log ("Starting server [web]");
-        Server.Builder builder = new Server.Builder(serverID);
-        try {
-            Server server = builder.build();
-            server.createPort(port);
-            ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
-            System.out.println("builder is " + b);
-            server.addContainer(b);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        /* support inplanted?
-        if (installRoot != null) {
-            File f = new File(installRoot, "glassfishv3");
-            f = new File(f, "glassfish");
-            if (!f.exists()) {
-                log("Not found : " + f.getAbsolutePath());
-                return;
-            }
-
-            EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-            efsb.setInstallRoot(f);
-            Server.Builder builder = new Server.Builder(serverID);
-            builder.setEmbeddedFileSystem(efsb.build());
-            server = builder.build();
-            f = new File(f, "domains");
-            f = new File(f, "domain1" );
-            docroot = new File(f, "docroot");
-        } else {
-            server = new Server.Builder(serverID).build();
-            docroot = new File(server.getFileSystem().installRoot, "docroot");
-        }
-        */
+        super.setContainerType(ContainerBuilder.Type.web);
+        super.execute();
     }
 }

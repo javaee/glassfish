@@ -71,7 +71,7 @@ public class DeployTask extends Task {
         cmdParams.name = name;
     }
 
-	public void setContextroot(String contextroot) {
+    public void setContextroot(String contextroot) {
         cmdParams.contextroot = contextroot;
     }
 
@@ -109,11 +109,14 @@ public class DeployTask extends Task {
         cmdParams.availabilityenabled = availabilityenabled;
     }
 
+    public void setDescription(String description) {
+        cmdParams.description = description;
+    }
 
     public void setVirtualservers(String virtualservers) {
         cmdParams.virtualservers = virtualservers;
     }
-    
+
     public void setRetrievestubs(String retrieve) {
         cmdParams.retrieve = retrieve;
     }

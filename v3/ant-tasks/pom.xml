@@ -66,25 +66,10 @@
            <version>1.7.0</version>
            <optional>true</optional>
        </dependency>
-        <dependency>
-            <groupId>org.glassfish.extras</groupId>
-            <artifactId>glassfish-embedded-shell</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <dependency>
           <groupId>org.glassfish.common</groupId>
           <artifactId>glassfish-api</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.glassfish.web</groupId>
-          <artifactId>web-embed-api</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.glassfish.common</groupId>
-          <artifactId>internal-api</artifactId>
           <version>${project.version}</version>
         </dependency>
     </dependencies>
