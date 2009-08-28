@@ -245,7 +245,7 @@ public class StatelessSessionContainer
         
         createBeanPool();
 
-        //TODO registerMonitorableComponents();
+        registerMonitorableComponents();
     }
 
     protected void createBeanPool() {
@@ -264,8 +264,8 @@ public class StatelessSessionContainer
     }
 
     protected void registerMonitorableComponents() {
-        registryMediator.registerProvider(this);
-        registryMediator.registerProvider(pool);
+        //registryMediator.registerProvider(this);
+        //registryMediator.registerProvider(pool);
         super.registerMonitorableComponents();
         super.populateMethodMonitorMap();
         _logger.log(Level.FINE, "[SLSB Container] registered monitorable");

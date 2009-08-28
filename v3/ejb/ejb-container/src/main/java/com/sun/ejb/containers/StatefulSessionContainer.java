@@ -209,7 +209,7 @@ public final class StatefulSessionContainer
 
         // TODO loadCheckpointInfo();
 
-        // TODO registerMonitorableComponents();
+        registerMonitorableComponents();
 
     }
 
@@ -314,14 +314,16 @@ public final class StatefulSessionContainer
     }
 
     protected void registerMonitorableComponents() {
-        registryMediator.registerProvider(this);
-        registryMediator.registerProvider(sessionBeanCache);
+        //registryMediator.registerProvider(this);
+        //registryMediator.registerProvider(sessionBeanCache);
         super.registerMonitorableComponents();
         super.populateMethodMonitorMap();
+/** TODO
         sfsbStoreMonitor = registryMediator.registerProvider(
                 sfsbStoreManager.getMonitorableSFSBStoreManager(),
                 checkpointPolicy.isHAEnabled());
         sessionBeanCache.setStatefulSessionStoreMonitor(sfsbStoreMonitor);
+**/
         _logger.log(Level.FINE, "[SFSBContainer] registered monitorable");
     }
 

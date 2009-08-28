@@ -213,12 +213,10 @@ public final class MessageBeanContainer extends BaseContainer implements
 	}
 
 	protected void registerMonitorableComponents(Method[] msgListenerMethods) {
-		/*
-		registryMediator.registerProvider(this);
+		//registryMediator.registerProvider(this);
 		super.registerMonitorableComponents();
 		super.populateMethodMonitorMap(msgListenerMethods);
 		_logger.log(Level.FINE, "[MessageBeanContainer] registered monitorable");
-		*/
 	}
 
     protected void initializeHome()

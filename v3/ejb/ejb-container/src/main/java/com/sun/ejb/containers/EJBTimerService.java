@@ -1779,7 +1779,7 @@ public class EJBTimerService
             // Since the ejbTimeout was called successfully increment the
             // delivery count
             BaseContainer container = getContainer(timerState.getContainerId());
-            // XXX TODO XXX container.incrementDeliveredTimedObject();
+            container.incrementDeliveredTimedObject();
                                   
             synchronized(timerState) {
                 
@@ -2024,7 +2024,7 @@ public class EJBTimerService
                 // caused exception in #getContainerSynch(). For non-persistent 
                 // timer schedule it right away
                 scheduleTask(pk, initialExpiration);
-                // XXX TODO XXX ejbContainerUtil.getContainer(containerId).incrementCreatedTimedObject();
+                ejbContainerUtil.getContainer(containerId).incrementCreatedTimedObject();
 
             } else {
 
@@ -2070,7 +2070,7 @@ public class EJBTimerService
                 // caused exception in #getContainerSynch(). For non-persistent 
                 // timer remove it right away
                 expungeTimer(timerId);
-                // XXX TODO XXX ejbContainerUtil.getContainer(containerId).incrementRemovedTimedObject();
+                ejbContainerUtil.getContainer(containerId).incrementRemovedTimedObject();
             } else {
 
                 Synchronization timerSynch =
@@ -2519,7 +2519,7 @@ public class EJBTimerService
             case TimerState.ACTIVE :
                 if( status == Status.STATUS_COMMITTED ) {
                     timerService_.scheduleTask(timerId_, timeout_);
-                    // XXX TODO XXX container_.incrementCreatedTimedObject();
+                    container_.incrementCreatedTimedObject();
                 } else {
                     timerService_.expungeTimer(timerId_);
                 }
@@ -2537,7 +2537,7 @@ public class EJBTimerService
                     }
                 } else {
                     timerService_.expungeTimer(timerId_);
-                    // XXX TODO XXX container_.incrementRemovedTimedObject();
+                    container_.incrementRemovedTimedObject();
                 }
                 break;
             }

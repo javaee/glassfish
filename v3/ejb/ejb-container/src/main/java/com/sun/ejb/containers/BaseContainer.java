@@ -73,8 +73,8 @@ import org.glassfish.ejb.api.EjbEndpointFacade;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.deployment.common.DeploymentException;
 
-import com.sun.ejb.monitoring.stats.EjbMonitoringStatsProvider;
-import com.sun.ejb.monitoring.probes.EjbMonitoringProbeProvider;
+import com.sun.ejb.monitoring.stats.*;
+import com.sun.ejb.monitoring.probes.*;
 import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.glassfish.external.probe.provider.PluginPoint;
 
@@ -378,12 +378,15 @@ public abstract class BaseContainer
     protected boolean			    monitorOn = false;
     protected MonitoringRegistryMediator    registryMediator;
     protected EJBMethodStatsManager	    ejbMethodStatsManager;
-    protected EjbMonitoringStatsProvider    probeListener;
-    protected EjbMonitoringProbeProvider    probeNotifier;
+    protected EjbMonitoringStatsProvider    ejbProbeListener;
+    protected EjbMonitoringProbeProvider    ejbProbeNotifier;
+    protected EjbTimedObjectStatsProvider   timerProbeListener;
+    protected EjbTimedObjectProbeProvider   timerProbeNotifier;
+    protected ContainerInfo                 containerInfo;
         
     private String _debugDescription;
 
-    protected TimedObjectMonitorableProperties toMonitorProps = null;
+    //protected TimedObjectMonitorableProperties toMonitorProps = null;
     
     //protected Agent callFlowAgent;
     
@@ -3837,7 +3840,7 @@ public abstract class BaseContainer
     }
      
     final void onEnteringContainer() {
-        probeNotifier.ejbContainerEnteringEvent(
+        ejbProbeNotifier.ejbContainerEnteringEvent(
                 callFlowInfo.getApplicationName(),
                 callFlowInfo.getModuleName(),
                 callFlowInfo.getComponentName());
@@ -3845,7 +3848,7 @@ public abstract class BaseContainer
     }
 
     final void onLeavingContainer() {
-        probeNotifier.ejbContainerLeavingEvent(
+        ejbProbeNotifier.ejbContainerLeavingEvent(
                 callFlowInfo.getApplicationName(),
                 callFlowInfo.getModuleName(),
                 callFlowInfo.getComponentName());
@@ -3853,7 +3856,7 @@ public abstract class BaseContainer
     }
 
     final void onEjbMethodStart() {
-        probeNotifier.ejbMethodStartEvent(
+        ejbProbeNotifier.ejbMethodStartEvent(
                 callFlowInfo.getApplicationName(),
                 callFlowInfo.getModuleName(),
                 callFlowInfo.getComponentName(),
@@ -3862,7 +3865,7 @@ public abstract class BaseContainer
     }
     
     final void onEjbMethodEnd() {
-        probeNotifier.ejbMethodEndEvent(
+        ejbProbeNotifier.ejbMethodEndEvent(
                 callFlowInfo.getApplicationName(),
                 callFlowInfo.getModuleName(),
                 callFlowInfo.getComponentName(),
@@ -4100,7 +4103,10 @@ public abstract class BaseContainer
 	        registryMediator = null;
 	        ejbMethodStatsManager = null;
 
-                probeListener.unregister();
+                ejbProbeListener.unregister();
+                if (timerProbeListener != null) {
+                    timerProbeListener.unregister();
+                }
             
         } finally {
             if(System.getSecurityManager() == null) {
@@ -5125,27 +5131,25 @@ public abstract class BaseContainer
 		    com.sun.enterprise.util.io.FileUtils.makeFriendlyFilename(archiveuri);
 	    }
 	    ejbName = ejbDescriptor.getName();
+            containerInfo = new ContainerInfo(appName, modName, ejbName);
+
 	    this.registryMediator =
 		new MonitoringRegistryMediator( getEJBMonitoredObjectType(), ejbName, modName, appName);
 
 	    this.ejbMethodStatsManager = registryMediator.getEJBMethodStatsManager();
 
-            probeListener = new EjbMonitoringStatsProvider(appName, modName, ejbName, 
+            ejbProbeListener = new EjbMonitoringStatsProvider(appName, modName, ejbName, 
                     getMonitoringMethodsArray());
-
-            // This probe listener will register itself, so do it as the last step, 
-            // so that other settings still work if this step fails.
-            probeListener.register();
+            ejbProbeListener.register();
 
 	    _logger.log(Level.FINE, "Created MonitoringRegistryMediator: appName: "
                 + appName + "; modName: " + modName + "; ejbName: " + ejbName);
 	} catch (Exception ex) {
 	    _logger.log(Level.SEVERE, "[**BaseContainer**] Could not create MonitorRegistryMediator. appName: " + appName + "; modName: " + modName + "; ejbName: " + ejbName, ex);
-	    
 	}
 
         // Always create to avoid NPE
-        probeNotifier = new EjbMonitoringProbeProvider();
+        ejbProbeNotifier = new EjbMonitoringProbeProvider();
     }
 
     protected void populateMethodMonitorMap() {
@@ -5215,22 +5219,29 @@ public abstract class BaseContainer
 
     protected void registerTimerMonitorableComponent() {
         if( isTimedObject() ) {
-            toMonitorProps = new TimedObjectMonitorableProperties();
-	    registryMediator.registerProvider( toMonitorProps );
+            //toMonitorProps = new TimedObjectMonitorableProperties();
+	    //registryMediator.registerProvider( toMonitorProps );
+            timerProbeNotifier = new EjbTimedObjectProbeProvider();
+            timerProbeListener = new EjbTimedObjectStatsProvider(
+                    containerInfo.appName, containerInfo.modName, containerInfo.ejbName);
+            timerProbeListener.register();
 	}
         _logger.log(Level.FINE, "[BaseContainer] registered timer monitorable");
     }
 
     protected void incrementCreatedTimedObject() {
-        toMonitorProps.incrementTimersCreated();
+        timerProbeNotifier.ejbTimerCreatedEvent();
+        //toMonitorProps.incrementTimersCreated();
     }
 
     protected void incrementRemovedTimedObject() {
-        toMonitorProps.incrementTimersRemoved();
+        timerProbeNotifier.ejbTimerRemovedEvent();
+        //toMonitorProps.incrementTimersRemoved();
     }
 
     protected void incrementDeliveredTimedObject() {
-        toMonitorProps.incrementTimersDelivered();
+        timerProbeNotifier.ejbTimerDeliveredEvent();
+        //toMonitorProps.incrementTimersDelivered();
     }
 
     private static class JndiInfo {
@@ -5472,6 +5483,7 @@ final class SafeProperties extends Properties {
     }
 } //SafeProperties{}
 
+/** TODO: remove
 final class TimedObjectMonitorableProperties 
     implements com.sun.ejb.spi.stats.EJBTimedObjectStatsProvider
     {
@@ -5540,3 +5552,16 @@ final class TimedObjectMonitorableProperties
     }
 
 } //TimedObjectMonitorableProperties{}
+**/
+
+final class ContainerInfo {
+    String appName;
+    String modName;
+    String ejbName;
+
+    ContainerInfo(String appName, String modName, String ejbName) {
+        this.appName = appName;
+        this.modName = modName;
+        this.ejbName = ejbName;
+    }
+}

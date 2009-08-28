@@ -381,10 +381,11 @@ public class EntityContainer
             poolProp.poolIdleTimeoutInSeconds, loader);
 
 
-	// TODO registerMonitorableComponents();
+	registerMonitorableComponents();
     }
 
     protected void registerMonitorableComponents() {
+/** TODO
 	registryMediator.registerProvider(this);
 	registryMediator.registerProvider(entityCtxPool);
 	if (readyStore != null) {
@@ -396,6 +397,7 @@ public class EntityContainer
 		    (BaseCache) readyStore, confMaxCacheSize);
 	    registryMediator.registerProvider(cacheStatsProvider);
 	}
+**/
         super.registerMonitorableComponents();
 	super.populateMethodMonitorMap();
         _logger.log(Level.FINE, "[Entity Container] registered monitorable");

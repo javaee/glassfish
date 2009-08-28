@@ -49,8 +49,6 @@ import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.external.statistics.*;
 import org.glassfish.external.statistics.impl.*;
 import org.glassfish.gmbal.*;
-import com.sun.enterprise.admin.monitor.stats.MutableTimeStatistic;
-import com.sun.enterprise.admin.monitor.stats.MutableTimeStatisticImpl;
 
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 
@@ -62,8 +60,8 @@ import com.sun.ejb.containers.EjbContainerUtilImpl;
  */
 // TODO: find the right names
 //@AMXMetadata(type="ejb-application-mon", group="monitoring", isSingleton=false)
-//@ManagedObject
-//@Description("Ejb Application Statistics")
+@ManagedObject
+@Description("Ejb Application Statistics")
 public class EjbMonitoringStatsProvider {
 
     private Map<Method, EjbMethodStatsProvider> methodMonitorMap = 
@@ -73,14 +71,14 @@ public class EjbMonitoringStatsProvider {
     private String beanName = null;
     private boolean registered = false;
 
-    protected static final Logger _logger =
-            EjbContainerUtilImpl.getInstance().getLogger();
+    private CountStatisticImpl createStat = new CountStatisticImpl("CreateCount", 
+            "count", "Number of times EJB create method is called");
 
-    static final String NODE = "/";
-    static final String SEP = "-";
-    static final String APPLICATION_NODE = "applications" + NODE;
-    static final String METHOD_NODE = NODE + "bean-methods" + NODE;
-    static final String MONITORING_NODE = "ejb-container";
+    private CountStatisticImpl removeStat = new CountStatisticImpl("RemoveCount", 
+            "count", "Number of times EJB remove method is called");
+
+    private static final Logger _logger =
+            EjbContainerUtilImpl.getInstance().getLogger();
 
     public EjbMonitoringStatsProvider(String appName, String moduleName, 
             String beanName, Method[] methods) {
@@ -94,25 +92,20 @@ public class EjbMonitoringStatsProvider {
     }
 
     public void register() {
-        String beanSubTreeNode = /** APPLICATION_NODE + **/
-                appName + NODE + moduleName + NODE + beanName;
-        beanSubTreeNode = beanSubTreeNode.replaceAll("\\.", "\\\\.").
-               replaceAll("_jar", "\\\\.jar").replaceAll("_war", "\\\\.war");
-
-        _logger.info("BEAN NODE NAME: " + beanSubTreeNode);
-        StatsProviderManager.register(MONITORING_NODE, 
-                    PluginPoint.APPLICATIONS, beanSubTreeNode, this);
-
-        for ( Method m : methodMonitorMap.keySet()) {
-            String subTreeNode = beanSubTreeNode + METHOD_NODE + stringify(m); 
-            _logger.info("METHOD NODE NAME: " + subTreeNode);
-
-            EjbMethodStatsProvider monitor = methodMonitorMap.get(m);
-            //StatsProviderManager.register(MONITORING_NODE, PluginPoint.APPLICATIONS, subTreeNode, monitor);
-            //monitor.registered();
+        String beanSubTreeNode = EjbMonitoringUtils.registerComponent(
+                appName, moduleName, beanName, this);
+        if ( beanSubTreeNode != null) {
+            registered = true;
+            for ( Method m : methodMonitorMap.keySet()) {
+                EjbMethodStatsProvider monitor = methodMonitorMap.get(m);
+/** Cases NPE on asadmin get --monitor=true "*"
+                String node = EjbMonitoringUtils.registerMethod(beanSubTreeNode, m, monitor);
+                if (node != null) {
+                    monitor.registered();
+                }
+**/
+            }
         }
-
-        registered = true;
     }
 
     @ProbeListener("glassfish:ejb:ejb-monitoring:methodStartEvent")
@@ -188,12 +181,12 @@ public class EjbMonitoringStatsProvider {
 
     public void unregister() {
         if (registered) {
-            for ( EjbMethodStatsProvider l : methodMonitorMap.values()) {
-                if (l.isRegistered()) {
-                    StatsProviderManager.unregister(l);
+            StatsProviderManager.unregister(this);
+            for ( EjbMethodStatsProvider monitor : methodMonitorMap.values()) {
+                if (monitor.isRegistered()) {
+                    StatsProviderManager.unregister(monitor);
                 }
             }
-            StatsProviderManager.unregister(this);
         }
     }
 
@@ -216,23 +209,14 @@ public class EjbMonitoringStatsProvider {
     }
 
     private void log(String mname) {
-        _logger.info("===> In EjbMonitoringStatsProvider for: [" 
+        _logger.fine("===> In EjbMonitoringStatsProvider for: [" 
                 + mname + "] " + appName + "::" + moduleName + "::" + beanName);
     }
 
     private void log(String mname, Method m) {
-        _logger.info("===> In EjbMonitoringStatsProvider for: [" 
+        _logger.fine("===> In EjbMonitoringStatsProvider for: [" 
                 + mname + "] " + appName + "::" + moduleName + "::" + beanName
-                + "::" + stringify(m));
+                + "::" + EjbMonitoringUtils.stringify(m));
     }
 
-    private String stringify(Method m) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(m.getName());
-        Class[] args = m.getParameterTypes();
-        for (Class c : args) {
-            sb.append(SEP).append(c.getName());
-        }
-        return sb.toString().replaceAll("\\.", "\\\\.").replaceAll("_", "\\\\.");
-    }
 }

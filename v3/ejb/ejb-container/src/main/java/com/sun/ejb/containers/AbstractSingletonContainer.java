@@ -271,7 +271,7 @@ public abstract class AbstractSingletonContainer
        
         createBeanPool();
 
-        //TODO registerMonitorableComponents();
+        registerMonitorableComponents();
     }
 
     private void createBeanPool() {
