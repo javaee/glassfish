@@ -116,7 +116,7 @@ public class AdminTask extends Task {
             return;
         }
         try {
-            Process pr = Runtime.getRuntime().exec(installDirectory + File.separator + "glassfish" +
+            Process pr = Runtime.getRuntime().exec(installDirectory +
                     File.separator + "bin" + File.separator + "asadmin " + commandExec);
 
             BufferedReader error = new BufferedReader(new InputStreamReader(pr.getErrorStream()));

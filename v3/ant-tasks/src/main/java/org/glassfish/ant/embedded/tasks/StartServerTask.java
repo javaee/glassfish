@@ -78,9 +78,21 @@ public class StartServerTask extends Task {
 
     public void execute() throws BuildException {
         log ("Starting server");
-        Server server = getServer();
+
         try {
-            server.createPort(port);
+            Server.Builder builder = new Server.Builder(serverID);
+            Server server;
+            EmbeddedFileSystem efs = getFileSystem();
+            if (efs != null) {
+                // port ignored in this case...
+                log("Using the install root : " + efs.installRoot);
+                server = builder.setEmbeddedFileSystem(getFileSystem()).build();
+            }
+            else {
+                server = builder.build();
+                server.createPort(port);
+            }
+
             server.addContainer(type);
             ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
             for (EmbeddedContainer c : server.getContainers()) {
@@ -91,19 +103,6 @@ public class StartServerTask extends Task {
         }
     }
 
-    Server getServer() {
-        Server.Builder builder = new Server.Builder(serverID);
-        Server server;
-        EmbeddedFileSystem efs = getFileSystem();
-        if (efs != null) {
-            log("Using the install root : " + efs.installRoot);
-            server = builder.setEmbeddedFileSystem(getFileSystem()).build();
-        }
-        else {
-            server = builder.build();
-        }
-        return server;
-    }
 
     EmbeddedFileSystem getFileSystem() {
         if (installRoot == null)
