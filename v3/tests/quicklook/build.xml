@@ -53,9 +53,9 @@
         <antcall target="runtest">
         <param name="testng.xml" value="testng.xml"/> </antcall>
         <antcall target="undeploy"/>
+        <antcall target="quicklook-summary"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
-        <antcall target="quicklook-summary"/>
         <antcall target="testng-summary"/>
 	<copy file="test-output/emailable-report.html" tofile="test-output/QL-WP-report.html"/>
         <record name="allrun.output" action="stop"/>
