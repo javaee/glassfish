@@ -255,7 +255,7 @@ public class AMXConfigImpl extends AMXImplBase
         final ConfigBean cb = getConfigBean();
 
         String name = AMXConfigLoader.getName(cb);
-
+        
         return name == null ? NO_NAME : name;
     }
 

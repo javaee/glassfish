@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -659,7 +660,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         return spt.getTypeString();
     }
     
-        public static String
+        static String
     getName(final ConfigBean cb)
     {
         final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance( cb );
@@ -694,11 +695,6 @@ public final class AMXConfigLoader extends MBeanImplBase
         {
             name = cb.rawAttribute( nameHint );
         }
-        
-        if ( name == null || name.length() == 0 )
-        {
-            throw new IllegalArgumentException( "Non-singleton ConfigBean of type has null or empty name (key)" + cb.getProxyType().getName() );
-        }
 
         return name;
     }
@@ -707,6 +703,8 @@ public final class AMXConfigLoader extends MBeanImplBase
     {
         return ProxyFactory.getInstance(mServer).getDomainRootProxy(false);
     }
+    
+    private static final AtomicLong sCounter = new AtomicLong(1);
     
         private ObjectName
     buildObjectName( final ConfigBean cb )
@@ -724,7 +722,14 @@ public final class AMXConfigLoader extends MBeanImplBase
         }
         
         final String type = getType( cb );
-        final String name = getName( cb ) ;
+        String name = getName( cb ) ;
+        
+        final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance( cb );
+        if ( (! spt.isSingleton()) && (name == null || name.length() == 0) )
+        {
+            name = "MISSING_NAME-" + sCounter.getAndIncrement();
+            ImplUtil.getLogger().log( Level.WARNING, "Non-singleton ConfigBean " + cb.getProxyType().getName() + " has empty key value (name), supplying " + name);
+        }
         
         //debug( "Type/name for " + cb.getProxyType().getName() + " = " + type + " = " + name );
         
@@ -734,6 +739,7 @@ public final class AMXConfigLoader extends MBeanImplBase
 
         return objectName;
     }
+    
     
 }
 
