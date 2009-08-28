@@ -40,10 +40,13 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.logging.Level;
 import javax.management.ObjectName;
 
 import org.glassfish.admin.amx.util.ListUtil;
 import org.glassfish.admin.amx.base.DomainRoot;
+
+import org.glassfish.admin.amx.impl.util.ImplUtil;
 
 import org.glassfish.admin.amx.intf.config.AuthRealm;
 import org.glassfish.admin.amx.intf.config.SecurityService;
@@ -123,7 +126,7 @@ public final class RealmsImpl extends AMXImplBase
             }
             catch( final Exception e )
             {
-                e.printStackTrace();
+                ImplUtil.getLogger().log( Level.WARNING, "Can't instantiate realm: " + authRealm, e );
             }
         }
         
@@ -136,10 +139,10 @@ public final class RealmsImpl extends AMXImplBase
                 final Realm r = Realm.getInstance(defaultRealm);
                 Realm.setDefaultRealm(defaultRealm);
             }
-            catch (Exception e)
+            catch (final Exception e)
             {
+                ImplUtil.getLogger().log( Level.WARNING, "Can't get realm ", e );
                 Realm.setDefaultRealm(goodRealms.iterator().next());
-                e.printStackTrace();
             }
         }
         

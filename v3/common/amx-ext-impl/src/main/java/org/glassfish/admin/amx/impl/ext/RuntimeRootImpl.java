@@ -46,6 +46,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
+
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
 
@@ -176,9 +178,8 @@ public final class RuntimeRootImpl extends AMXImplBase
                 }
             }
         }
-        catch (IOException e)
+        catch ( final IOException e)
         {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
 
@@ -284,7 +285,6 @@ public final class RuntimeRootImpl extends AMXImplBase
         }
         catch (Exception e)
         {
-            e.printStackTrace();
             result = ExceptionUtil.toString(e);
         }
         finally
@@ -306,8 +306,7 @@ public final class RuntimeRootImpl extends AMXImplBase
         }
         catch (final Exception ex)
         {
-            //TODO log exception
-            ex.printStackTrace();
+            ImplUtil.getLogger().log( Level.INFO, "Can't get cipher suites", ex);
             return new String[0];
         }
     }
