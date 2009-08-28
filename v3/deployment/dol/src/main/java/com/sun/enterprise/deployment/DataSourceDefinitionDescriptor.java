@@ -211,13 +211,30 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
         setTransactionSet(true);
     }
 
+    //DD specified Enumeration values are String
+    //Annotation uses integer values and hence this mapping is needed
+    public String getIsolationLevelString(){
+        String isolationLevelString = null;
+        if(isolationLevel == Connection.TRANSACTION_READ_COMMITTED){
+            isolationLevelString = TRANSACTION_READ_COMMITTED;
+        }else if (isolationLevel == Connection.TRANSACTION_READ_UNCOMMITTED){
+            isolationLevelString = TRANSACTION_READ_UNCOMMITTED;
+        }else if (isolationLevel == Connection.TRANSACTION_REPEATABLE_READ){
+            isolationLevelString = TRANSACTION_REPEATABLE_READ;
+        }else if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE){
+            isolationLevelString = TRANSACTION_SERIALIZABLE;
+        }
+        return isolationLevelString;
+    }
     public int getIsolationLevel() {
         return isolationLevel;
     }
 
+    //DD specified Enumeration values are String
+    //Annotation uses integer values and hence this mapping is needed
     public void setIsolationLevel(String isolationLevelString) {
-        if (!isIntegerIsolationLevelSet(isolationLevelString)) {
 
+        if (!isIntegerIsolationLevelSet(isolationLevelString)) {
 
             if (isolationLevelString.equals(TRANSACTION_READ_COMMITTED)) {
                 this.isolationLevel = Connection.TRANSACTION_READ_COMMITTED;

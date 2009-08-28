@@ -98,7 +98,12 @@ public class DataSourceDefinitionNode extends DeploymentDescriptorNode<DataSourc
 
         appendTextChild(node, TagNames.DATA_SOURCE_LOGIN_TIMEOUT, String.valueOf(dataSourceDesc.getLoginTimeout()));
         appendTextChild(node, TagNames.DATA_SOURCE_TRANSACTIONAL, String.valueOf(dataSourceDesc.isTransactional()));
-        appendTextChild(node, TagNames.DATA_SOURCE_ISOLATION_LEVEL, dataSourceDesc.getIsolationLevel());
+        //DD specified Enumeration values are String
+        //Annotation uses integer values and hence this mapping is needed
+        String isolationLevelString = dataSourceDesc.getIsolationLevelString();
+        if(isolationLevelString != null){
+            appendTextChild(node, TagNames.DATA_SOURCE_ISOLATION_LEVEL, isolationLevelString);
+        }
         appendTextChild(node, TagNames.DATA_SOURCE_INITIAL_POOL_SIZE, dataSourceDesc.getInitialPoolSize());
         appendTextChild(node, TagNames.DATA_SOURCE_MAX_POOL_SIZE, dataSourceDesc.getMaxPoolSize());
         appendTextChild(node, TagNames.DATA_SOURCE_MIN_POOL_SIZE, dataSourceDesc.getMinPoolSize());
