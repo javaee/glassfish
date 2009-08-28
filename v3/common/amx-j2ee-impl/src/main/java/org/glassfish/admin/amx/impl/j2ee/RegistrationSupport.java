@@ -38,6 +38,8 @@ package org.glassfish.admin.amx.impl.j2ee;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+
 import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerNotification;
@@ -705,9 +707,9 @@ final class RegistrationSupport
                 mConfigRefTo77.put(ref.objectName(), mbean77);
             }
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
-            e.printStackTrace();
+            ImplUtil.getLogger().log( Level.INFO, "Can't register JSR 77 MBean for resourceRef: " + ref.objectName(), e);
         }
     //cdebug( "Registered " + child + " for  config resource " + amx.objectName() );
         return mbean77;
@@ -773,7 +775,7 @@ final class RegistrationSupport
                         }
                         catch (final Exception e)
                         {
-                            e.printStackTrace();
+                            ImplUtil.getLogger().log( Level.INFO, "Can't unregister MBean: " + objectName, e);
                         }
                     }
                 }

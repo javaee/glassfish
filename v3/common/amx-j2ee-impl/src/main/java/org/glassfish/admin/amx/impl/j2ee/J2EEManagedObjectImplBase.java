@@ -269,7 +269,6 @@ public abstract class J2EEManagedObjectImplBase extends AMXImplBase {
             final ManagementHome home = (ManagementHome) PortableRemoteObject.narrow(objref, ManagementHome.class);
             mejb = home.create();
         } catch (Exception ex) {
-            ex.printStackTrace();
             throw new RuntimeException("Can't find MEJB", ex);
         }
         return mejb;
