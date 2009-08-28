@@ -134,9 +134,7 @@ public class FlashlightProbeProviderFactory
     }
 
     public void monitoringEnabledChanged(boolean newValue) {
-        //TODO
         FlashlightUtils.setMonitoringEnabled(newValue);
-        System.out.println("ZZZZ  monitoring enable changed to " + newValue);
     }
     
     public <T> T getProbeProvider(Class<T> providerClazz)

@@ -18,12 +18,13 @@ import org.jvnet.hk2.component.Habitat;
  * Why? We do not want the overhead of being a Service that implements a Contract
  * which is what you need to get a habitat object!
  *
+ * // TODO -- just make this a Service and inject the habitat and simplify the code a bit!
  * @author Byron Nevins
  */
 
 public class FlashlightUtils {
     private FlashlightUtils() {
-        // All static.  No instances llowed.
+        // All static.  No instances allowed.
     }
 
     public static void initialize(Habitat h, MonitoringService mc) {
@@ -47,6 +48,11 @@ public class FlashlightUtils {
     public static void setMonitoringEnabled(boolean b) {
         ok();
         monitoringEnabled = b;
+    }
+
+    public static boolean isMonitoringEnabled() {
+        ok();
+        return monitoringEnabled;
     }
 
     public static boolean isDtraceAvailable() {
