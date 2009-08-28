@@ -24,7 +24,6 @@ package com.sun.enterprise.v3.services.impl;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
@@ -165,10 +164,6 @@ public class ContainerMapper extends StaticResourcesAdapter {
             }
 
             String uriEncoding = (String) grizzlyEmbeddedHttp.getProperty("uriEncoding");
-            if (uriEncoding == null || uriEncoding.equals("")){
-                uriEncoding = "UTF-8";
-            }
-
             HttpRequestURIDecoder.decode(decodedURI, urlDecoder, uriEncoding, null);
             adapter = map(req, decodedURI, mappingData);
             if (adapter == null || adapter instanceof ContainerMapper) {
@@ -205,8 +200,8 @@ public class ContainerMapper extends StaticResourcesAdapter {
                     adapter.service(req, res);
                 } else {
                     ClassLoader cl = null;
-                    if (contextRootInfo.getContainer() !=null) {
-                        cl = contextRootInfo.getContainer().getClassLoader();
+                    if (contextRootInfo.getContainer() instanceof ApplicationContainer){
+                        cl = ((ApplicationContainer)contextRootInfo.getContainer()).getClassLoader();
                     }
                     hk2Dispatcher.dispath(adapter, cl, req, res);
                 }
@@ -357,35 +352,4 @@ public class ContainerMapper extends StaticResourcesAdapter {
 
     // -------------------------------------------------------------------- //
 
-    /**
-     * Class represents context-root associated information
-     */
-    public static class ContextRootInfo {
-        protected Adapter adapter;
-        protected ApplicationContainer container;
-
-        public ContextRootInfo() {
-        }
-
-        public ContextRootInfo(Adapter adapter, ApplicationContainer container) {
-            this.adapter = adapter;
-            this.container = container;
-        }
-
-        public Adapter getAdapter() {
-            return adapter;
-        }
-
-        public void setAdapter(Adapter adapter) {
-            this.adapter = adapter;
-        }
-
-        public ApplicationContainer getContainer() {
-            return container;
-        }
-
-        public void setContainer(ApplicationContainer container) {
-            this.container = container;
-        }
-    }
 }
