@@ -158,4 +158,26 @@ public abstract class ActionReporter extends ActionReport {
     public void setContentType(String s) {
         contentType = s;
     }
+
+    /** Returns combined messages. Meant mainly for long running
+     *  operations where some of the intermediate steps can go wrong, although
+     *  overall operation succeeds. Does nothing if either of the arguments are null.
+     *  The traversal visits the message of current reporter first.
+     * <p>
+     * Note: This method is a recursive implementation.
+     * @param aReport a given (usually top-level) ActionReporter instance
+     * @param sb StringBuilder instance that contains all the messages  
+     */
+    protected void getCombinedMessages(ActionReporter aReport, StringBuilder sb) {
+        if (aReport == null || sb == null)
+            return;
+        if (aReport.getMessage() != null && aReport.getMessage().length() != 0)
+            sb.append(aReport.getMessage());
+        if (aReport.getFailureCause() != null && aReport.getFailureCause().getMessage() != null && aReport.getFailureCause().getMessage().length() != 0)
+            sb.append(aReport.getFailureCause().getMessage());
+        for (ActionReporter sub : aReport.subActions) {
+            getCombinedMessages(sub, sb);
+        }
+    }
+
 }

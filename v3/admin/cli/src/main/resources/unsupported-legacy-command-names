@@ -11,9 +11,6 @@ restore-domain L
 list-backups L
 install-addons L
 uninstall-addons L
-create-jndi-resource R
-delete-jndi-resource R
-list-jndi-resources R
 create-persistence-resource R
 delete-persistence-resource R
 list-persistence-resources R

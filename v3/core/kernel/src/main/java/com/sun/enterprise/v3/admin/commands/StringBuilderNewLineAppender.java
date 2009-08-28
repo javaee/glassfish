@@ -29,7 +29,7 @@ import java.io.*;
 class StringBuilderNewLineAppender {
     
     private  StringBuilder sb;
-    static final String SEP = "%%%EOL%%%"; //System.getProperty("line.separator");
+    static final String SEP = System.getProperty("line.separator");
     /** Creates a new instance of StringBuilderNewLineAppender */
     StringBuilderNewLineAppender(final StringBuilder sb) {
         this.sb = sb;

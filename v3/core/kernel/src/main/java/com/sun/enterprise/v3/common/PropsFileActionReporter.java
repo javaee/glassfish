@@ -37,9 +37,9 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
-import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.File;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
 import java.util.Map;
@@ -52,6 +52,14 @@ import java.util.Map;
 @Scoped(PerLookup.class)
 public class PropsFileActionReporter extends ActionReporter {
 
+    @Override
+    public void setMessage(String message) {
+        if (message != null) {
+            message = message.replace("\n", "%%%EOL%%%");
+            message = message.replace(System.getProperty("line.separator"), "%%%EOL%%%");
+        }
+        super.setMessage(message);
+    }
     public void writeReport(OutputStream os) throws IOException {
 
         Manifest out = new Manifest();
@@ -69,7 +77,10 @@ public class PropsFileActionReporter extends ActionReporter {
 
     public void writeReport(String prefix, MessagePart part, Manifest m,  Attributes attr) {
         
-        attr.putValue("message", part.getMessage());
+        //attr.putValue("message", part.getMessage());
+        StringBuilder sb = new StringBuilder();
+        getCombinedMessages(this, sb);
+        attr.putValue("message", sb.toString());
         if (part.getProps().size()>0) {
             String keys=null;
             for (Map.Entry entry : part.getProps().entrySet()) {
