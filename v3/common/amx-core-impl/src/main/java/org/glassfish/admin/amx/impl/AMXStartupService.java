@@ -42,8 +42,9 @@ import javax.management.StandardMBean;
 import javax.management.remote.JMXServiceURL;
 
 import java.util.Collection;
-
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.Level;
+
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
 import javax.management.NotCompliantMBeanException;
@@ -154,7 +155,7 @@ public final class AMXStartupService
         }
         catch (final Exception e)
         {
-            e.printStackTrace();
+            ImplUtil.getLogger().log( Level.INFO, "Fatal error loading AMX", e);
             throw new Error(e);
         }
         //debug( "AMXStartupService.postConstruct(): registered: " + OBJECT_NAME );
@@ -253,7 +254,7 @@ public final class AMXStartupService
         catch (final Exception e)
         {
             final Throwable rootCause = ExceptionUtil.getRootCause(e);
-            rootCause.printStackTrace();
+            ImplUtil.getLogger().log( Level.INFO, "Fatal error loading AMX DomainRoot", rootCause);
             throw new RuntimeException(rootCause);
         }
 
@@ -299,8 +300,7 @@ public final class AMXStartupService
             }
             catch (final Exception e)
             {
-                ImplUtil.getLogger().info("AMXStartupServiceNew._loadAMXMBeans: AMXLoader failed to load: " + e);
-                e.printStackTrace();
+                ImplUtil.getLogger().log( Level.INFO, "AMXStartupServiceNew._loadAMXMBeans: AMXLoader failed to load", e);
             }
             finally
             {
@@ -368,7 +368,7 @@ public final class AMXStartupService
         }
         catch (Throwable t)
         {
-            t.printStackTrace();
+            ImplUtil.getLogger().log( Level.INFO, "_loadAMXMBeans", t);
         }
         finally
         {
