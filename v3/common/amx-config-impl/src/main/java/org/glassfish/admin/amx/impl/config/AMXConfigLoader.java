@@ -55,6 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
@@ -418,9 +419,9 @@ public final class AMXConfigLoader extends MBeanImplBase
                 mServer.registerMBean( this, objectName );
                 //debug( "AMXConfigLoader.start(): registered self as " + objectName );
             }
-            catch( Exception e )
+            catch( final Exception e )
             {
-                e.printStackTrace();
+                mLogger.log( Level.SEVERE, "Can't register AMXConfigLoader ", e );
                 throw new RuntimeException(e);
             }
             SingletonEnforcer.register( AMXConfigLoader.class, this );
@@ -435,7 +436,7 @@ public final class AMXConfigLoader extends MBeanImplBase
             }
             catch( final JMException e )
             {
-                e.printStackTrace();
+                mLogger.log( Level.SEVERE, "Can't register ConfigTools ", e );
             }
             
             // wait until config beans have been loaded as MBeans
@@ -444,7 +445,7 @@ public final class AMXConfigLoader extends MBeanImplBase
             // Now the Config subsystem is ready: after the first queue of ConfigBeans are registered as MBeans
             // and after the above MBeans are registered.
             final ObjectName domainConfig = getDomainRootProxy().getDomain().objectName();
-            ImplUtil.getLogger().info( "AMX config read, domain config registered as " + domainConfig );
+            mLogger.info( "AMX config read, domain config registered as " + domainConfig );
             FeatureAvailability.getInstance().registerFeature( AMXConfigConstants.AMX_CONFIG_READY_FEATURE, domainConfig );
         }
         return null;
@@ -487,9 +488,9 @@ public final class AMXConfigLoader extends MBeanImplBase
                     //debug( "AMXConfigLoaderThread.registerOne(): " + objectName);
                 }
             }
-            catch( Throwable t )
+            catch( final Throwable t )
             {
-                t.printStackTrace();
+                mLogger.log( Level.WARNING, "Can't register config MBean: " + objectName, t );
             }
             finally
             {
@@ -505,9 +506,9 @@ public final class AMXConfigLoader extends MBeanImplBase
             {
                 doRun();
             }
-            catch( Throwable t )
+            catch( final Throwable t )
             {
-                t.printStackTrace();
+                mLogger.log( Level.SEVERE, "Unexpected thread death of AMXConfigLoaderThread", t );
             }
         }
         
@@ -610,7 +611,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         objectName  = createAndRegister( cb, objectName );
         if ( objectName != null )
         {
-            ImplUtil.getLogger().fine( "REGISTERED MBEAN: " + objectName );
+            mLogger.fine( "REGISTERED MBEAN: " + objectName );
         }
         
         return objectName;
