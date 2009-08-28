@@ -796,10 +796,17 @@ public class Request
     }
     
     /**
-     * Sets the mapping data for this Request.
+     * Set the mapping data for this Request.
      */
     public void setMappingData(MappingData mappingData) {
         this.mappingData = mappingData;
+    }
+
+    /**
+     * Update this instance with the content of the {@link MappingData}
+     * {@link MappingData}
+     */
+    public void updatePaths(MappingData md){
         /*
          * Save the path components of this request, in order for them to
          * survive when the mapping data get recycled as the request
@@ -809,9 +816,9 @@ public class Request
          * and no async listeners have been registered that could be notified
          * at their onTimeout method)
          */
-        this.pathInfo = mappingData.pathInfo.toString();
-        this.servletPath = mappingData.wrapperPath.toString();
-        this.contextPath = mappingData.contextPath.toString();
+        pathInfo = md.pathInfo.toString();
+        servletPath = md.wrapperPath.toString();
+        contextPath = md.contextPath.toString();
     }
 
     /**
@@ -4207,8 +4214,7 @@ public class Request
      * is idle for X time. More info can be found look at
      * {@link com.sun.grizzly.tcp.Response#ResponseAttachment}
      */
-    private static class RequestAttachment<A> extends com.sun.grizzly.tcp.Response.ResponseAttachment{
-        private Long expiration;
+    private final static class RequestAttachment<A> extends com.sun.grizzly.tcp.Response.ResponseAttachment{
         private org.apache.catalina.connector.Response res;
 
         public RequestAttachment(Long timeout,A attachment,
