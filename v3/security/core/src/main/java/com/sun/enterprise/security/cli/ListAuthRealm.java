@@ -35,7 +35,10 @@
  */
 package com.sun.enterprise.security.cli;
 
+
 import java.util.List;
+
+
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -51,6 +54,10 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.security.auth.realm.Realm;
+import com.sun.enterprise.security.auth.realm.RealmConfig;
+import java.util.Enumeration;
+
 
 /**
  * List Auth Realms Command
@@ -89,9 +96,16 @@ public class ListAuthRealm implements AdminCommand {
         Config config = configList.get(0);
         SecurityService securityService = config.getSecurityService();
 
-        for (AuthRealm realm : securityService.getAuthRealm()) {
+        Enumeration realms = Realm.getRealmNames();
+
+        if ( realms == null || !realms.hasMoreElements()) {
+            //Create realms
+            RealmConfig.createRealms(securityService.getDefaultRealm(), securityService.getAuthRealm());
+        }
+
+        for (AuthRealm authRealm : securityService.getAuthRealm()) {
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            part.setMessage(realm.getName());
+            part.setMessage(authRealm.getName());
         }
     }
 }

@@ -117,7 +117,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     
     private static Map statsProviders = new HashMap();
     
-    private static RealmStatsProvider realmStatsProvier = null;
+
     
     private static WebSecurityDeployerStatsProvider webStatsProvider = null;
         
@@ -172,16 +172,10 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
                  _logger.log(Level.INFO, "Security startup service called");
              }
              
-             realmStatsProvier = new RealmStatsProvider();
              webStatsProvider = new WebSecurityDeployerStatsProvider();
+             StatsProviderManager.register("security", PluginPoint.SERVER, "web-security", webStatsProvider);
              
 
-             StatsProviderManager.register("security", PluginPoint.SERVER, "realm",realmStatsProvier);
-             StatsProviderManager.register("security", PluginPoint.SERVER, "web", webStatsProvider); 
-             
-             statsProviders.put("realm", realmStatsProvier);
-             statsProviders.put("web", webStatsProvider);
-             
             //TODO:V3 LoginContextDriver has a static variable dependency on AuditManager
             //And since LoginContextDriver has too many static methods that use AuditManager
             //we have to make this workaround here.

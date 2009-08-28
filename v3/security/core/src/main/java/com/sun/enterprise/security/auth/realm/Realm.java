@@ -39,6 +39,8 @@ import com.sun.enterprise.security.util.IASSecurityException;
 import java.io.*;
 import java.util.*;
 import com.sun.enterprise.util.*;
+import org.glassfish.external.probe.provider.PluginPoint;
+import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.annotations.Contract;
@@ -83,6 +85,7 @@ public abstract class Realm implements Comparable {
     private List<String> assignGroups = null;
     public static final String PARAM_GROUP_MAPPING="group-mapping";
     protected GroupMapper groupMapper = null;
+    private static RealmStatsProvider realmStatsProvier = null;
     
     /**
      * Returns the name of this realm.
@@ -164,6 +167,12 @@ public abstract class Realm implements Comparable {
                                     Properties props)
         throws BadRealmException
     {
+        //Register the realm provider
+        if(realmStatsProvier == null) {
+            realmStatsProvier = new RealmStatsProvider();
+            StatsProviderManager.register("security", PluginPoint.SERVER, "realm",realmStatsProvier);
+        }
+        
         Realm realmClass = _getInstance(name);
         if(realmClass == null) {
             return doInstantiate(name, className, props);
@@ -183,6 +192,8 @@ public abstract class Realm implements Comparable {
     public static Realm instantiate(String realmName, File f)
     throws NoSuchRealmException, BadRealmException, FileNotFoundException
     {
+
+
         if (!f.exists() || !f.isFile()) {
             throw new FileNotFoundException ();
         }
