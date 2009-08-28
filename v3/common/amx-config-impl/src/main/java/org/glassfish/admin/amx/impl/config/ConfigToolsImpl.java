@@ -347,7 +347,6 @@ public class ConfigToolsImpl extends AMXImplBase
         }
         catch (Exception e)
         {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -396,7 +395,6 @@ public class ConfigToolsImpl extends AMXImplBase
         }
         catch (final Exception e)
         {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
