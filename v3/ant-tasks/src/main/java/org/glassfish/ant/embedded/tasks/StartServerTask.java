@@ -125,6 +125,7 @@ public class StartServerTask extends Task {
         EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
         efsb.setInstallRoot(new File(installRoot), true);
         efsb.setInstanceRoot(instance);
+        efsb.setConfigurationFile(config);
         return efsb.build();
     }
 
