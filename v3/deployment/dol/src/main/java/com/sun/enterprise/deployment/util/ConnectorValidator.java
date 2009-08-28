@@ -88,15 +88,11 @@ public class ConnectorValidator implements ConnectorVisitor {
                     }
                 }
             } else {
-                //all the cases below are unacceptable, fail deployment
-                if (!raClass.equals("")) {
-                    if (annotations.size() > 1) {
-                        throw new RuntimeException("cannot determine appropriate @Connector annotation as multiple " +
-                                "annotations are present, none annotated on the resource-adapter" +
-                                " class [ " + descriptor.getResourceAdapterClass() + " ] ");
-                    }
-                }
-                if (raClass.equals("")) {
+
+                // if raClass is specified in the descriptor and multiple annotations not matching the raClass
+                // are present, ignore them.
+                if (raClass == null || raClass.equals("")) {
+                    //all the cases below are unacceptable, fail deployment
                     if (annotations.size() > 1) {
                         throw new RuntimeException("cannot determine appropriate @Connector annotation as multiple " +
                                 "annotations are present");
