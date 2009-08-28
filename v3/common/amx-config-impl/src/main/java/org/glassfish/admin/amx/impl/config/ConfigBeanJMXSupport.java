@@ -65,6 +65,9 @@ import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.DomDocument;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 
+import java.util.logging.Level;
+
+
 /**
  * Helps generate required JMX artifacts (MBeanInfo, etc) from a ConfigBean interface, as well
  * storing author useful information about each @Configured interface.
@@ -782,7 +785,7 @@ class ConfigBeanJMXSupport
                     }
                     catch (final Exception e)
                     {
-                        e.printStackTrace();
+                        ImplUtil.getLogger().log( Level.INFO, "Can't get field value for " + a, e );
                     }
                 }
             }
@@ -983,7 +986,7 @@ class ConfigBeanJMXSupport
         }
         catch (final Exception e)
         {
-            e.printStackTrace();
+            ImplUtil.getLogger().log( Level.INFO, "Can't getTypesImplementing for " + clazz, e );
             throw new RuntimeException(e);
         }
     }

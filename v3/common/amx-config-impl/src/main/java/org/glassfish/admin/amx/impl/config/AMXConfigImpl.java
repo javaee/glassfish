@@ -61,6 +61,8 @@ import static org.glassfish.external.amx.AMX.*;
 import org.glassfish.admin.amx.core.AMXProxy;
 import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
 
+import org.glassfish.admin.amx.impl.util.ImplUtil;
+import java.util.logging.Level;
 
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.impl.util.Issues;
@@ -475,7 +477,7 @@ public class AMXConfigImpl extends AMXImplBase
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            ImplUtil.getLogger().log( Level.INFO, "Can't create children", e );
             throw new RuntimeException(e);
         }
 
@@ -659,7 +661,6 @@ public class AMXConfigImpl extends AMXImplBase
                 }
                 catch( final Exception e )
                 {
-                    e.printStackTrace();
                     throw new IllegalStateException("impossible");
                 }
                 final java.lang.reflect.Type  listOfStringClass = m.getGenericReturnType();
