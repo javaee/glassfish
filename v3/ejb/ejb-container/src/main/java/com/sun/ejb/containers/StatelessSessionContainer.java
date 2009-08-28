@@ -41,7 +41,6 @@ import com.sun.ejb.containers.util.pool.AbstractPool;
 import com.sun.ejb.containers.util.pool.NonBlockingPool;
 import com.sun.ejb.containers.util.pool.ObjectFactory;
 
-import com.sun.ejb.spi.stats.StatelessSessionBeanStatsProvider;
 import com.sun.enterprise.admin.monitor.callflow.ComponentType;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -86,7 +85,7 @@ import java.util.logging.Level;
 
 public class StatelessSessionContainer
     extends BaseContainer 
-    implements StatelessSessionBeanStatsProvider
+    //implements StatelessSessionBeanStatsProvider
 {
 
     private static LocalStringManagerImpl localStrings;
@@ -279,7 +278,9 @@ public class StatelessSessionContainer
     {
         // No access check since this is an internal operation.
 
-	statCreateCount++;
+	ejbProbeNotifier.ejbBeanCreatedEvent(
+                containerInfo.appName, containerInfo.modName,
+                containerInfo.ejbName);
 
         return theRemoteBusinessObjectImpl;
     }
@@ -300,7 +301,9 @@ public class StatelessSessionContainer
                 ejbDescriptor, homeCreateMethod, null);
         }
         */
-	statCreateCount++;
+	ejbProbeNotifier.ejbBeanCreatedEvent(
+                containerInfo.appName, containerInfo.modName,
+                containerInfo.ejbName);
 
         // For stateless EJBs, EJB2.0 Section 7.8 says that 
         // Home.create() need not do any real creation.
@@ -354,7 +357,9 @@ public class StatelessSessionContainer
         } else {
             authorizeRemoteMethod(BaseContainer.EJBObject_remove);
         }
-	statRemoveCount++;
+	ejbProbeNotifier.ejbBeanDestroyedEvent(
+                containerInfo.appName, containerInfo.modName,
+                containerInfo.ejbName);
     }
 
     /**
@@ -643,12 +648,14 @@ public class StatelessSessionContainer
     // default
     public void activateEJB(Object ctx, Object instanceKey) {}
 
+/** TODO ???
     public void appendStats(StringBuffer sbuf) {
 	sbuf.append("\nStatelessContainer: ")
 	    .append("CreateCount=").append(statCreateCount).append("; ")
 	    .append("RemoveCount=").append(statRemoveCount).append("; ")
 	    .append("]");
     }
+**/
 
     protected void doConcreteContainerShutdown(boolean appBeingUndeployed) {
 

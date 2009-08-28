@@ -45,7 +45,6 @@ import com.sun.ejb.containers.util.MethodMap;
 import com.sun.ejb.portable.EJBMetaDataImpl;
 import com.sun.ejb.spi.io.IndirectlySerializable;
 import com.sun.ejb.spi.stats.EJBMethodStatsManager;
-import com.sun.ejb.spi.stats.EJBStatsProvider;
 import org.glassfish.enterprise.iiop.api.ProtocolManager;
 import org.glassfish.enterprise.iiop.api.RemoteReferenceFactory;
 import org.glassfish.enterprise.iiop.spi.EjbContainerFacade;
@@ -110,7 +109,7 @@ import org.jvnet.hk2.component.Habitat;
  */
 
 public abstract class BaseContainer
-    implements Container, EJBStatsProvider, EjbContainerFacade, JavaEEContainer
+    implements Container, EjbContainerFacade, JavaEEContainer
 {
     public enum ContainerType {
         STATELESS, STATEFUL, SINGLETON, MESSAGE_DRIVEN, ENTITY, READ_ONLY
@@ -372,8 +371,6 @@ public abstract class BaseContainer
     
     protected int cmtTimeoutInSeconds = 0;
 
-    protected int			    statCreateCount = 0;
-    protected int			    statRemoveCount = 0;
     protected HashMap			    methodMonitorMap;
     protected boolean			    monitorOn = false;
     protected MonitoringRegistryMediator    registryMediator;
@@ -3841,17 +3838,15 @@ public abstract class BaseContainer
      
     final void onEnteringContainer() {
         ejbProbeNotifier.ejbContainerEnteringEvent(
-                callFlowInfo.getApplicationName(),
-                callFlowInfo.getModuleName(),
-                callFlowInfo.getComponentName());
+                containerInfo.appName, containerInfo.modName, 
+                containerInfo.ejbName);
         //callFlowAgent.startTime(ContainerTypeOrApplicationType.EJB_CONTAINER);
     }
 
     final void onLeavingContainer() {
         ejbProbeNotifier.ejbContainerLeavingEvent(
-                callFlowInfo.getApplicationName(),
-                callFlowInfo.getModuleName(),
-                callFlowInfo.getComponentName());
+                containerInfo.appName, containerInfo.modName, 
+                containerInfo.ejbName);
         //callFlowAgent.endTime();
     }
 
@@ -5073,16 +5068,6 @@ public abstract class BaseContainer
         }
     }
     
-
-    public long getCreateCount() {
-	return statCreateCount;
-    }
-
-    public long getRemoveCount() {
-	return statRemoveCount;
-    }
-
-
     private MonitoredObjectType getEJBMonitoredObjectType()
     {
         MonitoredObjectType type    = MonitoredObjectType.NONE;

@@ -78,8 +78,6 @@ import com.sun.enterprise.admin.monitor.*;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 
-import com.sun.ejb.spi.stats.EntityBeanStatsProvider;
-
 import com.sun.ejb.spi.container.BeanStateSynchronization;
 
 /**
@@ -152,7 +150,7 @@ import com.sun.ejb.spi.container.BeanStateSynchronization;
 
 public class EntityContainer
     extends BaseContainer
-    implements CacheListener, EntityBeanStatsProvider
+    implements CacheListener //, EntityBeanStatsProvider
 {
     
     private ThreadLocal ejbServant = new ThreadLocal() {
@@ -406,6 +404,7 @@ public class EntityContainer
     public void onReady() {
     }
     
+/** TODO
     public String getMonitorAttributeValues() {
         StringBuffer sbuf = new StringBuffer();
 	appendStats(sbuf);
@@ -427,6 +426,7 @@ public class EntityContainer
         appendStat(sbuf, "EJBObjectStore", ejbObjectStore.getStats());
         appendStat(sbuf, "EJBLocalObjectStore",ejbLocalObjectStore.getStats());
     }
+**/
 
     /****************************/
     //Methods of EntityBeanStatsProvider
@@ -726,7 +726,9 @@ public class EntityContainer
      * Called from getContext before the ejb.ejbCreate is called
      */
     protected void preCreate(EjbInvocation inv, EntityContextImpl context) {
-	statCreateCount++;
+	ejbProbeNotifier.ejbBeanCreatedEvent(
+                containerInfo.appName, containerInfo.modName,
+                containerInfo.ejbName);
     }
     
     
@@ -1071,7 +1073,9 @@ public class EntityContainer
         throws RemoveException
     {
         try {
-	    statRemoveCount++;
+	    ejbProbeNotifier.ejbBeanDestroyedEvent(
+                    containerInfo.appName, containerInfo.modName,
+                    containerInfo.ejbName);
             // Note: if there are concurrent invocations/transactions in
             // progress for this ejbObject, they will be serialized along with
             // this remove by the database. So we optimistically do ejbRemove.

@@ -70,7 +70,6 @@ import java.util.logging.*;
 
 import com.sun.logging.*;
 
-import com.sun.ejb.spi.stats.MessageDrivenBeanStatsProvider;
 import org.glassfish.api.invocation.ComponentInvocation;
 
 import static com.sun.ejb.containers.EJBContextImpl.BeanState;
@@ -91,7 +90,7 @@ import static com.sun.ejb.containers.EJBContextImpl.BeanState;
  * @author Kenneth Saks
  */
 public final class MessageBeanContainer extends BaseContainer implements
-		MessageBeanProtocolManager, MessageDrivenBeanStatsProvider {
+		MessageBeanProtocolManager { //, MessageDrivenBeanStatsProvider {
 	private static final Logger _logger = LogDomains.getLogger(
 			MessageBeanContainer.class, LogDomains.MDB_LOGGER);
 
@@ -493,7 +492,9 @@ public final class MessageBeanContainer extends BaseContainer implements
 					beanContext.setInEjbRemove(true);
 					interceptorManager.intercept(CallbackType.PRE_DESTROY,
 							beanContext);
-					statRemoveCount++;
+					ejbProbeNotifier.ejbBeanDestroyedEvent(
+                                                containerInfo.appName, containerInfo.modName,
+                                                containerInfo.ejbName);
 				} catch (Throwable t) {
 					_logger.log(Level.SEVERE,
 							"containers.mdb_preinvoke_exception_indestroy",
@@ -552,6 +553,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 		messageBeanPool_.returnObject(beanContext);
 	}
 
+/** TODO
 	public void appendStats(StringBuffer sbuf) {
 		sbuf.append("\nMessageBeanContainer: ").append("CreateCount=").append(
 				statCreateCount).append("; ").append("RemoveCount=").append(
@@ -559,6 +561,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 				statMessageCount).append("; ");
 		sbuf.append("]");
 	}
+**/
 
 	// This particular postInvoke signature not used
 	public void postInvoke(EjbInvocation inv) {
@@ -694,7 +697,9 @@ public final class MessageBeanContainer extends BaseContainer implements
 			// Call ejbCreate OR @PostConstruct on the bean.
 			interceptorManager.intercept(CallbackType.POST_CONSTRUCT, context);
 
-			statCreateCount++;
+			ejbProbeNotifier.ejbBeanCreatedEvent(
+                                containerInfo.appName, containerInfo.modName,
+                                containerInfo.ejbName);
 
 			// Set the state to POOLED after ejbCreate so that
 			// EJBContext methods not allowed will throw exceptions
@@ -1223,14 +1228,6 @@ public final class MessageBeanContainer extends BaseContainer implements
 	}
 	private boolean isEjbTimeoutMethod(Method m) {
 		return schedules.containsKey(m) || m.equals(ejbTimeoutMethod);
-	}
-
-	public long getCreateCount() {
-		return statCreateCount;
-	}
-
-	public long getRemoveCount() {
-		return statRemoveCount;
 	}
 
 	public long getMessageCount() {

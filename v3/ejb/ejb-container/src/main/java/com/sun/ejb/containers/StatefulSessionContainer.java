@@ -86,8 +86,6 @@ import com.sun.ejb.spi.sfsb.util.CheckpointPolicy;
 import com.sun.ejb.spi.sfsb.util.SFSBUUIDUtil;
 import com.sun.ejb.spi.sfsb.util.SFSBVersionManager;
 
-import com.sun.ejb.spi.stats.StatefulSessionBeanStatsProvider;
-
 import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
 import com.sun.enterprise.deployment.runtime.CheckpointAtEndOfMethodDescriptor;
 import com.sun.enterprise.admin.monitor.callflow.ComponentType;
@@ -119,7 +117,8 @@ import static com.sun.ejb.containers.EJBContextImpl.BeanState;
 public final class StatefulSessionContainer
         extends BaseContainer
         implements CacheListener, SFSBContainerCallback,
-        StatefulSessionBeanStatsProvider, SFSBContainerInitialization {
+        SFSBContainerInitialization {
+        //StatefulSessionBeanStatsProvider, SFSBContainerInitialization {
 
     private static final Logger _logger =
             LogDomains.getLogger(StatefulSessionContainer.class, LogDomains.EJB_LOGGER);
@@ -339,6 +338,7 @@ public final class StatefulSessionContainer
         return sbuf.toString();
     }
 
+/** TODO
     public void appendStats(StringBuffer sbuf) {
         sbuf.append("\nStatefulContainer: ")
                 .append("CreateCount=").append(statCreateCount).append("; ")
@@ -349,6 +349,7 @@ public final class StatefulSessionContainer
                 .append(statMethodReadyCount).append("; ");
         sbuf.append("]");
     }
+**/
 
     private static final String convertCtxStateToString(
             SessionContextImpl sc) {
@@ -703,7 +704,9 @@ public final class StatefulSessionContainer
             }
         }
 
-        statCreateCount++;
+        ejbProbeNotifier.ejbBeanCreatedEvent(
+                containerInfo.appName, containerInfo.modName,
+                containerInfo.ejbName);
         incrementMethodReadyStat();
 
 
@@ -960,7 +963,9 @@ public final class StatefulSessionContainer
         // because EJBObjectImpl.remove() called preInvoke().
 
         try {
-            statRemoveCount++;
+            ejbProbeNotifier.ejbBeanDestroyedEvent(
+                containerInfo.appName, containerInfo.modName,
+                containerInfo.ejbName);
             SessionContextImpl sc = (SessionContextImpl) inv.context;
             Transaction tc = sc.getTransaction();
 

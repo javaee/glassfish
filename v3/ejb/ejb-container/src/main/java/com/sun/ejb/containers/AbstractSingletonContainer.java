@@ -296,7 +296,9 @@ public abstract class AbstractSingletonContainer
     {
         // No access check since this is an internal operation.
 
-	    statCreateCount++;
+	    ejbProbeNotifier.ejbBeanCreatedEvent(
+                containerInfo.appName, containerInfo.modName,
+                containerInfo.ejbName);
 
         return theRemoteBusinessObjectImpl;
     }
@@ -613,12 +615,14 @@ public abstract class AbstractSingletonContainer
     // default
     public void activateEJB(Object ctx, Object instanceKey) {}
 
+/** TODO
     public void appendStats(StringBuffer sbuf) {
 	sbuf.append("\nSingletonContainer: ")
 	    .append("CreateCount=").append(statCreateCount).append("; ")
 	    .append("RemoveCount=").append(statRemoveCount).append("; ")
 	    .append("]");
     }
+**/
 
     protected void doConcreteContainerShutdown(boolean appBeingUndeployed) {
 

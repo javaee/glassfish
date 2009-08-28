@@ -108,6 +108,17 @@ public class EjbMonitoringStatsProvider {
         }
     }
 
+    public void unregister() {
+        if (registered) {
+            StatsProviderManager.unregister(this);
+            for ( EjbMethodStatsProvider monitor : methodMonitorMap.values()) {
+                if (monitor.isRegistered()) {
+                    StatsProviderManager.unregister(monitor);
+                }
+            }
+        }
+    }
+
     @ProbeListener("glassfish:ejb:ejb-monitoring:methodStartEvent")
     public void ejbMethodStartEvent(
             @ProbeParam("appName") String appName,
@@ -146,6 +157,7 @@ public class EjbMonitoringStatsProvider {
             @ProbeParam("ejbName") String ejbName) {
         if (isValidEvent(appName, modName, ejbName)) {
             log ("ejbBeanCreatedEvent");
+            createStat.increment();
         }
     }
 
@@ -156,6 +168,7 @@ public class EjbMonitoringStatsProvider {
             @ProbeParam("ejbName") String ejbName) {
         if (isValidEvent(appName, modName, ejbName)) {
             log ("ejbBeanDestroyedEvent");
+            removeStat.increment();
         }
     }
 
@@ -179,15 +192,16 @@ public class EjbMonitoringStatsProvider {
         }
     }
 
-    public void unregister() {
-        if (registered) {
-            StatsProviderManager.unregister(this);
-            for ( EjbMethodStatsProvider monitor : methodMonitorMap.values()) {
-                if (monitor.isRegistered()) {
-                    StatsProviderManager.unregister(monitor);
-                }
-            }
-        }
+    @ManagedAttribute(id="createcount")
+    @Description( "Number of times EJB create method is called")
+    public CountStatistic getCreateCount() {
+        return createStat.getStatistic();
+    }
+
+    @ManagedAttribute(id="removecount")
+    @Description( "Number of times EJB remove method is called")
+    public CountStatistic getRemoveCount() {
+        return removeStat.getStatistic();
     }
 
     private boolean isValidEvent(String appName, String moduleName,
