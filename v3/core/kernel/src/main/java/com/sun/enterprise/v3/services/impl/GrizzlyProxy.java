@@ -65,6 +65,11 @@ public class GrizzlyProxy implements NetworkProxy {
     final NetworkListener networkListener;
     private int portNumber;
 
+    public final static String LEADER_FOLLOWER
+            = "com.sun.grizzly.disableLeaderFollower";
+
+    public final static String AUTO_CONFIGURE
+            = "com.sun.grizzly.autoConfigure";
 
     // <http-listener> 'address' attribute
     private InetAddress address;
@@ -132,6 +137,19 @@ public class GrizzlyProxy implements NetworkProxy {
             adapter.configureMapper();
 
             embeddedHttp.setAdapter(adapter);
+            boolean autoConfigure = false;
+            // Avoid overriding the default with false
+            if (System.getProperty(AUTO_CONFIGURE) != null){
+                autoConfigure = true;
+            }
+            embeddedHttp.getController().setAutoConfigure(autoConfigure);
+
+            boolean leaderFollower = false;
+            // Avoid overriding the default with false
+            if (System.getProperty(LEADER_FOLLOWER) != null){
+                leaderFollower = true;
+            }
+            embeddedHttp.getController().useLeaderFollowerStrategy(leaderFollower);
 
             onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
             grizzlyService.getHabitat().addIndex(onePortMapper,
