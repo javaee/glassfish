@@ -41,6 +41,7 @@ import org.glassfish.api.amx.MBeanListener;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.impl.provider.FlashlightProbeProviderFactory;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
@@ -66,8 +67,6 @@ public class MonitoringBootstrap implements Init, PostConstruct, EventListener, 
     @Inject
     Events events;
 
-    @Inject(optional=true)
-    ModuleMonitoringLevels config = null;
     @Inject(optional=true)
     MonitoringService monitoringService = null;
     @Inject
@@ -307,15 +306,16 @@ public class MonitoringBootstrap implements Init, PostConstruct, EventListener, 
             if(!ok(propName))
                 continue;
 
-            if (event.getSource() instanceof ModuleMonitoringLevels) {
+            if (event.getSource() instanceof ContainerMonitoring) {
+                ContainerMonitoring cm = (ContainerMonitoring)event.getSource();
                 boolean newEnabled = parseLevelsBoolean(newVal.toString());
-
+                
                 // complications!  What if old is null? we fake out the rest of
                 // the logic to think it changed...
                 boolean oldEnabled = (oldVal == null) ? !newEnabled : parseLevelsBoolean(oldVal.toString());
                 
                 if((newEnabled != oldEnabled) && (spr != null)) // no spr -- means no work can be done.
-                    handleLevelChange(propName, newEnabled);
+                    handleLevelChange(cm.getName(), newEnabled);
             }
             else if(event.getSource() instanceof MonitoringService) {
                 // we don't want to get fooled because config allows ANY string.
