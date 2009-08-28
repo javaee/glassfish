@@ -14,6 +14,7 @@ import java.util.Collection;
 import javax.management.ObjectName;
 import javax.management.MBeanServer;
 import org.glassfish.api.amx.MBeanListener;
+import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.gmbal.ManagedObjectManager;
@@ -43,7 +44,6 @@ import org.glassfish.flashlight.provider.ProbeRegistry;
 @Scoped(Singleton.class)
 public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl implements StatsProviderManagerDelegate {
     protected ProbeClientMediator pcm;
-    ModuleMonitoringLevels config = null;
     MonitoringService monitoringService = null;
     private final MonitoringRuntimeDataRegistry mrdr;
     private final ProbeRegistry probeRegistry;
@@ -62,13 +62,10 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     private StatsProviderRegistry statsProviderRegistry;
 
     StatsProviderManagerDelegateImpl(ProbeClientMediator pcm, ProbeRegistry probeRegistry,
-                        MonitoringRuntimeDataRegistry mrdr, Domain domain, MonitoringService monitoringService) {
+            MonitoringRuntimeDataRegistry mrdr, Domain domain, MonitoringService monitoringService) {
         this.pcm = pcm;
         this.mrdr = mrdr;
         this.domain = domain;
-        if (monitoringService != null) {
-            this.config = monitoringService.getModuleMonitoringLevels();
-        }
         this.monitoringService = monitoringService;
         this.probeRegistry = probeRegistry;
         //serverNode is special, construct that first if doesn't exist
@@ -77,7 +74,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     }
 
     public void register(String configElement, PluginPoint pp,
-                        String subTreePath, Object statsProvider) {
+            String subTreePath, Object statsProvider) {
 
         /* Verify if PluginPoint exists, create one if it doesn't */
         TreeNode ppNode = getPluginPointNode(pp, serverNode);
@@ -111,21 +108,13 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         try {
             //System.out.println("****** Registering the StatsProvider (" + statsProvider.getClass().getName() + ") with flashlight");
             handles = pcm.registerListener(statsProvider);
-            //System.out.println("********* handles = " + handles);
-            // save the handles against config so you can enable/disable the handles
-            // save the handles also against statsProvider so you can unregister when statsProvider is unregistered
+        //System.out.println("********* handles = " + handles);
+        // save the handles against config so you can enable/disable the handles
+        // save the handles also against statsProvider so you can unregister when statsProvider is unregistered
         } catch (Exception e) {
             //e.printStackTrace();
             Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, "flashlight registration failed", e);
         }
-
-        /* config - TODO */
-        //add configElement to monitoring level element if not already there - find out from Nandini
-        //List<MonitoringItem> monItemList = monitoringService.getMonitoringItems();
-        //for (MonitoringItem mi : monItemList) {
-        //
-        //}
-
 
         //If module monitoring level = OFF, disableStatsProvider for that configElement
         //If module monitoring level = ON and AMX DomainRoot is loaded, register with gmbal, and add mom to registry
@@ -169,12 +158,12 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     }
 
     public boolean hasListeners(String probeStr) {
-		boolean hasListeners = false;
+        boolean hasListeners = false;
         FlashlightProbe probe = probeRegistry.getProbe(probeStr);
         if (probe != null)
             return probe.isEnabled();
         return hasListeners;
-	}
+    }
 
     //Called when AMX DomainRoot is loaded (when jconsole or gui is started)
     //Register statsProviders with gmbal whose configElement is enabled
@@ -215,8 +204,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
                     }
                 }
             }
-            //To register hierarchy in mom specify parent ManagedObject, and the ManagedObject itself
-            //DynamicMBean mbean = (DynamicMBean)mom.register(parent, obj);
+        //To register hierarchy in mom specify parent ManagedObject, and the ManagedObject itself
+        //DynamicMBean mbean = (DynamicMBean)mom.register(parent, obj);
         } catch (Exception e) {
             Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, "gmbal registration failed", e);
         }
@@ -238,7 +227,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             return serverNode;
         else
             return createSubTree(serverNode, pp.getPath());
-    }
+        }
 
     private TreeNode createSubTree(TreeNode parent, String subTreePath) {
         StringTokenizer st = new StringTokenizer(subTreePath, "/");
@@ -270,72 +259,16 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         return srvrNode;
     }
 
-    // hard-code the module monitoring level attribute for now until the new monitoring config is available
     private boolean getEnabledValue(String configElement) {
         boolean enabled = false;
-        if (this.config != null) {
-            if (configElement.equals("connector-service")) {
-                if (this.config.getConnectorService().equals("OFF")) {
-                    enabled = false;
-                } else {
+        ContainerMonitoring cm = monitoringService.getContainerMonitoring(configElement);
+        if (cm != null) {
+            String level = cm.getLevel();
+            if (level != null) {
+                if (level.equals(ContainerMonitoring.LEVEL_HIGH) ||
+                        level.equals(ContainerMonitoring.LEVEL_LOW)) {
                     enabled = true;
                 }
-            } else if (configElement.equals("ejb-container")) {
-                if (this.config.getEjbContainer().equals("OFF")) {
-                    enabled = false;
-                } else {
-                    enabled = true;
-                }
-            } else if (configElement.equals("http-service")) {
-                if (this.config.getHttpService().equals("OFF")) {
-                    enabled = false;
-                } else {
-                    enabled = true;
-                }
-            } else if (configElement.equals("jdbc-connection-pool")) {
-                if (this.config.getJdbcConnectionPool().equals("OFF")) {
-                    enabled = false;
-                } else {
-                    enabled = true;
-                }
-            } else if (configElement.equals("jms-service")) {
-                if (this.config.getJmsService().equals("OFF")) {
-                    enabled = false;
-                } else {
-                    enabled = true;
-                }
-            } else if (configElement.equals("jvm")) {
-                if (this.config.getJvm().equals("OFF")) {
-                    enabled = false;
-                } else {
-                    enabled = true;
-                }
-            } else if (configElement.equals("orb")) {
-                if (this.config.getOrb().equals("OFF")) {
-                    enabled = false;
-                } else {
-                    enabled = true;
-                }
-            } else if (configElement.equals("thread-pool")) {
-                if (this.config.getThreadPool().equals("OFF")) {
-                    enabled = false;
-                } else {
-                    enabled = true;
-                }
-            } else if (configElement.equals("transaction-service")) {
-                if (this.config.getTransactionService().equals("OFF")) {
-                    enabled = false;
-                } else {
-                    enabled = true;
-                }
-            } else if (configElement.equals("web-container")) {
-                if (this.config.getWebContainer().equals("OFF")) {
-                    enabled = false;
-                } else {
-                    enabled = true;
-                }
-            } else { // external modules turn always on for now
-                enabled = true;
             }
         }
         return enabled;
