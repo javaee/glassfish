@@ -36,7 +36,7 @@
 package org.glassfish.jdbc.admin.monitor.config;
 
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.monitoring.MonitoringItem;
+import org.glassfish.api.monitoring.ContainerMonitoring;
 
 /**
  * Config interface for jdbc-connection-pool
@@ -44,6 +44,6 @@ import org.glassfish.api.monitoring.MonitoringItem;
  * @author Sreenivas Munnangi
  */
 @Configured
-public interface JdbcConnectionPoolMI extends MonitoringItem {
+public interface JdbcConnectionPoolMI extends ContainerMonitoring {
 }
 

@@ -14,7 +14,6 @@ import java.util.Collection;
 import javax.management.ObjectName;
 import javax.management.MBeanServer;
 import org.glassfish.api.amx.MBeanListener;
-import org.glassfish.api.monitoring.MonitoringItem;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.gmbal.ManagedObjectManager;

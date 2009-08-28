@@ -36,7 +36,7 @@
 package com.sun.enterprise.v3.services.impl.monitor.config;
 
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.monitoring.MonitoringItem;
+import org.glassfish.api.monitoring.ContainerMonitoring;
 
 /**
  * Config interface for thread-pool
@@ -44,6 +44,6 @@ import org.glassfish.api.monitoring.MonitoringItem;
  * @author Sreenivas Munnangi
  */
 @Configured
-public interface ThreadPoolMI extends MonitoringItem {
+public interface ThreadPoolMI extends ContainerMonitoring {
 }
 

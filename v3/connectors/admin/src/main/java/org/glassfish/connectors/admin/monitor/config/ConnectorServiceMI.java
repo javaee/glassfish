@@ -36,7 +36,7 @@
 package org.glassfish.connectors.admin.monitor.config;
 
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.monitoring.MonitoringItem;
+import org.glassfish.api.monitoring.ContainerMonitoring;
 
 /**
  * Config interface for connector-service
@@ -44,6 +44,6 @@ import org.glassfish.api.monitoring.MonitoringItem;
  * @author Sreenivas Munnangi
  */
 @Configured
-public interface ConnectorServiceMI extends MonitoringItem {
+public interface ConnectorServiceMI extends ContainerMonitoring {
 }
 

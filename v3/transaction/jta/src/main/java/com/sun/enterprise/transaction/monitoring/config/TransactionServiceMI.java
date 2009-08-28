@@ -36,7 +36,7 @@
 package com.sun.enterprise.transaction.monitoring.config;
 
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.monitoring.MonitoringItem;
+import org.glassfish.api.monitoring.ContainerMonitoring;
 
 /**
  * Config interface for transaction-service
@@ -44,6 +44,6 @@ import org.glassfish.api.monitoring.MonitoringItem;
  * @author Sreenivas Munnangi
  */
 @Configured
-public interface TransactionServiceMI extends MonitoringItem {
+public interface TransactionServiceMI extends ContainerMonitoring {
 }
 

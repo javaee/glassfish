@@ -35,7 +35,7 @@
  */
 package org.glassfish.connectors.admin.monitor.config;
 
-import org.glassfish.api.monitoring.MonitoringItem;
+import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -60,8 +60,8 @@ public class ConnectorServiceConfigUpgrade implements ConfigurationUpgrade, Post
     @Inject
     MonitoringService ms;
 
-    private String level = MonitoringItem.LEVEL_OFF;
-    private String name = MonitoringItem.CONNECTOR_SERVICE;
+    private String level = ContainerMonitoring.LEVEL_OFF;
+    private String name = ContainerMonitoring.CONNECTOR_SERVICE;
 
     public void postConstruct() {
         try {
@@ -78,10 +78,10 @@ public class ConnectorServiceConfigUpgrade implements ConfigurationUpgrade, Post
 
             // if monitoring-item exists set level 
             // otherwise create element and set level
-            MonitoringItem mi = getMonitoringItem(ms);
+            ContainerMonitoring mi = getMonitoringItem(ms);
             if (mi != null) {
-                ConfigSupport.apply(new SingleConfigCode<MonitoringItem>() {
-                    public Object run(MonitoringItem param) 
+                ConfigSupport.apply(new SingleConfigCode<ContainerMonitoring>() {
+                    public Object run(ContainerMonitoring param)
                     throws PropertyVetoException, TransactionFailure {
                         param.setLevel(level);
                         return param;
@@ -91,7 +91,7 @@ public class ConnectorServiceConfigUpgrade implements ConfigurationUpgrade, Post
                 ConfigSupport.apply(new SingleConfigCode<MonitoringService>() {
                     public Object run(MonitoringService param) 
                     throws PropertyVetoException, TransactionFailure {
-                        MonitoringItem newItem = param.createChild(
+                        ContainerMonitoring newItem = param.createChild(
                             org.glassfish.connectors.admin.monitor.config.ConnectorServiceMI.class);
                         newItem.setName(name);
                         newItem.setLevel(level);
@@ -107,8 +107,8 @@ public class ConnectorServiceConfigUpgrade implements ConfigurationUpgrade, Post
         }
     }
 
-    private MonitoringItem getMonitoringItem(MonitoringService ms) {
-        for (MonitoringItem mi : ms.getMonitoringItems()) {
+    private ContainerMonitoring getMonitoringItem(MonitoringService ms) {
+        for (ContainerMonitoring mi : ms.getMonitoringItems()) {
             if (mi.getName().equals(name)) {
                 return mi;
             }

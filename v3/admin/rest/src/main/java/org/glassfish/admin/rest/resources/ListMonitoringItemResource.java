@@ -10,19 +10,18 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
+
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
-import org.glassfish.api.monitoring.MonitoringItem;
-public class ListMonitoringItemResource extends TemplateListOfResource<MonitoringItem> {
+import org.glassfish.api.monitoring.ContainerMonitoring;
+
+public class ListMonitoringItemResource extends TemplateListOfResource<ContainerMonitoring> {
 
 
 	@Path("{Name}/")
 	public MonitoringItemResource getMonitoringItemResource(@PathParam("Name") String id) {
 		MonitoringItemResource resource = resourceContext.getResource(MonitoringItemResource.class);
-		for (MonitoringItem c: entity){
+		for (ContainerMonitoring c: entity){
 			if(c.getName().equals(id)){
 				resource.setEntity(c);
 			}

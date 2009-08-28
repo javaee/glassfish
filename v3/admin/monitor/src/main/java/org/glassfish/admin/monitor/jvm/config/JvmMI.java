@@ -36,7 +36,7 @@
 package org.glassfish.admin.monitor.jvm.config;
 
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.monitoring.MonitoringItem;
+import org.glassfish.api.monitoring.ContainerMonitoring;
 
 /**
  * Config interface for jvm
@@ -44,6 +44,6 @@ import org.glassfish.api.monitoring.MonitoringItem;
  * @author Sreenivas Munnangi
  */
 @Configured
-public interface JvmMI extends MonitoringItem {
+public interface JvmMI extends ContainerMonitoring {
 }
 

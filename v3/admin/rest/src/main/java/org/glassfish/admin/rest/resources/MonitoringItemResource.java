@@ -10,11 +10,9 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
-import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
-import org.glassfish.admin.rest.provider.GetResult;
-import org.glassfish.api.monitoring.MonitoringItem;
-public class MonitoringItemResource extends TemplateResource<MonitoringItem> {
+import org.glassfish.api.monitoring.ContainerMonitoring;
+
+public class MonitoringItemResource extends TemplateResource<ContainerMonitoring> {
 
 }

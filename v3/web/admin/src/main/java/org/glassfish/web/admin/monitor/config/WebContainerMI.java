@@ -36,7 +36,7 @@
 package org.glassfish.web.admin.monitor.config;
 
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.monitoring.MonitoringItem;
+import org.glassfish.api.monitoring.ContainerMonitoring;
 
 /**
  * Config interface for web-container
@@ -44,6 +44,6 @@ import org.glassfish.api.monitoring.MonitoringItem;
  * @author Sreenivas Munnangi
  */
 @Configured
-public interface WebContainerMI extends MonitoringItem {
+public interface WebContainerMI extends ContainerMonitoring {
 }
 

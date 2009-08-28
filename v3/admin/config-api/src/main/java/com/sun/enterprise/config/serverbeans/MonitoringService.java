@@ -38,11 +38,8 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.glassfish.api.monitoring.MonitoringItem;
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.glassfish.api.monitoring.ContainerMonitoring;
+import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
@@ -145,10 +142,41 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, org.glas
     public void setDtraceEnabled(String value) throws PropertyVetoException;
 
     /**
-     * Get the monitoring configuration for other types of containers.
+     * Get the monitoring configuration for containers that used the default
+     * ContainerMonitoring.
+     *
+     * @return list of container monitoring configurations (default)
+     */
+    List<ContainerMonitoring> getContainerMonitorings();
+
+    /**
+     * Get the monitoring configuration for other types of containers that used
+     * custom monitoring configuration.
      *
      * @return  list of container monitoring configurations
      */
     @Element("*")
-    List<MonitoringItem> getMonitoringItems();
+    List<ContainerMonitoring> getMonitoringItems();
+
+    /**
+     * Return the monitoring configuration for a container by the provided name,
+     * assuming the named container used the default ContainerMonitoring to
+     * express its monitoring configuration.
+     *
+     * @param name name of the container to return the configuration for
+     * @return the container configuration or null if not found
+     */
+    @DuckTyped
+    ContainerMonitoring getContainerMonitoring(String name);
+
+    public class Duck {
+        public static ContainerMonitoring getContainerMonitoring(MonitoringService ms, String name) {
+            for (ContainerMonitoring cm : ms.getMonitoringItems()) {
+                if (cm.getName().equals(name)) {
+                    return cm;
+                }
+            }
+            return null;
+        }
+    }
 }
