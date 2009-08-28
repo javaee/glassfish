@@ -11,5 +11,4 @@
                         org.glassfish.flashlight.statistics; \
                         org.glassfish.flashlight.statistics.factory; \
                         org.glassfish.admin.monitor; \
-                        org.glassfish.admin.monitor.jvm.config; \
                         org.glassfish.admin.monitor.cli; version=${project.osgi.version}

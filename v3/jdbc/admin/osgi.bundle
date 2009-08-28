@@ -1,3 +1,2 @@
 -exportcontents: \
-                        org.glassfish.jdbc.admin.monitor.config; \
                         org.glassfish.jdbc.admin.cli; version=${project.osgi.version}

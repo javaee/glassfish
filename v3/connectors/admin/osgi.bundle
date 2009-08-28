@@ -1,3 +1,2 @@
 -exportcontents: \
-                        org.glassfish.connectors.admin.monitor.config; \
                         org.glassfish.connectors.admin.cli; version=${project.osgi.version}

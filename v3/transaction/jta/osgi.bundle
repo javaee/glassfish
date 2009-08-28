@@ -1,5 +1,4 @@
 -exportcontents: \
-                        com.sun.enterprise.transaction.monitoring.config; \
                         com.sun.enterprise.transaction; password="GlassFish"; mandatory:=password; version=${project.osgi.version}
 # dependent flashlight package resolved at runtime
 DynamicImport-Package: org.glassfish.flashlight.provider
