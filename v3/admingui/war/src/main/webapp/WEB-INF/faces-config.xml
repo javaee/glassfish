@@ -58,9 +58,6 @@
         </locale-config>
 	<el-resolver>com.sun.webui.jsf.faces.UIComponentELResolver</el-resolver>
     </application>
-	<lifecycle>
-	    <phase-listener>com.sun.jsftemplating.util.fileStreamer.FileStreamerPhaseListener</phase-listener>
-	</lifecycle>
 
     <!-- These two components override the default Woodstock implementations
 	 to allow their internal ImageComponent to be preserved across requests
