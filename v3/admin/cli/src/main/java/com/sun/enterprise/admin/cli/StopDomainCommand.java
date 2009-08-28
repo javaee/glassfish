@@ -77,11 +77,47 @@ public class StopDomainCommand extends LocalDomainCommand {
         processProgramOptions();
     }
 
+    /**
+     * Override initDomain in LocalDomainCommand to only initialize
+     * the local domain information (name, directory) in the local
+     * case, when no --host has been specified.
+     */
+    @Override
+    protected void initDomain() throws CommandValidationException {
+        // only initialize local domain information if it's a local operation
+        if (programOpts.getHost().equals(CLIConstants.DEFAULT_HOSTNAME))
+            super.initDomain();
+        else if (operands.size() > 0)   // remote case
+            throw new CommandValidationException(
+                strings.get("StopDomain.noDomainNameAllowed"));
+    }
+
     @Override
     protected int executeCommand()
             throws CommandException, CommandValidationException {
-        int adminPort = getAdminPort(getDomainXml());
-        programOpts.setPort(adminPort);
+        // if a domain name has been set by initDomain, this is a local request
+        if (domainName != null) {
+            // if the local password isn't available, the domain isn't running
+            // (localPassword is set by initDomain)
+            if (localPassword == null) {
+                // by definition this is not an error
+                // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
+                logger.printWarning(strings.get("StopDomain.dasNotRunning"));
+                return 0;
+            }
+
+            int adminPort = getAdminPort(getDomainXml());
+            programOpts.setPort(adminPort);
+            logger.printDebugMessage("Stopping local domain on port " +
+                                                                adminPort);
+
+            /*
+             * If we're using the local password, we don't want to prompt
+             * for a new password.  If the local password doesn't work it
+             * most likely means we're talking to the wrong server.
+             */
+            programOpts.setInteractive(false);
+        }
 
         // Verify that the DAS is running and reachable
         if (!DASUtils.pingDASQuietly(programOpts, env)) {
@@ -90,26 +126,45 @@ public class StopDomainCommand extends LocalDomainCommand {
             logger.printWarning(strings.get("StopDomain.dasNotRunning"));
             return 0;
         }
+        logger.printDebugMessage("DAS is running");
+
+        /*
+         * At this point any options will have been prompted for, and
+         * the password will have been prompted for by pingDASQuietly,
+         * so even if the password is wrong we don't want any more
+         * prompting here.
+         */
+        programOpts.setInteractive(false);
+
+        // in the local case, make sure we're talking to the correct DAS
+        if (domainName != null) {
+            if (!isThisDAS(domainRootDir)) {
+                // by definition this is not an error
+                // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
+                logger.printWarning(strings.get("StopDomain.dasNotRunning"));
+                return 0;
+            }
+            logger.printDebugMessage("It's the correct DAS");
+        }
 
         // run the remote stop-domain command and throw away the output
-        RemoteCommand cmd = new RemoteCommand("stop-domain", programOpts, env);
+        RemoteCommand cmd = new RemoteCommand(getName(), programOpts, env);
         cmd.executeAndReturnOutput("stop-domain");
-        waitForDeath(adminPort);
+        waitForDeath();
         return 0;
     }
 
-    private void waitForDeath(int adminPort) throws CommandException {
-        // 1) it's impossible to use the logger to print anything without \n
-        // 2) The Logger is set to WARNING right now to kill the version
-        //    messages
-        // that's why I'm writing to stderr
-
-        long startWait = System.currentTimeMillis();
+    /**
+     * Wait for the server to die.
+     */
+    protected void waitForDeath() throws CommandException {
+        // use stderr because logger always appends a newline
         System.err.print(strings.get("StopDomain.WaitDASDeath") + " ");
+        long startWait = System.currentTimeMillis();
         boolean alive = true;
 
         while (!timedOut(startWait)) {
-            if (!isRunning(adminPort)) {
+            if (!isRunning(programOpts.getPort())) {
                 alive = false;
                 break;
             }

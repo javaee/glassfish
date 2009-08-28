@@ -65,36 +65,21 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  */
 @Service(name = "restart-domain")
 @Scoped(PerLookup.class)
-public class RestartDomainCommand extends CLICommand {
+public class RestartDomainCommand extends StopDomainCommand {
+
+    protected String stopCommand = "restart-domain";
+    private long uptimeOldServer;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(RestartDomainCommand.class);
 
-    /**
-     */
-    @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        commandOpts = new HashSet<ValidOption>();
-        addOption(commandOpts, "help", '?', "BOOLEAN", false, "false");
-        operandType = "STRING";
-        operandMin = 0;
-        operandMax = 0;
-
-        processProgramOptions();
-    }
-
     @Override
     protected int executeCommand()
             throws CommandException, CommandValidationException {
-        long uptimeOldServer = getUptime();  // may throw CommandException
-        RemoteCommand cmd =
-            new RemoteCommand("restart-domain", programOpts, env);
-        // run the command and throw away the output
-        cmd.executeAndReturnOutput("restart-domain");
-        waitForRestart(uptimeOldServer);
+        uptimeOldServer = getUptime();  // may throw CommandException
+        int ret = super.executeCommand();
         logger.printMessage(strings.get("restartDomain.success"));
-        return 0;
+        return ret;
     }
 
     private long getUptime()
@@ -136,13 +121,22 @@ public class RestartDomainCommand extends CLICommand {
         }
     }
 
-    private void waitForRestart(long uptimeOldServer) throws CommandException {
+    /**
+     * Override waitForDeath in StopDomainCommand.
+     * We actually wait for the server to restart.
+     */
+    @Override
+    protected void waitForDeath() throws CommandException {
         long end = CLIConstants.WAIT_FOR_DAS_TIME_MS +
                                         System.currentTimeMillis();
 
         while (System.currentTimeMillis() < end) {
             try {
                 Thread.sleep(300);
+                if (domainName != null) {
+                    // local password will change when server restarts
+                    initializeLocalPassword(domainRootDir);
+                }
                 long up = getUptime();
 
                 if (up > 0 && up < uptimeOldServer)

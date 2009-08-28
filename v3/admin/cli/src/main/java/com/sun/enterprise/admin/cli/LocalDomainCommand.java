@@ -36,17 +36,18 @@
 
 package com.sun.enterprise.admin.cli;
 
+import java.io.*;
+import java.util.*;
+import java.net.Socket;
+import java.security.KeyStore;
+
+import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.security.store.PasswordAdapter;
-
-import java.io.*;
-import java.net.Socket;
-import java.security.KeyStore;
-import java.util.Set;
 
 /**
  * A class that's supposed to capture all the behavior common to operation
@@ -59,7 +60,12 @@ public abstract class LocalDomainCommand extends CLICommand {
     protected File   domainsDir;
     protected File   domainRootDir;
     protected String domainName;
+    protected String localPassword;
     
+    // the key for the Domain Root in the main attributes of the
+    // manifest returned by the __locations command
+    private static final String DOMAIN_ROOT_KEY = "Domain-Root_value";
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(LocalDomainCommand.class);
 
@@ -159,16 +165,17 @@ public abstract class LocalDomainCommand extends CLICommand {
      */
     protected void initializeLocalPassword(File domainRootDir) {
         // root-dir/config/local-password
-        File localPassword = new File(new File(domainRootDir, "config"),
+        File localPasswordFile = new File(new File(domainRootDir, "config"),
                                     "local-password");
         BufferedReader r = null;
         try {
-            r = new BufferedReader(new FileReader(localPassword));
+            r = new BufferedReader(new FileReader(localPasswordFile));
             String pwd = r.readLine();
             if (ok(pwd)) {
                 // use the local password
                 logger.printDebugMessage("Using local password");
                 programOpts.setPassword(pwd);
+                localPassword = pwd;
                 // if no user specified, use the default
                 if (programOpts.getUser() == null)
                     programOpts.setUser(
@@ -289,6 +296,30 @@ public abstract class LocalDomainCommand extends CLICommand {
                     server.close();
                 } catch (IOException ex) { }
             }
+        }
+    }
+
+    /**
+     * See if DAS is alive and is the one at the specified domain directory.
+     *
+     * @return true if it's the DAS at this domain directory
+     */
+    protected boolean isThisDAS(File domainDir) {
+        logger.printDebugMessage("Check if server is at location " + domainDir);
+        try {
+            RemoteCommand cmd =
+                new RemoteCommand("__locations", programOpts, env);
+            Map<String, String> attrs =
+                cmd.executeAndReturnAttributes(new String[] { "__locations" });
+            String rdr = attrs.get(DOMAIN_ROOT_KEY);
+            logger.printDebugMessage("Remote server has domain root " + rdr);
+            if (rdr != null) {
+                File rf = SmartFile.sanitize(new File(rdr));
+                return rf.equals(domainDir);
+            }
+            return false;
+        } catch (Exception ex) {
+            return false;
         }
     }
 }

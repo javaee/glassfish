@@ -63,10 +63,6 @@ public final class ListDomainsCommand extends LocalDomainCommand {
 
     private static final String DOMAINDIR = "domaindir";
 
-    // the key for the Domain Root in the main attributes of the
-    // manifest returned by the __locations command
-    private static final String DOMAIN_ROOT_KEY = "Domain-Root_value";
-
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ListDomainsCommand.class);
 
@@ -163,31 +159,6 @@ public final class ListDomainsCommand extends LocalDomainCommand {
         } catch (MiniXmlParserException me) {
             logger.printExceptionStackTrace(me);
             return strings.get("list.domains.StatusUnknown");
-        }
-    }
-
-
-    /**
-     * See if DAS is alive and is the one at the specified domain directory.
-     *
-     * @return true if it's the DAS at this domain directory
-     */
-    private boolean isThisDAS(File domainDir) {
-        logger.printDebugMessage("Check if server is at location " + domainDir);
-        try {
-            RemoteCommand cmd =
-                new RemoteCommand("__locations", programOpts, env);
-            Map<String, String> attrs =
-                cmd.executeAndReturnAttributes(new String[] { "__locations" });
-            String rdr = attrs.get(DOMAIN_ROOT_KEY);
-            logger.printDebugMessage("Remote server has domain root " + rdr);
-            if (rdr != null) {
-                File rf = SmartFile.sanitize(new File(rdr));
-                return rf.equals(domainDir);
-            }
-            return false;
-        } catch (Exception ex) {
-            return false;
         }
     }
 }

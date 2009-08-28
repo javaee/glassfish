@@ -199,6 +199,7 @@ public class RemoteCommand extends CLICommand {
                     fetchCommandMetadata();
                 else
                     throw ex;
+                logger.printDebugMessage("Updated authentication worked");
             }
             if (commandOpts == null)
                 throw new CommandException(strings.get("InvalidCommand", name),
@@ -208,8 +209,10 @@ public class RemoteCommand extends CLICommand {
             // on the server
             addOption(commandOpts, "help", '?', "BOOLEAN", false, "false");
         } catch (CommandException cex) {
+            logger.printDebugMessage("RemoteCommand.prepare throws " + cex);
             throw cex;
         } catch (Exception e) {
+            logger.printDebugMessage("RemoteCommand.prepare throws " + e);
             throw new CommandException(e.getMessage());
         }
     }
