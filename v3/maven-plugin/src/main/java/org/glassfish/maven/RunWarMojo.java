@@ -116,9 +116,11 @@ public class RunWarMojo extends AbstractMojo
                         + " contextroot is " + contextRoot);
                 System.out.println("");
                 System.out.println("Hit ENTER to redeploy " + name + "[" + webapp + "]"
-                        + " <Ctrl-C> to exit");
+                        + " X to exit");
                 // wait for enter
-                new BufferedReader(new InputStreamReader(System.in)).readLine();
+                String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
+                if (str.equalsIgnoreCase("X"))
+                    break;
                 deployer.undeploy(name);
             }
         } catch(Exception e) {
