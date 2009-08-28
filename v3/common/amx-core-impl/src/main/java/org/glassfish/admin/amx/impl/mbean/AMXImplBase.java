@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import javax.management.AttributeChangeNotification;
 import javax.management.AttributeList;
@@ -86,6 +87,7 @@ import org.glassfish.admin.amx.util.jmx.stringifier.AttributeChangeNotificationS
 import org.glassfish.admin.amx.util.jmx.stringifier.MBeanInfoStringifier;
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
+import org.glassfish.admin.amx.impl.util.ImplUtil;
 
 
 /**
@@ -342,62 +344,7 @@ public class AMXImplBase extends MBeanImplBase
 		assert( false );
 		throw new RuntimeException( t );
 	}
-	
-	
-		private Object
-	convertToClass(
-		final Object	value,
-		final Class		theClass )
-		throws Exception
-	{
-		Object	result	= value;
-		
-		if ( value instanceof String )
-		{
-			result	= ClassUtil.InstantiateFromString( theClass, (String)value );
-		}
-		else
-		{
-			getMBeanLogger().info( "convertToClass: don't know how to convert: " +
-				value.getClass().getName() );
-		}
-		
-		return( result );
-	}
-	
-    /**
-        Called every time an Attribute is obtained via delegateGetAttribute(), so 
-        make sure it's reasonably fast.
-		private Class<?>
-	getAttributeClass( final String attributeName )
-		throws ClassNotFoundException
-	{
-        final Map<String,Class> mappings    = ATTRIBUTE_CLASSES.get( getType() );
-        
-        Class theClass = mappings.get( attributeName );
-        // initialize only if the class is null and there isn't a mapping for to null
-        if ( theClass == null && ! mappings.containsKey( attributeName ) )
-        {
-            // no need to synchronize; the Map is already so.
-            // And if mappings were somehow 'put' twice, that's rare and of no importance
-            final MBeanAttributeInfo[]	infos	= getMBeanInfo().getAttributes();
-            
-            // Map each Attribute to a Class
-            for( int i = 0; i < infos.length; ++i )
-            {
-                final String attrName   = infos[ i ].getName();
-                final Class c = ClassUtil.getClassFromName( infos[ i ].getType() );
-                mappings.put( attrName, c );
-            }
-            
-            theClass    = mappings.get( attributeName );
-		}
-        
-		return( theClass );
-	}
-     */
-	
-		
+			
 	
 		protected Object
 	getAttributeNoThrow( String name )
@@ -442,9 +389,8 @@ public class AMXImplBase extends MBeanImplBase
 		public Logger
 	getLogger()
 	{
-		return( getMBeanLogger() );
+		return ImplUtil.getLogger();
 	}
-
     
 
 	/**
@@ -602,19 +548,16 @@ public class AMXImplBase extends MBeanImplBase
 		}
 		catch( InvocationTargetException e )
 		{
-        e.printStackTrace();
 			trace( "InvocationTargetException: " + attrName + " by " + m );
 			rethrowAttributeNotFound( ExceptionUtil.getRootCause(e), attrName );
 		}
 		catch( IllegalAccessException e )
 		{
-        e.printStackTrace();
 			trace( "ILLEGAL ACCESS TO: " + attrName + " by " + m );
 			rethrowAttributeNotFound( ExceptionUtil.getRootCause(e), attrName );
 		}
 		catch( Exception e )
 		{
-        e.printStackTrace();
 			trace( "Exception: " + attrName + " by " + m );
 			rethrowAttributeNotFound( ExceptionUtil.getRootCause(e), attrName );
 		}
@@ -1106,7 +1049,6 @@ public class AMXImplBase extends MBeanImplBase
 		}
 		catch( Exception e )
 		{
-            //e.printStackTrace();
 		    debug( ExceptionUtil.toString( e ) );
 			handleInvokeThrowable( e );
 		}
@@ -1265,7 +1207,7 @@ public class AMXImplBase extends MBeanImplBase
             catch( final Throwable t )
             {
                 // note it, and move on, we must unregister remaining ones
-                t.printStackTrace();
+                ImplUtil.getLogger().log( Level.INFO, "Unable to unregister MBean " + child, t );
             }
         }
     }
