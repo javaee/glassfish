@@ -68,6 +68,11 @@ final class ConfigBeanJMXSupportRegistry
         public static ConfigBeanJMXSupport
     getInstance( final Class<? extends ConfigBeanProxy> intf )
     {
+        if ( intf == null )
+        {
+            throw new IllegalArgumentException("null ConfigBeanProxy interface passed in" );
+        }
+        
         ConfigBeanJMXSupport helper = INSTANCES.get(intf);
         if ( helper == null )
         {

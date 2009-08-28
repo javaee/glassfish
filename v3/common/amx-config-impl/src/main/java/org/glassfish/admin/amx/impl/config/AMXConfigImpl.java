@@ -754,6 +754,11 @@ public class AMXConfigImpl extends AMXImplBase
                 //cdebug( "recursiveCreate: " + type );
                 
                 final Class<? extends ConfigBeanProxy> clazz = ConfigBeanJMXSupportRegistry.getConfigBeanProxyClassFor(sptRoot, type);
+                if ( clazz == null )
+                {
+                    throw new IllegalArgumentException("@Configured interface for type " + type + " cannot be found" );
+                }
+                
                 final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance(clazz);
 
                 final ConfigBeanProxy childProxy = parent.allocateProxy(clazz);
