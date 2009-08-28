@@ -93,7 +93,6 @@ public final class MBeanTracker implements NotificationListener, MBeanRegistrati
             }
             catch( Exception e )
             {
-                e.printStackTrace();
                 throw new RuntimeException("Could not register with MBeanServerDelegate", e);
             }
             //debug( "MBeanTracker: registered as " + mObjectName );

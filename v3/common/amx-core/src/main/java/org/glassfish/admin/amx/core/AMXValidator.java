@@ -1046,7 +1046,6 @@ public final class AMXValidator
                 if ( ! instanceNotFound(e) )
                 {
                     debug( "Unable to create AMXProxy for " + objectName );
-                    e.printStackTrace();
                     
                     final String msg = "Cannot create AMXProxy for MBean \"" + objectName + "\" -- MBean is  non-compliant, unregistering it.";
                     problems.add(msg);

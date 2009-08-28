@@ -52,6 +52,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -412,7 +414,7 @@ public final class NotificationEmitterSupport
             }
             catch (InterruptedException e)
             {
-                e.printStackTrace();
+                Logger.getAnonymousLogger().log(Level.WARNING,  "Interrupted: ", e);
             }
         }
 
