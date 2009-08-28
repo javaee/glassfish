@@ -41,6 +41,7 @@ import com.sun.grizzly.util.buf.UDecoder;
 import com.sun.grizzly.util.http.HttpRequestURIDecoder;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.grizzly.util.http.mapper.MappingData;
+import com.sun.grizzly.util.http.MimeType;
 import java.io.IOException;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.ApplicationContainer;
@@ -168,14 +169,22 @@ public class ContainerMapper extends StaticResourcesAdapter {
             adapter = map(req, decodedURI, mappingData);
             if (adapter == null || adapter instanceof ContainerMapper) {
                 String ext = decodedURI.toString();
+                String type = "";
                 if (ext.indexOf(".") > 0) {
                     ext = "*" + ext.substring(ext.lastIndexOf("."));
+                    type = ext.substring(ext.lastIndexOf(".") + 1);
                 }
-                
-                initializeFileURLPattern(ext);
-                mappingData.recycle();
-                adapter = map(req, decodedURI, mappingData);
+
+                if (!MimeType.contains(type) && !ext.equals("/")){
+                    initializeFileURLPattern(ext);
+                    mappingData.recycle();
+                    adapter = map(req, decodedURI, mappingData);
+                } else {
+                    super.service(req, res);
+                    return;
+                }
             }
+
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine("Request: " + decodedURI.toString()
                     + " was mapped to Adapter: " + adapter);
@@ -196,6 +205,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
                 if (mappingData.context != null && mappingData.context instanceof ContextRootInfo) {
                     contextRootInfo = (ContextRootInfo) mappingData.context;
                 }
+
                 if (contextRootInfo == null){
                     adapter.service(req, res);
                 } else {
