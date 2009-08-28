@@ -40,6 +40,8 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Set;
+import java.util.logging.Level;
+
 
 
 import javax.management.MBeanServer;
@@ -203,13 +205,13 @@ public final class ComplianceMonitor implements NotificationListener
             {
                 doRun();
             }
-            catch (Throwable t)
+            catch ( final Throwable t)
             {
-                t.printStackTrace();
+                ImplUtil.getLogger().log( Level.SEVERE, "AMX ComplianceMonitor thread has unexpectedly quit", t );
             }
         }
 
-        protected void doRun() throws Exception
+        protected void doRun() throws InterruptedException
         {
             //debug( "ValidatorThread.doRun(): started" );                
             while (true)
@@ -237,9 +239,9 @@ public final class ComplianceMonitor implements NotificationListener
                         ImplUtil.getLogger().info(result.toString());
                     }
                 }
-                catch (Throwable t)
+                catch ( final Throwable t)
                 {
-                    t.printStackTrace();
+                    ImplUtil.getLogger().log( Level.WARNING, "Exception validating MBean " + next, t );
                 }
             }
         }
