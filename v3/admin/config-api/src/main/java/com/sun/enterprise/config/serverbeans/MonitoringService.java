@@ -147,7 +147,8 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, org.glas
      *
      * @return list of container monitoring configurations (default)
      */
-    List<ContainerMonitoring> getContainerMonitorings();
+    @Element
+    List<ContainerMonitoring> getContainerMonitoring();
 
     /**
      * Get the monitoring configuration for other types of containers that used
