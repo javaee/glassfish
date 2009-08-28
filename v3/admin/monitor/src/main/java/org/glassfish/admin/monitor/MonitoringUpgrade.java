@@ -53,11 +53,36 @@ public class MonitoringUpgrade implements ConfigurationUpgrade, PostConstruct {
                             addContainerMonitoring(param, ContainerMonitoring.ORB, mmls.getOrb());
                         }
                         if (isNonDefault(mmls.getEjbContainer())) {
-                            addContainerMonitoring(param, ContainerMonitoring.ORB, mmls.getEjbContainer());
+                            addContainerMonitoring(param, ContainerMonitoring.EJB_CONTAINER, mmls.getEjbContainer());
                         }
                         if (isNonDefault(mmls.getJmsService())) {
-                            addContainerMonitoring(param, ContainerMonitoring.ORB, mmls.getJmsService());
+                            addContainerMonitoring(param, ContainerMonitoring.JMS_SERVICE, mmls.getJmsService());
                         }
+                        if (isNonDefault(mmls.getConnectorConnectionPool())) {
+                            addContainerMonitoring(param, ContainerMonitoring.CONNECTOR_CONNECTION_POOL, mmls.getConnectorConnectionPool());
+                        }
+                        if (isNonDefault(mmls.getConnectorService())) {
+                            addContainerMonitoring(param, ContainerMonitoring.CONNECTOR_SERVICE, mmls.getConnectorService());
+                        }
+                        if (isNonDefault(mmls.getHttpService())) {
+                            addContainerMonitoring(param, ContainerMonitoring.HTTP_SERVICE, mmls.getHttpService());
+                        }
+                        if (isNonDefault(mmls.getJdbcConnectionPool())) {
+                            addContainerMonitoring(param, ContainerMonitoring.JDBC_CONNECTION_POOL, mmls.getJdbcConnectionPool());
+                        }
+                        if (isNonDefault(mmls.getJvm())) {
+                            addContainerMonitoring(param, ContainerMonitoring.JVM, mmls.getJvm());
+                        }
+                        if (isNonDefault(mmls.getThreadPool())) {
+                            addContainerMonitoring(param, ContainerMonitoring.THREAD_POOL, mmls.getThreadPool());
+                        }
+                        if (isNonDefault(mmls.getTransactionService())) {
+                            addContainerMonitoring(param, ContainerMonitoring.TRANSACTION_SERVICE, mmls.getTransactionService());
+                        }
+                        if (isNonDefault(mmls.getWebContainer())) {
+                            addContainerMonitoring(param, ContainerMonitoring.WEB_CONTAINER, mmls.getWebContainer());
+                        }
+
                         return null;
                     }
                 }, ms);
@@ -75,10 +100,12 @@ public class MonitoringUpgrade implements ConfigurationUpgrade, PostConstruct {
     private void addContainerMonitoring(MonitoringService ms, String name, String level)
             throws TransactionFailure, PropertyVetoException {
 
+        if (ms.getContainerMonitoring(name) == null) {
             ContainerMonitoring newItem = ms.createChild(
                 ContainerMonitoring.class);
             newItem.setName(name);
             newItem.setLevel(level);
             ms.getMonitoringItems().add(newItem);
+        }
     }
 }
