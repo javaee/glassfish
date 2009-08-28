@@ -43,7 +43,6 @@ import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.glassfish.flashlight.client.ProbeClientMediator;
-import org.glassfish.flashlight.impl.provider.FlashlightProbeProviderFactory;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.glassfish.internal.api.Init;
 /**
@@ -53,7 +52,6 @@ import org.glassfish.internal.api.Init;
 @Service
 @Scoped(Singleton.class)
 public class MonitoringBootstrap implements Init, PostConstruct, EventListener, ModuleLifecycleListener, ConfigListener {
-
     @Inject
     private MonitoringRuntimeDataRegistry mrdr;
     @Inject
@@ -83,22 +81,30 @@ public class MonitoringBootstrap implements Init, PostConstruct, EventListener, 
     private final String DELIMITER = ",";
     private StatsProviderManagerDelegateImpl spmd;
     private boolean ddebug = false;
+    private boolean monitoringEnabled;
 
     public void postConstruct() {
+        // wbn: This value sticks for the life of the bootstrapping.  If the user changes it
+        // somehow during bootstrapping we would have some problems so we just get the value
+        // and run with it...
+
+        if(monitoringService != null)
+            monitoringEnabled = Boolean.parseBoolean(monitoringService.getMonitoringEnabled());
+        else
+            monitoringEnabled = false;
+
         // Register as ModuleLifecycleListener
         events.register(this);
         registry.register(this);
+
         // Iterate thru existing modules
         for (Module m : registry.getModules()) {
-            //mprint("***  State=" + m.getState().toString() + " - Module name = " + m.getName());
-            //if (m.getState() == ModuleState.READY) {
                 printd(" In startup, calling moduleStarted");
                 moduleStarted(m);
-            //}
         }
 
-        //Set the StatsProviderManagerDelegate
-        setStatsProviderManagerDelegate();
+        if(monitoringEnabled)
+            setStatsProviderManagerDelegate();
     }
 
 
@@ -112,7 +118,10 @@ public class MonitoringBootstrap implements Init, PostConstruct, EventListener, 
     }
 
     public void setStatsProviderManagerDelegate() {
-        //Set the StatsProviderManagerDelegate
+        // only run the code one time!
+        if(spmd != null)
+            return;
+
         spmd = new StatsProviderManagerDelegateImpl(pcm, probeRegistry, mrdr, domain, monitoringService);
         StatsProviderManager.setStatsProviderManagerDelegate(spmd);
         mprint(" StatsProviderManagerDelegate is assigned ********************");
@@ -130,7 +139,6 @@ public class MonitoringBootstrap implements Init, PostConstruct, EventListener, 
         if (module == null) return;
         String str = module.getName();
         //mprint("moduleStarted: " + str);
-        printd(" moduleStarted : " + str);
         if (!map.containsKey(str)) {
             map.put(str, module);
             addProvider(module);
@@ -289,7 +297,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, EventListener, 
     }*/
 
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] propertyChangeEvents) {
-        StatsProviderRegistry spr = spmd.getStatsProviderRegistry();
+        StatsProviderRegistry spr = (spmd == null) ? null : spmd.getStatsProviderRegistry();
 
         for (PropertyChangeEvent event : propertyChangeEvents) {
             // let's get out of here ASAP if it is not our stuff!!
@@ -336,6 +344,9 @@ public class MonitoringBootstrap implements Init, PostConstruct, EventListener, 
         if(!ok(propName))
             return;
 
+        if(spmd == null)
+            return; // nothing to do!
+
         StatsProviderRegistry spr = spmd.getStatsProviderRegistry();
 
         if(spr == null)
@@ -363,12 +374,15 @@ public class MonitoringBootstrap implements Init, PostConstruct, EventListener, 
                 spr.unregisterAllGmbal();
         }
         else if(propName.equals("dtrace-enabled")) {
-            //TODO
             probeProviderFactory.dtraceEnabledChanged(enabled);
         }
         else if(propName.equals("monitoring-enabled")) {
-            // TODO
             probeProviderFactory.monitoringEnabledChanged(enabled);
+
+            if(enabled) {
+                // TODO attach btrace agent dynamically
+                setStatsProviderManagerDelegate();
+            }
         }
     }
     

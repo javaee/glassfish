@@ -42,6 +42,7 @@ import org.glassfish.flashlight.provider.FlashlightProbe;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import org.glassfish.flashlight.FlashlightUtils;
 
 public class ReflectiveClientInvoker
         implements ProbeClientInvoker {
@@ -99,6 +100,9 @@ public class ReflectiveClientInvoker
     }
 
     public void invoke(Object[] args) {
+        if(!FlashlightUtils.isMonitoringEnabled())
+            return;
+        
         try {
             if (useProbeArgs) {
                 //We can use the args as it is
