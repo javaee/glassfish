@@ -236,7 +236,7 @@ public class FlashlightProbeClientMediator
             FlashlightProbe probe = probeRegistry.getProbe(probeString);
 
             if (probe == null)
-                throw new RuntimeException("Invalid probe desc: " + probeString);
+                throw new RuntimeException("Probe is not registered: " + probeString);
             
             mp.add(new MethodProbe(method, probe));
         }
