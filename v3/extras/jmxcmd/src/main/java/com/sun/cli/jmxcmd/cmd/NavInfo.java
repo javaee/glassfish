@@ -30,10 +30,15 @@ public final class NavInfo
 
     public NavInfo(final MBeanServerConnection conn)
     {
+        this( conn, DEFAULT_DIR);
+    }
+    
+    public NavInfo(final MBeanServerConnection conn, final String path)
+    {
         mCurrentDir = DEFAULT_DIR;
-                
         mConn = null;
         setMBeanServerConnection(conn);
+        cd(path);
     }
 
     public MBeanServerConnection getMBeanServerConnection()
@@ -67,9 +72,15 @@ public final class NavInfo
 
     public void setCurrentDir(final String dir)
     {
-        if (resolve(dir) != null)
+        String normalized = dir;
+        while ( normalized.endsWith("/") && normalized.length() > 1 )
         {
-            mCurrentDir = dir;
+            normalized = normalized.substring(0, normalized.length() - 1 );
+        }
+        
+        if (resolve(normalized) != null)
+        {
+            mCurrentDir = normalized;
         }
         else
         {
@@ -117,12 +128,13 @@ public final class NavInfo
         final String saveDir = getCurrentDir();
         
         String cur = path;
+        boolean ok = false;
         try
         {
             if ( isAbsolutePath(path) )
             {
                 setCurrentDir(path);
-                println( "Setting absolute path: " + path );
+                //println( "Setting absolute path: " + path );
             }
             else
             {
@@ -131,7 +143,7 @@ public final class NavInfo
                     if ( cur.startsWith("./") )
                     {
                         cur = cur.substring(2);
-                        println( "Stripped ./: " + cur );
+                        //println( "Stripped ./: " + cur );
                     }
                     else if ( cur.startsWith("..") )
                     {
@@ -143,7 +155,7 @@ public final class NavInfo
                         else if ( cur.startsWith(PATH_SEP) )
                         {
                             cur = cur.substring(1);
-                            println( "Going up: " + cur );
+                            //println( "Going up: " + cur );
                             setCurrentDir( parentPath() );
                         }
                         else
@@ -164,11 +176,14 @@ public final class NavInfo
                     }
                 }
             }
+            ok = true;
         }
-        catch( final Exception e )
+        finally
         {
-            e.printStackTrace();
-            setCurrentDir( saveDir );
+            if ( ! ok )
+            {
+                setCurrentDir( saveDir );
+            }
         }
     }
 

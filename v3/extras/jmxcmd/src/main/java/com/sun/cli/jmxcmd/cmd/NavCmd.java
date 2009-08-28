@@ -5,7 +5,10 @@
 package com.sun.cli.jmxcmd.cmd;
 
 import javax.management.ObjectName;
+import javax.management.MBeanServerConnection;
 
+import java.util.Map;
+import java.util.HashMap;
 
 
 import com.sun.cli.jcmd.framework.CmdEnv;
@@ -25,8 +28,14 @@ import java.util.Set;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.util.CollectionUtil;
+import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 import static com.sun.cli.jmxcmd.cmd.NavInfo.*;
+
+import org.glassfish.admin.amx.core.PathnameParser;
+
+
 
 /**
 Manages the default targets.
@@ -77,6 +86,8 @@ public class NavCmd extends JMXCmd
     private final static String PUSHD_NAME = "pushd";
     private final static String POPD_NAME = "popd";
     private final static String LS_NAME = "ls";
+    private final static String PGET_NAME = "pget";
+    
     protected static final OperandsInfo CD_OPERAND_INFO = new OperandsInfoImpl("<path>", 0);
     private final static CmdInfo CD_INFO = new CmdInfoImpl(CD_NAME, CD_OPERAND_INFO);
     private final static CmdInfo CAT_INFO = new CmdInfoImpl(CAT_NAME);
@@ -84,13 +95,17 @@ public class NavCmd extends JMXCmd
     private final static CmdInfo PWD_INFO = new CmdInfoImpl(PWD_NAME);
     private final static CmdInfo PUSHD_INFO = new CmdInfoImpl(PUSHD_NAME);
     private final static CmdInfo POPD_INFO = new CmdInfoImpl(POPD_NAME);
+    
+    protected static final OperandsInfo PGET_OPERAND_INFO = new OperandsInfoImpl("<path@attr>", 0);
+    private final static CmdInfo PGET_INFO = new CmdInfoImpl(PGET_NAME, PGET_OPERAND_INFO);
+    
 
 
     public static CmdInfos getCmdInfos()
     {
         return new CmdInfos(new CmdInfo[]
             {
-                CD_INFO, LS_INFO, PWD_INFO, PUSHD_INFO, POPD_INFO, CAT_INFO, TARGET_INFO, CLEAR_TARGET_INFO
+                CD_INFO, LS_INFO, PWD_INFO, PUSHD_INFO, POPD_INFO, CAT_INFO, TARGET_INFO, CLEAR_TARGET_INFO, PGET_INFO
             });
     }
     public static final String NAV_INFO_KEY = "NavCmd.NavInfo";
@@ -107,6 +122,83 @@ public class NavCmd extends JMXCmd
         return ProxyFactory.getInstance(getConnection()).getProxy(target());
     }
 
+    private void pget(final String[] argsIn)
+    {
+        final String ATTR_DELIM = "@";
+        final String ALL = "*";
+        
+        final MBeanServerConnection conn = getConnection();
+        final ProxyFactory proxyFactory = ProxyFactory.getInstance(conn);
+        
+        final String currentDir = getNavInfo().getCurrentDir();
+        
+        final String[] args = argsIn.length == 0 ?  new String[] { getNavInfo().getCurrentDir() } : argsIn;
+        
+        for( final String arg : args )
+        {
+            String expr = arg;
+            println( "Processing arg: " + arg );
+            
+            // full path?  If not, prepend the current dir
+            if ( ! expr.startsWith( "/" ) )
+            {
+                // not a full path, prepend current dir
+                if ( expr.startsWith(ATTR_DELIM) )
+                {
+                    expr = currentDir + expr;
+                }
+                else
+                {
+                    if ( currentDir.endsWith("/") )
+                    {
+                        expr = currentDir + expr;
+                    }
+                    else
+                    {
+                        expr = currentDir + "/" + expr;
+                    }
+                }
+            }
+            println( "arg = " + arg + ", expr = " + expr);
+            
+            try
+            {
+                final int idx = expr.indexOf(ATTR_DELIM);
+                final String path = idx < 0 ? expr : expr.substring(0,idx);
+                String attr = idx < 0 ? ALL : expr.substring(idx+1);
+                if ( attr.length() == 0 )
+                {
+                    attr = ALL;
+                }
+                
+                final PathnameParser parser = new PathnameParser(path);
+                println( "Parsed: " + parser.parts() );
+                
+                //println( "path = " + path + ", attrs = " + attr );
+                final NavInfo navInfo = new NavInfo(conn, path);
+                
+                final ObjectName objectName = navInfo.resolve();
+                final AMXProxy amx = proxyFactory.getProxy(objectName);
+                
+                final Set<String> attrNames = attr.equals(ALL) ? amx.attributeNames() : SetUtil.newUnmodifiableStringSet( attr.split(",") );
+                final Map<String,Object> results = amx.attributesMap(attrNames);
+                
+                for( final String attrName : SetUtil.toSortedStringArray( results.keySet() ) )
+                {
+                    final Object value = results.get(attrName);
+                    final String valueStr = SmartStringifier.toString(value);
+                    println( path + ATTR_DELIM + attrName + "=" + valueStr);
+                }
+                
+            }
+            catch( final Exception e )
+            {
+                println( "" + e );
+            }
+            println( "" );
+        }
+    }
+    
 
     private void cd(final String dest)
     {
@@ -342,6 +434,10 @@ public class NavCmd extends JMXCmd
                 connect();
                 setTargets(operands);
             }
+        }
+        else if ( cmd.equals( PGET_NAME ) )
+        {
+            pget(operands);
         }
         else
         {
