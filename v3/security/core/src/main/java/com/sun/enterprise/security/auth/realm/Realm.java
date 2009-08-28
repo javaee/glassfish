@@ -164,7 +164,11 @@ public abstract class Realm implements Comparable {
                                     Properties props)
         throws BadRealmException
     {
-        return doInstantiate(name, className, props);
+        Realm realmClass = _getInstance(name);
+        if(realmClass == null) {
+            return doInstantiate(name, className, props);
+        }
+        return realmClass;
     }
     
 
