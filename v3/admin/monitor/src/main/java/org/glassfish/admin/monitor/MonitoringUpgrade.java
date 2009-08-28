@@ -105,7 +105,7 @@ public class MonitoringUpgrade implements ConfigurationUpgrade, PostConstruct {
                 ContainerMonitoring.class);
             newItem.setName(name);
             newItem.setLevel(level);
-            ms.getMonitoringItems().add(newItem);
+            ms.getContainerMonitoring().add(newItem);
         }
     }
 }

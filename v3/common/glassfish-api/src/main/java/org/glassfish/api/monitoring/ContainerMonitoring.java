@@ -42,6 +42,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import javax.validation.constraints.NotNull;
 import java.beans.PropertyVetoException;
 import org.jvnet.hk2.config.Configured;
+import org.glassfish.api.admin.config.Named;
 
 /**
  * Default monitoring configuration for containers. Containers can provide their
@@ -50,7 +51,7 @@ import org.jvnet.hk2.config.Configured;
  * @author Nandini Ektare
  */
 @Configured
-public interface ContainerMonitoring extends ConfigBeanProxy {
+public interface ContainerMonitoring extends ConfigBeanProxy, Named {
 
     public static final String LEVEL_OFF = "OFF";
     public static final String LEVEL_LOW = "LOW";
@@ -83,17 +84,4 @@ public interface ContainerMonitoring extends ConfigBeanProxy {
 
     public void setLevel(String level) throws PropertyVetoException;
 
-    /**
-     * The name of the monitoring module that has this config
-     * @return String name
-     */
-    @Attribute(key=true)
-    @NotNull
-    public String getName();
-
-    /**
-     * Set the name of this monitoring module
-     * @param name the monitoring name
-     */
-    public void setName(String name) throws PropertyVetoException;
 }

@@ -39,6 +39,7 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.glassfish.api.monitoring.ContainerMonitoring;
+import org.glassfish.api.monitoring.MonitoringItem;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Injectable;
 
@@ -157,7 +158,7 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, org.glas
      * @return  list of container monitoring configurations
      */
     @Element("*")
-    List<ContainerMonitoring> getMonitoringItems();
+    List<MonitoringItem> getMonitoringItems();
 
     /**
      * Return the monitoring configuration for a container by the provided name,
@@ -172,7 +173,7 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, org.glas
 
     public class Duck {
         public static ContainerMonitoring getContainerMonitoring(MonitoringService ms, String name) {
-            for (ContainerMonitoring cm : ms.getMonitoringItems()) {
+            for (ContainerMonitoring cm : ms.getContainerMonitoring()) {
                 if (cm.getName().equals(name)) {
                     return cm;
                 }
