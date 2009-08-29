@@ -171,10 +171,19 @@ public abstract class ActionReporter extends ActionReport {
     protected void getCombinedMessages(ActionReporter aReport, StringBuilder sb) {
         if (aReport == null || sb == null)
             return;
-        if (aReport.getMessage() != null && aReport.getMessage().length() != 0)
-            sb.append(aReport.getMessage());
-        if (aReport.getFailureCause() != null && aReport.getFailureCause().getMessage() != null && aReport.getFailureCause().getMessage().length() != 0)
-            sb.append(aReport.getFailureCause().getMessage());
+        String mainMsg = null; //this is the message related to the topMessage
+        String failMsg = null; //this is the message related to failure cause
+        // Other code in the server may write something like report.setMessage(exception.getMessage())
+        // and also set report.setFailureCause(exception). We need to avoid the duplicate message.
+        if (aReport.getMessage() != null && aReport.getMessage().length() != 0) {
+            mainMsg = aReport.getMessage();
+            sb.append(mainMsg);
+        }
+        if (aReport.getFailureCause() != null && aReport.getFailureCause().getMessage() != null && aReport.getFailureCause().getMessage().length() != 0) {
+            failMsg = aReport.getFailureCause().getMessage();
+            if (!failMsg.equals(mainMsg))
+                sb.append(failMsg);
+        }
         for (ActionReporter sub : aReport.subActions) {
             getCombinedMessages(sub, sb);
         }

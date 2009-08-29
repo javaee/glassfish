@@ -23,8 +23,6 @@
 
 package com.sun.enterprise.v3.admin.commands;
 
-import java.lang.management.ManagementFactory;
-import javax.management.MBeanServer;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.I18n;
@@ -33,27 +31,30 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.PerLookup;
+
+import javax.management.MBeanServer;
+import java.lang.management.ManagementFactory;
 
 /** Implements the front end for generating the JVM report. Sends back a String
- * to the server based on its locale.
+ * to the asadmin console based on server's locale.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  * @since GlassFish V3
  */
 @Service(name="generate-jvm-report")
-@Scoped(Singleton.class) //I want exactly one instance of this class all the time
+@Scoped(PerLookup.class)
 @I18n("generate.jvm.report")
 public class GenerateJvmReportCommand implements AdminCommand {
     
     @Param(name="target", optional=true) // default is DAS, TODO
     String target;
     
-    @Param(name="type", optional=true, defaultValue="summary") //default is "summary"
+    @Param(name="type", optional=true, defaultValue="summary", acceptableValues = "summary, thread, class, memory, log") //default is "summary"
     String type;
     
     private MBeanServer mbs = null;  //needs to be injected, I guess
     private JVMInformation jvmi = null;
-    
+
     public void execute(AdminCommandContext ctx) {
         prepare();
         String result = getResult();
@@ -68,7 +69,7 @@ public class GenerateJvmReportCommand implements AdminCommand {
             jvmi = new JVMInformation(mbs);
     }
     private String getResult() {
-        if (type == null || "summary".equals(type))
+        if ("summary".equals(type))
             return (jvmi.getSummary(target));
         else if("thread".equals(type))
             return jvmi.getThreadDump(target);
@@ -79,6 +80,6 @@ public class GenerateJvmReportCommand implements AdminCommand {
         else if ("log".equals(type))
             return jvmi.getLogInformation(target);
         else
-            throw new IllegalArgumentException("Unsupported Option: " + type);
+            throw new IllegalArgumentException("Unsupported Option: " + type);   //this should not happen
     }
 }
