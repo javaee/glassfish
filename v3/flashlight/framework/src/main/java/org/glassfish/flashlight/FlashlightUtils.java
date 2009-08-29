@@ -23,6 +23,7 @@ import org.jvnet.hk2.component.Habitat;
  */
 
 public class FlashlightUtils {
+
     private FlashlightUtils() {
         // All static.  No instances allowed.
     }
@@ -68,6 +69,14 @@ public class FlashlightUtils {
             return false;
 
         return true;
+    }
+
+    /** This only reveals whether it is enabled in domain.xml
+     * isDtraceAvailable() checks this AND a few other things
+     * @return
+     */
+    public static boolean isDtraceEnabled() {
+        return dtraceEnabled;
     }
 
     static public DTraceContract getDtraceEngine() {

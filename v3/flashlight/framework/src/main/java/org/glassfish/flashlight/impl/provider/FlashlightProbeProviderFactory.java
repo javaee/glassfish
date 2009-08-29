@@ -121,13 +121,8 @@ public class FlashlightProbeProviderFactory
         // instrument with DTrace
         Collection<FlashlightProbeProvider> pps = ProbeProviderRegistry.getInstance().getAllProbeProviders();
 
-
-        System.out.println("ZZZZZ Instrumenting DTrace after the fact!!!!");
-
-
         for(FlashlightProbeProvider pp : pps) {
             if(!pp.isDTraceInstrumented()) {
-                System.out.println("ZZZZZ DTrace Instrumenting: " + pp.getProbeProviderName());
                 handleDTrace(pp);
             }
         }
@@ -135,6 +130,13 @@ public class FlashlightProbeProviderFactory
 
     public void monitoringEnabledChanged(boolean newValue) {
         FlashlightUtils.setMonitoringEnabled(newValue);
+
+        // if monitoring-enabled is going false -> true AND
+        // dtrace-enabled is true -- then we need to do something
+        // o/w we don't have to do anything
+
+        if(newValue == true && FlashlightUtils.isDtraceEnabled())
+            dtraceEnabledChanged(true);
     }
     
     public <T> T getProbeProvider(Class<T> providerClazz)
