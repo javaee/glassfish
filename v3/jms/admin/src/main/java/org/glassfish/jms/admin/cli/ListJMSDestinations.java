@@ -75,7 +75,7 @@ public class ListJMSDestinations extends JMSDestination implements AdminCommand 
         @Param(name="desttype", optional=true)
         String destType;
 
-        @Param(name="property", optional=true)
+        @Param(name="property", optional=true, separator=':')
         Properties props;
 
         @Param(primary=true, optional=true)

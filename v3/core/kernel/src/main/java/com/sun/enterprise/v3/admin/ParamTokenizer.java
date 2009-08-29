@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -89,7 +89,7 @@ public class ParamTokenizer
 {
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ParamTokenizer.class);
     private final static char    ESCAPE_CHAR  = '\\';
-    private final static String  QUOTE_STRING = "\"";
+    private final static char    QUOTE_CHAR   = '"';
     private int size = 0;
     private ListIterator tokenIterator = null;
 
@@ -100,12 +100,12 @@ public class ParamTokenizer
      *  @param stringToken - the string to tokenize.
      *  @param delimiter - the delimiter to tokenize.
      */
-    public ParamTokenizer(String stringToken, String delimiter)
+    public ParamTokenizer(String stringToken, char delimiter)
     {
         if (!checkForMatchingQuotes(stringToken))
             throw new IllegalArgumentException(localStrings.getLocalString("UnclosedString", "Unclosed string"));
 
-        if (stringToken != null && delimiter != null)
+        if (stringToken != null && delimiter != '\0')
             tokenIterator = populateList(stringToken, delimiter);
         else
             throw new NullPointerException(localStrings.getLocalString("CouldNotCreateParamTokenizer", "Couldn't create ParamTokenizer"));
@@ -160,13 +160,13 @@ public class ParamTokenizer
     private boolean checkForMatchingQuotes(String str)
     {
         //get index of the first quote in the string
-        int beginQuote = getStringDelimiterIndex(str, QUOTE_STRING, 0);
+        int beginQuote = getStringDelimiterIndex(str, QUOTE_CHAR, 0);
 
         while (beginQuote != -1)
         {
-            int endQuote = getStringDelimiterIndex(str, QUOTE_STRING, beginQuote+1);
+            int endQuote = getStringDelimiterIndex(str, QUOTE_CHAR, beginQuote+1);
             if (endQuote == -1) return false;
-            beginQuote = getStringDelimiterIndex(str, QUOTE_STRING, endQuote+1);
+            beginQuote = getStringDelimiterIndex(str, QUOTE_CHAR, endQuote+1);
         }
         return true;
     }
@@ -179,7 +179,7 @@ public class ParamTokenizer
      *  @param delimiter - delimiter to tokenize the string
      *  @return ListIterator
      */
-    private ListIterator populateList(String strToken, String delimiter)
+    private ListIterator populateList(String strToken, char delimiter)
     {
         java.util.List tokenList = new java.util.Vector();
         int endIndex = getStringDelimiterIndex(strToken, delimiter, 0);
@@ -217,7 +217,7 @@ public class ParamTokenizer
         while (prefixIndex < strValue.length())
         {
             int delimeterIndex = getStringDelimiterIndex(strValue,
-                                                         String.valueOf(ESCAPE_CHAR), prefixIndex);
+                                                         ESCAPE_CHAR, prefixIndex);
             if (delimeterIndex == -1)
             {
                 strbuff.append(strValue.substring(prefixIndex));
@@ -226,7 +226,7 @@ public class ParamTokenizer
 
             //if a quote is follow by an esacpe then keep the escape character
             if (delimeterIndex+1 < strValue.length() &&
-                String.valueOf(strValue.charAt(delimeterIndex+1)).equals(QUOTE_STRING))
+                strValue.charAt(delimeterIndex+1) == QUOTE_CHAR)
                 strbuff.append(strValue.substring(prefixIndex, delimeterIndex+1));
             else
                 strbuff.append(strValue.substring(prefixIndex, delimeterIndex));
@@ -248,14 +248,14 @@ public class ParamTokenizer
 
         while (prefixIndex < strValue.length())
         {
-            int delimeterIndex = strValue.indexOf(String.valueOf(ESCAPE_CHAR), prefixIndex);
+            int delimeterIndex = strValue.indexOf(ESCAPE_CHAR, prefixIndex);
             if (delimeterIndex == -1)
             {
                 strbuff.append(strValue.substring(prefixIndex));
                 break;
             }
             //if a quote is follow by an esacpe then remove the escape character
-            if (String.valueOf(strValue.charAt(delimeterIndex+1)).equals(QUOTE_STRING))
+            if (strValue.charAt(delimeterIndex+1) == QUOTE_CHAR)
                 strbuff.append(strValue.substring(prefixIndex, delimeterIndex));
             else
                 strbuff.append(strValue.substring(prefixIndex, delimeterIndex+1));
@@ -278,7 +278,7 @@ public class ParamTokenizer
         while (prefixIndex < strValue.length())
         {
             int delimeterIndex = getStringDelimiterIndex(strValue,
-                                                         QUOTE_STRING, prefixIndex);
+                                                         QUOTE_CHAR, prefixIndex);
             if (delimeterIndex == -1)
             {
                 strbuff.append(strValue.substring(prefixIndex));
@@ -300,7 +300,7 @@ public class ParamTokenizer
      *  @return index - index of the delimiter in the strToken
      *  @throw CommandTokenizerException if the end quote do not match.
      */
-    private int getStringDelimiterIndex(String strToken, String delimiter,
+    private int getStringDelimiterIndex(String strToken, char delimiter,
                                         int fromIndex)
     {
         if (fromIndex > strToken.length()-1) return -1;
@@ -309,7 +309,7 @@ public class ParamTokenizer
         final int hasDelimiter = strToken.indexOf(delimiter, fromIndex);
 
             //get index of the first quote in the string token
-        final int quoteBeginIndex = strToken.indexOf(QUOTE_STRING, fromIndex);
+        final int quoteBeginIndex = strToken.indexOf(QUOTE_CHAR, fromIndex);
 
             // ex: set server.ias1.jdbcurl="jdbc://oracle"
             // if there's is a quote and a delimiter, then find the end quote
@@ -317,7 +317,7 @@ public class ParamTokenizer
             (quoteBeginIndex < hasDelimiter))
         {
             //get index of the end quote in the string token
-            final int quoteEndIndex = strToken.indexOf(QUOTE_STRING, quoteBeginIndex+1);
+            final int quoteEndIndex = strToken.indexOf(QUOTE_CHAR, quoteBeginIndex+1);
             
             if (quoteEndIndex == -1)
                 throw new IllegalArgumentException(localStrings.getLocalString("UnclosedString", "Unclosed string"));
@@ -343,10 +343,10 @@ public class ParamTokenizer
     public static void main(String[] args) 
     {
         try {
-            final ParamTokenizer ct = new ParamTokenizer(args[0], ":");
+            final ParamTokenizer ct = new ParamTokenizer(args[0], ':');
             while (ct.hasMoreTokens()) {
                 final String nameAndvalue = ct.nextToken();
-                final ParamTokenizer ct2 = new ParamTokenizer(nameAndvalue, "=");
+                final ParamTokenizer ct2 = new ParamTokenizer(nameAndvalue, '=');
                 System.out.println("+++++ ct2 tokens = " + ct2.countTokens() + " +++++");
                 if (ct2.countTokens() == 1)
                 {

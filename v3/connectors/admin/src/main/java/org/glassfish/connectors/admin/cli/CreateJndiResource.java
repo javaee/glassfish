@@ -47,7 +47,7 @@ public class CreateJndiResource implements AdminCommand {
     @Param(optional = true)
     String description;
 
-    @Param(name = "property", optional = true)
+    @Param(name = "property", optional = true, separator = ':')
     Properties properties;
 
     @Param(optional = true,

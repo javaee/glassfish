@@ -347,6 +347,10 @@ public class GenericCRUDCommand implements AdminCommand, PostConstruct, CommandM
                     public boolean password() {
                         return false;
                     }
+
+                    public char separator() {
+                        return ',';
+                    }
                 };
             }
         }

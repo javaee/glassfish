@@ -2,7 +2,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -93,7 +93,7 @@ public class CommandRunnerTest {
         propsExpected.put("prop1", "valA");
         propsExpected.put("prop2", "valB");
         propsExpected.put("prop3", "valC");
-        Properties propsActual = cr.convertStringToProperties(propsStr);
+        Properties propsActual = cr.convertStringToProperties(propsStr, ':');
         assertEquals(propsExpected, propsActual);
     }
     
@@ -103,19 +103,22 @@ public class CommandRunnerTest {
         Properties propsExpected = new Properties();
         propsExpected.put("connectionAttributes", ";create\\=true");
         Properties propsActual = null;
-        propsActual = cr.convertStringToProperties(propsStr);
+        propsActual = cr.convertStringToProperties(propsStr, ':');
         assertEquals(propsExpected, propsActual);
     }
     
     @Test
     public void convertStringToObjectTest() throws Exception {
-        String name = "name";
+        DummyCommand dc = new DummyCommand();
+        Class<?> cl = dc.getClass();
+        AnnotatedElement target = (AnnotatedElement)cl.getDeclaredField("foo");
         String paramValueStr = "prop1=valA:prop2=valB:prop3=valC";
-        Object paramValActual = cr.convertStringToObject(name, String.class, paramValueStr);
+        Object paramValActual = cr.convertStringToObject(target, String.class, paramValueStr);
         Object paramValExpected =  "prop1=valA:prop2=valB:prop3=valC";
         assertEquals("String type", paramValExpected, paramValActual);
   
-        paramValActual = cr.convertStringToObject(name, Properties.class, paramValueStr);
+        target = (AnnotatedElement)cl.getDeclaredField("prop");
+        paramValActual = cr.convertStringToObject(target, Properties.class, paramValueStr);
         paramValExpected = new Properties();        
         ((Properties)paramValExpected).put("prop1", "valA");
         ((Properties)paramValExpected).put("prop2", "valB");
@@ -123,7 +126,8 @@ public class CommandRunnerTest {
         assertEquals("Properties type", paramValExpected, paramValActual);
 
         paramValueStr = "server1:server2:server3";
-        paramValActual = cr.convertStringToObject(name, List.class, paramValueStr);
+        target = (AnnotatedElement)cl.getDeclaredField("lstr");
+        paramValActual = cr.convertStringToObject(target, List.class, paramValueStr);
         List<String> paramValueList = new java.util.ArrayList();
         paramValueList.add("server1");
         paramValueList.add("server2");
@@ -131,7 +135,8 @@ public class CommandRunnerTest {
         assertEquals("List type", paramValueList, paramValActual);
 
         paramValueStr = "server1,server2,server3";
-        paramValActual = cr.convertStringToObject(name, (new String[]{}).getClass(),
+        target = (AnnotatedElement)cl.getDeclaredField("astr");
+        paramValActual = cr.convertStringToObject(target, (new String[]{}).getClass(),
                                                   paramValueStr);
         String[] strArray = new String[3];
         strArray[0] = "server1";
@@ -191,18 +196,18 @@ public class CommandRunnerTest {
         listExpected.add("server1:server2");
         listExpected.add("\\server3");
         listExpected.add("server4");
-        List<String> listActual = cr.convertStringToList(listStr);
+        List<String> listActual = cr.convertStringToList(listStr, ':');
         assertEquals(listExpected, listActual);
     }
 
     @Test
-    public void convertStingToStringArrayTest() {
+    public void convertStringToStringArrayTest() {
         String strArray = "server1\\,server2,\\\\server3,server4";
         String[] strArrayExpected = new String[3];
         strArrayExpected[0]="server1,server2";
         strArrayExpected[1]="\\server3";
         strArrayExpected[2]="server4";
-        String[] strArrayActual = cr.convertStringToStringArray(strArray);
+        String[] strArrayActual = cr.convertStringToStringArray(strArray, ',');
         assertEquals(strArrayExpected, strArrayActual);
     }
 
@@ -251,8 +256,12 @@ public class CommandRunnerTest {
         String bar;
         @Param
         String hello="world";
-        @Param
+        @Param(name="prop", separator=':')
         Properties prop;
+        @Param(name="lstr", separator=':')
+        List<String> lstr;
+        @Param(name="astr")
+        String[] astr;
         
         public void execute(AdminCommandContext context) {}
     }

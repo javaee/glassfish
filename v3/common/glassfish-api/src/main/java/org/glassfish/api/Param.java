@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -110,4 +110,13 @@ public @interface Param {
      * @return true if the parameter is password
      */
     public boolean password() default false;
+
+    /**
+     * Returns the character used to separate items in a list.
+     * Applies to parameters of type List, Properties, and String[].
+     * The default separator is comma.
+     *
+     * @return the separator character
+     */
+    public char separator() default ',';
 }

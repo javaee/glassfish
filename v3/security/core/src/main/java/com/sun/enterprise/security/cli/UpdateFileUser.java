@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -77,7 +77,7 @@ public class UpdateFileUser implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(UpdateFileUser.class);    
 
-    @Param(name="groups", optional=true)
+    @Param(name="groups", optional=true, separator=':')
     List<String> groups = new ArrayList<String>(0); //by default, an empty list is better than a null
 
     // @Param(name="userpasswordfile", optional=true)

@@ -180,7 +180,7 @@ public class CommandRunnerImpl implements CommandRunner {
                         Object paramValue = sourceField.get(parameters);
 /*
                         if (paramValue==null) {
-                            return convertStringToObject(paramName, type, param.defaultValue());
+                            return convertStringToObject(target, type, param.defaultValue());
                         }
 */
                         // XXX temp fix, to revisit
@@ -213,7 +213,7 @@ public class CommandRunnerImpl implements CommandRunner {
             public Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
                 // look for the name in the list of parameters passed.
                 Param param = target.getAnnotation(Param.class);
-                String acceptable = param.acceptableValues();
+                //String acceptable = param.acceptableValues();
                 String paramName = getParamName(param, target);
                 if (param.primary()) {
                     // this is the primary parameter for the command
@@ -221,12 +221,14 @@ public class CommandRunnerImpl implements CommandRunner {
                     if (value!=null) {
                         // let's also copy this value to the command with a real name.
                         parameters.setProperty(paramName, value);
-                        return convertStringToObject(paramName, type, value);
+                        return convertStringToObject(target, type, value);
                     }
                 }
                 String paramValueStr = getParamValueString(parameters, param,
                                                            target);
 
+                checkAgainstAcceptableValues(target, paramValueStr);
+                /*
                 if(ok(acceptable)&& ok(paramValueStr)) {
                     String[] ss = acceptable.split(",");
                     boolean ok = false;
@@ -245,8 +247,9 @@ public class CommandRunnerImpl implements CommandRunner {
                             paramValueStr,
                             acceptable));
                 }
+                */
                 if (paramValueStr != null) {
-                    return convertStringToObject(paramName, type, paramValueStr);
+                    return convertStringToObject(target, type, paramValueStr);
                 }
                 //return default value
                 return getParamField(component, target);
@@ -291,7 +294,7 @@ public class CommandRunnerImpl implements CommandRunner {
                         Object paramValue = sourceField.get(parameters);
 /*
                         if (paramValue==null) {
-                            return convertStringToObject(paramName, type, param.defaultValue());
+                            return convertStringToObject(target, type, param.defaultValue());
                         }
 */
                         // XXX temp fix, to revisit 
@@ -669,18 +672,20 @@ public class CommandRunnerImpl implements CommandRunner {
          *
          * @return Object
          */
-        Object convertStringToObject(String paramName, Class type, String paramValStr) {
+        Object convertStringToObject(AnnotatedElement target, Class type, String paramValStr) {
+            Param param = target.getAnnotation(Param.class);
             Object paramValue = paramValStr;
             if (type.isAssignableFrom(String.class)) {
                 paramValue = paramValStr;
             } else if (type.isAssignableFrom(Properties.class)) {
-                paramValue = convertStringToProperties(paramValStr);
+                paramValue = convertStringToProperties(paramValStr, param.separator());
             } else if (type.isAssignableFrom(List.class)) {
-                paramValue = convertStringToList(paramValStr);
+                paramValue = convertStringToList(paramValStr, param.separator());
             } else if (type.isAssignableFrom(Boolean.class)) {
+                String paramName = getParamName(param, target);
                 paramValue = convertStringToBoolean(paramName, paramValStr);
             } else if (type.isAssignableFrom(String[].class)) {
-                paramValue = convertStringToStringArray(paramValStr);
+                paramValue = convertStringToStringArray(paramValStr, param.separator());
             } else if (type.isAssignableFrom(File.class)) {
                 return new File(paramValStr);
             }
@@ -1094,15 +1099,16 @@ public class CommandRunnerImpl implements CommandRunner {
          * {name1=value1, name2=value2, name3=value3, ...}
          *
          * @param propsString - the String to convert
+         * @param sep the separator character
          * @return Properties containing the elements in String
          */
-    Properties convertStringToProperties(String propsString) {
+    Properties convertStringToProperties(String propsString, char sep) {
         final Properties properties = new Properties();
         if (propsString != null) {
-            ParamTokenizer stoken = new ParamTokenizer(propsString, ":");
+            ParamTokenizer stoken = new ParamTokenizer(propsString, sep);
             while (stoken.hasMoreTokens()) {
                 String token = stoken.nextToken();
-                final ParamTokenizer nameTok = new ParamTokenizer(token, "=");
+                final ParamTokenizer nameTok = new ParamTokenizer(token, '=');
                 if (nameTok.countTokens() == 2) {
                     properties.setProperty(nameTok.nextTokenWithoutEscapeAndQuoteChars(),
                                        nameTok.nextTokenWithoutEscapeAndQuoteChars());
@@ -1120,12 +1126,13 @@ public class CommandRunnerImpl implements CommandRunner {
          * The List object contains elements: string1, string2, string3, ...
          *
          * @param listString - the String to convert
+         * @param sep the separator character
          * @return List containing the elements in String
          */
-    List<String> convertStringToList(String listString) {
+    List<String> convertStringToList(String listString, char sep) {
         List<String> list = new java.util.ArrayList();
         if (listString != null) {
-            final ParamTokenizer ptoken = new ParamTokenizer(listString, ":");
+            final ParamTokenizer ptoken = new ParamTokenizer(listString, sep);
             while (ptoken.hasMoreTokens()) {
                 String token = ptoken.nextTokenWithoutEscapeAndQuoteChars();
                 list.add(token);
@@ -1140,10 +1147,11 @@ public class CommandRunnerImpl implements CommandRunner {
          * The String Array contains: string1, string2, string3, ...
          *
          * @param arrayString - the String to convert
+         * @param sep the separator character
          * @return String[] containing the elements in String
          */
-    String[] convertStringToStringArray(String arrayString) {
-        final ParamTokenizer paramTok = new ParamTokenizer(arrayString,",");
+    String[] convertStringToStringArray(String arrayString, char sep) {
+        final ParamTokenizer paramTok = new ParamTokenizer(arrayString, sep);
         String[] strArray = new String[paramTok.countTokens()];
         int ii=0;
         while (paramTok.hasMoreTokens()) 

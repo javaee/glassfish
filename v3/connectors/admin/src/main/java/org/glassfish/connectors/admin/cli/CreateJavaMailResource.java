@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -98,7 +98,7 @@ public class CreateJavaMailResource implements AdminCommand {
     @Param(optional=true, defaultValue="false")
     Boolean debug;
 
-    @Param(name="property", optional=true)
+    @Param(name="property", optional=true, separator=':')
     Properties properties;
 
     @Param(optional=true,
