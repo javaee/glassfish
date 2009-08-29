@@ -27,11 +27,45 @@ import javax.annotation.sql.*;
                         user = "APP",
                         password = "APP",
                         databaseName = "hello-client-annotation-global",
-                        properties = {"connectionAttributes=;create=true"}
+                        properties = {"connectionAttributes=;create=true"},
+                        isolationLevel = 8
                 ),
 
 
                 @DataSourceDefinition(name = "java:comp/env/Appclient_DataSource",
+                        minPoolSize = 0,
+                        initialPoolSize = 0,
+                        className = "org.apache.derby.jdbc.ClientXADataSource",
+                        portNumber = 1527,
+                        serverName = "localhost",
+                        user = "APP",
+                        password = "APP",
+                        databaseName = "hello-client-annotation-comp",
+                        properties = {"connectionAttributes=;create=true"},
+                        isolationLevel = -1
+                ),
+                //test case to ensure that isolationLevel specified as integer in annotation
+                //is converted to DD equivalent string.
+                //The only way to confirm the fix for IT 9292 is that appclient console
+                //should not have "invalidDescriptorFailureException" printed
+                @DataSourceDefinition(name = "java:comp/env/Appclient_DataSource1",
+                        minPoolSize = 0,
+                        initialPoolSize = 0,
+                        className = "org.apache.derby.jdbc.ClientXADataSource",
+                        portNumber = 1527,
+                        serverName = "localhost",
+                        user = "APP",
+                        password = "APP",
+                        databaseName = "hello-client-annotation-comp",
+                        properties = {"connectionAttributes=;create=true"},
+                        isolationLevel = 4
+                ),
+                //test case to ensure that isolationLevel specified as integer in annotation
+                //is converted to DD equivalent string.
+                //The only way to confirm the fix for IT 9292 is that appclient console
+                //should not have "invalidDescriptorFailureException" printed
+                //no isolation level specified
+		@DataSourceDefinition(name = "java:comp/env/Appclient_DataSource2",
                         minPoolSize = 0,
                         initialPoolSize = 0,
                         className = "org.apache.derby.jdbc.ClientXADataSource",
