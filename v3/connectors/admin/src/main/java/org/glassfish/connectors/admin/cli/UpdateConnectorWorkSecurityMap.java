@@ -31,10 +31,10 @@ public class UpdateConnectorWorkSecurityMap implements AdminCommand {
     @Param(name = "raname")
     String raName;
 
-    @Param(name = "addprincipals", optional = true, separator = ':')
+    @Param(name = "addprincipals", optional = true)
     Properties addPrincipals;
 
-    @Param(name = "addgroups", optional = true, separator = ':')
+    @Param(name = "addgroups", optional = true)
     Properties addGroups;
 
     @Param(name = "removeprincipals", optional = true)

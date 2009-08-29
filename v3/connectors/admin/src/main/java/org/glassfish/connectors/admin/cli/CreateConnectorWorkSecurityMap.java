@@ -75,10 +75,10 @@ public class CreateConnectorWorkSecurityMap implements AdminCommand {
     @Param(name="raname")
     String raName;
 
-    @Param(name="principalsmap", optional=true, separator=':')
+    @Param(name="principalsmap", optional=true)
     Properties principalsMap;
 
-    @Param(name = "groupsmap", optional=true, separator=':')
+    @Param(name = "groupsmap", optional=true)
     Properties groupsMap;
 
     @Param(name="description", optional=true)
