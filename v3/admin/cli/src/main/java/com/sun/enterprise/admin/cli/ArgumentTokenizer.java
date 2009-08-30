@@ -44,7 +44,6 @@ public class ArgumentTokenizer {
     protected int currentPosition;
     protected int maxPosition;
     protected String str;
-    protected String delimiters = null;
     protected StringBuilder token = new StringBuilder();
 
     private static final LocalStringsImpl strings =
@@ -119,6 +118,8 @@ public class ArgumentTokenizer {
                             throw new ArgumentTokenizer.ArgumentException(
                                 strings.get("token.escapeAtEOL"));
                         c = str.charAt(currentPosition++);
+                        if (!(c == '\\' || c == '"' || c == '\''))
+                            token.append('\\');
                     } else if (c == quote) {
                         break;
                     }
@@ -127,15 +128,14 @@ public class ArgumentTokenizer {
                 if (c != quote)
                     throw new ArgumentTokenizer.ArgumentException(
                                 strings.get("token.unbalancedQuotes"));
-            } else if (delimiters != null && delimiters.indexOf(c) >= 0) {
-                if (token.length() == 0)
-                    token.append(c);
-                break;
             } else if (c == '\\') {
                 if (currentPosition >= maxPosition)
                     throw new ArgumentTokenizer.ArgumentException(
                                 strings.get("token.escapeAtEOL"));
                 c = str.charAt(currentPosition++);
+                if (!(c == '\\' || c == '"' || c == '\'' ||
+                        Character.isWhitespace(c)))
+                    token.append('\\');
                 token.append(c);
             } else if (Character.isWhitespace(c)) {
                 break;
