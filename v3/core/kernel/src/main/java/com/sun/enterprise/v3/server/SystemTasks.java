@@ -114,14 +114,17 @@ public class SystemTasks implements Init, PostConstruct {
 
     private void setSystemPropertiesFromDomainXml() {
         // precedence order from high to low
-        // 1. server
-        // 2. server-config
-        // so we need to add System Properties in *reverse order* to get the 
+        // 0. server
+        // 1. server-config
+        // 2. domain
+        // so we need to add System Properties in *reverse order* to get the
         // right precedence.
 
-        List<SystemProperty> serverSPList = server.getSystemProperty();
+        List<SystemProperty> domainSPList = domain.getSystemProperty();
         List<SystemProperty> configSPList = getConfigSystemProperties();
+        List<SystemProperty> serverSPList = server.getSystemProperty();
 
+        setSystemProperties(domainSPList);
         setSystemProperties(configSPList);
         setSystemProperties(serverSPList);
     }

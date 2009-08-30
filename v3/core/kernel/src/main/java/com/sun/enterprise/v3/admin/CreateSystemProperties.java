@@ -50,6 +50,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.SystemPropertyBag;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
@@ -94,16 +95,27 @@ public class CreateSystemProperties implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        Server server = domain.getServerNamed(target);
+        SystemPropertyBag spb;
+        if ("domain".equals(target))
+            spb = domain;
+        else
+            spb = domain.getServerNamed(target); //this is ok for now  (config is not a target as far as v3 FCS is concerned -- take it up later)
+        if (spb == null) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            String msg = localStrings.getLocalString("invalid.target.sys.props",
+                    "Invalid target:{0}. Valid targets are ''domain'' and a server named ''server'' (default).", target);
+            report.setMessage(msg);
+            return;
+        }
         String sysPropName = "";
         try {            
             for (final Object key : properties.keySet()) {
                 final String propName = (String) key;
                 sysPropName = propName;
                     
-                ConfigSupport.apply(new SingleConfigCode<Server>() {
+                ConfigSupport.apply(new SingleConfigCode<SystemPropertyBag>() {
 
-                    public Object run(Server param) throws PropertyVetoException, TransactionFailure {
+                    public Object run(SystemPropertyBag param) throws PropertyVetoException, TransactionFailure {
 
                         // update existing system properties
                         // sysProperty.setValue(propValue) doesn't work ? so
@@ -122,9 +134,9 @@ public class CreateSystemProperties implements AdminCommand {
                         param.getSystemProperty().add(newSysProp);                    
                         return newSysProp;
                     }
-                }, server);
+                }, spb);
+                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             }
-            
         } catch(TransactionFailure tfe) {
             report.setMessage(localStrings.getLocalString("create.system.properties.failed",
                     "System property {0} creation failed", sysPropName));
@@ -138,7 +150,5 @@ public class CreateSystemProperties implements AdminCommand {
             report.setFailureCause(e);
             return;
         }
-        ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
-        report.setActionExitCode(ec);
     }
 }

@@ -35,23 +35,24 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import java.beans.PropertyVetoException;
-import com.sun.enterprise.config.serverbeans.SystemProperty;
-import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.SystemPropertyBag;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+
+import java.beans.PropertyVetoException;
 
 /**
  * Delete System Property Command
@@ -78,7 +79,7 @@ public class DeleteSystemProperty implements AdminCommand {
     String propName;
     
     @Inject
-    Server[] servers;
+    Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -88,43 +89,40 @@ public class DeleteSystemProperty implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        
-        try {
-            for (final Server server : servers) {
-                if (server.getName().equals(target)) {
-                    if (ConfigSupport.apply(new SingleConfigCode<Server>() {
-
-                        public Object run(Server param) throws PropertyVetoException, TransactionFailure {
-
-                            for (SystemProperty prop : param.getSystemProperty()) {
-                                if (prop.getName().equals(propName)) {
-                                    return param.getSystemProperty().remove(prop);
-                                }
-                            }
-                            // not found
-                            return null;
-                        }
-                    }, server) == null) {
-                        report.setMessage(localStrings.getLocalString("delete.system.property.doesNotExist",
-                        "A system property named {0} does not exist.", propName));
-                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                        return;
-                    }
-                }
-            }
-        } catch(TransactionFailure tfe) {
-            report.setMessage(localStrings.getLocalString("delete.system.property.failed",
-                    "System property {0} deletion failed", propName));
+        SystemPropertyBag spb;
+        if ("domain".equals(target))
+            spb = domain;
+        else
+            spb = domain.getServerNamed(target); //this is ok for now  (config is not a target as far as v3 FCS is concerned -- take it up later)
+        if (spb == null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(tfe);
-            return;
-        } catch(Exception e) {
-            report.setMessage(localStrings.getLocalString("delete.system.property.failed",
-                    "System property {0} deletion failed", propName));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
+            String msg = localStrings.getLocalString("invalid.target.sys.props",
+                    "Invalid target:{0}. Valid targets are ''domain'' and a server named ''server'' (default).", target);
+            report.setMessage(msg);
             return;
         }
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        if(!spb.containsProperty(propName)) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            String msg = localStrings.getLocalString("no.such.property",
+                    "System Property named {0} does not exist at the given target {1}", propName, target);
+            report.setMessage(msg);
+            return;
+        }
+        //now we are sure that the target exits in the config, just remove the given property
+        try {
+            ConfigSupport.apply(new SingleConfigCode<SystemPropertyBag>() {
+                public Object run(SystemPropertyBag param) throws PropertyVetoException, TransactionFailure {
+                    param.getSystemProperty().remove(param.getSystemProperty(propName));
+                    return param;
+                }
+            }, spb);
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            String msg = localStrings.getLocalString("delete.sysprops.ok",
+                    "System Property named {0} deleted from given target {1}. Make sure that you remove any references to this property from configuration", propName, target);
+            report.setMessage(msg);
+        } catch (TransactionFailure tf) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setFailureCause(tf);
+        }
     }
 }

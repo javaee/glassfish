@@ -37,6 +37,8 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
+import com.sun.enterprise.config.serverbeans.SystemPropertyBag;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.List;
@@ -71,7 +73,7 @@ public class ListSystemProperties implements AdminCommand {
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
     @Inject
-    Server[] servers;
+    Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -81,30 +83,39 @@ public class ListSystemProperties implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        
+        SystemPropertyBag spb;
+        if ("domain".equals(target))
+            spb = domain;
+        else
+            spb = domain.getServerNamed(target); //this is ok for now  (config is not a target as far as v3 FCS is concerned -- take it up later)
+        if (spb == null) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            String msg = localStrings.getLocalString("invalid.target.sys.props",
+                    "Invalid target:{0}. Valid targets are ''domain'' and a server named ''server'' (default).", target);
+            report.setMessage(msg);
+            return;
+        }
         try {
-            for (Server server : servers) {
-                if (server.getName().equals(target)) {
-                    List<SystemProperty> sysProps = server.getSystemProperty();
-                    if (sysProps.isEmpty()) {
-                        final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                        part.setMessage(localStrings.getLocalString(
-                                "NothingToList", "Nothing to List."));
-                    } else {
-                        for (SystemProperty prop : sysProps) {
-                            final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                            part.setMessage(prop.getName()+"="+prop.getValue());
-                        }
-                    }
+            List<SystemProperty> sysProps = spb.getSystemProperty();
+            int length = 0;
+            if (sysProps.isEmpty()) {
+                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                part.setMessage(localStrings.getLocalString(
+                        "NothingToList", "Nothing to List."));
+            } else {
+                for (SystemProperty prop : sysProps) {
+                    final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                    part.setMessage(prop.getName()+"="+prop.getValue());
+                    length++;
                 }
+                report.setMessage(localStrings.getLocalString("list.ok", "The target {0} contains following {1} system properties", target, length));
             }
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (Exception e) {
             report.setMessage(localStrings.getLocalString("list.system.properties.failed",
                     "list-system-properties failed"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
-            return;
         }
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }

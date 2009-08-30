@@ -171,8 +171,8 @@ public abstract class ActionReporter extends ActionReport {
     protected void getCombinedMessages(ActionReporter aReport, StringBuilder sb) {
         if (aReport == null || sb == null)
             return;
-        String mainMsg = null; //this is the message related to the topMessage
-        String failMsg = null; //this is the message related to failure cause
+        String mainMsg = ""; //this is the message related to the topMessage
+        String failMsg; //this is the message related to failure cause
         // Other code in the server may write something like report.setMessage(exception.getMessage())
         // and also set report.setFailureCause(exception). We need to avoid the duplicate message.
         if (aReport.getMessage() != null && aReport.getMessage().length() != 0) {

@@ -39,6 +39,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.DuckTyped;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.util.List;
 
@@ -48,7 +49,7 @@ import java.util.List;
  * <b>Important: document legal properties using {@link PropertiesDesc}, one {@link PropertyDesc}
  * for each legal system-property</b>.
  */
-public interface SystemPropertyBag {
+public interface SystemPropertyBag extends ConfigBeanProxy {
     /**
      * Gets the list of system-property.
      * <p/>
@@ -90,6 +91,9 @@ public interface SystemPropertyBag {
     @DuckTyped
     String getPropertyValue(String name, String defaultValue);
 
+    @DuckTyped
+    boolean containsProperty(String name);
+
     class Duck {
         public static SystemProperty getSystemProperty(final SystemPropertyBag me, final String name) {
             for (final SystemProperty prop : me.getSystemProperty()) {
@@ -110,6 +114,10 @@ public interface SystemPropertyBag {
                 return prop.getValue();
             }
             return defaultValue;
+        }
+
+        public static boolean containsProperty(SystemPropertyBag me, String name) {
+            return me.getSystemProperty(name) != null;    
         }
     }
 }
