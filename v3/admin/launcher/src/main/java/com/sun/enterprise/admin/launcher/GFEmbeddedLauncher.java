@@ -4,14 +4,11 @@
  */
 package com.sun.enterprise.admin.launcher;
 
-import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
-import java.io.*;
 import java.io.File;
 import java.util.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +38,10 @@ class GFEmbeddedLauncher extends GFLauncher {
 
     @Override
     String getMainClass() throws GFLauncherException {
-        return "org.glassfish.embed.EmbeddedMain";
+        String className = System.getenv(GFE_RUNSERVER_CLASS);
+        if (className == null)
+            return "org.glassfish.embedded.EmbeddedMain";
+        return className;
     }
 
     @Override
@@ -84,9 +84,9 @@ class GFEmbeddedLauncher extends GFLauncher {
             File dx = new File(theConfigDir, "domain.xml");
             info.setConfigDir(theConfigDir);
 
+            info.setDomainRootDir(new File(System.getenv(INSTALL_HOME)));
             MiniXmlParser parser = new MiniXmlParser(dx, instanceName);
             info.setAdminPorts(parser.getAdminPorts());
-
         }
         catch (Exception e) {
             // temp todo
@@ -112,7 +112,10 @@ class GFEmbeddedLauncher extends GFLauncher {
 
     @Override
     void setClasspath() {
-        setClasspath(gfeJar.getPath() + File.pathSeparator + javaDbClassPath);
+        String classPath = gfeJar.getPath() + File.pathSeparator + javaDbClassPath;
+        if (runServerJar != null)
+            classPath = classPath + File.pathSeparator + runServerJar.getPath();
+        setClasspath(classPath);
     }
 
     @Override
@@ -165,7 +168,7 @@ class GFEmbeddedLauncher extends GFLauncher {
 
     private void setupFromEnv() throws GFLauncherException {
         // we require several env. variables to be set for embedded-cli usage
-        setupEmbeddedJar();
+        setupEmbeddedJars();
         setupInstallationDir();
         setupJDK();
         setupDomainDir();
@@ -232,7 +235,7 @@ class GFEmbeddedLauncher extends GFLauncher {
         installDir = SmartFile.sanitize(installDir);
     }
 
-    private void setupEmbeddedJar() throws GFLauncherException {
+    private void setupEmbeddedJars() throws GFLauncherException {
         String err = "You must set the environmental variable GFE_JAR to point " +
                 "at the Embedded jarfile.";
 
@@ -247,6 +250,24 @@ class GFEmbeddedLauncher extends GFLauncher {
             throw new GFLauncherException(err);
 
         gfeJar = SmartFile.sanitize(gfeJar);
+
+         err = "You must set the environmental variable GFE_RUNSERVER_JAR to point " +
+                "at the server startup jar.";
+
+        String runServerJarName = System.getenv(GFE_RUNSERVER_JAR);
+
+        if (runServerJarName != null) {
+            if (!ok(runServerJarName)) {
+                throw new GFLauncherException(err);
+            }
+            runServerJar = new File(runServerJarName);
+
+            if (!runServerJar.isFile())
+                throw new GFLauncherException(err);
+
+            runServerJar = SmartFile.sanitize(runServerJar);
+        }
+
     }
 
     private void setupJavaDB() throws GFLauncherException {
@@ -290,12 +311,14 @@ class GFEmbeddedLauncher extends GFLauncher {
         return s != null && s.length() > 0;
     }
     private boolean setup = false;
-    private File gfeJar;
+    private File gfeJar, runServerJar;
     private File installDir;
     private File javaExe;
     private File domainDir;
     private File domainXml;
     private String javaDbClassPath;
+    private static final String GFE_RUNSERVER_JAR = "GFE_RUNSERVER_JAR";
+    private static final String GFE_RUNSERVER_CLASS = "GFE_RUNSERVER_CLASS";
     private static final String GFE_JAR = "GFE_JAR";
     private static final String INSTALL_HOME = "S1AS_HOME";
     private static final String JAVA_HOME = "JAVA_HOME";
