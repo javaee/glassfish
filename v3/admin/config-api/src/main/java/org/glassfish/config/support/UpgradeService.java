@@ -359,7 +359,7 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
 
                         Property prop4 =
                             app.createChild(Property.class);
-                        prop4.setName("isLifecycle");
+                        prop4.setName(ServerTags.IS_LIFECYCLE);
                         prop4.setValue("true");
                         app.getProperty().add(prop4);
 

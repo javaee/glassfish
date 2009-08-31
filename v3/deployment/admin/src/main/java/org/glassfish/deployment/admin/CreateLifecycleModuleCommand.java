@@ -132,7 +132,7 @@ public class CreateLifecycleModuleCommand implements AdminCommand {
         appProps.setProperty(ServerTags.IS_FAILURE_FATAL, 
             failurefatal.toString());
  
-        appProps.setProperty("isLifecycle", "true");
+        appProps.setProperty(ServerTags.IS_LIFECYCLE, "true");
 
         try  {
             deployment.registerAppInDomainXML(null, deploymentContext);

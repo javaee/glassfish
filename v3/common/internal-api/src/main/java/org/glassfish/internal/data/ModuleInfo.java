@@ -347,22 +347,24 @@ public class ModuleInfo {
 
         module.setName(name);
 
-        // write the module properties
-        // the app level properties will also be written at module level
-        // as they apply to module as well
-        for (Iterator itr = moduleProps.keySet().iterator(); itr.hasNext();) {
-            String propName = (String) itr.next();
-            if (!propName.equals(ServerTags.LOCATION) &&
-                !propName.equals(ServerTags.OBJECT_TYPE) &&
-                !propName.equals(ServerTags.CONTEXT_ROOT) &&
-                !propName.equals(ServerTags.DIRECTORY_DEPLOYED) &&
-                !propName.equals("isComposite") &&
-                !propName.startsWith("appConfig"))
-            {
-                Property prop = module.createChild(Property.class);
-                module.getProperty().add(prop);
-                prop.setName(propName);
-                prop.setValue(moduleProps.getProperty(propName));
+        // write out the module properties only for composite app
+        if (Boolean.valueOf(moduleProps.getProperty(
+            ServerTags.IS_COMPOSITE))) {
+            for (Iterator itr = moduleProps.keySet().iterator(); 
+                itr.hasNext();) {
+                String propName = (String) itr.next();
+                if (!propName.equals(ServerTags.LOCATION) &&
+                    !propName.equals(ServerTags.OBJECT_TYPE) &&
+                    !propName.equals(ServerTags.CONTEXT_ROOT) &&
+                    !propName.equals(ServerTags.DIRECTORY_DEPLOYED) &&
+                    !propName.equals(ServerTags.IS_COMPOSITE) &&
+                    !propName.startsWith(ServerTags.APP_CONFIG))
+                {
+                    Property prop = module.createChild(Property.class);
+                    module.getProperty().add(prop);
+                    prop.setName(propName);
+                    prop.setValue(moduleProps.getProperty(propName));
+                }
             }
         }
 

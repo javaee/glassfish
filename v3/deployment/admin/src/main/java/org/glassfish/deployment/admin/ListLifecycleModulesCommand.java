@@ -36,6 +36,7 @@ package org.glassfish.deployment.admin;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
@@ -62,9 +63,6 @@ public class ListLifecycleModulesCommand implements AdminCommand  {
     @Inject
     Applications applications;
 
-    // the property to indicate lifecycle module
-    private final static String IS_LIFECYCLE = "isLifecycle";
-
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListLifecycleModulesCommand.class);
    
     public void execute(AdminCommandContext context) {
@@ -74,7 +72,7 @@ public class ListLifecycleModulesCommand implements AdminCommand  {
 
         for (Application app : applications.getApplications()) {
             if (Boolean.valueOf(app.getDeployProperties().getProperty
-                (IS_LIFECYCLE))) {
+                (ServerTags.IS_LIFECYCLE))) {
                 ActionReport.MessagePart childPart = part.addChild();
                 childPart.setMessage(app.getName());
             }

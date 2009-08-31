@@ -79,9 +79,6 @@ public class LifecycleModuleService implements Startup, PreDestroy, PostConstruc
     @Inject
     Events events;
 
-    // the property to indicate lifecycle module
-    private final static String IS_LIFECYCLE = "isLifecycle";
-
     /**
      * The set of registered LifecycleListeners for event notifications.
      */
@@ -128,7 +125,7 @@ public class LifecycleModuleService implements Startup, PreDestroy, PostConstruc
             List<Application> lcms = new ArrayList<Application>();;
             for (Application app : applications) {
                 if (Boolean.valueOf(app.getDeployProperties().getProperty
-                    (IS_LIFECYCLE))) {
+                    (ServerTags.IS_LIFECYCLE))) {
                     lcms.add(app);
                 }
             }
@@ -166,7 +163,7 @@ public class LifecycleModuleService implements Startup, PreDestroy, PostConstruc
                         ServerTags.IS_FAILURE_FATAL);
                     slcm.setIsFatal(Boolean.valueOf(isFailureFatal));
 
-                    props.remove(IS_LIFECYCLE);
+                    props.remove(ServerTags.IS_LIFECYCLE);
                     props.remove(ServerTags.OBJECT_TYPE);
                         
                     for (String propName : props.stringPropertyNames()) {

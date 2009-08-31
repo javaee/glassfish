@@ -674,7 +674,10 @@ public class ServerTags  {
     static public final String IS_FAILURE_FATAL = "is-failure-fatal";
     //static public final String OBJECT_TYPE = "object-type";
     //static public final String ENABLED = "enabled";
+    public static final String IS_LIFECYCLE = "isLifecycle";
     // Tags for Element j2ee-application
+    public static final String IS_COMPOSITE = "isComposite";
+    public static final String APP_CONFIG = "appConfig";
     static public final String J2EE_APPLICATION = "j2ee-application";
     //static public final String DESCRIPTION = "description";
     //static public final String NAME = "name";

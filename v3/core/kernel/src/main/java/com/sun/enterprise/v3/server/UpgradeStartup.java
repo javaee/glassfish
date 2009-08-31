@@ -147,7 +147,7 @@ public class UpgradeStartup implements ModuleStartup {
         for (Application app : applications.getApplications()) {
             // we don't need to redeploy lifecycle modules
             if (Boolean.valueOf(app.getDeployProperties().getProperty
-                ("isLifecycle"))) {
+                (ServerTags.IS_LIFECYCLE))) {
                 continue;
             }
             logger.log(Level.INFO, "Redeploy application " + app.getName() + " located at " + app.getLocation());    

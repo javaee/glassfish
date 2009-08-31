@@ -163,7 +163,7 @@ public class AppSpecificConnectorClassLoaderUtil {
                 if (modules.size() == 1) {
                     Module module = modules.get(0);
                     if ((module.getEngine("connector")) != null &&
-                            (!Boolean.valueOf(application.getDeployProperties().getProperty("isComposite")))) {
+                            (!Boolean.valueOf(application.getDeployProperties().getProperty(ServerTags.IS_COMPOSITE)))) {
                         String appName = application.getName();
                         ApplicationInfo appInfo = appRegistry.get(appName);
                         Application dolApp = appInfo.getMetaData(Application.class);

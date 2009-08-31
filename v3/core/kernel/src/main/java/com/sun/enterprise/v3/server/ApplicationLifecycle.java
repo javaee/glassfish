@@ -136,7 +136,6 @@ public class ApplicationLifecycle implements Deployment {
 
     protected Logger logger = LogDomains.getLogger(AppServerStartup.class, LogDomains.CORE_LOGGER);
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ApplicationLifecycle.class);      
-    private static final String IS_COMPOSITE = "isComposite";
 
     protected <T extends Container, U extends ApplicationContainer> Deployer<T, U> getDeployer(EngineInfo<T, U> engineInfo) {
         return engineInfo.getDeployer();
@@ -383,7 +382,7 @@ public class ApplicationLifecycle implements Deployment {
             ReadableArchive source=context.getSource();
             if (handler instanceof CompositeHandler) {
                 source = new CompositeArchive(context.getSource(), (CompositeHandler) handler);
-                context.getAppProps().setProperty(IS_COMPOSITE, "true");
+                context.getAppProps().setProperty(ServerTags.IS_COMPOSITE, "true");
                 sniffers = snifferManager.getCompositeSniffers(context);
             } else {
                 sniffers = snifferManager.getSniffers(source, context.getClassLoader());

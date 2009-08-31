@@ -105,7 +105,7 @@ public class WebAppHandlers {
 
             // If this is a ear file,  or context-root is not specified, do not show the context root.
         String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-        String isEar = V3AMX.getPropValue(V3AMX.objectNameToProxy(objectNameStr), "isComposite" );
+        String isEar = V3AMX.getPropValue(V3AMX.objectNameToProxy(objectNameStr), DFDeploymentProperties.IS_COMPOSITE);
         if (isEar == null || !isEar.equals("true")){
             handlerCtx.setOutputValue("value", Boolean.TRUE);
         }else{

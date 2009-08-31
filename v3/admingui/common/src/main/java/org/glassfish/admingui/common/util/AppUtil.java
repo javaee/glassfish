@@ -73,7 +73,4 @@ public class AppUtil {
     static {
         sniffersHide.add("security");
     }
-
-    static public final String PROP_IS_COMPOSITE = "isComposite";
-
 }

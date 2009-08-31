@@ -331,6 +331,7 @@ public class DFDeploymentProperties extends Properties {
     public static final String LOAD_ORDER = "load-order";
     public static final String IS_FAILURE_FATAL = "is-failure-fatal";
     public static final String IS_LIFECYCLE = "isLifecycle"; 
+    public static final String IS_COMPOSITE = "isComposite"; 
 
     public Map<String,String> asMap() {
         return new HashMap<String,String>();

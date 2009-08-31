@@ -28,6 +28,7 @@ import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
@@ -112,9 +113,6 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
     // See https://glassfish.dev.java.net/issues/show_bug.cgi?id=7179
     @Inject(name="ResourceManager", optional = true)
     Startup resourceManager;
-
-    private static final String IS_COMPOSITE = "isComposite";
-    private static final String IS_LIFECYCLE = "isLifecycle";
 
     /**
      * Retuns the lifecyle of the service.
@@ -248,7 +246,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
         // lifecycle modules are loaded separately
         if (Boolean.valueOf(app.getDeployProperties().getProperty
-            (IS_LIFECYCLE))) {
+            (ServerTags.IS_LIFECYCLE))) {
             return;
         }
 
@@ -285,7 +283,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
                     List<Sniffer> sniffers = new ArrayList<Sniffer>();
                     if (!Boolean.valueOf(depContext.getAppProps().getProperty
-                        (IS_COMPOSITE))) {
+                        (ServerTags.IS_COMPOSITE))) {
                         for (String snifferType : snifferTypes) {
                             Sniffer sniffer = snifferManager.getSniffer(snifferType);
                             if (sniffer!=null) {

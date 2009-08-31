@@ -43,6 +43,7 @@ import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Module;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.api.admin.config.Named;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Scoped;
@@ -100,7 +101,7 @@ public class ListAppRefsCommand implements AdminCommand {
             app = (Application) named;
         }
         if (app != null) {
-            if (Boolean.valueOf(app.getDeployProperties().getProperty("isComposite"))) {
+            if (Boolean.valueOf(app.getDeployProperties().getProperty(ServerTags.IS_COMPOSITE))) {
                 if (type.equals("ear")) {
                     return true;
                 } else {
