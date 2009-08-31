@@ -75,8 +75,8 @@ public final class DeleteJvmOptions implements AdminCommand {
     //depends what target is being sent on command line -- this is a temporary measure
     @Inject JavaConfig jc;
     
-    @Param(name="jvm_option_name", primary=true)
-    String optString;
+    @Param(name="jvm_option_name", primary=true, separator=':')
+    List<String> jvmOptions;
     
     private static final StringManager lsm = StringManager.getManager(ListJvmOptions.class); 
     private static final Logger logger     = Logger.getLogger(DeleteJvmOptions.class.getPackage().getName()); // TODO: change later
@@ -84,12 +84,11 @@ public final class DeleteJvmOptions implements AdminCommand {
         //validate the target first
         logfh("Injected JavaConfig: " + jc);
         final ActionReport report = context.getActionReport();
-        List<Joe> joes             = Joe.toJoes(optString);
         
         try {
-            deleteX(jc, Joe.toStrings(joes));
+            deleteX(jc, jvmOptions);
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            part.setMessage("deleted " + joes.size() + " option(s)");
+            part.setMessage("deleted " + jvmOptions.size() + " option(s)");
         } catch (Exception e) {
             String msg = e.getMessage() != null ? e.getMessage() : 
                 lsm.getStringWithDefault("delete.jvm.options.failed",

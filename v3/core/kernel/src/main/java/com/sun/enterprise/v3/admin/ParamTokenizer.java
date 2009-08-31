@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,339 +34,127 @@
  * holder.
  */
 
-/*
- *  ParamTokenizer.java
- */
-
 package com.sun.enterprise.v3.admin;
 
+import java.util.NoSuchElementException;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import java.util.ListIterator;
 
 /**
- * This Parameter Tokenizer class allows CLI command to break strings into tokens.
- * The tokenizer checks for the escape characters and the quotes to determine 
- * the tokens.
- * Consider the following examples:
- * <li> 
- *   string is <code>name1=value1:name2=value2</code> and the delimiter is :
- *   Properties tokenizer will tokenized the string to:
- *   <blockquote><pre>
- *   name1=value1
- *   name2=value2
- *   </pre></blockquote>
- * </li> 
- * <li> 
- *   string is <code>name1=abc\:def:name2=value2</code> and the delimiter is :
- *   Properties tokenizer will tokenized the string to:
- *   <blockquote><pre>
- *   name1=abc:def
- *   name2=value2
- *   </pre></blockquote>
- *   notice that abc\:def is not tokenized since it contains an escape character
- *   before the :.
- * </li> 
- * <li> 
- *   string is <code>name1="abc:def":name2=value2</code> and the delimiter is :
- *   Properties tokenizer will tokenized the string to:
- *   <blockquote><pre>
- *   name1=abc:def
- *   name2=value2
- *   </pre></blockquote>
- *   notice that "abc:def" is not not tokenized since it's in the quotes
- * </li> 
- * <li> 
- *   string is <code>name1="abc\:def":name2=value2</code> and the delimiter is :
- *   Properties tokenizer will tokenized the string to:
- *   <blockquote><pre>
- *   name1=abc\:def
- *   name2=value2
- *   </pre></blockquote>
- * </li> 
- * @author  Jane Young
+ * Separate parameters to admin commands into tokens.
+ * Mostly used for parameters that take a list of values
+ * seprated by colons.
+ *
+ * @author Bill Shannon
  */
-public class ParamTokenizer 
-{
-    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ParamTokenizer.class);
-    private final static char    ESCAPE_CHAR  = '\\';
-    private final static char    QUOTE_CHAR   = '"';
-    private int size = 0;
-    private ListIterator tokenIterator = null;
+public class ParamTokenizer {
+    protected int currentPosition;
+    protected int maxPosition;
+    protected String str;
+    protected char delimiter;
+    protected StringBuilder token = new StringBuilder();
 
+    public static final LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(ParamTokenizer.class);
 
     /**
-     *  constructor that calls popluateList to create the tokeIterator
-     *  and size variables.
-     *  @param stringToken - the string to tokenize.
-     *  @param delimiter - the delimiter to tokenize.
+     * Construct a tokenizer for the specified string.
+     *
+     * @param   str            a string to be parsed.
      */
-    public ParamTokenizer(String stringToken, char delimiter)
-    {
-        if (!checkForMatchingQuotes(stringToken))
-            throw new IllegalArgumentException(localStrings.getLocalString("UnclosedString", "Unclosed string"));
-
-        if (stringToken != null && delimiter != '\0')
-            tokenIterator = populateList(stringToken, delimiter);
-        else
-            throw new NullPointerException(localStrings.getLocalString("CouldNotCreateParamTokenizer", "Couldn't create ParamTokenizer"));
+    public ParamTokenizer(String str, char delimiter) {
+        currentPosition = 0;
+        this.str = str;
+        this.delimiter = delimiter;
+        maxPosition = str.length();
     }
 
     /**
-     *  returns the number of tokens in the string.
-     *  @return number of tokens
+     * Test if there are more tokens available from this tokenizer's string.
+     *
+     * @return  <code>true</code> if there are more tokens available from this
+     *          tokenizer's string; <code>false</code> otherwise.
      */
-    public int countTokens()
-    {
-        return size;
+    public boolean hasMoreTokens() {
+        return (currentPosition < maxPosition);
     }
 
     /**
-     *  returns true is there are more token in the list
-     *  @return true if there are more tokens else false.
+     * Return the next token from this tokenizer.
+     *
+     * @return     the next token from this tokenizer.
+     * @exception  NoSuchElementException  if there are no more tokens in this
+     *               tokenizer's string.
      */
-    public boolean hasMoreTokens()
-    {
-        return tokenIterator.hasNext();
-    }
-
-    /**
-     *  returns the token string without the  escape characters
-     *  @return the next string token without the escape characters.
-     */
-    public String nextTokenWithoutEscapeAndQuoteChars()
-    {
-        final String strWOEscape = removeEscapeChars((String)tokenIterator.next());
-        final String strWOQuotes = removeQuoteChars(strWOEscape);
-        return removeEscapeCharsFromQuotes(strWOQuotes);
-    }
-
-
-    /**
-     *  returns the next token string
-     *  @return the next string token 
-     */
-    public String nextToken()
-    {
-        return (String)tokenIterator.next();
-    }
-
-
-    /**
-     *  This method will check for matching quotes.  If quotes do not match then
-     *  return false else return true.
-     *  @param str - string to check for matching quotes
-     *  @return boolean - true if quotes match else false.
-     */
-    private boolean checkForMatchingQuotes(String str)
-    {
-        //get index of the first quote in the string
-        int beginQuote = getStringDelimiterIndex(str, QUOTE_CHAR, 0);
-
-        while (beginQuote != -1)
-        {
-            int endQuote = getStringDelimiterIndex(str, QUOTE_CHAR, beginQuote+1);
-            if (endQuote == -1) return false;
-            beginQuote = getStringDelimiterIndex(str, QUOTE_CHAR, endQuote+1);
+    public String nextToken() throws NoSuchElementException {
+        if (currentPosition >= maxPosition) {
+            throw new NoSuchElementException(
+                localStrings.getLocalString("NoMoreTokens", "No more tokens"));
         }
-        return true;
-    }
-
-
-    /**
-     *  this methos calls the getStringDelimiterIndex to determine the index
-     *  of the delimiter and use that to populate the tokenIterator.
-     *  @param strToken - string to tokenize
-     *  @param delimiter - delimiter to tokenize the string
-     *  @return ListIterator
-     */
-    private ListIterator populateList(String strToken, char delimiter)
-    {
-        java.util.List tokenList = new java.util.Vector();
-        int endIndex = getStringDelimiterIndex(strToken, delimiter, 0);
-        if (endIndex == -1) tokenList.add(strToken);
-        else
-        {
-            int beginIndex = 0;
-            while (endIndex > -1)
-            {
-                    //do not want to add to the list if the string is empty
-                if (beginIndex != endIndex)
-                    tokenList.add(strToken.substring(beginIndex, endIndex));
-                beginIndex = endIndex + 1;
-                endIndex = getStringDelimiterIndex(strToken, delimiter, beginIndex);
-            }
-                //do not want to add to the list if the begindIndex is the last index
-            if (beginIndex != strToken.length())
-                tokenList.add(strToken.substring(beginIndex));
-        }
-        size = tokenList.size();
-        return tokenList.listIterator();
-    }
-
-
-    /**
-     * Removes the escape characters from the property value
-     * @param strValue - string value to remove the escape character
-     * @return the string with escape character removed
-     */
-    private String removeEscapeChars(String strValue)
-    {
-        int prefixIndex = 0;
-        java.lang.StringBuffer strbuff = new java.lang.StringBuffer();
-
-        while (prefixIndex < strValue.length())
-        {
-            int delimeterIndex = getStringDelimiterIndex(strValue,
-                                                         ESCAPE_CHAR, prefixIndex);
-            if (delimeterIndex == -1)
-            {
-                strbuff.append(strValue.substring(prefixIndex));
-                break;
-            }
-
-            //if a quote is follow by an esacpe then keep the escape character
-            if (delimeterIndex+1 < strValue.length() &&
-                strValue.charAt(delimeterIndex+1) == QUOTE_CHAR)
-                strbuff.append(strValue.substring(prefixIndex, delimeterIndex+1));
-            else
-                strbuff.append(strValue.substring(prefixIndex, delimeterIndex));
-            
-            prefixIndex = delimeterIndex+1;
-        }
-        return strbuff.toString();
+        return scanToken(false);
     }
 
     /**
-     * Removes escape characters that precedes quotes
-     * @param strValue - the string value to remove the escape characters
-     * @return string value with escape characters removed
+     * Return the next token from this tokenizer.
+     * Keep escapes and quotes intact.
+     *
+     * @return     the next token from this tokenizer.
+     * @exception  NoSuchElementException  if there are no more tokens in this
+     *               tokenizer's string.
      */
-    private String removeEscapeCharsFromQuotes(String strValue)
-    {
-        int prefixIndex = 0;
-        java.lang.StringBuffer strbuff = new java.lang.StringBuffer();
-
-        while (prefixIndex < strValue.length())
-        {
-            int delimeterIndex = strValue.indexOf(ESCAPE_CHAR, prefixIndex);
-            if (delimeterIndex == -1)
-            {
-                strbuff.append(strValue.substring(prefixIndex));
-                break;
-            }
-            //if a quote is follow by an esacpe then remove the escape character
-            if (strValue.charAt(delimeterIndex+1) == QUOTE_CHAR)
-                strbuff.append(strValue.substring(prefixIndex, delimeterIndex));
-            else
-                strbuff.append(strValue.substring(prefixIndex, delimeterIndex+1));
-            
-            prefixIndex = delimeterIndex+1;
+    public String nextTokenKeepEscapes() throws NoSuchElementException {
+        if (currentPosition >= maxPosition) {
+            throw new NoSuchElementException(
+                localStrings.getLocalString("NoMoreTokens", "No more tokens"));
         }
-        return strbuff.toString();
+        return scanToken(true);
     }
-
 
     /**
-     * Removes the quote characters from the property value
-     * @return string value with quotes removed
+     * Return the next token starting at the current position.
      */
-    private String removeQuoteChars(String strValue)
-    {
-        int prefixIndex = 0;
-        java.lang.StringBuffer strbuff = new java.lang.StringBuffer();
-
-        while (prefixIndex < strValue.length())
-        {
-            int delimeterIndex = getStringDelimiterIndex(strValue,
-                                                         QUOTE_CHAR, prefixIndex);
-            if (delimeterIndex == -1)
-            {
-                strbuff.append(strValue.substring(prefixIndex));
-                break;
-            }
-            strbuff.append(strValue.substring(prefixIndex, delimeterIndex));
-            prefixIndex = delimeterIndex+1;
-        }
-        return strbuff.toString();
-    }
-
-
-    /** 
-     *  This method returns the index of the delimiter.  It will factor out the
-     *  escape and quote characters.
-     *  @param strToken - string to token
-     *  @param delimiter - the delimiter to tokenize
-     *  @param fromIndex - the index to start the tokenize
-     *  @return index - index of the delimiter in the strToken
-     *  @throw CommandTokenizerException if the end quote do not match.
-     */
-    private int getStringDelimiterIndex(String strToken, char delimiter,
-                                        int fromIndex)
-    {
-        if (fromIndex > strToken.length()-1) return -1;
-        
-            //get index of the delimiter
-        final int hasDelimiter = strToken.indexOf(delimiter, fromIndex);
-
-            //get index of the first quote in the string token
-        final int quoteBeginIndex = strToken.indexOf(QUOTE_CHAR, fromIndex);
-
-            // ex: set server.ias1.jdbcurl="jdbc://oracle"
-            // if there's is a quote and a delimiter, then find the end quote
-        if ((quoteBeginIndex != -1) && (hasDelimiter != -1) &&
-            (quoteBeginIndex < hasDelimiter))
-        {
-            //get index of the end quote in the string token
-            final int quoteEndIndex = strToken.indexOf(QUOTE_CHAR, quoteBeginIndex+1);
-            
-            if (quoteEndIndex == -1)
-                throw new IllegalArgumentException(localStrings.getLocalString("UnclosedString", "Unclosed string"));
-            if (quoteEndIndex != (strToken.length()-1))
-            {
-                return getStringDelimiterIndex(strToken, delimiter, quoteEndIndex + 1);
-            }
-            else
-            {
-                return -1;
-            }
-        }
-        if ((hasDelimiter > 0) && (strToken.charAt(hasDelimiter-1) == ESCAPE_CHAR))
-        {
-            return getStringDelimiterIndex(strToken, delimiter, hasDelimiter+1);
-        }
-        else
-        {
-            return hasDelimiter;
-        }
-    }
-    
-    public static void main(String[] args) 
-    {
-        try {
-            final ParamTokenizer ct = new ParamTokenizer(args[0], ':');
-            while (ct.hasMoreTokens()) {
-                final String nameAndvalue = ct.nextToken();
-                final ParamTokenizer ct2 = new ParamTokenizer(nameAndvalue, '=');
-                System.out.println("+++++ ct2 tokens = " + ct2.countTokens() + " +++++");
-                if (ct2.countTokens() == 1)
-                {
-                    System.out.println(ct2.nextTokenWithoutEscapeAndQuoteChars());
+    protected String scanToken(boolean keep) throws IllegalArgumentException {
+        while (currentPosition < maxPosition) {
+            char c = str.charAt(currentPosition++);
+            if (c == '"' || c == '\'') {
+                if (keep)
+                    token.append(c);
+                char quote = c;
+                while (currentPosition < maxPosition) {
+                    c = str.charAt(currentPosition++);
+                    if (c == '\\' && quote == '"') {
+                        if (currentPosition >= maxPosition)
+                            throw new IllegalArgumentException(
+                                localStrings.getLocalString("EscapeAtEOL",
+                                    "Escape at EOL"));
+                        c = str.charAt(currentPosition++);
+                        if (keep)
+                            token.append('\\');
+                    } else if (c == quote) {
+                        break;
+                    }
+                    token.append(c);
                 }
-                else if (ct2.countTokens() == 2)
-                {
-                    System.out.println(ct2.nextTokenWithoutEscapeAndQuoteChars() + "  " +  
-                                       ct2.nextTokenWithoutEscapeAndQuoteChars());
-                }
-                System.out.println("+++++ " + nameAndvalue + " +++++");
+                if (c != quote)
+                    throw new IllegalArgumentException(
+                        localStrings.getLocalString("UnbalancedQuotes",
+                            "Unbalanced quotes"));
+            } else if (c == delimiter) {
+                break;
+            } else if (c == '\\') {
+                if (currentPosition >= maxPosition)
+                    throw new IllegalArgumentException(
+                        localStrings.getLocalString("EscapeAtEOL",
+                            "Escape at EOL"));
+                c = str.charAt(currentPosition++);
+                if (keep)
+                    token.append('\\');
+                token.append(c);
+            } else {
+                token.append(c);
             }
-            System.out.println("***** the end *****");
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        String s = token.toString();
+        token.setLength(0);
+        return s;
     }
-
-
-
 }

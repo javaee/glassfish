@@ -45,9 +45,7 @@ import java.io.*;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Properties;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
@@ -228,26 +226,6 @@ public class CommandRunnerImpl implements CommandRunner {
                                                            target);
 
                 checkAgainstAcceptableValues(target, paramValueStr);
-                /*
-                if(ok(acceptable)&& ok(paramValueStr)) {
-                    String[] ss = acceptable.split(",");
-                    boolean ok = false;
-
-                    for(String s : ss) {
-                        if(paramValueStr.equals(s.trim())) {
-                            ok = true;
-                            break;
-                        }
-                    }
-                    if(!ok)
-                        throw new UnacceptableValueException(
-                            adminStrings.getLocalString("adapter.command.unacceptableValue",
-                            "Invalid parameter: {0}.  Its value is {1} but it isn''t one of these acceptable values: {2}",
-                            paramName,
-                            paramValueStr,
-                            acceptable));
-                }
-                */
                 if (paramValueStr != null) {
                     return convertStringToObject(target, type, paramValueStr);
                 }
@@ -1109,12 +1087,16 @@ public class CommandRunnerImpl implements CommandRunner {
             while (stoken.hasMoreTokens()) {
                 String token = stoken.nextToken();
                 final ParamTokenizer nameTok = new ParamTokenizer(token, '=');
-                if (nameTok.countTokens() == 2) {
-                    properties.setProperty(nameTok.nextTokenWithoutEscapeAndQuoteChars(),
-                                       nameTok.nextTokenWithoutEscapeAndQuoteChars());
-                } else {
-                    throw new IllegalArgumentException(adminStrings.getLocalString("InvalidPropertySyntax", "Invalid property syntax.", propsString));
-                }
+                String name = null, value = null;
+                if (nameTok.hasMoreTokens())
+                    name = nameTok.nextTokenKeepEscapes();
+                if (nameTok.hasMoreTokens())
+                    value = nameTok.nextTokenKeepEscapes();
+                if (nameTok.hasMoreTokens() || name == null || value == null)
+                    throw new IllegalArgumentException(
+                        adminStrings.getLocalString("InvalidPropertySyntax",
+                            "Invalid property syntax.", propsString));
+                properties.setProperty(name, value);
             }
         }
         return properties;
@@ -1134,7 +1116,7 @@ public class CommandRunnerImpl implements CommandRunner {
         if (listString != null) {
             final ParamTokenizer ptoken = new ParamTokenizer(listString, sep);
             while (ptoken.hasMoreTokens()) {
-                String token = ptoken.nextTokenWithoutEscapeAndQuoteChars();
+                String token = ptoken.nextToken();
                 list.add(token);
             }
         }
@@ -1152,13 +1134,10 @@ public class CommandRunnerImpl implements CommandRunner {
          */
     String[] convertStringToStringArray(String arrayString, char sep) {
         final ParamTokenizer paramTok = new ParamTokenizer(arrayString, sep);
-        String[] strArray = new String[paramTok.countTokens()];
-        int ii=0;
-        while (paramTok.hasMoreTokens()) 
-        {
-            strArray[ii++] = paramTok.nextTokenWithoutEscapeAndQuoteChars();
-        }
-        return strArray;
+        List<String> strs = new ArrayList<String>();
+        while (paramTok.hasMoreTokens())
+            strs.add(paramTok.nextToken());
+        return strs.toArray(new String[strs.size()]);
     }
 
         /**

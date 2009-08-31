@@ -76,8 +76,8 @@ public final class CreateJvmOptions implements AdminCommand {
     //depends what target is being sent on command line -- this is a temporary measure
     @Inject JavaConfig jc;
     
-    @Param(name="jvm_option_name", primary=true)
-    String optString;
+    @Param(name="jvm_option_name", primary=true, separator=':')
+    List<String> jvmOptions;
     
     private static final StringManager lsm = StringManager.getManager(ListJvmOptions.class); 
     private static final Logger logger     = Logger.getLogger(CreateJvmOptions.class.getPackage().getName()); // TODO: change later
@@ -87,12 +87,11 @@ public final class CreateJvmOptions implements AdminCommand {
         
         final ActionReport report = context.getActionReport();
         try {
-            List<Joe> joes             = Joe.toJoes(optString);
-            joes                       = Joe.pruneJoes(jc.getJvmOptions(), joes);
+            jvmOptions.removeAll(jc.getJvmOptions());
         
-            addX(jc, Joe.toStrings(joes));
+            addX(jc, jvmOptions);
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            part.setMessage("created " + joes.size() + " option(s)");
+            part.setMessage("created " + jvmOptions.size() + " option(s)");
         } catch (IllegalArgumentException iae) {
             report.setMessage(iae.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
