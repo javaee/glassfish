@@ -43,6 +43,7 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
@@ -50,9 +51,11 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
 import com.sun.enterprise.config.serverbeans.Domain;
 import org.jvnet.hk2.config.types.Property;
+import org.glassfish.api.admin.config.LegacyConfigurationUpgrade;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collection;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -65,6 +68,9 @@ import java.util.regex.Matcher;
 @Scoped(PerLookup.class)
 @I18n("set")
 public class SetCommand extends V2DottedNameSupport implements AdminCommand {
+
+    @Inject
+    Habitat habitat;
 
     @Inject
     Domain domain;
@@ -157,6 +163,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                 try {
                     ConfigSupport.createAndSet((ConfigBean) parentNode, Property.class, attributes );
                     context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                    runLegacyChecks(context);
                     return;
                 } catch (TransactionFailure transactionFailure) {
                     context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -166,7 +173,6 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                     return;
                 }
             }
-
         }
 
         Map<ConfigBean, Map<String, String>> changes = new HashMap<ConfigBean, Map<String, String>>();
@@ -184,8 +190,6 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
 
         for (Map.Entry<Dom, String> node : matchingNodes.entrySet()) {
             final Dom targetNode = node.getKey();
-
-
 
             for (String name : targetNode.model.getAttributeNames()) {
                 String finalDottedName = node.getValue()+"."  + name;
@@ -236,7 +240,8 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
         if (!changes.isEmpty()) {
             try {
                 config.apply(changes);
-                context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);                
+                context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                runLegacyChecks(context);
             } catch (TransactionFailure transactionFailure) {
                 context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
                 context.getActionReport().setFailureCause(transactionFailure);
@@ -253,6 +258,13 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
             }
         }
 
+    }
+
+    private void runLegacyChecks(AdminCommandContext context) {
+        final Collection<LegacyConfigurationUpgrade> list = habitat.getAllByContract(LegacyConfigurationUpgrade.class);
+        for (LegacyConfigurationUpgrade upgrade : list) {
+            upgrade.execute(context);
+        }
     }
 
     /**

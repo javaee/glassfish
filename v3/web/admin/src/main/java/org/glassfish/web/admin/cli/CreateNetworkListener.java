@@ -81,7 +81,7 @@ public class CreateNetworkListener implements AdminCommand {
     @Param(name="port", optional=false)
     String port;
              
-    @Param(name="threadpool", optional=true)
+    @Param(name="threadpool", optional=true, defaultValue = "http-thread-pool")
     String threadPool;
 
     @Param(name="protocol", optional=false)
@@ -90,7 +90,7 @@ public class CreateNetworkListener implements AdminCommand {
     @Param(name="name", primary=true)
     String listenerName;
 
-    @Param(name="transport", optional=false)
+    @Param(name="transport", optional=true, defaultValue = "tcp")
     String transport;
 
     @Param(name="enabled", optional=true)
