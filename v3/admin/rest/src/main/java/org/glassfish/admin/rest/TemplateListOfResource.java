@@ -35,13 +35,10 @@
  */
 package org.glassfish.admin.rest;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -58,17 +55,15 @@ import javax.ws.rs.core.UriInfo;
 
 import com.sun.jersey.api.core.ResourceContext;
 
+import com.sun.jersey.multipart.FormDataMultiPart;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Dom;
 
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.CommandModel;
-import org.glassfish.api.admin.CommandRunner;
 
 import org.glassfish.admin.rest.provider.GetResultList;
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
-import org.glassfish.admin.rest.provider.ParameterMetaData;
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
@@ -160,6 +155,26 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
         }
     }
 
+    /*
+     * allows for remote files to be put in a tmp area and we pass the
+     * local location of this file to the corresponding command instead of the content of the file
+     * * Yu need to add  enctype="multipart/form-data" in the form
+     * for ex:  <form action="http://localhost:4848/management/domain/applications/application" method="post" enctype="multipart/form-data">
+     * then any param of type="file" will be uploaded, stored locally and the param will use the local location
+     * on the server side (ie. just the path)
+
+     * */
+
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA) 
+    public void post(FormDataMultiPart formData) {
+            /* data passed to the generic command running
+             *
+             * */
+            HashMap<String, String> data = TemplateResource.createDataBasedOnForm(formData);
+            CreateResource(data); //execute the deploy command with a copy of the file locally
+
+    }
  
     @OPTIONS 
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
