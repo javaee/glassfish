@@ -282,8 +282,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     new ApplicationConfigInfo(app).store(depContext.getAppProps());
 
                     List<Sniffer> sniffers = new ArrayList<Sniffer>();
-                    if (!Boolean.valueOf(depContext.getAppProps().getProperty
-                        (ServerTags.IS_COMPOSITE))) {
+                    if (app.isStandaloneModule()) {
                         for (String snifferType : snifferTypes) {
                             Sniffer sniffer = snifferManager.getSniffer(snifferType);
                             if (sniffer!=null) {

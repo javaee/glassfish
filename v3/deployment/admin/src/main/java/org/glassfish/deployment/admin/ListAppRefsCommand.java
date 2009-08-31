@@ -101,7 +101,7 @@ public class ListAppRefsCommand implements AdminCommand {
             app = (Application) named;
         }
         if (app != null) {
-            if (Boolean.valueOf(app.getDeployProperties().getProperty(ServerTags.IS_COMPOSITE))) {
+            if (!app.isStandaloneModule()) {
                 if (type.equals("ear")) {
                     return true;
                 } else {

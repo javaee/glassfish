@@ -212,6 +212,8 @@ public class ListComponentsCommandTest {
         public Map<String, Properties> getModulePropertiesMap() {return null;}
 
         public Module getModule(String moduleName) {return null;}
+        public boolean isStandaloneModule() {return false;}
+        public boolean containsSnifferType(String snifferType) {return false;}
         public List<Module> getModule() {
             return modules;
         }

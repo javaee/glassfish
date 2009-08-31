@@ -92,6 +92,9 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
 
     @DuckTyped
     List<Application> getApplicationsWithSnifferType(String snifferType);
+
+    @DuckTyped
+    List<Application> getApplicationsWithSnifferType(String snifferType, boolean onlyStandaloneModules);
     
     public class Duck {
         public static <T> List<T> getModules(Applications apps, Class<T> type) {
@@ -123,32 +126,30 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
 
         public static List<Application> getApplicationsWithSnifferType(
             Applications apps, String snifferType) {
+            return getApplicationsWithSnifferType(apps, snifferType, false);
+        }
+
+        public static List<Application> getApplicationsWithSnifferType(
+            Applications apps, String snifferType, 
+            boolean onlyStandaloneModules) {
             List <Application> result = new ArrayList<Application>();
 
             List<Application> applications = 
                 getModules(apps, Application.class);      
 
             for (Application app : applications) {
-                List<Engine> engineList = new ArrayList<Engine>();
-
-                // first add application level engines
-                engineList.addAll(app.getEngine());
-
-                // now add module level engines
-                for (Module module: app.getModule()) {
-                    engineList.addAll(module.getEngines());
-                }
-
-                for (Engine engine : engineList) {
-                    if (engine.getSniffer().equals(snifferType)) {
+                if (app.containsSnifferType(snifferType)) {
+                    if (onlyStandaloneModules) {
+                        if (app.isStandaloneModule()) {
+                            result.add(app);
+                        }
+                    } else {
                         result.add(app);
-                        break;
                     }
                 }
             }
 
             return result;
         }
-
     }
 }

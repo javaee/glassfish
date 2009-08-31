@@ -42,6 +42,7 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -286,6 +287,12 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
     @DuckTyped
     Map<String, Properties> getModulePropertiesMap();
 
+    @DuckTyped
+    boolean isStandaloneModule();
+
+    @DuckTyped
+    boolean containsSnifferType(String snifferType);
+
     class Duck {
         public static Module getModule(Application instance, String name) {
             for (Module module : instance.getModule()) {
@@ -353,6 +360,32 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
             }
             return modulePropertiesMap;
         }
+
+        public static boolean isStandaloneModule(Application me) {
+            return !(Boolean.valueOf(me.getDeployProperties().getProperty
+                (ServerTags.IS_COMPOSITE)));
+        }
+
+        public static boolean containsSnifferType(Application app, 
+            String snifferType) {
+            List<Engine> engineList = new ArrayList<Engine>();
+
+            // first add application level engines
+            engineList.addAll(app.getEngine());
+
+            // now add module level engines
+            for (Module module: app.getModule()) {
+                engineList.addAll(module.getEngines());
+            }
+
+            for (Engine engine : engineList) {
+                if (engine.getSniffer().equals(snifferType)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
     }
     
     /**

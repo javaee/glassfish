@@ -153,17 +153,14 @@ public class AppSpecificConnectorClassLoaderUtil {
         } else {
             boolean found = false;
             //detect sun-ra.xml
+
+            // find all the standalone connector modules
             List<com.sun.enterprise.config.serverbeans.Application> applications =
-                    getApplications().getApplications();
+                    getApplications().getApplicationsWithSnifferType("connector", true);
             Iterator itr = applications.iterator();
             while (itr.hasNext()) {
                 com.sun.enterprise.config.serverbeans.Application application =
                         (com.sun.enterprise.config.serverbeans.Application) itr.next();
-                List<Module> modules = application.getModule();
-                if (modules.size() == 1) {
-                    Module module = modules.get(0);
-                    if ((module.getEngine("connector")) != null &&
-                            (!Boolean.valueOf(application.getDeployProperties().getProperty(ServerTags.IS_COMPOSITE)))) {
                         String appName = application.getName();
                         ApplicationInfo appInfo = appRegistry.get(appName);
                         Application dolApp = appInfo.getMetaData(Application.class);
@@ -186,8 +183,6 @@ public class AppSpecificConnectorClassLoaderUtil {
                                 }
                             }
                         }
-                    }
-                }
             }
 
             if (!found) {
