@@ -176,6 +176,7 @@ public interface ConnectorConstants {
      * represents the monitoring-service level element name
      */
     public static String MONITORING_CONNECTOR_SERVICE_MODULE_NAME = "connector-service";
+    public static String MONITORING_JMS_SERVICE_MODULE_NAME = "jms-service";
 
     /**
      * represents the monitoring-service hierarchy elements <br>
