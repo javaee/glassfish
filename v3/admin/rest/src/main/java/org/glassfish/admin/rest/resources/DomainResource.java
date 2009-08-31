@@ -4,7 +4,6 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Tue Aug 11 16:09:03 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -95,6 +94,12 @@ return new String[][]{{"stop", "POST"}, {"restart", "POST"}, {"uptime", "GET"}, 
 	public ServersResource getServersResource() {
 		ServersResource resource = resourceContext.getResource(ServersResource.class);
 		resource.setEntity(getEntity().getServers() );
+		return resource;
+	}
+	@Path("amx-pref/")
+	public AmxPrefResource getAmxPrefResource() {
+		AmxPrefResource resource = resourceContext.getResource(AmxPrefResource.class);
+		resource.setEntity(getEntity().getAmxPref() );
 		return resource;
 	}
 	@Path("node-agents/")

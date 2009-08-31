@@ -4,7 +4,6 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Wed Aug 26 14:38:44 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -19,11 +18,11 @@ import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 public class ListResourceAdapterConfigResource extends TemplateListOfResource<ResourceAdapterConfig> {
 
 
-	@Path("{Name}/")
-	public ResourceAdapterConfigResource getResourceAdapterConfigResource(@PathParam("Name") String id) {
+	@Path("{ResourceAdapterName}/")
+	public ResourceAdapterConfigResource getResourceAdapterConfigResource(@PathParam("ResourceAdapterName") String id) {
 		ResourceAdapterConfigResource resource = resourceContext.getResource(ResourceAdapterConfigResource.class);
 		for (ResourceAdapterConfig c: entity){
-			if(c.getName().equals(id)){
+			if(c.getResourceAdapterName().equals(id)){
 				resource.setEntity(c);
 			}
 		}

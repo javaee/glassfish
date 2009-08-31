@@ -13,7 +13,7 @@ import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
 import org.glassfish.admin.rest.provider.GetResult;
-import com.sun.enterprise.config.serverbeans.BackendPrincipal;
-public class BackendPrincipalResource extends TemplateResource<BackendPrincipal> {
+import org.glassfish.api.monitoring.ContainerMonitoring;
+public class ContainerMonitoringResource extends TemplateResource<ContainerMonitoring> {
 
 }

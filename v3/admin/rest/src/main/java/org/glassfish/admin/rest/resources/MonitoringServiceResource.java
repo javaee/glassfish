@@ -4,7 +4,6 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Wed Aug 26 14:38:41 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -17,6 +16,12 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.MonitoringService;
 public class MonitoringServiceResource extends TemplateResource<MonitoringService> {
 
+	@Path("container-monitoring/")
+	public ListContainerMonitoringResource getContainerMonitoringResource() {
+		ListContainerMonitoringResource resource = resourceContext.getResource(ListContainerMonitoringResource.class);
+		resource.setEntity(getEntity().getContainerMonitoring() );
+		return resource;
+	}
 	@Path("module-monitoring-levels/")
 	public ModuleMonitoringLevelsResource getModuleMonitoringLevelsResource() {
 		ModuleMonitoringLevelsResource resource = resourceContext.getResource(ModuleMonitoringLevelsResource.class);

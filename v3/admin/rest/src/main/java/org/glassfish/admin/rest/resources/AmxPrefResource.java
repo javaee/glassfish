@@ -13,19 +13,19 @@ import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
 import org.glassfish.admin.rest.provider.GetResult;
-import com.sun.enterprise.config.serverbeans.WebServiceEndpoint;
-public class WebServiceEndpointResource extends TemplateResource<WebServiceEndpoint> {
+import com.sun.enterprise.config.serverbeans.AmxPref;
+public class AmxPrefResource extends TemplateResource<AmxPref> {
 
-	@Path("registry-location/")
-	public ListRegistryLocationResource getRegistryLocationResource() {
-		ListRegistryLocationResource resource = resourceContext.getResource(ListRegistryLocationResource.class);
-		resource.setEntity(getEntity().getRegistryLocation() );
+	@Path("property/")
+	public ListPropertyResource getPropertyResource() {
+		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+		resource.setEntity(getEntity().getProperty() );
 		return resource;
 	}
-	@Path("transformation-rule/")
-	public ListTransformationRuleResource getTransformationRuleResource() {
-		ListTransformationRuleResource resource = resourceContext.getResource(ListTransformationRuleResource.class);
-		resource.setEntity(getEntity().getTransformationRule() );
+	@Path("system-property/")
+	public ListSystemPropertyResource getSystemPropertyResource() {
+		ListSystemPropertyResource resource = resourceContext.getResource(ListSystemPropertyResource.class);
+		resource.setEntity(getEntity().getSystemProperty() );
 		return resource;
 	}
 }

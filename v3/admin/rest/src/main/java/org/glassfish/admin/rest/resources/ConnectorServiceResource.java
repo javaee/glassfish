@@ -4,7 +4,6 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Wed Aug 26 14:38:43 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -17,4 +16,10 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.ConnectorService;
 public class ConnectorServiceResource extends TemplateResource<ConnectorService> {
 
+	@Path("property/")
+	public ListPropertyResource getPropertyResource() {
+		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+		resource.setEntity(getEntity().getProperty() );
+		return resource;
+	}
 }

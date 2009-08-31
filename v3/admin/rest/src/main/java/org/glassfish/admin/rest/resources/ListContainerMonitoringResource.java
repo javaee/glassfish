@@ -14,14 +14,14 @@ import javax.ws.rs.*;
 import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
 import org.glassfish.admin.rest.provider.GetResultList;
-import com.sun.enterprise.config.serverbeans.WebServiceEndpoint;
-public class ListWebServiceEndpointResource extends TemplateListOfResource<WebServiceEndpoint> {
+import org.glassfish.api.monitoring.ContainerMonitoring;
+public class ListContainerMonitoringResource extends TemplateListOfResource<ContainerMonitoring> {
 
 
 	@Path("{Name}/")
-	public WebServiceEndpointResource getWebServiceEndpointResource(@PathParam("Name") String id) {
-		WebServiceEndpointResource resource = resourceContext.getResource(WebServiceEndpointResource.class);
-		for (WebServiceEndpoint c: entity){
+	public ContainerMonitoringResource getContainerMonitoringResource(@PathParam("Name") String id) {
+		ContainerMonitoringResource resource = resourceContext.getResource(ContainerMonitoringResource.class);
+		for (ContainerMonitoring c: entity){
 			if(c.getName().equals(id)){
 				resource.setEntity(c);
 			}
