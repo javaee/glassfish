@@ -140,5 +140,8 @@ public interface Context extends ServletContext, Lifecycle {
      * @return the security configuration for this context
      */
     public SecurityConfig getSecurityConfig();
+    
+    
+    public void setDefaultWebXml(String defaultWebXml);
 
 }

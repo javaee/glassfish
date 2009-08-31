@@ -73,7 +73,6 @@ import org.apache.catalina.Connector;
 public class EmbeddedWebContainer implements 
         org.glassfish.web.embed.EmbeddedWebContainer {
 
-
     @Inject
     Habitat habitat;
     
@@ -87,6 +86,9 @@ public class EmbeddedWebContainer implements
     public EmbeddedWebContainer() {
         embedded = new Embedded();
         embedded.setUseNaming(false);
+        engine = embedded.createEngine();
+        embedded.addEngine(engine);
+        
     }
     
 
@@ -96,6 +98,8 @@ public class EmbeddedWebContainer implements
     private VirtualServer defaultVirtualServer = null;
     
     private Embedded embedded = null;
+    
+    private Engine engine = null;
     
     private File path = null;
     
@@ -150,12 +154,10 @@ public class EmbeddedWebContainer implements
     
         try { 
             if (createDefaultConfig()) {
-                Engine engine = embedded.createEngine();
                 engine.setName(defaultDomain);
                 ((StandardEngine)engine).setDomain(defaultDomain);
                 engine.setDefaultHost(virtualServerId);
                 engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
-                embedded.addEngine(engine);
             
                 WebListener webListener = 
                     createWebListener(webListenerId, WebListener.class);
@@ -167,19 +169,22 @@ public class EmbeddedWebContainer implements
             
                 File docRoot = getPath();
                 defaultVirtualServer = (VirtualServer)
-                    createVirtualServer(virtualServerId, docRoot, webListeners);
+                        createVirtualServer(virtualServerId, docRoot, webListeners);
                 defaultVirtualServer.addAlias(hostName);
                 engine.addChild(defaultVirtualServer);
             
                 Context context = (Context) createContext(docRoot, null);
                 defaultVirtualServer.addChild(context);
+                                
+                embedded.addEngine(engine);
       
-                addWebListener(webListener);
+                //addWebListener(webListener);
             }
             
             embedded.start();
             
         } catch (Exception e) {
+            e.printStackTrace();
             throw new LifecycleException(e);
         }
 
@@ -206,34 +211,35 @@ public class EmbeddedWebContainer implements
         String defaultDomain = "com.sun.appserv";
         
         try { 
-            Engine engine = embedded.createEngine();
-            engine.setName(defaultDomain);
-            ((StandardEngine)engine).setDomain(defaultDomain);
-            engine.setDefaultHost(config.getVirtualServerId());
-            engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
+            if (createDefaultConfig()) {
+                engine.setName(defaultDomain);
+                ((StandardEngine)engine).setDomain(defaultDomain);
+                engine.setDefaultHost(config.getVirtualServerId());
+                engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
             
-            WebListener webListener = 
-                createWebListener(config.getWebListenerId(), WebListener.class);
-            webListener.setPort(config.getPort());
-            webListener.setDefaultHost(config.getVirtualServerId());
-            webListener.setDomain(defaultDomain);
-            WebListener[] webListeners = new WebListener[1];
-            webListeners[0] = webListener;
+                WebListener webListener = 
+                    createWebListener(config.getWebListenerId(), WebListener.class);
+                webListener.setPort(config.getPort());
+                webListener.setDefaultHost(config.getVirtualServerId());
+                webListener.setDomain(defaultDomain);
+                WebListener[] webListeners = new WebListener[1];
+                webListeners[0] = webListener;
             
-            File docRoot = getPath();
-            defaultVirtualServer = (VirtualServer)createVirtualServer(
-                config.getVirtualServerId(), docRoot, webListeners);
-            for (String alias : config.getHostNames()) {
-                defaultVirtualServer.addAlias(alias);
+                File docRoot = getPath();
+                defaultVirtualServer = (VirtualServer)createVirtualServer(
+                    config.getVirtualServerId(), docRoot, webListeners);
+                for (String alias : config.getHostNames()) {
+                    defaultVirtualServer.addAlias(alias);
+                }
+                engine.addChild(defaultVirtualServer);
+            
+                Context context = (Context) createContext(docRoot, null);
+                defaultVirtualServer.addChild(context);
+            
+                embedded.addEngine(engine);
+            
+                //addWebListener(webListener);
             }
-            engine.addChild(defaultVirtualServer);
-            
-            Context context = (Context) createContext(docRoot, null);
-            defaultVirtualServer.addChild(context);
-            
-            embedded.addEngine(engine);
-            
-            addWebListener(webListener);
             
             embedded.start();
             
@@ -503,7 +509,9 @@ public class EmbeddedWebContainer implements
         log.info("Created virtual server "+id+" with ports ");
         VirtualServer virtualServer = new VirtualServer();
         virtualServer.setName(id);
-        virtualServer.setAppBase(docRoot.getPath());
+        if (docRoot!=null) {
+            virtualServer.setAppBase(docRoot.getPath());
+        } 
         int[] ports = new int[webListeners.length];
         for (int i=0; i<webListeners.length; i++) {
             ports[i] = webListeners[i].getPort();
@@ -530,7 +538,9 @@ public class EmbeddedWebContainer implements
         log.info("Created virtual server "+id+" with ports ");
         VirtualServer virtualServer = new VirtualServer();
         virtualServer.setName(id);
-        virtualServer.setAppBase(docRoot.getPath());
+        if (docRoot!=null) {
+            virtualServer.setAppBase(docRoot.getPath());
+        }
         Connector[] connectors = embedded.findConnectors();
         int[] ports = new int[connectors.length];
         for (int i=0; i<connectors.length; i++) {
@@ -653,7 +663,7 @@ public class EmbeddedWebContainer implements
     public File getPath() {
         return path;
     }
- 
+
     
     /**
      * Sets log level
