@@ -169,11 +169,6 @@ public class PersistenceUnitLoader {
             overrides = tempOverride;
         }
 
-        // Check if we are running in embedded mode. Disable weaving for EclipseLink in such case.
-        if (com.sun.enterprise.security.common.Util.isEmbeddedServer()) {
-            props.put("eclipselink.weaving", "false");
-        }
-
         EntityManagerFactory emf = provider.createContainerEntityManagerFactory(pInfo, overrides);
 
         if (fineMsgLoggable) {
@@ -265,6 +260,11 @@ public class PersistenceUnitLoader {
         props.put(ECLIPSELINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY,
                 System.getProperty(ECLIPSELINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY,
                         "SunAS9")); // NOI18N
+
+        // Check if we are running in embedded mode. Disable weaving for EclipseLink in such case.
+        if (com.sun.enterprise.security.common.Util.isEmbeddedServer()) {
+            props.put("eclipselink.weaving", "false");
+        }
 
         // TopLink specific properties:
         // See https://glassfish.dev.java.net/issues/show_bug.cgi?id=249
