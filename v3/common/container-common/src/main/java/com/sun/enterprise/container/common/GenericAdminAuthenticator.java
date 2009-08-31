@@ -43,6 +43,7 @@ import com.sun.enterprise.security.SecurityLifecycle;
 import com.sun.enterprise.security.SecuritySniffer;
 import com.sun.enterprise.admin.util.AdminConstants;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.AdminService;
@@ -84,6 +85,8 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
 
     @Inject
     ClassLoaderHierarchy clh;
+
+    private static LocalStringManagerImpl lsm = new LocalStringManagerImpl(GenericAdminAuthenticator.class);
     
     private final Logger logger = Logger.getAnonymousLogger();
 
@@ -202,17 +205,18 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     }
 
     public Subject authenticate(Object credentials) {
-        if (this.serverAllowsAnonymousFileRealmLogin()) {
-            logger.fine("Allowing anonymous login for JMX Access");
-            return null;
-        }
+
         if (!(credentials instanceof String[])) {
-            throw new SecurityException("The JMX Connector should access with a two-element string array containing user name and password");
+            String msg = lsm.getLocalString("two.elem.array",
+                    "The JMX Connector should access with a two-element string array containing user name and password");
+            throw new SecurityException(msg);
         }
-            //this is supposed to be 2-string array with user name and password
-            String[] up = (String[])credentials;
+        //this is supposed to be 2-string array with user name and password
+        String[] up = (String[])credentials;
         if (up.length < 2) {
-            throw new SecurityException("The JMX Connector should access with a two-element string array containing user name and password");
+            String msg = lsm.getLocalString("invalid.array",
+                    "JMX Connector (client) provided an invalid array {0}, access denied", java.util.Arrays.toString(up));
+            throw new SecurityException(msg);
         }
         String u = up[0], p = up[1];
         String realm = as.getSystemJmxConnector().getAuthRealmName(); //yes, for backward compatibility;
@@ -221,7 +225,12 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
 
         // XXX - allow local password for JMX?
         try {
-            this.login(u, p, realm);
+            boolean ok = this.login(u, p, realm);
+            if (!ok) {
+                String msg = lsm.getLocalString("authentication.failed",
+                        "User [{0}] does not have administration access", u);
+                throw new SecurityException(msg);
+            }
             return null; //for now;
         } catch (LoginException e) {
             throw new SecurityException(e);
