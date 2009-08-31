@@ -97,6 +97,8 @@
 	<module>glassfish-jcdi</module>
 	<module>mq</module>
 	<module>glassfish-common</module>
+	<module>glassfish-web-profile</module>
+	<module>glassfish-full-profile</module>
     </modules>
 
     <build>
