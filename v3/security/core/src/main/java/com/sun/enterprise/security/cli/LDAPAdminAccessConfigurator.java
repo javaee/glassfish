@@ -35,24 +35,26 @@
  */
 package com.sun.enterprise.security.cli;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.config.*;
-import org.jvnet.hk2.config.types.Property;
+import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.security.auth.realm.Realm;
+import com.sun.enterprise.security.auth.realm.ldap.LDAPRealm;
+import com.sun.enterprise.util.i18n.StringManager;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.security.auth.realm.ldap.LDAPRealm;
-import com.sun.enterprise.security.auth.realm.Realm;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.types.Property;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import java.util.Properties;
-import java.util.List;
 import java.beans.PropertyVetoException;
+import java.util.List;
+import java.util.Properties;
 
 /**  A convenience command to configure LDAP for administration. There are several properties and attributes that
  *   user needs to remember and that's rather user unfriendly. That's why this command is being developed.
@@ -102,6 +104,7 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
         pingLDAP(sb);
         try {
             configure(sb);
+            //Realm.getInstance(FIXED_ADMIN_REALM_NAME).refresh();
             rep.setMessage(sb.toString());
             rep.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch(TransactionFailure tf) {
@@ -109,7 +112,19 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
             rep.setActionExitCode(ActionReport.ExitCode.FAILURE);
         } catch (PropertyVetoException e) {
             rep.setMessage(e.getMessage());
-            rep.setActionExitCode(ActionReport.ExitCode.FAILURE);        }
+            rep.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        }
+/*
+        catch (NoSuchRealmException e) {
+            ActionReport ar = rep.addSubActionsReport();
+            ar.setMessage(lsm.getString("realm.not.refreshed"));
+            ar.setActionExitCode(ActionReport.ExitCode.WARNING);
+        } catch (BadRealmException e) {
+            ActionReport ar = rep.addSubActionsReport();
+            ar.setMessage(lsm.getString("realm.not.refreshed"));
+            ar.setActionExitCode(ActionReport.ExitCode.WARNING);
+        }
+*/
     }
 
     private void configure(StringBuilder sb) throws TransactionFailure, PropertyVetoException {

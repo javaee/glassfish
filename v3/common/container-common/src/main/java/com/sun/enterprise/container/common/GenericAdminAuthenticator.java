@@ -38,14 +38,20 @@ package com.sun.enterprise.container.common;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.file.FileRealmUser;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;
+import com.sun.enterprise.security.auth.login.LoginContextDriver;
+import com.sun.enterprise.security.SecurityLifecycle;
+import com.sun.enterprise.security.SecuritySniffer;
 import com.sun.enterprise.admin.util.AdminConstants;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.AdminService;
 import org.glassfish.internal.api.AdminAccessController;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.security.auth.login.LoginException;
 import javax.security.auth.Subject;
@@ -60,10 +66,11 @@ import java.io.File;
  */
 @Service
 public class GenericAdminAuthenticator implements AdminAccessController, JMXAuthenticator {
-//    @Inject
-//    Habitat habitat;
-//    @Inject
-//    SecuritySniffer snif;
+    @Inject
+    Habitat habitat;
+    
+    @Inject
+    SecuritySniffer snif;
 
     @Inject
     volatile SecurityService ss;
@@ -75,22 +82,41 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     @Inject
     LocalPassword localPassword;
 
+    @Inject
+    ClassLoaderHierarchy clh;
+    
     private final Logger logger = Logger.getAnonymousLogger();
 
     public boolean login(String user, String password, String realm) throws LoginException {
-        return handleFileRealm(user, password, realm); //as of now
-//        try {
-        //Inhabitant<SecurityLifecycle> sl = habitat.getInhabitantByType(SecurityLifecycle.class);
-        //sl.get();            snif.setup(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/modules/security", Logger.getAnonymousLogger());
-//            LoginContextDriver.login(user, password, realm);
-//        } catch(Exception e) {
-//            LoginException le = new LoginException("login failed!");
-//            le.initCause(e);
-//            throw le;
-//        }
+        if (as.usesFileRealm())
+            return handleFileRealm(user, password, realm);
+        else {
+            //now, deleate to the security service
+            ClassLoader pc = null;
+            boolean hack = false;
+            try {
+                pc = Thread.currentThread().getContextClassLoader();
+                if (!clh.getCommonClassLoader().equals(pc)) { //this is per Sahoo
+                    Thread.currentThread().setContextClassLoader(clh.getCommonClassLoader());
+                    hack = true;
+                }
+                Inhabitant<SecurityLifecycle> sl = habitat.getInhabitantByType(SecurityLifecycle.class);
+                sl.get();
+                snif.setup(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/modules/security", Logger.getAnonymousLogger());
+                LoginContextDriver.login(user, password, realm);
+                return true;
+           } catch(Exception e) {
+                LoginException le = new LoginException("login failed!");
+                le.initCause(e);
+                //thorw le //TODO need to work on this ...
+                return false;
+           } finally {
+                if (hack)
+                    Thread.currentThread().setContextClassLoader(pc);
+            }
+        }
     }
 
-    /* This is a temporary measure. */
     private boolean handleFileRealm(String user, String password, String realm) throws LoginException {
         /* I decided to handle FileRealm  as a special case. Maybe it is not such a good idea, but
            loading the security subsystem for FileRealm is really not required.

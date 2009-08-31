@@ -36,7 +36,6 @@
 package org.glassfish.internal.api;
 
 import org.jvnet.hk2.annotations.Contract;
-
 import javax.security.auth.login.LoginException;
 
 /** Determines the behavior of administrative access to GlassFish v3. It should be enhanced to take into account

@@ -51,11 +51,13 @@ import org.jvnet.hk2.config.types.Property;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.Realm;
+import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.security.common.Util;
 
@@ -96,6 +98,7 @@ public class CreateFileUser implements AdminCommand {
 
     @Inject
     Configs configs;
+    public final String FIXED_REALM = "admin-realm";
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -212,6 +215,7 @@ public class CreateFileUser implements AdminCommand {
                 fr.writeKeyFile(keyFile);
             }
             refreshRealm(authRealmName);
+            setAdminRelatedMessage(fr, userName, report);
         } catch (Exception e) {
             e.printStackTrace();
             report.setMessage(
@@ -222,38 +226,52 @@ public class CreateFileUser implements AdminCommand {
             report.setFailureCause(e);
         }        
     }
-        
-    /* private String fetchPassword(ActionReport report) {
-        String password = null;
-        if (userpassword != null && passwordFile != null)
-            return password;
-        if (userpassword != null) 
-            password = userpassword;
-        if (passwordFile != null) {
-            File passwdFile = new File(passwordFile);
-            InputStream is = null;
+
+    private void setAdminRelatedMessage(FileRealm fr, String user, ActionReport report) {
+        if (FIXED_REALM.equals(authRealmName)) {
             try {
-                is = new BufferedInputStream(new FileInputStream(passwdFile));
-                Properties prop = new Properties();
-                prop.load(is);            
-                for (Enumeration e=prop.propertyNames(); e.hasMoreElements();) {
-                    String entry = (String)e.nextElement();
-                    if (entry.equals("AS_ADMIN_USERPASSWORD")) {                    
-                        password = prop.getProperty(entry);
-                        break;
-                    }
+                if (fr.getUser(SystemPropertyConstants.DEFAULT_ADMIN_USER) != null) {
+                    report.setMessage(localStrings.getLocalString("create.user.ok.anon.allowed",
+                            "A new ''admin user'' {0} is now created for immediate use, however, this domain still allows anonymous admin access.", user));
                 }
-            } catch(Exception e) {
-                report.setFailureCause(e);
-            } finally {
-                try {
-                    if (is != null) 
-                        is.close();
-                } catch(final Exception ignore){}
-            }        
-        } 
-        return password;
-    } */
+            } catch (NoSuchUserException e) {
+                report.setMessage(localStrings.getLocalString("create.user.ok",
+                    "A new ''admin user'' {0} is now created for immediate use", user));
+            }
+        }
+    }
+
+    /* private String fetchPassword(ActionReport report) {
+       String password = null;
+       if (userpassword != null && passwordFile != null)
+           return password;
+       if (userpassword != null)
+           password = userpassword;
+       if (passwordFile != null) {
+           File passwdFile = new File(passwordFile);
+           InputStream is = null;
+           try {
+               is = new BufferedInputStream(new FileInputStream(passwdFile));
+               Properties prop = new Properties();
+               prop.load(is);
+               for (Enumeration e=prop.propertyNames(); e.hasMoreElements();) {
+                   String entry = (String)e.nextElement();
+                   if (entry.equals("AS_ADMIN_USERPASSWORD")) {
+                       password = prop.getProperty(entry);
+                       break;
+                   }
+               }
+           } catch(Exception e) {
+               report.setFailureCause(e);
+           } finally {
+               try {
+                   if (is != null)
+                       is.close();
+               } catch(final Exception ignore){}
+           }
+       }
+       return password;
+   } */
    public void refreshRealm(String realmName){
       if(realmName != null && realmName.length()  >0){
          try{

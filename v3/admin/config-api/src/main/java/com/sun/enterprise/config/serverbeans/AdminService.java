@@ -53,12 +53,12 @@ import javax.validation.constraints.NotNull;
     "dasConfig",
     "property"
 }) */
-
-@Configured
 /**
  * Admin Service exists in every instance. It is the configuration for either
  * a normal server, DAS or PE instance
  */
+
+@Configured
 public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
@@ -146,7 +146,7 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
      *
      * @return name of the auth realm to be used for admin access
      */
-    @Attribute //(defaultValue="admin-realm") //there's a reason this is commented out
+    @Attribute (defaultValue="admin-realm")
     @NotNull
     String getAuthRealmName();
 
@@ -157,6 +157,9 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
 
     @DuckTyped
     AuthRealm getAssociatedAuthRealm();
+
+    @DuckTyped
+    boolean usesFileRealm();
 
     public class Duck {
         public static JmxConnector getSystemJmxConnector(AdminService as) {
@@ -185,6 +188,20 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
                     return realm;
             }
             return null;
+        }
+
+        /** Returns true if the classname of associated authrealm is same as fully qualified FileRealm classname.
+         *
+         * @param as "This" Admin Service
+         * @return  true if associated authrealm is nonnull and its classname equals "com.sun.enterprise.security.auth.realm.file.FileRealm", false otherwise 
+         */
+        public static boolean usesFileRealm(AdminService as) {
+            boolean usesFR = false;
+            AuthRealm ar = as.getAssociatedAuthRealm();
+            //Note: This is type unsafe.
+            if (ar != null && "com.sun.enterprise.security.auth.realm.file.FileRealm".equals(ar.getClassname()))
+                usesFR = true;
+            return usesFR;
         }
     }
 }
