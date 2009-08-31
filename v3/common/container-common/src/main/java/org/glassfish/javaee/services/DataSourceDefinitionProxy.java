@@ -72,7 +72,6 @@ public class DataSourceDefinitionProxy implements NamingObjectProxy.Initializati
     private transient Habitat habitat;
     private DataSourceDefinitionDescriptor desc;
     private String actualResourceName;
-    //private String componentEnvId;
 
     public Object create(Context ic) throws NamingException {
         if(actualResourceName == null){
@@ -101,13 +100,6 @@ public class DataSourceDefinitionProxy implements NamingObjectProxy.Initializati
     public void setDescriptor(DataSourceDefinitionDescriptor desc){
         this.desc = desc;
     }
-
-/*
-    public void setComponentEnvId(String componentEnvId){
-        this.componentEnvId = componentEnvId;
-    }
-*/
-
 
     private ResourceDeployer getResourceDeployer(Object resource, Collection<ResourceDeployer> deployers) {
         ResourceDeployer resourceDeployer = null;
