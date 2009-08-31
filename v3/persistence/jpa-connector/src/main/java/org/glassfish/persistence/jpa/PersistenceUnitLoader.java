@@ -265,12 +265,13 @@ public class PersistenceUnitLoader {
                 "eclipselink.weaving"; // NOI18N
 
         // Check if we are running in embedded mode. Disable weaving for EclipseLink in such case.
-        if (com.sun.enterprise.security.common.Util.isEmbeddedServer()) {
+        if (com.sun.enterprise.security.common.Util.isEmbeddedServer()) { //TODO Implement this check correctly once issue 9320 is fixed
             props.put(ECLIPSELINK_WEAVING_PROPERTY,
                     System.getProperty(ECLIPSELINK_WEAVING_PROPERTY,
                             "false")); // NOI18N
 
-            //TODO Need to check whether weaving in embedded mode is an issue with Hibernate. If yes, find the property to disable it and move this if block to bottom adding all properties required by embedded together.
+            //TODO Need to check whether weaving in embedded mode is an issue with Hibernate. If yes, property USE_CLASS_ENHANCER seems to disable it
+            // move this if block to bottom adding all properties required by embedded together if hibernate requires this
         }
 
         // TopLink specific properties:
