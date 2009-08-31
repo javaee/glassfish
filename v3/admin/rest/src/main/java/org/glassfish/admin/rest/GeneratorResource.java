@@ -83,6 +83,26 @@ public class GeneratorResource {
                 new File(System.getProperty("user.home") + "/acvs/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources");
         loc.mkdirs();
         genDir = loc.getAbsolutePath();
+
+        //generate date info in 1 single file
+        File file = new File(genDir + "/codegeneration.properties");
+        try {
+            file.createNewFile();
+            FileWriter fstream = new FileWriter(file);
+            BufferedWriter out = new BufferedWriter(fstream);
+            out.write("generation_date=" + new Date() + "\n");
+            out.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+
+
+
+
         //        DomDocument dodo = RestService.getHabitat().getComponent(DomDocument.class);
         //        Dom root = dodo.getRoot();
         // System.out.println(" root "+ root );
@@ -136,7 +156,6 @@ public class GeneratorResource {
         out.write("* Generated code from the com.sun.enterprise.config.serverbeans.*\n");
         out.write("* config beans, based on  HK2 meta model for these beans\n");
         out.write("* see generator at org.admin.admin.rest.GeneratorResource\n");
-        out.write("* date=" + new Date() + "\n");
         out.write("* Very soon, this generated code will be replace by asm or even better...more dynamic logic.\n");
         out.write("* Ludovic Champenois ludo@dev.java.net\n");
         out.write("*\n");
@@ -473,8 +492,8 @@ public class GeneratorResource {
         } else {
             out.write("\treturn " + commandName + ";\n");
         }
-        out.write("}\n");
-    }
+        out.write("}\n");       
+        }
 
 
     private String getPostCommandName(String resourceName) {
@@ -492,7 +511,7 @@ public class GeneratorResource {
      *
      * */
     
-    private static String MappingConfigBeansToCommands[][] = {
+ /*   private static String MappingConfigBeansToCommands[][] = {
         {"Domain", "stop-domain"},
         {"Domain", "restart-domain"},
         {"Domain", "uptime"},
@@ -563,8 +582,8 @@ public class GeneratorResource {
     delete-virtual-server
 
 
-     **/};
-
+     };
+*/
 
     private static String MappingConfigBeansToPOSTCommands[][] = {
         {"ListApplication", "deploy"},
