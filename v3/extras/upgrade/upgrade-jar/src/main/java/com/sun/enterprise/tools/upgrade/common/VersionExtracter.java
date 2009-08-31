@@ -47,61 +47,57 @@ import org.w3c.dom.Element;
 
 public class VersionExtracter {
 
-    private String installDir;
-
     private static final StringManager stringManager =
         StringManager.getManager(VersionExtracter.class);
     private static final Logger logger = LogService.getLogger();
-    private CommonInfoModel common;
+    private final CommonInfoModel common;
 
-    /** Creates a new instance of VersionExtracter */
-    public VersionExtracter(String iD,CommonInfoModel common) {
-        this.installDir = iD;
+    public VersionExtracter(CommonInfoModel common) {
         this.common = common;
     }
 
     /**
      * Method to put together the version and edition (if any) in a simple format.
      */
-	public String formatVersionEditionStrings(String v, String e ){
-		return v + UpgradeConstants.DELIMITER  +e;
-	}
+    public String formatVersionEditionStrings(String v, String e) {
+        return v + UpgradeConstants.DELIMITER + e;
+    }
   
     /**
      * Method to determine the version/edition information from the config file.
      */
-    public String extractVersionFromConfigFile(String cfgFilename){
-		String verEdStr = null;
+    public String extractVersionFromConfigFile(String cfgFilename) {
+        String verEdStr = null;
         String versionString = null;
-		File configFile = new File(cfgFilename);
-		if (!configFile.exists() || !configFile.isFile()){
-			return verEdStr;
-		}
-		
+        File configFile = new File(cfgFilename);
+        if (!configFile.exists() || !configFile.isFile()) {
+            return verEdStr;
+        }
+
         UpgradeUtils upgrUtils = UpgradeUtils.getUpgradeUtils(common);
         Document adminServerDoc = upgrUtils.getDomainDocumentElement(configFile.toString());
 
         try {
             String publicID = adminServerDoc.getDoctype().getPublicId();
             String appservString = stringManager.getString(
-				"common.versionextracter.appserver.string");
-			int indx = publicID.indexOf(appservString);
-			if (indx > -1){
-				//- product version is 1st token after the appserver text.
-				String tmpS = publicID.substring(indx+appservString.length()).trim();
-				String [] s = tmpS.split(" ");
-				versionString = s[0];
-			}
+                "common.versionextracter.appserver.string");
+            int indx = publicID.indexOf(appservString);
+            if (indx > -1) {
+                //- product version is 1st token after the appserver text.
+                String tmpS = publicID.substring(indx + appservString.length()).trim();
+                String[] s = tmpS.split(" ");
+                versionString = s[0];
+            }
 
             verEdStr = formatVersionEditionStrings(versionString, UpgradeConstants.ALL_PROFILE);
 
-        }catch (Exception ex){
+        } catch (Exception ex) {
             //- Very basic check that this contain V3 domain XML.
             Element rootElement = adminServerDoc.getDocumentElement();
             if (!"domain".equals(rootElement.getTagName())) {
                 logger.log(Level.SEVERE, stringManager.getString("common.versionextracter.dtd_product_version_find_failured"), ex);
             } else {
-                verEdStr=formatVersionEditionStrings(UpgradeConstants.VERSION_3_0, UpgradeConstants.ALL_PROFILE);
+                verEdStr = formatVersionEditionStrings(UpgradeConstants.VERSION_3_0, UpgradeConstants.ALL_PROFILE);
             }
         }
         return verEdStr;

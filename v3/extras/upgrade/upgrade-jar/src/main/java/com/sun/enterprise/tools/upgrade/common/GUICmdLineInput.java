@@ -33,14 +33,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.tools.upgrade.common;
 
-import java.util.ArrayList;
-import java.util.Map;
-
-import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
+import java.util.ArrayList;
 
 /**
  * Utility to process CLI arguments provided for the GUI
@@ -48,26 +44,21 @@ import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
  *
  * @author rebeccas
  */
-public class GUICmdLineInput implements InteractiveInput{
+public class GUICmdLineInput implements InteractiveInput {
 
-	private static final StringManager sm =
-        StringManager.getManager(GUICmdLineInput.class);
-	
-	public void collectMissingArguments(Map inputMap){}
-
-	public ArrayList<ArgumentHandler> parse(String [] args){
-		ArgsParser ap = new ArgsParser();
-		ArrayList<ArgumentHandler> aList = ap.parse(args);
+    public ArrayList<ArgumentHandler> parse(String[] args) {
+        ArgsParser ap = new ArgsParser();
+        ArrayList<ArgumentHandler> aList = ap.parse(args);
         return aList;
-	}
+    }
 
-    public void processArguments(ArrayList<ArgumentHandler> aList){
-		//- set under laying values.  Skip invalid data.
-		//- GUI will handle.
-		for(ArgumentHandler v: aList) {
-			if (v.isValidParameter()) {
-				v.exec();
-			}
-		}
-	}
+    public void processArguments(ArrayList<ArgumentHandler> aList) {
+        //- set under laying values.  Skip invalid data.
+        //- GUI will handle.
+        for (ArgumentHandler v : aList) {
+            if (v.isValidParameter()) {
+                v.exec();
+            }
+        }
+    }
 }

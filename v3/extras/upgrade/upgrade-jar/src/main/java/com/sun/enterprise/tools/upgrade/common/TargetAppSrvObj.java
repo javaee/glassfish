@@ -91,19 +91,19 @@ public class TargetAppSrvObj extends BaseDomainInfoObj {
     }
 	
     @Override
-	public String getDomainDir(){
-		return getInstallDir() + "/" + super.domainName;
+    public String getDomainDir() {
+        return getInstallDir() + "/" + super.domainName;
     }
-	
+
     @Override
-	public String getConfigXMLFile(){
-		return getDomainDir() + "/" + super.CONFIG_DOMAIN_XML_FILE;
-	}
+    public String getConfigXMLFile() {
+        return getDomainDir() + "/" + super.CONFIG_DOMAIN_XML_FILE;
+    }
 	
     public String getVersionEdition() {
         if (versionEdition == null) {
             VersionExtracter vExtracter = new VersionExtracter(
-                domainRoot, CommonInfoModel.getInstance());
+                CommonInfoModel.getInstance());
             version = UpgradeConstants.VERSION_3_0;
             edition = UpgradeConstants.ALL_PROFILE;
             versionEdition = vExtracter.formatVersionEditionStrings(

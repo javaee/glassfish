@@ -70,7 +70,7 @@ public class SourceAppSrvObj  extends BaseDomainInfoObj {
 	
     public String getVersionEdition() {
         if (versionEdition == null) {
-            VersionExtracter vExtracter = new VersionExtracter(installDir,
+            VersionExtracter vExtracter = new VersionExtracter(
                 CommonInfoModel.getInstance());
             versionEdition =
                 vExtracter.extractVersionFromConfigFile(srvConfigFile);

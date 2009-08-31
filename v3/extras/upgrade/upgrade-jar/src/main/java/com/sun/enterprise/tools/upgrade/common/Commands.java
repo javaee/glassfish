@@ -54,17 +54,12 @@ import com.sun.enterprise.tools.upgrade.UpgradeToolMain;
 public class Commands {
 
     private static final Logger logger = LogService.getLogger();
-    
     private static final StringManager stringManager =
         StringManager.getManager(Commands.class);
     
-    /** Creates a new instance of Commands */
-    public Commands() {
-    }
-    
     public static int startDomain(String domainName, CommonInfoModel commonInfo) {
         Credentials c = commonInfo.getSource().getDomainCredentials();
-		String adminUser = c.getAdminUserName();
+        String adminUser = c.getAdminUserName();
 
         String installRoot = System.getProperty(UpgradeToolMain.AS_DOMAIN_ROOT);
         File installRootF = new File(installRoot);
@@ -72,28 +67,28 @@ public class Commands {
         String asadminScript = asadminF.getAbsolutePath();
         try {
             asadminScript = asadminF.getCanonicalPath();
-        } catch(IOException e){
+        } catch (IOException e) {
             //- no action needed use absolutePath
         }
         String ext = "";
         String osName = System.getProperty("os.name");
-        if(osName.indexOf("Windows") != -1){
-           ext = ".bat";
+        if (osName.indexOf("Windows") != -1) {
+            ext = ".bat";
         }
         ArrayList<String> tmpC = new ArrayList<String>();
         //-tmpC.add("bin/asadmin");
-        tmpC.add(asadminScript+ext);
+        tmpC.add(asadminScript + ext);
         tmpC.add("start-domain");
         tmpC.add("--upgrade");
         tmpC.add("--domaindir");
         tmpC.add(commonInfo.getTarget().getInstallDir());
 
         //- V3 allows for anonymous user credentials. skip passing credentials
-        if (adminUser != null && adminUser.length() > 0){
+        if (adminUser != null && adminUser.length() > 0) {
             tmpC.add("--user");
             tmpC.add(adminUser);
             String adminPassword = c.getAdminPassword();
-            if(adminPassword != null && adminPassword.length() > 0){
+            if (adminPassword != null && adminPassword.length() > 0) {
                 tmpC.add("--passwordfile ");
                 tmpC.add(c.getPasswordFile());
             }
@@ -104,47 +99,48 @@ public class Commands {
         command = tmpC.toArray(command);
         return executeCommand(command);
     }
- 
-  
+   
     private static int executeCommand(String[] commandStrings) {
-        int exitValue=0;
+        int exitValue = 0;
 
         StringBuffer commandOneString = new StringBuffer();
-            for(int i = 0; i < commandStrings.length; i++) {
-                commandOneString.append(commandStrings[i]).append(" ");
-            }
-            logger.info(stringManager.
-                    getString("commands.executingCommandMsg") + commandOneString);
+        for (int i = 0; i < commandStrings.length; i++) {
+            commandOneString.append(commandStrings[i]).append(" ");
+        }
+        logger.info(stringManager.getString("commands.executingCommandMsg") +
+            commandOneString);
 
         try {
-            Process asadminProcess = Runtime.getRuntime().exec(commandOneString.toString());
+            Process asadminProcess = Runtime.getRuntime().exec(
+                commandOneString.toString());
             BufferedReader pInReader =
-                    new BufferedReader(new InputStreamReader(
-                    asadminProcess.getInputStream()));
+                new BufferedReader(new InputStreamReader(
+                asadminProcess.getInputStream()));
             BufferedReader eInReader =
-                    new BufferedReader(new InputStreamReader(
-                    asadminProcess.getErrorStream()));
+                new BufferedReader(new InputStreamReader(
+                asadminProcess.getErrorStream()));
             String inLine = null;
             String eLine = null;
-            while ((eLine = eInReader.readLine()) != null && (inLine = pInReader.readLine()) != null) {
-                if(eLine != null){
-                    logger.log(Level.INFO,eLine);
+            while ((eLine = eInReader.readLine()) != null &&
+                (inLine = pInReader.readLine()) != null) {
+                if (eLine != null) {
+                    logger.log(Level.INFO, eLine);
                     exitValue++;
                 }
-                if(inLine != null){
-                    logger.log(Level.INFO,inLine);
+                if (inLine != null) {
+                    logger.log(Level.INFO, inLine);
                 }
             }
             asadminProcess.destroy();
             pInReader.close();
             eInReader.close();
         } catch (Exception e) {
+            // todo: just log the exception with log(level, throwable)
             Throwable t = e.getCause();
             logger.warning(stringManager.getString(
-				"upgrade.common.general_exception") + (t==null?e.getMessage():t.getMessage()));
+                "upgrade.common.general_exception") +
+                (t == null ? e.getMessage() : t.getMessage()));
         }
         return exitValue;
     }
 }
-
-

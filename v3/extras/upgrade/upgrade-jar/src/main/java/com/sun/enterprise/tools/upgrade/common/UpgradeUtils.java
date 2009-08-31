@@ -90,41 +90,41 @@ public class UpgradeUtils {
         }
     }
 
-	public static void copyFile(String source, String target) throws IOException {
-		FileUtils.copy(source, target);
-	}
-	
-	/**
-	 * Copies the entire tree to a new location except the symbolic links
-	 * Invokes the FileUtils.java to do the same
-	 *
-	 * @param   sourceTree  File pointing at root of tree to copy
-	 * @param   destTree    File pointing at root of new tree
-	 *
-	 * If target directory does not exist, it will be created.
-	 *
-	 * @exception  IOException  if an error while copying the content
-	 */
-	public static void copyDirectory(File sourceDir , File targetDir) throws IOException {
-		File [] srcFiles = sourceDir.listFiles();
-		if (srcFiles != null) {
-			for(int i=0; i< srcFiles.length; i++) {
-				File dest = new File(targetDir, srcFiles[i].getName());
-				if( srcFiles[i].isDirectory() && FileUtils.safeIsRealDirectory(srcFiles[i])) {
-					if (!dest.exists()) {
-						dest.mkdirs();
-					}
-					copyDirectory(srcFiles[i], dest);
-				} else {
-					if (!dest.exists()) {
-						dest.createNewFile();
-					}
-					copyFile(srcFiles[i].getAbsolutePath(),new File(targetDir, 
-						srcFiles[i].getName()).getAbsolutePath());					
-				}
-			}
-		}
-	}
+    public static void copyFile(String source, String target) throws IOException {
+        FileUtils.copy(source, target);
+    }
+
+    /**
+     * Copies the entire tree to a new location except the symbolic links
+     * Invokes the FileUtils.java to do the same
+     *
+     * @param   sourceTree  File pointing at root of tree to copy
+     * @param   destTree    File pointing at root of new tree
+     *
+     * If target directory does not exist, it will be created.
+     *
+     * @exception  IOException  if an error while copying the content
+     */
+    public static void copyDirectory(File sourceDir, File targetDir) throws IOException {
+        File[] srcFiles = sourceDir.listFiles();
+        if (srcFiles != null) {
+            for (int i = 0; i < srcFiles.length; i++) {
+                File dest = new File(targetDir, srcFiles[i].getName());
+                if (srcFiles[i].isDirectory() && FileUtils.safeIsRealDirectory(srcFiles[i])) {
+                    if (!dest.exists()) {
+                        dest.mkdirs();
+                    }
+                    copyDirectory(srcFiles[i], dest);
+                } else {
+                    if (!dest.exists()) {
+                        dest.createNewFile();
+                    }
+                    copyFile(srcFiles[i].getAbsolutePath(), new File(targetDir,
+                        srcFiles[i].getName()).getAbsolutePath());
+                }
+            }
+        }
+    }
 	
 
     /**
@@ -134,14 +134,14 @@ public class UpgradeUtils {
      * @param srcDir
      * @param trgDir
      */
-    public void copyUserLibFiles(File srcDir, File trgDir){
+    public void copyUserLibFiles(File srcDir, File trgDir) {
         //- get the appropriate list of lib files to exclude
         String osName = System.getProperty("os.name");
         String pkgName = this.getClass().getPackage().getName();
-        String excludeFile = pkgName + ".unixV2LibExcludeList"; 
-        if(osName.indexOf("Windows") != -1){
+        String excludeFile = pkgName + ".unixV2LibExcludeList";
+        if (osName.indexOf("Windows") != -1) {
             excludeFile = pkgName + ".winV2LibExcludeList";
-        } else if (osName.indexOf("Mac") != -1){
+        } else if (osName.indexOf("Mac") != -1) {
             excludeFile = pkgName + ".macV2LibExcludeList";
         }
         String verEd = CommonInfoModel.getInstance().getSource().getVersionEdition();
@@ -152,75 +152,75 @@ public class UpgradeUtils {
         try {
             String excludeF = excludeFile.replace('.', '/') + ".properties";
             UpgradeFileFilter fs = new UpgradeFileFilter(excludeF);
-            File [] l = srcDir.listFiles(fs);
-            
-            for(File tmpF: l){
-                if (tmpF.isDirectory()){
+            File[] l = srcDir.listFiles(fs);
+
+            for (File tmpF : l) {
+                if (tmpF.isDirectory()) {
                     try {
                         File tmpDir = new File(trgDir, tmpF.getName());
                         tmpDir.mkdir();
                         copyDirectory(tmpF, tmpDir);
                         logger.log(Level.INFO,
-                        stringManager.getString("upgrade.common.copied_dir",tmpDir.getName()));
+                            stringManager.getString("upgrade.common.copied_dir", tmpDir.getName()));
                     } catch (IOException ioe) {
                         logger.log(Level.SEVERE,
-                        stringManager.getString("upgrade.common.lib_copy_error",ioe));
+                            stringManager.getString("upgrade.common.lib_copy_error", ioe));
                     }
                 } else {
-                    try{
+                    try {
                         File tmpFile = new File(trgDir, tmpF.getName());
                         copyFile(tmpF.getCanonicalPath(), tmpFile.getCanonicalPath());
                         logger.log(Level.INFO,
-                        stringManager.getString("upgrade.common.copied_file",tmpFile.getName()));
-                    } catch(IOException ioe){
+                            stringManager.getString("upgrade.common.copied_file", tmpFile.getName()));
+                    } catch (IOException ioe) {
                         logger.log(Level.SEVERE,
-                        stringManager.getString("upgrade.common.lib_copy_error",ioe));
+                            stringManager.getString("upgrade.common.lib_copy_error", ioe));
                     }
                 }
             }
         } catch (FileNotFoundException e) {
             logger.log(Level.SEVERE,
-				stringManager.getString("upgrade.common.lib_exclude_error",e));
+                stringManager.getString("upgrade.common.lib_exclude_error", e));
         } catch (IOException io) {
             logger.log(Level.SEVERE,
-				stringManager.getString("upgrade.common.lib_exclude_error",io));
+                stringManager.getString("upgrade.common.lib_exclude_error", io));
         } catch (NullPointerException ne) {
             logger.log(Level.SEVERE,
-				stringManager.getString("upgrade.common.lib_exclude_error",ne.toString()));
-        } 
+                stringManager.getString("upgrade.common.lib_exclude_error", ne.toString()));
+        }
     }
 
-	public static boolean deleteDirectory(File dir) {
-		if(dir.isDirectory()) {
-			String[] subDirs = dir.list();
-			for(int i=0; i<subDirs.length; i++) {
-				boolean success = deleteDirectory(new File(dir, subDirs[i]));
-				if(!success) {
-					return false;
-				}
-			}
-		}
-		//Delete the empty directory
-		return dir.delete();
-	}
+    public static boolean deleteDirectory(File dir) {
+        if (dir.isDirectory()) {
+            String[] subDirs = dir.list();
+            for (int i = 0; i < subDirs.length; i++) {
+                boolean success = deleteDirectory(new File(dir, subDirs[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        //Delete the empty directory
+        return dir.delete();
+    }
 	
 	
-	public Document getDomainDocumentElement(String domainFileName){
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setNamespaceAware(true);
-		Document resultDoc = null;
-		try {
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			///builder.setEntityResolver(
-			///	(org.xml.sax.helpers.DefaultHandler)Class.forName
-			///	("com.sun.enterprise.config.serverbeans.ServerValidationHandler").newInstance());
-			resultDoc = builder.parse( new File(domainFileName));
-		}catch (Exception ex){
-			logger.log(Level.WARNING,
-				stringManager.getString("upgrade.common.iiop_port_domain_doc"),ex);
-		}
-		return resultDoc;
-	}
+    public Document getDomainDocumentElement(String domainFileName) {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        Document resultDoc = null;
+        try {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            ///builder.setEntityResolver(
+            ///	(org.xml.sax.helpers.DefaultHandler)Class.forName
+            ///	("com.sun.enterprise.config.serverbeans.ServerValidationHandler").newInstance());
+            resultDoc = builder.parse(new File(domainFileName));
+        } catch (Exception ex) {
+            logger.log(Level.WARNING,
+                stringManager.getString("upgrade.common.iiop_port_domain_doc"), ex);
+        }
+        return resultDoc;
+    }
 	
     /*
      * Code used by DirectoryMover implementations to actually

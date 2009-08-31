@@ -41,6 +41,7 @@ package com.sun.enterprise.tools.upgrade.gui.util;
  * @author  prakash
  */
 import com.sun.enterprise.tools.upgrade.logging.LogService;
+import java.net.URL;
 import java.util.logging.Logger;
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
@@ -53,18 +54,19 @@ public class Utils {
     // don't need to instantiate
     private Utils() {}
 
-    public static HelpBroker getHelpBroker(){
-        if(helpBroker == null){
-            String helpHSString = "com/sun/enterprise/tools/upgrade/doc/UpgradeToolHelp.hs";
+    public static HelpBroker getHelpBroker() {
+        if (helpBroker == null) {
+            String helpHSString =
+                "com/sun/enterprise/tools/upgrade/doc/UpgradeToolHelp.hs";
             HelpSet helpHS = null;
             ClassLoader cl = Utils.class.getClassLoader();
             try {
-                java.net.URL hsURL = HelpSet.findHelpSet(cl, helpHSString);
+                URL hsURL = HelpSet.findHelpSet(cl, helpHSString);
                 helpHS = new HelpSet(null, hsURL);
             } catch (Exception ee) {
                 // log messages....
-                log.warning( "HelpSet " + ee.getMessage());
-                log.warning("HelpSet "+ helpHS +" not found");
+                log.warning("HelpSet " + ee.getMessage());
+                log.warning("HelpSet " + helpHS + " not found");
                 return null;
             }
             // Create a HelpBroker object:

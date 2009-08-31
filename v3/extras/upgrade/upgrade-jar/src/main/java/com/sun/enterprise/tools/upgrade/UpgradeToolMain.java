@@ -53,7 +53,6 @@ import java.util.logging.Logger;
 public class UpgradeToolMain {
 
     public static final String AS_DOMAIN_ROOT = "com.sun.aas.domainRoot";
-
     private static final Logger logger = LogService.getLogger();
 
     static {
@@ -62,8 +61,7 @@ public class UpgradeToolMain {
             System.err.println("Configuration Error: AS_DEFS_DOMAINS_PATH is not set.");
             System.exit(1);
         }
-    }
-    
+    }    
 
     private static final StringManager sm =
         StringManager.getManager(UpgradeToolMain.class);
@@ -128,54 +126,44 @@ public class UpgradeToolMain {
         this.upgrade();
     }
     
-	private void cliParse(String[] args){
-		ArgsParser ap = new ArgsParser();
-		ArrayList<ArgumentHandler> aList = ap.parse(args);
-		
-		InteractiveInput tmpI = new InteractiveInputImpl();
-		if (commonInfo.isNoprompt()){
-			tmpI = new NopromptInput();
-		} 
+    private void cliParse(String[] args) {
+        ArgsParser ap = new ArgsParser();
+        ArrayList<ArgumentHandler> aList = ap.parse(args);
+
+        InteractiveInput tmpI = new InteractiveInputImpl();
+        if (commonInfo.isNoprompt()) {
+            tmpI = new NopromptInput();
+        }
         tmpI.processArguments(aList);
         printArgs(aList);
-	}
+    }
 
-	private void printArgs(ArrayList<ArgumentHandler> aList){
-		StringBuilder sb = new StringBuilder();
-		for(ArgumentHandler tmpAh : aList){
-			if (tmpAh instanceof ARG_w || tmpAh instanceof ARG_adminpassword ||
-				tmpAh instanceof ARG_m || tmpAh instanceof ARG_masterpassword){
-				//- don't reveal passwords
-				sb.append("-" + tmpAh.getCmd() + " " +
-					tmpAh.getRawParameter().replaceAll(".","*"));
-			} else if(tmpAh instanceof ARG_c || tmpAh instanceof ARG_console ||
-					tmpAh instanceof ARG_h || tmpAh instanceof ARG_help ||
-					tmpAh instanceof ARG_V || tmpAh instanceof ARG_version ||
-                    tmpAh instanceof ARG_noprompt){
-				sb.append("-" + tmpAh.getCmd());
-			}else {
-				sb.append("-" + tmpAh.getCmd() + " " + tmpAh.getRawParameter());
-			}
-			sb.append(" ");
-		}
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.fine(UpgradeConstants.ASUPGRADE + " " + sb.toString());
-                }
-	}
-	
-//    private void processUIEvent(DialogEvent evt) {
-//        if (evt.getAction() == DialogEvent.FINISH_ACTION ||
-//            evt.getAction() == DialogEvent.CANCEL_ACTION) {
-//            System.exit(0);
-//        } else if (evt.getAction() == DialogEvent.UPGRADE_ACTION) {
-//            this.upgrade();
-//        }
-//    }
-    
+    private void printArgs(ArrayList<ArgumentHandler> aList) {
+        StringBuilder sb = new StringBuilder();
+        for (ArgumentHandler tmpAh : aList) {
+            if (tmpAh instanceof ARG_w || tmpAh instanceof ARG_adminpassword ||
+                tmpAh instanceof ARG_m || tmpAh instanceof ARG_masterpassword) {
+                //- don't reveal passwords
+                sb.append("-" + tmpAh.getCmd() + " " +
+                    tmpAh.getRawParameter().replaceAll(".", "*"));
+            } else if (tmpAh instanceof ARG_c || tmpAh instanceof ARG_console ||
+                tmpAh instanceof ARG_h || tmpAh instanceof ARG_help ||
+                tmpAh instanceof ARG_V || tmpAh instanceof ARG_version ||
+                tmpAh instanceof ARG_noprompt) {
+                sb.append("-" + tmpAh.getCmd());
+            } else {
+                sb.append("-" + tmpAh.getCmd() + " " + tmpAh.getRawParameter());
+            }
+            sb.append(" ");
+        }
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine(UpgradeConstants.ASUPGRADE + " " + sb.toString());
+        }
+    }
+	    
     private void upgrade() {
         try {
             commonInfo.setupTasks();
-
 
             try {
                 // preform upgrade
@@ -194,14 +182,14 @@ public class UpgradeToolMain {
                     }
                 } catch (FileNotFoundException fe) {
                     logger.log(Level.WARNING, sm.getString(
-                            "enterprise.tools.upgrade.domain_log_file_not_found", fe.getMessage()));
+                        "enterprise.tools.upgrade.domain_log_file_not_found", fe.getMessage()));
                 } catch (IOException e) {
                     logger.log(Level.WARNING, sm.getString(
-                            "enterprise.tools.upgrade.domain_log_read_failure", e.getMessage()));
+                        "enterprise.tools.upgrade.domain_log_read_failure", e.getMessage()));
                 }
 
                 dProcessor.copyUserLibFiles();
-                int exitValue = dProcessor.startDomain(_target.getDomainName());              
+                int exitValue = dProcessor.startDomain(_target.getDomainName());
 
                 //- There should be a new server log file.
                 if (serverLog == null) {
@@ -211,19 +199,19 @@ public class UpgradeToolMain {
                         logParser.setStartPoint(0);
                     } catch (FileNotFoundException fe) {
                         logger.log(Level.WARNING, sm.getString(
-                                "enterprise.tools.upgrade.domain_log_file_not_found", fe.getMessage()));
+                            "enterprise.tools.upgrade.domain_log_file_not_found", fe.getMessage()));
                     } catch (IOException e) {
                         logger.log(Level.WARNING, sm.getString(
-                                "enterprise.tools.upgrade.domain_log_read_failure", e.getMessage()));
+                            "enterprise.tools.upgrade.domain_log_read_failure", e.getMessage()));
                     }
                 }
                 //- broadcast all upgrade error found
-                if (logParser != null){
+                if (logParser != null) {
                     StringBuilder sbuf = logParser.parseLog();
-                    if (sbuf.length() > 0){
+                    if (sbuf.length() > 0) {
                         logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.not_successful_mgs"));
-                         logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.logs_mgs_title"));
-                         logger.log(Level.INFO, sbuf.toString());
+                        logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.logs_mgs_title"));
+                        logger.log(Level.INFO, sbuf.toString());
 
                     } else {
                         logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.done"));
@@ -237,20 +225,19 @@ public class UpgradeToolMain {
 
             } catch (HarnessException he) {
                 logger.log(Level.INFO, sm.getString(
-                        "enterprise.tools.upgrade.generalException", he.getMessage()));
+                    "enterprise.tools.upgrade.generalException", he.getMessage()));
             }
 
             //Delete temporary files (if any) created during the process
             logger.log(Level.FINE, sm.getString(
-                    "enterprise.tools.upgrade.deletingTempPasswordFiles"));
+                "enterprise.tools.upgrade.deletingTempPasswordFiles"));
             commonInfo.getSource().getDomainCredentials().deletePasswordFile();
         } catch (Exception e) {
             logger.log(Level.INFO, e.getMessage());
         }
     }
 
-    
-    public static void main(String [] args) {
+    public static void main(String[] args) {
         UpgradeToolMain main = new UpgradeToolMain();
         boolean isCLIcmd = false;
         for (int i = 0; i < args.length; i++) {
@@ -267,7 +254,7 @@ public class UpgradeToolMain {
                 System.exit(0);
             }
         }
-        
+
         if (isCLIcmd) {
             main.startCLI(args);
             System.exit(0);

@@ -52,30 +52,31 @@ import java.util.logging.Logger;
  */
 public class NopromptInput implements InteractiveInput {
 
-	private CommonInfoModel commonInfo = CommonInfoModel.getInstance();
-	private static final StringManager sm =
+    private static final CommonInfoModel commonInfo =
+        CommonInfoModel.getInstance();
+    private static final StringManager sm =
         StringManager.getManager(NopromptInput.class);
-	private static final Logger _log = LogService.getLogger();
+    private static final Logger log = LogService.getLogger();
 	
-    public void processArguments(ArrayList<ArgumentHandler> aList){
-		for(ArgumentHandler v: aList){
-			if (v.isValidParameter()){
-				v.exec();
-			} else {
-				if (v instanceof ARG_adminpassword || v instanceof ARG_masterpassword){
-					//- don't print security info
-					_log.severe(sm.getString("enterprise.tools.upgrade.cli._invalid_option_or_value",
-						v.getCmd(), ""));
-				}else {
-					_log.severe(sm.getString("enterprise.tools.upgrade.cli._invalid_option_or_value",
-						v.getCmd(), v.getRawParameter()));
-				}
-				System.exit(1);
-			}
-		}
+    public void processArguments(ArrayList<ArgumentHandler> aList) {
+        for (ArgumentHandler v : aList) {
+            if (v.isValidParameter()) {
+                v.exec();
+            } else {
+                if (v instanceof ARG_adminpassword || v instanceof ARG_masterpassword) {
+                    //- don't print security info
+                    log.severe(sm.getString("enterprise.tools.upgrade.cli._invalid_option_or_value",
+                        v.getCmd(), ""));
+                } else {
+                    log.severe(sm.getString("enterprise.tools.upgrade.cli._invalid_option_or_value",
+                        v.getCmd(), v.getRawParameter()));
+                }
+                System.exit(1);
+            }
+        }
 
-		if (!commonInfo.isUpgradeSupported()){
-			System.exit(1);
-		}
-	}
+        if (!commonInfo.isUpgradeSupported()) {
+            System.exit(1);
+        }
+    }
 }
