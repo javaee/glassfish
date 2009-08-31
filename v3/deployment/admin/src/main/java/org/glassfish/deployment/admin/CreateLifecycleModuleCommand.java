@@ -110,6 +110,7 @@ public class CreateLifecycleModuleCommand implements AdminCommand {
         DeployCommandParameters commandParams = new DeployCommandParameters();
         commandParams.name = name;
         commandParams.enabled = enabled;
+        commandParams.description = description;
 
         // create a dummy context to hold params and props
         ExtendedDeploymentContext deploymentContext = new DeploymentContextImpl(report, logger, null, commandParams, null);
