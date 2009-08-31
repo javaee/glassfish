@@ -20,7 +20,7 @@ import org.glassfish.web.embed.impl.WebListener;
 /**
  * @author Amy Roh
  */
-public class EmbeddedWebAPITest {
+public class EmbeddedWebAPIConfigTest {
 
     static Server server;
     static EmbeddedWebContainer embedded;
@@ -47,28 +47,16 @@ public class EmbeddedWebAPITest {
     }
     
     @Test
-    public void testEmbeddedWebAPI() throws Exception {   
+    public void testEmbeddedWebAPIConfig() throws Exception {   
         
-        System.out.println("================ Test Embedded Web API");
+        System.out.println("================ Test Embedded Web API Config");
         
-        int port = 9090;
-        String virtualServerId = "test-server";
-        String hostName = "localhost";
-        String defaultDomain = "com.sun.appserv";  
+        WebContainerConfig config = new WebContainerConfig();
+        //XXX setters for different configs
         
-        server.createPort(port);
-         
-        VirtualServer defaultVirtualServer = (VirtualServer) 
-                embedded.createVirtualServer(virtualServerId, f);
-        defaultVirtualServer.addAlias(hostName);
-        embedded.addVirtualServer(defaultVirtualServer);
+        server.createPort(8080);
         
-        Context context = (Context) embedded.createContext(f, null);
-        context.addWelcomeFile("index.html");
-        System.out.println("default web xml "+context.getDefaultWebXml());
-        defaultVirtualServer.addChild(context);
-        
-        embedded.start();
+        embedded.start(config);
         
         Thread.sleep(10000);
      }
