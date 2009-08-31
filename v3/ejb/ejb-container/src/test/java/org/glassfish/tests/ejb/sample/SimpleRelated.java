@@ -35,7 +35,7 @@
  */
 
 /*
- * SimpleEntity.java
+ * SimpleRelated.java
  *
  * @author Marina Vatkina
  */
@@ -43,28 +43,24 @@
 package org.glassfish.tests.ejb.sample;
 
 import javax.persistence.*;
-import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 
 @Entity
-@NamedQueries({
-    @NamedQuery(name = "SimpleEntity.findAll", query = "select e from SimpleEntity e")
-})
-public class SimpleEntity {
+public class SimpleRelated {
     
     @Id 
     @GeneratedValue
     private int id;
     private String name;
 
-    @OneToOne(cascade=PERSIST, fetch=LAZY)
-    private SimpleRelated related;
+    @OneToOne(fetch=LAZY)
+    private SimpleEntity entity;
     
-    public SimpleEntity(String name) {
+    public SimpleRelated(String name) {
         setName(name);
     }
     
-    public SimpleEntity() {
+    public SimpleRelated() {
     }
     
     public String getName() {
@@ -74,12 +70,11 @@ public class SimpleEntity {
         this.name = name;
     }
     
-    public SimpleRelated getRelated() {
-        return related;
+    public SimpleEntity getEntity() {
+        return entity;
     }
-    public void setRelated(SimpleRelated related) {
-        this.related = related;
+    public void setEntity(SimpleEntity entity) {
+        this.entity = entity;
     }
-    
     
 }
