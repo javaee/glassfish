@@ -261,9 +261,16 @@ public class PersistenceUnitLoader {
                 System.getProperty(ECLIPSELINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY,
                         "SunAS9")); // NOI18N
 
+        final String ECLIPSELINK_WEAVING_PROPERTY =
+                "eclipselink.weaving"; // NOI18N
+
         // Check if we are running in embedded mode. Disable weaving for EclipseLink in such case.
         if (com.sun.enterprise.security.common.Util.isEmbeddedServer()) {
-            props.put("eclipselink.weaving", "false");
+            props.put(ECLIPSELINK_WEAVING_PROPERTY,
+                    System.getProperty(ECLIPSELINK_WEAVING_PROPERTY,
+                            "false")); // NOI18N
+
+            //TODO Need to check whether weaving in embedded mode is an issue with Hibernate. If yes, find the property to disable it and move this if block to bottom adding all properties required by embedded together.
         }
 
         // TopLink specific properties:
