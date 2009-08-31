@@ -103,7 +103,9 @@ public final class CommonWorkManager implements WorkManager {
             } catch (NoSuchThreadPoolException e) {
                 String msg = localStrings.getString("workmanager.threadpool_not_found");
                 logger.log(Level.SEVERE, msg, threadPoolId);
-                throw new ConnectorRuntimeException(e.getMessage());
+                ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
+                cre.initCause(e);
+                throw cre;
             }
 
             if (tp == null) {
@@ -123,12 +125,22 @@ public final class CommonWorkManager implements WorkManager {
             }
         }
         probeProvider = new WorkManagementProbeProvider();
-        dottedNamesHierarchy = ConnectorConstants.MONITORING_CONNECTOR_SERVICE +
-                ConnectorConstants.MONITORING_SEPARATOR + raName + ConnectorConstants.MONITORING_SEPARATOR +
-                ConnectorConstants.MONITORING_WORK_MANAGEMENT;
+        String monitoringModuleName = ConnectorConstants.MONITORING_CONNECTOR_SERVICE_MODULE_NAME;
+
+        if(ConnectorsUtil.isJMSRA(raName)){
+            dottedNamesHierarchy = ConnectorConstants.MONITORING_JMS_SERVICE +
+                ConnectorConstants.MONITORING_SEPARATOR + ConnectorConstants.MONITORING_WORK_MANAGEMENT;
+            monitoringModuleName =  ConnectorConstants.MONITORING_JMS_SERVICE_MODULE_NAME;
+        }else{
+            dottedNamesHierarchy = ConnectorConstants.MONITORING_CONNECTOR_SERVICE +
+                    ConnectorConstants.MONITORING_SEPARATOR + raName + ConnectorConstants.MONITORING_SEPARATOR +
+                    ConnectorConstants.MONITORING_WORK_MANAGEMENT;
+
+        }
         statsProvider = new WorkManagementStatsProvider(raName);
-        StatsProviderManager.register(ConnectorConstants.MONITORING_CONNECTOR_SERVICE_MODULE_NAME,
-                    PluginPoint.SERVER, dottedNamesHierarchy, statsProvider);
+
+        StatsProviderManager.register(monitoringModuleName,PluginPoint.SERVER, dottedNamesHierarchy, statsProvider);
+
         logger.log(Level.FINE, "Registered work-monitoring stats [ "+dottedNamesHierarchy+" ]  " +
                 "for [ " + raName + " ] with monitoring-stats-registry.");
     }

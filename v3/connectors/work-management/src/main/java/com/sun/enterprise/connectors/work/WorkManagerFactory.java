@@ -129,7 +129,7 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
                 wm = (WorkManager) method.invoke(cls, new Object[]{});
             }
         } catch (Exception e) {
-            String msg = localStrings.getString("workmanager.instantiation_error");
+            String msg = localStrings.getString("workmanager.instantiation_error", raName);
             logger.log(Level.SEVERE, msg, e);
         }
 
