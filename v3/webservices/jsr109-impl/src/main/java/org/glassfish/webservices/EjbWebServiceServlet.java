@@ -71,14 +71,12 @@ import org.glassfish.webservices.EjbMessageDispatcher;
  */
 public class EjbWebServiceServlet extends HttpServlet {
 
-     protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
+    private Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
 
     private ResourceBundle rb = logger.getResourceBundle()   ;
     private static final Base64 base64Helper = new Base64();
     private static final String AUTHORIZATION_HEADER = "authorization";
 
-//    private static AuditManager auditManager =
-//            AuditManagerFactory.getAuditManagerInstance();
 
     protected void service(HttpServletRequest hreq,
                            HttpServletResponse hresp)
@@ -89,31 +87,31 @@ public class EjbWebServiceServlet extends HttpServlet {
 
         String requestUriRaw = hreq.getRequestURI();
         String requestUri = (requestUriRaw.charAt(0) == '/') ?
-            requestUriRaw.substring(1) : requestUriRaw;
-        String query = hreq.getQueryString();                                    
+                requestUriRaw.substring(1) : requestUriRaw;
+        String query = hreq.getQueryString();
 
         // check if it is a tester servlet invocation
         if ("Tester".equalsIgnoreCase(query)) {
             Endpoint endpoint = WebServiceEngineImpl.getInstance().getEndpoint(hreq.getRequestURI());
             if((endpoint.getDescriptor().isSecure()) ||
-               (endpoint.getDescriptor().getMessageSecurityBinding() != null)) {
+                    (endpoint.getDescriptor().getMessageSecurityBinding() != null)) {
                 String message = endpoint.getDescriptor().getWebService().getName() +
-                    "is a secured web service; Tester feature is not supported for secured services";
-                (new WsUtil()).writeInvalidMethodType(hresp, message);                
+                        "is a secured web service; Tester feature is not supported for secured services";
+                (new WsUtil()).writeInvalidMethodType(hresp, message);
                 return;
-            }            
+            }
             if (endpoint!=null && Boolean.parseBoolean(endpoint.getDescriptor().getDebugging())) {
                 dispatch = false;
                 WebServiceTesterServlet.invoke(hreq, hresp,
-                                               endpoint.getDescriptor());
+                        endpoint.getDescriptor());
             }
         }
 
         if (dispatch) {
             WebServiceEjbEndpointRegistry wsejbEndpointRegistry = (WebServiceEjbEndpointRegistry) org.glassfish.internal.api.Globals.getDefaultHabitat().getComponent(
                     WSEjbEndpointRegistry.class);
-            EjbRuntimeEndpointInfo ejbEndpoint = 
-                wsejbEndpointRegistry.getEjbWebServiceEndpoint(requestUri, hreq.getMethod(), query);
+            EjbRuntimeEndpointInfo ejbEndpoint =
+                    wsejbEndpointRegistry.getEjbWebServiceEndpoint(requestUri, hreq.getMethod(), query);
 
             if (ejbEndpoint != null) {
                 /*
@@ -133,19 +131,19 @@ public class EjbWebServiceServlet extends HttpServlet {
 
         String scheme = hreq.getScheme();
         String expectedScheme = ejbEndpoint.getEndpoint().isSecure() ?
-            "https" : "http";
+                "https" : "http";
 
         if( !expectedScheme.equalsIgnoreCase(scheme) ) {
             logger.log(Level.WARNING, "Invalid request scheme for Endpoint " +
-                       ejbEndpoint.getEndpoint().getEndpointName() + ". " +
-                       "Expected " + expectedScheme + " . Received " + scheme);
+                    ejbEndpoint.getEndpoint().getEndpointName() + ". " +
+                    "Expected " + expectedScheme + " . Received " + scheme);
             return;
         }
 
 
         EjbEndpointFacade container = ejbEndpoint.getContainer();
         ClassLoader savedClassLoader = null;
-        
+
         boolean authenticated = false;
         SecurityService secServ = org.glassfish.internal.api.Globals.get(SecurityService.class);
         try {
@@ -167,32 +165,32 @@ public class EjbWebServiceServlet extends HttpServlet {
                 // use the same logic as BasicAuthenticator
                 realmName = hreq.getServerName() + ":" + hreq.getServerPort();
             }
-            
+
             try {
                 if (secServ != null) {
                     WebServiceContextImpl context = (WebServiceContextImpl) ((EjbRuntimeEndpointInfo) ejbEndpoint).getWebServiceContext();
                     authenticated = secServ.doSecurity(hreq, ejbEndpoint, realmName, context);
                 }
-                
+
             } catch(Exception e) {
                 //sendAuthenticationEvents(false, hreq.getRequestURI(), null);
                 logger.log(Level.WARNING, "authentication failed for " +
-                           ejbEndpoint.getEndpoint().getEndpointName(),
-                           e);
-            } 
-            
+                        ejbEndpoint.getEndpoint().getEndpointName(),
+                        e);
+            }
+
             if (!authenticated) {
                 hresp.setHeader("WWW-Authenticate",
                         "Basic realm=\"" + realmName + "\"");
                 hresp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
-            
+
             // depending on the jaxrpc or jax-ws version, this will return the
             // right dispatcher.
             EjbMessageDispatcher msgDispatcher = ejbEndpoint.getMessageDispatcher();
             msgDispatcher.invoke(hreq, hresp, getServletContext(), ejbEndpoint);
-            
+
         } catch(Throwable t) {
             logger.log(Level.WARNING, "", t);
         } finally {
@@ -203,7 +201,7 @@ public class EjbWebServiceServlet extends HttpServlet {
                     secServ.resetSecurityContext();
                 }
             }
-            
+
             // Restore context class loader
             Thread.currentThread().setContextClassLoader(savedClassLoader);
         }

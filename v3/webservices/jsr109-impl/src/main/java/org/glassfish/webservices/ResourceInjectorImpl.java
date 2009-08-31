@@ -45,8 +45,11 @@ import com.sun.enterprise.deployment.InjectionTarget;
 
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.logging.LogDomains;
 
 import java.util.Iterator;
+import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import javax.xml.ws.WebServiceException;
 
@@ -63,8 +66,8 @@ public class ResourceInjectorImpl extends ResourceInjector {
     private WebServiceEndpoint endpoint;
     private ComponentInvocation inv;
     private InvocationManager invMgr;
-
-    
+    private Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
+    private ResourceBundle rb = logger.getResourceBundle();
 
     public ResourceInjectorImpl(WebServiceEndpoint ep) {
 
@@ -111,6 +114,7 @@ public class ResourceInjectorImpl extends ResourceInjector {
                         wsc = (WebServiceContextImpl) ic.lookup("java:comp/env/" + r.getName());
                     } catch (Throwable t) {
                         // Do something here
+                        logger.fine(rb.getString("exception.thrown") + t);
                     }
                     if(wsc != null) {
                         wsc.setContextDelegate(context);

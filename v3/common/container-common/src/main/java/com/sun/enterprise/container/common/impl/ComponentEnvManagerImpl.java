@@ -809,7 +809,6 @@ public class ComponentEnvManagerImpl
                 throws NamingException {
             Object result = null;
 
-
             wsRefMgr = habitat.getByContract(WebServiceReferenceManager.class);
             if (wsRefMgr != null )  {
                 result = wsRefMgr.resolveWSReference(serviceRef,ctx);

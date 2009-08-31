@@ -26,11 +26,14 @@ package org.glassfish.webservices;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.node.WebServiceNode;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.deploy.shared.FileArchive;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.logging.LogDomains;
 import com.sun.tools.ws.util.xml.XmlUtil;
 import com.sun.xml.bind.api.JAXBRIContext;
@@ -38,9 +41,12 @@ import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentException;
+import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.webservices.codegen.*;
 import org.glassfish.webservices.monitoring.Deployment109ProbeProvider;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
@@ -60,9 +66,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.servlet.SingleThreadModel;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.net.*;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -84,20 +88,28 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         return deploymentNotifier;
     }
 
-    protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
+    private Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
 
     private ResourceBundle rb = logger.getResourceBundle();
 
     @Inject
-    ServerEnvironment env;
+    private ServerEnvironment env;
 
     @Inject
-    RequestDispatcher dispatcher;
+    private RequestDispatcher dispatcher;
 
     @Inject(name="server-config")
-    Config config;
+    private Config config;
 
-    @Inject Habitat habitat;
+    @Inject
+    private Habitat habitat;
+
+    @Inject
+    private DownloadableArtifacts downloadableArtifacts;
+
+    @Inject
+    private ArchiveFactory archiveFactory;
+
 
 
     private Deployment109ProbeProvider probe;
@@ -165,6 +177,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                 }
             }
             doWebServicesDeployment(app,dc);
+            populateWsdlFilesForPublish(dc,wsDesc);
             Thread.currentThread().setContextClassLoader(oldCl);
             return true;
         } catch (Exception ex) {
@@ -548,7 +561,8 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
             // For JAXWS services, we rely on JAXWS RI to do WSL gen and publishing
             // For JAXRPC we do it here in 109
-            if(wsUtil.isJAXWSbasedService(next)) {
+            //however it is needed for file publishing for jaxws
+            if(wsUtil.isJAXWSbasedService(next) && (!next.hasFilePublishing())) {
                 for(WebServiceEndpoint wsep : next.getEndpoints()) {
                     wsep.composeFinalWsdlUrl(wsUtil.getWebServerInfoForDAS().getWebServerRootURL(wsep.isSecure()));
                 }
@@ -563,14 +577,18 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                 // from having write the module to disk in order to store the
                 // modified runtime info.
                 URL url = next.getWsdlFileUrl();
+                if (url == null ) {
+                    File f = new File(dc.getSourceDir(),next.getWsdlFileUri()) ;
+                    url = f.toURL();
+                }
 
                 // Create the generated WSDL in the generated directory; for that create the directories first
                 File genXmlDir =  dc.getScratchDir("xml");
-                if(!app.isVirtual()) {
+                /*if(!app.isVirtual()) {
                     // Add module name to the generated xml dir for apps
                     String subDirName = next.getBundleDescriptor().getModuleDescriptor().getArchiveUri();
                     genXmlDir = new File(genXmlDir, subDirName.replaceAll("\\.", "_"));
-                }
+                }*/
                 String wsdlFileDir = next.getWsdlFileUri().substring(0, next.getWsdlFileUri().lastIndexOf('/'));
                 (new File(genXmlDir, wsdlFileDir)).mkdirs();
                 File genWsdlFile = new File(genXmlDir, next.getWsdlFileUri());
@@ -681,7 +699,13 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         }
     }
 
-    public void clean(DeploymentContext context) {}
+    public void clean(DeploymentContext dc) {
+        BundleDescriptor bundle = dc.getModuleMetaData(BundleDescriptor.class);
+        String name = bundle.getApplication().getAppName();
+        if (downloadableArtifacts.getArtifacts(name).size()>0) {
+            downloadableArtifacts.clearArtifacts(name) ;
+        }
+    }
 
 
     public WebServicesApplication load(WebServicesContainer container, DeploymentContext context) {
@@ -696,6 +720,89 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
         return new WebServicesApplication(context, env, dispatcher, config, habitat);
     }
+
+    /**
+     * Populate the wsdl files entries to download (if any) (Only for webservices which
+     * use file publishing).
+     */
+    private void populateWsdlFilesForPublish(
+            DeploymentContext dc, WebServicesDescriptor wsDesc) throws IOException {
+
+
+        for (WebService webService : wsDesc.getWebServices()) {
+            if (!webService.hasFilePublishing()) {
+                continue;
+            }
+
+            copyExtraFilesToGeneratedFolder(dc);
+            BundleDescriptor bundle = webService.getBundleDescriptor();
+
+            XModuleType moduleType = bundle.getModuleType();
+            //only EAR, WAR and EJB archives could contain wsdl files for publish
+            if (!(XModuleType.EAR.equals(moduleType) ||
+                    XModuleType.WAR.equals(moduleType) ||
+                    XModuleType.EJB.equals(moduleType))) {
+                return;
+            }
+
+            String moduleName = bundle.getApplication().getAppName();
+            File sourceDir = dc.getScratchDir("xml");
+
+            URI clientPublishURI =  null;
+
+            try {
+                clientPublishURI =  webService.getClientPublishUrl().toURI();
+            } catch (URISyntaxException e) {
+                logger.warning(rb.getString("exception.thrown") + e);
+
+            }
+            File parent = new File(clientPublishURI);
+            
+            // Collect the names of all entries in or below the
+            // dedicated wsdl directory.
+            FileArchive archive = new FileArchive();
+            archive.open(sourceDir.toURI());
+
+
+            Enumeration entries = archive.entries(bundle.getWsdlDir());
+
+            // Strictly speaking, we only need to write the files needed by
+            // imports of this web service's wsdl file.  However, it's not
+            // worth actual parsing the whole chain just to figure this
+            // out.  In the worst case, some unnecessary files under
+            // META-INF/wsdl or WEB-INF/wsdl will be written to the publish
+            // directory.
+            ArrayList<DownloadableArtifacts.FullAndPartURIs> alist = new ArrayList<DownloadableArtifacts.FullAndPartURIs>();
+            while(entries.hasMoreElements()) {
+                String name = (String) entries.nextElement();
+                String wsdlName = name.substring(name.lastIndexOf('/')+1) ;
+                URI clientwsdl = new File(parent, wsdlName).toURI();
+                alist.add(new DownloadableArtifacts.FullAndPartURIs(new File(sourceDir,name).toURI(),clientwsdl));
+            }
+            downloadableArtifacts.addArtifacts(moduleName,alist);
+
+        }
+    }
+
+    /**
+     * This is to be used for filepublishing only. Incase of wsdlImports and wsdlIncludes
+     * we need to copy the nested wsdls from applications folder to the generated/xml folder
+     *
+     */
+    private void copyExtraFilesToGeneratedFolder( DeploymentContext context) throws IOException{
+        Archivist archivist = habitat.getByContract(Archivist.class);
+
+        ReadableArchive archive = archiveFactory.openArchive(
+                context.getSourceDir());
+
+        WritableArchive archive2 = archiveFactory.createArchive(
+                context.getScratchDir("xml"));
+
+        // copy the additional webservice elements etc
+        archivist.copyExtraElements(archive, archive2);
+ 
+    }
+
 }
 
    
