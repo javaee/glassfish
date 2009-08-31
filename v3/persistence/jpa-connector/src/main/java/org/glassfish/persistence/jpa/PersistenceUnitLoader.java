@@ -234,6 +234,9 @@ public class PersistenceUnitLoader {
                 System.getProperty(ECLIPSELINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY,
                         "SunAS9")); // NOI18N
 
+        if (com.sun.enterprise.security.common.Util.isEmbeddedServer()) {
+            props.put("eclipselink.weaving", "false");
+        }
 
         // TopLink specific properties:
         // See https://glassfish.dev.java.net/issues/show_bug.cgi?id=249
