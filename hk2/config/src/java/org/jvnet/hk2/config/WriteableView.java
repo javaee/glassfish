@@ -267,7 +267,6 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         if ( keyStr != null) {
             final String key = keyStr.substring(1);  // remove leading @
             final String value = getPropertyValue(key);
-            System.out.println( "commit(): key " + key + " has value " + value );
             if ( value == null ) {
                 throw new TransactionFailure( "Key value cannot be null: " + key );
             }
