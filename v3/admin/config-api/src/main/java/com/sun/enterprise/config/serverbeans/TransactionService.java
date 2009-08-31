@@ -43,6 +43,9 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
+
 import java.util.List;
 
 import java.beans.PropertyVetoException;
@@ -51,7 +54,6 @@ import java.beans.PropertyVetoException;
 import org.glassfish.config.support.datatypes.PositiveInteger;
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
 
 /**
  * Configuration for Transaction Manager
@@ -62,7 +64,7 @@ import org.glassfish.api.admin.config.Property;
 }) */
 
 @Configured
-public interface TransactionService extends ConfigBeanProxy, Injectable, org.glassfish.api.admin.config.PropertyBag {
+public interface TransactionService extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the automaticRecovery property.

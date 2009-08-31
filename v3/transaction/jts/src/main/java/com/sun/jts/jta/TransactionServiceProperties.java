@@ -45,8 +45,7 @@ import com.sun.jts.CosTransactions.Configuration;
 
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.admin.ProcessEnvironment;
-import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import com.sun.enterprise.config.serverbeans.TransactionService;
 import com.sun.enterprise.config.serverbeans.Domain;

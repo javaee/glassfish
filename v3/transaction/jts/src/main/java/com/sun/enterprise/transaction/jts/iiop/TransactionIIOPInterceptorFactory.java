@@ -36,21 +36,16 @@
 
 package com.sun.enterprise.transaction.jts.iiop;
 
-import java.io.File;
 import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import com.sun.jts.pi.InterceptorImpl;
-import com.sun.jts.jta.TransactionManagerImpl;
 import com.sun.jts.jta.TransactionServiceProperties;
 import com.sun.jts.CosTransactions.Configuration;
 
 import org.glassfish.enterprise.iiop.api.IIOPInterceptorFactory;
-import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.glassfish.api.admin.ProcessEnvironment;
-import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
-import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
@@ -62,7 +57,6 @@ import org.omg.CORBA.*;
 import org.omg.IOP.Codec;
 import org.omg.PortableInterceptor.Current;
 import org.omg.PortableInterceptor.ClientRequestInterceptor;
-import org.omg.PortableInterceptor.IORInterceptor;
 import org.omg.PortableInterceptor.ORBInitInfo;
 import org.omg.PortableInterceptor.ServerRequestInterceptor;
 

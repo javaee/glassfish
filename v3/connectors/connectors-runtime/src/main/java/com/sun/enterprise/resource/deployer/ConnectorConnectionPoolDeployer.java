@@ -37,9 +37,8 @@
 package com.sun.enterprise.resource.deployer;
 
 
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;

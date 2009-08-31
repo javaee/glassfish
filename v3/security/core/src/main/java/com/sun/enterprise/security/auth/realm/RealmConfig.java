@@ -36,7 +36,7 @@
 package com.sun.enterprise.security.auth.realm;
 
 import com.sun.enterprise.config.serverbeans.AuthRealm;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import com.sun.logging.LogDomains;
 import java.util.List;
 import java.util.Properties;

@@ -42,7 +42,7 @@
 
 package com.sun.enterprise.resource.deployer;
 
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 
 /**
  * @author Rob Ruyak

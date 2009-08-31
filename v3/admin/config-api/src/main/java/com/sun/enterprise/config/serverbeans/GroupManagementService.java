@@ -48,13 +48,12 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Digits;
 
 /**
  * group-management-service(GMS) is an in-process service that provides cluster
@@ -214,7 +213,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
     
     
     /**
-    	Properties as per {@link PropertyBag}
+    	Properties as per {@link org.jvnet.hk2.config.types.PropertyBag}
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})

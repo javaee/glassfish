@@ -48,8 +48,8 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
 import com.sun.grizzly.config.dom.Ssl;
@@ -216,7 +216,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
     void String(boolean value);
     
     /**
-    	Properties as per {@link PropertyBag}
+    	Properties as per {@link org.jvnet.hk2.config.types.PropertyBag}
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})

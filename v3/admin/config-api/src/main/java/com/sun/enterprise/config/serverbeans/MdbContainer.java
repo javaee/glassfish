@@ -42,6 +42,8 @@ import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
@@ -52,8 +54,6 @@ import org.glassfish.config.support.datatypes.NonNegativeInteger;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
 
 import javax.validation.constraints.Min;
 /**

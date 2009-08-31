@@ -37,7 +37,7 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.Param;

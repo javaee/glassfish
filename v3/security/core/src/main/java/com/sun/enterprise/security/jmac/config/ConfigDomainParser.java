@@ -48,7 +48,7 @@ import java.io.IOException;
 import javax.security.auth.message.MessagePolicy;
 
 import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import com.sun.enterprise.config.serverbeans.ProviderConfig;
 import com.sun.enterprise.config.serverbeans.RequestPolicy;
 import com.sun.enterprise.config.serverbeans.ResponsePolicy;
@@ -190,7 +190,7 @@ public class ConfigDomainParser implements ConfigParser {
         String key;
         String value;
 
-	List<org.glassfish.api.admin.config.Property> pList = pConfig.getProperty();
+	List<Property> pList = pConfig.getProperty();
 
 	if (pList != null) {
 

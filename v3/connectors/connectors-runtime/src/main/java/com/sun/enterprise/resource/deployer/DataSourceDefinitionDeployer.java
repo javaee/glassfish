@@ -46,8 +46,8 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.component.Habitat;
-import org.glassfish.api.admin.config.Property;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
@@ -168,7 +168,7 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         return resource instanceof DataSourceDefinitionDescriptor;
     }
 
-    class DataSourceProperty implements org.glassfish.api.admin.config.Property {
+    class DataSourceProperty implements Property {
 
         private String name;
         private String value;

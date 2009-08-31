@@ -58,10 +58,10 @@ import com.sun.enterprise.server.Constants;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.zip.ZipFile;
 import com.sun.enterprise.util.zip.ZipFileException;
-import org.glassfish.api.admin.config.Property;
 import com.sun.logging.LogDomains;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.api.ServerContext;
+import org.jvnet.hk2.config.types.Property;
 
 /**
  *

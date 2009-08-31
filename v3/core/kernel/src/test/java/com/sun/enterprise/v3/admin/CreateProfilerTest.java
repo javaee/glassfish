@@ -43,7 +43,7 @@ import com.sun.logging.LogDomains;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.Properties;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 
 import org.glassfish.api.admin.AdminCommandContext;
 import org.junit.After;

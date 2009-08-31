@@ -49,8 +49,8 @@ import java.util.List;
 
 
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
 
@@ -71,7 +71,7 @@ import javax.validation.constraints.NotNull;
 /**
  * The mail-resource element describes a javax.mail.Session resource 
  */
-public interface MailResource extends ConfigBeanProxy, Injectable, Resource, org.glassfish.api.admin.config.PropertyBag, BindableResource {
+public interface MailResource extends ConfigBeanProxy, Injectable, Resource, PropertyBag, BindableResource {
 
 
     /**

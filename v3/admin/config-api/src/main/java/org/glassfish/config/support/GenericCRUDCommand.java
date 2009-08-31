@@ -36,20 +36,15 @@
 package org.glassfish.config.support;
 
 import org.glassfish.api.admin.*;
-import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
 import com.sun.hk2.component.InhabitantsFile;
 import com.sun.hk2.component.InjectionResolver;
 import com.sun.logging.LogDomains;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.Domain;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -58,7 +53,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.lang.reflect.Field;
 import java.lang.annotation.Annotation;
 import java.beans.PropertyVetoException;
 

@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -54,7 +53,6 @@ import javax.security.auth.Subject;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.connectors.ActiveResourceAdapter;
 import com.sun.enterprise.connectors.*;
 import com.sun.enterprise.connectors.authentication.ConnectorSecurityMap;
@@ -63,7 +61,6 @@ import com.sun.enterprise.connectors.util.ConnectionDefinitionUtils;
 import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
 import com.sun.enterprise.connectors.util.ConnectionPoolReconfigHelper;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
-import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.connectors.util.SecurityMapUtils;
 import com.sun.enterprise.connectors.util.SetMethodAction;
 import com.sun.enterprise.deployment.ConnectionDefDescriptor;
@@ -75,7 +72,7 @@ import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.util.RelativePathResolver;
 import com.sun.enterprise.util.i18n.StringManager;
 import javax.resource.spi.ConnectionRequestInfo;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 
 
 /**

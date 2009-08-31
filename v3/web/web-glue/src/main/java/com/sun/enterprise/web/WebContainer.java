@@ -90,7 +90,7 @@ import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.reconfig.HttpServiceConfigListener;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.hk2.component.ConstructorWomb;
 import com.sun.logging.LogDomains;

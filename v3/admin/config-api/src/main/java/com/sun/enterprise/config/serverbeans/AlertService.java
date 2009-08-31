@@ -39,13 +39,13 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 import org.jvnet.hk2.component.Injectable;
 
 import java.util.List;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
@@ -89,7 +89,7 @@ public interface AlertService extends ConfigBeanProxy, Injectable, PropertyBag {
     List<AlertSubscription> getAlertSubscription();
     
     /**
-    	Properties as per {@link PropertyBag}
+    	Properties as per {@link org.jvnet.hk2.config.types.PropertyBag}
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})

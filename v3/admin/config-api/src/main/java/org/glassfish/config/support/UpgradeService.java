@@ -3,13 +3,11 @@ package org.glassfish.config.support;
 import java.beans.PropertyVetoException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.List;
-import java.util.ArrayList;
 import java.io.File;
 
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;

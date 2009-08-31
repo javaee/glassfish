@@ -41,18 +41,15 @@ import org.glassfish.internal.api.DelegatingClassLoader;
 import org.glassfish.internal.api.ConnectorClassFinder;
 import org.glassfish.internal.api.ConnectorClassLoaderService;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
-import org.glassfish.api.admin.config.Property;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PostConstruct;
 
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import com.sun.logging.LogDomains;
-import com.sun.enterprise.config.serverbeans.ConnectorService;
 
 /**
  * We support two policies:

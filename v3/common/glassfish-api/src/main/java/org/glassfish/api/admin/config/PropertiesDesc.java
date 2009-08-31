@@ -35,18 +35,15 @@
  */
 package org.glassfish.api.admin.config;
 
-import org.jvnet.hk2.config.DataType;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.annotation.Documented;
 
-import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation that holds an array of {@link PropertyDesc} for properties eg {@link Property}.
+ * Annotation that holds an array of {@link PropertyDesc} for properties eg {@link org.jvnet.hk2.config.types.Property}.
  * Needed because it's not otherwise possible to have more than one annotation of the same type.
  */
 @Retention(RUNTIME)

@@ -29,7 +29,7 @@ import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import org.glassfish.server.ServerEnvironmentImpl;
 
 import java.util.Arrays;

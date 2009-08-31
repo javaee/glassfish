@@ -47,11 +47,11 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.UnprocessedChangeEvent;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
+import org.jvnet.hk2.config.types.Property;
 
 import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
 import com.sun.enterprise.config.serverbeans.TransactionService;
 import com.sun.enterprise.config.serverbeans.ServerTags;
-import org.glassfish.api.admin.config.Property;
 
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 

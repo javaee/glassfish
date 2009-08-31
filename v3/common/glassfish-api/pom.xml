@@ -66,6 +66,11 @@
             <artifactId>hk2</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>config-types</artifactId>
+            <version>${hk2.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-utils</artifactId>
         </dependency>

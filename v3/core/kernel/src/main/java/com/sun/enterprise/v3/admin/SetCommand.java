@@ -49,7 +49,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
 import com.sun.enterprise.config.serverbeans.Domain;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 
 import java.util.Map;
 import java.util.HashMap;

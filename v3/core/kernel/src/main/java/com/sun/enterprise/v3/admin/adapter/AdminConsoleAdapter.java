@@ -43,7 +43,7 @@ import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.logging.LogDomains;
 import com.sun.pkg.client.Image;
 import com.sun.pkg.client.Version;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 
 import java.beans.PropertyVetoException;
 import java.io.File;

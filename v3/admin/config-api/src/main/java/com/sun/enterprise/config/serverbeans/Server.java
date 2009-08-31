@@ -38,8 +38,8 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.ReferenceContainer;
@@ -57,7 +57,6 @@ import org.jvnet.hk2.config.TransactionFailure;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Min;
 /**
  *

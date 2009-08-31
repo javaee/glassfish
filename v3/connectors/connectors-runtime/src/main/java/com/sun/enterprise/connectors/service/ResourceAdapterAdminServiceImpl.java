@@ -55,7 +55,7 @@ import java.util.Set;
 import java.util.List;
 import java.util.concurrent.*;
 
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import org.glassfish.internal.api.DelegatingClassLoader;
 import org.glassfish.internal.api.ConnectorClassFinder;
 

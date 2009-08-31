@@ -70,8 +70,8 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.naming.GlassfishNamingManager;
-import org.glassfish.api.admin.config.Property;
 
 import javax.naming.Context;
 import javax.naming.NamingException;

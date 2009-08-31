@@ -44,7 +44,6 @@ import com.sun.enterprise.web.connector.extension.GrizzlyConfig;
 import com.sun.enterprise.web.pwc.connector.coyote.PwcCoyoteRequest;
 import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.NetworkListener;
-import org.glassfish.api.admin.config.Property;
 import com.sun.grizzly.config.dom.Ssl;
 import com.sun.grizzly.config.dom.ThreadPool;
 import com.sun.grizzly.config.dom.Transport;

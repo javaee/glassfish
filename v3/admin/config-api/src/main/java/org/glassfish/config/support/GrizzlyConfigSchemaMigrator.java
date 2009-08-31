@@ -26,7 +26,7 @@ import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.config.dom.Protocols;
 import com.sun.grizzly.config.dom.Ssl;

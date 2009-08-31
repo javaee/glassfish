@@ -47,6 +47,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.types.Property;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -54,7 +55,6 @@ import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
-import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 
 /**

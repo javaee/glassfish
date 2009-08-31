@@ -50,7 +50,7 @@ import com.sun.enterprise.deployment.runtime.web.StoreProperties;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.config.serverbeans.SessionProperties;
 import com.sun.logging.LogDomains;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 
 public abstract class BasePersistenceStrategyBuilder
         implements PersistenceStrategyBuilder {

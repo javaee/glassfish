@@ -42,8 +42,8 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
@@ -61,7 +61,7 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured
-public interface LoadBalancer extends ConfigBeanProxy, Injectable, org.glassfish.api.admin.config.PropertyBag {
+public interface LoadBalancer extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the name property.
@@ -122,7 +122,7 @@ public interface LoadBalancer extends ConfigBeanProxy, Injectable, org.glassfish
     public void setAutoApplyEnabled(String value) throws PropertyVetoException;
     
     /**
-     *Properties as per {@link PropertyBag}
+     *Properties as per {@link org.jvnet.hk2.config.types.PropertyBag}
      *
      * Known properties:
      * device-host - Host name or IP address for the device

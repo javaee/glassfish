@@ -38,7 +38,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyBag;
+import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.config.Named;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;

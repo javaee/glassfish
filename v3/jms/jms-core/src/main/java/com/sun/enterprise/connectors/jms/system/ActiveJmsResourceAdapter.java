@@ -82,7 +82,6 @@ import javax.resource.spi.*;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.grizzly.LazyServiceInitializer;
-import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.server.ServerEnvironmentImpl;
 
@@ -92,6 +91,7 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.types.Property;
 //import com.sun.messaging.jmq.util.service.PortMapperClientHandler;
 
 

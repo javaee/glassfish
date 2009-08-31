@@ -10,12 +10,11 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
+
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
+
 public class ListPropertyResource extends TemplateListOfResource<Property> {
 
 

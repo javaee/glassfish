@@ -42,7 +42,7 @@ import com.sun.logging.LogDomains;
 import com.sun.enterprise.config.serverbeans.JaccProvider;
 //V3:Commented import com.sun.enterprise.config.serverbeans.ElementProperty;
 //V3:Commented import com.sun.enterprise.config.ConfigContext;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.util.List;

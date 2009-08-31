@@ -35,7 +35,7 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import java.util.List;
 
 import org.glassfish.api.admin.AdminCommand;

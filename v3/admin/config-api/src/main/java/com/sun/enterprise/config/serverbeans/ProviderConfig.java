@@ -49,7 +49,8 @@ import java.util.List;
 
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 
 import javax.validation.constraints.NotNull;
 
@@ -70,7 +71,7 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured
-public interface ProviderConfig extends ConfigBeanProxy, Injectable, org.glassfish.api.admin.config.PropertyBag {
+public interface ProviderConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the providerId property.

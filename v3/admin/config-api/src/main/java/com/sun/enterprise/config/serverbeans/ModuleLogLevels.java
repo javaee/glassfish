@@ -48,14 +48,12 @@ import org.jvnet.hk2.config.DuckTyped;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 

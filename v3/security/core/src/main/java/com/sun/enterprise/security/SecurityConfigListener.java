@@ -38,6 +38,7 @@ package com.sun.enterprise.security;
 
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import org.jvnet.hk2.config.*;
+import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.annotations.Service;
@@ -49,8 +50,6 @@ import com.sun.enterprise.config.serverbeans.JaccProvider;
 import com.sun.enterprise.config.serverbeans.AuditModule;
 import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 
-import com.sun.enterprise.deployment.LoginConfigurationImpl;
-import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.security.audit.AuditManager;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.server.pluggable.SecuritySupport;

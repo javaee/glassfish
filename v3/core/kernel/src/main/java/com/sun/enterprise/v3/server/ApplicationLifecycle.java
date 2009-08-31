@@ -36,7 +36,7 @@ package com.sun.enterprise.v3.server;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.config.serverbeans.*;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.admin.config.Named;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.Module;

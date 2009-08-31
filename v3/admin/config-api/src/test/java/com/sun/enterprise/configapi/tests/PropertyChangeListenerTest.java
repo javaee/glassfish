@@ -2,13 +2,12 @@ package com.sun.enterprise.configapi.tests;
 
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.*;
+import org.jvnet.hk2.config.types.Property;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.glassfish.tests.utils.Utils;
-import com.sun.hk2.component.ConstructorWomb;
 import com.sun.enterprise.config.serverbeans.*;
-import org.glassfish.api.admin.config.Property;
 
 
 import java.beans.PropertyVetoException;

@@ -42,13 +42,14 @@ import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
 import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.NotNull;
@@ -66,7 +67,7 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured
-public interface NodeAgent extends ConfigBeanProxy, Injectable, org.glassfish.api.admin.config.PropertyBag {
+public interface NodeAgent extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the name property.
@@ -177,7 +178,7 @@ public interface NodeAgent extends ConfigBeanProxy, Injectable, org.glassfish.ap
     public void setLogService(LogService value) throws PropertyVetoException;
     
     /**
-    	Properties as per {@link org.glassfish.api.admin.config.PropertyBag}
+    	Properties as per {@link org.jvnet.hk2.config.types.PropertyBag}
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})

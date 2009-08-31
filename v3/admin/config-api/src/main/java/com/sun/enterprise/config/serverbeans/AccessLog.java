@@ -41,11 +41,9 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.types.PropertyBag;
 import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
-
-import org.glassfish.config.support.datatypes.PositiveInteger;
-import org.glassfish.api.admin.config.PropertyBag;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Max;

@@ -42,9 +42,9 @@ import org.junit.Before;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.types.Property;
 
 import com.sun.enterprise.config.serverbeans.*;
-import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.deployment.DeployCommandParameters;
 
 import java.beans.PropertyVetoException;

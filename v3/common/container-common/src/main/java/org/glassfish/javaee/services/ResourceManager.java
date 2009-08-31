@@ -35,7 +35,6 @@
  */
 package org.glassfish.javaee.services;
 
-import javax.resource.ResourceException;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
@@ -43,7 +42,7 @@ import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.*;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.Startup;
 
 import java.beans.PropertyChangeEvent;

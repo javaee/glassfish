@@ -41,13 +41,14 @@ package com.sun.enterprise.config.serverbeans;
 import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.glassfish.api.monitoring.MonitoringItem;
 import org.jvnet.hk2.config.*;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
 import org.glassfish.quality.ToDo;
 
 
@@ -58,7 +59,7 @@ import org.glassfish.quality.ToDo;
 }) */
 
 @Configured
-public interface MonitoringService extends ConfigBeanProxy, Injectable, org.glassfish.api.admin.config.PropertyBag {
+public interface MonitoringService extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the moduleMonitoringLevels property.
@@ -78,7 +79,7 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, org.glas
     public void setModuleMonitoringLevels(ModuleMonitoringLevels value) throws PropertyVetoException;
     
     /**
-     * Properties as per {@link org.glassfish.api.admin.config.PropertyBag}
+     * Properties as per {@link org.jvnet.hk2.config.types.PropertyBag}
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})

@@ -46,7 +46,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.ExtensionModule;
 import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.config.serverbeans.ManagerProperties;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import com.sun.enterprise.config.serverbeans.SessionConfig;
 import com.sun.enterprise.config.serverbeans.SessionManager;
 import com.sun.enterprise.config.serverbeans.SessionProperties;

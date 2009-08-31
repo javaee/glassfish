@@ -40,7 +40,7 @@ import java.net.*;
 import java.util.*;
 import java.util.logging.*;
 import java.util.regex.Pattern;
-import org.glassfish.api.admin.config.Property;
+
 import org.glassfish.api.web.TldProvider;
 import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.annotations.Scoped;

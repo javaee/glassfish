@@ -49,8 +49,8 @@ import java.util.List;
 
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;

@@ -37,7 +37,7 @@
 package com.sun.enterprise.connectors.util;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.deploy.shared.FileArchive;

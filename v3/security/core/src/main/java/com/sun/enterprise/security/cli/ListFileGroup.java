@@ -47,6 +47,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.types.Property;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -185,7 +186,7 @@ public class ListFileGroup implements AdminCommand {
 
         // ensure we have the file associated with the authrealm
         String keyFile = null;
-        for (org.glassfish.api.admin.config.Property fileProp : fileAuthRealm.getProperty()) {
+        for (Property fileProp : fileAuthRealm.getProperty()) {
             if (fileProp.getName().equals("file"))
                 keyFile = fileProp.getValue();
         }

@@ -62,7 +62,7 @@ import com.sun.enterprise.deployment.ConnectorConfigProperty ;
 import com.sun.enterprise.deployment.ResourcePrincipal;
 import com.sun.enterprise.resource.deployer.ConnectorResourceDeployer;
 import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
 import org.jvnet.hk2.annotations.Inject;

@@ -38,7 +38,6 @@ package com.sun.enterprise.transaction;
 import java.util.*;
 import java.util.logging.*;
 import java.rmi.RemoteException;
-import java.beans.PropertyChangeEvent;
 
 import javax.transaction.*;
 import javax.transaction.xa.*;
@@ -77,8 +76,6 @@ import org.glassfish.external.probe.provider.StatsProviderManager;
 
 import com.sun.enterprise.config.serverbeans.TransactionService;
 import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
-import com.sun.enterprise.config.serverbeans.ServerTags;
-import org.glassfish.api.admin.config.Property;
 
 /**
  * Implementation of javax.transaction.TransactionManager interface.

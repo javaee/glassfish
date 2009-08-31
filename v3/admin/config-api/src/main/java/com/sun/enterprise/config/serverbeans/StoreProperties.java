@@ -48,7 +48,8 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.quality.ToDo;
 
 /**
@@ -60,7 +61,7 @@ import org.glassfish.quality.ToDo;
 }) */
 
 @Configured
-public interface StoreProperties extends ConfigBeanProxy, Injectable, org.glassfish.api.admin.config.PropertyBag {
+public interface StoreProperties extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the directory property.
@@ -97,7 +98,7 @@ public interface StoreProperties extends ConfigBeanProxy, Injectable, org.glassf
     public void setReapIntervalInSeconds(String value) throws PropertyVetoException;
     
     /**
-    	Properties as per {@link org.glassfish.api.admin.config.PropertyBag}
+    	Properties as per {@link org.jvnet.hk2.config.types.PropertyBag}
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})

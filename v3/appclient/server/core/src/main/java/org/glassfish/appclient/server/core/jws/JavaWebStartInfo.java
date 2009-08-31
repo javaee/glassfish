@@ -58,7 +58,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.appclient.server.core.AppClientDeployerHelper;
@@ -80,6 +79,7 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.UnprocessedChangeEvent;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
+import org.jvnet.hk2.config.types.Property;
 
 /**
  * Encapsulates information related to Java Web Start support for a single

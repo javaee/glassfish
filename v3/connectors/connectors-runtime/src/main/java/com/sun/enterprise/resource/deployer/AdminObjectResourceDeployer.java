@@ -45,7 +45,7 @@ import java.util.Properties;
 import java.util.List;
 import java.util.logging.*;
 
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;

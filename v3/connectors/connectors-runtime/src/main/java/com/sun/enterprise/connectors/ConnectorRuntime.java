@@ -85,7 +85,7 @@ import com.sun.enterprise.resource.pool.monitor.JdbcConnPoolProbeProvider;
 import com.sun.enterprise.security.jmac.callback.ContainerCallbackHandler;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.admin.*;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.InvocationManager;

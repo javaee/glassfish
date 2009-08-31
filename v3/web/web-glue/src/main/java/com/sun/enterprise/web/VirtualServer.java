@@ -60,7 +60,7 @@ import com.sun.enterprise.security.web.GlassFishSingleSignOn;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.session.SessionCookieConfig;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import com.sun.logging.LogDomains;
 import com.sun.web.security.RealmAdapter;
 import org.apache.catalina.Container;

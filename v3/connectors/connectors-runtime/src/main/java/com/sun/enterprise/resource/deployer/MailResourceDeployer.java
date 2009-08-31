@@ -60,7 +60,7 @@ import com.sun.appserv.connectors.internal.api.ResourcePropertyImpl;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 
 import org.glassfish.api.naming.GlassfishNamingManager;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;

@@ -7,7 +7,7 @@ package com.sun.enterprise.v3.admin.listener;
 
 import com.sun.enterprise.config.serverbeans.JavaConfig;
 import com.sun.enterprise.config.serverbeans.Profiler;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;

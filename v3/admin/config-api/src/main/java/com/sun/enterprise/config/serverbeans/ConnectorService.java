@@ -42,17 +42,14 @@ import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.component.Injectable;
-import org.glassfish.quality.ToDo;
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
+import org.jvnet.hk2.config.types.PropertyBag;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 
 
@@ -84,7 +81,7 @@ public interface ConnectorService extends ConfigBeanProxy, Injectable, PropertyB
     public void setShutdownTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
-     *	Properties as per {@link org.glassfish.api.admin.config.PropertyBag}
+     *	Properties as per {@link org.jvnet.hk2.config.types.PropertyBag}
      *
      *  Properties are used to override the ManagedConnectionFactory  javabean
      * configuration settings. When one or more of these properties are

@@ -40,7 +40,6 @@ package com.sun.enterprise.config.serverbeans;
 
 import java.beans.PropertyVetoException;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,14 +49,13 @@ import java.util.logging.Level;
 import java.net.URISyntaxException;
 import java.net.URI;
 
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;

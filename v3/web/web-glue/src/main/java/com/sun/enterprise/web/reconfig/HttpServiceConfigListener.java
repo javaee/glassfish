@@ -47,7 +47,7 @@ import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.v3.services.impl.MapperUpdateListener;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.grizzly.config.dom.NetworkListener;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import org.apache.catalina.LifecycleException;
 import org.jvnet.hk2.annotations.Inject;

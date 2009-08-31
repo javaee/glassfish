@@ -43,7 +43,6 @@ import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.Orb;
 import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.enterprise.config.serverbeans.SslClientConfig;
-import org.glassfish.api.admin.config.Property;
 import com.sun.grizzly.config.dom.Ssl;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
@@ -62,6 +61,7 @@ import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.types.Property;
 
 /**
  * This class initializes the ORB with a list of (standard) properties

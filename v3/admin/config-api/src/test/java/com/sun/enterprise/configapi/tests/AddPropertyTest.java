@@ -37,7 +37,7 @@
 package com.sun.enterprise.configapi.tests;
 
 import com.sun.enterprise.config.serverbeans.Domain;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.jvnet.hk2.config.Changed;

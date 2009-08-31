@@ -37,7 +37,7 @@
 package com.sun.enterprise.connectors;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;

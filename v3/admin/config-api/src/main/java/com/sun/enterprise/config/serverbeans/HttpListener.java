@@ -38,16 +38,14 @@ package com.sun.enterprise.config.serverbeans;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 import com.sun.grizzly.config.dom.Ssl;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.config.support.datatypes.NonNegativeInteger;
-import org.glassfish.config.support.datatypes.Port;
-import org.glassfish.config.support.datatypes.PositiveInteger;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;

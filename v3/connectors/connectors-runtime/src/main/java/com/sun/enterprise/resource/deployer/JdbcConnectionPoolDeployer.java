@@ -67,7 +67,7 @@ import com.sun.enterprise.deployment.ConnectorConfigProperty;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
-import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.config.types.Property;
 
 import java.util.*;
 import java.util.logging.Level;
