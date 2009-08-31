@@ -260,6 +260,23 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         if (currentTx==t) {
             currentTx=null;
         }
+        
+        // a key attribute must be non-null and have length >= 1
+        final ConfigBean master = getMasterView();
+        final String keyStr = master.model.key;
+        if ( keyStr != null) {
+            final String key = keyStr.substring(1);  // remove leading @
+            final String value = getPropertyValue(key);
+            System.out.println( "commit(): key " + key + " has value " + value );
+            if ( value == null ) {
+                throw new TransactionFailure( "Key value cannot be null: " + key );
+            }
+            if ( value.length() == 0 ) {
+                throw new TransactionFailure( "Key value cannot be empty string: " + key );
+            }
+        }
+
+
         try {
             List<PropertyChangeEvent> appliedChanges = new ArrayList<PropertyChangeEvent>();
             for (PropertyChangeEvent event : changedAttributes.values()) {
