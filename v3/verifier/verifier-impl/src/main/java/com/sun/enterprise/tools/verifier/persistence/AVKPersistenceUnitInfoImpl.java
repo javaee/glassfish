@@ -44,6 +44,7 @@ import javax.sql.DataSource;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.EntityManagerFactory;
 import javax.naming.NamingException;
+import javax.validation.ValidatorFactory;
 
 import org.glassfish.persistence.jpa.PersistenceUnitInfoImpl;
 import org.glassfish.persistence.jpa.ProviderContainerContractInfo;
@@ -92,6 +93,11 @@ public class AVKPersistenceUnitInfoImpl extends PersistenceUnitInfoImpl
 
             public DataSource lookupNonTxDataSource(String dataSourceName) throws NamingException
             {
+                return null;
+            }
+
+            public ValidatorFactory getValidatorFactory() {
+                // TODO: Need to implement this correctly.
                 return null;
             }
 

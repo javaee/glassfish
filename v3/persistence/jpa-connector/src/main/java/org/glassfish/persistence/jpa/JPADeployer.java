@@ -39,6 +39,8 @@ import javax.naming.NamingException;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import javax.validation.ValidatorFactory;
+import javax.validation.Validation;
 import java.util.*;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
@@ -109,20 +111,22 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
                     currentBundle = application;
                 }
 
-                // Initialize pus for only this bundle here to enable transformers to work properly. 
+                // Initialize pus for only this bundle here to enable transformers to work properly.
                 // This is because classloader from deploymentcontext is for this bundle only
                 Collection<PersistenceUnitsDescriptor> pusDescriptorForThisBundle = currentBundle.getExtensionsDescriptors(PersistenceUnitsDescriptor.class);
-                    for (PersistenceUnitsDescriptor persistenceUnitsDescriptor : pusDescriptorForThisBundle) {
-                        for (PersistenceUnitDescriptor pud : persistenceUnitsDescriptor.getPersistenceUnitDescriptors()) {
-                            if(referencedPus.contains(pud)) {
-                                PersistenceUnitLoader puLoader = new PersistenceUnitLoader(pud, new ProviderContainerContractInfoImpl(context, connectorRuntime));
-                                // Store the puLoader in context. It is retreived in load() to execute java2db and to
-                                // store the loaded emfs in a JPAApplicationContainer object for cleanup
-                                context.addTransientAppMetaData(getUniquePuIdentifier(pud), puLoader );
-                            }
+                for (PersistenceUnitsDescriptor persistenceUnitsDescriptor : pusDescriptorForThisBundle) {
+                    for (PersistenceUnitDescriptor pud : persistenceUnitsDescriptor.getPersistenceUnitDescriptors()) {
+                        if(referencedPus.contains(pud)) {
+                            PersistenceUnitLoader puLoader = new PersistenceUnitLoader(pud, new ProviderContainerContractInfoImpl(context, connectorRuntime));
+                            // Store the puLoader in context. It is retreived in load() to execute java2db and to
+                            // store the loaded emfs in a JPAApplicationContainer object for cleanup
+                            context.addTransientAppMetaData(getUniquePuIdentifier(pud), puLoader );
                         }
                     }
+                }
             }
+
+//        StatsProviderManager.register("jpa", PluginPoint.SERVER, "jpa/eclipselink", new EclipseLinkStatsProvider());
 
         return prepared;
     }
@@ -166,15 +170,16 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
 
 
 
-    private static class ProviderContainerContractInfoImpl
-            implements ProviderContainerContractInfo {
+    private static class ProviderContainerContractInfoImpl implements ProviderContainerContractInfo {
         private final DeploymentContext deploymentContext;
         private final ConnectorRuntime connectorRuntime;
         private final ClassLoader finalClassLoader;
-        
+        private ValidatorFactory validatorFactory;
+
         public ProviderContainerContractInfoImpl(DeploymentContext deploymentContext, ConnectorRuntime connectorRuntime) {
             this.deploymentContext = deploymentContext;
             this.connectorRuntime = connectorRuntime;
+            // Cache finalClassLoader as deploymentContext.getFinalClassLoader() is expected to be called only once during deployment.
             this.finalClassLoader=deploymentContext.getFinalClassLoader();
         }
 
@@ -224,6 +229,16 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
 
         public DataSource lookupNonTxDataSource(String dataSourceName) throws NamingException {
             return DataSource.class.cast(connectorRuntime.lookupNonTxResource(dataSourceName, false));
+        }
+
+        public ValidatorFactory getValidatorFactory() {
+            // TODO Once discussion about BeanValidation in JavaEE is done, ValidatorFactory should be available from deployment context
+            // We only create one validator factory per bundle.
+            if (validatorFactory == null) {
+                validatorFactory = Validation.buildDefaultValidatorFactory();
+            }
+
+            return validatorFactory;
         }
 
         /**

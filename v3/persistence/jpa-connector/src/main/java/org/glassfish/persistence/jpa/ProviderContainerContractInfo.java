@@ -40,6 +40,8 @@ import javax.persistence.spi.ClassTransformer;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import javax.naming.NamingException;
+import javax.validation.ValidatorFactory;
+
 import org.glassfish.api.deployment.DeploymentContext;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 
@@ -91,6 +93,11 @@ public interface ProviderContainerContractInfo {
      * @throws NamingException
      */
     DataSource lookupNonTxDataSource(String dataSourceName) throws NamingException;
+
+    /**
+     * get instance of ValidatorFactory for this environment
+     */
+    ValidatorFactory getValidatorFactory();
 
     /**
      * Answers whether an application is being deployed

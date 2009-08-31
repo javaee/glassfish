@@ -31,6 +31,7 @@ import com.sun.logging.LogDomains;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityManager;
+import javax.persistence.ValidationMode;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceProvider;
 import java.util.Map;
@@ -72,6 +73,13 @@ public class PersistenceUnitLoader {
      * Integration properties for loading PUs for execution
      */
     private static Map<String, String> integrationPropertiesWithoutJava2DB;
+
+    /** Name of property used to specify validation mode */
+    private static final String VALIDATION_MODE_PROPERTY = "javax.persistence.validation.mode";
+
+    /** Name of property used to specify validator factory */
+    private static final String VALIDATOR_FACTORY = "javax.persistence.validation.factory";
+
 
     public PersistenceUnitLoader(PersistenceUnitDescriptor puToInstatntiate, ProviderContainerContractInfo providerContainerContractInfo) {
        this.providerContainerContractInfo = providerContainerContractInfo;
@@ -150,11 +158,23 @@ public class PersistenceUnitLoader {
             java2db = processor.isJava2DbPU(pud);
         }
 
-        Map<String, String> overrides = (java2db)? integrationPropertiesWithJava2DB :
-                integrationPropertiesWithoutJava2DB;
+        Map<String, ?> overrides =  (java2db)? integrationPropertiesWithJava2DB : integrationPropertiesWithoutJava2DB;
 
-        EntityManagerFactory emf = provider.createContainerEntityManagerFactory(
-                pInfo, overrides);
+        // Check if the persistence unit requires Bean Validation
+        ValidationMode validationMode = getValidationMode(pud);
+        if(validationMode == ValidationMode.AUTO || validationMode == ValidationMode.CALLBACK ) {
+            // Declare a temp variable to let compiler allow put below.
+            Map<String, Object> tempOverride = new HashMap<String, Object>(overrides);
+            tempOverride.put(VALIDATOR_FACTORY, providerContainerContractInfo.getValidatorFactory());
+            overrides = tempOverride;
+        }
+
+        // Check if we are running in embedded mode. Disable weaving for EclipseLink in such case.
+        if (com.sun.enterprise.security.common.Util.isEmbeddedServer()) {
+            props.put("eclipselink.weaving", "false");
+        }
+
+        EntityManagerFactory emf = provider.createContainerEntityManagerFactory(pInfo, overrides);
 
         if (fineMsgLoggable) {
             logger.logp(Level.FINE, "PersistenceUnitLoader", "loadPU", // NOI18N
@@ -211,6 +231,18 @@ public class PersistenceUnitLoader {
         }
     }
 
+    private ValidationMode getValidationMode(PersistenceUnitDescriptor pud) {
+        ValidationMode validationMode = pud.getValidationMode(); //Initialize with value element <validation-mode> in persitence.xml
+        //Check is overridden in properties
+        String validationModeFromProperty = (String) pud.getProperties().get(VALIDATION_MODE_PROPERTY);
+        if(validationModeFromProperty != null) {
+            //User would get IllegalArgumentException if he has specified invalid mode
+            validationMode = ValidationMode.valueOf(validationModeFromProperty);
+        }
+        return validationMode;
+    }
+
+
     static {
         /*
          * We set all the provider specific integration level properties here.
@@ -233,10 +265,6 @@ public class PersistenceUnitLoader {
         props.put(ECLIPSELINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY,
                 System.getProperty(ECLIPSELINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY,
                         "SunAS9")); // NOI18N
-
-        if (com.sun.enterprise.security.common.Util.isEmbeddedServer()) {
-            props.put("eclipselink.weaving", "false");
-        }
 
         // TopLink specific properties:
         // See https://glassfish.dev.java.net/issues/show_bug.cgi?id=249

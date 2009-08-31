@@ -55,6 +55,8 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.ClassTransformer;
 import javax.sql.DataSource;
+import javax.validation.ValidatorFactory;
+
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.persistence.jpa.ProviderContainerContractInfo;
 
@@ -122,6 +124,11 @@ public class ProviderContainerContractInfoImpl implements ProviderContainerContr
 
     public DataSource lookupNonTxDataSource(String dataSourceName) throws NamingException {
         return (DataSource) connectorRuntime.lookupPMResource(dataSourceName, false);
+    }
+
+    public ValidatorFactory getValidatorFactory() {
+        // TODO: Need to implement this correctly.
+        return null;
     }
 
     // TODO: remove after persistence is refactored.

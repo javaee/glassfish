@@ -75,9 +75,9 @@ public class PersistenceUnitDescriptor extends Descriptor {
 
     private boolean excludeUnlistedClasses = false;
 
-    private CachingType cahchingType = CachingType.ALL; //TODO need to change this to UNSPECIFIED once EclipseLink integration with including UNSPECIFIED happens
+    private CachingType cahchingType;
 
-    private ValidationMode validationMode = ValidationMode.AUTO;
+    private ValidationMode validationMode;
 
     public PersistenceUnitDescriptor() {
     }
