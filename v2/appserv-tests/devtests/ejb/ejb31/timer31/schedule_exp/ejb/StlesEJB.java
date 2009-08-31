@@ -2,6 +2,8 @@ package com.sun.s1asdev.ejb31.timer.schedule_exp;
 
 
 import javax.ejb.*;
+import javax.interceptor.AroundTimeout;
+import javax.interceptor.InvocationContext;
 import javax.annotation.Resource;
 
 import java.util.Map;
@@ -56,7 +58,7 @@ public class StlesEJB implements Stles {
 
         String s = "" + (h0 - 1) + " - " + (h1 + 2);
         int second = now.get(Calendar.SECOND);
-        if (second > 55) {
+        if (second >= 55) {
             second -= 60;
         }
 
@@ -254,7 +256,7 @@ public class StlesEJB implements Stles {
     }
 
     @Timeout
-    private void timeout(Timer t) {
+    public void timeout(Timer t) {
 
         System.out.println("in StlesEJB:timeout "  + t.getInfo() + " - persistent: " + t.isPersistent());
         if (!t.isCalendarTimer()) {
@@ -264,5 +266,11 @@ public class StlesEJB implements Stles {
 
         callers.add("" + t.getInfo());
         expected_callers.remove("" + t.getInfo());
+    }
+
+    @AroundTimeout
+    private void xxx(InvocationContext ctx) throws Exception {
+        System.out.println("in StlesEJB:xxx "  + ((Timer)ctx.getTimer()).getInfo() );
+        ctx.proceed();
     }
 }
