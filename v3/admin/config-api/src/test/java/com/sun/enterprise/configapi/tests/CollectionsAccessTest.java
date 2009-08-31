@@ -91,6 +91,7 @@ public class CollectionsAccessTest extends ConfigApiTest  {
             public Object run(Applications param) throws PropertyVetoException, TransactionFailure {
                 List<Named> modules = param.getModules();
                 EjbModule m = param.createChild(EjbModule.class);
+                m.setName( "ejb-test" );
                 modules.add(m);
                 modules.remove(m);
                 return m;
