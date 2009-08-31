@@ -4,9 +4,9 @@
 -->
 
 <!DOCTYPE project [
-  <!ENTITY common SYSTEM "file:../../../../config/common.xml">
-  <!ENTITY run SYSTEM "file:../../../../config/run.xml">
-  <!ENTITY props SYSTEM "file:../../../../config/properties.xml">
+  <!ENTITY common SYSTEM "../../../../config/common.xml">
+  <!ENTITY run SYSTEM "../../../../config/run.xml">
+  <!ENTITY props SYSTEM "../../../../config/properties.xml">
 ]>
 
 <project name="connector1.5 RA" default="all" basedir=".">
@@ -35,7 +35,7 @@
     </antcall>
 
     <antcall target="asadmin-common">
-       <param name="admin.command" value="create-resource-adapter-config  --threadpools test-thread-pool"/>
+       <param name="admin.command" value="create-resource-adapter-config  --threadpoolid test-thread-pool"/>
        <param name="operand.props" value="threadpooltest-ra"/>
     </antcall>
     <antcall target="asadmin-common">

@@ -98,6 +98,10 @@
 
     <target name="runtest" depends="init-common">
 
+        <antcall target="execute-sql-common">
+            <param name="sql.file" value="sql/create_pointbase.sql"/>
+        </antcall>
+
           <java classname="client.WebTest">
             <arg value="${http.host}"/>
             <arg value="${http.port}"/>
@@ -107,6 +111,10 @@
              <pathelement location="."/>
            </classpath>
           </java>
+
+        <antcall target="execute-sql-common">
+            <param name="sql.file" value="sql/drop_pointbase.sql"/>
+        </antcall>
 
       </target>
 

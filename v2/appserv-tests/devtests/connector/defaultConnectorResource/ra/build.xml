@@ -4,8 +4,8 @@
 -->
 
 <!DOCTYPE project [
-  <!ENTITY common SYSTEM "file:../../../../config/common.xml">
-  <!ENTITY props SYSTEM "file:../../../../config/properties.xml">
+  <!ENTITY common SYSTEM "../../../../config/common.xml">
+  <!ENTITY props SYSTEM "../../../../config/properties.xml">
 ]>
 
 <project name="connector1.5 RA" default="all" basedir=".">
@@ -45,7 +45,6 @@
       <param name="admin.command" value="create-admin-object --target ${appserver.instance.name} --restype connector.MyAdminObject --raname generic-embeddedApp#generic-ra --property ResetControl=BEGINNING"/>
       <param name="operand.props" value="eis/testAdmin"/>
     </antcall>
-    <antcall target="reconfig-common"/>
   </target>
 
   <target name="testDelAdmin" depends="init-common">
@@ -53,7 +52,6 @@
       <param name="admin.command" value="delete-admin-object"/>
       <param name="operand.props" value="--target ${appserver.instance.name} eis/testAdmin"/>
     </antcall>
-    <antcall target="reconfig-common"/>
   </target>
 
   <target name="sendMessage" depends="init-common">

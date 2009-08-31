@@ -3,8 +3,8 @@
 <!-- Author: jagadesh.munta@sun.com -->
 
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
 ]>
 
 <project name="connector" default="usage" basedir=".">

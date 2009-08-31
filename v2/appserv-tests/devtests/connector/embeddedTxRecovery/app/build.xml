@@ -4,9 +4,9 @@
 -->
 
 <!DOCTYPE project [
-  <!ENTITY common SYSTEM "file:../../../../config/common.xml">
-  <!ENTITY testcommon SYSTEM "file:../../../../config/properties.xml">
-  <!ENTITY database SYSTEM "file:../../config/database.xml">
+  <!ENTITY common SYSTEM "../../../../config/common.xml">
+  <!ENTITY testcommon SYSTEM "../../../../config/properties.xml">
+  <!ENTITY database SYSTEM "../../config/database.xml">
 ]>
 
 <project name="connector1.5 MDB" default="all" basedir=".">
@@ -54,7 +54,7 @@
 
   <target name="setupJdbc" depends="init-common">
       <antcall target="create-jdbc-conpool-connector">
-        <param name="db.class" value="com.sun.sql.jdbcx.oracle.OracleDataSource"/>
+        <param name="db.class" value="org.apache.derby.jdbc.ClientXADataSource"/>
         <param name="jdbc.conpool.name" value="jdbc-pointbase-pool1"/>
         <param name="jdbc.resource.type" value="javax.sql.XADataSource"/>
       </antcall>

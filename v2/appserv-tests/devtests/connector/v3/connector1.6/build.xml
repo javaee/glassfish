@@ -170,7 +170,6 @@
       <param name="raname" value="generic-ra"/>
       <param name="map.name" value="generic-ra-groups-map"/>
      </antcall>
-
     <!-- hack, RAR uses the jvm option to determine the mode of security-work-context-->
     <antcall target="unset-jvm-options"/>
 

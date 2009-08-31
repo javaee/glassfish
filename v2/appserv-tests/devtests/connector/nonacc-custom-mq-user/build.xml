@@ -47,7 +47,7 @@
     </target> 
     
     <target name="setup" depends="init-common">
-       <property name="IMQUSERMGR" value="${env.S1AS_HOME}/imq/bin/imqusermgr"/>
+       <property name="IMQUSERMGR" value="${env.S1AS_HOME}/../mq/bin/imqusermgr"/>
 
         <!-- create MQ user -->
     <exec executable="${IMQUSERMGR}" failonerror="true">
@@ -72,6 +72,7 @@
 	       <pathelement location="${jmsra.jar}"/>
 	       <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
 	       <pathelement location="${java.home}/lib/jsse.jar"/>
+	       <pathelement location="${env.S1AS_HOME}/modules/gf-client.jar"/>
 	       <pathelement path="${s1astest.classpath}"/>
 	   </classpath>
 	   <sysproperty key="org.omg.CORBA.ORBInitialHost" value="${orb.host}"/>
@@ -85,7 +86,7 @@
 
     <target name="unsetup" depends="init-common">
         <antcall target="undeploy-jms-common"/>
-       <property name="IMQUSERMGR" value="${env.S1AS_HOME}/imq/bin/imqusermgr"/>
+       <property name="IMQUSERMGR" value="${env.S1AS_HOME}/../mq/bin/imqusermgr"/>
 
     <exec executable="${IMQUSERMGR}" failonerror="true">
         <arg line=" delete -u foo  " />
