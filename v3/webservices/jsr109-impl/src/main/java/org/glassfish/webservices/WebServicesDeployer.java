@@ -41,6 +41,7 @@ import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.RequestDispatcher;
@@ -700,11 +701,13 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     }
 
     public void clean(DeploymentContext dc) {
-        BundleDescriptor bundle = dc.getModuleMetaData(BundleDescriptor.class);
-        String name = bundle.getApplication().getAppName();
+        super.clean(dc);
+        UndeployCommandParameters params = dc.getCommandParameters(UndeployCommandParameters.class);
+        String name = params.name()  ;
         if (downloadableArtifacts.getArtifacts(name).size()>0) {
             downloadableArtifacts.clearArtifacts(name) ;
         }
+
     }
 
 
