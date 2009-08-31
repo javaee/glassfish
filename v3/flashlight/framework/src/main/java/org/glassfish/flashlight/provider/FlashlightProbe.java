@@ -37,6 +37,8 @@
 package org.glassfish.flashlight.provider;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
 import org.glassfish.flashlight.client.ProbeClientInvoker;
 import org.glassfish.flashlight.client.ProbeHandle;
 
@@ -52,18 +54,46 @@ public class FlashlightProbe
 
     public FlashlightProbe(int id, Class providerClazz, String moduleProviderName,
     		String moduleName, String probeProviderName, String probeName,
-                 String[] probeParamNames, Class[] paramTypes) {
+                 String[] probeParamNames, Class[] paramTypes, boolean self, boolean hidden) {
         this.id = id;
         this.providerClazz = providerClazz;
         this.moduleProviderName = moduleProviderName;
         this.moduleName = moduleName;
         this.probeProviderName = probeProviderName;
         this.probeName = probeName;
-        this.probeParamNames = probeParamNames;
-        this.paramTypes = paramTypes;
-        //System.out.println("[FL]AppName = " + appName + " " + this.appName);
         this.probeDesc = moduleProviderName + ":" + moduleName + ":" +
                 probeProviderName + ":" + probeName;
+        this.hasSelf = self;
+        this.hidden = hidden;
+        
+        if (self) {
+            if (isMethodStatic())
+                throw new RuntimeException("Monitoring: Cannot define \"self\" on a static method - " + probeDesc);
+            // Fill in the first slot of ParamNames with @Self and paramTypes with the providerClass type
+            this.probeParamNames = new String[probeParamNames.length+1];
+            this.paramTypes = new Class[paramTypes.length+1];
+            this.probeParamNames[0] = SELF;
+            this.paramTypes[0] = providerClazz;
+            for (int index = 0; index < probeParamNames.length; index++) {
+                this.probeParamNames[index+1] = probeParamNames[index];
+                this.paramTypes[index+1] = paramTypes[index];
+            }
+        } else {
+            this.probeParamNames = probeParamNames;
+            this.paramTypes = paramTypes;
+        }
+
+    }
+
+    private boolean isMethodStatic() {
+        boolean isMethodStatic = false;
+        try {
+            int modifier = getProviderClazz().getDeclaredMethod(getProviderJavaMethodName(),
+                                                                    getParamTypes()).getModifiers();
+            return Modifier.isStatic(modifier);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public synchronized boolean addInvoker(ProbeClientInvoker invoker) {
@@ -166,6 +196,15 @@ public class FlashlightProbe
         dtraceMethod = m;
     }
 
+    public boolean hasSelf() {
+        return hasSelf;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public static String SELF = "@SELF";
     private int id;
     private Class providerClazz;
     private String moduleProviderName;
@@ -180,4 +219,6 @@ public class FlashlightProbe
     private String probeDesc;
     private Object  dtraceProviderImpl;
     private Method  dtraceMethod;
+    private boolean hasSelf;
+    private boolean hidden;
 }

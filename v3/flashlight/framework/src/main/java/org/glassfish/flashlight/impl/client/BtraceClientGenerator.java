@@ -32,38 +32,60 @@ public class BtraceClientGenerator {
     public static byte[] generateBtraceClientClassData(int clientID, Collection<FlashlightProbe> probes) {
         // create a unique name.  It does not matter what the name is.
         String generatedClassName = "com/sun/btrace/flashlight/BTrace_Flashlight_" + clientID;
-
+        //Start of writing a class using ASM, which will be our BTrace Client
         int cwFlags = ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS;
         ClassWriter cw = new ClassWriter(cwFlags);
 
+        //Define the access identifiers for the BTrace Client class
         int access = Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL;
         cw.visit(Opcodes.V1_5, access, generatedClassName, null,
                 "java/lang/Object", null);
+        //Need a @OnMethod annotation, so prepare your Annotation Visitor for that
         AnnotationVisitor av = cw.visitAnnotation("Lcom/sun/btrace/annotations/BTrace;", true);
 
-        Type probeType = Type.getType(FlashlightProbe.class);
+        //Iterate through the probes, so you will create one method for each probe
         int methodCounter = 0;
         for (FlashlightProbe probe : probes) {
+            //Preparing the class method header and params (type) for @OnMethod annotation
             String typeDesc = "void ";
             String methodDesc = "void __" + probe.getProviderJavaMethodName() + "__" + clientID + "_" + methodCounter + "_";
             methodDesc += "(";
             typeDesc += "(";
             String delim = "";
-            for (Class paramType : probe.getParamTypes()) {
+            String typeDelim = "";
+            Class[] paramTypes = probe.getParamTypes();
+            for (int index = 0; index < paramTypes.length; index++) {
+                Class paramType = paramTypes[index];
                 methodDesc += delim + paramType.getName();
-                typeDesc += delim + paramType.getName();
+                // Dont add the param type for type desc, if self is the first index
+                if (!(probe.hasSelf() && (index == 0))) {
+                    typeDesc += typeDelim + paramType.getName();
+                    typeDelim = ",";
+                }
                 delim = ", ";
             }
             methodDesc += ")";
             typeDesc += ")";
+            //Creating the class method
             Method m = Method.getMethod(methodDesc);
             GeneratorAdapter gen = new GeneratorAdapter(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, m, null, null, cw);
+            // Add the @Self annotation
+            if (probe.hasSelf()) {
+                String[] paramNames = probe.getProbeParamNames();
+                for (int index = 0; index < paramNames.length; index++) {
+                    if (paramNames[index].equalsIgnoreCase(FlashlightProbe.SELF)) {
+                        AnnotationVisitor paramVisitor = gen.visitParameterAnnotation(index, "Lcom/sun/btrace/annotations/Self;", true);
+                        paramVisitor.visitEnd();
+                    }
+                }
+            }
+            //Add the @OnMethod annotation to this method
             av = gen.visitAnnotation("Lcom/sun/btrace/annotations/OnMethod;", true);
             av.visit("clazz", "" + probe.getProviderClazz().getName());
             av.visit("method", probe.getProviderJavaMethodName());
             av.visit("type", typeDesc);
             av.visitEnd();
-
+            //Add the body
             gen.push(probe.getId());
             gen.loadArgArray();
             gen.invokeStatic(Type.getType(

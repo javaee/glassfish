@@ -71,6 +71,8 @@ public class ProbeProviderXMLParser
     private static String PROBE_PROVIDER_CLASS = "class";
     private static String PROBE = "probe";
     private static String PROBE_NAME = "name";
+    private static String PROBE_SELF = "self";
+    private static String PROBE_HIDDEN = "hidden";
     private static String METHOD = "method";
     private static String PROBE_PARAM = "probe-param";
     private static String PROBE_PARAM_TYPE = "type";
@@ -192,6 +194,15 @@ public class ProbeProviderXMLParser
         //get probe name
         String name = probeEl.getAttribute(PROBE_NAME);
 
+        //get self attr of Probe
+        String self = probeEl.getAttribute(PROBE_SELF);
+        if (self == null)
+                self = "false";
+        //get hidden attr of Probe
+        String hidden = probeEl.getAttribute(PROBE_HIDDEN);
+        if (hidden == null)
+            hidden = "false";
+
         String method =
              probeEl.getElementsByTagName(METHOD).item(0).getFirstChild().getNodeValue();
 
@@ -210,7 +221,7 @@ public class ProbeProviderXMLParser
 
 
 
-        Probe probe = new Probe(name, method, params);
+        Probe probe = new Probe(name, method, params, Boolean.parseBoolean(self), Boolean.parseBoolean(hidden));
         return probe;
     }
 
@@ -284,6 +295,8 @@ public class ProbeProviderXMLParser
         String probeName = null;
         String probeMethod = null;
         List<ProbeParam> probeParams = null;
+        boolean hasSelf = false;
+        boolean isHidden = false;
 
         public String getProbeName() {
             return probeName;
@@ -297,10 +310,20 @@ public class ProbeProviderXMLParser
             return probeParams;
         }
 
-        public Probe(String probeName, String method, List<ProbeParam> params) {
+        public boolean hasSelf() {
+            return hasSelf;
+        }
+
+        public boolean isHidden() {
+            return isHidden;
+        }
+
+        public Probe(String probeName, String method, List<ProbeParam> params, boolean hasSelf, boolean isHidden) {
             this.probeName = probeName;
             probeMethod = method;
             probeParams = params;
+            this.hasSelf = hasSelf;
+            this.isHidden = isHidden;
 
         }
 

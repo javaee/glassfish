@@ -81,17 +81,17 @@ public class FlashlightProbeProviderFactory
     private final static Set<FlashlightProbeProvider> allProbeProviders = new HashSet<FlashlightProbeProvider>();
     private boolean debug = false;
     private final static Logger logger = Logger.getLogger(FlashlightProbeProviderFactory.class.getName());
-    private final HashMap<String, String> primTypes = new HashMap() {
+    private final HashMap<String, Class> primTypes = new HashMap<String, Class>() {
         {
-            put("int","java.lang.Integer");
-            put("byte","java.lang.Byte");
-            put("char","java.lang.Character");
-            put("short","java.lang.Short");
-            put("long","java.lang.Long");
-            put("float","java.lang.Float");
-            put("double","java.lang.Double");
-            put("boolean","java.lang.Boolean");
-            put("void","java.lang.Void");
+            put("int",Integer.TYPE);
+            put("byte",Byte.TYPE);
+            put("char",Character.TYPE);
+            put("short",Short.TYPE);
+            put("long",Long.TYPE);
+            put("float",Float.TYPE);
+            put("double",Double.TYPE);
+            put("boolean",Boolean.TYPE);
+            put("void",Void.TYPE);
         }
     };
 
@@ -165,10 +165,12 @@ public class FlashlightProbeProviderFactory
                 Probe pnameAnn = m.getAnnotation(Probe.class);
                 String probeName = (pnameAnn != null)
                         ? pnameAnn.name() : m.getName();
+                boolean self = (pnameAnn != null) ? pnameAnn.self() : false;
+                boolean hidden = (pnameAnn != null) ? pnameAnn.hidden() : false;
                 String[] probeParamNames = FlashlightUtils.getParamNames(m);
                 FlashlightProbe probe = ProbeFactory.createProbe(
                         providerClazz, moduleProviderName, moduleName, probeProviderName, probeName,
-                        probeParamNames, m.getParameterTypes());
+                        probeParamNames, m.getParameterTypes(), self, hidden);
                 probe.setProviderJavaMethodName(m.getName());
                 provider.addProbe(probe);
             }
@@ -333,6 +335,8 @@ public class FlashlightProbeProviderFactory
         for (ProbeProviderXMLParser.Probe probe : probes) {
             String probeName = probe.getProbeName();
             String probeMethod = probe.getProbeMethod();
+            boolean hasSelf = probe.hasSelf();
+            boolean isHidden = probe.isHidden();
 
             boolean errorParsingProbe = false;
             String[] probeParams = new String[probe.getProbeParams().size()];
@@ -364,7 +368,7 @@ public class FlashlightProbeProviderFactory
             }
             FlashlightProbe flProbe = ProbeFactory.createProbe( providerClazz,
                     moduleProviderName, moduleName, probeProviderName, probeName,
-                    probeParams, paramTypes);
+                    probeParams, paramTypes, hasSelf, isHidden);
             flProbe.setProviderJavaMethodName(probeMethod);
             mprint(" Constructed probe === " + flProbe.toString());
             flProvider.addProbe(flProbe);
@@ -385,10 +389,9 @@ public class FlashlightProbeProviderFactory
 
         try {
             // Lets see if this is a primitive type
-            String primType = primTypes.get(paramTypeStr);
+            Class primType = primTypes.get(paramTypeStr);
             if (primType != null) {
-                mprint("          paramType = " + primType);
-                return cl.loadClass(primType);
+                return primType;
             }
             //Not a primitive type, lets try to load it as is
             paramType = cl.loadClass(paramTypeStr);

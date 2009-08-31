@@ -58,11 +58,11 @@ public class ProbeFactory {
 	public static FlashlightProbe createProbe(Class providerClazz,
 			String moduleProviderName, String moduleName,
 			String probeProviderName, String probeName, String[] paramNames,
-			Class[] paramTypes) {
+			Class[] paramTypes, boolean self, boolean hidden) {
 		int id = counter.incrementAndGet();
 		FlashlightProbe probe = new FlashlightProbe(id, providerClazz,
 				moduleProviderName, moduleName, probeProviderName, probeName,
-				paramNames, paramTypes);
+				paramNames, paramTypes, self, hidden);
 
 		probeRegistry.registerProbe(probe);
 		return probe;

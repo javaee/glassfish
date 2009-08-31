@@ -1,6 +1,8 @@
 package org.glassfish.flashlight.provider;
 
 import java.util.Collection;
+import java.util.ArrayList;
+
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.impl.core.*;
 import org.jvnet.hk2.annotations.Scoped;
@@ -69,7 +71,13 @@ public class ProbeRegistry {
     }
     
     public Collection<FlashlightProbe> getAllProbes() {
-       return probeMap.values();
+       Collection<FlashlightProbe> allProbes = probeMap.values();
+       Collection<FlashlightProbe> visibleProbes = new ArrayList<FlashlightProbe>();
+       for (FlashlightProbe probe : allProbes) {
+           if (!probe.isHidden())
+               visibleProbes.add(probe);
+       }
+       return visibleProbes;
     }
 
    public static void invokeProbe(int id, Object[] args) {
