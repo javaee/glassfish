@@ -132,7 +132,10 @@ public class ConfigParser {
                 Logger.getAnonymousLogger().fine("Jumping over " + in.getLocalName());
             }
             // get to the next START_ELEMENT
-            in.nextTag();
+            // in.nextTag(); //TODO (based on inputs from Kohsuke - Commenting out this is not sufficient. 
+	    // If a sub element happens to have same name as the parent then this above loop will stop as 
+	    // soon as it hits the end tag for the SUB element not the parent. Need to fix that. 
+	    // Source can be borrowed from XMLStreaUtils.java 
             return null;
         }
         return handleElement(in,document,parent,model);
