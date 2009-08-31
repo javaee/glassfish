@@ -65,6 +65,8 @@ import org.jvnet.hk2.component.*;
 
 import java.util.logging.LogManager;
 
+import com.sun.enterprise.util.io.FileUtils;
+
 @Service
 @Contract
 public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
@@ -104,15 +106,14 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 		try {
             file =new File(loggingConfigDir, loggingPropertiesName);
             if (!file.exists()) {
-                Logger.getAnonymousLogger().log(Level.WARNING, file.getAbsolutePath() + " not found, will create one with properties given.");
+                Logger.getAnonymousLogger().log(Level.WARNING, file.getAbsolutePath() + " not found.");
                 return;
             }
 			fis = new java.io.FileInputStream (file);
         	props.load(fis);
             fis.close();            
 		} catch (java.io.FileNotFoundException e ) {
-			Logger.getAnonymousLogger().log(Level.INFO, "Cannot read logging.properties file. Creating new one ");
-
+			Logger.getAnonymousLogger().log(Level.INFO, "Cannot read logging.properties file. ");
             throw new IOException();
 		} catch (IOException e) {
 			Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot read logging.properties file : ", e);

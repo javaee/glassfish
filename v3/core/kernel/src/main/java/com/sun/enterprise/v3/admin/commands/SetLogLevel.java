@@ -3,6 +3,7 @@ package com.sun.enterprise.v3.admin.commands;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
+import org.glassfish.api.ActionReport;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -11,6 +12,9 @@ import org.jvnet.hk2.annotations.Inject;
 import com.sun.common.util.logging.LoggingConfigImpl;
 
 import java.io.IOException;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,13 +35,19 @@ public class SetLogLevel implements AdminCommand {
     LoggingConfigImpl loggingConfig;
 
     public void execute(AdminCommandContext context) {
-        //check the logger name
-        try {
-            String propertyName = logger_name+".level";
-            loggingConfig.setLoggingProperty(propertyName, level);
-        } catch (IOException e) {
+        final ActionReport report = context.getActionReport();
 
+        //check the logger name
+        LogManager logMgr =  LogManager.getLogManager();
+        Logger _l = logMgr.getLogger(logger_name);
+        if (_l == null) {
+            report.setMessage("Could not find logger "+ logger_name);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
         }
+        _l.setLevel(Level.parse(level));
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+
 
     }    
 
