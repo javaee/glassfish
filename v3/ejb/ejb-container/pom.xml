@@ -49,7 +49,7 @@
                     <archive>
                         <manifestEntries>
                             <probe-provider-class-names>
-                                org.glassfish.ejb.security.application.EjbSecurityProbeProvider,com.sun.ejb.monitoring.probes.EjbMonitoringProbeProvider,com.sun.ejb.monitoring.probes.EjbTimedObjectProbeProvider
+                                org.glassfish.ejb.security.application.EjbSecurityProbeProvider,com.sun.ejb.monitoring.probes.EjbMonitoringProbeProvider,com.sun.ejb.monitoring.probes.EjbTimedObjectProbeProvider,com.sun.ejb.monitoring.probes.EjbPoolProbeProvider
                             </probe-provider-class-names>
                         </manifestEntries>
                     </archive>

@@ -42,6 +42,7 @@ import com.sun.ejb.containers.util.pool.NonBlockingPool;
 import com.sun.ejb.containers.util.pool.ObjectFactory;
 
 import com.sun.enterprise.admin.monitor.callflow.ComponentType;
+import com.sun.ejb.monitoring.stats.EjbPoolStatsProvider;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Server;
 
@@ -265,8 +266,14 @@ public class StatelessSessionContainer
     protected void registerMonitorableComponents() {
         //registryMediator.registerProvider(this);
         //registryMediator.registerProvider(pool);
+        poolStatsListener = new EjbPoolStatsProvider(pool,
+                containerInfo.appName, containerInfo.modName,
+                containerInfo.ejbName);
+        poolStatsListener.register();
+
         super.registerMonitorableComponents();
         super.populateMethodMonitorMap();
+
         _logger.log(Level.FINE, "[SLSB Container] registered monitorable");
     }
 
@@ -684,6 +691,7 @@ public class StatelessSessionContainer
 
             if (pool != null) {
                 pool.close();
+                poolStatsListener.unregister();
             }
 
         } catch(Throwable t) {

@@ -60,6 +60,7 @@ import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.Callback
 import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
 import com.sun.enterprise.config.serverbeans.MdbContainer;
 import com.sun.enterprise.admin.monitor.callflow.ComponentType;
+import com.sun.ejb.monitoring.stats.EjbPoolStatsProvider;
 import org.glassfish.ejb.api.MessageBeanProtocolManager;
 import org.glassfish.ejb.api.ResourcesExceededException;
 import org.glassfish.ejb.api.MessageBeanListener;
@@ -291,6 +292,10 @@ public final class MessageBeanContainer extends BaseContainer implements
 						.getMaxPoolSize(), beanPoolDesc_
 						.getPoolIdleTimeoutInSeconds(), loader);
 
+                poolStatsListener = new EjbPoolStatsProvider(messageBeanPool_,
+                        containerInfo.appName, containerInfo.modName,
+                        containerInfo.ejbName);
+                poolStatsListener.register();
 		// TODO registryMediator.registerProvider(messageBeanPool_);
 		// super.setMonitorOn(mdbc.isMonitoringEnabled());
 	}

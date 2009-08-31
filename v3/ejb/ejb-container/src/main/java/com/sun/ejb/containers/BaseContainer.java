@@ -374,11 +374,14 @@ public abstract class BaseContainer
     protected HashMap			    methodMonitorMap;
     protected boolean			    monitorOn = false;
     protected MonitoringRegistryMediator    registryMediator;
+
     protected EJBMethodStatsManager	    ejbMethodStatsManager;
     protected EjbMonitoringStatsProvider    ejbProbeListener;
     protected EjbMonitoringProbeProvider    ejbProbeNotifier;
     protected EjbTimedObjectStatsProvider   timerProbeListener;
     protected EjbTimedObjectProbeProvider   timerProbeNotifier;
+    protected EjbPoolStatsProvider          poolStatsListener;
+
     protected ContainerInfo                 containerInfo;
         
     private String _debugDescription;

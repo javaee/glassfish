@@ -182,6 +182,7 @@ public class NonBlockingPool
                 if ((maintainSteadySize) && (addedResizeTask == false)) {
                     toAddResizeTask = addedResizeTask = true;
                 }
+                poolProbeNotifier.ejbObjectAddedEvent(); 
                 createdCount++;	//hope that everything will be OK.
             }
         }
@@ -198,6 +199,7 @@ public class NonBlockingPool
             return factory.create(param);
         } catch (RuntimeException th) {
             synchronized (list) {
+                poolProbeNotifier.ejbObjectAddFailedEvent(); 
                 createdCount--;
             }
             throw th;
@@ -236,6 +238,7 @@ public class NonBlockingPool
                 list.add(object);
                 return;
             } else {
+                poolProbeNotifier.ejbObjectDestroyedEvent();
                 destroyedCount++;
             }
         }
@@ -257,6 +260,7 @@ public class NonBlockingPool
      */
     public void destroyObject(Object object) {
     	synchronized (list) {
+            poolProbeNotifier.ejbObjectDestroyedEvent();
             destroyedCount++;
     	}
         
@@ -340,6 +344,7 @@ public class NonBlockingPool
             Object[] array = list.toArray();
             for (int i=0; i<array.length; i++) {
                 try {
+                    poolProbeNotifier.ejbObjectDestroyedEvent();
                     destroyedCount++;
                     try {
                         factory.destroy(array[i]);
@@ -374,6 +379,7 @@ public class NonBlockingPool
             int size = list.size();
             for (int i=0; (i<count) && (size > 0); i++) {
                 removeList.add(list.remove(--size));
+                poolProbeNotifier.ejbObjectDestroyedEvent();
                 destroyedCount++;
             }
         }
@@ -462,6 +468,7 @@ public class NonBlockingPool
                         EJBContextImpl ctx = (EJBContextImpl) list.get(0);
                         if (ctx.getLastTimeUsed() <= allowedIdleTime) {
                             removeList.add(list.remove(0));
+                            poolProbeNotifier.ejbObjectDestroyedEvent();
                             destroyedCount++;
                         } else {
                             break;

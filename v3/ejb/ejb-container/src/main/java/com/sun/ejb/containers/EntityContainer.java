@@ -79,6 +79,8 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 
 import com.sun.ejb.spi.container.BeanStateSynchronization;
+import com.sun.ejb.monitoring.stats.EntityBeanStatsProvider;
+import com.sun.ejb.monitoring.stats.EjbPoolStatsProvider;
 
 /**
  * This class implements the Container interface for EntityBeans.
@@ -218,6 +220,7 @@ public class EntityContainer
     protected int	totalPassivationErrors;
 
     private EntityCacheStatsProvider	cacheStatsProvider;
+    private EntityBeanStatsProvider    entityBeanStatsListener;
 
     static {
         _logger.log(Level.FINE," Loading Entitycontainer...");
@@ -398,6 +401,14 @@ public class EntityContainer
 **/
         super.registerMonitorableComponents();
 	super.populateMethodMonitorMap();
+        entityBeanStatsListener = new EntityBeanStatsProvider(this, 
+                containerInfo.appName, containerInfo.modName,
+                containerInfo.ejbName);
+        poolStatsListener = new EjbPoolStatsProvider(entityCtxPool, 
+                containerInfo.appName, containerInfo.modName,
+                containerInfo.ejbName);
+        entityBeanStatsListener.register();
+        poolStatsListener.register();
         _logger.log(Level.FINE, "[Entity Container] registered monitorable");
     }
     
@@ -2412,6 +2423,7 @@ public class EntityContainer
             destroyReadyStoreOnUndeploy(); //cache must set the listern to null
             
             entityCtxPool.close();
+            poolStatsListener.unregister();
             
             // stops the idle bean passivator and also removes the link
             // to the cache; note that cancel() method of timertask
@@ -2426,6 +2438,7 @@ public class EntityContainer
                 this.idleBeansPassivator.cache  = null;
             }
 	    cancelTimerTasks();
+            entityBeanStatsListener.unregister();
         }
         finally {
             

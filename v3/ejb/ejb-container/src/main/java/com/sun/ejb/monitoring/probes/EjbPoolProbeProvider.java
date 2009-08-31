@@ -39,22 +39,22 @@ import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.gmbal.Description;
 
 /**
- * Probe emitter for the Ejb Timed Object monitoring events. 
+ * Probe emitter for the Ejb Pool monitoring events. 
  * Used by the probe framework as an event notifier.
  *
  * @author Marina Vatkina
  */
 // TODO: find the right names
-@ProbeProvider(moduleProviderName="glassfish", moduleName="ejb", probeProviderName="ejb-timers-monitoring")
-public class EjbTimedObjectProbeProvider {
+@ProbeProvider(moduleProviderName="glassfish", moduleName="ejb", probeProviderName="ejb-pool-monitoring")
+public class EjbPoolProbeProvider {
 
-    @Probe(name="timerCreatedEvent")
-    public void ejbTimerCreatedEvent() {}
+    @Probe(name="objectAddedEvent")
+    public void ejbObjectAddedEvent() {}
 
-    @Probe(name="timerRemovedEvent")
-    public void ejbTimerRemovedEvent() {}
+    @Probe(name="objectAddFailedEvent")
+    public void ejbObjectAddFailedEvent() {}
 
-    @Probe(name="timerDeliveredEvent")
-    public void ejbTimerDeliveredEvent() {}
+    @Probe(name="objectDestroyedEvent")
+    public void ejbObjectDestroyedEvent() {}
 
 }
