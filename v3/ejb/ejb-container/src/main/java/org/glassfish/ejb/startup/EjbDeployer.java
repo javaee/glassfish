@@ -86,8 +86,6 @@ public class EjbDeployer
     private ComponentEnvManager compEnvManager;
     
 
-    protected CMPDeployer cmpDeployer;
-
     // Property used to persist unique id across server restart.
     private static final String APP_UNIQUE_ID_PROP = "org.glassfish.ejb.container.application_unique_id";
 
@@ -211,7 +209,7 @@ public class EjbDeployer
         OpsParams params = dc.getCommandParameters(OpsParams.class);
         if (params.origin == OpsParams.Origin.undeploy) {
 
-            cmpDeployer = habitat.getByContract(CMPDeployer.class);
+            CMPDeployer cmpDeployer = habitat.getByContract(CMPDeployer.class);
             if (cmpDeployer != null) {
                 cmpDeployer.clean(dc);
             }
@@ -277,7 +275,7 @@ public class EjbDeployer
             return;
         }
 
-        cmpDeployer = habitat.getByContract(CMPDeployer.class);
+        CMPDeployer cmpDeployer = habitat.getByContract(CMPDeployer.class);
         if (cmpDeployer == null) {
             throw new DeploymentException("No CMP Deployer is available to deploy this module");
         }
