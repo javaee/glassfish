@@ -37,25 +37,20 @@
 
 package org.glassfish.web.osgi;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.framework.ServiceRegistration;
 import static org.osgi.framework.Constants.ACTIVATION_LAZY;
 import static org.osgi.framework.Constants.BUNDLE_ACTIVATIONPOLICY;
 import org.osgi.service.url.URLConstants;
 import org.osgi.service.url.URLStreamHandlerService;
-import org.glassfish.api.event.Events;
-import org.glassfish.api.event.EventListener;
-import org.glassfish.api.event.EventTypes;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.internal.api.Globals;
 
-import java.util.Properties;
-import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An extender that listens to web application bundle's lifecycle
@@ -63,20 +58,24 @@ import java.util.logging.Logger;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class WebExtender implements BundleActivator, SynchronousBundleListener
+public class WebExtender implements Extender, SynchronousBundleListener
 {
     private OSGiWebContainer wc;
     private static final Logger logger =
-            Logger.getLogger(WebExtender.class.getPackage().getName());
+            Logger.getLogger(ExtenderManager.class.getPackage().getName());
     private BundleContext context;
-    private Events events = Globals.get(Events.class);
-    private EventListener listener;
-    private Semaphore serverReady = new Semaphore(0);
+    private AtomicBoolean started = new AtomicBoolean(false);
+    private ServiceRegistration urlHandlerService;
 
-    public void doActualWork() {
+    public WebExtender(BundleContext context)
+    {
+        this.context = context;
+    }
+
+    public void start() {
+        started.set(true);
         wc = new OSGiWebContainer();
         context.addBundleListener(this);
-        registerGlassFishEventListener();
 
         // Web Container bundle can come into existence after
         // web application bundles, so we must go through existing bundles
@@ -92,67 +91,12 @@ public class WebExtender implements BundleActivator, SynchronousBundleListener
         addURLHandler();
     }
 
-    public void start(BundleContext context) throws Exception
-    {
-        this.context = context;
-        // spawn a thread and wait for server to start before proceeding
-        waitForServerToStart();
-    }
-
-    /**
-     * This method spawns a new thread, waits for server to start.
-     * After being notified of server start, it proceeds by calling
-     * {@link #doActualWork()}
-     */
-    private void waitForServerToStart()
-    {
-        final EventListener serverStartedListener = new EventListener()
-        {
-            public void event(Event event)
-            {
-                if (EventTypes.SERVER_READY.equals(event.type()))
-                {
-                    logger.logp(Level.INFO, "WebExtender", "event", "Received Server Started Event");
-                    serverReady.release();
-                    events.unregister(this);
-                }
-            }
-        };
-        events.register(serverStartedListener);
-
-        new Thread(new Runnable(){
-            public void run()
-            {
-                // Check again to ensure that we did not miss the event
-                // after we checked the status and before we registered
-                // the listener. If we don't check and we have indeed
-                // missed the event, we will end up waiting for ever.
-                if (!isServerStarted()) {
-                    logger.logp(Level.INFO, "WebExtender", "run", "Waiting for Server to start");
-                    try
-                    {
-                        serverReady.acquire();
-                    }
-                    catch (InterruptedException e)
-                    {
-                        throw new RuntimeException(e);
-                    }
-                }
-                doActualWork();
-            }
-        }).start();
-    }
-
-    private boolean isServerStarted() {
-        ServerEnvironment serverEnv = Globals.get(ServerEnvironment.class);
-        return serverEnv.getStatus() == ServerEnvironment.Status.started;
-    }
-
-    public void stop(BundleContext context) throws Exception
-    {
-        unregisterGlassFishEventListener();
-        context.removeBundleListener(this);
-        wc.undeployAll();
+    public void stop() {
+        if (started.getAndSet(false)) {
+            removeURLHandler();
+            context.removeBundleListener(this);
+            if (wc!=null) wc.undeployAll();
+        }
     }
 
     public void bundleChanged(BundleEvent event)
@@ -244,27 +188,15 @@ public class WebExtender implements BundleActivator, SynchronousBundleListener
         Properties p = new Properties();
         p.put(URLConstants.URL_HANDLER_PROTOCOL,
                 new String[]{Constants.WEB_BUNDLE_SCHEME});
-        context.registerService(
+        urlHandlerService = context.registerService(
                 URLStreamHandlerService.class.getName(),
                 new WebBundleURLStreamHandlerService(),
                 p);
     }
 
-    private void registerGlassFishEventListener() {
-        listener = new EventListener() {
-            public void event(Event event)
-            {
-                if (EventTypes.PREPARE_SHUTDOWN.equals(event.type())) {
-                    wc.undeployAll();
-                }
-            }
-        };
-        events.register(listener);
-    }
-
-    private void unregisterGlassFishEventListener() {
-        if (listener != null) {
-            events.unregister(listener);
+    private void removeURLHandler() {
+        if (urlHandlerService !=null) {
+            urlHandlerService.unregister();
         }
     }
 }

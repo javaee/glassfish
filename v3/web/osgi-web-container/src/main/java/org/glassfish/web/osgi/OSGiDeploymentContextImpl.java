@@ -37,34 +37,30 @@
 
 package org.glassfish.web.osgi;
 
-import org.glassfish.deployment.common.DeploymentContextImpl;
+import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.Globals;
-import org.glassfish.internal.api.DelegatingClassLoader;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.net.URISyntaxException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.io.IOException;
-import java.io.File;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-
-import com.sun.enterprise.module.common_impl.CompositeEnumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
