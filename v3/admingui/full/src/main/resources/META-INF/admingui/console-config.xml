@@ -25,6 +25,11 @@
         parentId="form"
         content="Enterprise Application ;ear"
     />
+    <integration-point
+        id="full_edit_ear"
+        type="org.glassfish.admingui:editAppPage"
+        content="ear:full/apps/editEar.jsf"
+    />
 
     <!-- add the property sheet for deployment page, specific for app client app -->
     <integration-point
@@ -41,6 +46,11 @@
         parentId="form"
         content="Application Client ;appClient"
     />
+     <integration-point
+        id="full_edit_appClient"
+        type="org.glassfish.admingui:editAppPage"
+        content="appclient:full/apps/editAppClient.jsf"
+    />
 
     <!-- add the property sheet for deployment page, specific for EJB Jar -->
     <integration-point
@@ -56,6 +66,11 @@
         priority="400"
         parentId="form"
         content="EJB Jar ;ejb"
+    />
+     <integration-point
+        id="full_edit_ejb"
+        type="org.glassfish.admingui:editAppPage"
+        content="ejb:full/apps/editEjb.jsf"
     />
 
 </console-config>
