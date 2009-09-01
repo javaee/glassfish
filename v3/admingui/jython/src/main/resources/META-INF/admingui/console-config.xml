@@ -11,6 +11,13 @@
             content="deploymentJython.jsf"
     />
 
+     <integration-point
+            id="jython_edit_app"
+            type="org.glassfish.admingui:editAppPage"
+            content="jython/editJythonApp.jsf"
+    />
+
+
     <!-- add the dropdown option for selecting the type of app to deploy
          in the form of  label:value
      -->
@@ -21,5 +28,7 @@
             parentId="form"
             content="Jython Application;jython"
     />
+
+
 
 </console-config>
