@@ -43,6 +43,13 @@ public class ProbeRegistry {
     	return _me;
     }
 
+    public static void cleanup() {
+        if (_me != null) {
+            _me = new ProbeRegistry();
+        }
+        ProbeProviderRegistry.cleanup();
+    }
+
     public void registerProbe(FlashlightProbe probe) {
         probeMap.put(probe.getId(), probe);
         probeDesc2ProbeMap.put(probe.getProbeDesc(), probe);

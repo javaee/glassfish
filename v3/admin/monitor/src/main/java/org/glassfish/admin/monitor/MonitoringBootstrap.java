@@ -9,7 +9,7 @@ import java.beans.PropertyChangeEvent;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.*;
 import org.glassfish.external.probe.provider.StatsProviderManager;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
@@ -44,6 +44,7 @@ import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
+import org.glassfish.flashlight.provider.ProbeRegistry;
 import org.glassfish.internal.api.Init;
 /**
  *
@@ -51,7 +52,7 @@ import org.glassfish.internal.api.Init;
  */
 @Service
 @Scoped(Singleton.class)
-public class MonitoringBootstrap implements Init, PostConstruct, EventListener, ModuleLifecycleListener, ConfigListener {
+public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, EventListener, ModuleLifecycleListener, ConfigListener {
     @Inject
     private MonitoringRuntimeDataRegistry mrdr;
     @Inject
@@ -107,6 +108,13 @@ public class MonitoringBootstrap implements Init, PostConstruct, EventListener, 
             setStatsProviderManagerDelegate();
     }
 
+    public void preDestroy() {
+        ProbeRegistry.cleanup();
+        if (spmd != null) {
+            spmd = new StatsProviderManagerDelegateImpl(pcm, probeRegistry, mrdr, domain, monitoringService);
+            StatsProviderManager.setStatsProviderManagerDelegate(spmd);
+        }
+    }
 
     public void event(Event event) {
         if (event.is(EventTypes.SERVER_READY)) {

@@ -60,6 +60,10 @@ public class ProbeProviderRegistry {
         return _me;
     }
 
+    public static void cleanup() {
+        _me = new ProbeProviderRegistry();    
+    }
+
     public Collection<FlashlightProbeProvider> getAllProbeProviders() {
         return Collections.unmodifiableCollection(providerMap.values());
     }
