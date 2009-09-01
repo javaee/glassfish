@@ -1836,11 +1836,19 @@ public class WebModule extends PwcWebModule {
             wcd.setCanonicalName(wrapper.getName());
             String servletClassName = wrapper.getServletClassName();
             if (servletClassName != null) {
-                Class clazz = null;
-                try {
-                    clazz = getLoader().getClassLoader().loadClass(servletClassName);
-                } catch(Exception ex) {
-                    throw new IllegalArgumentException(ex);
+                Class clazz = wrapper.getServletClass();
+                if (clazz == null) {
+                    if (wrapper.getServlet() != null) {
+                        clazz = wrapper.getServlet().getClass();
+                    } else {                  
+                        try {
+                            clazz = getLoader().getClassLoader().loadClass(
+                                servletClassName);
+                            wrapper.setServletClass(clazz);
+                        } catch(Exception ex) {
+                            throw new IllegalArgumentException(ex);
+                        }
+                    }
                 }
                 if (clazz.isAnnotationPresent(RunAs.class)) {
                     RunAs runAs = (RunAs)clazz.getAnnotation(RunAs.class);
