@@ -68,6 +68,8 @@ public final class InterceptorInvocationHandler
     private Object[] interceptorInstances;
     private InterceptorManager interceptorManager;
 
+    private static Object[] emptyArray = new Object[] {};
+
 
     public void init(Object targetInstance, Object[] interceptorInstances,
                      Object clientProxy, InterceptorManager manager)
@@ -137,11 +139,13 @@ public final class InterceptorInvocationHandler
             InterceptorManager.InterceptorChain chain =
                     interceptorManager.getAroundInvokeChain(null, beanClassMethod);
 
+            Object[] theArgs = (args == null) ? emptyArray : args;
+
             // Create context for around invoke invocation.  Make sure method set on
             // InvocationContext is from bean class.
             AroundInvokeInvocationContext invContext =
                     new AroundInvokeInvocationContext(targetInstance, interceptorInstances, chain,
-                            beanClassMethod, method.getParameterTypes());
+                            beanClassMethod, theArgs );
 
             returnValue = interceptorManager.intercept(chain, invContext);
 
