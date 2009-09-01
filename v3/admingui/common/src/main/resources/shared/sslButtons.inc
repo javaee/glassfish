@@ -45,7 +45,6 @@
                 saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
                     skipAttrs="#{pageSession.skipAttrsList}"
                     convertToFalse="#{pageSession.convertToFalseList}"
-                    parentObjectNameStr="#{pageSession.parentObjectNameStr}"
                 );
                 prepareSuccessfulMsg();
                 redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");

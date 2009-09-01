@@ -51,9 +51,6 @@
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}"
                         onlyUseAttrs="#{pageSession.onlyUseAttrs}"
-                        parentObjectNameStr="#{pageSession.parentObjectNameStr}"
-                        forceCreate="#{pageSession.forceCreate}"
-                        childType="#{pageSession.childType}"
                     );
                     if(#{usersOptionG}){
                         if(#{pexist}) {
