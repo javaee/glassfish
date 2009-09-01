@@ -6,9 +6,11 @@ import org.glassfish.api.ActionReport;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
 
-import java.util.logging.LogManager;
-import java.util.Enumeration;
+import java.util.logging.Logger;
+import java.util.Map;
+import java.util.Set;
 
+import java.io.IOException;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -27,13 +29,25 @@ public class ListLoggerNames implements AdminCommand {
 
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        LogManager logMgr = LogManager.getLogManager();
-        Enumeration<String> logNames = logMgr.getLoggerNames();
-        while (logNames.hasMoreElements()) {
-             final ActionReport.MessagePart part = report.getTopMessagePart()
+        try {
+            Map<String,String>  props = loggingConfig.getLoggingProperties();
+            Set<String> keys = props.keySet();
+            for (String name : keys)   {
+                if (name.endsWith(".level") && !name.equals(".level")) {
+                final ActionReport.MessagePart part = report.getTopMessagePart()
                     .addChild();
-             part.setMessage(logNames.nextElement());
+                String n = name.substring(0,name.lastIndexOf(".level"));
+                part.setMessage(n + ": "+ (String)props.get(name));
+                }
+            }
+        } catch (IOException ex){
+          report.setMessage("Unable to get the logger names");
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setFailureCause(ex);
+            return;
         }
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+
 
     }
 }

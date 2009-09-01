@@ -37,17 +37,14 @@ public class SetLogLevel implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        //check the logger name
-        LogManager logMgr =  LogManager.getLogManager();
-        Logger _l = logMgr.getLogger(logger_name);
-        if (_l == null) {
-            report.setMessage("Could not find logger "+ logger_name);
+        try {
+            loggingConfig.setLoggingProperty(logger_name+".level", level);
+        }  catch (IOException e) {
+            report.setMessage("Could not set logger level "+ logger_name);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
         }
-        _l.setLevel(Level.parse(level));
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
     }    
 
