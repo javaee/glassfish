@@ -216,6 +216,8 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         String ff = manager.getProperty(cname+".flushFrequency");
         if (ff != null)
             flushFrequency = Integer.parseInt(manager.getProperty(cname+".flushFrequency"));
+        if (flushFrequency <= 0)
+            flushFrequency = 1;
 
         String formatterName = manager.getProperty(cname + ".formatter");
         if (formatterName==null || UniformLogFormatter.class.getName().equals(formatterName)) {
@@ -482,32 +484,6 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
     public void log() {
 
         LogRecord record;
-
-/*
-        int maxMsg = 1;
-        int queueSize =  pendingRecords.size();
-
-        if (queueSize == 0)
-            maxMsg = 1;
-        else if (queueSize < flushFrequency)
-            maxMsg = queueSize;
-        else if (queueSize >= flushFrequency)
-            maxMsg = flushFrequency;
-
-
-        for(int i=0; i< maxMsg;i++) {
-            try {
-                record = pendingRecords.take();
-                super.publish(record);
-                if (record.getLevel().intValue()>=Level.WARNING.intValue()) {
-                    recentErrors.offer(record);
-                }
-            } catch (InterruptedException e) {
-                return;
-            }
-        }
-
- */
 
         // take is blocking so we take one record off the queue
         try {
