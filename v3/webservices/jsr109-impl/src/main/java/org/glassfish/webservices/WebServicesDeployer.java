@@ -778,7 +778,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             ArrayList<DownloadableArtifacts.FullAndPartURIs> alist = new ArrayList<DownloadableArtifacts.FullAndPartURIs>();
             while(entries.hasMoreElements()) {
                 String name = (String) entries.nextElement();
-                String wsdlName = name.substring(name.lastIndexOf('/')+1) ;
+                String wsdlName = stripWsdlDir(name,bundle) ;
                 URI clientwsdl = new File(parent, wsdlName).toURI();
                 alist.add(new DownloadableArtifacts.FullAndPartURIs(new File(sourceDir,name).toURI(),clientwsdl));
             }
@@ -804,6 +804,14 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         // copy the additional webservice elements etc
         archivist.copyExtraElements(archive, archive2);
  
+    }
+
+    /**
+     * Return the entry name without "WEB-INF/wsdl" or "META-INF/wsdl".
+     */
+    private String stripWsdlDir(String entry, BundleDescriptor bundle) {
+        String wsdlDir = bundle.getWsdlDir();
+        return entry.substring(wsdlDir.length()+1);
     }
 
 }
