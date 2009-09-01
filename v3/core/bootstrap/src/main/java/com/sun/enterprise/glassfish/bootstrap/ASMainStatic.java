@@ -48,6 +48,7 @@ import com.sun.hk2.component.InhabitantsParserDecorator;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileReader;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.MalformedURLException;
@@ -115,8 +116,12 @@ public class ASMainStatic extends ASMainNonOSGi {
 
         setSystemProperties();
 
+        // create our masking class loader
+        final ClassLoader parent = getClass().getClassLoader();
+        ClassLoader maskingClassLoade = getMaskingClassLoader(parent, sc.getRootDirectory());
+
         // our unique class loader.
-        ClassLoader singleClassLoader = createTmpClassLoader(modulesDir);
+        ClassLoader singleClassLoader = createTmpClassLoader(maskingClassLoade, modulesDir);
 
         // set up the cache.
 /*        final File cacheDir = (System.getProperty("glassfish.static.cache.dir") != null)?new File(System.getProperty("glassfish.static.cache.dir"), getPreferedCacheDir()):new File(domainDir, getPreferedCacheDir());
@@ -227,6 +232,44 @@ public class ASMainStatic extends ASMainNonOSGi {
 */        
     }
 
+    protected ClassLoader getMaskingClassLoader(ClassLoader parent, File root) {
+        File f = new File(root, ASMainFelix.GF_FELIX_HOME);
+        f = new File(f, ASMainFelix.CONFIG_PROPERTIES);
+        if (!f.exists()) {
+            return parent;
+        }
+        Properties props = new Properties();
+        FileReader reader = null;
+        try {
+            reader = new FileReader(f);
+            props.load(reader);
+        } catch(IOException e) {
+            logger.log(Level.SEVERE, "Cannot load " + f.getAbsolutePath());
+            return parent;
+        } finally {
+            try {
+                if (reader!=null) {
+                    reader.close();
+                }
+            } catch(IOException e) {
+                // ignore.
+            }
+        }
+        String punchins = props.getProperty("jre-1.6");
+        StringTokenizer st = new StringTokenizer(punchins, ",");
+        List<String> p = new ArrayList<String>();
+        List<String> multiples = new ArrayList<String>();
+        multiples.add("org.jvnet");
+        multiples.add("org.glassfish");
+        while (st.hasMoreTokens()) {
+            String tk = st.nextToken();
+            if (tk.contains(";")) {
+                tk = tk.substring(0, tk.indexOf(";"));
+            }
+            p.add(tk.trim());
+        }
+        return new MaskingClassLoader(parent, p, multiples);
+    }
     
 
     @Override
@@ -252,12 +295,12 @@ public class ASMainStatic extends ASMainNonOSGi {
         return null;
     }
 
-    public ClassLoader createTmpClassLoader(File moduleDir) throws Exception {
+    public ClassLoader createTmpClassLoader(ClassLoader parent, File moduleDir) throws Exception {
         List<URL> urls = new ArrayList<URL>();
         Set<ModuleInfo> modules = getAlreadyLoadedModules();
         insertURLs(moduleDir, modules, urls);
         findDerbyClient(urls);
-        return new URLClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader());
+        return new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
 
     }
     private final class ModuleInfo {

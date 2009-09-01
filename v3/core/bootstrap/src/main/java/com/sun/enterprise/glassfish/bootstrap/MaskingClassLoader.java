@@ -36,9 +36,7 @@
  */
 package com.sun.enterprise.glassfish.bootstrap;
 
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * {@link ClassLoader} that masks a specified set of classes
@@ -47,67 +45,49 @@ import java.util.Collection;
  * <p>
  * This code is used to create an isolated environment.
  *
- * @author Kohsuke Kawaguchi
+ * @author Jerome Dochez
  */
 public class MaskingClassLoader extends ClassLoader {
 
-    private final String[] masks;
-    private final URLClassLoader delegate;
-    
+    private final Set<String> punchins = new HashSet<String>();
+    private final String[] multiples;
 
-/*    public MaskingClassLoader(String... masks) {
-        this.masks = masks;
-    }
-
-    public MaskingClassLoader(Collection<String> masks) {
-        this(masks.toArray(new String[masks.size()]));
-    }
-*/
-    public MaskingClassLoader(ClassLoader parent, URL[] urls, String... masks) {
+    /**
+     * Creates a new masking class loader letting a set of defined packages be loaded by the parent
+     * classloader. Multiples packages can be specified so that only the parent package needs to
+     * be provided.
+     *
+     * @param parent the parent classloader to delegate actual loading from when punchin is allowed
+     * @param punchins list of packages allowed to be visible from the parent
+     * @param multiples list of parent packages allowed to be visible from the parent class loader
+     */
+    public MaskingClassLoader(ClassLoader parent, Collection<String> punchins, Collection<String> multiples) {
         super(parent);
-        this.delegate = new URLClassLoader(urls, getMaskingClassLoader(masks));
-        this.masks = masks;
-    }
-
-    public MaskingClassLoader(ClassLoader parent, URL[] urls, Collection<String> masks) {
-        this(parent, urls, masks.toArray(new String[masks.size()]));
+        this.punchins.addAll(punchins);
+        this.multiples = multiples.toArray(new String[multiples.size()]);
     }
 
     @Override
     protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 
+        // I do not mask java packages, and I only mask javax. stuff for now.
         try {
-            for (String mask : masks) {
-                if (name.startsWith(mask)) {
-                    Class c = delegate.loadClass(name);
-                    return c;
-                }
-            }
+            return findSystemClass(name);
         } catch(ClassNotFoundException e) {
-
+            
         }
-        return super.loadClass(name, resolve);
-/*        for (String mask : masks) {
-            if(name.startsWith(mask))
-                delegate.loadClass(name);
+        if (!(name.startsWith("javax.") || name.startsWith("org."))) {
+            return super.loadClass(name, resolve);
         }
-
-        return super.loadClass(name, resolve);
-        */
-     }
-
-    public ClassLoader getMaskingClassLoader(final String... masks) {
-        return new ClassLoader() {
-            @Override
-            protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-                for (String mask : masks) {
-                    if (name.startsWith(mask)) {
-                        throw new ClassNotFoundException(name);
-                    }
-                }
+        final String packageName = name.substring(0, name.lastIndexOf("."));
+        if (punchins.contains(packageName)) {
+            return super.loadClass(name, resolve);
+        }
+        for (String multiple : multiples) {
+            if (name.startsWith(multiple)) {
                 return super.loadClass(name, resolve);
-            };
-
-        };
-    }
+            }
+        }
+        throw new ClassNotFoundException(name);
+     }
 }

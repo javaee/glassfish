@@ -53,6 +53,21 @@ public class ASMainFelix extends ASMainOSGi {
     private static final String FELIX_HOME = "FELIX_HOME";
     protected final static String CACHE_DIR = "org.osgi.framework.storage";
 
+    /**
+     * Home of Felix installation relative to Glassfish root installation.
+     */
+    public static final String GF_FELIX_HOME="osgi/felix";
+
+    /**
+     * Location of the config properties file relative to the felix installation 
+     */
+    public static final String CONFIG_PROPERTIES = "conf/config.properties";
+
+    /**
+     * Location of the config properties file relative to the felix installation
+     */
+    public static final String SYSTEM_PROPERTIES = "conf/system.properties";
+
     protected String getPreferedCacheDir() {
         return "osgi-cache/felix/";
     }
@@ -66,7 +81,7 @@ public class ASMainFelix extends ASMainOSGi {
         if (fwPath == null) {
             // try system property, which comes from asenv.conf
             fwPath = System.getProperty(FELIX_HOME,
-                    new File(glassfishDir, "osgi/felix").getAbsolutePath());
+                    new File(glassfishDir, GF_FELIX_HOME).getAbsolutePath());
         }
         fwDir = new File(fwPath);
         if (!fwDir.exists()) {
@@ -86,9 +101,9 @@ public class ASMainFelix extends ASMainOSGi {
     }
 
     protected void launchOSGiFW() throws Exception {
-        String sysFileURL = new File(fwDir, "conf/system.properties").toURI().toURL().toString();
+        String sysFileURL = new File(fwDir, SYSTEM_PROPERTIES).toURI().toURL().toString();
         System.setProperty("felix.system.properties", sysFileURL);
-        String confFileURL = new File(fwDir, "conf/config.properties").toURI().toURL().toString();
+        String confFileURL = new File(fwDir, CONFIG_PROPERTIES).toURI().toURL().toString();
         System.setProperty("felix.config.properties", confFileURL);
         Class mc = launcherCL.loadClass(getFWMainClassName());
         final String[] args = new String[0];
