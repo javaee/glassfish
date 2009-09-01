@@ -759,14 +759,16 @@ public class CommandRunnerImpl implements CommandRunner {
         if (i18n!=null) {
             i18nKey = i18n.value();
         }
-        if (i18nKey != null) {
-            usageText.append(lsm.getLocalString(i18nKey+".usagetext",
-                                                generateUsageText(model)));
+	String usage;
+        if (i18nKey != null &&
+		ok(usage = lsm.getLocalString(i18nKey+".usagetext", ""))) {
+	    usageText.append(adminStrings.getLocalString("adapter.usage", "Usage: "));
+            usageText.append(usage);
+	    return usageText.toString();
         }
         else {
             return generateUsageText(model);
         }
-        return usageText.toString();
     }
 
          /**
@@ -778,7 +780,7 @@ public class CommandRunnerImpl implements CommandRunner {
           */
     private String generateUsageText(CommandModel model) {
         StringBuffer usageText = new StringBuffer();
-        usageText.append("Usage: ");
+	usageText.append(adminStrings.getLocalString("adapter.usage", "Usage: "));
         usageText.append(model.getCommandName());
         usageText.append(" ");
         StringBuffer operand = new StringBuffer();
@@ -903,6 +905,9 @@ public class CommandRunnerImpl implements CommandRunner {
 	cmd.addProperty("name", model.getCommandName());
 	if (model.unknownOptionsAreOperands())
 	    cmd.addProperty("unknown-options-are-operands", "true");
+	String usage = localStrings.getLocalString(i18n_key + ".usagetext", "");
+	if (ok(usage))
+	    cmd.addProperty("usage", usage);
 	CommandModel.ParamModel primary = null;
 	// for each parameter add
 	// <option name="name" type="type" short="s" default="default"
@@ -915,7 +920,6 @@ public class CommandRunnerImpl implements CommandRunner {
 	    }
 	    ActionReport.MessagePart ppart = cmd.addChild();
 	    ppart.setChildrenType("option");
-    //System.out.println("Param name :" + p.getName() + ", type: " + p.getType());
 	    ppart.addProperty("name", p.getName());
 	    ppart.addProperty("type", typeOf(p));
 	    ppart.addProperty("optional", Boolean.toString(param.optional()));
@@ -941,6 +945,9 @@ public class CommandRunnerImpl implements CommandRunner {
 	    primpart.addProperty("min",
 		    primary.getParam().optional() ? "0" : "1");
 	    primpart.addProperty("max", "1");   // XXX - based on array type?
+	    String desc = getParamDescription(localStrings, i18n_key, primary);
+	    if (ok(desc))
+		primpart.addProperty("description", desc);
 	}
     }
 

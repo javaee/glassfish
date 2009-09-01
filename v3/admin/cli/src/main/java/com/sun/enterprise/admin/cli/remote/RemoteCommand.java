@@ -86,6 +86,7 @@ public class RemoteCommand extends CLICommand {
     private boolean                         addedUploadOption = false;
     private boolean                         doHelp = false;
     private Payload.Outbound                outboundPayload;
+    private String                          usage;
 
     /*
      * Set a default read timeout for URL connections.
@@ -472,8 +473,27 @@ public class RemoteCommand extends CLICommand {
      * 
      * @return  the command name
      */
+    /*
     public String getCommandName() {
         return name;
+    }
+    */
+
+    /**
+     * Get the usage text.
+     * If we got usage information from the server, use it.
+     *
+     * @return usage text
+     */
+    public String getUsage() {
+        if (usage == null)
+            return super.getUsage();
+
+        StringBuilder usageText = new StringBuilder();
+        usageText.append(strings.get("Usage", strings.get("Usage.asadmin")));
+        usageText.append(" ");
+        usageText.append(usage);
+        return usageText.toString();
     }
 
     /**
@@ -707,6 +727,7 @@ public class RemoteCommand extends CLICommand {
             if (cmdnode == null)
                 return null;    // no command info, must be invalid command
             NamedNodeMap cmdattrs = cmdnode.getAttributes();
+            usage = getAttr(cmdattrs, "usage");
             String dashOk = getAttr(cmdattrs, "unknown-options-are-operands");
             if (dashOk != null)
                 unknownOptionsAreOperands = Boolean.parseBoolean(dashOk);
