@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="464"/>
+    <property name="TOTAL_EXPECTED" value="465"/>
 
     &commonSetup;
     &commonBuild;
@@ -492,6 +492,10 @@
         <ant dir="redirectWithRootWildCardUrlPattern" target="all"/>
     </target>
 
+    <target name="comet">
+        <ant dir="cometEcho" target="all"/>
+    </target>
+
     <target name="all">
         <delete>
            <fileset dir="${env.APS_HOME}" includes="test_results*"/>
@@ -511,6 +515,7 @@
         <antcall target="security"/>
         <antcall target="http-connector"/>
         <antcall target="servlet"/>
+        <antcall target="comet"/>
         <antcall target="stopDomain"/>
         <record name="web.output" action="stop" />
 
