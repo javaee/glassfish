@@ -26,6 +26,7 @@ import com.sun.enterprise.util.Result;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
 import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.ControllerStateListener;
 import com.sun.grizzly.config.GrizzlyEmbeddedHttp;
@@ -81,6 +82,7 @@ public class GrizzlyProxy implements NetworkProxy {
     private GrizzlyService grizzlyService;
 
     private static final List<String> nvVsMapper = new ArrayList<String>();
+    private VirtualServer vs;
 
     // Those Adapter MUST not be mapped through a VirtualHostMapper, as our
     // WebContainer already supports it.
@@ -92,6 +94,13 @@ public class GrizzlyProxy implements NetworkProxy {
 
     public GrizzlyProxy(GrizzlyService service, NetworkListener listener) {
         grizzlyService = service;
+        final Collection<VirtualServer> list = service.getHabitat().getAllByType(VirtualServer.class);
+        final String vsName = listener.findHttpProtocol().getHttp().getDefaultVirtualServer();
+        for (VirtualServer virtualServer : list) {
+            if(virtualServer.getId().equals(vsName)) {
+                vs = virtualServer;
+            }
+        }
         logger = service.getLogger();
         networkListener = listener;
         String port = networkListener.getPort();
@@ -127,9 +136,7 @@ public class GrizzlyProxy implements NetworkProxy {
             mapper.setId(networkListener.getName());
 
             final GrizzlyEmbeddedHttp embeddedHttp = grizzlyListener.getEmbeddedHttp();
-            // Issue 9284
-            embeddedHttp.setWebAppRootPath(
-                    System.getProperty("com.sun.aas.instanceRoot") + "/docroot");
+            embeddedHttp.setWebAppRootPath(vs.getDocroot());
 
             final ContainerMapper adapter = new ContainerMapper(grizzlyService, embeddedHttp);
             adapter.setMapper(mapper);

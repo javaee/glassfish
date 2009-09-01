@@ -1380,17 +1380,6 @@ public class PECoyoteConnector extends Connector {
         // Configure Connector with <http-service> properties
         configHttpProperties(listener.findHttpProtocol().getHttp(),
             listener.findTransport(), listener.findHttpProtocol().getSsl());
-/*
-        for (Property httpListenerProp  : listener.getProperty()) {
-            String propName = httpListenerProp.getName();
-            String propValue = httpListenerProp.getValue();
-            if (!configureHttpListenerProperty(propName, propValue)) {
-                _logger.log(Level.WARNING,
-                    "pewebcontainer.invalid_http_listener_property",
-                    propName);                    
-            }
-        }
-*/ 
     }          
 
 
