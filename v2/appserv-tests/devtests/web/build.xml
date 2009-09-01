@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="463"/>
+    <property name="TOTAL_EXPECTED" value="464"/>
 
     &commonSetup;
     &commonBuild;
@@ -410,9 +410,7 @@
         <ant dir="sslCookie" target="all"/>
         <ant dir="installationPathDisclosure" target="all"/>
         <ant dir="programmaticLogin" target="all"/>
-<!-- XXX temporarily commented out, see IT 9291
         <ant dir="traceEnabled" target="all"/>
--->
         <ant dir="sslClientAuthUnprotectedResourceGetClientCert" target="all"/>
         <ant dir="securityConstraintWithoutAnyAuthConstraint" target="all"/>
         <ant dir="proxyKeysize" target="all"/>
