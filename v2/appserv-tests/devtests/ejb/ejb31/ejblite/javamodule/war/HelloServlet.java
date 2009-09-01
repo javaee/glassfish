@@ -104,6 +104,8 @@ public class HelloServlet extends HttpServlet {
 
 	System.out.println("In HelloServlet::doGet");
 
+	foo.foobar("foobar");
+
 	simpleSingleton.hello();
 
 	simpleStateless.hello();
@@ -128,6 +130,7 @@ public class HelloServlet extends HttpServlet {
 	slsb5.hello();
 
 	foo.foo();
+	foo.foobar("foobar");
 	foo2.foo();
 	foo3.foo();
 	foo4.foo();

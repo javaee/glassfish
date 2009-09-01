@@ -31,6 +31,10 @@ public class FooManagedBean extends ManagedSuper {
 	bmb.bar();
     }
 
+    public void foobar(String s) {
+	System.out.println("foobar::s = " + s);
+    }
+
     public Object getThis() {
 	return this;
     }

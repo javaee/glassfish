@@ -28,6 +28,9 @@ public class InterceptorA {
     @AroundInvoke
     private Object roundInvoke(InvocationContext c) throws Exception {
 	System.out.println("In InterceptorA::aroundInvoke() ");
+	if( c.getParameters().length > 0 ) {
+	    System.out.println("param 1 = " + c.getParameters()[0]);
+	}
 	return c.proceed();
     }
 
