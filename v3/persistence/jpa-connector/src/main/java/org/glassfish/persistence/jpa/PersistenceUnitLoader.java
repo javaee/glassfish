@@ -27,6 +27,8 @@ import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitsDescriptor;
 import org.glassfish.persistence.common.Java2DBProcessorHelper;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.ActionReport;
 import com.sun.logging.LogDomains;
 
 import javax.persistence.EntityManagerFactory;
@@ -204,8 +206,12 @@ public class PersistenceUnitLoader {
 
                 em = emf.createEntityManager();
             } catch(Throwable e) {
+                // Log warning
                 logger.log(Level.WARNING, e.getMessage(), e);
-                // Log and ignore
+                DeploymentContext ctx = providerContainerContractInfo.getDeploymentContext();
+                ActionReport subActionReport = ctx.getActionReport().addSubActionsReport();
+                // Propagte warning to client side so that the deployer can see the warning.
+                Java2DBProcessorHelper.warnUser(subActionReport, e.getMessage());
             } finally {
                 if(em != null) {
                     em.close();

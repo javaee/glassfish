@@ -331,7 +331,7 @@ public class Java2DBProcessorHelper {
             if (warningBuf.length() > 0) {
                 String warning = 
                         getI18NMessage("Java2DBProcessorHelper.tablewarning");
-                warnUser(warning + warningBuf.toString());
+                warnUser(subReport, warning + warningBuf.toString());
             }
         }
     }
@@ -649,7 +649,7 @@ public class Java2DBProcessorHelper {
         String msg = getI18NMessage(errorCode, 
                 regName, fileName, ex);
         logger.warning(msg);
-        warnUser(msg);        
+        warnUser(subReport, msg);        
     }
     
     /**
@@ -685,15 +685,15 @@ public class Java2DBProcessorHelper {
      * already-existing warning message text.
      * @param msg Message for user.
      */
-    public void warnUser(String msg) {
+    public static void warnUser(ActionReport report, String msg) {
         StringBuffer sb = new StringBuffer();
-        String s = subReport.getMessage();
+        String s = report.getMessage();
         if (s != null) {
             sb.append(s);
         }
         sb.append("\n").append(msg); // NOI18N
-        subReport.setMessage(sb.toString());
-        subReport.setActionExitCode(ActionReport.ExitCode.WARNING);
+        report.setMessage(sb.toString());
+        report.setActionExitCode(ActionReport.ExitCode.WARNING);
     }
 
-} 
+}
