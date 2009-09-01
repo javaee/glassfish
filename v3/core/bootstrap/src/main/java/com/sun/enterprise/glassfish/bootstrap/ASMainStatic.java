@@ -316,9 +316,9 @@ public class ASMainStatic extends ASMainNonOSGi {
 
     private void insertURLs(File directory, Set<ModuleInfo> modules, List<URL> result) throws Exception {
         for (File file : directory.listFiles()) {
-            if (file.isFile()) {
+            if (file.isFile() && (file.getName().endsWith(".jar") || file.getName().endsWith(".zip"))) {
                 processFile(file, modules, result);
-            } else {
+            } else if (file.isDirectory()) {
                 insertURLs(file,modules, result);
             }
         }
