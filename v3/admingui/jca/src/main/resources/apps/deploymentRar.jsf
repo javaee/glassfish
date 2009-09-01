@@ -42,7 +42,7 @@
         setAttribute(key="fieldMap" value="rar");
         createMap(result="#{pageSession.rar}")
         mapPut(map="#{pageSession.deployMap}", key="rar", value="#{pageSession.rar}");
-        mapPut(map="#{pageSession.rar}", key="convertToFalseList", value={ "verify"} );
+        mapPut(map="#{pageSession.rar}", key="convertToFalseList", value={"enabled", "verify"} );
      />
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{rarId});
