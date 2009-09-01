@@ -89,7 +89,7 @@
         <sun:propertySheetSection id="accessLog" label="$resource{i18n_web.access.SectionTitle}">
 
         <sun:property id="acLog" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.accessLogging}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap['AccessLogEnabled']}" selectedValue="true"/>
+            <sun:checkbox label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="true"/>
         </sun:property>
 
         <sun:property id="rotationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.Rotation}" helpText="$resource{i18n_web.access.RotationHelp}">
@@ -108,7 +108,7 @@
             <sun:textField id="Suffix" columns="$int{30}" text="#{pageSession.valueMap2['RotationSuffix']}" />
         </sun:property>
 
-        <sun:property id="MaxHistoryFiles"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.MaxHistoryFiles}" helpText="$resource{i18n_web.access.MaxHistoryFiles}">
+        <sun:property id="MaxHistoryFiles"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.MaxHistoryFiles}" helpText="$resource{i18n_web.access.MaxHistoryFilesHelp}">
             <sun:textField id="MaxHistoryFiles" columns="$int{30}" text="#{pageSession.valueMap2['MaxHistoryFiles']}" />
         </sun:property>
 
