@@ -52,8 +52,6 @@
                     saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}"
-                        parentObjectNameStr="#{pageSession.parentObjectNameStr}"
-                        forceCreate="#{pageSession.forceCreate}"
                     );
                     if(#{pageSession.has2Objects}){
                         saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}"  attrs="#{pageSession.valueMap2}"
