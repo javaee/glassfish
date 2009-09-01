@@ -63,7 +63,6 @@ import com.sun.enterprise.tools.upgrade.logging.LogService;
 public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
 
     private static final Logger logger = LogService.getLogger();
-    
     private Map<String, ArgumentHandler> inputMap;
     private static final StringManager sm =
         StringManager.getManager(InteractiveInputImpl.class);
@@ -71,146 +70,143 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
         CommonInfoModel.getInstance();
 
 	
-    ///-public void processArguments(Map<String, ArgumentHandler> inputMap){
-	public void processArguments(ArrayList<ArgumentHandler> aList){
+    public void processArguments(ArrayList<ArgumentHandler> aList) {
         int cnt = aList.size();
-		this.inputMap = new HashMap<String, ArgumentHandler>();
-		for (int i =0; i < cnt; i++){
-			ArgumentHandler tmpAh = aList.get(i);
-			inputMap.put(tmpAh.getCmd(), tmpAh);
-		}
+        this.inputMap = new HashMap<String, ArgumentHandler>();
+        for (int i = 0; i < cnt; i++) {
+            ArgumentHandler tmpAh = aList.get(i);
+            inputMap.put(tmpAh.getCmd(), tmpAh);
+        }
 
-		try {
-			sourcePrompt();
-			targetPrompt();
-			if (!CommonInfoModel.getInstance().isUpgradeSupported()){
-				System.exit(1);
-			}
-			adminPrompt();
-			adminPasswordPrompt();
-			masterPasswordPrompt();
-		}catch(IOException e) {
+        try {
+            sourcePrompt();
+            targetPrompt();
+            if (!CommonInfoModel.getInstance().isUpgradeSupported()) {
+                System.exit(1);
+            }
+            adminPrompt();
+            adminPasswordPrompt();
+            masterPasswordPrompt();
+        } catch (IOException e) {
             logger.log(Level.SEVERE,
                 sm.getString(
                 "enterprise.tools.upgrade.cli.unexpectedException"), e);
-		}		
-	}
+        }
+    }
 	
-	/**
-	 *  Collect the users response from stnd input.
-	 */
-	private String getResponse() throws IOException {
-		String response = null;
-		byte b[] = new byte[1024];
-		int c = System.in.read(b);
-		if (c == -1) { // input stream closed, maybe by ^C
-			System.exit(1);
-		}
-		response = new String(b,0,c);
-		return response.trim();
-	}
+    /**
+     *  Collect the users response from stnd input.
+     */
+    private String getResponse() throws IOException {
+        String response = null;
+        byte b[] = new byte[1024];
+        int c = System.in.read(b);
+        if (c == -1) { // input stream closed, maybe by ^C
+            System.exit(1);
+        }
+        response = new String(b, 0, c);
+        return response.trim();
+    }
 	
-	private void sourcePrompt() throws IOException {
-		ArgumentHandler tmpA = inputMap.get(CLIConstants.SOURCE_SHORT);
-		if (tmpA == null){
-			tmpA = inputMap.get(CLIConstants.SOURCE);
-		}
-		if(tmpA == null) {
-			System.out.print(
-				sm.getString("enterprise.tools.upgrade.cli.Source_input"));
-			
-			String source = getResponse();
-			tmpA = new ARG_source();
-			tmpA.setRawParameters(source);
-			inputMap.put(CLIConstants.SOURCE,tmpA);
-		}
-		//Check if input is a valid source directory input
-		if (tmpA.isValidParameter()){
-			tmpA.exec();
-		} else {
-			logger.severe(
-				sm.getString("enterprise.tools.upgrade.cli.not_valid_source_install"));
-			inputMap.remove(CLIConstants.SOURCE_SHORT);
-			inputMap.remove(CLIConstants.SOURCE);
-			sourcePrompt();
-		}
-	}
+    private void sourcePrompt() throws IOException {
+        ArgumentHandler tmpA = inputMap.get(CLIConstants.SOURCE_SHORT);
+        if (tmpA == null) {
+            tmpA = inputMap.get(CLIConstants.SOURCE);
+        }
+        if (tmpA == null) {
+            System.out.print(
+                sm.getString("enterprise.tools.upgrade.cli.Source_input"));
+            String source = getResponse();
+            tmpA = new ARG_source();
+            tmpA.setRawParameters(source);
+            inputMap.put(CLIConstants.SOURCE, tmpA);
+        }
+        //Check if input is a valid source directory input
+        if (tmpA.isValidParameter()) {
+            tmpA.exec();
+        } else {
+            logger.severe(
+                sm.getString("enterprise.tools.upgrade.cli.not_valid_source_install"));
+            inputMap.remove(CLIConstants.SOURCE_SHORT);
+            inputMap.remove(CLIConstants.SOURCE);
+            sourcePrompt();
+        }
+    }
 	
-	private void targetPrompt() throws IOException{
-		ArgumentHandler tmpA = inputMap.get(CLIConstants.TARGET_SHORT);
-		if (tmpA == null){
-			tmpA = inputMap.get(CLIConstants.TARGET);
-		}
-		if(tmpA == null) {
-			System.out.print(
-				sm.getString("enterprise.tools.upgrade.cli.Target_input"));
-			
-			String target = getResponse();
-			tmpA = new ARG_target();
-			tmpA.setRawParameters(target);
-			inputMap.put(CLIConstants.TARGET,tmpA);
-		}
+    private void targetPrompt() throws IOException {
+        ArgumentHandler tmpA = inputMap.get(CLIConstants.TARGET_SHORT);
+        if (tmpA == null) {
+            tmpA = inputMap.get(CLIConstants.TARGET);
+        }
+        if (tmpA == null) {
+            System.out.print(
+                sm.getString("enterprise.tools.upgrade.cli.Target_input"));
+            String target = getResponse();
+            tmpA = new ARG_target();
+            tmpA.setRawParameters(target);
+            inputMap.put(CLIConstants.TARGET, tmpA);
+        }
 
         // in the interactive CLI case, we'll allow users to fix name clashes
         tmpA.getCommonInfo().getTarget().setDirectoryMover(this);
-		if (tmpA.isValidParameter()){
-			tmpA.exec();
-		} else {
-			logger.severe(sm.getString("" +
-				"enterprise.tools.upgrade.cli.not_valid_target_install"));
-			inputMap.remove(CLIConstants.TARGET_SHORT);
-			inputMap.remove(CLIConstants.TARGET);
-			targetPrompt();
-		}
-	}
+        if (tmpA.isValidParameter()) {
+            tmpA.exec();
+        } else {
+            logger.severe(sm.getString("" +
+                "enterprise.tools.upgrade.cli.not_valid_target_install"));
+            inputMap.remove(CLIConstants.TARGET_SHORT);
+            inputMap.remove(CLIConstants.TARGET);
+            targetPrompt();
+        }
+    }
 	
-	private void adminPrompt() throws IOException{
-		ArgumentHandler tmpA = inputMap.get(CLIConstants.ADMINUSER_SHORT);
-		if (tmpA == null){
-			tmpA = inputMap.get(CLIConstants.ADMINUSER);
-		}
-		if(tmpA == null) {
-			System.out.print(
-				sm.getString("enterprise.tools.upgrade.cli.adminuser_input"));
-			
-			String admiuser = getResponse();
-			tmpA = new ARG_adminuser();
-			tmpA.setRawParameters(admiuser);
-			inputMap.put(CLIConstants.ADMINUSER,tmpA);
-		}
-		tmpA.exec();
-	}
-	
-	private void adminPasswordPrompt() throws IOException{
-		ArgumentHandler tmpA = inputMap.get(CLIConstants.ADMINPASSWORD_SHORT);
-		if (tmpA == null){
-			tmpA = inputMap.get(CLIConstants.ADMINPASSWORD);
-		}
-		
-		if(tmpA == null) {
-            String adminPassword = getPasswordResponse(sm.getString("enterprise.tools.upgrade.cli.adminpassword_input"));
-			tmpA = new ARG_adminpassword();
-			tmpA.setRawParameters(adminPassword);
-			inputMap.put(CLIConstants.ADMINPASSWORD,tmpA);
-		}
-		tmpA.exec();
-	}
-	
-	private void masterPasswordPrompt() throws IOException{
-		ArgumentHandler tmpA = inputMap.get(CLIConstants.MASTERPASSWORD_SHORT);
-		if (tmpA == null){
-			tmpA = inputMap.get(CLIConstants.MASTERPASSWORD);
-		}
-		if(tmpA == null) {
-            String password = getPasswordResponse(sm.getString("enterprise.tools.upgrade.cli.MasterPW_input"));
-			tmpA = new ARG_masterpassword();
-			tmpA.setRawParameters(password);
-			inputMap.put(CLIConstants.MASTERPASSWORD, tmpA);
-		}
-		tmpA.exec();
-	}
+    private void adminPrompt() throws IOException {
+        ArgumentHandler tmpA = inputMap.get(CLIConstants.ADMINUSER_SHORT);
+        if (tmpA == null) {
+            tmpA = inputMap.get(CLIConstants.ADMINUSER);
+        }
+        if (tmpA == null) {
+            System.out.print(
+                sm.getString("enterprise.tools.upgrade.cli.adminuser_input"));
 
-    private String getPasswordResponse(String prompt){
+            String admiuser = getResponse();
+            tmpA = new ARG_adminuser();
+            tmpA.setRawParameters(admiuser);
+            inputMap.put(CLIConstants.ADMINUSER, tmpA);
+        }
+        tmpA.exec();
+    }
+	
+    private void adminPasswordPrompt() throws IOException {
+        ArgumentHandler tmpA = inputMap.get(CLIConstants.ADMINPASSWORD_SHORT);
+        if (tmpA == null) {
+            tmpA = inputMap.get(CLIConstants.ADMINPASSWORD);
+        }
+
+        if (tmpA == null) {
+            String adminPassword = getPasswordResponse(sm.getString("enterprise.tools.upgrade.cli.adminpassword_input"));
+            tmpA = new ARG_adminpassword();
+            tmpA.setRawParameters(adminPassword);
+            inputMap.put(CLIConstants.ADMINPASSWORD, tmpA);
+        }
+        tmpA.exec();
+    }
+	
+    private void masterPasswordPrompt() throws IOException {
+        ArgumentHandler tmpA = inputMap.get(CLIConstants.MASTERPASSWORD_SHORT);
+        if (tmpA == null) {
+            tmpA = inputMap.get(CLIConstants.MASTERPASSWORD);
+        }
+        if (tmpA == null) {
+            String password = getPasswordResponse(sm.getString("enterprise.tools.upgrade.cli.MasterPW_input"));
+            tmpA = new ARG_masterpassword();
+            tmpA.setRawParameters(password);
+            inputMap.put(CLIConstants.MASTERPASSWORD, tmpA);
+        }
+        tmpA.exec();
+    }
+
+    private String getPasswordResponse(String prompt) {
         String optionValue;
         try {
             InputsAndOutputs.getInstance().getUserOutput().print(prompt);
@@ -221,7 +217,7 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
         } catch (java.lang.UnsatisfiedLinkError e) {
             optionValue = readInput();
         } catch (Exception e) {
-            optionValue=null;
+            optionValue = null;
         }
         return optionValue;
     }
@@ -234,18 +230,18 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
         }
     }
 
-	public void helpUsage(String str){
-		System.out.println("\n" + str + "\n");
-		helpUsage();
-	}
-	
-	public void helpUsage(){
-		helpUsage(0);
-	}
-	
-	public void helpUsage(int exitCode) {
-		System.out.println("(FIX THIS) InteractiveInputImpl:helpUsage:exitcode: " + exitCode);
-	}
+    public void helpUsage(String str) {
+        System.out.println("\n" + str + "\n");
+        helpUsage();
+    }
+
+    public void helpUsage() {
+        helpUsage(0);
+    }
+
+    public void helpUsage(int exitCode) {
+        System.out.println("(FIX THIS) InteractiveInputImpl:helpUsage:exitcode: " + exitCode);
+    }
 
     /**
      * Ask the user whether or not to move the
