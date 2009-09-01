@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.javaee.admin;
+package org.glassfish.connectors.admin.cli;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -50,16 +50,16 @@ import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 
 /**
- * Ping JDBC Connection Pool Command
+ * Ping Connection Pool Command
  * 
  */
 @Service(name="ping-connection-pool")
 @Scoped(PerLookup.class)
 @I18n("ping.connection.pool")
-public class PingJdbcConnectionPool implements AdminCommand {
+public class PingConnectionPool implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
-        new LocalStringManagerImpl(PingJdbcConnectionPool.class);    
+        new LocalStringManagerImpl(PingConnectionPool.class);
 
     @Param(name="pool_name", primary=true)
     String poolName;
@@ -72,7 +72,7 @@ public class PingJdbcConnectionPool implements AdminCommand {
 
     @Inject
     ConnectorConnectionPool[] connPools;
-    
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
