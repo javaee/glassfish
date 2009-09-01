@@ -49,6 +49,7 @@ import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.core.StandardContext;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -127,7 +128,10 @@ public class Activator implements BundleActivator {
         WebModuleConfig wmConfig = new WebModuleConfig();
         wmConfig.setWorkDirBase(System.getProperty("java.io.tmpdir"));
         wmConfig.setVirtualServers(vsId);
-        wmConfig.setAppClassLoader(getClass().getClassLoader());
+
+        // Setting it in WebModuleConfig does not work, Ceck with Jan.
+//        wmConfig.setAppClassLoader(getCommonClassLoader());
+        standardContext.setParentClassLoader(getCommonClassLoader());
         standardContext.setWebModuleConfig(wmConfig);
 
         // Since there is issue about locating user classes that are part
@@ -138,6 +142,13 @@ public class Activator implements BundleActivator {
 //        StandardContext standardContext =
 //                StandardContext.class.cast(vs.findChild(contextPath));
         return standardContext;
+    }
+
+    private ClassLoader getCommonClassLoader()
+    {
+        ClassLoaderHierarchy clh =
+                Globals.getDefaultHabitat().getComponent(ClassLoaderHierarchy.class);
+        return clh.getAPIClassLoader();
     }
 
     public void stop(BundleContext context) throws Exception {
