@@ -51,6 +51,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 
 import org.glassfish.api.Startup;
+import org.glassfish.internal.api.RestInterfaceUID;
 import org.glassfish.server.ServerEnvironmentImpl;
 
 
@@ -59,7 +60,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
  * @author Rajeshwar Patil
  */
 @Service
-public class RestService implements Startup, PostConstruct, PreDestroy {
+public class RestService implements Startup, PostConstruct, PreDestroy, RestInterfaceUID {
 
     @Inject
     private static Habitat habitat;
@@ -134,6 +135,26 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
     }
 
 
+    public String getUID() throws SecurityException {
+        SecurityManager securityManager = System.getSecurityManager();
+        if(securityManager != null) {
+            securityManager.checkPermission(new
+                RestInterfaceUIDPermission("get.uid"));
+        }
+
+        // sensitive code
+        if (_uid == null) {
+            _uid = java.util.UUID.randomUUID().toString();
+        }
+        return _uid;
+    }
+
+
+    static String getRestUID() {
+        return _uid;
+    }
+
+
     private void initialize() throws Exception {
         //System.getProperties().put("com.sun.grizzly.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
         theDomain = domain;
@@ -142,4 +163,7 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
                 RestService.habitat.getComponent(ConfigSupport.class);
         configSupport = cs;
     }
+
+
+    private static String _uid;
 }

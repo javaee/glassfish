@@ -50,6 +50,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 
+import org.glassfish.admin.rest.RestService;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.container.EndpointRegistrationException;
@@ -69,6 +70,7 @@ import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.grizzly.tcp.Request;
+import com.sun.grizzly.util.http.Cookie;
 
 import com.sun.jersey.api.container.ContainerFactory;
 import com.sun.jersey.api.core.ResourceConfig;
@@ -100,6 +102,8 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     @Inject
     ClassLoaderHierarchy classLoaderHierrachy;
 
+    @Inject
+    RestService restService;
 
     protected RestAdapter() {
     }
@@ -126,8 +130,27 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                 reportError(res, report, HttpURLConnection.HTTP_UNAVAILABLE);
                 return;
             } else {
-                if (!authenticate(req, report, res))
-                    return;
+                Cookie[] cookies = req.getCookies();
+                boolean isAdminClient = false;
+                String uid = RestService.getRestUID();
+                if (uid != null) {
+                    if (cookies != null) {
+                        for (Cookie cookie: cookies) {
+                            if (cookie.getName().equals("gfrestuid")) {
+                                if (cookie.getValue().equals(uid)) {
+                                    isAdminClient = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!isAdminClient) { //authenticate all clients except admin client
+                    if (!authenticate(req, report, res)) //admin client - client with valid rest interface uid
+                        return;
+                }
+
                 //delegate to adapter managed by Jersey.
                 if (adapter == null) {
                     exposeContext();
