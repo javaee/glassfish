@@ -40,22 +40,22 @@
     <sun:tab id="protocolGeneral" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.protocolTab}" >
         <!command
         setSessionAttribute(key="protocolTabs" value="protocolGeneral");
-        redirect(page="#{request.contextPath}/web/grizzly/protocolEdit.jsf?configName=#{configName}&name=#{pageSession.Name}");
+        redirect(page="#{request.contextPath}/web/grizzly/protocolEdit.jsf?configName=#{configName}&name=#{pageSession.Name}&parentPage=#{request.contextPath}/web/grizzly/protocols.jsf");
         />
     </sun:tab>
     <sun:tab id="sslTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.sslTab}" >
         <!command
         setSessionAttribute(key="protocolTabs" value="sslTab");
-        redirect(page="#{request.contextPath}/web/grizzly/protocolSSLEdit.jsf?configName=#{configName}&name=#{pageSession.Name}");
+        redirect(page="#{request.contextPath}/web/grizzly/protocolSSLEdit.jsf?configName=#{configName}&name=#{pageSession.Name}&parentPage=#{request.contextPath}/web/grizzly/protocols.jsf");
         />
     </sun:tab>
     <sun:tab id="httpTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.httpTab}" >
         <!command
         setSessionAttribute(key="protocolTabs" value="httpTab");
-        redirect(page="#{request.contextPath}/web/grizzly/protocolHttp.jsf?configName=#{pageSession.configName}&name=#{pageSession.Name}");
+        redirect(page="#{request.contextPath}/web/grizzly/protocolHttp.jsf?configName=#{pageSession.configName}&name=#{pageSession.Name}&parentPage=#{request.contextPath}/web/grizzly/protocols.jsf");
         />
     </sun:tab>
-    <sun:tab id="fileCacheTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.fileCacheTab}" >
+    <sun:tab id="fileCacheTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.fileCacheTab}&parentPage=#{request.contextPath}/web/grizzly/protocols.jsf" >
         <!command
         setSessionAttribute(key="protocolTabs" value="fileCacheTab");
         redirect(page="#{request.contextPath}/web/grizzly/protocolFileCache.jsf?configName=#{configName}&name=#{pageSession.Name}");

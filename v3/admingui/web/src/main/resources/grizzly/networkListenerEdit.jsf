@@ -88,6 +88,25 @@
             <sun:staticText id="name" text="#{pageSession.Name}"  rendered="#{Edit}" />
         </sun:property>
 
+
+    <sun:property id="protocol"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.protocol}" >
+             <sun:staticText id="protocol" text="#{pageSession.valueMap['Protocol']}" />
+        </sun:property>
+
+    <sun:property id="http-protocol"  rendered="#{pageSession.showHttp}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="HTTP Protocol: " >
+         <sun:staticText id="http-protocol" text="#{pageSession.httpProtocolName}" />
+         <!beforeCreate
+            findHttpProtocol(listenerName="#{pageSession.Name}" httpProtocolName="#{pageSession.httpProtocolName}" sameAsProtocol="#{pageSession.sameAsProtocol}" )
+            if(! #{pageSession.sameAsProtocol}){
+                setPageSessionAttribute(key="showHttp" value="#{true}")
+                setPageSessionAttribute(key="protocolName" value="#{pageSession.httpProtocolName}")
+            }
+            if(#{pageSession.sameAsProtocol}){
+                setPageSessionAttribute(key="showHttp" value="#{false}")
+            }
+        />
+    </sun:property>
+
         <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.status}" >
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" />
         </sun:property>
@@ -109,9 +128,7 @@
             <sun:textField id="addr" columns="$int{20}" text="#{pageSession.valueMap['Address']}"  />
         </sun:property>
 
-        <sun:property id="protocol"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.protocol}" >
-             <sun:staticText id="protocol" text="#{pageSession.valueMap['Protocol']}" />
-        </sun:property>
+
 
         <sun:property id="transport"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.transport}" >
             <sun:hyperlink id="transport" text="#{pageSession.valueMap['Transport']}" url="#{request.contextPath}/web/grizzly/transportEdit.jsf?name=#{pageSession.valueMap['Transport']}" />

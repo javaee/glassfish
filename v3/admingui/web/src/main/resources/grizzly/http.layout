@@ -47,11 +47,20 @@
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/http.jsf");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/protocols.jsf");
+        getRequestValue(key="parentPage" value="{#pageSession.parentPage}" default="#{request.contextPath}/web/grizzly/protocols.jsf");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols/protocol[#{pageSession.Name}],type=http");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=#{pageSession.Name}");
         setPageSessionAttribute(key="childType" value="http");
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.httpMap}");
+        proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
+        if (#{requestScope.exist}){
+            getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.httpMap}");
+            setPageSessionAttribute(key="edit" value="#{true}" );
+        }
+        if (! #{requestScope.exist}){
+            setPageSessionAttribute(key="edit" value="#{false}" )
+            getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.httpMap}")
+        }
+
         setPageSessionAttribute(key="valueMap" value="#{pageSession.httpMap}");
         setPageSessionAttribute(key="convertToFalseList" 
             value={"EnableCometSupport" , "EnableCometSupport"  ,"DisableUploadTimeout"  ,"EnableDnsLookup" , "EnableRcmSupport"  ,"TraceEnabled"  ,"Compression" , "EnableAuthPassThrough" , "ChunkingDisabled" , "XpoweredBy"  });
@@ -59,8 +68,10 @@
         setSessionAttribute(key="listenerTabs" value="httpTab");
         getRequestValue(key="listenerName" value="#{pageSession.listenerName}");
         setPageSessionAttribute(key="protocolName" value="#{pageSession.Name}");
+
+
         //set the following for including buttons.inc
-        setPageSessionAttribute(key="edit" value="#{true}" );
+        
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
