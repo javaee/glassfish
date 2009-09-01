@@ -36,59 +36,25 @@
 
 package org.glassfish.webbeans;
 
-import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.api.deployment.ApplicationContext;
+import javax.servlet.ServletContext;
 
+import org.glassfish.api.deployment.DeploymentContext;
 
+import org.jboss.webbeans.servlet.api.ServletServices;
+import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
 
-import org.jboss.webbeans.bootstrap.WebBeansBootstrap;
+public class ServletServicesImpl implements ServletServices {
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
+    private DeploymentContext deploymentContext = null;
 
-import com.sun.logging.LogDomains;
-
-public class WebBeansApplicationContainer implements ApplicationContainer {
-
-    private Logger _logger = LogDomains.getLogger(WebBeansApplicationContainer.class, LogDomains.CORE_LOGGER);
-
-    private WebBeansBootstrap webBeansBootstrap;
-
-
-    public WebBeansApplicationContainer(WebBeansBootstrap bootstrap) {
-        webBeansBootstrap = bootstrap;
+    public ServletServicesImpl(DeploymentContext deploymentContext) {
+        this.deploymentContext = deploymentContext;
     }
 
-    public Object getDescriptor() {
-        return null;
-    }
-   
-    public boolean start(ApplicationContext startupContxt) {
-
-        return true;
+    public BeanDeploymentArchive getBeanDeploymentArchive(ServletContext ctx) {
+        DeploymentImpl deploymentImpl = (DeploymentImpl)deploymentContext.getTransientAppMetaData(
+                WebBeansDeployer.WEB_BEAN_DEPLOYMENT, DeploymentImpl.class);
+        return deploymentImpl.getBeanDeploymentArchives().get(0);
     }
 
-    public boolean stop(ApplicationContext stopContext) {
-
-        try {
-            webBeansBootstrap.shutdown();
-        } catch(Exception e) {
-            _logger.log(Level.WARNING, "JCDI shutdown error", e);    
-        }
-
-        return true;
-    }
-
-    public boolean suspend() {
-        return false;
-    }
-
-    public boolean resume() {
-        return false;
-    }
-
-    public ClassLoader getClassLoader() {
-        return null;
-    }
 }
-

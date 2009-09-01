@@ -51,6 +51,8 @@ import java.util.logging.Logger;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 
+import org.jboss.webbeans.bootstrap.api.ServiceRegistry;
+import org.jboss.webbeans.bootstrap.api.helpers.SimpleServiceRegistry;
 import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.webbeans.bootstrap.spi.Deployment;
 
@@ -75,6 +77,8 @@ public class DeploymentImpl implements Deployment {
     private final List<BeanDeploymentArchive> beanDeploymentArchives;
     private final Collection<EjbDescriptor> ejbs;
 
+    private SimpleServiceRegistry simpleServiceRegistry = null;
+
     public DeploymentImpl(ReadableArchive archive, Collection<EjbDescriptor> ejbs) {
         this.wbClasses = new ArrayList<Class<?>>();
         this.wbUrls = new ArrayList<URL>();
@@ -94,6 +98,13 @@ public class DeploymentImpl implements Deployment {
 
     public BeanDeploymentArchive loadBeanDeploymentArchive(Class<?> beanClass) {
         return null;
+    }
+
+    public ServiceRegistry getServices() {
+        if (null == simpleServiceRegistry) {
+            simpleServiceRegistry = new SimpleServiceRegistry();
+        }
+        return simpleServiceRegistry;
     }
 
     private void scan() {
@@ -135,22 +146,16 @@ public class DeploymentImpl implements Deployment {
                         entry.indexOf(SEPARATOR_CHAR, WEB_INF_LIB.length() + 1 ) == -1 ) {
                         ReadableArchive jarArchive = archive.getSubArchive(entry);
                         if (jarArchive.exists(META_INF_BEANS_XML)) {
-                            Enumeration jarEntries = jarArchive.entries();
-                            while (jarEntries.hasMoreElements()) {
-                                entry = (String)entries.nextElement();
-                                if (entry.endsWith(CLASS_SUFFIX)) {
-                                    String className = filenameToClassname(entry);
-                                    wbClasses.add(getClassLoader().loadClass(className));
-                                } else if (entry.endsWith("beans.xml")) {
-                                    URL beansXmlUrl = WebBeanDiscoveryImpl.class.getResource(entry);
-                                    wbUrls.add(beansXmlUrl);
-                                }
-                            }
+                            collectJarInfo(jarArchive);
                         }
-                        jarArchive.close();
                     }
                }
             }
+
+            if (archive.exists(META_INF_BEANS_XML)) {
+                collectJarInfo(archive);
+            }
+        
         } catch(IOException e) {
             logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
         } catch(ClassNotFoundException cne) {
@@ -161,7 +166,24 @@ public class DeploymentImpl implements Deployment {
         beanDeploymentArchives.add(beanDeploymentArchive);
     }
 
-    public static String filenameToClassname(String filename) {
+    private void collectJarInfo(ReadableArchive archive) 
+        throws IOException, ClassNotFoundException {
+        Enumeration entries = archive.entries();
+        while (entries.hasMoreElements()) {
+            String entry = (String)entries.nextElement();
+            if (entry.endsWith(CLASS_SUFFIX)) {
+                String className = filenameToClassname(entry);
+                wbClasses.add(getClassLoader().loadClass(className));
+            } else if (entry.endsWith("beans.xml")) {
+                URL beansXmlUrl = Thread.currentThread().getContextClassLoader().getResource(entry);
+                wbUrls.add(beansXmlUrl);
+            }
+        }
+        archive.close();
+    }
+
+
+    private static String filenameToClassname(String filename) {
         String className = null;
         if (filename.indexOf(File.separatorChar) >= 0) {
             className = filename.replace(File.separatorChar, '.');

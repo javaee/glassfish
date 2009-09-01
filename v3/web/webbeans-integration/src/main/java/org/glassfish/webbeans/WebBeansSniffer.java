@@ -37,6 +37,8 @@
 package org.glassfish.webbeans;
 
 
+import com.sun.enterprise.deployment.deploy.shared.Util;
+
 import org.glassfish.internal.deployment.GenericSniffer;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -72,38 +74,39 @@ public class WebBeansSniffer extends GenericSniffer implements Sniffer {
     private static final String WEB_INF_BEANS_XML = "WEB-INF" + SEPERATOR_CHAR + "beans.xml";
     private static final String META_INF_BEANS_XML = "META-INF" + SEPERATOR_CHAR + "beans.xml";
     private static final String JAR_SUFFIX = ".jar";
+    private static final String EXPANDED_JAR_SUFFIX = "_jar";
 
     /**
      * Returns true if the archive contains beans.xml as defined by packaging rules of WebBeans 
      * TODO : Enhance this to handle ears
      */
     @Override
-    public boolean handles(ReadableArchive location, ClassLoader loader) {
+    public boolean handles(ReadableArchive archive, ClassLoader loader) {
         boolean isWebBeansArchive = false;
 
         // scan for beans.xml in expected locations. If at least one is found, this is
         // a Web Beans archive
         //
-        // Case 1: Standalone War check.  Perform the following checks:  
+        // War check.  Perform the following checks:  
         //     - Check for beans.xml under WEB-INF
         //     - Check jar files under WEB-INF/lib for beans.xml under META-INF 
         //
-        if (DeploymentUtils.isWebArchive(location)) {
-            isWebBeansArchive = isEntryPresent(location, WEB_INF_BEANS_XML);
+        if (DeploymentUtils.isWebArchive(archive)) {
+            isWebBeansArchive = isEntryPresent(archive, WEB_INF_BEANS_XML);
 
             if (!isWebBeansArchive) {
 
                 // Check jars under WEB_INF/lib
 
-                if (isEntryPresent(location, WEB_INF_LIB)) {
-                    Enumeration<String> entries = location.entries(WEB_INF_LIB);
+                if (isEntryPresent(archive, WEB_INF_LIB)) {
+                    Enumeration<String> entries = archive.entries(WEB_INF_LIB);
                     while (entries.hasMoreElements() && !isWebBeansArchive) {
                         String entryName = entries.nextElement();
                         // if the jar is not under a subdirectory under WEB-INF/lib
                         if (entryName.endsWith(JAR_SUFFIX) && 
                             entryName.indexOf(SEPERATOR_CHAR, WEB_INF_LIB.length() + 1 ) == -1 ) { 
                             try {
-                                ReadableArchive jarInLib = location.getSubArchive(entryName);
+                                ReadableArchive jarInLib = archive.getSubArchive(entryName);
                                 isWebBeansArchive = isEntryPresent(jarInLib, META_INF_BEANS_XML);
                                 jarInLib.close();
                             } catch (IOException e) {
@@ -113,14 +116,19 @@ public class WebBeansSniffer extends GenericSniffer implements Sniffer {
                     } 
                 } 
             } 
+        } 
+
+        if (!isWebBeansArchive && archive.getName().endsWith(EXPANDED_JAR_SUFFIX)) {
+            isWebBeansArchive = isEntryPresent(archive, META_INF_BEANS_XML);
         }
+
         return isWebBeansArchive;
     }
 
-    private boolean isEntryPresent(ReadableArchive location, String entry) {
+    private boolean isEntryPresent(ReadableArchive archive, String entry) {
         boolean entryPresent = false;
         try {
-            entryPresent = location.exists(entry);
+            entryPresent = archive.exists(entry);
         } catch (IOException e) {
             // ignore
         }

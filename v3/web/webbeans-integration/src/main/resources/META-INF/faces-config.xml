@@ -4,12 +4,13 @@
               xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd"
               version="2.0">
 
-   <application>
-      <el-resolver>org.jboss.webbeans.el.WebBeansELResolver</el-resolver>
-   </application>
-        <lifecycle>
-                <phase-listener>org.jboss.webbeans.jsf.WebBeansPhaseListener</phase-listener>
-        </lifecycle>
+    <lifecycle>
+        <phase-listener>org.jboss.webbeans.jsf.WebBeansPhaseListener</phase-listener>
+    </lifecycle>
+
+    <factory>
+        <application-factory>org.jboss.webbeans.jsf.WebBeansApplicationFactory</application-factory>
+    </factory>
 
     
 </faces-config>

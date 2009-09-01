@@ -52,14 +52,18 @@ import com.sun.enterprise.web.WebModule;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.event.Events;
+import org.glassfish.api.event.EventListener;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.SimpleDeployer;
-import org.glassfish.webbeans.ejb.EjbServicesImpl;
 import org.glassfish.ejb.api.EjbContainerServices;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.webbeans.ejb.EjbServicesImpl;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
 
 import org.jboss.webbeans.bootstrap.WebBeansBootstrap;
 import org.jboss.webbeans.bootstrap.api.Environments;
@@ -67,6 +71,7 @@ import org.jboss.webbeans.bootstrap.spi.Deployment;
 import org.jboss.webbeans.context.api.BeanStore;
 import org.jboss.webbeans.context.api.helpers.ConcurrentHashMapBeanStore;
 import org.jboss.webbeans.ejb.spi.EjbServices;
+import org.jboss.webbeans.servlet.api.ServletServices;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -74,27 +79,59 @@ import java.util.Collection;
 
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 @Service
-public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeansApplicationContainer> {
+public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeansApplicationContainer> 
+    implements PostConstruct, EventListener {
 
     /* package */ static final String WEB_BEAN_EXTENSION = "org.glassfish.webbeans";
 
     /* package */ static final String WEB_BEAN_BOOTSTRAP = "org.glassfish.webbeans.WebBeansBootstrap";
 
+    /* package */ static final String WEB_BEAN_DEPLOYMENT = "org.glassfish.webbeans.WebBeansDeployment";
+
     private static final String WEB_BEAN_LISTENER = "org.jboss.webbeans.servlet.WebBeansListener";
+
+    @Inject
+    private Events events;
 
     @Inject
     private Habitat habitat;
 
-
     @Override
     public MetaData getMetaData() {
         return new MetaData(true, null, new Class[] {Application.class});
+    }
+
+    public void postConstruct() {
+        events.register(this);
+    }
+
+    /**
+     * Specific stages of the Web Beans bootstrapping process will execute across different stages
+     * of the deployment process.  Web Beans deployment will happen when the load phase of the 
+     * deployment process is complete.
+     */
+    public void event(Event event) {
+        if ( event.is(org.glassfish.internal.deployment.Deployment.APPLICATION_LOADED) ) {
+            ApplicationInfo appInfo = (ApplicationInfo)event.hook();
+            WebBeansBootstrap bootstrap = (WebBeansBootstrap)appInfo.getTransientAppMetaData(WEB_BEAN_BOOTSTRAP, 
+                WebBeansBootstrap.class);
+            DeploymentImpl deploymentImpl = (DeploymentImpl)appInfo.getTransientAppMetaData(
+                WEB_BEAN_DEPLOYMENT, DeploymentImpl.class);
+            bootstrap.startContainer(Environments.SERVLET, deploymentImpl, new ConcurrentHashMapBeanStore());
+            bootstrap.startInitialization();
+            bootstrap.deployBeans();
+        } else if ( event.is(org.glassfish.internal.deployment.Deployment.APPLICATION_STARTED) ) {
+            ApplicationInfo appInfo = (ApplicationInfo)event.hook();
+            WebBeansBootstrap bootstrap = (WebBeansBootstrap)appInfo.getTransientAppMetaData(WEB_BEAN_BOOTSTRAP, 
+                WebBeansBootstrap.class);
+            bootstrap.validateBeans();
+            bootstrap.endInitialization();
+        }
     }
 
     protected void generateArtifacts(DeploymentContext dc) throws DeploymentException {
@@ -145,27 +182,38 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
         // TODO *** change this logic to share one instance of web beans bootstrap per application ***
 
         ReadableArchive archive = context.getSource();
-        BeanStore applicationBeanStore = new ConcurrentHashMapBeanStore();
 
-        WebBeansBootstrap bootstrap = new WebBeansBootstrap();
+        // See if a WebBeansBootsrap has already been created - only want one per app.
+
+        WebBeansBootstrap bootstrap = (WebBeansBootstrap)context.getTransientAppMetaData(WEB_BEAN_BOOTSTRAP,
+                WebBeansBootstrap.class);
+        if (null == bootstrap) {
+            bootstrap = new WebBeansBootstrap();
+        }
 
         Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
-        
+
+        EjbServices ejbServices = null;
         
         EjbBundleDescriptor ejbBundle = getEjbBundleFromContext(context);
+
+        DeploymentImpl deploymentImpl = new DeploymentImpl(archive, ejbs);
 
         if( ejbBundle != null ) {
 
             ejbs = ejbBundle.getEjbs();
 
-            EjbServices ejbServices = new EjbServicesImpl(habitat, ejbs);
-            bootstrap.getServices().add(EjbServices.class, ejbServices);
+            ejbServices = new EjbServicesImpl(habitat, ejbs);
+
+            deploymentImpl.getServices().add(EjbServices.class, ejbServices);
 
         }
+
+        ServletServices servletServices = new ServletServicesImpl(context);
+        deploymentImpl.getServices().add(ServletServices.class, servletServices);
         
-        bootstrap.setEnvironment(Environments.SERVLET);
-        bootstrap.getServices().add(Deployment.class, new DeploymentImpl(archive, ejbs) {});
-        bootstrap.setApplicationContext(applicationBeanStore);
+
+//        bootstrap.getServices().add(Deployment.class, new DeploymentImpl(archive, ejbs) {});
 
         WebBundleDescriptor wDesc = context.getModuleMetaData(WebBundleDescriptor.class);
         if( wDesc != null) {
@@ -178,13 +226,10 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
         WebBeansApplicationContainer wbApp = new WebBeansApplicationContainer(bootstrap);
 
-
-        // Do first stage of web beans initialization.  Note that we delay calling
-        // bootstrap.boot() until start phase (see WebBeansApplicationContainer)
-        bootstrap.initialize();      
-
         // Stash the WebBeansBootstrap instance, so we may access the WebBeansManager later..
         context.addTransientAppMetaData(WEB_BEAN_BOOTSTRAP, bootstrap);
+
+        context.addTransientAppMetaData(WEB_BEAN_DEPLOYMENT, deploymentImpl);
 
         return wbApp; 
     }
@@ -221,7 +266,7 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
         for(Method m : wbInterceptor.getDeclaredMethods() ) {
 
-           if( m.getAnnotation(PostConstruct.class) != null ) {
+           if( m.getAnnotation(javax.annotation.PostConstruct.class) != null ) {
                LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
                desc.setLifecycleCallbackClass(wbInterceptorName);
                desc.setLifecycleCallbackMethod(m.getName());

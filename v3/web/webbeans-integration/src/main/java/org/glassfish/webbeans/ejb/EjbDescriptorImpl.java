@@ -47,6 +47,7 @@ import com.sun.enterprise.deployment.MethodDescriptor;
 
 import java.lang.reflect.Method;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -59,6 +60,12 @@ public class EjbDescriptorImpl<T> implements org.jboss.webbeans.ejb.spi.EjbDescr
 
     public EjbDescriptorImpl(EjbDescriptor e) {
         ejbDesc = e;
+    }
+
+
+    // PENDING
+    public String getEjbName() {
+        return null;
     }
 
     public EjbDescriptor getEjbDescriptor() {
@@ -84,7 +91,7 @@ public class EjbDescriptorImpl<T> implements org.jboss.webbeans.ejb.spi.EjbDescr
     * 
     * @return An iterator over the local business interfaces
     */
-    public Iterable<BusinessInterfaceDescriptor<?>> getLocalBusinessInterfaces() {
+    public Collection<BusinessInterfaceDescriptor<?>> getLocalBusinessInterfaces() {
        
         Set<BusinessInterfaceDescriptor<?>> localBusIntfs = new HashSet<BusinessInterfaceDescriptor<?>>();
 
@@ -122,7 +129,7 @@ public class EjbDescriptorImpl<T> implements org.jboss.webbeans.ejb.spi.EjbDescr
     * 
     * @return An iterator over the remove methods
     */
-    public Iterable<Method> getRemoveMethods() {
+    public Collection<Method> getRemoveMethods() {
         Set<Method> removeMethods = new HashSet<Method>();
 
         if( ejbDesc.getType().equals(EjbSessionDescriptor.TYPE) ) {

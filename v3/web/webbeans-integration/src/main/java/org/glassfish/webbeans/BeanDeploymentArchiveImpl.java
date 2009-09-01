@@ -44,6 +44,8 @@ import java.util.logging.Logger;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.webbeans.ejb.EjbDescriptorImpl;
 
+import org.jboss.webbeans.bootstrap.api.ServiceRegistry;
+import org.jboss.webbeans.bootstrap.api.helpers.SimpleServiceRegistry;
 import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.webbeans.ejb.spi.EjbDescriptor;
 
@@ -59,6 +61,8 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     private final List<URL> wbUrls;
     private final Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbDescs;
 
+    private SimpleServiceRegistry simpleServiceRegistry = null;
+
     public BeanDeploymentArchiveImpl(List<Class<?>> wbClasses, List<URL> wbUrls,
                                      Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs) {
         this.wbClasses = wbClasses;
@@ -66,15 +70,15 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         this.ejbDescs = ejbs;
     }
 
-    public List<BeanDeploymentArchive> getBeanDeploymentArchives() {
+    public Collection<BeanDeploymentArchive> getBeanDeploymentArchives() {
         return Collections.emptyList();
     }
 
-    public Iterable<Class<?>> getBeanClasses() {
+    public Collection<Class<?>> getBeanClasses() {
         return wbClasses;
     }
 
-    public Iterable<URL> getBeansXml() {
+    public Collection<URL> getBeansXml() {
         return wbUrls;
     }
 
@@ -83,7 +87,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     *
     * @return the EJB descriptors
     */
-    public Iterable<EjbDescriptor<?>> getEjbs() {
+    public Collection<EjbDescriptor<?>> getEjbs() {
 
         Set<EjbDescriptor<?>> ejbs = new HashSet<EjbDescriptor<?>>();
 
@@ -96,6 +100,14 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
 
        return ejbs;
     }
+
+    public ServiceRegistry getServices() {
+        if (null == simpleServiceRegistry) {
+            simpleServiceRegistry = new SimpleServiceRegistry();
+        }
+        return simpleServiceRegistry;
+    }
+
    
 
 }

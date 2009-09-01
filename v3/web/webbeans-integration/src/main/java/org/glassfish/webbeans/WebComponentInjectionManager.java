@@ -40,9 +40,15 @@ package org.glassfish.webbeans;
 import com.sun.enterprise.web.WebComponentDecorator;
 import com.sun.enterprise.web.WebModule;
 
+import java.util.Collection;
+
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.InjectionTarget;
+
 import org.glassfish.api.deployment.DeploymentContext;
 import org.jboss.webbeans.BeanManagerImpl;
 import org.jboss.webbeans.bootstrap.WebBeansBootstrap;
+import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -61,9 +67,17 @@ public class WebComponentInjectionManager implements WebComponentDecorator {
             DeploymentContext deploymentContext = wm.getWebModuleConfig().getDeploymentContext();
             WebBeansBootstrap webBeansBootstrap = deploymentContext.getTransientAppMetaData(
                 WebBeansDeployer.WEB_BEAN_BOOTSTRAP, org.jboss.webbeans.bootstrap.WebBeansBootstrap.class); 
-            BeanManagerImpl beanManager = webBeansBootstrap.getManager();
+
+            DeploymentImpl deploymentImpl = deploymentContext.getTransientAppMetaData(
+                WebBeansDeployer.WEB_BEAN_DEPLOYMENT, DeploymentImpl.class); 
+            Collection deployments = deploymentImpl.getBeanDeploymentArchives();
+            BeanDeploymentArchive beanDeploymentArchive = (BeanDeploymentArchive)deployments.iterator().next(); 
+            BeanManagerImpl beanManager = webBeansBootstrap.getManager(beanDeploymentArchive);
             // PENDING : Not available in this Web Beans Release
-            // beanManager.createInjectionTarget(webComponent.getClass()).inject(webComponent, beanManager.createCreationalContext(null));
+            CreationalContext ccontext = beanManager.createCreationalContext(null);
+            InjectionTarget injectionTarget = beanManager.createInjectionTarget(beanManager.createAnnotatedType(webComponent.getClass()));
+            injectionTarget.inject(webComponent, ccontext);
+
         }
     }
 }
