@@ -55,7 +55,7 @@
         redirect(page="#{request.contextPath}/web/grizzly/protocolHttp.jsf?configName=#{pageSession.configName}&name=#{pageSession.Name}&parentPage=#{request.contextPath}/web/grizzly/protocols.jsf");
         />
     </sun:tab>
-    <sun:tab id="fileCacheTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.fileCacheTab}&parentPage=#{request.contextPath}/web/grizzly/protocols.jsf" >
+    <sun:tab id="fileCacheTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.fileCacheTab}" >
         <!command
         setSessionAttribute(key="protocolTabs" value="fileCacheTab");
         redirect(page="#{request.contextPath}/web/grizzly/protocolFileCache.jsf?configName=#{configName}&name=#{pageSession.Name}");
