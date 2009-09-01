@@ -381,6 +381,7 @@ public abstract class BaseContainer
     protected EjbTimedObjectStatsProvider   timerProbeListener;
     protected EjbTimedObjectProbeProvider   timerProbeNotifier;
     protected EjbPoolStatsProvider          poolStatsListener;
+    protected EjbCacheStatsProvider         cacheStatsListener;
 
     protected ContainerInfo                 containerInfo;
         

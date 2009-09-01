@@ -71,6 +71,7 @@ import com.sun.appserv.util.cache.CacheListener;
 import com.sun.ejb.base.io.IOUtils;
 
 import com.sun.ejb.base.stats.StatefulSessionStoreMonitor;
+import com.sun.ejb.base.stats.HAStatefulSessionStoreMonitor;
 
 import com.sun.ejb.containers.util.cache.LruSessionCache;
 
@@ -95,6 +96,7 @@ import com.sun.ejb.spi.io.SerializableObjectFactory;
 
 import com.sun.enterprise.container.common.impl.EntityManagerFactoryWrapper;
 import org.glassfish.api.invocation.ComponentInvocation;
+import com.sun.ejb.monitoring.stats.EjbCacheStatsProvider;
 
 import static com.sun.ejb.containers.EJBContextImpl.BeanState;
 
@@ -315,14 +317,23 @@ public final class StatefulSessionContainer
     protected void registerMonitorableComponents() {
         //registryMediator.registerProvider(this);
         //registryMediator.registerProvider(sessionBeanCache);
+        cacheStatsListener = new EjbCacheStatsProvider(sessionBeanCache,
+                containerInfo.appName, containerInfo.modName,
+                containerInfo.ejbName);
+        cacheStatsListener.register();
         super.registerMonitorableComponents();
         super.populateMethodMonitorMap();
-/** TODO
+/** 
         sfsbStoreMonitor = registryMediator.registerProvider(
                 sfsbStoreManager.getMonitorableSFSBStoreManager(),
                 checkpointPolicy.isHAEnabled());
-        sessionBeanCache.setStatefulSessionStoreMonitor(sfsbStoreMonitor);
 **/
+        if (checkpointPolicy.isHAEnabled()) {
+            sfsbStoreMonitor = new HAStatefulSessionStoreMonitor();
+        } else {
+            sfsbStoreMonitor = new StatefulSessionStoreMonitor();
+        }
+        sessionBeanCache.setStatefulSessionStoreMonitor(sfsbStoreMonitor);
         _logger.log(Level.FINE, "[SFSBContainer] registered monitorable");
     }
 
@@ -2525,6 +2536,7 @@ public final class StatefulSessionContainer
 
 
             sessionBeanCache.destroy();
+            cacheStatsListener.unregister();
 
 
             try {

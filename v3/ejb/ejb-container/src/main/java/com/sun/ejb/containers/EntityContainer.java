@@ -81,6 +81,7 @@ import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.ejb.spi.container.BeanStateSynchronization;
 import com.sun.ejb.monitoring.stats.EntityBeanStatsProvider;
 import com.sun.ejb.monitoring.stats.EjbPoolStatsProvider;
+import com.sun.ejb.monitoring.stats.EjbCacheStatsProvider;
 
 /**
  * This class implements the Container interface for EntityBeans.
@@ -389,6 +390,7 @@ public class EntityContainer
 /** TODO
 	registryMediator.registerProvider(this);
 	registryMediator.registerProvider(entityCtxPool);
+**/
 	if (readyStore != null) {
 	    int confMaxCacheSize = cacheProp.maxCacheSize;
 	    if (confMaxCacheSize <= 0) {
@@ -396,9 +398,12 @@ public class EntityContainer
 	    }
 	    this.cacheStatsProvider = new EntityCacheStatsProvider(
 		    (BaseCache) readyStore, confMaxCacheSize);
-	    registryMediator.registerProvider(cacheStatsProvider);
+	    //registryMediator.registerProvider(cacheStatsProvider);
+            cacheStatsListener = new EjbCacheStatsProvider(cacheStatsProvider, 
+                    containerInfo.appName, containerInfo.modName,
+                    containerInfo.ejbName);
+            cacheStatsListener.register();
 	}
-**/
         super.registerMonitorableComponents();
 	super.populateMethodMonitorMap();
         entityBeanStatsListener = new EntityBeanStatsProvider(this, 
@@ -2424,6 +2429,9 @@ public class EntityContainer
             
             entityCtxPool.close();
             poolStatsListener.unregister();
+            if (cacheStatsListener != null) {
+                cacheStatsListener.unregister();
+            }
             
             // stops the idle bean passivator and also removes the link
             // to the cache; note that cancel() method of timertask
