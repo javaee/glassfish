@@ -75,7 +75,7 @@
 
 
 <sun:property id="v2" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.run}" helpText="$resource{i18n.deploy.runHelp}">
-        <sun:checkbox id="ver2" label="$resource{i18n.common.Enabled}" selected="#{pageSession.war['PROPERTY-verify']}" selectedValue="true" />
+        <sun:checkbox id="ver2" label="$resource{i18n.common.Enabled}" selected="#{pageSession.war['verify']}" selectedValue="true" />
 </sun:property>
 
 

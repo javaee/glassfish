@@ -67,6 +67,12 @@
                 content="apps/deploymentWar.jsf"
         />
 
+        <integration-point
+                id="web_edit_app"
+                type="org.glassfish.admingui:editAppPage"
+                content="war:web/apps/editWar.jsf"
+        />
+
         <!-- add the dropdown option for selecting the type of app to deploy
              in the form of  label:value
          -->
@@ -77,6 +83,8 @@
                 parentId="form"
                 content="Web Application ;war"
         />
+
+        
 
 
         <!-- add the http ports to the Server General page -->
