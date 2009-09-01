@@ -739,6 +739,18 @@ public class WebappLoader
 
             setPermissions();
 
+            /*
+             * Start the WebappClassLoader unless it has already been started
+             * (by the deployment backend)
+             */
+            if (!classLoader.isStarted()) {
+                try {
+                    classLoader.start();
+                } catch (Exception e) {
+                    throw new LifecycleException(e);
+                } 
+            }
+
             // Binding the Webapp class loader to the directory context
             DirContextURLStreamHandler.bind(classLoader,
                     this.container.getResources());

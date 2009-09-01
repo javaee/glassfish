@@ -1353,7 +1353,7 @@ public class WebappClassLoader
 
         // Don't load classes if class loader is stopped
         if (!started) {
-            String msg = rb.getString("webappClassLoader.stopped");
+            String msg = rb.getString("webappClassLoader.notStarted");
             throw new IllegalStateException(
                 MessageFormat.format(msg, name));
         }
@@ -1628,6 +1628,10 @@ public class WebappClassLoader
      */
     public void start() {
         started = true;
+    }
+
+    public boolean isStarted() {
+        return started;
     }
 
     public void preDestroy() {
@@ -2054,7 +2058,7 @@ public class WebappClassLoader
     protected ResourceEntry findResourceInternal(String name, String path) {
 
         if (!started) {
-            String msg = rb.getString("webappClassLoader.stopped");
+            String msg = rb.getString("webappClassLoader.notStarted");
             throw new IllegalStateException(
                 MessageFormat.format(msg, name));
         }
