@@ -75,7 +75,9 @@ public class PortImpl implements Port {
                             transport.setName(listenerName);
                             listener.setTransport(listenerName);
                         }
+                        param.getNetworkListener().add(listener);
                         return listener;
+
                     }
                 }, config.getNetworkListeners());
         } catch (Exception e) {
