@@ -1136,6 +1136,7 @@ public class PECoyoteConnector extends Connector {
     }
 
     public void configHttpProperties(Http http, Transport transport, Ssl ssl) {
+        setAllowTrace(ConfigBeansUtilities.toBoolean(http.getTraceEnabled()));
         setMaxKeepAliveRequests(Integer.parseInt(http.getMaxConnections()));
         setKeepAliveTimeoutInSeconds(Integer.parseInt(http.getTimeoutSeconds()));
         setAuthPassthroughEnabled(ConfigBeansUtilities.toBoolean(http.getAuthPassThroughEnabled()));
