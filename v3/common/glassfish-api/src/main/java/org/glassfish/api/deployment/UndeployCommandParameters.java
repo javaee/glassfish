@@ -62,7 +62,7 @@ public class UndeployCommandParameters extends OpsParams {
     @Param(optional=true, defaultValue="false")
     public Boolean ignoreCascade;
 
-    @Param(optional=true)
+    @Param(optional=true, separator=':')
     public Properties properties=null;
 
     public String name() {
