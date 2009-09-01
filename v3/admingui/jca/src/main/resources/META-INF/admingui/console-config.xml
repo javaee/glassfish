@@ -24,6 +24,11 @@
         parentId="form"
         content="apps/deploymentRar.jsf"
     />
+    <integration-point
+        id="jca_edit_app"
+        type="org.glassfish.admingui:editAppPage"
+        content="rar:jca/apps/editRar.jsf"
+    />
 
     <!-- add the dropdown option for selecting the type of app to deploy
          in the form of  label:value
