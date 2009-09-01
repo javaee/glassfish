@@ -103,7 +103,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
     private final GrizzlyMonitoring monitoring;
 
-    ConcurrentLinkedQueue<MapperUpdateListener> mapperUpdateListeners =
+    private final ConcurrentLinkedQueue<MapperUpdateListener> mapperUpdateListeners =
             new ConcurrentLinkedQueue<MapperUpdateListener>();
 
     private DynamicConfigListener configListener;
@@ -395,7 +395,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * Registers all proxies
      */
     public void registerNetworkProxy(int port) {
-    for (org.glassfish.api.container.Adapter subAdapter : 
+        for (org.glassfish.api.container.Adapter subAdapter :
             habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
             //@TODO change EndportRegistrationException processing if required
             try {

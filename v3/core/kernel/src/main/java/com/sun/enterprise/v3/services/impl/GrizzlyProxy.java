@@ -128,7 +128,7 @@ public class GrizzlyProxy implements NetworkProxy {
 
             final GrizzlyEmbeddedHttp embeddedHttp = grizzlyListener.getEmbeddedHttp();
             // Issue 9284
-            GrizzlyEmbeddedHttp.setWebAppRootPath(
+            embeddedHttp.setWebAppRootPath(
                     System.getProperty("com.sun.aas.instanceRoot") + "/docroot");
 
             final ContainerMapper adapter = new ContainerMapper(grizzlyService, embeddedHttp);
