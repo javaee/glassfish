@@ -14,7 +14,7 @@
      <integration-point
             id="jython_edit_app"
             type="org.glassfish.admingui:editAppPage"
-            content="jython/editJythonApp.jsf"
+            content="jython:jython/editJythonApp.jsf"
     />
 
 
