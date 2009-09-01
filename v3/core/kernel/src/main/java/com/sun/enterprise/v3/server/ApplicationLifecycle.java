@@ -304,6 +304,7 @@ public class ApplicationLifecycle implements Deployment {
                  // if enable attribute is set to true
                  // we load and start the application
                 if (commandParams.enabled) {
+                    Thread.currentThread().setContextClassLoader(context.getFinalClassLoader());
                     appInfo.setLibraries(commandParams.libraries());
                     try {
                         appInfo.load(context, tracker);

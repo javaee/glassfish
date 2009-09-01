@@ -187,20 +187,26 @@ public class ApplicationInfo extends ModuleInfo {
     public void load(ExtendedDeploymentContext context, ProgressTracker tracker)
             throws Exception {
 
-
         context.setPhase(ExtendedDeploymentContext.Phase.LOAD);
-        super.load(context, tracker);
-        for (ModuleInfo module : modules) {
-            module.load(getSubContext(module,context), tracker);
+
+        ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(context.getClassLoader());
+            super.load(context, tracker);
+            for (ModuleInfo module : modules) {
+                module.load(getSubContext(module,context), tracker);
+            }
+
+            // put all the transient app meta meta from context to 
+            // application info
+            transientAppMetaData.putAll(context.getTransientAppMetadata());
+
+            if (events!=null) {
+                events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_LOADED, this), false);
+            }        
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
-
-        // put all the transient app meta meta from context to 
-        // application info
-        transientAppMetaData.putAll(context.getTransientAppMetadata());
-
-        if (events!=null) {
-            events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_LOADED, this), false);
-        }        
     }
 
 
@@ -208,13 +214,20 @@ public class ApplicationInfo extends ModuleInfo {
         ExtendedDeploymentContext context,
         ProgressTracker tracker) throws Exception {
 
-        super.start(context, tracker);
-        // registers all deployed items.
-        for (ModuleInfo module : getModuleInfos()) {
-            module.start(getSubContext(module, context), tracker);
-        }
-        if (events!=null) {
-            events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_STARTED, this), false);
+        ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(context.getClassLoader());
+
+            super.start(context, tracker);
+            // registers all deployed items.
+            for (ModuleInfo module : getModuleInfos()) {
+                module.start(getSubContext(module, context), tracker);
+            }
+            if (events!=null) {
+                events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_STARTED, this), false);
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
     }
 
