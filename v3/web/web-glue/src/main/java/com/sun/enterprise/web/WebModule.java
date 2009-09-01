@@ -53,6 +53,7 @@ import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.deployment.AbsoluteOrderingDescriptor;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.WebServicesDescriptor;
 import com.sun.enterprise.deployment.runtime.web.CookieProperties;
@@ -83,8 +84,7 @@ import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
-import org.apache.catalina.core.StandardPipeline;
-import org.apache.catalina.core.StandardWrapper;
+import org.apache.catalina.core.*;
 import org.apache.catalina.deploy.FilterMaps;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.session.StandardManager;
@@ -1804,6 +1804,56 @@ public class WebModule extends PwcWebModule {
             webContainer.getServerConfigLookup());
     }
 
+    @Override
+    protected ServletRegistrationImpl createServletRegistrationImpl(
+            StandardWrapper wrapper) {
+        return new WebServletRegistrationImpl(wrapper, this);
+    }
+
+    @Override
+    protected ServletRegistrationImpl createDynamicServletRegistrationImpl(
+            StandardWrapper wrapper) {
+        if (webBundleDescriptor == null) {
+            throw new IllegalStateException("Missing WebBundleDescriptor " +
+                "for context with name " + getName());
+        }
+        WebComponentDescriptor wcd =
+            webBundleDescriptor.getWebComponentByCanonicalName(
+                wrapper.getName());
+        if (wcd == null) {
+            /*
+             * Propagate the new servlet to the underlying 
+             * WebBundleDescriptor provided by the deployment backend,
+             * so that corresponding security constraints may be calculated
+             * by the security subsystem, which uses the
+             * WebBundleDescriptor as its input
+             */
+            wcd = new WebComponentDescriptor();
+            wcd.setName(wrapper.getName());
+            wcd.setCanonicalName(wrapper.getName());
+            webBundleDescriptor.addWebComponentDescriptor(wcd);
+        }
+
+        return new DynamicWebServletRegistrationImpl(wrapper, this);
+    }
+
+    @Override
+    protected void removePatternFromServlet(Wrapper wrapper, String pattern) {
+        super.removePatternFromServlet(wrapper, pattern);
+        WebBundleDescriptor wbd = getWebBundleDescriptor();
+        if (wbd == null) {
+            throw new IllegalStateException(
+                "Missing WebBundleDescriptor for " + getName());
+        }
+        WebComponentDescriptor wcd =
+            wbd.getWebComponentByCanonicalName(wrapper.getName());
+        if (wcd == null) {
+            throw new IllegalStateException(
+                "Missing WebComponentDescriptor for " + wrapper.getName());
+        }
+        wcd.removeUrlPattern(pattern);
+    }
+
     /**
      * Configure the properties of the session, such as the timeout,
      * whether to force URL rewriting etc.
@@ -2018,5 +2068,89 @@ class V3WebappLoader extends WebappLoader {
         // Do nothing. The nested (Webapp)ClassLoader is stopped in
         // WebApplication.stop()
     }
+}
 
+/**
+ * Implementation of javax.servlet.ServletRegistration whose addMapping also
+ * updates the WebBundleDescriptor from the deployment backend.
+ */
+class WebServletRegistrationImpl extends ServletRegistrationImpl {
+
+    public WebServletRegistrationImpl(StandardWrapper wrapper,
+                                      StandardContext context) {
+        super(wrapper, context);
+    }
+
+    @Override
+    public Set<String> addMapping(String... urlPatterns) {
+        Set<String> conflicts = super.addMapping(urlPatterns);
+        if (conflicts.isEmpty() && urlPatterns != null &&
+                urlPatterns.length > 0) {
+            /*
+             * Propagate the new mappings to the underlying 
+             * WebBundleDescriptor provided by the deployment backend,
+             * so that corresponding security constraints may be calculated
+             * by the security subsystem, which uses the
+             * WebBundleDescriptor as its input
+             */
+            WebBundleDescriptor wbd = ((WebModule) getContext()).getWebBundleDescriptor();
+            if (wbd == null) {
+                throw new IllegalStateException(
+                    "Missing WebBundleDescriptor for " + getContext().getName());
+            }
+            WebComponentDescriptor wcd =
+                wbd.getWebComponentByCanonicalName(getName());
+            if (wcd == null) {
+                throw new IllegalStateException(
+                    "Missing WebComponentDescriptor for " + getName());
+            }
+            for (String urlPattern : urlPatterns) {
+                wcd.addUrlPattern(urlPattern);
+            }
+        }
+        return conflicts;
+    }
+}
+
+/**
+ * Implementation of ServletRegistration.Dynamic whose addMapping also
+ * updates the WebBundleDescriptor from the deployment backend.
+ */
+class DynamicWebServletRegistrationImpl
+        extends DynamicServletRegistrationImpl {
+
+    public DynamicWebServletRegistrationImpl(StandardWrapper wrapper, 
+                                             StandardContext context) {
+        super(wrapper, context);
+    }
+
+    @Override
+    public Set<String> addMapping(String... urlPatterns) {
+        Set<String> conflicts = super.addMapping(urlPatterns);
+        if (conflicts.isEmpty() && urlPatterns != null &&
+                urlPatterns.length > 0) {
+            /*
+             * Propagate the new mappings to the underlying 
+             * WebBundleDescriptor provided by the deployment backend,
+             * so that corresponding security constraints may be calculated
+             * by the security subsystem, which uses the
+             * WebBundleDescriptor as its input
+             */
+            WebBundleDescriptor wbd = ((WebModule) getContext()).getWebBundleDescriptor();
+            if (wbd == null) {
+                throw new IllegalStateException(
+                    "Missing WebBundleDescriptor for " + getContext().getName());
+            }
+            WebComponentDescriptor wcd =
+                wbd.getWebComponentByCanonicalName(getName());
+            if (wcd == null) {
+                throw new IllegalStateException(
+                    "Missing WebComponentDescriptor for " + getName());
+            }
+            for (String urlPattern : urlPatterns) {
+                wcd.addUrlPattern(urlPattern);
+            }
+        }
+        return conflicts;
+    }
 }

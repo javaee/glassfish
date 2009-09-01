@@ -2032,11 +2032,11 @@ public class StandardContext
         if (createRegistration) {
             ServletRegistrationImpl regis = null;
             if (isProgrammatic || null == wrapper.getServletClassName()) {
-                regis = new DynamicServletRegistrationImpl(
-                    (StandardWrapper) wrapper, this);
+                regis = createDynamicServletRegistrationImpl(
+                    (StandardWrapper) wrapper);
             } else {
-                regis = new ServletRegistrationImpl(
-                    (StandardWrapper) wrapper, this);
+                regis = createServletRegistrationImpl(
+                    (StandardWrapper) wrapper);
             }
             servletRegisMap.put(wrapperName, regis);
             if (null == wrapper.getServletClassName() &&
@@ -2114,6 +2114,16 @@ public class StandardContext
                 addServletMapping(jspMappings[i], wrapperName);
             }
         }
+    }
+
+    protected ServletRegistrationImpl createServletRegistrationImpl(
+            StandardWrapper wrapper) {
+        return new ServletRegistrationImpl(wrapper, this);
+    }
+
+    protected ServletRegistrationImpl createDynamicServletRegistrationImpl(
+            StandardWrapper wrapper) {
+        return new DynamicServletRegistrationImpl(wrapper, this);
     }
 
     /**
@@ -3234,7 +3244,7 @@ public class StandardContext
                     // Override the mapping of the container provided
                     // Default- or JspServlet
                     Wrapper wrapper = (Wrapper) findChild(existing);
-                    wrapper.removeMapping(pattern);
+                    removePatternFromServlet(wrapper, pattern);
                     mapper.removeWrapper(pattern);
                     servletMappings.put(pattern, name);
                 }
@@ -3436,6 +3446,14 @@ public class StandardContext
 
             return regis;
         }
+    }
+
+    /**
+     * This method is overridden in web-glue to also remove the given
+     * mapping from the deployment backend's WebBundleDescriptor.
+     */
+    protected void removePatternFromServlet(Wrapper wrapper, String pattern) {
+        wrapper.removeMapping(pattern);
     }
 
     /**
