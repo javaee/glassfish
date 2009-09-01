@@ -48,7 +48,7 @@
             setPageSessionAttribute(key="objectNameStr", value="amx:pp=/,type=domain");
             setPageSessionAttribute(key="parentObjectNameStr", value="#{sessionScope.DOMAIN_ROOT}");
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/serverInstDomainAttrs.jsf");
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/serverInstDomainAttrs.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
              //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );
             setPageSessionAttribute(key="showDefaultButton" value="#{false}" );

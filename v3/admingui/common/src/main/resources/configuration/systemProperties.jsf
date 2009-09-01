@@ -48,7 +48,7 @@
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="system-property" result=>$attribute{tableList});
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/configuration/systemProperties.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/configuration/systemProperties.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
         setPageSessionAttribute(key="convertToFalseList" value={"DynamicReconfigurationEnabled"});
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );

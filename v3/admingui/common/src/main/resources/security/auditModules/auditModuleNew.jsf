@@ -43,7 +43,6 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/auditModules/auditModuleNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/auditModules/auditModules.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
         setPageSessionAttribute(key="childType" value="audit-module");

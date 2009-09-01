@@ -45,7 +45,7 @@
             if ("!#{pageSession.configName}") {
                 setPageSessionAttribute(key="configName", value="$requestParameter{configName}");
             }
-            setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/jms/jmsService.jsf");
+            setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/jms/jmsService.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
             setAttribute(key="edit" value="#{true}");
             setPageSessionAttribute(key="hasPropertySheet" value="#{true}");
 

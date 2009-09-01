@@ -48,7 +48,7 @@
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=admin-service");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/configuration/jmxConnectorEdit.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/configuration/jmxConnectorEdit.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
         setPageSessionAttribute(key="skipAttrsList" value={"SystemJmxConnectorName", "Name", "Type"});
 
         setPageSessionAttribute(key="objectNameStr2" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/admin-service,type=jmx-connector,name=#{pageSession.valueMap['SystemJmxConnectorName']}")

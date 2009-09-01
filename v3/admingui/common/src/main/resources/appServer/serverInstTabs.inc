@@ -59,7 +59,7 @@
         <sun:tab id="domainAttrs" immediate="true" text="$resource{i18n.headings.DomainAttributes}" >
             <!command
             setSessionAttribute(key="serverInstTabs" value="domainAttrs");
-            redirect(page="#{request.contextPath}/common/appServer/serverInstDomainAttrs.jsf");
+            redirect(page="#{request.contextPath}/common/appServer/serverInstDomainAttrs.jsf?configName=server-config");
             />
         </sun:tab>
     </sun:tab>

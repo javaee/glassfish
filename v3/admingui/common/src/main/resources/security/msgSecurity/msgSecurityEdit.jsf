@@ -47,7 +47,7 @@
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
         setSessionAttribute(key="msgSecurityTabs" value="msgSecurityEdit");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/msgSecurity/msgSecurityEdit.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/msgSecurity/msgSecurityEdit.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
         setPageSessionAttribute(key="childType" value="message-security-config");

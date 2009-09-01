@@ -46,7 +46,7 @@
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
         setSessionAttribute(key="iiopTab" value="iiopEdit");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/corba/iiopListenerEdit.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/corba/iiopListenerEdit.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/corba/iiopListeners.jsf");
         setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service")
         setPageSessionAttribute(key="childType" value="iiop-listener")

@@ -48,7 +48,7 @@
                 edit="#{edit}"
             );
             prepareSuccessfulMsg();
-            redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&appName=#{pageSession.Name}");
+            redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
         />
     </sun:button>
 

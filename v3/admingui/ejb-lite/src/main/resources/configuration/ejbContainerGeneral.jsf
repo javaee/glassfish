@@ -51,7 +51,7 @@
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=ejb-container");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/ejb-lite/configuration/ejbContainerGeneral.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/ejb-lite/configuration/ejbContainerGeneral.jsf?configName=#{pageSession.configName}");
 
         //mainly for radio button
         <!--

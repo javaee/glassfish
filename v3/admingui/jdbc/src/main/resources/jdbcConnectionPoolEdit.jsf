@@ -50,7 +50,7 @@
     <!beforeCreate
         setSessionAttribute(key="jdbcPoolTabs" value="general");
         getRequestValue(key="name" value="#{pageSession.Name}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf?name=#{pageSession.Name}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=jdbc-connection-pool,name=#{pageSession.Name}");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");

@@ -43,7 +43,7 @@
     <event>
         <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/security.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/security.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
         setPageSessionAttribute(key="childType" value="security-service");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");

@@ -43,9 +43,8 @@
 <!define name="content">
 <event>
     <!beforeCreate
-    getRequestValue(key="configName" value=>$page{configName} default="server-config");
     getRequestValue(key="name" value="#{pageSession.Name}");
-    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/resourceAdapterConfigEdit.jsf");
+    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/resourceAdapterConfigEdit.jsf?name=#{pageSession.Name}");
     setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/resourceAdapterConfigs.jsf");
     setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=resource-adapter-config,name=#{pageSession.Name}");
     setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");

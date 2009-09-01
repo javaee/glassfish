@@ -53,7 +53,7 @@
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/ejb-container,type=ejb-timer-service");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/ejb/configuration/ejbContainerTimerService.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/ejb/configuration/ejbContainerTimerService.jsf?configName=#{pageSession.configName}");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );

@@ -44,9 +44,8 @@
 <event>
     <!beforeCreate
     setSessionAttribute(key="connectorPoolTabs" value="general");
-    getRequestValue(key="configName" value=>$page{configName} default="server-config");
     getRequestValue(key="name" value="#{pageSession.Name}");
-    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorConnectionPoolEdit.jsf");
+    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorConnectionPoolEdit.jsf?name=#{pageSession.Name}");
     setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
     setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
     setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");

@@ -51,9 +51,9 @@
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=mdb-container");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/ejb/configuration/ejbContainerMDBSettings.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/ejb/configuration/ejbContainerMDBSettings.jsf?configName=#{pageSession.configName}");
         //set the following for including buttons.inc
-        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="edit" value="#{true}" );s
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{false}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );

@@ -51,7 +51,7 @@
             setPageSessionAttribute(key="convertToFalseList" value={"DebugEnabled"});
             setPageSessionAttribute(key="childType" value="java-config");            
             getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});            
-            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverInstJvmGeneral.jsf");
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverInstJvmGeneral.jsf?configName=#{pageSession.configName}");
             setPageSessionAttribute(key="skipAttrsList", value={"EnvClasspathIgnored" "ServerClasspath" "SystemClasspath" "ClasspathPrefix" "ClasspathSuffix" "NativeLibraryPathPrefix" "NativeLibraryPathSuffix"});
              //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );

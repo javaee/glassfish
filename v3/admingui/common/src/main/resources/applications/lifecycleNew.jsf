@@ -44,7 +44,6 @@
     <event>
     <!beforeCreate
         setPageSessionAttribute(key="edit" value="false")
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/applications/lifecycleNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/applications/lifecycles.jsf");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/applications,type=application,name=#{pageSession.Name}");
         setPageSessionAttribute(key="appRefObjectName" value="amx:pp=/domain/servers/server[server],type=application-ref,name=#{pageSession.Name}");

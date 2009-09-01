@@ -46,7 +46,7 @@
       <!beforeCreate
         getRequestValue(key="configName" value="#{pageSession.configName}" default="server-config");
         setSessionAttribute(key="jmxConnectorTab" value="jmxSSLEdit");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/configuration/jmxSSLEdit.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/configuration/jmxSSLEdit.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
         setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/admin-service,type=jmx-connector,name=system")
         setPageSessionAttribute(key="childType" value="ssl")
         setPageSessionAttribute(key="showCancelButton" value="#{false}")

@@ -45,7 +45,7 @@
     <!beforeCreate
         setPageSessionAttribute(key="edit" value="true")
         getRequestValue(key="appName" value="#{pageSession.Name}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/applications/lifecycleEdit.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/applications/lifecycleEdit.jsf?appName=#{pageSession.Name}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/applications/lifecycles.jsf");
         getLifecycleAttrEdit(Name="#{pageSession.Name}"  attrMap="#{pageSession.valueMap}", properties="#{requestScope.tableList}" );
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/applications,type=application,name=#{pageSession.Name}");

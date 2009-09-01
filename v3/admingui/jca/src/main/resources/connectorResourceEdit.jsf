@@ -45,7 +45,7 @@
     <!beforeCreate
     getRequestValue(key="configName" value=>$page{configName} default="server-config");
     getRequestValue(key="name" value="#{pageSession.Name}");
-    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorResourceEdit.jsf");
+    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorResourceEdit.jsf?name=#{pageSession.Name}");
     setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorResources.jsf");
     setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=connector-resource,name=#{pageSession.Name}");
     setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");

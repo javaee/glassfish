@@ -44,9 +44,8 @@
 <event>
     <!beforeCreate
     setPageSessionAttribute(key="edit" value="#{true}" );
-    getRequestValue(key="configName" value=>$page{configName} default="server-config");
     getRequestValue(key="name" value="#{pageSession.Name}");
-    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorConnectionPoolProperty.jsf");
+    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorConnectionPoolProperty.jsf?name=#{pageSession.Name}");
     setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
     setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
     setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
@@ -68,7 +67,7 @@
     
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njca.connectorConnectionPool.propertyPageTitle}" helpText="$resource{i18njca.connectorConnectionPool.propertyPageTitleHelp}" >
-#include "/common/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons_2.inc"
     </sun:title>
     "<br><br>
 #include "/common/shared/propertyDescTable.inc"

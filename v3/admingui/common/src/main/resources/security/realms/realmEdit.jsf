@@ -48,7 +48,7 @@
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/realms/realms.jsf");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/realms/realmEdit.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/realms/realmEdit.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=auth-realm,name=#{pageSession.Name}")
         getRealmAttrForEdit(objectNameStr="#{objectNameStr}" attrMap=>$page{attrMap}, classnameOption=>$page{classnameOption}, realmClasses=>$page{realmClasses}, properties="#{requestScope.tableList}" );
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");

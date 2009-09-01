@@ -65,7 +65,7 @@
    </sun:property>
 
     <sun:property id="failProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.lifecycleModule.onLoadFailure}" helpText="$resource{i18nc.lifecycleModule.onLoadFailureHelp}" >
-        <sun:checkbox label="$resource{i18nc.lifecycleModule.preventStart}" text="#{pageSession.valueMap['is-failure-fatal']}"  selectedValue="true" />
+        <sun:checkbox label="$resource{i18nc.lifecycleModule.preventStart}" selected="#{pageSession.valueMap['is-failure-fatal']}"  selectedValue="true" />
    </sun:property>
 
    <sun:property id="vsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}">

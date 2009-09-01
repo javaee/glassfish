@@ -48,7 +48,7 @@
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/servers,type=server,name=server");
         setPageSessionAttribute(key="childType" value="system-property");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result=>$attribute{tableList});
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/token.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/token.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
