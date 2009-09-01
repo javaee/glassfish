@@ -205,7 +205,10 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     }
 
     public Subject authenticate(Object credentials) {
-
+        if (this.serverAllowsAnonymousFileRealmLogin()) {  //all bets are off if server allows anonymous login
+            logger.fine("Allowing anonymous login for JMX Access");
+            return null;
+        }
         if (!(credentials instanceof String[])) {
             String msg = lsm.getLocalString("two.elem.array",
                     "The JMX Connector should access with a two-element string array containing user name and password");
