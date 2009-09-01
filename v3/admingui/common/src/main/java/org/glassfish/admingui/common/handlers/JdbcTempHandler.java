@@ -212,7 +212,6 @@ public class JdbcTempHandler {
 
                         }
                     }
-                    dsl.add(dsl.size(), "");
                     if (resType.equals(DRIVER)) {
                         extra.put("DList", dsl);
                         extra.put("DSList", "");
