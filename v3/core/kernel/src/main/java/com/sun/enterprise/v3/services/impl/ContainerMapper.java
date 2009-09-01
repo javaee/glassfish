@@ -84,7 +84,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
         this.habitat = grizzlyService.habitat;
         parserStates = new ConcurrentLinkedQueue<HttpParserState>();
         logger = GrizzlyEmbeddedHttp.logger();
-        setRootFolder(GrizzlyEmbeddedHttp.getWebAppRootPath());
+        setRootFolder(grizzlyEmbeddedHttp.getWebAppRootPath());
     }
 
     /**
