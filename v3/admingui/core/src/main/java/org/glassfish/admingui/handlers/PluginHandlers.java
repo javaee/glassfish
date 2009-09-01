@@ -57,8 +57,10 @@ import org.jvnet.hk2.component.Habitat;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -285,6 +287,39 @@ public class PluginHandlers {
         handlerCtx.setOutputValue("labels", labels);
         handlerCtx.setOutputValue("values", values);
 	}
+
+
+    @Handler(id="getAppEditIntegrationPoint",
+    	input={
+            @HandlerInput(name="type", type=String.class, required=true)},
+        output={
+            @HandlerOutput(name="appEditPageMap",  type=Map.class)})
+    public static void getAppEditIntegrationPoint(HandlerContext handlerCtx) throws java.io.IOException {
+        // Get the input
+        String type = (String) handlerCtx.getInputValue("type");
+
+        // Get the IntegrationPoints
+        FacesContext ctx = handlerCtx.getFacesContext();
+        Set<IntegrationPoint> points = getSortedIntegrationPoints(getIntegrationPoints(ctx, type));
+        Map result = new HashMap();
+        if (points != null) {
+            for(IntegrationPoint it : points){
+                String content = it.getContent();
+                if (GuiUtil.isEmpty(content)){
+                    GuiUtil.getLogger().warning("No Content specified for Integration Point: " + type + " id : " + it.getId());
+                    continue;
+                }
+                List<String> vv = GuiUtil.parseStringList(content, ":");
+                if (vv.size()!=2){
+                    GuiUtil.getLogger().warning("Invalid content specified for Integration Point: " + type + " id : " + it.getId());
+                    continue;
+                }
+                result.put(vv.get(0), vv.get(1));
+            }
+        }
+        handlerCtx.setOutputValue("appEditPageMap", result);
+    }
+
 
     /**
      *	<p> This method sorts the given {@link IntegrationPoint}'s by parentId
