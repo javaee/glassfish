@@ -1,5 +1,4 @@
 -exportcontents: \
-                        com.sun.appserv.security.provider; \
                         com.sun.enterprise.container.common; \
                         com.sun.enterprise.container.common.impl; \
                         com.sun.enterprise.container.common.impl.util; \
