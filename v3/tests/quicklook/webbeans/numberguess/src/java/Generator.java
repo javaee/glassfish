@@ -1,4 +1,4 @@
-package numberguess;
+package org.jboss.webbeans.examples.numberguess;
 
 
 import java.io.Serializable;
@@ -21,8 +21,8 @@ public class Generator implements Serializable
       return random;
    }
    
-   @Produces @Random Integer next() { 
-      return new Integer(getRandom().nextInt(maxNumber)); 
+   @Produces @Random int next() { 
+      return getRandom().nextInt(maxNumber); 
    }
    
    @Produces @MaxNumber int getMaxNumber()

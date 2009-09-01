@@ -1,4 +1,4 @@
-package numberguess;
+package org.jboss.webbeans.examples.numberguess;
 
 
 import java.io.Serializable;
@@ -6,7 +6,8 @@ import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Named;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
@@ -16,18 +17,20 @@ import javax.faces.context.FacesContext;
 @SessionScoped
 public class Game implements Serializable
 {
+   private static final long serialVersionUID = 1L;
+
    private int number;
    
    private int guess;
    private int smallest;
    
-   @MaxNumber
+   @MaxNumber @Inject
    private int maxNumber;
    
    private int biggest;
    private int remainingGuesses;
    
-   @Random Instance<Integer> randomNumber;
+   @Random @Inject Instance<Integer> randomNumber;
    
    public Game()
    {
