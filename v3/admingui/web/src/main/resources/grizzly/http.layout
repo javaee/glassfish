@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -35,10 +35,7 @@
 -->
 <!-- grizzly/http.jsf -->
 
-<!initPage
-    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
-/>
+
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.grizzly.httpPageTitle}" >
 <!define name="content">
 
@@ -46,7 +43,6 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/http.jsf");
         getRequestValue(key="parentPage" value="{#pageSession.parentPage}" default="#{request.contextPath}/web/grizzly/protocols.jsf");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols/protocol[#{pageSession.Name}],type=http");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=#{pageSession.Name}");
@@ -63,9 +59,8 @@
 
         setPageSessionAttribute(key="valueMap" value="#{pageSession.httpMap}");
         setPageSessionAttribute(key="convertToFalseList" 
-            value={"EnableCometSupport" , "EnableCometSupport"  ,"DisableUploadTimeout"  ,"EnableDnsLookup" , "EnableRcmSupport"  ,"TraceEnabled"  ,"Compression" , "EnableAuthPassThrough" , "ChunkingDisabled" , "XpoweredBy"  });
-        setSessionAttribute(key="protocolTabs" value="httpTab");
-        setSessionAttribute(key="listenerTabs" value="httpTab");
+            value={"UploadTimeutEnabled", "CometSupportEnabled", "DnsLookupEnabled", "RcmSupportEnabled", "TraceEnabled", "AuthPassThroughEnabled", "ChunkingEnabled", "XpoweredBy" });
+        
         getRequestValue(key="listenerName" value="#{pageSession.listenerName}");
         setPageSessionAttribute(key="protocolName" value="#{pageSession.Name}");
 

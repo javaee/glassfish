@@ -74,7 +74,7 @@
         </sun:property>
 
         <sun:property id="DisableUploadTimeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.DisableUploadTimeout}" helpText="$resource{i18n_web.http.DisableUploadTimeoutHelp}">
-            <sun:checkbox label="$resource{i18n_web.common.disabled}" selected="#{pageSession.httpMap['DisableUploadTimeout']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['UploadTimeutEnabled']}" selectedValue="true" />
         </sun:property>
 
           <sun:property id="connectionUploadTimeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.ConnectionUploadTimeout}" helpText="$resource{i18n_web.http.ConnectionUploadTimeoutHelp}" >
@@ -148,15 +148,15 @@
 
 
         <sun:property id="Comet"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.CometSupport}" helpText="$resource{i18n_web.http.CometSupportHelp}">
-            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['EnableCometSupport']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['CometSupportEnabled']}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="DnsLookup"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.DnsLookup}" helpText="$resource{i18n_web.http.DnsLookupHelp}">
-            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['EnableDnsLookup']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['DnsLookupEnabled']}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="RcmSupport"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.RcmSupport}" helpText="$resource{i18n_web.http.RcmSupportHelp}">
-            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['EnableRcmSupport']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['RcmSupportEnabled']}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="Trace"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.Trace}" helpText="$resource{i18n_web.http.TraceHelp}">
@@ -164,11 +164,11 @@
         </sun:property>
 
         <sun:property id="AuthPassThrough"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.AuthPassThrough}" helpText="$resource{i18n_web.http.AuthPassThroughHelp}">
-            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['EnableAuthPassThrough']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['AuthPassThroughEnabled']}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="chunking"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.Chunking}" helpText="$resource{i18n_web.http.ChunkingHelp}" >
-            <sun:checkbox label="$resource{i18n_web.common.disabled}" selected="#{pageSession.httpMap['ChunkingDisabled']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['ChunkingEnabled']}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="XpoweredBy"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.XpoweredBy}" helpText="$resource{i18n_web.http.XpoweredByHelp}" >

@@ -36,7 +36,7 @@
 -->
 <!-- grizzly/listenerTabs.inc -->
 
-<sun:tabSet id="listenerTabs" immediate="$boolean{true}" selected="#{sessionScope.protocolTabs}">
+<sun:tabSet id="listenerTabs" immediate="$boolean{true}" selected="#{sessionScope.listenerTabs}">
     <sun:tab id="generalTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.networkListener.listenerTab}" >
         <!command
         setSessionAttribute(key="listenerTabs" value="generalTab");

@@ -48,7 +48,7 @@
                 createProxy(parentObjectNameStr="#{pageSession.newProxy}" childType="#{pageSession.childType2}"
                         attrs="#{pageSession.httpMap}"
                         onlyUseAttrs={"EnableCometSupport", "DefaultVirtualServer", "ServerName", "RedirectPort"}
-                        convertToFalse={"EnableCometSupport"},
+                        convertToFalse={"UploadTimeutEnabled", "CometSupportEnabled", "DnsLookupEnabled", "RcmSupportEnabled", "TraceEnabled", "AuthPassThroughEnabled", "ChunkingEnabled", "XpoweredBy"},
                         result="#{pageSession.newHttp}");
 
                 createProxy(parentObjectNameStr="#{pageSession.newHttp}" childType="#{pageSession.childType3}"

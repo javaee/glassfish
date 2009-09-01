@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -38,7 +38,7 @@
 <sun:propertySheetSection id="propertSectionTextField">
 
         <sun:property id="nameNew"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}" helpText="$resource{i18n_web.common.nameHelp}">
-            <sun:textField id="name"  styleClass="required" required="#{true}" columns="$int{10}" text="#{pageSession.valueMap['Name']}" />
+            <sun:textField id="name"  styleClass="required" required="#{true}" columns="$int{50}" text="#{pageSession.valueMap['Name']}" />
         </sun:property>
 
         <sun:property id="name"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}">

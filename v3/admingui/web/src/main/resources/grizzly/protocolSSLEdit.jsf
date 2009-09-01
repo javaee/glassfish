@@ -35,6 +35,15 @@
 -->
 <!-- protocolSSLEdit.jsf -->
 
+
+
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
+    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/protocolSSLEdit.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
+    setSessionAttribute(key="protocolTabs" value="sslTab");
+/>
+
 <!composition template="/web/grizzly/ssl.layout"  guiTitle="$resource{i18n_web.grizzly.sslPageTitle}" >
 <!define name="protocolTabs">
 #include "/web/grizzly/protocolTabs.inc"

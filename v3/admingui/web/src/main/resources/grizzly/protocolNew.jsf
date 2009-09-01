@@ -46,7 +46,6 @@
     <!beforeCreate
         setPageSessionAttribute(key="edit" value="#{false}" );
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/protocolNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/protocols.jsf");
 
 
@@ -64,9 +63,6 @@
         setPageSessionAttribute(key="parentObjectNameStr3", value="amx:pp=/domain/configs/config[server-config]/network-config/protocols/protocol[admin-listener],type=http");
         setPageSessionAttribute(key="childType3" value="file-cache");
         getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr3}" childType="#{pageSession.childType3}"  valueMap="#{pageSession.fileMap}")
-
-        setPageSessionAttribute(key="convertToFalseList" value={"SecurityEnabled"});
-
         />
     </event>
 #include "/common/shared/restart.inc"

@@ -46,7 +46,6 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/fileCache.jsf");
         getRequestValue(key="parentPage" value="{#pageSession.parentPage}" default="#{request.contextPath}/web/grizzly/protocols.jsf");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config]/network-config/protocols/protocol[#{pageSession.Name}]/http,type=file-cache");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[server-config]/network-config/protocols/protocol[#{pageSession.Name}],type=http");
@@ -62,8 +61,6 @@
         }
         setPageSessionAttribute(key="valueMap" value="#{pageSession.fileMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
-        setSessionAttribute(key="protocolTabs" value="fileCacheTab");
-        setSessionAttribute(key="listenerTabs" value="fileCacheTab");
         getRequestValue(key="listenerName" value="#{pageSession.listenerName}");
         setPageSessionAttribute(key="protocolName" value="#{pageSession.Name}");
         //set the following for including buttons.inc

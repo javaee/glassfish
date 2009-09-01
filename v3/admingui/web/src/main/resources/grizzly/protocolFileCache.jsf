@@ -36,6 +36,13 @@
 <!-- grizzly/fileCache.jsf -->
 
 
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
+    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/protocolFileCache.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
+    setSessionAttribute(key="protocolTabs" value="fileCacheTab");
+/>
+
 <!composition template="/web/grizzly/fileCache.layout"   >
 <!define name="protocolTabs">
 #include "/web/grizzly/protocolTabs.inc"

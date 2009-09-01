@@ -46,14 +46,11 @@
         getRequestValue(key="configName" value="#{pageSession.configName}" default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
         setPageSessionAttribute(key="protocolName" value="#{pageSession.Name}");
-        setSessionAttribute(key="protocolTabs" value="sslTab");
-        setSessionAttribute(key="listenerTabs" value="sslTab");
         getRequestValue(key="listenerName" value="#{pageSession.listenerName}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/protocolSSLEdit.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/protocols.jsf");
         setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=#{pageSession.Name}")
         setPageSessionAttribute(key="childType" value="ssl")
-            setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols/protocol[#{pageSession.Name}],type=ssl");
+        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols/protocol[#{pageSession.Name}],type=ssl");
         setPageSessionAttribute(key="showCancelButton" value="#{true}" )
 #include "/common/shared/sslPrepare.inc"
       />
