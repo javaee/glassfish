@@ -50,7 +50,6 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.StringTokenizer;
 import javax.management.ObjectName;
 
 
@@ -59,6 +58,7 @@ import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.intf.config.AMXConfigHelper;
 import org.glassfish.admin.amx.intf.config.ConfigTools;
+import org.glassfish.admin.amx.intf.config.Property;
 import org.glassfish.admin.amx.intf.config.Server;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.GuiUtil;
@@ -318,8 +318,7 @@ public class ProxyHandlers {
     }
 
     /*
-     * Save the attributes of the proxy.   If the proxy doesn't exist, And forceCreate is true, a new
-     * proxy will be created.
+     * Save the attributes of the proxy.  
      */
     @Handler(id = "saveBeanAttributes",
         input = {
@@ -327,23 +326,14 @@ public class ProxyHandlers {
             @HandlerInput(name = "attrs", type = Map.class),
             @HandlerInput(name = "skipAttrs", type = List.class),
             @HandlerInput(name = "convertToFalse", type = List.class),
-            @HandlerInput(name = "onlyUseAttrs", type = List.class),
-            @HandlerInput(name = "parentObjectNameStr", type = String.class),
-            @HandlerInput(name = "forceCreate", type = Boolean.class),
-            @HandlerInput(name = "childType", type = String.class)})
+            @HandlerInput(name = "onlyUseAttrs", type = List.class)})
     public static void saveBeanAttributes(HandlerContext handlerCtx) {
         try {
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
 
             if (!doesProxyExist(objectNameStr)) {
-                Boolean forceCreate = (Boolean) handlerCtx.getInputValue("forceCreate");
-                if (forceCreate != null && forceCreate.booleanValue()) {
-                    createProxy(handlerCtx);
-                    return;
-                } else {
                     GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("error.noSuchProxy"));
                     return;
-                }
             }
 
             Map attrs = (Map) handlerCtx.getInputValue("attrs");
@@ -356,6 +346,18 @@ public class ProxyHandlers {
                     }
                 }
             }
+
+            List<String> onlyUseAttrs = (List) handlerCtx.getInputValue("onlyUseAttrs");
+            if (onlyUseAttrs != null) {
+                Map newAttrs = new HashMap();
+                for (String key : onlyUseAttrs) {
+                    if (attrs.keySet().contains(key)) {
+                        newAttrs.put(key, attrs.get(key));
+                    }
+                }
+                attrs = newAttrs;
+            }
+
 
             List<String> convertToFalse = (List) handlerCtx.getInputValue("convertToFalse");
             if (convertToFalse != null) {
@@ -723,6 +725,66 @@ public class ProxyHandlers {
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
+    }
+
+
+    /*
+     * This handler returns a Map for the properties of the specified object.  Since this is a Map, the key
+     * is the property name, and the value is the property value.   The description will not be available.
+     */
+    @Handler(id = "getProxyProperties",
+        input = {
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "result", type = Map.class)})
+    public static void getProxyProperties(HandlerContext handlerCtx) {
+
+        String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+        AMXProxy amx = V3AMX.objectNameToProxy(objectNameStr);
+        Map<String, Property> children = amx.childrenMap(Property.class);
+        Map result = new HashMap();
+        for(Property oneChild : children.values()){
+            result.put(oneChild.getName(), oneChild.getValue());
+        }
+        handlerCtx.setOutputValue("result", result);
+    }
+
+    /*
+     * This handler converts a Map into a list of Properties.  If useOnly is specified, then only those will be included in the
+     * list returned.
+     */
+    @Handler(id = "propMapToList",
+        input = {
+            @HandlerInput(name = "propMap", type = Map.class, required = true),
+            @HandlerInput(name = "convertToFalse", type = List.class)},
+        output = {
+            @HandlerOutput(name = "propList", type = List.class)})
+    public static void propMapToList(HandlerContext handlerCtx) {
+        Map<String, String> propMap = (Map) handlerCtx.getInputValue("propMap");
+        List convertToFalse = (List) handlerCtx.getInputValue("convertToFalse");
+        if (convertToFalse == null){
+            convertToFalse = new ArrayList();
+        }
+        List result = new ArrayList();
+
+        for(String name: propMap.keySet()){
+            String value = propMap.get(name);
+            Map newRow = new HashMap();
+            newRow.put(PROPERTY_NAME, name);
+            if (convertToFalse.contains(name)){
+                if (value == null){
+                    value="false";
+                }
+                newRow.put(PROPERTY_VALUE, value);
+                result.add(newRow);
+            }else{
+                if (! GuiUtil.isEmpty(value)){
+                    newRow.put(PROPERTY_VALUE, value);
+                    result.add(newRow);
+                }
+            }
+        }
+        handlerCtx.setOutputValue("propList", result);
     }
 
 

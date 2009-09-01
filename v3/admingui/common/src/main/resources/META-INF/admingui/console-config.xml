@@ -59,6 +59,12 @@
                 content="Other; other"
         />
 
+        <integration-point
+                id="common_edit_app"
+                type="org.glassfish.admingui:editAppPage"
+                content="other:common/applications/editDefaultType.jsf"
+        />
+
 
         <!-- Add a link under the Configuration Page  -->
         <integration-point

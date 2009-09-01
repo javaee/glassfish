@@ -215,6 +215,39 @@ public class WebAppHandlers {
     }
 
 
+    /*
+     * Get the application type for the specified appName.
+     * If there isComposite property is true, the appType will be returned as 'ear'
+     * Otherwise, depends on the sniffer engine
+     */
+    @Handler(id = "getApplicationType",
+        input = {
+            @HandlerInput(name = "appName", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "appType", type = String.class)})
+    public static void getApplicationType(HandlerContext handlerCtx) {
+        String appName = (String) handlerCtx.getInputValue("appName");
+        Application application = V3AMX.getInstance().getApplication(appName);
+        String appType = V3AMX.getPropValue(application, "isComposite");
+        if ("true".equals(appType)){
+            appType = "ear";
+        }else{
+            List sniffersList = AppUtil.getAllSniffers(application);
+            if (sniffersList.contains("connector")){
+                appType="rar";
+            }else
+            if (sniffersList.contains("web")){
+                appType="war";
+            }else
+            if (sniffersList.contains("appclient")){
+                appType="appclient";
+            }else
+                //For the case like "jruby", "jython", "ejb jar" etc.  Those should only have 1 sniffer engine.
+                appType = (String) sniffersList.get(0);
+        }
+        handlerCtx.setOutputValue("appType", appType);
+    }
+
     /**
      *	<p> This handler returns the list of lifecycles for populating the table.
      *  <p> Input  value: "serverName" -- Type: <code> java.lang.String</code></p>

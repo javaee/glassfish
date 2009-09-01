@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -34,7 +34,7 @@
  holder.
 -->
 
-<!-- uploadOtherPropSheet.jsf -->
+<!-- deploymentOther.jsf -->
 <!-- This is the default property sheet that has ALL the possible arguments that can be passed to DF.deploy -->
 
 <sun:propertySheet id="other" visible="#{false}" >
@@ -42,7 +42,7 @@
         setAttribute(key="fieldMap" value="other");
         createMap(result="#{pageSession.other}")
         mapPut(map="#{pageSession.deployMap}", key="other", value="#{pageSession.other}");
-        mapPut(map="#{pageSession.other}", key="convertToFalseList", value={"enabled", "precompilejsp" ,  "PROPERTY-verify", } );
+        mapPut(map="#{pageSession.other}", key="convertToFalseList", value={"enabled", "precompilejsp" ,  "verify", } );
      />
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{otherId});
