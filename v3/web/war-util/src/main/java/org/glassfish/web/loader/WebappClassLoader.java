@@ -1353,8 +1353,9 @@ public class WebappClassLoader
 
         // Don't load classes if class loader is stopped
         if (!started) {
-            logger.log(Level.SEVERE, "webappClassLoader.stopped", name);
-            return null;
+            String msg = rb.getString("webappClassLoader.stopped");
+            throw new IllegalStateException(
+                MessageFormat.format(msg, name));
         }
 
         // Check our previously loaded local class cache
@@ -2053,8 +2054,9 @@ public class WebappClassLoader
     protected ResourceEntry findResourceInternal(String name, String path) {
 
         if (!started) {
-            logger.log(Level.SEVERE, "webappClassLoader.stopped", name);
-            return null;
+            String msg = rb.getString("webappClassLoader.stopped");
+            throw new IllegalStateException(
+                MessageFormat.format(msg, name));
         }
 
         if ((name == null) || (path == null)) {
