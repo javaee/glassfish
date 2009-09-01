@@ -43,6 +43,9 @@
     setPageSessionAttribute(key="editPage" value="#{request.contextPath}/web/apps/editWar.jsf")
 />
 
-#include "/common/applications/appEdit.inc"
-
+<!composition template="/common/applications/appEdit.layout"   >
+<!define name="editAppFields">
+#include "/common/applications/edit.inc"
+</define>
+</composition>
 
