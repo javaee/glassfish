@@ -1,0 +1,57 @@
+
+asadmin Utility Subcommands                        delete-http(1)
+
+NAME
+     delete-http - removes HTTP parameters
+
+SYNOPSIS
+     delete-http
+     [--help]
+     [ --target  server]
+     protocol-name
+
+DESCRIPTION
+     The delete-http command removes the specified HTTP parameter
+     set. This command is supported in remote mode only.
+
+OPTIONS
+     --help
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     protocol-name               The name of the protocol associ-
+                                 ated with the HTTP parameter set
+                                 to be deleted.
+
+EXAMPLES
+     Example 1 Using the delete-http command
+
+     The following command deletes the HTTP  parameter  set  from
+     the protocol named http-1:
+
+       asadmin> delete-http --user admin1
+       --passwordfile passwords.txt --host host1 --port 5001 http-1
+       Command delete-http executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+Java EE 6           Last change: 25 Jun 2008                    1
+
+asadmin Utility Subcommands                        delete-http(1)
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-http(1)
+
+Java EE 6           Last change: 25 Jun 2008                    2
+

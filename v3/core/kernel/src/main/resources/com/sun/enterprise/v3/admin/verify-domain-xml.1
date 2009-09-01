@@ -1,0 +1,67 @@
+
+asadmin Utility Subcommands                  verify-domain-xml(1)
+
+NAME
+     verify-domain-xml - verifies the content of  the  domain.xml
+     file
+
+SYNOPSIS
+     verify-domain-xml  [--terse={false|true}] [ --echo ={false|true}]
+      [ --help ] [ --verbose ={false|true}]
+      [ --domaindir  domain-dir] [domain-name]
+
+DESCRIPTION
+     Verifies the content of the domain.xml file.
+
+OPTIONS
+     -t --terse
+
+         Indicates that any output data  must  be  very  concise,
+         typically avoiding human-friendly sentences and favoring
+         well-formatted data for consumption by a script. Default
+         is false.
+
+     -e --echo
+         Setting to true will echo the command line statement  on
+         the standard output. Default is false.
+
+     -h --help
+
+         Displays the help text for the command.
+
+     --verbose
+         Turns on verbose debugging mode if true. The default  is
+         false.
+
+     --domaindir
+
+         Specifies the directory where the domains  are  located.
+         The  path  must  be  accessible  in the file system. The
+         default  is  the  value  of   the   $AS_DEF_DOMAINS_PATH
+         environment  variable.  This  variable is defined in the
+         file asenv.bat or asenv.conf. The default value of  this
+         variable is as-install/domains.
+
+OPERANDS
+     domain_name
+         Specifies  the  name  of  the  domain.  The  default  is
+         domain1.
+
+Java EE 6            Last change: 1 Jul 2009                    1
+
+asadmin Utility Subcommands                  verify-domain-xml(1)
+
+EXAMPLES
+     Example 1 Using verify-domain-xml
+
+       asadmin> verify-domain-xml --verbose=true
+       All Tests Passed.
+       domain.xml is valid
+
+EXIT STATUS
+     0                   command executed successfully
+
+     1                   error in executing the command
+
+Java EE 6            Last change: 1 Jul 2009                    2
+

@@ -1,5 +1,5 @@
 
-Administration Commands       create-message-security-provider(1)
+asadmin Utility Subcommands   create-message-security-provider(1)
 
 NAME
      create-message-security-provider  -  enables  administrators
@@ -8,10 +8,7 @@ NAME
 
 SYNOPSIS
      create-message-security-provider
-     [--terse={true|false}][ --echo={true|false} ]
-     [ --interactive={true|false} ] [ --host  host]
-     [--port port] [--secure| -s ] [ --user  admin_user]
-     [--passwordfile filename] [--help]
+     [--help]
 
       [ --target   target] --classname  provider_class
       [--layer   message_layer ] [--providertype provider_type ]
@@ -23,13 +20,14 @@ SYNOPSIS
       provider_name
 
 DESCRIPTION
-     Enables the administrator to  create  the  message-security-
-     config  and  provider-config  sub-elements  for the security
-     service in domain.xml (the file  that  specifies  parameters
-     and  properties  of  a domain to the Enterprise Server). The
-     options specified in the  list  below  apply  to  attributes
-     within  the message-security-config and provider-config sub-
-     elements of the domain.xml file.
+     The  create-message-security-provider  command  enables  the
+     administrator  to  create  the  message-security-config  and
+     provider-config sub-elements for  the  security  service  in
+     domain.xml  (the  file that specifies parameters and proper-
+     ties of a domain to the Enterprise  ServerTM).  The  options
+     specified  in  the list below apply to attributes within the
+     message-security-config and provider-config sub-elements  of
+     the domain.xml file.
 
      If the message-layer (message-security-config) element  does
      not exist, this command creates it, and then provider-config
@@ -42,124 +40,20 @@ OPTIONS
      precedes  the  long option name. Short options have one dash
      whereas long options have two dashes.
 
-     -t --terse
-
-         Indicates that any output data  must  be  very  concise,
-         typically avoiding human-friendly sentences and favoring
-         well-formatted data for consumption by a script. Default
-         is false.
-
-Java EE 6           Last change: 15 Apr 2009                    1
-
-Administration Commands       create-message-security-provider(1)
-
-     -e --echo
-
-         If set to true, the command-line statement is echoed  on
-         the standard output. Default is false.
-
-     -I --interactive
-         If set to true (default),  only  the  required  password
-         options are prompted.
-
-     -H --host
-
-         The machine name where the domain administration  server
-         is running. The default value is localhost.
-
-     -p --port
-         The HTTP port or HTTPS  port  for  administration.  This
-         port is the port in the URL that you specify in your web
-         browser   to   manage   the   domain,    for    example,
-         http://localhost:4848.
-
-         The default port number for administration is 4848.
-
-     -s --secure
-
-         If set to true, uses SSL/TLS  to  communicate  with  the
-         domain administration server.
-
-         The default is false.
-
-     -u --user
-         The user name of the authorized administrative  user  of
-         the domain administration server.
-
-         If you have authenticated to a domain by using the asad-
-         min  login  command,  you  need  not  specify the --user
-         option for subsequent operations on the domain.
-
-     --passwordfile
-
-         Specifies the name, including the full path, of  a  file
-         that contains the password entries in a specific format.
-
-         The entry for a password must have the AS_ADMIN_  prefix
-         followed  by the password name in uppercase letters. For
-         example, to specify the password for the domain adminis-
-         tration server, use an entry with the following format:
-
-Java EE 6           Last change: 15 Apr 2009                    2
-
-Administration Commands       create-message-security-provider(1)
-
-           AS_ADMIN_PASSWORD=password
-
-         In this example, password is  the  actual  administrator
-         password.
-
-         The following other passwords can also be specified:
-
-             o    AS_ADMIN_MAPPEDPASSWORD
-
-             o    AS_ADMIN_USERPASSWORD
-
-             o    AS_ADMIN_ALIASPASSWORD
-         All remote  commands  must  specify  the  administration
-         password  to  authenticate  to the domain administration
-         server. The password can be specified by one of the fol-
-         lowing means:
-
-             o    Through the --passwordfile option
-
-             o    Through the asadmin login command
-
-             o    Interactively at the command prompt
-         The asadmin login command can be used  only  to  specify
-         the  administration  password.  For other passwords that
-         remote commands require, use the  --passwordfile  option
-         or specify them at the command prompt.
-
-         After authenticating to a domain by  using  the  asadmin
-         login  command,  you need not specify the administration
-         password through the --passwordfile  option  for  subse-
-         quent  operations  on  the  domain.  However,  only  the
-         AS_ADMIN_PASSWORD option is not required. You still must
-         provide    the    other    passwords,    for    example,
-         AS_ADMIN_USERPASSWORD, when required by individual  com-
-         mands, such as update-file-user.
-
-         For security reasons, a password that is specified as an
-         environment variable is not read by the asadmin command.
-
-         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
-         changeit.
-
      --help
 
-         Displays the help text for the command.
+         Displays the help text for the subcommand.
 
      --target
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
-         option, a syntax error  does  not  occur.  Instead,  the
-
-Java EE 6           Last change: 15 Apr 2009                    3
-
-Administration Commands       create-message-security-provider(1)
-
+         option, a syntax error does not occur. Instead, the sub-
          command  runs  successfully  and  the option is silently
+
+Java EE 6           Last change: 28 Aug 2009                    1
+
+asadmin Utility Subcommands   create-message-security-provider(1)
+
          ignored.
 
 OPTIONAL ATTRIBUTES
@@ -206,9 +100,9 @@ OPTIONAL ATTRIBUTES
          values  are before-content or after-content. The default
          value is after-content.
 
-Java EE 6           Last change: 15 Apr 2009                    4
+Java EE 6           Last change: 28 Aug 2009                    2
 
-Administration Commands       create-message-security-provider(1)
+asadmin Utility Subcommands   create-message-security-provider(1)
 
      responseauthsource
 
@@ -252,14 +146,13 @@ EXAMPLES
      The following example shows how to create a message security
      provider for a client.
 
-       asadmin> create-message-security-provider --user admin
-       --passwordfile pwd_file
+       asadmin> create-message-security-provider
        --classname com.sun.enterprise.security.jauth.ClientAuthModule
        --providertype client mySecurityProvider
 
-Java EE 6           Last change: 15 Apr 2009                    5
+Java EE 6           Last change: 28 Aug 2009                    3
 
-Administration Commands       create-message-security-provider(1)
+asadmin Utility Subcommands   create-message-security-provider(1)
 
 EXIT STATUS
      0                            command executed successfully
@@ -270,5 +163,7 @@ SEE ALSO
      delete-message-security-provider(1),  list-message-security-
      providers(1)
 
-Java EE 6           Last change: 15 Apr 2009                    6
+     asadmin(1M)
+
+Java EE 6           Last change: 28 Aug 2009                    4
 

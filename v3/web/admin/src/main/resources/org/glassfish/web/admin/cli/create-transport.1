@@ -1,0 +1,113 @@
+
+asadmin Utility Subcommands                   create-transport(1)
+
+NAME
+     create-transport - adds a new transport
+
+SYNOPSIS
+     create-transport
+     [--help]
+     [ --classname  class-name]
+     [--idlekeytimeout idle-key-timeout]
+     [--readtimeout read-timeout]
+     [--writetimeout write-timeout]
+     [--tcpnodelay={true|false}]
+     [ --maxconnections  max-connections]
+     [--acceptorthreads acceptor-threads]
+     [--buffersize buffer-size]
+     [--target server] transport-name
+
+DESCRIPTION
+     The create-transport command creates a transport for a  net-
+     work  listener.  This  command  is  supported in remote mode
+     only.
+
+OPTIONS
+     --help
+
+         Displays the help text for the subcommand.
+
+     --classname
+         The fully qualified name of the Java class  that  imple-
+         ments      the     transport.     The     default     is
+         com.sun.grizzly.TCPSelectorHandler.
+
+     --idlekeytimeout
+
+         The idle key timeout. The default is 30 seconds.
+
+     --readtimeout
+         The amount of time the server waits  during  the  header
+         and  body  parsing  phase.  The  default  is  30000 mil-
+         liseconds, or 30 seconds.
+
+     --writetimeout
+
+         The amount of time the server waits  before  considering
+         the   remote   client   disconnected  when  writing  the
+         response. The  default  is  30000  milliseconds,  or  30
+         seconds.
+
+Java EE 6           Last change: 23 Jun 2009                    1
+
+asadmin Utility Subcommands                   create-transport(1)
+
+     --tcpnodelay
+
+         If true, the default, enables TCP_NODELAY  (also  called
+         Nagle's algorithm).
+
+     --maxconnections
+         The  maximum  number  of  connections  for  the  network
+         listener  that  references this transport. A value of -1
+         specifies no limit. The default value is 4096.
+
+     --acceptorthreads
+
+         The number of acceptor threads for  the  transport.  The
+         recommended  value  is  the  number of processors in the
+         machine. The default value is 1.
+
+     --buffersize
+         The size, in bytes, of the buffer  to  be  provided  for
+         input  streams  created  by  the  network  listener that
+         references this transport. The default value is 4096.
+
+     --target
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     transport-name              The name of the transport.
+
+EXAMPLES
+     Example 1 Using the create-transport command
+
+     The following command creates a transport named  http1-trans
+     that  uses  a  non-default number of acceptor threads and is
+     not enabled at runtime:
+
+       asadmin> create-transport --user admin1
+       --passwordfile passwords.txt --host host1 --port 4848
+       --acceptorthreads 100 http1-trans
+       Command create-transport executed successfully.
+
+Java EE 6           Last change: 23 Jun 2009                    2
+
+asadmin Utility Subcommands                   create-transport(1)
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     delete-transport(1),   list-transports(1),   create-network-
+     listener(1)
+
+Java EE 6           Last change: 23 Jun 2009                    3
+

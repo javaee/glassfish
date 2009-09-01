@@ -1,0 +1,49 @@
+
+asadmin Utility Subcommands                list-jndi-resources(1)
+
+NAME
+     list-jndi-resources - lists all existing JNDI resources
+
+SYNOPSIS
+     list-jndi-resources
+     [--help]
+      [target]
+
+DESCRIPTION
+     Use the list-jndi-resources  command  to  identify  all  the
+     existing JNDI resources. This command is supported in remote
+     mode only.
+
+OPTIONS
+     --help
+
+         Displays the help text for the subcommand.
+
+OPERANDS
+     target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Using the list-jndi-resources command
+
+       asadmin> list-jndi-resources --user admin
+       --passwordfile passwords.txt --host plum
+       jndi_resource1
+       jndi_resource2
+       jndi_resource3
+       Command list-jndi-resources executed successfully
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-jndi-resource(1), delete-jndi-resource(1)
+
+Java EE 6            Last change: 2 Jul 2009                    1
+

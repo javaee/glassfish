@@ -1,820 +1,187 @@
 
-Administration Commands                                   list(1)
+asadmin Utility Subcommands                               list(1)
 
 NAME
-     list - lists the configurable elements
+     list - lists configurable or monitorable elements
 
 SYNOPSIS
      list
-     [--terse={true|false}][ --echo={true|false} ]
-     [ --interactive={true|false} ] [ --host  host]
-     [--port port] [--secure| -s ] [ --user  admin_user]
-     [--passwordfile filename] [--help]
-      [ --monitor =false]
-      [dotted_parent_attribute_name]
+     [--help]
+     [ --monitor ={false|true}]
+     [dotted-parent-attribute-name]
 
 DESCRIPTION
-     Lists the  configurable  element.  On  Solaris,  quotes  are
-     needed when executing commands with * as the option value or
-     operand.
-
-     The dotted notation follows these guidelines:
-
-         o    Any list command that has a dotted name that is not
-              followed by a wildcard (*) will get, as its result,
-              the current node's immediate children. For example,
-              list  --monitor server lists all immediate children
-              belonging to the server node.
-
-         o    Any list command that has a dotted name followed by
-              a wildcard(*) will get, as its result, a hierarchi-
-              cal tree of children nodes from the  current  node.
-              For  example,  list --monitor server.applications.*
-              will list all children of  applications  and  their
-              subsequent child nodes and so on.
-
-         o    Any list command that has a dotted name preceded or
-              followed by a wildcard (*) of the form *dotted name
-              or dotted * name or dotted name* will get,  as  its
-              result,  all  nodes and their children matching the
-              regular expression created by the provided matching
-              pattern.
-
-     An application server dotted name uses the "." (period) as a
-     delimiter  to separate the parts of a complete name. This is
-     similar to how the "/" character is used to delimit the lev-
-     els  in  the  absolute  path name of a file in the UNIX file
-     system. The following rules apply while forming  the  dotted
-     names  accepted by the get, set and list commands. Note that
-     a specific command has some additional semantics applied.
-
-         o     A . (period) always separates two sequential parts
-              of the name.
-
-Java EE 6           Last change: 22 Dec 2004                    1
-
-Administration Commands                                   list(1)
-
-         o    A part of the name usually identifies  an  applica-
-              tion server subsystem and/or its specific instance.
-              For example:  web-container,  log-service,  thread-
-              pool-1 etc.
-
-         o    If any  part  of  the  name  itself  contains  a  .
-              (period),  then  it  must be escaped with a leading
-              \fR (backslash) so that the "." does not act like a
-              delimiter.
-
-         o    An * (asterisk) can be used anywhere in the  dotted
-              name  and  it  acts  like the wildcard character in
-              regular expressions. Additionally, an  *  can  col-
-              lapse all the parts of the dotted name. Long dotted
-              name like  "this.is.really.long.hierarchy"  can  be
-              abbreviated to "th*.hierarchy". But note that the .
-              always delimits the parts of the name.
-
-         o    The top level switch for any dotted name is  -moni-
-              tor  or  -m that is separately specified on a given
-              command line. The presence or lack of  this  switch
-              implies the selection of one of the two hierarchies
-              for appserver management: monitoring and configura-
-              tion.
-
-         o    If you happen to know  the  exact  complete  dotted
-              name  without any wildcard character, then list and
-              get/set have a little difference  in  their  seman-
-              tics:
-
-             o    The list command treats  this  complete  dotted
-                  name  as  the complete name of a parent node in
-                  the abstract  hierarchy.  Upon  providing  this
-                  name  to  list  command,  it simply returns the
-                  names of the immediate children at that  level.
-                  For   example,   list  server.applications.web-
-                  module will list all the web  modules  deployed
-                  to the domain or the default server.
-
-             o    The get and set commands  treat  this  complete
-                  dotted  name as the fully qualified name of the
-                  attribute of a node (whose dotted  name  itself
-                  is  the  name  that you get when you remove the
-                  last part of this dotted name) and it gets/sets
-                  the  value  of  that attribute. This is true if
-                  such an attribute exists. You will never  start
-                  with this case because in order to find out the
-                  names of attributes of a particular node in the
-                  hierarchy,  you must use the wildcard character
-                  *.   For   example,    server.applications.web-
-                  module.JSPWiki.context-root   will  return  the
-                  context-root of the web-application deployed to
-
-Java EE 6           Last change: 22 Dec 2004                    2
-
-Administration Commands                                   list(1)
-
-                  the domain or default server.
-
-         o    server(usually the first part of the complete  dot-
-              ted  name)  can be replaced with the name of a par-
-              ticular server instance of interest (e.g., server1)
-              and  you'll  get  the  information  of  that server
-              instance, remaining part of the dotted name remain-
-              ing  the  same. Note that the dotted names that are
-              available in such other server instances are  those
-              from  the monitoring hierarchy because these server
-              instances don't have a way to expose the configura-
-              tion hierarchy.
-
-     The list command is the progenitor of navigational capabili-
-     ties  of  these  three  commands.  If you want to set or get
-     attributes of a particular application server subsystem, you
-     must know its dotted name. The list command is the one which
-     can guide you to find the dotted name of that subsystem. For
-     example, to find out the modified date (attribute) of a par-
-     ticular file in a large file  system  that  starts  with  /.
-     First  you  must  find  out the location of that file in the
-     file system, and then look at its attributes. Therefor,  two
-     of  the  first  commands  to  understand  the hierarchies in
-     appserver are: * list "*" and * list * -monitor. The  sorted
-     output of these commands is typically of the following form:
-
-         Command                                    Output
-     ___________________________________________________________________________________
-
-Java EE 6           Last change: 22 Dec 2004                    3
-
-Administration Commands                                   list(1)
-
-     list *
-
-                                o    default-config
-
-                                o    default-config.admin-service
-
-                                o    default-config.admin-service.das-config
-
-                                o    default-config.admin-service.jmx-connector.system
-
-                                o    default-config.admin-service.jmx-
-                                     connector.system.ssl
-
-                                o    default-config.availability-service
-
-                                o    default-config.availability-service.jms-
-                                     availability
-
-                                o    default-config.diagnostic-service
-
-                                o    default-config.ejb-container
-
-                                o    . . .
-
-                                o    default-config.http-service.http-listener.http-
-                                     listener-1
-
-                                o    default-config.http-service.http-listener.http-
-                                     listener-2
-
-                                o    . . .
-
-                                o    default-config.iiop-service
-
-                                o    . . .
-
-                                o    default-config.java-config
-
-                                o    . . .
-
-                                o    domain
-
-                                o    domain.clusters
-
-                                o    domain.configs
-
-                                o    domain.resources
-
-                                o    domain.resources.jdbc-connection-pool.DerbyPool
-
-                                o    domain.resources.jdbc-connection-pool._CallFlowPool
-
-Java EE 6           Last change: 22 Dec 2004                    4
-
-Administration Commands                                   list(1)
-
-                                o    domain.resources.jdbc-connection-pool._TimerPool
-
-                                o    . . .
-
-                                o    server
-
-                                o    server-config
-
-                                o    cerver-config.admin-service
-
-                                o    server-config.admin-service.das-config
-
-                                o    server-config.admin-service.jmx-connector.system
-
-                                o    server-config.admin-service.jmx-
-                                     connector.system.ssl
-
-                                o    server-config-availability-servicce
-
-                                o    server-config.availability-service.jms-availability
-
-                                o    server-config.diagnostic-service
-
-                                o    server-config.ejb-container
-
-                                o    . . .
-
-                                o    server.log-service
-
-                                o    server.log-service.module-log-levels
-
-                                o    . . .
-
-                                o    server.session-config
-
-                                o    server.session-config.session-manager
-
-                                o    server.session-config.session-manager.manager-
-                                     properties
-
-                                o    server.session-config.session-manager.store-
-                                     properties
-
-                                o    server.session-config.session-properties
-
-                                o    server.thread-pools
-
-                                o    server.thread-pools.thread-pool.thread-pool-1
-
-                                o    server.transaction-service
-
-                                o    server.web-container
-
-Java EE 6           Last change: 22 Dec 2004                    5
-
-Administration Commands                                   list(1)
-
-                                o    server.web-container-availability
-     list -monitor *
-
-                                o    server
-
-                                o    server.applications
-
-                                o    server.applications._JWSappclients
-
-                                o    server.applications._JWSappclients.sys.war
-
-                                o    server.applications.adminapp
-
-                                o    server.applications.admingui
-
-                                o    server.connector-service
-
-                                o    server.http-service
-
-                                o    server.http-service.server
-
-                                o    server.jms-service
-
-                                o    server.jvm
-
-                                o    server.orb
-
-                                o    server.orb.connection-managers
-
-                                o    server.resources
-
-                                o    server.thread-pools
-
-     Consequently, the list command is the entry point  into  the
-     navigation  of the application server's s management hierar-
-     chies. Take note of the output of the list command:
-
-         o    The output lists one element per line.
-
-         o     Every element on a line is a  complete-dotted-name
-              of a management component that is capable of having
-              attributes. Note that none of these lines show  any
-              kind of attributes at all.
-
-     The output of thelist command is  a  list  of  dotted  names
-     representing  individual  application  server components and
-     subsystems. Every component or subsystem is capable of  hav-
-     ing zero or more attributes that can be read and modified.
-
-Java EE 6           Last change: 22 Dec 2004                    6
-
-Administration Commands                                   list(1)
-
-     With thelist command you can drill down through the  hierar-
-     chy  in a particular branch of interest. For example, if you
-     want to find the configuration of the http-listener  of  the
-     domain  (the  default server, whose ID is "server"). Here is
-     how you could proceed on a UNIX terminal:
-
-      ID                                 Command                                                         Output/Comment
-     ____________________________________________________________________________________________________________________________________________
-     1      list "*" | grep http | grep listener
-
-                                                                                         1.   default-config.http-service.http-listener.http-
-                                                                                              listener-1
-
-                                                                                         2.   default-config.http-service.http-listener.http-
-                                                                                              listener-2
-
-                                                                                         3.   server-config.http-service.http-listener.admin-
-                                                                                              listener
-
-                                                                                         4.   server-config.http-service.http-listener.http-
-                                                                                              listener-1
-
-                                                                                         5.   server-config.http-service.http-listener.http-
-                                                                                              listener-2
-
-                                                                                         6.   server-http-service.http-listener.admin-listener
-
-                                                                                         7.   server.http-service.http-listener.http-listener-1
-
-                                                                                         8.   server.http-service.http-listener.http-listener-2
-
-Java EE 6           Last change: 22 Dec 2004                    7
-
-Administration Commands                                   list(1)
-
-     2      To   find    the    listener    that                                server.http-service.http-
-            corresponds  to  the  default  http-                                listener.http-listener-
-            listener where the web  applications                                1.acceptor-threads           =
-            in the domain/server are deployed:                                  1server.http-service.http-
-                                                                                listener.http-listener-
-                     1.   Examine the dotted name starting with item number 7   1.address                    =
-                          in above output.                                      0.0.0.0server.http-
-                                                                                service.http-listener.http-
-                     2.   Use the get command as shown in its usage.            listener-1.blocking-enabled  =
-                                                                                falseserver.http-
-                                                                                service.http-listener.http-
-                                                                                listener-1.default-virtual-
-                                                                                server  =   serverserver.http-
-                                                                                service.http-listener.http-
-                                                                                listener-1.enabled           =
-                                                                                trueserver.http-service.http-
-                                                                                listener.http-listener-
-                                                                                1.external-port  =server.http-
-                                                                                service.http-listener.http-
-                                                                                listener-1.family            =
-                                                                                inetserver.http-service.http-
-                                                                                listener.http-listener-1.id  =
-                                                                                http-listener-1server.http-
-                                                                                service.http-listener.http-
-                                                                                listener-1.port              =
-                                                                                8080server.http-service.http-
-                                                                                listener.http-listener-
-                                                                                1.redirect-port  =server.http-
-                                                                                service.http-listener.http-
-                                                                                listener-1.security-enabled  =
-                                                                                falseserver.http-
-                                                                                service.http-listener.http-
-                                                                                listener-1.server-name
-                                                                                =server.http-service.http-
-                                                                                listener.http-listener-
-                                                                                1.xpowered-by = true
-
-     Making use of both list and get commands, it is straightfor-
-     ward to reach a particular component of interest.
-
-     To get the monitoring information of a particular  subsystem
-     you must:
-
-         1.   Use the set command to set an appropriate  monitor-
-              ing level for the component of interest.
-
-         2.   Obtain the various information about the  JVM  that
-              the application server domain is running.
-
-Java EE 6           Last change: 22 Dec 2004                    8
-
-Administration Commands                                   list(1)
-
-      ID                Command                       Output/Comment
-     _______________________________________________________________________
-     1      list server* | grep monitoring    server-config.monitoring-
-                                              serviceserver-
-                                              config.monitoring-
-                                              service.module-monitoring-
-                                              levelsserver.monitoring-
-                                              serviceserver.monitoring-
-                                              service.module-
-                                              monitoring-levelsNote     that
-                                              this is the list  command.  It
-                                              only   shows   the  hierarchy,
-                                              nothing else.  Using  the  '|'
-                                              and  "grep"  narrows  down the
-                                              search effectively.  Now,  you
-                                              can  choose server.monitoring-
-                                              service to set the  attributes
-                                              of various attributes that can
-                                              be monitored.This is the  con-
-                                              figuration  data  because this
-                                              setting will be  persisted  to
-                                              the   server's   configuration
-                                              store.
-     2      get server.monitoring-service.*   You  can  try  the  number  of
-                                              attributes  that are presently
-                                              available with monitoring ser-
-                                              vice.  Here  is the output: No
-                                              matches  resulted   from   the
-                                              wildcard  expression.  This is
-                                              because this fully dotted name
-                                              does  not  have any attributes
-                                              at all. Logically, you try the
-                                              next    one   and   that   is:
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels. Again, use  the  wild-
-                                              card  character to get ALL the
-                                              attributes  of  a   particular
-                                              component.
-
-Java EE 6           Last change: 22 Dec 2004                    9
-
-Administration Commands                                   list(1)
-
-     3      get          server.monitoring-   server.monitoring-
-            service.module-monitoring-        service.module-monitoring-
-            levels.*                          levels.connector-connection-
-                                              pool  = OFF server.monitoring-
-                                              service.module-monitoring-
-                                              levels.connector-service = OFF
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels.ejb-container   =   OFF
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels.http-service    =   OFF
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels.jdbc-connection-pool  =
-                                              OFF         server.monitoring-
-                                              service.module-monitoring-
-                                              levels.jms-service    =    OFF
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels.jvm        =        OFF
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels.orb        =        OFF
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels.thread-pool    =    OFF
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels.transaction-service   =
-                                              OFF         server.monitoring-
-                                              service.module-monitoring-
-                                              levels.web-container = OFF The
-                                              JVM  monitoring  is at a level
-                                              OFF. It  must  be  changed  in
-                                              order to make the JVM monitor-
-                                              ing information available. The
-                                              other valid values for all the
-                                              monitoring level are: LOW  and
-                                              HIGH.  use  the set command to
-                                              set the value appropriately.
-     4      set          server.monitoring-   server.monitoring-
-            service.module-monitoring-        service.module-monitoring-
-            levels.jvm=HIGHThere   is    no   levels.jvm = HIGHNow, the  JVM
-            space  before  or  after  the =   information  can  be  obtained
-            sign.                             using the get command and mon-
-                                              itoring switch. But remember ,
-                                              when you switch to  the  moni-
-                                              toring  hierarchy,  start with
-                                              the list command again.
-
-Java EE 6           Last change: 22 Dec 2004                   10
-
-Administration Commands                                   list(1)
-
-     5      list --monitor * | grep jvm       server.jvm   server.jvm.class-
-                                              loading-system
-                                              server.jvm.compilation-system
-                                              server.jvm.garbage-collectors
-                                              server.jvm.garbage-
-                                              collectors.Copy
-                                              server.jvm.garbage-
-                                              collectors.MarkSweepCompact
-                                              server.jvm.memory
-                                              server.jvm.operating-system
-                                              server.jvm.runtime
-                                              server.jvm.thread-system
-                                              server.jvm.thread-
-                                              system.thread-1    .    .    .
-                                              server.jvm.thread-
-                                              system.thread-793823
-                                              server.jvm.thread-
-                                              system.thread-793824
-                                              server.jvm.thread-
-                                              system.thread-793825
-                                              server.jvm.thread-
-                                              system.thread-793826
-                                              server.jvm.thread-
-                                              system.thread-793827
-                                              server.jvm.thread-
-                                              system.thread-9The  JRE  1.5.0
-                                              monitorable   components   are
-                                              exposed  in an elegant manner.
-                                              This is what you see when con-
-                                              nected  by the JConsole.  Now,
-                                              to know more about the  class-
-                                              loading  system  in  the  JVM,
-                                              this     is     how     you'll
-                                              proceed.Note  that now you are
-                                              interested in  the  attributes
-                                              of  a  particular  leaf  node.
-                                              Thus the command  is  get  not
-                                              list.
-
-Java EE 6           Last change: 22 Dec 2004                   11
-
-Administration Commands                                   list(1)
-
-     6      get -monitor  server.jvm.class-   server.jvm.class-loading-
-            loading-system.*                  system.dotted-name           =
-                                              server.jvm.class-loading-
-                                              system       server.jvm.class-
-                                              loading-
-                                              system.loadedclasscount-count
-                                              =    7328    server.jvm.class-
-                                              loading-
-                                              system.loadedclasscount-
-                                              description  =  No Description
-                                              was                  available
-                                              server.jvm.class-loading-
-                                              system.loadedclasscount-
-                                              lastsampletime = 1133819508973
-                                              server.jvm.class-loading-
-                                              system.loadedclasscount-name =
-                                              LoadedClassCount?
-                                              server.jvm.class-loading-
-                                              system.loadedclasscount-
-                                              starttime    =   1133819131268
-                                              server.jvm.class-loading-
-                                              system.loadedclasscount-unit =
-                                              count        server.jvm.class-
-                                              loading-
-                                              system.totalloadedclasscount-
-                                              count          =         10285
-                                              server.jvm.class-loading-
-                                              system.totalloadedclasscount-
-                                              description =  No  Description
-                                              was                  available
-                                              server.jvm.class-loading-
-                                              system.totalloadedclasscount-
-                                              lastsampletime = 1133819508972
-                                              server.jvm.class-loading-
-                                              system.totalloadedclasscount-
-                                              name  = TotalLoadedClassCount?
-                                              server.jvm.class-loading-
-                                              system.totalloadedclasscount-
-                                              starttime   =    1133819131268
-                                              server.jvm.class-loading-
-                                              system.totalloadedclasscount-
-                                              unit          =          count
-                                              server.jvm.class-loading-
-                                              system.unloadedclasscount-
-                                              count          =          2957
-                                              server.jvm.class-loading-
-                                              system.unloadedclasscount-
-                                              description  =  No Description
-                                              was                  available
-                                              server.jvm.class-loading-
-                                              system.unloadedclasscount-
-                                              lastsampletime = 1133819508973
-
-Java EE 6           Last change: 22 Dec 2004                   12
-
-Administration Commands                                   list(1)
-
-                                              server.jvm.class-loading-
-                                              system.unloadedclasscount-name
-                                              =          UnloadedClassCount?
-                                              server.jvm.class-loading-
-                                              system.unloadedclasscount-
-                                              starttime    =   1133819131268
-                                              server.jvm.class-loading-
-                                              system.unloadedclasscount-unit
-                                              = countYou cansee  that  10285
-                                              is the total number of classes
-                                              loaded by the Virtual Machine.
-                                              Whereas,  2957  is  number  of
-                                              classes unloaded, since it was
-                                              started.   ,Similarly, you can
-                                              explore  attributes   of   the
-                                              other subsystems as well.
+     Lists the names of the configurable or monitorable  elements
+     of Enterprise Server.
+
+     The list subcommand uses dotted names to  access  configura-
+     tion  and monitoring attributes. The output of the list sub-
+     command is a list of the dotted names that represent indivi-
+     dual server components and subsystems. For example, a dotted
+     name might be server.applications.web-module. After you know
+     the  particular component or subsystem, you can then use the
+     get(1) subcommand to access any attributes, and  the  set(1)
+     subcommand to modify configurable attributes.
+
+     The following rules apply to dotted names in a list  subcom-
+     mand:
+
+     Note -
+
+       On Solaris systems, double quotes are required  when  run-
+       ning subcommands that use * (asterisk) as the option value
+       or operand.
+
+         o    Any list subcommand that has a dotted name that  is
+              not  followed  by  a wildcard (*) lists the current
+              node's immediate children. For example, the follow-
+              ing  command lists all immediate children belonging
+              to the server node:
+
+                asadmin> list --monitor server
+
+         o    Any list subcommand that has a dotted name followed
+              by a wildcard(*) lists a hierarchical tree of child
+              nodes from the current node. For example, the  fol-
+              lowing  command  lists  all child nodes of applica-
+              tions and their subsequent child nodes, and so on:
+
+                asadmin> list monitor server.applications.*
+
+Java EE 6           Last change: 27 Aug 2009                    1
+
+asadmin Utility Subcommands                               list(1)
+
+         o    Any list subcommand that has a dotted name preceded
+              or  followed  by a wildcard (*) of the form *dotted
+              name or dottedname* lists all nodes and their child
+              nodes  that match the regular expression created by
+              the provided matching pattern.
+
+     For  detailed  information  about  dotted  names,  see   the
+     dotted-names(5ASC) help page.
 
 OPTIONS
-     -t --terse
-
-         Indicates that any output data  must  be  very  concise,
-         typically avoiding human-friendly sentences and favoring
-         well-formatted data for consumption by a script. Default
-         is false.
-
-     -e --echo
-         If set to true, the command-line statement is echoed  on
-         the standard output. Default is false.
-
-     -I --interactive
-
-         If set to true (default),  only  the  required  password
-         options are prompted.
-
-     -H --host
-         The machine name where the domain administration  server
-         is running. The default value is localhost.
-
-     -p --port
-
-         The HTTP port or HTTPS  port  for  administration.  This
-         port is the port in the URL that you specify in your web
-         browser   to   manage   the   domain,    for    example,
-         http://localhost:4848.
-
-         The default port number for administration is 4848.
-
-Java EE 6           Last change: 22 Dec 2004                   13
-
-Administration Commands                                   list(1)
-
-     -s --secure
-
-         If set to true, uses SSL/TLS  to  communicate  with  the
-         domain administration server.
-
-         The default is false.
-
-     -u --user
-         The user name of the authorized administrative  user  of
-         the domain administration server.
-
-         If you have authenticated to a domain by using the asad-
-         min  login  command,  you  need  not  specify the --user
-         option for subsequent operations on the domain.
-
-     --passwordfile
-
-         Specifies the name, including the full path, of  a  file
-         that contains the password entries in a specific format.
-
-         The entry for a password must have the AS_ADMIN_  prefix
-         followed  by the password name in uppercase letters. For
-         example, to specify the password for the domain adminis-
-         tration server, use an entry with the following format:
-
-           AS_ADMIN_PASSWORD=password
-
-         In this example, password is  the  actual  administrator
-         password.
-
-         The following other passwords can also be specified:
-
-             o    AS_ADMIN_MAPPEDPASSWORD
-
-             o    AS_ADMIN_USERPASSWORD
-
-             o    AS_ADMIN_ALIASPASSWORD
-         All remote  commands  must  specify  the  administration
-         password  to  authenticate  to the domain administration
-         server. The password can be specified by one of the fol-
-         lowing means:
-
-             o    Through the --passwordfile option
-
-             o    Through the asadmin login command
-
-             o    Interactively at the command prompt
-         The asadmin login command can be used  only  to  specify
-         the  administration  password.  For other passwords that
-         remote commands require, use the  --passwordfile  option
-         or specify them at the command prompt.
-
-Java EE 6           Last change: 22 Dec 2004                   14
-
-Administration Commands                                   list(1)
-
-         After authenticating to a domain by  using  the  asadmin
-         login  command,  you need not specify the administration
-         password through the --passwordfile  option  for  subse-
-         quent  operations  on  the  domain.  However,  only  the
-         AS_ADMIN_PASSWORD option is not required. You still must
-         provide    the    other    passwords,    for    example,
-         AS_ADMIN_USERPASSWORD, when required by individual  com-
-         mands, such as update-file-user.
-
-         For security reasons, a password that is specified as an
-         environment variable is not read by the asadmin command.
-
-         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
-         changeit.
-
      --help
 
-         Displays the help text for the command.
+         Displays the help text for the subcommand.
 
      --monitor
-         defaults to false; if set  to  false,  the  configurable
+     --m
+         Defaults to false. If set  to  false,  the  configurable
          attribute values are returned. If set to true, the moni-
          torable attribute values are returned.
 
 OPERANDS
-     dotted_parent_element_name  configurable or monitorable ele-
-                                 ment name.
+     dotted-parent-element-name  Configurable or monitorable ele-
+                                 ment name
 
 EXAMPLES
-     Example 1 Using list to view all dotted-name prefixes
+     Example 1 Listing Dotted Names of Configurable Elements
 
-       asadmin> list --user admin --passwordfile password.txt
-       --port 5001 "*"
-       server
-       server.admin-service
-       server.admin-service.das-config
-       server.application-ref.MEjbApp
-       server.application-ref.__ejb_container_timer_app
-       server.application-ref.adminapp
-       server.application-ref.admingui
-       server.application-ref.com_sun_web_ui
-       server.applications
-       server.applications.j2ee-application.MEjbApp
-       server.applications.j2ee-application.__ejb_container_timer_app
-       server.applications.web-module.adminapp
-       server.applications.web-module.admingui
-       server.applications.web-module.com_sun_web_ui
-       server.ejb-container
+     This example lists the  elements  that  can  be  configured.
+     (This  example  of  the  Solaris  operating system. On other
+     operating systems, the double quotes would be omitted.)
 
-Java EE 6           Last change: 22 Dec 2004                   15
+       asadmin> list "*"
+       applications
+       configs
+       configs.config.server-config
+       configs.config.server-config.admin-service
+       configs.config.server-config.admin-service.das-config
+       configs.config.server-config.admin-service.jmx-connector.system
+       configs.config.server-config.admin-service.property.adminConsoleContextRoot
+       configs.config.server-config.admin-service.property.adminConsoleDownloadLocation
+       configs.config.server-config.admin-service.property.ipsRoot
+       configs.config.server-config.ejb-container
+       configs.config.server-config.ejb-container.ejb-timer-service
+       configs.config.server-config.http-service
+       configs.config.server-config.http-service.access-log
+       configs.config.server-config.http-service.virtual-server.__asadmin
 
-Administration Commands                                   list(1)
+Java EE 6           Last change: 27 Aug 2009                    2
 
-       server.http-service
-       server.http-service.http-listener.admin-listener
-       server.http-service.http-listener.http-listener-1
-       server.http-service.http-listener.http-listener-2
-       server.iiop-service
-       server.iiop-service.iiop-listener.SSL
-       server.iiop-service.iiop-listener.SSL.ssl
-       server.iiop-service.iiop-listener.SSL_MUTUALAUTH
-       server.iiop-service.iiop-listener.SSL_MUTUALAUTH.ssl
-       server.iiop-service.iiop-listener.orb-listener-1
-       server.iiop-service.orb
-       server.java-config
-       server.jms-service
-       server.jms-service.jms-host.default_JMS_host
-       server.log-service
-       server.log-service.module-log-levels
-       server.mdb-container
-       server.monitoring-service
-       server.monitoring-service.module-monitoring-levels
-       server.resource-ref.jdbc/PointBase
-       server.resource-ref.jdbc/__TimerPool
-       server.resources
-       server.resources.jdbc-connection-pool.PointBasePool
-       server.resources.jdbc-connection-pool.__TimerPool
-       server.resources.jdbc-resource.jdbc/PointBase
-       server.resources.jdbc-resource.jdbc/__TimerPool
-       server.security-service
-       server.security-service.audit-module.default
-       server.security-service.auth-realm.certificate
-       server.security-service.auth-realm.file
-       server.security-service.jacc-provider.default
-       server.thread-pools
-       server.thread-pools.thread-pool.thread-pool-1
+asadmin Utility Subcommands                               list(1)
+
+       configs.config.server-config.http-service.virtual-server.server
+       configs.config.server-config.iiop-service
+       configs.config.server-config.iiop-service.iiop-listener.SSL
+       configs.config.server-config.iiop-service.iiop-listener.SSL.ssl
+       configs.config.server-config.iiop-service.iiop-listener.SSL_MUTUALAUTH
+       configs.config.server-config.iiop-service.iiop-listener.SSL_MUTUALAUTH.ssl
+       configs.config.server-config.iiop-service.iiop-listener.orb-listener-1
+       configs.config.server-config.iiop-service.orb
+       configs.config.server-config.java-config
+       configs.config.server-config.jms-service
+       configs.config.server-config.jms-service.jms-host.default_JMS_host
+       ...
+       property.administrative.domain.name
+       resources
+       resources.jdbc-connection-pool.DerbyPool
+       resources.jdbc-connection-pool.DerbyPool.property.DatabaseName
+       resources.jdbc-connection-pool.DerbyPool.property.Password
+       resources.jdbc-connection-pool.DerbyPool.property.PortNumber
+       resources.jdbc-connection-pool.DerbyPool.property.User
+       resources.jdbc-connection-pool.DerbyPool.property.connectionAttributes
+       resources.jdbc-connection-pool.DerbyPool.property.serverName
+       resources.jdbc-connection-pool.__TimerPool
+       resources.jdbc-connection-pool.__TimerPool.property.connectionAttributes
+       resources.jdbc-connection-pool.__TimerPool.property.databaseName
+       resources.jdbc-resource.jdbc/__TimerPool
+       resources.jdbc-resource.jdbc/__default
+       servers
+       servers.server.server
+       servers.server.server.resource-ref.jdbc/__TimerPool
+       servers.server.server.resource-ref.jdbc/__default
+       system-applications
+
+       Command list executed successfully.
+
+     Example 2 Listing Attributes of a Configurable Element
+
+     This example lists the attributes of the web container.
+
+       asadmin> list configs.config.server-config.web-container
+       configs.config.server-config.web-container
+       configs.config.server-config.web-container.session-config
+
+       Command list executed successfully.
+
+     Example 3 Listing Dotted Names of Monitorable Objects
+
+Java EE 6           Last change: 27 Aug 2009                    3
+
+asadmin Utility Subcommands                               list(1)
+
+     This example lists the names of the monitorable objects that
+     are  enabled  for  monitoring.  (This example of the Solaris
+     operating system. On other  operating  systems,  the  double
+     quotes would be omitted.)
+
+       asadmin>  list --monitor=true "*"
+       server.jvm
+       server.jvm.class-loading-system
+       server.jvm.compilation-system
+       server.jvm.garbage-collectors
+       server.jvm.garbage-collectors.Copy
+       server.jvm.garbage-collectors.MarkSweepCompact
+       server.jvm.memory
+       server.jvm.operating-system
+       server.jvm.runtime
+       server.network
+       server.network.admin-listener
+       server.network.admin-listener.connections
+       server.network.admin-listener.file-cache
+       server.network.admin-listener.keep-alive
+       server.network.admin-listener.thread-pool
+       server.network.http-listener-1
+       server.network.http-listener-1.connections
+       server.network.http-listener-1.file-cache
+       server.network.http-listener-1.keep-alive
+       server.network.http-listener-1.thread-pool
        server.transaction-service
-       server.virtual-server.__asadmin
-       server.virtual-server.server
-       server.web-container
 
-     Example 2 Using list for an application
-
-       asadmin> list --user admin --passwordfile password.txt
-       --host localhost --port 4848 server.applications.j2ee-application
-       server.applications.j2ee-application.MEjbApp
-       server.applications.j2ee-application._ejb_container_timer_app
-       server.applications.j2ee-application.stateless-simple
-
-     Example 3 Using list for a web module
-
-Java EE 6           Last change: 22 Dec 2004                   16
-
-Administration Commands                                   list(1)
-
-       asadmin> list --user admin --passwordfile password.txt
-       --host localhost --port 4848 server.applications.web-module
-       server.applications.web-module.adminapp
-       server.applications.web-module.adminguip
-       server.applications.web-module.com_sun_web_ui
+       Command list executed successfully.
 
 EXIT STATUS
      0                           command executed successfully
@@ -824,5 +191,11 @@ EXIT STATUS
 SEE ALSO
      get(1), set(1)
 
-Java EE 6           Last change: 22 Dec 2004                   17
+     dotted-names(5ASC)
+
+     asadmin(1M)
+
+     Sun GlassFish Enterprise Server v3 Administration Guide
+
+Java EE 6           Last change: 27 Aug 2009                    4
 

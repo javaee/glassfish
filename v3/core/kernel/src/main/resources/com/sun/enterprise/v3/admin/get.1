@@ -1,1049 +1,202 @@
 
-Administration Commands                                    get(1)
+asadmin Utility Subcommands                                get(1)
 
 NAME
-     get - gets the values of  the  monitorable  or  configurable
-     attributes
+     get - gets the values of configurable or monitorable  attri-
+     butes
 
 SYNOPSIS
      get
-     [--terse={true|false}][ --echo={true|false} ]
-     [ --interactive={true|false} ] [ --host  host]
-     [--port port] [--secure| -s ] [ --user  admin_user]
-     [--passwordfile filename] [--help]
-      [ --monitor =[true|false]]
-      (dotted_attribute_name)+
+     [--help]
+     [ --monitor =[{true|false}]
+     (dotted-attribute--name)+
 
 DESCRIPTION
-     Gets the names and values of attributes.  If  the  --monitor
-     option  is  set  to  true,  the  monitorable  attributes are
-     returned. If the --monitor option is set to false, the  con-
-     figurable  attribute values are returned. On UNIX platforms,
-     if the shell treats the wildcard (*) as a special character,
-     enclose the dotted name in a double quotes ("dotted_name").
+     The get subcommand gets the names and values of configurable
+     or monitorable attributes for Enterprise Server elements.
 
-     The asadmin get, set and list commands  work  in  tandem  to
-     provide  a navigation mechanism for the Application Server's
-     abstract hierarchy. There  are two  hierarchies:  configura-
-     tion  and monitoring and these commands operate on both. The
-     list command provides the fully qualified  dotted  names  of
-     the  management components that have read-only or modifiable
-     attributes. The configuration hierarchy provides  attributes
-     that  are  modifiable;  whereas the attributes of management
-     components from monitoring hierarchy are  purely  read-only.
-     The configuration hierarchy is loosely based on the domain's
-     schema document; whereas the monitoring hierarchy is a  lit-
-     tle  different.  Use  the list command to reach a particular
-     management component in the desired hierarchy. Then,  invoke
-     the  get and set commands to get the names and values or set
-     the values of the attributes of the management component  at
-     hand.  Use the wildcard (*) option to fetch all matches in a
-     given fully qualified dotted  name.  See  the  examples  for
-     further  clarification  of  the  possible  navigation of the
-     hierarchies and management components.
+     The get subcommand uses dotted names to  access  attributes.
+     You  can  use  the  list(1) subcommand to display the dotted
+     names that represent individual server components  and  sub-
+     systems.    For    example,   a   dotted   name   might   be
+     server.applications.web-module. Attributes from the monitor-
+     ing  hierarchy  are  read-only, but configuration attributes
+     can be  modified  using  the  set(1)  subcommand.  For  more
+     detailed  information  on  dotted  names,  see  the  dotted-
+     names(5ASC) help page.
 
-     An application server dotted name uses the "." (period) as a
-     delimiter  to separate the parts of a complete name. This is
-     similar to how the "/" character is used to delimit the lev-
-     els  in  the  absolute  path name of a file in the UNIX file
-     system. The following rules apply while forming  the  dotted
-     names  accepted by the get, set and list commands. Note that
-     a specific command has some additional semantics applied.
+     Note -
 
-Java EE 6           Last change: 22 Dec 2004                    1
+       On SolarisTM systems, double quotes are required when run-
+       ning subcommands that use * (asterisk) as the option value
+       or operand.
 
-Administration Commands                                    get(1)
+     The following list shows common usage of the get subcommand:
 
-         o     A . (period) always separates two sequential parts
-              of the name.
+     get * or get *.*
 
-         o    A part of the name usually identifies  an  applica-
-              tion server subsystem and/or its specific instance.
-              For example:  web-container,  log-service,  thread-
-              pool-1 etc.
+         Gets all values on all dotted name prefixes.
 
-         o    If any  part  of  the  name  itself  contains  a  .
-              (period),  then  it  must be escaped with a leading
-              \fR (backslash) so that the "." does not act like a
-              delimiter.
+     get domain* or get domain*.*
+         Gets all values on the  dotted  names  that  begin  with
+         domain.
 
-         o    An * (asterisk) can be used anywhere in the  dotted
-              name  and  it  acts  like the wildcard character in
-              regular expressions. Additionally, an  *  can  col-
-              lapse all the parts of the dotted name. Long dotted
-              name like  "this.is.really.long.hierarchy"  can  be
-              abbreviated to "th*.hierarchy". But note that the .
-              always delimits the parts of the name.
+     get domain.*
 
-         o    The top level switch for any dotted name is  -moni-
-              tor  or  -m that is separately specified on a given
-              command line. The presence or lack of  this  switch
-              implies the selection of one of the two hierarchies
-              for appserver management: monitoring and configura-
-              tion.
+         Gets all values on the dotted  name  domain.  Note  that
+         this example is quite different from domain*.
 
-         o    If you happen to know  the  exact  complete  dotted
-              name  without any wildcard character, then list and
-              get/set have a little difference  in  their  seman-
-              tics:
+Java EE 6           Last change: 27 Aug 2009                    1
 
-             o    The list command treats  this  complete  dotted
-                  name  as  the complete name of a parent node in
-                  the abstract  hierarchy.  Upon  providing  this
-                  name  to  list  command,  it simply returns the
-                  names of the immediate children at that  level.
-                  For   example,   list  server.applications.web-
-                  module will list all the web  modules  deployed
-                  to the domain or the default server.
+asadmin Utility Subcommands                                get(1)
 
-             o    The get and set commands  treat  this  complete
-                  dotted  name as the fully qualified name of the
-                  attribute of a node (whose dotted  name  itself
-                  is  the  name  that you get when you remove the
-                  last part of this dotted name) and it gets/sets
-                  the  value  of  that attribute. This is true if
-                  such an attribute exists. You will never  start
-                  with this case because in order to find out the
-                  names of attributes of a particular node in the
-                  hierarchy,  you must use the wildcard character
+     get *config*.*.*
 
-Java EE 6           Last change: 22 Dec 2004                    2
+         Gets all values on the dotted  names  that  match  *con-
+         fig*.*.
 
-Administration Commands                                    get(1)
+     get domain.j2ee-applications.*.ejb-module.*.*
+         Gets all values on all EJB modules of all applications.
 
-                  *.   For   example,    server.applications.web-
-                  module.JSPWiki.context-root   will  return  the
-                  context-root of the web-application deployed to
-                  the domain or default server.
+     get *web-modules.*.*
 
-         o    server(usually the first part of the complete  dot-
-              ted  name)  can be replaced with the name of a par-
-              ticular server instance of interest (e.g., server1)
-              and  you'll  get  the  information  of  that server
-              instance, remaining part of the dotted name remain-
-              ing  the  same. Note that the dotted names that are
-              available in such other server instances are  those
-              from  the monitoring hierarchy because these server
-              instances don't have a way to expose the configura-
-              tion hierarchy.
+         Gets all values on all web modules whether in an  appli-
+         cation or standalone.
 
-     The list command is the progenitor of navigational capabili-
-     ties  of  these  three  commands.  If you want to set or get
-     attributes of a particular application server subsystem, you
-     must know its dotted name. The list command is the one which
-     can guide you to find the dotted name of that subsystem. For
-     example, to find out the modified date (attribute) of a par-
-     ticular file in a large file  system  that  starts  with  /.
-     First  you  must  find  out the location of that file in the
-     file system, and then look at its attributes. Therefor,  two
-     of  the  first  commands  to  understand  the hierarchies in
-     appserver are: * list "*" and * list * -monitor. The  sorted
-     output of these commands is typically of the following form:
+     get *.*.*.*
+         Gets all values on all  dotted  names  that  have  three
+         parts.
 
-         Command                                    Output
-     ___________________________________________________________________________________
+     The following list shows examples  of  the  get  subcommands
+     with the --monitor option. Monitoring must be enabled for an
+     object before attributes can be accessed.
 
-Java EE 6           Last change: 22 Dec 2004                    3
+     get --monitor=true server.monitoring-service.modulel-
+     monitoring-levels.*
 
-Administration Commands                                    get(1)
+         Gets  the  monitoring  settings  for   all   monitorable
+         objects.
 
-     list *
+     get monitor=true server.http-service.*
+         No output. A message states that there are no attributes
+         at this node.
 
-                                o    default-config
+     get monitor=true server.http-service.virtual-server1
 
-                                o    default-config.admin-service
+         No output. A message states that there are no attributes
+         at this node.
 
-                                o    default-config.admin-service.das-config
-
-                                o    default-config.admin-service.jmx-connector.system
-
-                                o    default-config.admin-service.jmx-
-                                     connector.system.ssl
-
-                                o    default-config.availability-service
-
-                                o    default-config.availability-service.jms-
-                                     availability
-
-                                o    default-config.diagnostic-service
-
-                                o    default-config.ejb-container
-
-                                o    . . .
-
-                                o    default-config.http-service.http-listener.http-
-                                     listener-1
-
-                                o    default-config.http-service.http-listener.http-
-                                     listener-2
-
-                                o    . . .
-
-                                o    default-config.iiop-service
-
-                                o    . . .
-
-                                o    default-config.java-config
-
-                                o    . . .
-
-                                o    domain
-
-                                o    domain.clusters
-
-                                o    domain.configs
-
-                                o    domain.resources
-
-                                o    domain.resources.jdbc-connection-pool.DerbyPool
-
-                                o    domain.resources.jdbc-connection-pool._CallFlowPool
-
-Java EE 6           Last change: 22 Dec 2004                    4
-
-Administration Commands                                    get(1)
-
-                                o    domain.resources.jdbc-connection-pool._TimerPool
-
-                                o    . . .
-
-                                o    server
-
-                                o    server-config
-
-                                o    cerver-config.admin-service
-
-                                o    server-config.admin-service.das-config
-
-                                o    server-config.admin-service.jmx-connector.system
-
-                                o    server-config.admin-service.jmx-
-                                     connector.system.ssl
-
-                                o    server-config-availability-servicce
-
-                                o    server-config.availability-service.jms-availability
-
-                                o    server-config.diagnostic-service
-
-                                o    server-config.ejb-container
-
-                                o    . . .
-
-                                o    server.log-service
-
-                                o    server.log-service.module-log-levels
-
-                                o    . . .
-
-                                o    server.session-config
-
-                                o    server.session-config.session-manager
-
-                                o    server.session-config.session-manager.manager-
-                                     properties
-
-                                o    server.session-config.session-manager.store-
-                                     properties
-
-                                o    server.session-config.session-properties
-
-                                o    server.thread-pools
-
-                                o    server.thread-pools.thread-pool.thread-pool-1
-
-                                o    server.transaction-service
-
-                                o    server.web-container
-
-Java EE 6           Last change: 22 Dec 2004                    5
-
-Administration Commands                                    get(1)
-
-                                o    server.web-container-availability
-     list -monitor *
-
-                                o    server
-
-                                o    server.applications
-
-                                o    server.applications._JWSappclients
-
-                                o    server.applications._JWSappclients.sys.war
-
-                                o    server.applications.adminapp
-
-                                o    server.applications.admingui
-
-                                o    server.connector-service
-
-                                o    server.http-service
-
-                                o    server.http-service.server
-
-                                o    server.jms-service
-
-                                o    server.jvm
-
-                                o    server.orb
-
-                                o    server.orb.connection-managers
-
-                                o    server.resources
-
-                                o    server.thread-pools
-
-     Consequently, the list command is the entry point  into  the
-     navigation  of the application server's s management hierar-
-     chies. Take note of the output of the list command:
-
-         o    The output lists one element per line.
-
-         o     Every element on a line is a  complete-dotted-name
-              of a management component that is capable of having
-              attributes. Note that none of these lines show  any
-              kind of attributes at all.
-
-     The output of thelist command is  a  list  of  dotted  names
-     representing  individual  application  server components and
-     subsystems. Every component or subsystem is capable of  hav-
-     ing zero or more attributes that can be read and modified.
-
-Java EE 6           Last change: 22 Dec 2004                    6
-
-Administration Commands                                    get(1)
-
-     With thelist command you can drill down through the  hierar-
-     chy  in a particular branch of interest. For example, if you
-     want to find the configuration of the http-listener  of  the
-     domain  (the  default server, whose ID is "server"). Here is
-     how you could proceed on a UNIX terminal:
-
-      ID                                 Command                                                         Output/Comment
-     ____________________________________________________________________________________________________________________________________________
-     1      list "*" | grep http | grep listener
-
-                                                                                         1.   default-config.http-service.http-listener.http-
-                                                                                              listener-1
-
-                                                                                         2.   default-config.http-service.http-listener.http-
-                                                                                              listener-2
-
-                                                                                         3.   server-config.http-service.http-listener.admin-
-                                                                                              listener
-
-                                                                                         4.   server-config.http-service.http-listener.http-
-                                                                                              listener-1
-
-                                                                                         5.   server-config.http-service.http-listener.http-
-                                                                                              listener-2
-
-                                                                                         6.   server-http-service.http-listener.admin-listener
-
-                                                                                         7.   server.http-service.http-listener.http-listener-1
-
-                                                                                         8.   server.http-service.http-listener.http-listener-2
-
-Java EE 6           Last change: 22 Dec 2004                    7
-
-Administration Commands                                    get(1)
-
-     2      To   find    the    listener    that                                server.http-service.http-
-            corresponds  to  the  default  http-                                listener.http-listener-
-            listener where the web  applications                                1.acceptor-threads           =
-            in the domain/server are deployed:                                  1server.http-service.http-
-                                                                                listener.http-listener-
-                     1.   Examine the dotted name starting with item number 7   1.address                    =
-                          in above output.                                      0.0.0.0server.http-
-                                                                                service.http-listener.http-
-                     2.   Use the get command as shown in its usage.            listener-1.blocking-enabled  =
-                                                                                falseserver.http-
-                                                                                service.http-listener.http-
-                                                                                listener-1.default-virtual-
-                                                                                server  =   serverserver.http-
-                                                                                service.http-listener.http-
-                                                                                listener-1.enabled           =
-                                                                                trueserver.http-service.http-
-                                                                                listener.http-listener-
-                                                                                1.external-port  =server.http-
-                                                                                service.http-listener.http-
-                                                                                listener-1.family            =
-                                                                                inetserver.http-service.http-
-                                                                                listener.http-listener-1.id  =
-                                                                                http-listener-1server.http-
-                                                                                service.http-listener.http-
-                                                                                listener-1.port              =
-                                                                                8080server.http-service.http-
-                                                                                listener.http-listener-
-                                                                                1.redirect-port  =server.http-
-                                                                                service.http-listener.http-
-                                                                                listener-1.security-enabled  =
-                                                                                falseserver.http-
-                                                                                service.http-listener.http-
-                                                                                listener-1.server-name
-                                                                                =server.http-service.http-
-                                                                                listener.http-listener-
-                                                                                1.xpowered-by = true
-
-     Making use of both list and get commands, it is straightfor-
-     ward to reach a particular component of interest.
-
-     To get the monitoring information of a particular  subsystem
-     you must:
-
-         1.   Use the set command to set an appropriate  monitor-
-              ing level for the component of interest.
-
-         2.   Obtain the various information about the  JVM  that
-              the application server domain is running.
-
-Java EE 6           Last change: 22 Dec 2004                    8
-
-Administration Commands                                    get(1)
-
-      ID                Command                       Output/Comment
-     _______________________________________________________________________
-     1      list server* | grep monitoring    server-config.monitoring-
-                                              serviceserver-
-                                              config.monitoring-
-                                              service.module-monitoring-
-                                              levelsserver.monitoring-
-                                              serviceserver.monitoring-
-                                              service.module-
-                                              monitoring-levelsNote     that
-                                              this is the list  command.  It
-                                              only   shows   the  hierarchy,
-                                              nothing else.  Using  the  '|'
-                                              and  "grep"  narrows  down the
-                                              search effectively.  Now,  you
-                                              can  choose server.monitoring-
-                                              service to set the  attributes
-                                              of various attributes that can
-                                              be monitored.This is the  con-
-                                              figuration  data  because this
-                                              setting will be  persisted  to
-                                              the   server's   configuration
-                                              store.
-     2      get server.monitoring-service.*   You  can  try  the  number  of
-                                              attributes  that are presently
-                                              available with monitoring ser-
-                                              vice.  Here  is the output: No
-                                              matches  resulted   from   the
-                                              wildcard  expression.  This is
-                                              because this fully dotted name
-                                              does  not  have any attributes
-                                              at all. Logically, you try the
-                                              next    one   and   that   is:
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels. Again, use  the  wild-
-                                              card  character to get ALL the
-                                              attributes  of  a   particular
-                                              component.
-
-Java EE 6           Last change: 22 Dec 2004                    9
-
-Administration Commands                                    get(1)
-
-     3      get          server.monitoring-   server.monitoring-
-            service.module-monitoring-        service.module-monitoring-
-            levels.*                          levels.connector-connection-
-                                              pool  = OFF server.monitoring-
-                                              service.module-monitoring-
-                                              levels.connector-service = OFF
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels.ejb-container   =   OFF
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels.http-service    =   OFF
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels.jdbc-connection-pool  =
-                                              OFF         server.monitoring-
-                                              service.module-monitoring-
-                                              levels.jms-service    =    OFF
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels.jvm        =        OFF
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels.orb        =        OFF
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels.thread-pool    =    OFF
-                                              server.monitoring-
-                                              service.module-monitoring-
-                                              levels.transaction-service   =
-                                              OFF         server.monitoring-
-                                              service.module-monitoring-
-                                              levels.web-container = OFF The
-                                              JVM  monitoring  is at a level
-                                              OFF. It  must  be  changed  in
-                                              order to make the JVM monitor-
-                                              ing information available. The
-                                              other valid values for all the
-                                              monitoring level are: LOW  and
-                                              HIGH.  use  the set command to
-                                              set the value appropriately.
-     4      set          server.monitoring-   server.monitoring-
-            service.module-monitoring-        service.module-monitoring-
-            levels.jvm=HIGHThere   is    no   levels.jvm = HIGHNow, the  JVM
-            space  before  or  after  the =   information  can  be  obtained
-            sign.                             using the get command and mon-
-                                              itoring switch. But remember ,
-                                              when you switch to  the  moni-
-                                              toring  hierarchy,  start with
-                                              the list command again.
-
-Java EE 6           Last change: 22 Dec 2004                   10
-
-Administration Commands                                    get(1)
-
-     5      list --monitor * | grep jvm       server.jvm   server.jvm.class-
-                                              loading-system
-                                              server.jvm.compilation-system
-                                              server.jvm.garbage-collectors
-                                              server.jvm.garbage-
-                                              collectors.Copy
-                                              server.jvm.garbage-
-                                              collectors.MarkSweepCompact
-                                              server.jvm.memory
-                                              server.jvm.operating-system
-                                              server.jvm.runtime
-                                              server.jvm.thread-system
-                                              server.jvm.thread-
-                                              system.thread-1    .    .    .
-                                              server.jvm.thread-
-                                              system.thread-793823
-                                              server.jvm.thread-
-                                              system.thread-793824
-                                              server.jvm.thread-
-                                              system.thread-793825
-                                              server.jvm.thread-
-                                              system.thread-793826
-                                              server.jvm.thread-
-                                              system.thread-793827
-                                              server.jvm.thread-
-                                              system.thread-9The  JRE  1.5.0
-                                              monitorable   components   are
-                                              exposed  in an elegant manner.
-                                              This is what you see when con-
-                                              nected  by the JConsole.  Now,
-                                              to know more about the  class-
-                                              loading  system  in  the  JVM,
-                                              this     is     how     you'll
-                                              proceed.Note  that now you are
-                                              interested in  the  attributes
-                                              of  a  particular  leaf  node.
-                                              Thus the command  is  get  not
-                                              list.
-
-Java EE 6           Last change: 22 Dec 2004                   11
-
-Administration Commands                                    get(1)
-
-     6      get -monitor  server.jvm.class-   server.jvm.class-loading-
-            loading-system.*                  system.dotted-name           =
-                                              server.jvm.class-loading-
-                                              system       server.jvm.class-
-                                              loading-
-                                              system.loadedclasscount-count
-                                              =    7328    server.jvm.class-
-                                              loading-
-                                              system.loadedclasscount-
-                                              description  =  No Description
-                                              was                  available
-                                              server.jvm.class-loading-
-                                              system.loadedclasscount-
-                                              lastsampletime = 1133819508973
-                                              server.jvm.class-loading-
-                                              system.loadedclasscount-name =
-                                              LoadedClassCount?
-                                              server.jvm.class-loading-
-                                              system.loadedclasscount-
-                                              starttime    =   1133819131268
-                                              server.jvm.class-loading-
-                                              system.loadedclasscount-unit =
-                                              count        server.jvm.class-
-                                              loading-
-                                              system.totalloadedclasscount-
-                                              count          =         10285
-                                              server.jvm.class-loading-
-                                              system.totalloadedclasscount-
-                                              description =  No  Description
-                                              was                  available
-                                              server.jvm.class-loading-
-                                              system.totalloadedclasscount-
-                                              lastsampletime = 1133819508972
-                                              server.jvm.class-loading-
-                                              system.totalloadedclasscount-
-                                              name  = TotalLoadedClassCount?
-                                              server.jvm.class-loading-
-                                              system.totalloadedclasscount-
-                                              starttime   =    1133819131268
-                                              server.jvm.class-loading-
-                                              system.totalloadedclasscount-
-                                              unit          =          count
-                                              server.jvm.class-loading-
-                                              system.unloadedclasscount-
-                                              count          =          2957
-                                              server.jvm.class-loading-
-                                              system.unloadedclasscount-
-                                              description  =  No Description
-                                              was                  available
-                                              server.jvm.class-loading-
-                                              system.unloadedclasscount-
-                                              lastsampletime = 1133819508973
-
-Java EE 6           Last change: 22 Dec 2004                   12
-
-Administration Commands                                    get(1)
-
-                                              server.jvm.class-loading-
-                                              system.unloadedclasscount-name
-                                              =          UnloadedClassCount?
-                                              server.jvm.class-loading-
-                                              system.unloadedclasscount-
-                                              starttime    =   1133819131268
-                                              server.jvm.class-loading-
-                                              system.unloadedclasscount-unit
-                                              = countYou cansee  that  10285
-                                              is the total number of classes
-                                              loaded by the Virtual Machine.
-                                              Whereas,  2957  is  number  of
-                                              classes unloaded, since it was
-                                              started.   ,Similarly, you can
-                                              explore  attributes   of   the
-                                              other subsystems as well.
+     get monitor=true server.http-service.virtual-server1.http-
+     listener-1
+         Gets attributes and values that correspond to  the  HTTP
+         listener statistics.
 
 OPTIONS
-     -t --terse
 
-         Indicates that any output data  must  be  very  concise,
-         typically avoiding human-friendly sentences and favoring
-         well-formatted data for consumption by a script. Default
-         is false.
+Java EE 6           Last change: 27 Aug 2009                    2
 
-     -e --echo
-         If set to true, the command-line statement is echoed  on
-         the standard output. Default is false.
-
-     -I --interactive
-
-         If set to true (default),  only  the  required  password
-         options are prompted.
-
-     -H --host
-         The machine name where the domain administration  server
-         is running. The default value is localhost.
-
-     -p --port
-
-         The HTTP port or HTTPS  port  for  administration.  This
-         port is the port in the URL that you specify in your web
-         browser   to   manage   the   domain,    for    example,
-         http://localhost:4848.
-
-         The default port number for administration is 4848.
-
-Java EE 6           Last change: 22 Dec 2004                   13
-
-Administration Commands                                    get(1)
-
-     -s --secure
-
-         If set to true, uses SSL/TLS  to  communicate  with  the
-         domain administration server.
-
-         The default is false.
-
-     -u --user
-         The user name of the authorized administrative  user  of
-         the domain administration server.
-
-         If you have authenticated to a domain by using the asad-
-         min  login  command,  you  need  not  specify the --user
-         option for subsequent operations on the domain.
-
-     --passwordfile
-
-         Specifies the name, including the full path, of  a  file
-         that contains the password entries in a specific format.
-
-         The entry for a password must have the AS_ADMIN_  prefix
-         followed  by the password name in uppercase letters. For
-         example, to specify the password for the domain adminis-
-         tration server, use an entry with the following format:
-
-           AS_ADMIN_PASSWORD=password
-
-         In this example, password is  the  actual  administrator
-         password.
-
-         The following other passwords can also be specified:
-
-             o    AS_ADMIN_MAPPEDPASSWORD
-
-             o    AS_ADMIN_USERPASSWORD
-
-             o    AS_ADMIN_ALIASPASSWORD
-         All remote  commands  must  specify  the  administration
-         password  to  authenticate  to the domain administration
-         server. The password can be specified by one of the fol-
-         lowing means:
-
-             o    Through the --passwordfile option
-
-             o    Through the asadmin login command
-
-             o    Interactively at the command prompt
-         The asadmin login command can be used  only  to  specify
-         the  administration  password.  For other passwords that
-         remote commands require, use the  --passwordfile  option
-         or specify them at the command prompt.
-
-Java EE 6           Last change: 22 Dec 2004                   14
-
-Administration Commands                                    get(1)
-
-         After authenticating to a domain by  using  the  asadmin
-         login  command,  you need not specify the administration
-         password through the --passwordfile  option  for  subse-
-         quent  operations  on  the  domain.  However,  only  the
-         AS_ADMIN_PASSWORD option is not required. You still must
-         provide    the    other    passwords,    for    example,
-         AS_ADMIN_USERPASSWORD, when required by individual  com-
-         mands, such as update-file-user.
-
-         For security reasons, a password that is specified as an
-         environment variable is not read by the asadmin command.
-
-         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
-         changeit.
+asadmin Utility Subcommands                                get(1)
 
      --help
 
-         Displays the help text for the command.
+         Displays the help text for the subcommand.
 
-     --monitor
-         defaults to false; if set  to  false,  the  configurable
+     --monitor--m
+     --m
+         Defaults to false. If set  to  false,  the  configurable
          attribute values are returned. If set to true, the moni-
          torable attribute values are returned.
 
 OPERANDS
-     attributename               Identifies the attribute name in
+     dotted-attribute-name       Identifies the attribute name in
                                  the  dotted  notation.  At least
                                  one  dotted  name  attribute  is
                                  required. The dotted notation is
                                  the syntax used to access attri-
-                                 butes  of configurable entities.
-                                 The following format is used for
-                                 the notation:
-
-                                 Configuration:           <config
-                                 name>.<config            element
-                                 name>.<primary   key>.<attribute
-                                 name>  | <instance name>.<config
-                                 element           name>.<primary
-                                 key>.<attribute name>
-
-                                 Resource:
-                                 <instancename>.<resource
-                                 name>.<primary   key>.<attribute
-                                 name>                          |
-                                 domain.resources.<resource
-                                 name>.<primary   key>.<attribute
-                                 name>
-
-Java EE 6           Last change: 22 Dec 2004                   15
-
-Administration Commands                                    get(1)
+                                 butes of configurable entities.
 
 EXAMPLES
-     Example 1 Using the get command with wildcard
+     Example 1 Getting the Attributes of a Configurable Element
 
-     ____________________________________________________________
-    |__________________________________|________________________|
-    | get *                            |  get all values on  all|
-    |                                  |  dotted name prefixes  |
-    |__________________________________|________________________|
-    |__________________________________|________________________|
-    | get domain.*                     |  gets all values on the|
-    |                                  |  dotted  name "domain."|
-    |                                  |  Note  that   this   is|
-    |                                  |  quite  different  from|
-    |                                  |  "domain*".            |
-    |__________________________________|________________________|
-    | get domain*                      |  gets all values on the|
-    |                                  |  dotted nams that begin|
-    |                                  |  with         "domain".|
-    |                                  |  Equivalent    to   get|
-    |__________________________________|________________________|
-    | get *config*.*.*                 |  gets all values on the|
-    |                                  |  dotted   names   which|
-    |                                  |  match "*config*.*"    |
-    |__________________________________|________________________|
-    | get                  domain.j2ee-|  gets all values on all|
-    | applications.*.ejb-module.*.*    |  ejb-modules   of   all|
-    |__________________________________|________________________|
-    | get *web-modules.*.*             |  get all values on  all|
-    |                                  |  web modules whether in|
-    |                                  |  an   application    or|
-    |                                  |  standalone.           |
-    |__________________________________|________________________|
-    | get *.*.*.*                      |  get all values on  all|
-    |                                  |  dotted   names   which|
-    |__________________________________|________________________|
+     This example gets the attributes of  listener.http-listener-
+     1.
 
-     Example 2 Using get with the monitor option
+       asadmin> get server.http-service.http-listener.http-listener-1.*
+       server.http-service.http-listener.http-listener-1.acceptor-threads = 1
+       server.http-service.http-listener.http-listener-1.address = 0.0.0.0
+       server.http-service.http-listener.http-listener-1.blocking-enabled = false
+       server.http-service.http-listener.http-listener-1.default-virtual-server = server
+       server.http-service.http-listener.http-listener-1.enabled = true
+       server.http-service.http-listener.http-listener-1.external-port =
+       server.http-service.http-listener.http-listener-1.family = inet
+       server.http-service.http-listener.http-listener-1.id = http-listener-1
+       server.http-service.http-listener.http-listener-1.port = 8080
+       server.http-service.http-listener.http-listener-1.redirect-port =
+       server.http-service.http-listener.http-listener-1.security-enabled = false
+       server.http-service.http-listener.http-listener-1.server-name =
+       server.http-service.http-listener.http-listener-1.xpowered-by = true
 
-     To get the monitoring data from  the  domain  administration
-     server,  the appropriate monitoring level must be set on the
-     appropriate subsystem. Use the set command to set the  moni-
-     toring  data level. For example, to set the monitoring level
-     on Web Container on Domain Administration  Server  (DAS)  to
-     HIGH  so  that  the  Web  Container returns many monitorable
-     attributes    and    their    values:     server.monitoring-
-     service.module-monitoring-levels.web-container=HIGH. See the
-     set command for further details on  setting  the  monitoring
-     level.
+       Command get executed successfully.
 
-Java EE 6           Last change: 22 Dec 2004                   16
+     Example 2 Getting Monitorable Objects
 
-Administration Commands                                    get(1)
+Java EE 6           Last change: 27 Aug 2009                    3
 
-     Top Level
+asadmin Utility Subcommands                                get(1)
 
-     _______________________________________________________________
-    |________|_______________________|_____________________________|
-    | get -m |  server.*             |  No output, but message say-|
-    |        |                       |  ing there are no attributes|
-    |        |                       |  at this node.              |
-    |________|_______________________|_____________________________|
+     This example gets the monitorable objects and shows  whether
+     they are enabled (LOW or HIGH) or disabled (OFF).
 
-     Applications Level
+       asadmin> get server.monitoring-service.module-monitoring-levels.*
 
-     ________________________________________________________________________________
-    | Command|               Dotted Name              |            Output           |
-    |________|________________________________________|_____________________________|
-    | get -m |  server.applications.*or*applications.*|  No output, but message say-|
-    |        |                                        |  ing there are no attributes|
-    |________|________________________________________|_____________________________|
+     The output shows that only the jvm component is enabled  for
+     monitoring (HIGH).
 
-     Applications  -  Enterprise  Applications   and   Standalone
-     Modules
+       server.monitoring-service.module-monitoring-levels.connector-connection-pool=OFF
+       server.monitoring-service.module-monitoring-levels.connector-service=OFF
+       server.monitoring-service.module-monitoring-levels.d-trace=OFF
+       server.monitoring-service.module-monitoring-levels.ejb-container=OFF
+       server.monitoring-service.module-monitoring-levels.http-service=OFF
+       server.monitoring-service.module-monitoring-levels.jdbc-connection-pool=OFF
+       server.monitoring-service.module-monitoring-levels.jms-service=OFF
+       server.monitoring-service.module-monitoring-levels.jvm=ON
+       server.monitoring-service.module-monitoring-levels.orb=OFF
+       server.monitoring-service.module-monitoring-levels.thread-pool=OFF
+       server.monitoring-service.module-monitoring-levels.transaction-service=OFF
+       server.monitoring-service.module-monitoring-levels.web-container=OFF
 
-Java EE 6           Last change: 22 Dec 2004                   17
+       Command get executed successfully.
 
-Administration Commands                                    get(1)
+     Example 3 Getting Attributes and Values  for  a  Monitorable
+     Object
 
-     _____________________________________________________________________________________
-     _____________________________________________________________________________________
-      get -m    server.applications.app1.*or*app1.*      No output, but message say-
-                                                         ing there are no attributes
-                                                         at this node.
-     _____________________________________________________________________________________
-      get -m     server.applications.app1.ejb-           No output, but message say-
-                module1_jar.* or *ejb-module1_jar.*      ing there are no attributes
-                or         server.applications.ejb-      at this node.
-     _____________________________________________________________________________________
-      get -m    server.applications.app1.ejb-            Attribute
-                module1_jar.bean1.*Note  : where it      CreateCount_Count,  Value =
-                is a standalone  module,  the  node      xxxxAttribute
-                app1 will not appear.                    CreateCount_Description,
-                                                         Value    =    xxxxAttribute
-                                                         CreateCount_LastSampleTime,
-                                                         Value    =    xxxxAttribute
-                                                         CreateCount_Name,  Value  =
-                                                         xxxxAttribute
-                                                         CreateCount_StartTime,
-                                                         Value    =    xxxxAttribute
-                                                         CreateCount_Unit,  Value  =
-                                                         xxxxAttribute
-                                                         MethodReadyCount_Current,
-                                                         Value    =    xxxxAttribute
-                                                         MethodReadyCount_Description,
-                                                         Value    =    xxxxAttribute
-                                                         MethodReadyCount_HighWaterMark,
-                                                         Value    =    xxxxAttribute
-                                                         MethodReadyCount_LastSampleTime,
-                                                         Value    =    xxxxAttribute
-                                                         MethodReadyCount_LowWaterMark,
-                                                         Value    =    xxxxAttribute
-                                                         MethodReadyCount_Name,
-                                                         Value                     =
-                                                         xxxxMethodReadyCount_StartTime,
-                                                         Value                     =
-                                                         xxxxMethodReadyCount_Unit,
-                                                         Value    =    xxxxAttribute
-                                                         RemoveCount_Count,  Value =
-                                                         xxxxAttribute
-                                                         RemoveCount_Description,
-                                                         Value    =    xxxxAttribute
-                                                         RemoveCount_LastSampleTime,
-                                                         Value    =    xxxxAttribute
-                                                         RemoveCount_Name,  Value  =
-                                                         xxxxAttribute
-                                                         RemoveCount_StartTime,
-                                                         Value    =    xxxxAttribute
-                                                         RemoveCount_Unit,  Value  =
-                                                         xxxx
-     _____________________________________________________________________________________
+     This example gets all attributes and values the jvm monitor-
+     able object.
 
-Java EE 6           Last change: 22 Dec 2004                   18
+       asadmin> get --monitor=true server.jvm.*
+       server.jvm.HeapSize_Current = 45490176
+       server.jvm.HeapSize_Description = Describes JvmHeapSize
+       server.jvm.HeapSize_HighWaterMark = 45490176
+       server.jvm.HeapSize_LastSampleTime = 1063217002433
+       server.jvm.HeapSize_LowWaterMark = 0
+       server.jvm.HeapSize_LowerBound = 0
+       server.jvm.HeapSize_Name = JvmHeapSize
+       server.jvm.HeapSize_StartTime = 1063238840055
+       server.jvm.HeapSize_Unit = bytes
+       server.jvm.HeapSize_UpperBound = 531628032
+       server.jvm.UpTime_Count = 1063238840100
+       server.jvm.UpTime_Description = Describes JvmUpTime
+       server.jvm.UpTime_LastSampleTime = 1-63238840070
 
-Administration Commands                                    get(1)
+Java EE 6           Last change: 27 Aug 2009                    4
 
-      get -m    server.applications.app1.ejb-            List  of   Attributes   and
-    |        |  module1_jar.bean1.bean-poolNote:      |  Values   corresponding   to     |
-    |        |  Where it is  a  standalone  module,   |  attributes as defined under     |
-    |        |  the node app1 will not appear.        |  EJBPoolStats Statistics.        |
-    |________|________________________________________|__________________________________|
-    | get -m |  server.applications.app1.ejb-         |  List  of   Attributes   and     |
-    |        |  module1_jar.bean1.bean-cache.*Note:   |  Values   corresponding   to     |
-    |        |  Where it is  a  standalone  module,   |  attributes as defined under     |
-    |________|________________________________________|__________________________________|
-    | get -m |  server.applications.app1.ejb-         |  List  of   Attributes   and     |
-    |        |  module1_jar.bean1.bean-               |  Values   corresponding   to     |
-    |        |  cachemethod.method1.*Note: Where it   |  attributes as defined under     |
-    |        |  is  a  standalone  module, the node   |  EJBMethodStats Statistics.      |
-    |        |  app1 will not appear.                 |                                  |
-    |________|________________________________________|__________________________________|
-    | get -m |  server.applications.app1.web-         |  No output, but message say-     |
-    |        |  module1_war.*                         |  ing there are no attributes     |
-    |________|________________________________________|__________________________________|
-    | get -m |  server.applications.app1.web-         |  No output, but message say-     |
-    |        |  module1_war.virtual_server1.*         |  ing there are no attributes     |
-    |        |                                        |  at this node.                   |
-    |________|________________________________________|__________________________________|
-    | get -m |  server.applications.app1.web-         |  List  of   Attributes   and     |
-    |        |  module1_war.virtual_server1.servlet1.*|  Values   corresponding   to     |
-    |________|________________________________________|__________________________________|
+asadmin Utility Subcommands                                get(1)
 
-     Http-Service Level
+       server.jvm.UpTime_Name = JvmUpTime
+       server.jvm.UpTime_StartTime = 1063217002430
+       server.jvm.UpTime_Unit = milliseconds
 
-     _____________________________________________________________________________
-    |________|_____________________________________|_____________________________|
-    | get -m |  server.http-service.*              |  No output, but message say-|
-    |        |                                     |  ing there are no attributes|
-    |        |                                     |  at this node.              |
-    |________|_____________________________________|_____________________________|
-    | get -m |  server.http-service.virtual-server1|  No output, but message say-|
-    |        |                                     |  ing there are no attributes|
-    |________|_____________________________________|_____________________________|
-    | get -m |  server.http-service.virtual-       |  Attributes    and    Values|
-    |        |  server1.http-listener1.*           |  corresponding            to|
-    |        |                                     |  HttpListerneStats   Statis-|
-    |        |                                     |  tics.                      |
-    |________|_____________________________________|_____________________________|
-
-     Thread-Pools Level
-
-Java EE 6           Last change: 22 Dec 2004                   19
-
-Administration Commands                                    get(1)
-
-     ____________________________________________________________________________
-    |________|____________________________________|_____________________________|
-    | get -m |  server.thread-pools.*             |  No output, but message say-|
-    |        |                                    |  ing there are no attributes|
-    |        |                                    |  at this node.              |
-    |________|____________________________________|_____________________________|
-    | get -m |  server.thread-pools.thread-pool1.*|  List  of   Attributes   and|
-    |        |                                    |  Values   corresponding   to|
-    |________|____________________________________|_____________________________|
-
-     Resources Level
-
-     _____________________________________________________________________________
-    |________|_____________________________________|_____________________________|
-    | get -m |  server.resources.*                 |  No output, but message say-|
-    |        |                                     |  ing there are no attributes|
-    |        |                                     |  at this node.              |
-    |________|_____________________________________|_____________________________|
-    | get -m |  server.resources.connection-pool1.*|  List  of   Attributes   and|
-    |        |                                     |  Values   corresponding   to|
-    |        |                                     |  JDBCConnectionPool Stats or|
-    |        |                                     |  ConnectorConnectionPool-   |
-    |        |                                     |  Stats  Statistics  as   the|
-    |________|_____________________________________|_____________________________|
-
-     Transaction-Service Level
-
-     ______________________________________________________________________
-    |________|______________________________|_____________________________|
-    | get -m |  server.transaction-service.*|  List  of   Attributes   and|
-    |        |                              |  Values   corresponding   to|
-    |        |                              |  JTAStats Statistics.       |
-    |________|______________________________|_____________________________|
-
-     ORB Level
-
-Java EE 6           Last change: 22 Dec 2004                   20
-
-Administration Commands                                    get(1)
-
-     __________________________________________________________________________
-    |________|__________________________________|_____________________________|
-    | get -m |  server.orb.*                    |  No output, but message say-|
-    |        |                                  |  ing there are no attributes|
-    |        |                                  |  at this node.              |
-    |________|__________________________________|_____________________________|
-    | get -m |  server.orb.connection-managers.*|  No output, but message say-|
-    |        |                                  |  ing there are no attributes|
-    |________|__________________________________|_____________________________|
-    | get -m |  server.orb.connection-          |  Attributes    and    values|
-    |        |  managers.orbconnmgr1.*          |  corresponding to OrbConnec-|
-    |        |                                  |  tionManagerStats    Statis-|
-    |        |                                  |  tics.                      |
-    |________|__________________________________|_____________________________|
-
-     JVM Level
-
-     _________________________________________________________________________________
-      Command        Dotted Name                           Output
-     _________________________________________________________________________________
-
-Java EE 6           Last change: 22 Dec 2004                   21
-
-Administration Commands                                    get(1)
-
-      get -m    server.jvm.*            Attributes    and    Values
-                                        corresponding  to  JVMStats
-                                        Statistics.For
-                                        example:server.jvm.HeapSize_Current
-                                        =
-                                        45490176server.jvm.HeapSize_Description
-                                        =                 Describes
-                                        JvmHeapSizeserver.jvm.HeapSize_HighWaterMark
-                                        =
-                                        45490176server.jvm.HeapSize_LastSampleTime
-                                        =
-                                        1063217002433server.jvm.HeapSize_LowWaterMark
-                                        =
-                                        0server.jvm.HeapSize_LowerBound
-                                        = 0server.jvm.HeapSize_Name
-                                        =
-                                        JvmHeapSizeserver.jvm.HeapSize_StartTime
-                                        =
-                                        1063238840055server.jvm.HeapSize_Unit
-                                        =
-                                        bytesserver.jvm.HeapSize_UpperBound
-                                        =
-    |        |                       |  531628032server.jvm.UpTime_Count             |
-    |        |                       |  =                                            |
-    |        |                       |  1063238840100server.jvm.UpTime_Description   |
-    |        |                       |  =                 Describes                  |
-    |        |                       |  JvmUpTimeserver.jvm.UpTime_LastSampleTime    |
-    |        |                       |  =                        1-                  |
-    |        |                       |  63238840070server.jvm.UpTime_Name            |
-    |        |                       |  =                                            |
-    |        |                       |  JvmUpTimeserver.jvm.UpTime_StartTime         |
-    |        |                       |  =                                            |
-    |        |                       |  1063217002430server.jvm.UpTime_Unit          |
-    |        |                       |  = milliseconds                               |
-    |________|_______________________|_______________________________________________|
+       Command get executed successfully.
 
 EXIT STATUS
      0                           command executed successfully
@@ -1051,7 +204,13 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     set(1), list(1)
+     list(1), set(1)
 
-Java EE 6           Last change: 22 Dec 2004                   22
+     dotted-names(5ASC)
+
+     asadmin(1M)
+
+     Sun GlassFish Enterprise Server v3 Administration Guide
+
+Java EE 6           Last change: 27 Aug 2009                    5
 

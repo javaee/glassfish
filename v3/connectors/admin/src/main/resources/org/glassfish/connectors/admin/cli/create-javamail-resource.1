@@ -1,5 +1,5 @@
 
-Administration Commands               create-javamail-resource(1)
+asadmin Utility Subcommands           create-javamail-resource(1)
 
 NAME
      create-javamail-resource  -  creates  a   JavaMail   session
@@ -7,139 +7,32 @@ NAME
 
 SYNOPSIS
      create-javamail-resource
-     [--terse={true|false}][ --echo={true|false} ]
-     [ --interactive={true|false} ] [ --host  host]
-     [--port port] [--secure| -s ] [ --user  admin_user]
-     [--passwordfile filename] [--help]
+     [--help]
      [ --target  target]
      --mailhost hostname --mailuser username
-     --fromaddress address [--storeprotocol imap]
-     [--storeprotocolclass com.sun.mail.imapIMAPStore]
-     [--transprotocol smtp] [--transprotocolclass com.sun.mail.smtp.SMTPTransport]
-     [--debug=false] [--enabled=true]
-     [--description text] [--property (name=value)[:name=value]*]
-     jndi_name
+     --fromaddress address [--storeprotocol storeprotocol]
+     [--storeprotocolclass storeprotocolclass]
+     [--transprotocol transprotocol] [--transprotocolclass transprotocolclass]
+     [--debug={false|true}] [ --enabled ={true|false}]
+     [ --description  text] [--property (name=value)[:name=value]*]
+     jndi-name
 
 DESCRIPTION
      The create-javamail-resource command creates a JavaMail ses-
-     sion  resource.  This  command  is  supported in remote mode
-     only.
+     sion resource.
+
+     This command is supported in remote mode only.
 
 OPTIONS
-     -t --terse
-
-         Indicates that any output data  must  be  very  concise,
-         typically avoiding human-friendly sentences and favoring
-         well-formatted data for consumption by a script. Default
-         is false.
-
-     -e --echo
-         If set to true, the command-line statement is echoed  on
-         the standard output. Default is false.
-
-     -I --interactive
-
-         If set to true (default),  only  the  required  password
-         options are prompted.
-
-     -H --host
-         The machine name where the domain administration  server
-         is running. The default value is localhost.
-
-     -p --port
-
-         The HTTP port or HTTPS  port  for  administration.  This
-
-Java EE 6           Last change: 14 Apr 2009                    1
-
-Administration Commands               create-javamail-resource(1)
-
-         port is the port in the URL that you specify in your web
-         browser   to   manage   the   domain,    for    example,
-         http://localhost:4848.
-
-         The default port number for administration is 4848.
-
-     -s --secure
-
-         If set to true, uses SSL/TLS  to  communicate  with  the
-         domain administration server.
-
-         The default is false.
-
-     -u --user
-         The user name of the authorized administrative  user  of
-         the domain administration server.
-
-         If you have authenticated to a domain by using the asad-
-         min  login  command,  you  need  not  specify the --user
-         option for subsequent operations on the domain.
-
-     --passwordfile
-
-         Specifies the name, including the full path, of  a  file
-         that contains the password entries in a specific format.
-
-         The entry for a password must have the AS_ADMIN_  prefix
-         followed  by the password name in uppercase letters. For
-         example, to specify the password for the domain adminis-
-         tration server, use an entry with the following format:
-
-           AS_ADMIN_PASSWORD=password
-
-         In this example, password is  the  actual  administrator
-         password.
-
-         The following other passwords can also be specified:
-
-             o    AS_ADMIN_MAPPEDPASSWORD
-
-             o    AS_ADMIN_USERPASSWORD
-
-             o    AS_ADMIN_ALIASPASSWORD
-         All remote  commands  must  specify  the  administration
-         password  to  authenticate  to the domain administration
-         server. The password can be specified by one of the fol-
-         lowing means:
-
-             o    Through the --passwordfile option
-
-Java EE 6           Last change: 14 Apr 2009                    2
-
-Administration Commands               create-javamail-resource(1)
-
-             o    Through the asadmin login command
-
-             o    Interactively at the command prompt
-         The asadmin login command can be used  only  to  specify
-         the  administration  password.  For other passwords that
-         remote commands require, use the  --passwordfile  option
-         or specify them at the command prompt.
-
-         After authenticating to a domain by  using  the  asadmin
-         login  command,  you need not specify the administration
-         password through the --passwordfile  option  for  subse-
-         quent  operations  on  the  domain.  However,  only  the
-         AS_ADMIN_PASSWORD option is not required. You still must
-         provide    the    other    passwords,    for    example,
-         AS_ADMIN_USERPASSWORD, when required by individual  com-
-         mands, such as update-file-user.
-
-         For security reasons, a password that is specified as an
-         environment variable is not read by the asadmin command.
-
-         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
-         changeit.
-
      --help
 
-         Displays the help text for the command.
+         Displays the help text for the subcommand.
 
      --target
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the com-
-         mand  runs  successfully  and  the  option  is  silently
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
          ignored.
 
      --mailhost
@@ -156,9 +49,9 @@ Administration Commands               create-javamail-resource(1)
          and Transport objects use  this  value  if  a  protocol-
          specific username property is not supplied.
 
-Java EE 6           Last change: 14 Apr 2009                    3
+Java EE 6           Last change: 20 Jul 2009                    1
 
-Administration Commands               create-javamail-resource(1)
+asadmin Utility Subcommands           create-javamail-resource(1)
 
      --fromaddress
 
@@ -204,9 +97,9 @@ Administration Commands               create-javamail-resource(1)
          If set to true, the resource is enabled at runtime.  The
          default value is true.
 
-Java EE 6           Last change: 14 Apr 2009                    4
+Java EE 6           Last change: 20 Jul 2009                    2
 
-Administration Commands               create-javamail-resource(1)
+asadmin Utility Subcommands           create-javamail-resource(1)
 
      --description
 
@@ -218,14 +111,14 @@ Administration Commands               create-javamail-resource(1)
          the properties you might want to set.
 
 OPERANDS
-     jndi_name
+     jndi-name
 
          The JNDI name of the JavaMail resource to be created. It
          is  a  recommended practice to use the naming subcontext
          prefix mail/ for JavaMail resources.
 
 EXAMPLES
-     Example 1 Using the create-javamail-resource command
+     Example 1 Creating a JavaMail Resource
 
      The following command  creates  a  JavaMail  resource  named
      mail/MyMailSession.  The escape character (\) is used in the
@@ -233,10 +126,8 @@ EXAMPLES
      (@).  The  JNDI  name  for  a JavaMail session resource cus-
      tomarily includes the mail/ naming subcontext.
 
-       asadmin> create-javamail-resource --user admin
-       --passwordfile passwords.txt --host fuyako --port 7070
-       --mailhost localhost --mailuser sample
-       --fromaddress sample\@sun\.com mail/MyMailSession
+       asadmin> create-javamail-resource --mailhost localhost
+       --mailuser sample --fromaddress sample\@sun\.com mail/MyMailSession
        Command create-javamail-resource executed successfully.
 
 EXIT STATUS
@@ -247,5 +138,5 @@ EXIT STATUS
 SEE ALSO
      delete-javamail-resource(1), list-javamail-resources(1)
 
-Java EE 6           Last change: 14 Apr 2009                    5
+Java EE 6           Last change: 20 Jul 2009                    3
 

@@ -1,0 +1,70 @@
+
+asadmin Utility Subcommands                     list-protocols(1)
+
+NAME
+     list-protocols - lists the existing protocols
+
+SYNOPSIS
+     list-protocols
+     [--help]
+     [target]
+
+DESCRIPTION
+     The list-protocols command  lists  the  existing  protocols.
+     This command is supported in remote mode only.
+
+OPTIONS
+     --help
+
+         Displays the help text for the subcommand.
+
+OPERANDS
+     target
+         This option is valid only in domains that are configured
+         to  support  clusters,  such as domains that are created
+         with the cluster profile or the enterprise profile. This
+         operand specifies the target for which the protocols are
+         to be listed. Valid values are:
+
+         server
+
+             Lists the protocols for the default server  instance
+             server and is the default value.
+
+         configuration-name
+             Lists the protocols for the specified configuration.
+
+         cluster-name
+
+             Lists the protocols for the specified cluster.
+
+         instance-name
+             Lists  the  protocols  for   a   particular   server
+             instance.
+
+EXAMPLES
+     Example 1 Using the list-protocols command
+
+Java EE 6           Last change: 16 Apr 2009                    1
+
+asadmin Utility Subcommands                     list-protocols(1)
+
+     The following command lists all the protocols for the server
+     instance:
+
+       asadmin> list-protocols --user admin1
+       --passwordfile passwords.txt --host host1 --port 5001
+       http1
+       https2
+       Command list-protocols executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-protocol(1), delete-protocol(1)
+
+Java EE 6           Last change: 16 Apr 2009                    2
+

@@ -1,15 +1,12 @@
 
-Administration Commands                          list-commands(1)
+asadmin Utility Subcommands                      list-commands(1)
 
 NAME
      list-commands - lists available commands
 
 SYNOPSIS
      list-commands
-     [--terse={true|false}][ --echo={true|false} ]
-     [ --interactive={true|false} ] [ --host  host]
-     [--port port] [--secure| -s ] [ --user  admin_user]
-     [--passwordfile filename] [--help]
+     [--help]
       [ --localonly ={false|true}] [ --remoteonly ={false|true}]
 
 DESCRIPTION
@@ -24,114 +21,9 @@ DESCRIPTION
      This command is supported in local mode and remote mode.
 
 OPTIONS
-     -t --terse
-
-         Indicates that any output data  must  be  very  concise,
-         typically avoiding human-friendly sentences and favoring
-         well-formatted data for consumption by a script. Default
-         is false.
-
-     -e --echo
-         If set to true, the command-line statement is echoed  on
-         the standard output. Default is false.
-
-     -I --interactive
-
-         If set to true (default),  only  the  required  password
-         options are prompted.
-
-     -H --host
-         The machine name where the domain administration  server
-         is running. The default value is localhost.
-
-     -p --port
-
-         The HTTP port or HTTPS  port  for  administration.  This
-
-Java EE 6           Last change: 14 Apr 2008                    1
-
-Administration Commands                          list-commands(1)
-
-         port is the port in the URL that you specify in your web
-         browser   to   manage   the   domain,    for    example,
-         http://localhost:4848.
-
-         The default port number for administration is 4848.
-
-     -s --secure
-
-         If set to true, uses SSL/TLS  to  communicate  with  the
-         domain administration server.
-
-         The default is false.
-
-     -u --user
-         The user name of the authorized administrative  user  of
-         the domain administration server.
-
-         If you have authenticated to a domain by using the asad-
-         min  login  command,  you  need  not  specify the --user
-         option for subsequent operations on the domain.
-
-     --passwordfile
-
-         Specifies the name, including the full path, of  a  file
-         that contains the password entries in a specific format.
-
-         The entry for a password must have the AS_ADMIN_  prefix
-         followed  by the password name in uppercase letters. For
-         example, to specify the password for the domain adminis-
-         tration server, use an entry with the following format:
-
-           AS_ADMIN_PASSWORD=password
-
-         In this example, password is  the  actual  administrator
-         password.
-
-         The following other passwords can also be specified:
-
-             o    AS_ADMIN_MAPPEDPASSWORD
-
-             o    AS_ADMIN_USERPASSWORD
-
-             o    AS_ADMIN_ALIASPASSWORD
-         All remote  commands  must  specify  the  administration
-         password  to  authenticate  to the domain administration
-         server. The password can be specified by one of the fol-
-         lowing means:
-
-             o    Through the --passwordfile option
-
-Java EE 6           Last change: 14 Apr 2008                    2
-
-Administration Commands                          list-commands(1)
-
-             o    Through the asadmin login command
-
-             o    Interactively at the command prompt
-         The asadmin login command can be used  only  to  specify
-         the  administration  password.  For other passwords that
-         remote commands require, use the  --passwordfile  option
-         or specify them at the command prompt.
-
-         After authenticating to a domain by  using  the  asadmin
-         login  command,  you need not specify the administration
-         password through the --passwordfile  option  for  subse-
-         quent  operations  on  the  domain.  However,  only  the
-         AS_ADMIN_PASSWORD option is not required. You still must
-         provide    the    other    passwords,    for    example,
-         AS_ADMIN_USERPASSWORD, when required by individual  com-
-         mands, such as update-file-user.
-
-         For security reasons, a password that is specified as an
-         environment variable is not read by the asadmin command.
-
-         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
-         changeit.
-
      --help
 
-         Displays the help text for the command.
+         Displays the help text for the subcommand.
 
      --localonly
          If this option is set to true, only local  commands  are
@@ -155,12 +47,12 @@ EXAMPLES
        ********** Local Commands **********
        create-domain
        backup-domain
-
-Java EE 6           Last change: 14 Apr 2008                    3
-
-Administration Commands                          list-commands(1)
-
        delete-domain
+
+Java EE 6           Last change: 14 Apr 2008                    1
+
+asadmin Utility Subcommands                      list-commands(1)
+
        start-domain
        restore-domain
        stop-domain
@@ -212,12 +104,12 @@ Administration Commands                          list-commands(1)
        list-virtual-servers
        ping-connection-pool
        redeploy
-
-Java EE 6           Last change: 14 Apr 2008                    4
-
-Administration Commands                          list-commands(1)
-
        stop-domain
+
+Java EE 6           Last change: 14 Apr 2008                    2
+
+asadmin Utility Subcommands                      list-commands(1)
+
        undeploy
        update-file-user
        version
@@ -231,5 +123,5 @@ EXIT STATUS
 SEE ALSO
      list-components(1), list-containers(1), list-modules(1)
 
-Java EE 6           Last change: 14 Apr 2008                    5
+Java EE 6           Last change: 14 Apr 2008                    3
 

@@ -1,0 +1,60 @@
+
+asadmin Utility Subcommands               delete-jndi-resource(1)
+
+NAME
+     delete-jdbc-resource - removes the JNDI  resource  with  the
+     specified JNDI name
+
+SYNOPSIS
+     delete-jndi-resource
+     [--help]
+      [ --target  target]
+      jndi_name
+
+DESCRIPTION
+     The delete-jndi-resource command removes the specified  JNDI
+     resource. This command is supported in remote mode only.
+
+     You must remove all associations to the JNDI resource before
+     you execute this command.
+
+OPTIONS
+     --help
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     jndi_name
+
+         The name of the JNDI resource to be removed.
+
+EXAMPLES
+     Example 1 Using the delete-jndi-resource command
+
+       asadmin> delete-jndi-resource --user admin --passwordfile passwords.txt --host pigeon --port 4001 sample_jndi_resource
+       Command delete-jndi-resource executed successfully.
+
+     Where asadmin is the command prompt and sample_jndi_resource
+     is the resource to be removed.
+
+Java EE 6            Last change: 2 Jul 2009                    1
+
+asadmin Utility Subcommands               delete-jndi-resource(1)
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-jndi-resource(1), list-jndi-resources(1)
+
+Java EE 6            Last change: 2 Jul 2009                    2
+

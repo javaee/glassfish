@@ -1,0 +1,66 @@
+
+asadmin Utility Subcommands                list-sub-components(1)
+
+NAME
+     list-sub-components - lists EJBs  or  Servlets  in  deployed
+     module or module of deployed application
+
+SYNOPSIS
+     list-sub-components
+     [--help]
+      [ --type  {ejbs|servlets}]
+      [ --appname  appname] modulename
+
+DESCRIPTION
+     This command lists EJBs or Servlets in a deployed module  or
+     in  a module of the deployed application. If a module is not
+     identified, all modules are  listed.  The  --appname  option
+     functions  only  when  the  given  module  is standalone. To
+     display a  specific  module  in  an  application,  you  must
+     specify  the module name and the --appname option. This com-
+     mand is supported in remote mode only.
+
+OPTIONS
+     --help
+
+         Displays the help text for the subcommand.
+
+     --type
+         This is the type of component to be listed. The  options
+         are ejbs and servlets. If nothing is specified, then all
+         of the components are listed.
+
+     --appname
+
+         Identifies the name of the application. This  option  is
+         required  when  the desired output is the sub-components
+         of an embedded module of a deployed application.
+
+OPERANDS
+     -modulename
+         This is the name  of  the  module  containing  the  sub-
+         component.
+
+EXAMPLES
+     Example 1 Using list-sub-components
+
+       asadmin> list-sub-components --user admin --appname MEjbApp mejb.jar
+       Please enter admin password>
+       MEJBBean <StatelessSessionBean>
+       Command list-sub-components executed successfully.
+
+Java EE 6           Last change: 30 Jan 2007                    1
+
+asadmin Utility Subcommands                list-sub-components(1)
+
+EXIT STATUS
+     0                   command executed successfully
+
+     1                   error in executing the command
+
+SEE ALSO
+     deploy(1), deploydir(1), undeploy(1), enable(1), disable(1),
+     list-components(1)
+
+Java EE 6           Last change: 30 Jan 2007                    2
+

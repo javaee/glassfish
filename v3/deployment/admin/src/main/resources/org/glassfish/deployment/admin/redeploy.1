@@ -1,144 +1,40 @@
 
-Administration Commands                               redeploy(1)
+asadmin Utility Subcommands                           redeploy(1)
 
 NAME
-     redeploy - redeploys the specified application
+     redeploy - redeploys the specified component
 
 SYNOPSIS
      redeploy
-     [--terse={true|false}][ --echo={true|false} ]
-     [ --interactive={true|false} ] [ --host  host]
-     [--port port] [--secure| -s ] [ --user  admin_user]
-     [--passwordfile filename] [--help]
+     [--help]
       --name  component-name [--upload={true|false}]
-     [ --retrieve  local_dirpath] [--dbvendorname dbvendorname]
+     [ --retrieve  local-dirpath] [--dbvendorname dbvendorname]
      [--createtables={true|false} |  --dropandcreatetables ={true|false}]
-     [ --uniquetablenames ={true|false}] [ --deploymentplan  deployment_plan]
+     [ --uniquetablenames ={true|false}] [ --deploymentplan  deployment-plan]
      [--enabled={true|false}]
      [ --contextroot  context-root]
      [--precompilejsp={true|false}]
      [ --virtualservers  virtual-servers]
-     [--libraries jar_file[(path_separator)jar_file*]]
+     [--libraries jar-file[,jar-file]*]
      [--type pkg-type]
      [--properties(name=value)[:name=value]*][archive-path]
 
 DESCRIPTION
-     The  redeploy  command  redeploys  an  application  that  is
-     already  deployed.  The  redeploy command preserves the set-
-     tings and other options with which the application was  ori-
-     ginally  deployed. The application must already be deployed.
-     Otherwise, an error occurs.
+     The  redeploy command redeploys an  enterprise  application,
+     web  application, module based on the Enterprise JavaBeansTM
+     (EJB)  specification  (EJB  module),  connector  module,  or
+     application  client  module  that  is  already  deployed  or
+     already exists. The redeploy command preserves the  settings
+     and  other options with which the application was originally
+     deployed. The application must already be  deployed.  Other-
+     wise, an error occurs.
 
      This command is supported in remote mode only.
 
 OPTIONS
-     -t --terse
-
-         Indicates that any output data  must  be  very  concise,
-         typically avoiding human-friendly sentences and favoring
-         well-formatted data for consumption by a script. Default
-         is false.
-
-     -e --echo
-         If set to true, the command-line statement is echoed  on
-         the standard output. Default is false.
-
-     -I --interactive
-
-         If set to true (default),  only  the  required  password
-         options are prompted.
-
-Java EE 6            Last change: 3 May 2009                    1
-
-Administration Commands                               redeploy(1)
-
-     -H --host
-
-         The machine name where the domain administration  server
-         is running. The default value is localhost.
-
-     -p --port
-         The HTTP port or HTTPS  port  for  administration.  This
-         port is the port in the URL that you specify in your web
-         browser   to   manage   the   domain,    for    example,
-         http://localhost:4848.
-
-         The default port number for administration is 4848.
-
-     -s --secure
-
-         If set to true, uses SSL/TLS  to  communicate  with  the
-         domain administration server.
-
-         The default is false.
-
-     -u --user
-         The user name of the authorized administrative  user  of
-         the domain administration server.
-
-         If you have authenticated to a domain by using the asad-
-         min  login  command,  you  need  not  specify the --user
-         option for subsequent operations on the domain.
-
-     --passwordfile
-
-         Specifies the name, including the full path, of  a  file
-         that contains the password entries in a specific format.
-
-         The entry for a password must have the AS_ADMIN_  prefix
-         followed  by the password name in uppercase letters. For
-         example, to specify the password for the domain adminis-
-         tration server, use an entry with the following format:
-
-           AS_ADMIN_PASSWORD=password
-
-         In this example, password is  the  actual  administrator
-         password.
-
-         The following other passwords can also be specified:
-
-             o    AS_ADMIN_MAPPEDPASSWORD
-
-             o    AS_ADMIN_USERPASSWORD
-
-Java EE 6            Last change: 3 May 2009                    2
-
-Administration Commands                               redeploy(1)
-
-             o    AS_ADMIN_ALIASPASSWORD
-         All remote  commands  must  specify  the  administration
-         password  to  authenticate  to the domain administration
-         server. The password can be specified by one of the fol-
-         lowing means:
-
-             o    Through the --passwordfile option
-
-             o    Through the asadmin login command
-
-             o    Interactively at the command prompt
-         The asadmin login command can be used  only  to  specify
-         the  administration  password.  For other passwords that
-         remote commands require, use the  --passwordfile  option
-         or specify them at the command prompt.
-
-         After authenticating to a domain by  using  the  asadmin
-         login  command,  you need not specify the administration
-         password through the --passwordfile  option  for  subse-
-         quent  operations  on  the  domain.  However,  only  the
-         AS_ADMIN_PASSWORD option is not required. You still must
-         provide    the    other    passwords,    for    example,
-         AS_ADMIN_USERPASSWORD, when required by individual  com-
-         mands, such as update-file-user.
-
-         For security reasons, a password that is specified as an
-         environment variable is not read by the asadmin command.
-
-         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
-         changeit.
-
      --help
 
-         Displays the help text for the command.
+         Displays the help text for the subcommand.
 
      --name
          The name of the  application that is  being  redeployed.
@@ -154,9 +50,9 @@ Administration Commands                               redeploy(1)
          accessible  to  both server and client, set the --upload
          option to false.
 
-Java EE 6            Last change: 3 May 2009                    3
+Java EE 6           Last change: 27 Jul 2009                    1
 
-Administration Commands                               redeploy(1)
+asadmin Utility Subcommands                           redeploy(1)
 
      --retrieve
 
@@ -179,9 +75,9 @@ Administration Commands                               redeploy(1)
      --createtables
 
          Creates tables at  deployment  of  an  application  with
-         unmapped  CMP  beans.  Default  is the create-tables-at-
-         deploy entry in the cmp-resource  element  of  the  sun-
-         ejb-jar.xml file.
+         unmapped   container-managed  persistence  (CMP)  beans.
+         Default is  the  create-tables-at-deploy  entry  in  the
+         cmp-resource element of the sun-ejb-jar.xml file.
 
      --dropandcreatetables
          If set to true, when the component  is  redeployed,  the
@@ -206,9 +102,9 @@ Administration Commands                               redeploy(1)
          Takes the deployment plan, which  is  a  JAR  containing
          Sun-specific descriptors, and deploys it. This should be
 
-Java EE 6            Last change: 3 May 2009                    4
+Java EE 6           Last change: 27 Jul 2009                    2
 
-Administration Commands                               redeploy(1)
+asadmin Utility Subcommands                           redeploy(1)
 
          passed along when deploying a pure EAR file. A pure  EAR
          file is an EAR without Sun-specific descriptors.
@@ -217,17 +113,12 @@ Administration Commands                               redeploy(1)
 
          If set to true (default), allows  users  to  access  the
          application.  If set to false, users will not be able to
-         access the application. In a domain whose profile is the
-         cluster  profile  or the enterprise profile, this option
-         enables the application on the specified target instance
-         or  cluster.  If  you  deploy to the target domain, this
-         option is ignored, since deploying to the domain doesn't
-         deploy to a specific instance or cluster.
+         access the application.
 
      --contextroot
          Valid only if the archive is a web module. It is ignored
          for  other  archive  types; defaults to filename without
-         extension.The context root of the  application  that  is
+         extension. The context root of the application  that  is
          being redeployed. The context root identifies the appli-
          cation in the server. The default is the  name,  without
          the  extension,  of  the  archive file that contains the
@@ -256,14 +147,13 @@ Administration Commands                               redeploy(1)
 
          A comma-separated list of library JAR files. Specify the
          library  JAR  files by their relative or absolute paths.
-
-Java EE 6            Last change: 3 May 2009                    5
-
-Administration Commands                               redeploy(1)
-
          Specify   relative   paths   relative    to    instance-
          root/lib/applibs.  The  libraries  are made available to
          the application in the order specified.
+
+Java EE 6           Last change: 27 Jul 2009                    3
+
+asadmin Utility Subcommands                           redeploy(1)
 
      --type
 
@@ -271,7 +161,7 @@ Administration Commands                               redeploy(1)
          being deployed. Possible values are as follows:
 
          osgi
-             The component is packaged as an OSGI  Alliance  bun-
+             The component is packaged as an OSGi  Alliance  bun-
              dle.
 
          The --type option is optional. If the component is pack-
@@ -311,13 +201,13 @@ Administration Commands                               redeploy(1)
                  deserializes any sessions that  were  previously
                  saved.
 
-Java EE 6            Last change: 3 May 2009                    6
-
-Administration Commands                               redeploy(1)
-
              Other available properties  are  determined  by  the
              implementation  of the component that is being rede-
              ployed.
+
+Java EE 6           Last change: 27 Jul 2009                    4
+
+asadmin Utility Subcommands                           redeploy(1)
 
              Note -
 
@@ -364,13 +254,12 @@ EXAMPLES
      of  the  application  are  to be preserved and then restored
      when the redeployment is complete.
 
-Java EE 6            Last change: 3 May 2009                    7
-
-Administration Commands                               redeploy(1)
-
-       asadmin> redeploy --user admin --passwordfile myfile --name hello
-       --properties keepSessions=true hello.war
+       asadmin> redeploy --name hello --properties keepSessions=true hello.war
        Command redeploy executed successfully
+
+Java EE 6           Last change: 27 Jul 2009                    5
+
+asadmin Utility Subcommands                           redeploy(1)
 
      Example 2 Redeploying a Web Application From a Directory
 
@@ -389,5 +278,5 @@ EXIT STATUS
 SEE ALSO
      deploy(1), undeploy(1), list-components(1)
 
-Java EE 6            Last change: 3 May 2009                    8
+Java EE 6           Last change: 27 Jul 2009                    6
 

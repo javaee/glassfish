@@ -1,0 +1,44 @@
+
+asadmin Utility Subcommands                 list-web-env-entry(1)
+
+NAME
+     list-web-env-entry - lists web environment entries
+
+SYNOPSIS
+     list-web-env-entry
+     [--help]
+     [ --name =env-entry-name] application-name[/module-name]
+
+DESCRIPTION
+     This command lists web environment entries.
+
+OPTIONS
+     --help
+
+         Displays the help text for the subcommand.
+
+     --name
+         The name of the entry.
+
+OPERANDS
+     application-name[/module-name]
+
+         The application name and optionally the module name.
+
+EXAMPLES
+     Example 1 Listing Web Environment Entries
+
+     This example lists web environment entries.
+
+       asadmin> list-web-env-entry MyWebApp
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     set-web-env-entry(1)
+
+Java EE 6           Last change: 12 Aug 2009                    1
+

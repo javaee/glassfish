@@ -1,0 +1,65 @@
+
+asadmin Utility Subcommands                  create-auth-realm(1)
+
+NAME
+     create-auth-realm - adds the named authentication realm
+
+SYNOPSIS
+     create-auth-realm   --classname realm_class
+     [--help]
+     [ --property (name=value)[:name=value]*]
+     [ --target  target_name] auth_realm_name
+
+DESCRIPTION
+     The create-auth-realm command adds the named  authentication
+     realm. This command is supported in remote mode only.
+
+OPTIONS
+     --help
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+     --classname
+
+         Java class which implements this realm.
+
+     --property
+         Optional attributes name/value pairs of provider  imple-
+         mentation specific attributes.
+
+OPERANDS
+     auth_realm_name             Name of this realm.
+
+EXAMPLES
+     Example 1 Using create-auth-realm
+
+       asadmin> create-auth-realm --user admin1
+       --classname com.iplanet.ias.security.auth.realm.DB.Database
+       --property defaultuser=admin:Password=admin db
+       Command create-auth-realm executed successfully
+
+Java EE 6          Last change: 28 August 2009                  1
+
+asadmin Utility Subcommands                  create-auth-realm(1)
+
+     Where db is the authentication realm created.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     delete-auth-realm(1), list-auth-realms(1)
+
+     asadmin(1M)
+
+Java EE 6          Last change: 28 August 2009                  2
+

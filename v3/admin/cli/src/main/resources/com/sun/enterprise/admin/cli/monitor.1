@@ -1,5 +1,5 @@
 
-Administration Commands                                monitor(1)
+asadmin Utility Subcommands                            monitor(1)
 
 NAME
      monitor - displays monitoring data for commonly used  Enter-
@@ -7,10 +7,7 @@ NAME
 
 SYNOPSIS
      monitor
-     [--terse={true|false}][ --echo={true|false} ]
-     [ --interactive={true|false} ] [ --host  host]
-     [--port port] [--secure| -s ] [ --user  admin_user]
-     [--passwordfile filename] [--help]
+     [--help]
       --type  monitor_type [--filename file_name]
      [--interval interval] [--filter filter_name]
      instance_name
@@ -27,112 +24,9 @@ DESCRIPTION
        Administration Console or the set(1) command.
 
 OPTIONS
-     -t --terse
-
-         Indicates that any output data  must  be  very  concise,
-         typically avoiding human-friendly sentences and favoring
-         well-formatted data for consumption by a script. Default
-         is false.
-
-     -e --echo
-         If set to true, the command-line statement is echoed  on
-         the standard output. Default is false.
-
-     -I --interactive
-
-         If set to true (default),  only  the  required  password
-         options are prompted.
-
-     -H --host
-         The machine name where the domain administration  server
-         is running. The default value is localhost.
-
-Java EE 6           Last change: 29 Sep 2008                    1
-
-Administration Commands                                monitor(1)
-
-     -p --port
-
-         The HTTP port or HTTPS  port  for  administration.  This
-         port is the port in the URL that you specify in your web
-         browser   to   manage   the   domain,    for    example,
-         http://localhost:4848.
-
-         The default port number for administration is 4848.
-
-     -s --secure
-         If set to true, uses SSL/TLS  to  communicate  with  the
-         domain administration server.
-
-         The default is false.
-
-     -u --user
-
-         The user name of the authorized administrative  user  of
-         the domain administration server.
-
-         If you have authenticated to a domain by using the asad-
-         min  login  command,  you  need  not  specify the --user
-         option for subsequent operations on the domain.
-
-     --passwordfile
-         Specifies the name, including the full path, of  a  file
-         that contains the password entries in a specific format.
-
-         The entry for a password must have the AS_ADMIN_  prefix
-         followed  by the password name in uppercase letters. For
-         example, to specify the password for the domain adminis-
-         tration server, use an entry with the following format:
-
-           AS_ADMIN_PASSWORD=password
-
-         In this example, password is  the  actual  administrator
-         password.
-
-         The following other passwords can also be specified:
-
-             o    AS_ADMIN_MAPPEDPASSWORD
-
-             o    AS_ADMIN_USERPASSWORD
-
-             o    AS_ADMIN_ALIASPASSWORD
-         All remote  commands  must  specify  the  administration
-         password  to  authenticate  to the domain administration
-         server. The password can be specified by one of the fol-
-         lowing means:
-
-Java EE 6           Last change: 29 Sep 2008                    2
-
-Administration Commands                                monitor(1)
-
-             o    Through the --passwordfile option
-
-             o    Through the asadmin login command
-
-             o    Interactively at the command prompt
-         The asadmin login command can be used  only  to  specify
-         the  administration  password.  For other passwords that
-         remote commands require, use the  --passwordfile  option
-         or specify them at the command prompt.
-
-         After authenticating to a domain by  using  the  asadmin
-         login  command,  you need not specify the administration
-         password through the --passwordfile  option  for  subse-
-         quent  operations  on  the  domain.  However,  only  the
-         AS_ADMIN_PASSWORD option is not required. You still must
-         provide    the    other    passwords,    for    example,
-         AS_ADMIN_USERPASSWORD, when required by individual  com-
-         mands, such as update-file-user.
-
-         For security reasons, a password that is specified as an
-         environment variable is not read by the asadmin command.
-
-         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
-         changeit.
-
      --help
 
-         Displays the help text for the command.
+         Displays the help text for the subcommand.
 
      --type
          The component or service  to  monitor.  This  option  is
@@ -153,65 +47,66 @@ Administration Commands                                monitor(1)
                  The total number errors  in  the  processing  of
                  HTTP requests.
 
-Java EE 6           Last change: 29 Sep 2008                    3
-
-Administration Commands                                monitor(1)
-
              mt
 
                  The longest response time (in milliseconds)  for
                  the processing of a single HTTP request.
 
+Java EE 6           Last change: 29 Sep 2008                    1
+
+asadmin Utility Subcommands                            monitor(1)
+
              pt
+
                  The total amount of time (in milliseconds)  that
                  the  HTTP listener service has spent in process-
                  ing HTTP requests.
 
              rc
-
                  The total  number  of  requests  that  the  HTTP
                  listener service has processed.
 
          jvm
+
              For  this   type,   the   attribute   server.server-
              config.monitoring-service.module-monitoring-
              levels.jvm must be set to LOW or HIGH.
 
-             Displays the following statistics for   the  Virtual
-             Machine   for  the  JavaTM  platform  (Java  Virtual
-             Machine or JVMTM machine):
+             Displays the following sTMtistics for   the  Virtual
+             Machine   for TMhe  Java    platform  (Java  Virtual
+             Machine or JVM   machine):
 
              The terms "Java Virtual Machine" and  "JVM"  mean  a
              Virtual Machine for the Java platform.
 
              UpTime
-
                  The number of milliseconds that the JVM  machine
                  has been running since it was last started.
 
              min
+
                  The initial amount of memory (in bytes) that the
                  JVM  machine  requests from the operating system
                  for memory management during startup.
 
              low
-
                  Retained for compatibility with other releases.
 
              high
+
                  Retained for compatibility with other releases.
 
-Java EE 6           Last change: 29 Sep 2008                    4
-
-Administration Commands                                monitor(1)
-
              count
-
                  The  amount  of  memory  (in  bytes)   that   is
                  guaranteed  to  be  available for use by the JVM
                  machine.
 
+Java EE 6           Last change: 29 Sep 2008                    2
+
+asadmin Utility Subcommands                            monitor(1)
+
          webmodule
+
              For  this   type,   the   attribute   server.server-
              config.monitoring-service.module-monitoring-
              levels.web-container must be set to LOW or HIGH.
@@ -220,73 +115,73 @@ Administration Commands                                monitor(1)
              web modules:
 
              asc
-
                  The number of currently active sessions.
 
              ast
+
                  The total number of sessions that are  currently
                  active or have been active previously.
 
              rst
-
                  The total number of rejected sessions.
 
              st
+
                  The total number  of  sessions  that  have  been
                  created.
 
              ajlc
-
-                 The  TMmber  oTM currently   active   JavaServer
-                 Pages     (JSP  )   technology  pages  that  are
+                 The  number  of  currently   active   JavaServer
+                 PagesTM   (JSPTM)   technology  pages  that  are
                  loaded.
 
              mjlc
+
                  The maximum number of JSP technology pages  that
                  were active at any time simultaneously.
 
              tjlc
-
                  Total number of JSP technology pages  that  have
                  been loaded.
-
-Java EE 6           Last change: 29 Sep 2008                    5
-
-Administration Commands                                monitor(1)
 
              aslc
 
                  The number of  currently  active  Java  servlets
                  that are loaded.
 
+Java EE 6           Last change: 29 Sep 2008                    3
+
+asadmin Utility Subcommands                            monitor(1)
+
              mslc
+
                  The maximum number of Java  servlets  that  were
                  active at any time simultaneously.
 
              tslc
-
                  The total number of Java servlets that have been
                  loaded.
 
      --filename
+
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the com-
-         mand  runs  successfully  and  the  option  is  silently
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
          ignored.
 
      --interval
-
          The interval  in  seconds  before  capturing  monitoring
          attributes.  The  interval  must  be greater than 0. The
          monitoring attributes are displayed on stdout until  you
          type Control-C or q. The default value is 30.
 
      --filter
+
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the com-
-         mand  runs  successfully  and  the  option  is  silently
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
          ignored.
 
 OPERANDS
@@ -296,15 +191,16 @@ OPERANDS
 EXAMPLES
      Example 1 Displaying Statistics for the JVM Machine
 
-Java EE 6           Last change: 29 Sep 2008                    6
-
-Administration Commands                                monitor(1)
-
      This example shows the sequence of commands  for  displaying
      statistics for the JVM machine every 2000 seconds.
 
          1.   This   command    sets    the    server.monitoring-
               service.module-monitoring-levels.jvm  attribute  to
+
+Java EE 6           Last change: 29 Sep 2008                    4
+
+asadmin Utility Subcommands                            monitor(1)
+
               HIGH.
 
                 asadmin> set
@@ -333,5 +229,5 @@ EXIT STATUS
 SEE ALSO
      get(1), list(1), set(1)
 
-Java EE 6           Last change: 29 Sep 2008                    7
+Java EE 6           Last change: 29 Sep 2008                    5
 

@@ -1,5 +1,5 @@
 
-Administration Commands                         create-service(1)
+asadmin Utility Subcommands                     create-service(1)
 
 NAME
      create-service -  configures the starting of a DAS  or  node
@@ -7,13 +7,13 @@ NAME
 
 SYNOPSIS
      create-service  --passwordfile passwordfile
-     [--echo={true | false}][--terse={true | false}][--name servicename] [--type das | nodeagent]
-     [--serviceproperties serviceproperties]
-     domain-or-node-agent-configuration-directory
+      [--echo={true | false}][--terse={true | false}][--name servicename] [--type das | nodeagent]
+      [--serviceproperties serviceproperties]
+      domain-or-node-agent-configuration-directory
 
 DESCRIPTION
      Configures the starting of a DAS or node agent on  an  unat-
-     tended  boot.   On Solaris 10, this command uses the Service
+     tended  boot.  On  Solaris 10, this command uses the Service
      Management Facility (SMF). This is  a  local  command.  This
      command  must  be  run  as  the OS-level user with superuser
      privileges. For AS 9.0, this is available only  for  Solaris
@@ -27,7 +27,7 @@ DESCRIPTION
      agent resides.
 
      To run this command, you must have solaris.smf.*  authoriza-
-     tion.   See the useradd and usermod manpages to find out how
+     tion.  See  the useradd and usermod manpages to find out how
      to set the authorizations. It  is  also  essential  for  the
      users  to  have  write  permission  in  the  directory tree:
      /var/svc/manifest/application/SUNWappserver.  Usually,   the
@@ -48,85 +48,73 @@ DESCRIPTION
               /var/svc/manifest/application.
 
 OPTIONS
-     --passwordfile              The --passwordfile option speci-
-                                 fies   the   name   of   a  file
+     --passwordfile
 
-Java EE 5           Last change: 24 July 2007                   1
+         The --passwordfile option specifies the name of  a  file
 
-Administration Commands                         create-service(1)
+Java EE 6           Last change: 24 July 2007                   1
 
-                                 containing the password  entries
-                                 in a specified format. The entry
-                                 for the password  must have  the
-                                 AS_ADMIN_ prefix followed by the
-                                 password   name    in    capital
-                                 letters. For example, to specify
-                                 the domain administration server
-                                 password,  use an entry with the
-                                 following                format:
-                                 AS_ADMIN_PASSWORD=password,
-                                 where  password  is  the  actual
-                                 administrator   password.  Other
-                                 passwords that can be  specified
-                                 include AS_ADMIN_MAPPEDPASSWORD,
-                                 AS_ADMIN_USERPASSWORD,
-                                 AS_ADMIN_MQPASSWORD, and so on.
+asadmin Utility Subcommands                     create-service(1)
 
-     -e --echo                   Setting to true  will  echo  the
-                                 command  line  statement  on the
-                                 standard  output.   Default   is
-                                 false.
+         containing  the  password entries in a specified format.
+         The entry for the password  must have the AS_ADMIN_ pre-
+         fix  followed  by  the password name in capital letters.
+         For example, to specify the domain administration server
+         password,  use  an  entry  with  the  following  format:
+         AS_ADMIN_PASSWORD=password, where password is the actual
+         administrator  password.  Other  passwords  that  can be
+         specified        include        AS_ADMIN_MAPPEDPASSWORD,
+         AS_ADMIN_USERPASSWORD, AS_ADMIN_MQPASSWORD, and so on.
 
-     -t --terse                  Indicates that any  output  data
-                                 must  be very concise, typically
-                                 avoiding   human-friendly   sen-
-                                 tences    and   favoring   well-
-                                 formatted data  for  consumption
-                                 by a script. Default is false.
+     -e --echo
 
-     --name                       Indicates the name of the  ser-
-                                 vice  and overrides the default,
-                                 if present.
+         Setting to true will echo the command line statement  on
+         the standard output. Default is false.
 
-     --type                       Specifies whether  the  service
-                                 pertains  to  DAS or node agent.
-                                 Valid values are das  and  node-
-                                 agent  and  the default value is
-                                 das, indicating that the  user's
-                                 domain will be created as a ser-
-                                 vice by default.
+     -t --terse
+         Indicates that any output data  must  be  very  concise,
+         typically avoiding human-friendly sentences and favoring
+         well-formatted data for consumption by a script. Default
+         is false.
 
-     --serviceproperties          Specifies a  colon(:)-separated
-                                 list  of various properties that
-                                 are specific to the service. For
-                                 Solaris   10,   if  you  specify
-                                 net_privaddr,   the    service's
-                                 processes  will  be able to bind
+     --name
 
-Java EE 5           Last change: 24 July 2007                   2
+          Indicates the name of the  service  and  overrides  the
+         default, if present.
 
-Administration Commands                         create-service(1)
+     --type
+          Specifies whether the service pertains to DAS  or  node
+         agent.  Valid  values  are  das  and  node-agent and the
+         default value is das, indicating that the user's  domain
+         will be created as a service by default.
 
-                                 to the privileged ports  (<1024)
-                                 on the platform. You can bind to
-                                 ports< 1024 only if the owner of
-                                 the  service is super-user, this
-                                 is not allowed. If  you  specify
-                                 startinstances=true/false,  when
-                                 the type is node-agent, all  the
-                                 instances  are  started when the
-                                 node-agent starts up.
+     --serviceproperties
+
+          Specifies a colon(:)-separated list of various  proper-
+         ties  that  are specific to the service. For Solaris 10,
+         if you specify  net_privaddr,  the  service's  processes
+         will  be able to bind to the privileged ports (<1024) on
+         the platform. You can bind to ports< 1024  only  if  the
+         owner of the service is super-user, this is not allowed.
+         If you specify startinstances=true/false, when the  type
+         is  node-agent,  all  the instances are started when the
+         node-agent starts up.
 
 OPERANDS
-     domain-dir or node-agent-dir The absolute path of  directory
-                                 on disk that contains the confi-
-                                 guration of the domain  or  node
-                                 agent.
+
+Java EE 6           Last change: 24 July 2007                   2
+
+asadmin Utility Subcommands                     create-service(1)
+
+     domain-dir or node-agent-dir
+
+          The absolute path of directory on  disk  that  contains
+         the configuration of the domain or node agent.
 
 EXIT STATUS
      0                           command executed successfully
 
      1                           error in executing the command
 
-Java EE 5           Last change: 24 July 2007                   3
+Java EE 6           Last change: 24 July 2007                   3
 

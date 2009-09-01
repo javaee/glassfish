@@ -1,5 +1,5 @@
 
-Administration Commands       create-connector-connection-pool(1)
+asadmin Utility Subcommands   create-connector-connection-pool(1)
 
 NAME
      create-connector-connection-pool -  adds a  connection  pool
@@ -7,10 +7,7 @@ NAME
 
 SYNOPSIS
      create-connector-connection-pool
-     [--terse={true|false}][ --echo={true|false} ]
-     [ --interactive={true|false} ] [ --host  host]
-     [--port port] [--secure| -s ] [ --user  admin_user]
-     [--passwordfile filename] [--help]
+     [--help]
      --raname resource_adapter_name --connectiondefinition connection_definition_name
       [--steadypoolsize steadypoolsize] [--maxpoolsize maxpoolsize]
      [--maxwait maxwait] [--poolresize poolresize]
@@ -34,113 +31,9 @@ DESCRIPTION
      connection pool with the specified connection pool name.
 
 OPTIONS
-     -t --terse
-
-         Indicates that any output data  must  be  very  concise,
-         typically avoiding human-friendly sentences and favoring
-         well-formatted data for consumption by a script. Default
-         is false.
-
-     -e --echo
-         If set to true, the command-line statement is echoed  on
-         the standard output. Default is false.
-
-     -I --interactive
-
-         If set to true (default),  only  the  required  password
-         options are prompted.
-
-Java EE 6           Last change: 20 Apr 2009                    1
-
-Administration Commands       create-connector-connection-pool(1)
-
-     -H --host
-
-         The machine name where the domain administration  server
-         is running. The default value is localhost.
-
-     -p --port
-         The HTTP port or HTTPS  port  for  administration.  This
-         port is the port in the URL that you specify in your web
-         browser   to   manage   the   domain,    for    example,
-         http://localhost:4848.
-
-         The default port number for administration is 4848.
-
-     -s --secure
-
-         If set to true, uses SSL/TLS  to  communicate  with  the
-         domain administration server.
-
-         The default is false.
-
-     -u --user
-         The user name of the authorized administrative  user  of
-         the domain administration server.
-
-         If you have authenticated to a domain by using the asad-
-         min  login  command,  you  need  not  specify the --user
-         option for subsequent operations on the domain.
-
-     --passwordfile
-
-         Specifies the name, including the full path, of  a  file
-         that contains the password entries in a specific format.
-
-         The entry for a password must have the AS_ADMIN_  prefix
-         followed  by the password name in uppercase letters. For
-         example, to specify the password for the domain adminis-
-         tration server, use an entry with the following format:
-
-           AS_ADMIN_PASSWORD=password
-
-         In this example, password is  the  actual  administrator
-         password.
-
-         The following other passwords can also be specified:
-
-             o    AS_ADMIN_MAPPEDPASSWORD
-
-             o    AS_ADMIN_USERPASSWORD
-
-Java EE 6           Last change: 20 Apr 2009                    2
-
-Administration Commands       create-connector-connection-pool(1)
-
-             o    AS_ADMIN_ALIASPASSWORD
-         All remote  commands  must  specify  the  administration
-         password  to  authenticate  to the domain administration
-         server. The password can be specified by one of the fol-
-         lowing means:
-
-             o    Through the --passwordfile option
-
-             o    Through the asadmin login command
-
-             o    Interactively at the command prompt
-         The asadmin login command can be used  only  to  specify
-         the  administration  password.  For other passwords that
-         remote commands require, use the  --passwordfile  option
-         or specify them at the command prompt.
-
-         After authenticating to a domain by  using  the  asadmin
-         login  command,  you need not specify the administration
-         password through the --passwordfile  option  for  subse-
-         quent  operations  on  the  domain.  However,  only  the
-         AS_ADMIN_PASSWORD option is not required. You still must
-         provide    the    other    passwords,    for    example,
-         AS_ADMIN_USERPASSWORD, when required by individual  com-
-         mands, such as update-file-user.
-
-         For security reasons, a password that is specified as an
-         environment variable is not read by the asadmin command.
-
-         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
-         changeit.
-
      --help
 
-         Displays the help text for the command.
+         Displays the help text for the subcommand.
 
      --target
          The target option is deprecated.
@@ -155,12 +48,11 @@ Administration Commands       create-connector-connection-pool(1)
      --steadypoolsize
 
          The minimum and initial number of connections maintained
-
-Java EE 6           Last change: 20 Apr 2009                    3
-
-Administration Commands       create-connector-connection-pool(1)
-
          in the pool. The default value is 8.
+
+Java EE 6           Last change: 20 Apr 2009                    1
+
+asadmin Utility Subcommands   create-connector-connection-pool(1)
 
      --maxpoolsize
 
@@ -206,14 +98,14 @@ Administration Commands       create-connector-connection-pool(1)
          If connection leak tracing is enabled, you can  use  the
          Admin  Console  to enable monitoring of the JDBC connec-
          tion pool to get statistics on the number  of connection
-
-Java EE 6           Last change: 20 Apr 2009                    4
-
-Administration Commands       create-connector-connection-pool(1)
-
          leaks.
 
          The default value is 0, which disables  connection  leak
+
+Java EE 6           Last change: 20 Apr 2009                    2
+
+asadmin Utility Subcommands   create-connector-connection-pool(1)
+
          tracing.
 
      --leakreclaim
@@ -258,12 +150,11 @@ Administration Commands       create-connector-connection-pool(1)
 
              Resources to a transaction are always  enlisted  and
              not  only  when  a method actually uses the resource
-
-Java EE 6           Last change: 20 Apr 2009                    5
-
-Administration Commands       create-connector-connection-pool(1)
-
              (default).
+
+Java EE 6           Last change: 20 Apr 2009                    3
+
+asadmin Utility Subcommands   create-connector-connection-pool(1)
 
          true
 
@@ -309,9 +200,9 @@ Administration Commands       create-connector-connection-pool(1)
 
              A connection is associated with the thread.
 
-Java EE 6           Last change: 20 Apr 2009                    6
+Java EE 6           Last change: 20 Apr 2009                    4
 
-Administration Commands       create-connector-connection-pool(1)
+asadmin Utility Subcommands   create-connector-connection-pool(1)
 
      --matchconnections
 
@@ -361,9 +252,9 @@ Administration Commands       create-connector-connection-pool(1)
          an order of values, where XATransaction is the  highest,
          and NoTransaction the lowest.
 
-Java EE 6           Last change: 20 Apr 2009                    7
+Java EE 6           Last change: 20 Apr 2009                    5
 
-Administration Commands       create-connector-connection-pool(1)
+asadmin Utility Subcommands   create-connector-connection-pool(1)
 
      --isconnectvalidatereq
 
@@ -405,5 +296,5 @@ SEE ALSO
      delete-connector-connection-pool(1),         list-connector-
      connection-pools(1)
 
-Java EE 6           Last change: 20 Apr 2009                    8
+Java EE 6           Last change: 20 Apr 2009                    6
 

@@ -1,0 +1,59 @@
+
+asadmin Utility Subcommands              show-component-status(1)
+
+NAME
+     show-component-status - displays the status of the  deployed
+     component
+
+SYNOPSIS
+     show-component-status
+     [--help]
+     [ --target  target]
+     component-name
+
+DESCRIPTION
+     The show-component-status command gets  the  status  of  the
+     deployed  component.  The  status is a string representation
+     returned by the server. The possible status strings  include
+     status  of app-name is enabled or status of app-name is dis-
+     abled. This command is supported in remote mode only.
+
+OPTIONS
+     --help
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     component-name
+
+         The name of the component whose status is to be listed.
+
+EXAMPLES
+     Example 1 Using show-component-status command
+
+       asadmin> show-component-status --user admin MEjbApp
+       Please enter the admin password>
+       Status of MEjbApp is enabled
+       Command show-component-status executed successfully.
+
+EXIT STATUS
+     0                   command executed successfully
+
+Java EE 6            Last change: 2 Jul 2009                    1
+
+asadmin Utility Subcommands              show-component-status(1)
+
+     1                   error in executing the command
+
+SEE ALSO
+     list-components(1), list-sub-components(1)
+
+Java EE 6            Last change: 2 Jul 2009                    2
+

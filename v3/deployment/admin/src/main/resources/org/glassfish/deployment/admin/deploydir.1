@@ -1,5 +1,5 @@
 
-Administration Commands                              deploydir(1)
+asadmin Utility Subcommands                          deploydir(1)
 
 NAME
      deploydir  -  deploys  an  exploded  format  of  application
@@ -7,17 +7,14 @@ NAME
 
 SYNOPSIS
      deploydir
-     [--terse={true|false}][ --echo={true|false} ]
-     [ --interactive={true|false} ] [ --host  host]
-     [--port port] [--secure| -s ] [ --user  admin_user]
-     [--passwordfile filename] [--help]
-      [ --virtualservers  virtual_servers]
-      [--contextroot context_root] [--force=true]
-      [ --verify =false] [ --precompilejsp =false]
-      [ --name  component_name] [--uniquetablenames=true|false]
-      [--dbvendorname dbvendorname] [--createtables=false |  --dropandcreatetables =false]
-      [ --generatermistubs =false] [ --availabilityenabled =false]
-      [ --libraries  jar_file[(path_separator)jar_file*]]
+     [--help]
+      [ --virtualservers  virtual-servers]
+      [--contextroot context-root] [--force={false|true}]
+      [ --verify ={false|true}] [ --precompilejsp ={false|true}]
+      [ --name  component-name] [--uniquetablenames={true|false}]
+      [ --dbvendorname  dbvendorname] [--createtables={false|true} |  --dropandcreatetables ={false|true}]
+      [ --generatermistubs ={false|true}] [ --availabilityenabled ={false|true}]
+      [ --libraries  jar-file[,jar-file]*]
       [--target target]
      [--type pkg-type]
      [--properties(name=value)[:name=value]*]
@@ -39,7 +36,7 @@ DESCRIPTION
      ments, use the deploy command. Directory deployment is  only
      supported  on localhost, that is, the client and server must
      reside on the same machine. For this reason, the only values
-     for the --host option are:
+     for the --host asadmin utility option are:
 
          o    localhost
 
@@ -47,13 +44,15 @@ DESCRIPTION
 
          o    The IP address of the machine
 
+     For  information  about  the  asadmin   utility,   see   the
+     asadmin(1M) man page.
+
+Java EE 6           Last change: 27 Jul 2009                    1
+
+asadmin Utility Subcommands                          deploydir(1)
+
      The --force option makes sure the  component  is  forcefully
      (re)deployed  even  if  the  specified component has already
-
-Java EE 6            Last change: 3 May 2009                    1
-
-Administration Commands                              deploydir(1)
-
      been deployed or already exists. Set --force to false for  a
      first  deployment. If the application with that name is run-
      ning and force is set to false, the command fails.
@@ -61,113 +60,9 @@ Administration Commands                              deploydir(1)
      This command is supported in remote mode only.
 
 OPTIONS
-     -t --terse
-
-         Indicates that any output data  must  be  very  concise,
-         typically avoiding human-friendly sentences and favoring
-         well-formatted data for consumption by a script. Default
-         is false.
-
-     -e --echo
-         If set to true, the command-line statement is echoed  on
-         the standard output. Default is false.
-
-     -I --interactive
-
-         If set to true (default),  only  the  required  password
-         options are prompted.
-
-     -H --host
-         The machine name where the domain administration  server
-         is running. The default value is localhost.
-
-     -p --port
-
-         The HTTP port or HTTPS  port  for  administration.  This
-         port is the port in the URL that you specify in your web
-         browser   to   manage   the   domain,    for    example,
-         http://localhost:4848.
-
-         The default port number for administration is 4848.
-
-     -s --secure
-         If set to true, uses SSL/TLS  to  communicate  with  the
-         domain administration server.
-
-         The default is false.
-
-     -u --user
-
-         The user name of the authorized administrative  user  of
-         the domain administration server.
-
-Java EE 6            Last change: 3 May 2009                    2
-
-Administration Commands                              deploydir(1)
-
-         If you have authenticated to a domain by using the asad-
-         min  login  command,  you  need  not  specify the --user
-         option for subsequent operations on the domain.
-
-     --passwordfile
-
-         Specifies the name, including the full path, of  a  file
-         that contains the password entries in a specific format.
-
-         The entry for a password must have the AS_ADMIN_  prefix
-         followed  by the password name in uppercase letters. For
-         example, to specify the password for the domain adminis-
-         tration server, use an entry with the following format:
-
-           AS_ADMIN_PASSWORD=password
-
-         In this example, password is  the  actual  administrator
-         password.
-
-         The following other passwords can also be specified:
-
-             o    AS_ADMIN_MAPPEDPASSWORD
-
-             o    AS_ADMIN_USERPASSWORD
-
-             o    AS_ADMIN_ALIASPASSWORD
-         All remote  commands  must  specify  the  administration
-         password  to  authenticate  to the domain administration
-         server. The password can be specified by one of the fol-
-         lowing means:
-
-             o    Through the --passwordfile option
-
-             o    Through the asadmin login command
-
-             o    Interactively at the command prompt
-         The asadmin login command can be used  only  to  specify
-         the  administration  password.  For other passwords that
-         remote commands require, use the  --passwordfile  option
-         or specify them at the command prompt.
-
-         After authenticating to a domain by  using  the  asadmin
-         login  command,  you need not specify the administration
-         password through the --passwordfile  option  for  subse-
-         quent  operations  on  the  domain.  However,  only  the
-         AS_ADMIN_PASSWORD option is not required. You still must
-         provide    the    other    passwords,    for    example,
-         AS_ADMIN_USERPASSWORD, when required by individual  com-
-         mands, such as update-file-user.
-
-         For security reasons, a password that is specified as an
-         environment variable is not read by the asadmin command.
-
-Java EE 6            Last change: 3 May 2009                    3
-
-Administration Commands                              deploydir(1)
-
-         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
-         changeit.
-
      --help
 
-         Displays the help text for the command.
+         Displays the help text for the subcommand.
 
      --virtualservers
          Comma-separated list of virtual server IDs.
@@ -181,58 +76,58 @@ Administration Commands                              deploydir(1)
      --force
          Makes sure the component is forcefully (re)deployed even
          if  the specified component has already been deployed or
-         already exists.
+         already exists. The default is false.
 
      --verify
 
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the com-
-         mand  runs  successfully  and  the  option  is  silently
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
          ignored.
 
      --precompilejsp
          By default, this option is set to false, which does  not
-         allow the JSP to pre-compile during deployment. Instead,
+         allow  the JSP to precompile during deployment. Instead,
          JSPs are compiled during runtime.
 
      --name
 
          Name of the deployable component.
 
+Java EE 6           Last change: 27 Jul 2009                    2
+
+asadmin Utility Subcommands                          deploydir(1)
+
      --uniquetablenames
+
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the com-
-         mand  runs  successfully  and  the  option  is  silently
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
          ignored.
 
-Java EE 6            Last change: 3 May 2009                    4
-
-Administration Commands                              deploydir(1)
-
      --dbvendorname
-
          Specifies the name of  the  database  vendor  for  which
          tables are created. Supported values include db2, mssql,
          oracle, derby, javadb, postgresql, pointbase and sybase,
          case-insensitive.  If  not  specified,  the value of the
          database-vendor-name  attribute  in  sun-ejb-jar.xml  is
          used.  If no value is specified, a connection is made to
-         the resource specifie by the jndi-name subelement of the
-         cmp-resource  element  in  the sun-ejb-jar.xml file, and
-         the database vendor name is read. If the connection can-
-         not  be  established, or if the value is not recognized,
-         SQL-92 compliance is presumed.
+         the resource specified by the  jndi-name  subelement  of
+         the  cmp-resource  element  in the sun-ejb-jar.xml file,
+         and the database vendor name is read. If the  connection
+         cannot  be  established,  or  if the value is not recog-
+         nized, SQL-92 compliance is presumed.
 
      --createtables
+
          Creates tables at  deployment  of  an  application  with
          unmapped  CMP  beans.  Default  is the create-tables-at-
          deploy entry in the cmp-resource  element  of  the  sun-
          ejb-jar.xml file.
 
      --dropandcreatetables
-
          Drops existing tables and creates tables during  deploy-
          ment  for  application  using unmapped CMP beans. If not
          specified, the tables are dropped  if  the  drop-tables-
@@ -245,55 +140,55 @@ Administration Commands                              deploydir(1)
          creating the new tables.
 
      --generatermistubs
+
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the com-
-         mand  runs  successfully  and  the  option  is  silently
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
          ignored.
+
+Java EE 6           Last change: 27 Jul 2009                    3
+
+asadmin Utility Subcommands                          deploydir(1)
 
      --availabilityenabled
 
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the com-
-         mand  runs  successfully  and  the  option  is  silently
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
          ignored.
 
-Java EE 6            Last change: 3 May 2009                    5
-
-Administration Commands                              deploydir(1)
-
      --libraries
-
          Specify the library JAR files by their relative or abso-
          lute   paths.   Specify   relative   paths  relative  to
          instance-root/lib/applibs. The JAR files  are  separated
-         by  a colon on Unix and Linux systems and by a semicolon
+         by  a colon on UNIX and Linux systems and by a semicolon
          on Windows systems. The libraries are made available  to
          the application in the order specified. Place the depen-
          dent JAR files in the domain-dir/lib directory.
 
      --target
+
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the com-
-         mand  runs  successfully  and  the  option  is  silently
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
          ignored.
 
      --type
-
          The packaging archive type  of  the  component  that  is
          being deployed. Possible values are as follows:
 
          osgi
-             The component is packaged as an OSGI  Alliance  bun-
+
+             The component is packaged as an OSGi  Alliance  bun-
              dle.
 
          The --type option is optional. If the component is pack-
          aged as a regular archive, omit this option.
 
      --properties --property
-
          Optional keyword-value  pairs  that  specify  additional
          properties  for the deployment. The available properties
          are determined by the implementation  of  the  component
@@ -305,25 +200,25 @@ Administration Commands                              deploydir(1)
            equivalent.  You  can  use either option regardless of
            the number of properties that you specify.
 
+Java EE 6           Last change: 27 Jul 2009                    4
+
+asadmin Utility Subcommands                          deploydir(1)
+
 OPERANDS
      dirpath
+
          Path to the directory containing the exploded format  of
          the deployable archive.
 
-Java EE 6            Last change: 3 May 2009                    6
-
-Administration Commands                              deploydir(1)
-
 EXAMPLES
-     Example 1 Using the deploydir command
+     Example 1 Deploying an Application From a Directory
 
      The  exploded  application  to  be  deployed   is   in   the
      /home/temp/sampleApp  directory.  Since  the force option is
      set to true, if an application of that name already  exists,
      the application is redeployed.
 
-       asadmin> deploydir --user admin --passwordfile passwords.txt
-       --host localhost --port 4848 --force=true --precompilejsp=true /home/temp/sampleApp
+       asadmin> deploydir --force=true --precompilejsp=true /home/temp/sampleApp
        Command deploydir executed successfully
 
 EXIT STATUS
@@ -335,5 +230,7 @@ SEE ALSO
      deploy(1), disable(1), enable(1), list-components(1),  rede-
      ploy(1), undeploy(1)
 
-Java EE 6            Last change: 3 May 2009                    7
+     asadmin(1M)
+
+Java EE 6           Last change: 27 Jul 2009                    5
 

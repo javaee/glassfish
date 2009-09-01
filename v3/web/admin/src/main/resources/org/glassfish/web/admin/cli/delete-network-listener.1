@@ -1,0 +1,57 @@
+
+asadmin Utility Subcommands            delete-network-listener(1)
+
+NAME
+     delete-network-listener - removes a network listener
+
+SYNOPSIS
+     delete-network-listener
+     [--help]
+     [ --target  server]
+     listener-name
+
+DESCRIPTION
+     The delete-network-listener command  removes  the  specified
+     network  listener.  This command is supported in remote mode
+     only.
+
+OPTIONS
+     --help
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     listener-name               The name of the network listener
+                                 to be deleted.
+
+EXAMPLES
+     Example 1 Using the delete-network-listener command
+
+     The following command deletes  the  network  listener  named
+     sampleListener:
+
+       asadmin> delete-network-listener --user admin1
+       --passwordfile passwords.txt --host host1 --port 5001 sampleListener
+       Command delete-network-listener executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+Java EE 6           Last change: 17 Jun 2009                    1
+
+asadmin Utility Subcommands            delete-network-listener(1)
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-network-listener(1), list-network-listeners(1)
+
+Java EE 6           Last change: 17 Jun 2009                    2
+
