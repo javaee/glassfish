@@ -205,7 +205,7 @@ public class CreateFileUser implements AdminCommand {
         
         // now adding user
         try {
-            CreateFileUser.handleAdminRealm(authRealmName, groups);
+            CreateFileUser.handleAdminGroup(authRealmName, groups);
             String[] groups1 = groups.toArray(new String[groups.size()]); 
             fr.addUser(userName, password, groups1);
             if(Util.isEmbeddedServer()) {
@@ -217,7 +217,6 @@ public class CreateFileUser implements AdminCommand {
             refreshRealm(authRealmName);
             setAdminRelatedMessage(fr, userName, report);
         } catch (Exception e) {
-            e.printStackTrace();
             report.setMessage(
                 localStrings.getLocalString("create.file.user.useraddfailed",
                 "Adding User {0} to the file realm {1} failed", 
@@ -287,12 +286,12 @@ public class CreateFileUser implements AdminCommand {
 	 }
       }
   }
-    static void handleAdminRealm(String lr, List<String> lg) {
+    static void handleAdminGroup(String lr, List<String> lg) {
         String fr = "admin-realm";   //this should be a constant defined at a central place -- the name of realm for admin
         String fg = "asadmin";       //this should be a constant defined at a central place -- fixed name of admin group
         if (fr.equals(lr)) {
-            if (!lg.contains(fg))
-                lg.add(fg);
+            lg.clear();             //basically, we are ignoring the group specified on command line when it's admin realm
+            lg.add(fg);
         }
     }
 }

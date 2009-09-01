@@ -48,12 +48,13 @@ public interface AdminAccessController {
     /** Authenticates the admin user by delegating to the underlying realm. The implementing classes
      *  should use the GlassFish security infrastructure constructs like LoginContextDriver. This method assumes that
      *  the realm infrastructure is available in both the configuration and runtime of the server.
-     *
+     *  <p>
+     *  Like the name suggests the method also ensures that the admin group membership is satisfied.
      * @param user String representing the user name of the user doing an admin opearation
      * @param password String representing clear-text password of the user doing an admin operation
      * @param realm String representing the name of the admin realm for given server
      * @throws LoginException if there is any error in underlying implementation
      * @return true if authentication succeeds, false otherwise
      */
-    boolean login(String user, String password, String realm) throws LoginException;
+    boolean loginAsAdmin(String user, String password, String realm) throws LoginException;
 }

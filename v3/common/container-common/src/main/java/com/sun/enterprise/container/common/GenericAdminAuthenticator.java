@@ -41,6 +41,7 @@ import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.SecurityLifecycle;
 import com.sun.enterprise.security.SecuritySniffer;
+import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.admin.util.AdminConstants;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -49,6 +50,7 @@ import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.AdminService;
 import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.security.common.Group;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Inhabitant;
@@ -60,10 +62,22 @@ import javax.management.remote.JMXAuthenticator;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.Enumeration;
+import java.util.Set;
 import java.io.File;
 
 /** Implementation of {@link AdminAccessController} that delegates to LoginContextDriver.
  *  @author Kedar Mhaswade (km@dev.java.net)
+ *  This is still being developed. This particular implementation both authenticates and authorizes
+ *  the users directly or indirectly. <p>
+ *  <ul>
+ *    <li> Authentication works by either calling FileRealm.authenticate() or by calling LoginContextDriver.login </li>
+ *    <li> The admin users in case of administration file realm are always in a fixed group called "asadmin". In case
+ *         of LDAP, the specific group relationships are enforced. </li>
+ *  </ul>
+ *  Note that admin security is tested only with FileRealm and LDAPRealm.
+ *  @see com.sun.enterprise.security.cli.LDAPAdminAccessConfigurator
+ *  @see com.sun.enterprise.security.cli.CreateFileUser
+ *  @since GlassFish v3
  */
 @Service
 public class GenericAdminAuthenticator implements AdminAccessController, JMXAuthenticator {
@@ -90,13 +104,22 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     
     private final Logger logger = Logger.getAnonymousLogger();
 
-    public boolean login(String user, String password, String realm) throws LoginException {
+    /** Ensures that authentication and authorization works as specified in class documentation.
+     *
+     * @param user String representing the user name of the user doing an admin opearation
+     * @param password String representing clear-text password of the user doing an admin operation
+     * @param realm String representing the name of the admin realm for given server
+     * @return boolean representing successful authentication and group membership
+     * @throws LoginException
+     */
+    public boolean loginAsAdmin(String user, String password, String realm) throws LoginException {
         if (as.usesFileRealm())
-            return handleFileRealm(user, password, realm);
+            return handleFileRealm(user, password);
         else {
             //now, deleate to the security service
             ClassLoader pc = null;
             boolean hack = false;
+            boolean authenticated = false;
             try {
                 pc = Thread.currentThread().getContextClassLoader();
                 if (!clh.getCommonClassLoader().equals(pc)) { //this is per Sahoo
@@ -107,11 +130,12 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                 sl.get();
                 snif.setup(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/modules/security", Logger.getAnonymousLogger());
                 LoginContextDriver.login(user, password, realm);
-                return true;
+                authenticated = true;
+                return ensureGroupMembership(user, realm);
            } catch(Exception e) {
-                LoginException le = new LoginException("login failed!");
-                le.initCause(e);
-                //thorw le //TODO need to work on this ...
+//              LoginException le = new LoginException("login failed!");
+//              le.initCause(e);
+//              thorw le //TODO need to work on this, this is rather too ugly
                 return false;
            } finally {
                 if (hack)
@@ -120,7 +144,28 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
         }
     }
 
-    private boolean handleFileRealm(String user, String password, String realm) throws LoginException {
+    private boolean ensureGroupMembership(String user, String realm) {
+        final String ADMIN_GROUP = "asadmin";
+        try {
+            SecurityContext sc = SecurityContext.getCurrent();
+            Set ps = sc.getPrincipalSet(); //before generics
+            for (Object principal : ps) {
+                if (principal instanceof Group) {
+                    Group group = (Group) principal;
+                    if (ADMIN_GROUP.equals(group.getName()))
+                        return true;
+                }
+            }
+            logger.fine("User is not the member of the special admin group");
+            return false;
+        } catch(Exception e) {
+            logger.fine("User is not the member of the special admin group: " + e.getMessage());
+            return false;
+        }
+
+    }
+
+    private boolean handleFileRealm(String user, String password) throws LoginException {
         /* I decided to handle FileRealm  as a special case. Maybe it is not such a good idea, but
            loading the security subsystem for FileRealm is really not required.
          */
@@ -141,7 +186,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                 FileRealmUser fru = (FileRealmUser)fr.getUser(user);
                 for (String group : fru.getGroups()) {
                     if (group.equals(AdminConstants.DOMAIN_ADMIN_GROUP_NAME))
-                        return fr.authenticate(user, password) != null;
+                        return fr.authenticate(user, password) != null; //this is indirect as all admin-keyfile users are in group "asadmin"
                 }
                 return false;
             }
@@ -228,7 +273,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
 
         // XXX - allow local password for JMX?
         try {
-            boolean ok = this.login(u, p, realm);
+            boolean ok = this.loginAsAdmin(u, p, realm);
             if (!ok) {
                 String msg = lsm.getLocalString("authentication.failed",
                         "User [{0}] does not have administration access", u);

@@ -223,7 +223,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         String user = up[0];
         String password = up.length > 1 ? up[1] : "";
         if (authenticator != null) {
-            return authenticator.login(user, password, as.getAuthRealmName());
+            return authenticator.loginAsAdmin(user, password, as.getAuthRealmName());
         }
         return true;   //if the authenticator is not available, allow all access - per Jerome
     }
