@@ -266,10 +266,10 @@ public class StatelessSessionContainer
     protected void registerMonitorableComponents() {
         //registryMediator.registerProvider(this);
         //registryMediator.registerProvider(pool);
-        poolStatsListener = new EjbPoolStatsProvider(pool,
+        poolProbeListener = new EjbPoolStatsProvider(pool,
                 containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
-        poolStatsListener.register();
+        poolProbeListener.register();
 
         super.registerMonitorableComponents();
         super.populateMethodMonitorMap();
@@ -691,7 +691,7 @@ public class StatelessSessionContainer
 
             if (pool != null) {
                 pool.close();
-                poolStatsListener.unregister();
+                poolProbeListener.unregister();
             }
 
         } catch(Throwable t) {

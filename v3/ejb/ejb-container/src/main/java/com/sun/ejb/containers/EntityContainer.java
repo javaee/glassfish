@@ -221,7 +221,7 @@ public class EntityContainer
     protected int	totalPassivationErrors;
 
     private EntityCacheStatsProvider	cacheStatsProvider;
-    private EntityBeanStatsProvider    entityBeanStatsListener;
+    private EntityBeanStatsProvider    entityBeanProbeListener;
 
     static {
         _logger.log(Level.FINE," Loading Entitycontainer...");
@@ -399,21 +399,21 @@ public class EntityContainer
 	    this.cacheStatsProvider = new EntityCacheStatsProvider(
 		    (BaseCache) readyStore, confMaxCacheSize);
 	    //registryMediator.registerProvider(cacheStatsProvider);
-            cacheStatsListener = new EjbCacheStatsProvider(cacheStatsProvider, 
+            cacheProbeListener = new EjbCacheStatsProvider(cacheStatsProvider, 
                     containerInfo.appName, containerInfo.modName,
                     containerInfo.ejbName);
-            cacheStatsListener.register();
+            cacheProbeListener.register();
 	}
         super.registerMonitorableComponents();
 	super.populateMethodMonitorMap();
-        entityBeanStatsListener = new EntityBeanStatsProvider(this, 
+        entityBeanProbeListener = new EntityBeanStatsProvider(this, 
                 containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
-        poolStatsListener = new EjbPoolStatsProvider(entityCtxPool, 
+        poolProbeListener = new EjbPoolStatsProvider(entityCtxPool, 
                 containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
-        entityBeanStatsListener.register();
-        poolStatsListener.register();
+        entityBeanProbeListener.register();
+        poolProbeListener.register();
         _logger.log(Level.FINE, "[Entity Container] registered monitorable");
     }
     
@@ -2428,9 +2428,9 @@ public class EntityContainer
             destroyReadyStoreOnUndeploy(); //cache must set the listern to null
             
             entityCtxPool.close();
-            poolStatsListener.unregister();
-            if (cacheStatsListener != null) {
-                cacheStatsListener.unregister();
+            poolProbeListener.unregister();
+            if (cacheProbeListener != null) {
+                cacheProbeListener.unregister();
             }
             
             // stops the idle bean passivator and also removes the link
@@ -2446,7 +2446,7 @@ public class EntityContainer
                 this.idleBeansPassivator.cache  = null;
             }
 	    cancelTimerTasks();
-            entityBeanStatsListener.unregister();
+            entityBeanProbeListener.unregister();
         }
         finally {
             

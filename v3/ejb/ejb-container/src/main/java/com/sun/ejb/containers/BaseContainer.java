@@ -380,8 +380,8 @@ public abstract class BaseContainer
     protected EjbMonitoringProbeProvider    ejbProbeNotifier;
     protected EjbTimedObjectStatsProvider   timerProbeListener;
     protected EjbTimedObjectProbeProvider   timerProbeNotifier;
-    protected EjbPoolStatsProvider          poolStatsListener;
-    protected EjbCacheStatsProvider         cacheStatsListener;
+    protected EjbPoolStatsProvider          poolProbeListener;
+    protected EjbCacheStatsProvider         cacheProbeListener;
 
     protected ContainerInfo                 containerInfo;
         
@@ -4098,15 +4098,8 @@ public abstract class BaseContainer
 		        _logger.log(Level.FINE, "", namEx);
 	        }
             
-	        registryMediator.undeploy();
-	        registryMediator = null;
-	        ejbMethodStatsManager = null;
+                unregisterProbeListeners();
 
-                ejbProbeListener.unregister();
-                if (timerProbeListener != null) {
-                    timerProbeListener.unregister();
-                }
-            
         } finally {
             if(System.getSecurityManager() == null) {
                 currentThread.setContextClassLoader(previousClassLoader);
@@ -4130,6 +4123,22 @@ public abstract class BaseContainer
 
     }
 
+    private void unregisterProbeListeners() {
+        registryMediator.undeploy();
+        registryMediator = null;
+        ejbMethodStatsManager = null;
+
+        ejbProbeListener.unregister();
+        if (timerProbeListener != null) {
+            timerProbeListener.unregister();
+        }
+        if (poolProbeListener != null) {
+            poolProbeListener.unregister();
+        }
+        if (cacheProbeListener != null) {
+            cacheProbeListener.unregister();
+        }
+    }
     /**
      * Called when server instance is Ready
      */

@@ -110,6 +110,7 @@ public class EjbPoolStatsProvider {
 
     public void unregister() {
         if (registered) {
+            registered = false;
             StatsProviderManager.unregister(this);
         }
     }

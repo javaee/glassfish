@@ -119,6 +119,10 @@ public class EjbMethodStatsProvider {
         registered = true;
     }
 
+    void unregistered() {
+        registered = false;
+    }
+
     boolean isRegistered() {
         return registered;
     }

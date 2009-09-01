@@ -102,6 +102,7 @@ public class EntityBeanStatsProvider {
 
     public void unregister() {
         if (registered) {
+            registered = false;
             StatsProviderManager.unregister(this);
         }
     }

@@ -292,10 +292,10 @@ public final class MessageBeanContainer extends BaseContainer implements
 						.getMaxPoolSize(), beanPoolDesc_
 						.getPoolIdleTimeoutInSeconds(), loader);
 
-                poolStatsListener = new EjbPoolStatsProvider(messageBeanPool_,
+                poolProbeListener = new EjbPoolStatsProvider(messageBeanPool_,
                         containerInfo.appName, containerInfo.modName,
                         containerInfo.ejbName);
-                poolStatsListener.register();
+                poolProbeListener.register();
 		// TODO registryMediator.registerProvider(messageBeanPool_);
 		// super.setMonitorOn(mdbc.isMonitoringEnabled());
 	}

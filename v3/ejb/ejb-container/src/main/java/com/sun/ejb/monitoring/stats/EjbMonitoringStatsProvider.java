@@ -110,9 +110,11 @@ public class EjbMonitoringStatsProvider {
 
     public void unregister() {
         if (registered) {
+            registered = false;
             StatsProviderManager.unregister(this);
             for ( EjbMethodStatsProvider monitor : methodMonitorMap.values()) {
                 if (monitor.isRegistered()) {
+                    monitor.unregistered();
                     StatsProviderManager.unregister(monitor);
                 }
             }
