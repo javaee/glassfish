@@ -222,6 +222,7 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         }
 
         UndeployCommandParameters params = new UndeployCommandParameters(name);
+        params.origin = UndeployCommandParameters.Origin.undeploy;
         
         ExtendedDeploymentContext deploymentContext = null;
         try {
