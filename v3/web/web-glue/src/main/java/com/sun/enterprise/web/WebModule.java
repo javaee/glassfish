@@ -44,6 +44,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.security.RunAs;
 import javax.servlet.*;
 import javax.servlet.http.HttpSession;
 
@@ -52,6 +53,8 @@ import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.deployment.AbsoluteOrderingDescriptor;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.Role;
+import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
@@ -1831,6 +1834,23 @@ public class WebModule extends PwcWebModule {
             wcd = new WebComponentDescriptor();
             wcd.setName(wrapper.getName());
             wcd.setCanonicalName(wrapper.getName());
+            String servletClassName = wrapper.getServletClassName();
+            if (servletClassName != null) {
+                Class clazz = null;
+                try {
+                    clazz = getLoader().getClassLoader().loadClass(servletClassName);
+                } catch(Exception ex) {
+                    throw new IllegalArgumentException(ex);
+                }
+                if (clazz.isAnnotationPresent(RunAs.class)) {
+                    RunAs runAs = (RunAs)clazz.getAnnotation(RunAs.class);
+                    String roleName = runAs.value();
+                    webBundleDescriptor.addRole(new Role(roleName));
+                    RunAsIdentityDescriptor runAsDesc = new RunAsIdentityDescriptor();
+                    runAsDesc.setRoleName(roleName);
+                    wcd.setRunAsIdentity(runAsDesc);
+                }
+            }
             webBundleDescriptor.addWebComponentDescriptor(wcd);
         }
 
