@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -56,11 +56,12 @@
 
         proxyExist(objectNameStr="#{pageSession.jRuntimeObj}" exist="#{requestScope.jRuntimeInitialized}")
         if (#{requestScope.jRuntimeInitialized}){
-        getProxyAttribute(objectNameStr="#{pageSession.jRuntimeObj}" attrName="JrubyRuntime" value="#{pageSession.xxx}")
-            getProxyAttribute(objectNameStr="#{pageSession.jRuntimeObj}" attrName="JrubyRuntime" value="#{pageSession.jruby['PROPERTY-jruby.runtime']}");
-            getProxyAttribute(objectNameStr="#{pageSession.jRuntimeObj}" attrName="JrubyRuntimeMin" value="#{pageSession.jruby['PROPERTY-jruby.runtime.min']}");
-            getProxyAttribute(objectNameStr="#{pageSession.jRuntimeObj}" attrName="JrubyRuntimeMax" value="#{pageSession.jruby['PROPERTY-jruby.runtime.max']}");
+            getProxyAttrs(objectNameStr="#{pageSession.jRuntimeObj}" valueMap="#{pageSession.tmpMap}");
+            mapPut(map="#{pageSession.jruby}" key="PROPERTY-jruby.runtime" value="#{pageSession.tmpMap['InitialPoolSize']}")
+            mapPut(map="#{pageSession.jruby}" key="PROPERTY-jruby.runtime.min" value="#{pageSession.tmpMap['MinPoolSize']}")
+            mapPut(map="#{pageSession.jruby}" key="PROPERTY-jruby.runtime.max" value="#{pageSession.tmpMap['MaxPoolSize']}")
         }
+        setPageSessionAttribute(key="edit" value="#{false}")
 
      />
     <!afterCreate

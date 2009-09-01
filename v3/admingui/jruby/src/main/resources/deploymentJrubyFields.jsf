@@ -35,7 +35,7 @@
 -->
 <!-- deploymentJrubyFields.jsf -->
 
-<sun:property id="nameProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.ApplicationName}" >
+<sun:property id="nameProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.ApplicationName}" >
     <sun:textField id="appName" columns="$int{40}" text="#{pageSession.jruby['name']}" styleClass="required" required="#{true}"
         onChange="javascript: setAppName('#{appNameId}', this.value, window)">
         <!afterCreate
@@ -43,7 +43,6 @@
         />
     </sun:textField>
 </sun:property>
-
 
 <sun:property id="cxp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.ContextRoot}" helpText="$resource{i18n.webApp.contextRootHelp}" >
     <sun:textField id="ctx" columns="$int{40}" text="#{pageSession.jruby['contextroot']}" >

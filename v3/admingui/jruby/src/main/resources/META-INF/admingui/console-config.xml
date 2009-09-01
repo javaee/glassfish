@@ -20,6 +20,13 @@
             content="deploymentJruby.jsf"
     />
 
+     <integration-point
+            id="jruby_edit_app"
+            type="org.glassfish.admingui:editAppPage"
+            content="jruby:jruby/editJrubyApp.jsf"
+    />
+
+
     <!-- add the dropdown option for selecting the type of app to deploy
          in the form of  label:value
      -->
