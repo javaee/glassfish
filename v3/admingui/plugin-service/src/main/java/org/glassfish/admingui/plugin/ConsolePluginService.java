@@ -127,6 +127,7 @@ public class ConsolePluginService {
 //System.out.println("Storing: " + config.getId() + " : " + provider.getClass().getClassLoader());
 		id = config.getId();
 		moduleClassLoaderMap.put(id, provider.getClass().getClassLoader());
+		classLoaderModuleMap.put(provider.getClass().getClassLoader(), id);
 
 		// Add the new IntegrationPoints
 		addIntegrationPoints(config.getIntegrationPoints(), id);
@@ -142,6 +143,84 @@ public class ConsolePluginService {
 		logger.finest(pointsByType.toString());
 	    }
 	}
+	//getHelpTOC("en");
+    }
+
+    /**
+     *
+     */
+    protected synchronized TOC getHelpTOC(String locale) {
+	if (locale == null) {
+	    locale = "en"; // Use this as the default...
+	}
+	TOC mergedTOC = helpSetMap.get(locale);
+	if (mergedTOC != null) {
+	    // Already calculated...
+	    return mergedTOC;
+	}
+
+	// TOC
+	Map<String, List<URL>> mapUrls = getResources(locale + "/help/toc.xml");
+
+	// Get our parser...
+	ConfigParser parser = new ConfigParser(habitat);
+
+	// Setup a new "merged" TOC...
+	mergedTOC = new TOC();
+	mergedTOC.setTOCItems(new ArrayList<TOCItem>());
+	mergedTOC.setVersion("2.0");
+
+	// Loop through the urls and add them all
+	String id = null; // module id
+	String prefix = "/" + locale + "/help/";  // prefix (minus module id)
+	List<URL> urls = null; // URLs to TOC files w/i each plugin module
+	for (Map.Entry<String, List<URL>> entry : mapUrls.entrySet()) {
+	    id = entry.getKey();
+	    urls = entry.getValue();
+	    for (URL url : urls) {
+		DomDocument doc = parser.parse(url);
+
+		// Merge all the TOC's...
+		TOC toc = (TOC) doc.getRoot().get();
+		for (TOCItem item : toc.getTOCItems()) {
+		    insertTOCItem(mergedTOC.getTOCItems(), item, id + prefix);
+		}
+	    }
+	}
+
+// FIXME: Sort?
+	return mergedTOC;
+    }
+
+    /**
+     *	<p> This method inserts the given <code>item</code> into the
+     *	    <code>dest</code> list.</p>
+     */
+    private void insertTOCItem(List<TOCItem> dest, TOCItem item, String prefix) {
+	int idx = dest.indexOf(item);
+	if (idx == -1) {
+	    // Fix target path...
+	    fixTargetPath(item, prefix);
+
+	    // Not there yet, just add it...
+	    dest.add(item);
+	} else {
+	    // Already there, insert children of item...
+	    TOCItem parent = dest.get(idx);
+	    for (TOCItem child : item.getTOCItems()) {
+		insertTOCItem(parent.getTOCItems(), child, prefix);
+	    }
+	}
+    }
+
+    /**
+     *
+     */
+    private void fixTargetPath(TOCItem parent, String prefix) {
+	parent.setTargetPath(prefix + parent.getTarget() + ".html");
+	for (TOCItem item : parent.getTOCItems()) {
+	    fixTargetPath(item, prefix);
+	}
     }
 
     /**
@@ -150,8 +229,8 @@ public class ConsolePluginService {
      *	    will NOT return <code>null</code>, but may return an empty
      *	    <code>List</code>.</p>
      */
-    public List<URL> getResources(String name) {
-	ArrayList<URL> result = new ArrayList<URL>();
+    public Map<String, List<URL>> getResources(String name) {
+	Map<String, List<URL>> result = new HashMap<String, List<URL>>();
 	if ((providers != null) && (providers.length > 0)) {
 	    // Get our parser...
 	    Enumeration<URL> urls = null;
@@ -161,11 +240,8 @@ public class ConsolePluginService {
 	    for (ConsoleProvider provider : providers) {
 		// Read the contents from the URL
 		ClassLoader loader = provider.getClass().getClassLoader();
-System.out.println("** CL: '" + loader + "'");
 		try {
 		    urls = loader.getResources(name);
-//		    url = loader.getResource(name);
-//System.out.println("URL " + provider.getClass().getName() + " == '" + url + "'");
 		} catch (IOException ex) {
 		    if (logger.isLoggable(Level.INFO)) {
 			logger.log(Level.INFO, "Error getting resource '"
@@ -175,19 +251,23 @@ System.out.println("** CL: '" + loader + "'");
 		    }
 		    continue;
 		}
+		List<URL> providerURLs = new ArrayList<URL>();
 		while (urls.hasMoreElements()) {
 		    // Found one... add it.
 		    url = urls.nextElement();
-System.out.println("URL " + provider.getClass().getName() + " == '" + url + "'");
 		    try {
-//System.out.println("\n\n########FILE: \n" + new String(readFromURL(url)) + "\n\n");
-			result.add(new URL(url, ""));
+			providerURLs.add(new URL(url, ""));
 		    } catch (Exception ex) {
 			// Ignore b/c this should not ever happen, we're not
 			// changing the URL
 			System.out.println(
 			    "ConsolePluginService: URL Copy Failed!");
 		    }
+		}
+
+		// Put the URLs into the Map by module id...
+		if (providerURLs.size() > 0) {
+		    result.put(classLoaderModuleMap.get(loader), providerURLs);
 		}
 	    }
 	}
@@ -279,7 +359,7 @@ System.out.println("URL " + provider.getClass().getName() + " == '" + url + "'")
     /**
      *	<p> Flag indicating intialization has already occured.</p>
      */
-    private boolean initialized	= false;
+    private boolean initialized	    = false;
 
     /**
      *	<p> This <code>Map</code> contains the {@link IntegrationPoint}s keyed
@@ -296,4 +376,18 @@ System.out.println("URL " + provider.getClass().getName() + " == '" + url + "'")
      */
     private Map<String, ClassLoader> moduleClassLoaderMap =
 	    new HashMap<String, ClassLoader>();
+
+    /**
+     *	<p> This <code>Map</code> keeps track of the module id for each
+     *	    <code>ClassLoader</code> that provides {@link IntegrationPoint}s.
+     *	    It is keyed by the classloader and returns the module id as
+     *	    specified in the module's <code>console-config.xml</code> file.</p>
+     */
+    private Map<ClassLoader, String> classLoaderModuleMap =
+	    new HashMap<ClassLoader, String>();
+
+    /**
+     *
+     */
+    private Map<String, TOC> helpSetMap = new HashMap<String, TOC>();
 }
