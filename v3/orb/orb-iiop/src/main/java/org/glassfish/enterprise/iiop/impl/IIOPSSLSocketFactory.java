@@ -36,7 +36,7 @@
 package org.glassfish.enterprise.iiop.impl;
 
 import com.sun.corba.ee.impl.orbutil.ORBUtility;
-import com.sun.corba.ee.pept.transport.Acceptor;
+import com.sun.corba.ee.spi.transport.CorbaAcceptor;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -341,7 +341,7 @@ public class IIOPSSLSocketFactory  implements ORBSocketFactory, Serializable
 	}
     }
 
-    public void setAcceptedSocketOptions(Acceptor acceptor,
+    public void setAcceptedSocketOptions(CorbaAcceptor acceptor,
             ServerSocket serverSocket, Socket socket)  {
 	if (_logger.isLoggable(Level.FINE)) {
 	    _logger.log(Level.FINE, "setAcceptedSocketOptions: " + acceptor

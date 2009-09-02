@@ -96,7 +96,7 @@ public class S1ASThreadPoolManager implements ThreadPoolManager {
         String minThreadsValue, maxThreadsValue, timeoutValue;//, numberOfQueuesValue;
         int minThreads = DEFAULT_MIN_THREAD_COUNT;
         int maxThreads = DEFAULT_MAX_THREAD_COUNT;
-        int idleTimeoutInSeconds = ORBConstants.DEFAULT_INACTIVITY_TIMEOUT;
+        int idleTimeoutInSeconds = 120000;
 //        int numberOfQueues = DEFAULT_NUMBER_OF_QUEUES;
 
         try {

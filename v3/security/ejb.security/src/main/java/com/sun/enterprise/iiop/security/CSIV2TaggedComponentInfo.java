@@ -63,8 +63,8 @@ import com.sun.corba.ee.spi.orbutil.generic.UnaryFunction;
 
 import com.sun.corba.ee.spi.folb.SocketInfo ;
 
-import com.sun.corba.ee.impl.encoding.CDRInputStream;
-import com.sun.corba.ee.impl.encoding.CDROutputStream;
+import com.sun.corba.ee.impl.encoding.CDRInputObject;
+import com.sun.corba.ee.impl.encoding.CDROutputObject;
 import com.sun.corba.ee.impl.encoding.EncapsInputStream;
 
 // The following classes are generated from CSIIOP.idl
@@ -257,7 +257,7 @@ public final class CSIV2TaggedComponentInfo
     private org.omg.IOP.TaggedComponent createCompoundSecMechListComponent(
 	CompoundSecMech[] mechList) {
 
- 	CDROutputStream out = (CDROutputStream) orb.create_output_stream();
+ 	CDROutputObject out = (CDROutputObject) orb.create_output_stream();
 	out.putEndian();
 
 	boolean stateful = false; 
@@ -620,7 +620,7 @@ public final class CSIV2TaggedComponentInfo
 	TLS_SEC_TRANS tls_sec = new TLS_SEC_TRANS(
 	    (short)targetSupports, (short)targetRequires, listTa);
 
- 	CDROutputStream out = (CDROutputStream) orb.create_output_stream();
+ 	CDROutputObject out = (CDROutputObject) orb.create_output_stream();
  	out.putEndian() ; 
  	TLS_SEC_TRANSHelper.write((org.omg.CORBA.portable.OutputStream)out, tls_sec);
 
@@ -777,7 +777,7 @@ public final class CSIV2TaggedComponentInfo
 
 	org.omg.IOP.TaggedComponent comp = tcomp.getIOPComponent(orb);
 	byte[] b = comp.component_data;
-	CDRInputStream in = (CDRInputStream) new EncapsInputStream(orb, b, b.length);
+	CDRInputObject in = (CDRInputObject) new EncapsInputStream(orb, b, b.length);
 	in.consumeEndian();
 	CompoundSecMechList l = CompoundSecMechListHelper.read(in);
 	CompoundSecMech[] list = l.mechanism_list;
@@ -804,7 +804,7 @@ public final class CSIV2TaggedComponentInfo
             ssl = null;
         } else {
             byte[] b = comp.component_data;
-            CDRInputStream in = (CDRInputStream)  new EncapsInputStream(orb, b, b.length);
+            CDRInputObject in = (CDRInputObject)  new EncapsInputStream(orb, b, b.length);
             in.consumeEndian();
             ssl = TLS_SEC_TRANSHelper.read(in);
         }
