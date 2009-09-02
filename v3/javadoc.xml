@@ -39,7 +39,7 @@
       <include name="external/mq-distribution/mq/src/share/java/**"/>
       <include name="external/eclipse.persistence/**"/>
       <include name="external/saaj-api/**" />
-      <include name="external/uel/**/src/main/java/**"/>
+      <include name="external/uel/**"/>
       <include name="external/validation-api/src/main/java/**"/>
       <include name="external/webbeans-api/**"/>
     </dirset>
@@ -86,7 +86,7 @@
       <antcall target="mq.download" />
       <antcall target="eclipse-persistence.download" />
       <antcall target="saaj-api.download" />
-      <antcall target="uel.checkout" />
+      <antcall target="uel.download" />
       <antcall target="bean-validator.checkout" />
       <antcall target="webbeans-api.download" />
   </target>
@@ -230,8 +230,8 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jsp.download" description="Download JSP" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jsp">
-          <dependency groupId="javax.servlet.jsp" artifactId="jsp-api" version="2.1.3-b02"/>
-          <dependency groupId="org.glassfish.web" artifactId="jsp-impl" version="2.1.3-b10"/>
+          <dependency groupId="javax.servlet.jsp" artifactId="jsp-api" version="2.1.3-b03"/>
+          <dependency groupId="org.glassfish.web" artifactId="jsp-impl" version="2.1.3-b15"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -375,17 +375,22 @@ fileset refid of artifact:dependencies does not work in unjar
       </unjar>
   </target>
 
-
-  <target name="uel.checkout" description="Checkout UEL workspace"> 
-      <echo message="checkout UEL from ${uel.svn.url}." />
-      <!-- checkout UEL source -->
-      <exec executable="svn" dir="${basedir}" failonerror="true" >
-	  <arg line="checkout" />
-          <arg line="${uel.svn.url}" />
-          <arg line="--username" />
-          <arg line="guest" />
-          <arg line="external/uel" />
-	</exec>
+  <target name="uel.download" description="Download UEL-API" depends="initialize.maven" >
+      <artifact:dependencies sourcesFilesetId="sources.dependency.uel" >
+          <dependency groupId="javax.el" artifactId="el-api" version="2.1.2-b05" classifier="sources" />
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
+      <mkdir dir="${external.dir}/uel" />
+      <copy todir="${external.dir}/uel" verbose="true">
+          <fileset refid="sources.dependency.uel" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/uel"  >
+          <fileset dir="${external.dir}/uel">
+              <include name="**/el-api*sources.jar"/>
+          </fileset>
+      </unjar>
   </target>
 
   <target name="bean-validator.checkout" description="Checkout BeanValidator workspace"> 
