@@ -633,6 +633,15 @@ public class ApplicationLifecycle implements Deployment {
         }
         // I need to create the application info here from the context, or something like this.
         // and return the application info from this method for automatic registration in the caller.
+
+        // set isComposite property on module props so we know whether to persist 
+        // module level properties inside ModuleInfo
+        String isComposite = context.getAppProps().getProperty(
+            ServerTags.IS_COMPOSITE);
+        if (isComposite != null) {
+            context.getModuleProps().setProperty(ServerTags.IS_COMPOSITE, isComposite);
+        }
+
         ModuleInfo mi = new ModuleInfo(events, moduleName, addedEngines,
             context.getModuleProps());
 

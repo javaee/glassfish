@@ -350,21 +350,14 @@ public class ModuleInfo {
         // write out the module properties only for composite app
         if (Boolean.valueOf(moduleProps.getProperty(
             ServerTags.IS_COMPOSITE))) {
+            moduleProps.remove(ServerTags.IS_COMPOSITE);
             for (Iterator itr = moduleProps.keySet().iterator(); 
                 itr.hasNext();) {
                 String propName = (String) itr.next();
-                if (!propName.equals(ServerTags.LOCATION) &&
-                    !propName.equals(ServerTags.OBJECT_TYPE) &&
-                    !propName.equals(ServerTags.CONTEXT_ROOT) &&
-                    !propName.equals(ServerTags.DIRECTORY_DEPLOYED) &&
-                    !propName.equals(ServerTags.IS_COMPOSITE) &&
-                    !propName.startsWith(ServerTags.APP_CONFIG))
-                {
-                    Property prop = module.createChild(Property.class);
-                    module.getProperty().add(prop);
-                    prop.setName(propName);
-                    prop.setValue(moduleProps.getProperty(propName));
-                }
+                Property prop = module.createChild(Property.class);
+                module.getProperty().add(prop);
+                prop.setName(propName);
+                prop.setValue(moduleProps.getProperty(propName));
             }
         }
 
