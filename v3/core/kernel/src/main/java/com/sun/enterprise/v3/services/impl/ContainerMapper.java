@@ -24,12 +24,13 @@ package com.sun.enterprise.v3.services.impl;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import com.sun.enterprise.v3.server.HK2Dispatcher;
 import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.config.GrizzlyEmbeddedHttp;
+//import com.sun.grizzly.config.ContextRootInfo;
+//import com.sun.grizzly.config.FileCacheAware;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
@@ -57,18 +58,17 @@ import org.jvnet.hk2.component.Habitat;
  * @author Alexey Stashok
  */
 @SuppressWarnings({"NonPrivateFieldAccessedInSynchronizedContext"})
-public class ContainerMapper extends StaticResourcesAdapter {
+public class ContainerMapper extends StaticResourcesAdapter /* implements FileCacheAware */{
     private final static String ROOT = "";
     private Mapper mapper;
     private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
     private String defaultHostName = "server";
-    private UDecoder urlDecoder = new UDecoder();
+    private final UDecoder urlDecoder = new UDecoder();
     private final Habitat habitat;
     private final GrizzlyService grizzlyService;
-    private ConcurrentLinkedQueue<HttpParserState> parserStates;
     protected final static int MAPPING_DATA = 12;
     protected final static int MAPPED_ADAPTER = 13;
-    private static byte[] errorBody =
+    private final static byte[] errorBody =
             HttpUtils.getErrorPage("Glassfish/v3","HTTP Status 404");
 
     private HK2Dispatcher hk2Dispatcher = new HK2Dispatcher();
@@ -82,7 +82,6 @@ public class ContainerMapper extends StaticResourcesAdapter {
         this.grizzlyEmbeddedHttp = grizzlyEmbeddedHttp;
         this.grizzlyService = grizzlyService;
         this.habitat = grizzlyService.habitat;
-        parserStates = new ConcurrentLinkedQueue<HttpParserState>();
         logger = GrizzlyEmbeddedHttp.logger();
         setRootFolder(grizzlyEmbeddedHttp.getWebAppRootPath());
     }
@@ -228,11 +227,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
                     logger.log(Level.WARNING, "Unable to error page", ex2);
                 }
             }
-        } finally {
-            if (mappingData != null){
-                mappingData.recycle();
-            }
-        }
+        } 
     }
 
     public synchronized void initializeFileURLPattern(String ext) {
@@ -298,6 +293,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
      */
     @Override
     public void afterService(Request req, Response res) throws Exception {
+        MappingData mappingData = (MappingData) req.getNote(MAPPING_DATA);
         try {
             Adapter adapter = (Adapter) req.getNote(MAPPED_ADAPTER);
             if (adapter != null) {
@@ -306,6 +302,9 @@ public class ContainerMapper extends StaticResourcesAdapter {
             super.afterService(req, res);
         } finally {
             req.setNote(MAPPED_ADAPTER, null);
+            if (mappingData != null){
+                mappingData.recycle();
+            }
         }
     }
 
