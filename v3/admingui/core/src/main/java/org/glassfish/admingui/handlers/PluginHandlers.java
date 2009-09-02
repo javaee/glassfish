@@ -124,7 +124,7 @@ public class PluginHandlers {
     	input={
             @HandlerInput(name="name", type=String.class, required=true)},
         output={
-            @HandlerOutput(name="resources", type=List.class)})
+            @HandlerOutput(name="resources", type=Map.class)})
     public static void getPluginResources(HandlerContext handlerCtx) {
 	String name = (String) handlerCtx.getInputValue("name");
 	ConsolePluginService cps = getPluginService(
