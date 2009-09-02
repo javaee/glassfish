@@ -21,8 +21,8 @@ import org.jvnet.hk2.annotations.Service;
  * Time: 5:32:17 PM
  * To change this template use File | Settings | File Templates.
  */
-@Service(name="list-logger-names")
-public class ListLoggerNames implements AdminCommand {
+@Service(name="list-logger-levels")
+public class ListLoggerLevels implements AdminCommand {
 
     @Inject
     LoggingConfigImpl loggingConfig;
