@@ -47,6 +47,11 @@ import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
+import java.lang.reflect.Method;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.quality.ToDo;
@@ -172,6 +177,9 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, Property
     @DuckTyped
     ContainerMonitoring getContainerMonitoring(String name);
 
+    @DuckTyped
+    String getMonitoringLevel(String name);
+
     public class Duck {
         public static ContainerMonitoring getContainerMonitoring(MonitoringService ms, String name) {
             for (ContainerMonitoring cm : ms.getContainerMonitoring()) {
@@ -179,6 +187,72 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, Property
                     return cm;
                 }
             }
+            return null;
+        }
+
+        private static List<String> getMethods = null;
+
+        public static String getMonitoringLevel(MonitoringService ms, String name) {
+
+            String level = null;
+
+            // It is possible that the given module name might exist as
+            // attribute of module-monitoring-levels or
+            // as container-monitoring element provided for extensibility.
+
+            // Order of precedence is to first check module-monitoring-levels
+            // then container-monitoring.
+
+            // module-monitoring-levels
+            // We need to use reflection to comapre the given name with the
+            // getters of ModuleMonitoringLevel.
+            // For performance, the method names are cached when this is run first time.
+
+            if (getMethods == null) {
+              getMethods = new ArrayList<String>();
+              synchronized (getMethods) {
+                for (Method method : ModuleMonitoringLevels.class.getDeclaredMethods()) {
+                    // If it is a getter store it in the list
+                    String str = method.getName();
+                    if (str.startsWith("get")) {
+                        getMethods.add(str);
+                    }
+                }
+              }
+            }
+
+            // strip - part from name
+            String rName = name.replaceAll("-", "");
+
+            Iterator<String> itr = getMethods.iterator();
+            while (itr.hasNext()) {
+                String methodName = itr.next();
+                if (rName.equalsIgnoreCase(methodName.substring(3))) {
+                    Class [] params = null;
+                    try {
+                        Method mthd = ModuleMonitoringLevels.class.getMethod(methodName, params);
+                        level = (String) mthd.invoke(ms.getModuleMonitoringLevels(), null);
+                    } catch (NoSuchMethodException nsme) {
+                        Logger.getAnonymousLogger().log(Level.WARNING, nsme.getMessage(), nsme);
+                    } catch (IllegalAccessException ile) {
+                        Logger.getAnonymousLogger().log(Level.WARNING, ile.getMessage(), ile);
+                    } catch (java.lang.reflect.InvocationTargetException ite) {
+                        Logger.getAnonymousLogger().log(Level.WARNING, ite.getMessage(), ite);
+                    }
+                    break;
+                }
+            }
+
+            if (level != null) 
+                return level;
+
+            // container-monitoring
+            for (ContainerMonitoring cm : ms.getContainerMonitoring()) {
+                if (cm.getName().equals(name)) {
+                    return cm.getLevel();
+                }
+            }
+
             return null;
         }
     }

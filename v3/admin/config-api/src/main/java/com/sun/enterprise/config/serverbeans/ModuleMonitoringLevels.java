@@ -268,6 +268,76 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
     public void setJvm(String value) throws PropertyVetoException;
     
     /**
+     * Gets the value of the security property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute (defaultValue="OFF")
+    public String getSecurity();
+
+    /**
+     * Sets the value of the security property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    public void setSecurity(String value) throws PropertyVetoException;
+    
+    /**
+     * Gets the value of the web-service-container property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute (defaultValue="OFF")
+    public String getWebServicesContainer();
+
+    /**
+     * Sets the value of the web-service-container property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    public void setWebServicesContainer(String value) throws PropertyVetoException;
+    
+
+    /**
+     * Gets the value of the jpa property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute (defaultValue="OFF")
+    public String getJpa();
+
+    /**
+     * Sets the value of the jpa property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    public void setJpa(String value) throws PropertyVetoException;
+    
+
+    /**
+     * Gets the value of the jax-ra property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute (defaultValue="OFF")
+    public String getJersey();
+
+    /**
+     * Sets the value of the jax-ra property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    public void setJersey(String value) throws PropertyVetoException;
+    
+    /**
     	Properties as per {@link PropertyBag}
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )

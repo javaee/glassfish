@@ -68,6 +68,10 @@ public interface ContainerMonitoring extends ConfigBeanProxy, Named {
     public static final String THREAD_POOL = "thread-pool";
     public static final String TRANSACTION_SERVICE = "transaction-service";
     public static final String WEB_CONTAINER = "web-container";
+    public static final String SECURITY = "security";
+    public static final String WEB_SERVICES_CONTAINER = "web-services-container";
+    public static final String JPA = "jpa";
+    public static final String JERSEY = "jersey";
 
     /**
      * The monitoring level of this monitoring item 
