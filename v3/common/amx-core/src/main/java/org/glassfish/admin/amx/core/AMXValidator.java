@@ -316,17 +316,30 @@ public final class AMXValidator
     
     private void addToProblems( final String msg, final List<String> problems, final Throwable t )
     {
-        // it's not an issue if the MBean went missing
-        final Throwable rootCause = ExceptionUtil.getRootCause(t);
-        if ( ! instanceNotFound(rootCause) )
+        if ( t == null )
         {
-            problems.add( msg + "\n" + ExceptionUtil.toString(rootCause) );
+            problems.add( msg );
+        }
+        else
+        {
+            // it's not an issue if the MBean went missing
+            final Throwable rootCause = ExceptionUtil.getRootCause(t);
+            if ( ! instanceNotFound(rootCause) )
+            {
+                problems.add( msg + "\n" + ExceptionUtil.toString(rootCause) );
+            }
         }
     }
     
     private void addToProblems( final List<String> problems, final Throwable t )
     {
         addToProblems( "", problems, t );
+    }
+    
+    
+    private void addToProblems( final String msg, final List<String> problems)
+    {
+        addToProblems( msg, problems, null );
     }
     
     private List<String> _validate(final AMXProxy proxy)
@@ -818,14 +831,22 @@ public final class AMXValidator
             }
         }
 
-        void validateMetadataStringNonEmpty(final String fieldName)
+        void validateMetadataStringNonEmptyOrNull(final String fieldName)
         {
             if (mFieldNames.contains(fieldName))
             {
                 final Object value = mDescriptor.getFieldValue(fieldName);
-                if (value == null || (!(value instanceof String)) || ((String) value).length() == 0)
+                if ( value != null )
                 {
-                    mProblems.add("Descriptor field " + fieldName + " must be non-zero length String, value = " + value);
+                    if ( ! (value instanceof String) )
+                    {
+                        mProblems.add("Descriptor field " + fieldName + " must be a String!" );
+                    }
+                    
+                    if ( ((String)value).length() == 0)
+                    {
+                        mProblems.add("Descriptor field " + fieldName + " must be non-zero length String, value = " + value);
+                    }
                 }
             }
         }
@@ -841,7 +862,34 @@ public final class AMXValidator
                 }
             }
         }
+    }
+    
+        private static boolean
+    isLegalClassname( final String s )
+    {
+        if ( s.length()== 0 || s.indexOf(" ") >= 0 )
+        {
+            return false;   // detect totally bogus name
+        }
+            
+        return true;
+    }
 
+    
+    private void checkLegalAttributeType(final String clazz, final String attrName, final List<String> problems )
+    {
+        if ( ! isLegalClassname(clazz) )
+        {
+            addToProblems( "Illegal classname for attribute " + StringUtil.quote(attrName) + ": " + StringUtil.quote(clazz), problems );
+        }
+    }
+    
+    private void checkLegalReturnType(final String clazz, final String operation, final List<String> problems )
+    {
+        if ( ! isLegalClassname(clazz) )
+        {
+            addToProblems( "Illegal return type for " + operation + "(): " + StringUtil.quote(clazz), problems );
+        }
     }
 
     private List<String> validateMetadata(final AMXProxy proxy)
@@ -868,19 +916,23 @@ public final class AMXValidator
         val.validateMetadataBoolean(DESC_SUPPORTS_ADOPTION);
         val.validateMetadataBoolean(DESC_STD_IMMUTABLE_INFO);
 
-        val.validateMetadataStringNonEmpty(DESC_STD_INTERFACE_NAME);
-        val.validateMetadataStringNonEmpty(DESC_GENERIC_INTERFACE_NAME);
-        val.validateMetadataStringNonEmpty(DESC_GROUP);
+        val.validateMetadataStringNonEmptyOrNull(DESC_STD_INTERFACE_NAME);
+        val.validateMetadataStringNonEmptyOrNull(DESC_GENERIC_INTERFACE_NAME);
+        val.validateMetadataStringNonEmptyOrNull(DESC_GROUP);
 
         val.validate(DESC_SUB_TYPES, String[].class);
 
         for (final MBeanAttributeInfo attrInfo : mbeanInfo.getAttributes())
         {
+            checkLegalAttributeType( attrInfo.getType(), attrInfo.getName(), problems );
+
             new MetadataValidator(attrInfo.getDescriptor(), problems);
         }
 
         for (final MBeanOperationInfo opInfo : mbeanInfo.getOperations())
         {
+            checkLegalReturnType( opInfo.getReturnType(), opInfo.getName(), problems );
+            
             new MetadataValidator(opInfo.getDescriptor(), problems);
         }
 
