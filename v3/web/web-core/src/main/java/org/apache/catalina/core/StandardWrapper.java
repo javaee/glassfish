@@ -609,6 +609,9 @@ public class StandardWrapper
      * @param className Servlet class name
      */
     public void setServletClassName(String className) {
+        if (className == null) {
+            throw new NullPointerException("Null servlet class name");
+        }
         if (servletClassName != null) {
             throw new IllegalStateException(
                 "Wrapper already initialized with servlet instance, " +
@@ -638,14 +641,19 @@ public class StandardWrapper
      * @param servletClass The class object from which this servlet will
      * be instantiated
      */
-    public void setServletClass(Class <? extends Servlet> servletClass) {
-        if (servletClassName != null) {
+    public void setServletClass(Class <? extends Servlet> clazz) {
+        if (clazz == null) {
+            throw new NullPointerException("Null servlet class");
+        }
+        if ((servletClass != null) ||
+                servletClassName != null &&
+                    !servletClassName.equals(clazz.getName())) {
             throw new IllegalStateException(
                 "Wrapper already initialized with servlet instance, " +
                 "class, or name");
         }
-        this.servletClass = servletClass;
-        servletClassName = servletClass.getName();
+        servletClass = clazz;
+        servletClassName = clazz.getName();
         if (Constants.JSP_SERVLET_CLASS.equals(servletClassName)) {
             isJspServlet = true;
         }
@@ -676,7 +684,8 @@ public class StandardWrapper
                 "class, or name");
         }
         this.instance = instance;
-        servletClassName = instance.getClass().getName();
+        servletClass = instance.getClass();
+        servletClassName = servletClass.getName();
         if (Constants.JSP_SERVLET_CLASS.equals(servletClassName)) {
             isJspServlet = true;
         }
