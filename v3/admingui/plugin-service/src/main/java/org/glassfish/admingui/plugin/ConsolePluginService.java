@@ -143,13 +143,13 @@ public class ConsolePluginService {
 		logger.finest(pointsByType.toString());
 	    }
 	}
-	//getHelpTOC("en");
     }
 
     /**
-     *
+     *	<p> This method returns a merged Table Of Contents for all found help
+     *	    sets for the given locale.</p>
      */
-    protected synchronized TOC getHelpTOC(String locale) {
+    public synchronized TOC getHelpTOC(String locale) {
 	if (locale == null) {
 	    locale = "en"; // Use this as the default...
 	}
