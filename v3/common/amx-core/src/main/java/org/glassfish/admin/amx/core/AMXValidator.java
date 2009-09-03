@@ -320,7 +320,7 @@ public final class AMXValidator
         final Throwable rootCause = ExceptionUtil.getRootCause(t);
         if ( ! instanceNotFound(rootCause) )
         {
-            problems.add( msg + rootCause.toString() );
+            problems.add( msg + "\n" + ExceptionUtil.toString(rootCause) );
         }
     }
     
@@ -398,6 +398,11 @@ public final class AMXValidator
 
         // test path resolution
         final Pathnames paths = mDomainRoot.getPathnames();
+        if ( paths == null )
+        {
+            throw new IllegalStateException("Pathnames MBean does not exist");
+        }
+        
         try
         {
             final String path = proxy.path();
@@ -416,7 +421,7 @@ public final class AMXValidator
                 problems.add("Path " + path + " does not resolve to ObjectName: " + actualObjectName);
             }
         }
-        catch (Throwable t)
+        catch (final Throwable t)
         {
             addToProblems( problems, t);
         }
@@ -1034,12 +1039,14 @@ public final class AMXValidator
         // list them in order
         for (final ObjectName objectName : targets)
         {
+            //debug( "AMXValidator.validate(): " + objectName );
             List<String> problems = new ArrayList<String>();
             AMXProxy     amx = null;
             try
             {
                 // certain failures prevent even the proxy from being created, a fatal error
                 amx = mProxyFactory.getProxy(objectName);
+                //debug( "VALIDATING: got proxy for: " + objectName );
             }
             catch( final Exception e )
             {
@@ -1060,16 +1067,23 @@ public final class AMXValidator
                 }
                 catch( final Exception e )
                 {
+                    //debug( "AMXValidator.validate(): got exception from _validate for " + objectName + " : " + e );
                     problems = new ArrayList<String>();
                     addToProblems( "Validation failure for MBean " + objectName + ", ", problems, e);
+                }
+                if ( problems.size() != 0 )
+                {
+                    debug( "AMXValidator.validate(): got problems from _validate for " + objectName + " : " + problems );
                 }
             }
             if ( problems.size() != 0 )
             {
+                ImplUtil.getLogger().log( Level.INFO, "Unregistering non-compliant MBean: " + objectName + " for problems: " + problems );
                 unregisterNonCompliantMBean(objectName);
             }
 
             failures.result(objectName, problems);
+            //debug( "AMXValidator.validate(): finished for: " + objectName );
         }
         final long elapsedMillis = System.currentTimeMillis() - startMillis;
 
