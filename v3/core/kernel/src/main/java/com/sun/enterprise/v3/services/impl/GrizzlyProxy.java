@@ -94,7 +94,7 @@ public class GrizzlyProxy implements NetworkProxy {
 
     public GrizzlyProxy(GrizzlyService service, NetworkListener listener) {
         grizzlyService = service;
-        final Collection<VirtualServer> list = service.getHabitat().getAllByType(VirtualServer.class);
+        final Collection<VirtualServer> list = service.getHabitat().getAllByContract(VirtualServer.class);
         final String vsName = listener.findHttpProtocol().getHttp().getDefaultVirtualServer();
         for (VirtualServer virtualServer : list) {
             if(virtualServer.getId().equals(vsName)) {
