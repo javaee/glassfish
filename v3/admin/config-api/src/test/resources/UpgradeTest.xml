@@ -11,6 +11,28 @@
       <engine sniffer="security"></engine>
     </application>
   </applications>
+  <j2ee-application location="/foo/bar">
+  </j2ee-application>
+    <something-weird>
+        <foo>
+            <something-weird>
+                <again>
+                    <something-weird>
+                        <notagain>
+                            <ohno>
+                                <stopthis></stopthis>
+                            </ohno>
+                        </notagain>
+                    </something-weird>
+                </again>
+            </something-weird>
+        </foo>
+    </something-weird>
+    <something-weirder>
+        <foo>
+            <bar></bar>   
+        </foo>
+    </something-weirder>
   <resources>
     <jdbc-resource pool-name="__TimerPool" jndi-name="jdbc/__TimerPool" object-type="system-admin"></jdbc-resource>
     <jdbc-resource pool-name="DerbyPool" jndi-name="jdbc/__default"></jdbc-resource>

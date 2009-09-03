@@ -64,7 +64,7 @@ import javax.validation.constraints.NotNull;
     "property"
 }) */
 
-@Configured
+@Configured(name="j2ee-application") // name is necessary as hk2 name mangling will create j2-ee-application
 public interface J2eeApplication extends ConfigBeanProxy, Injectable, Named, PropertyBag {
 
     /**
