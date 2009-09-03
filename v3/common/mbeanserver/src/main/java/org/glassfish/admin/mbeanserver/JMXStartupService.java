@@ -55,6 +55,8 @@ import java.util.ArrayList;
 import java.lang.management.ManagementFactory;
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.JmxConnector;
+import com.sun.enterprise.config.serverbeans.AmxPref;
+import com.sun.enterprise.config.serverbeans.Domain;
 
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXServiceURL;
@@ -82,6 +84,8 @@ public final class JMXStartupService implements Startup, PostConstruct
     }
     @Inject
     private MBeanServer mMBeanServer;
+    @Inject
+    private Domain mDomain;
     @Inject
     private AdminService mAdminService;
     @Inject
@@ -117,9 +121,19 @@ public final class JMXStartupService implements Startup, PostConstruct
 
         final List<JmxConnector> configuredConnectors = mAdminService.getJmxConnector();
 
-        mConnectorsStarterThread = new JMXConnectorsStarterThread(mMBeanServer, configuredConnectors, mBootAMX);
+        // AmxPref might not exist
+        final AmxPref amxPref = mDomain.getAmxPref();
+        final boolean autoStart = amxPref == null ? AmxPref.AUTO_START_DEFAULT : Boolean.valueOf(amxPref.getAutoStart());
+        
+        mConnectorsStarterThread = new JMXConnectorsStarterThread(mMBeanServer, configuredConnectors, mBootAMX, ! autoStart);
         mConnectorsStarterThread.start();
-
+        
+        // start AMX *first* (if auto start) so that it's ready
+        if ( autoStart )
+        {
+            new BootAMXThread(mBootAMX).start();
+        }
+        
         mEvents.register(new ShutdownListener());
     }
 
@@ -130,6 +144,19 @@ public final class JMXStartupService implements Startup, PostConstruct
 
         mConnectorsStarterThread.shutdown();
     }
+    
+    private static final class BootAMXThread extends Thread
+    {
+        private final BootAMX mBooter;
+        public BootAMXThread(final BootAMX booter)
+        {
+            mBooter = booter;
+        }
+        public void run()
+        {
+            mBooter.bootAMX();
+        }
+    }
 
     /**
     Thread that starts the configured JMXConnectors.
@@ -139,16 +166,18 @@ public final class JMXStartupService implements Startup, PostConstruct
         private final List<JmxConnector> mConfiguredConnectors;
         private final MBeanServer mMBeanServer;
         private final BootAMX mAMXBooterNew;
-
+        private final boolean mNeedBootListeners;
 
         public JMXConnectorsStarterThread(
             final MBeanServer mbs,
             final List<JmxConnector> configuredConnectors,
-            final BootAMX amxBooter)
+            final BootAMX amxBooter,
+            final boolean  needBootListeners )
         {
             mMBeanServer = mbs;
             mConfiguredConnectors = configuredConnectors;
             mAMXBooterNew = amxBooter;
+            mNeedBootListeners = needBootListeners;
         }
 
 
@@ -197,7 +226,7 @@ public final class JMXStartupService implements Startup, PostConstruct
             final boolean securityEnabled = Boolean.parseBoolean(connConfig.getSecurityEnabled());
         
             JMXConnectorServer server = null;
-            final BootAMXListener listener = new BootAMXListener(server, mAMXBooterNew);
+            final BootAMXListener listener = mNeedBootListeners ? new BootAMXListener(server, mAMXBooterNew) : null;
             if (protocol.equals("rmi_jrmp"))
             {
                 final RMIConnectorStarter starter = new RMIConnectorStarter(mMBeanServer, address, port, protocol, authRealmName, securityEnabled, sAuthenticator, listener);

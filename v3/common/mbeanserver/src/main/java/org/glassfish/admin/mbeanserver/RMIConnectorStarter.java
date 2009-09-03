@@ -128,7 +128,10 @@ final class RMIConnectorStarter extends ConnectorStarter
 
         mJMXServiceURL = new JMXServiceURL(urlStr);
         mConnectorServer = JMXConnectorServerFactory.newJMXConnectorServer(mJMXServiceURL, env, mMBeanServer);
-        mConnectorServer.addNotificationListener(mBootListener, null, mJMXServiceURL.toString() );
+        if ( mBootListener != null )
+        {
+            mConnectorServer.addNotificationListener(mBootListener, null, mJMXServiceURL.toString() );
+        }
         mConnectorServer.start();
 
         return mConnectorServer;

@@ -117,7 +117,10 @@ final class JMXMPConnectorStarter extends ConnectorStarter
         try
         {
             jmxmp = new JMXMPConnectorServer(serviceURL, env, mMBeanServer);
-            jmxmp.addNotificationListener(mBootListener, null, serviceURL.toString() );
+            if ( mBootListener != null )
+            {
+                jmxmp.addNotificationListener(mBootListener, null, serviceURL.toString() );
+            }
 
             jmxmp.start();
             startedOK = true;

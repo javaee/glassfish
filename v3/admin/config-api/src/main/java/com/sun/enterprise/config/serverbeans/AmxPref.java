@@ -66,4 +66,12 @@ public interface AmxPref extends ConfigBeanProxy, Injectable, PropertyBag, Syste
     @Attribute(defaultValue="true", dataType=Boolean.class)
     public String getUnregisterNonCompliant();
     public void setUnregisterNonCompliant(String unregister);
+    
+    /** lazy-loads AMX by default */
+    public static final boolean AUTO_START_DEFAULT = false;
+    
+    /** Whether to automatically start AMX */
+    @Attribute(defaultValue="" + AUTO_START_DEFAULT, dataType=Boolean.class)
+    public String getAutoStart();
+    public void setAutoStart(String autoStart);
 }
