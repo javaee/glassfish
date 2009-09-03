@@ -76,13 +76,13 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
 
     private static final String INSTALL_ROOT_URI_PROPERTY_NAME = "com.sun.aas.installRootURI";
 
-    private final boolean debug = false;
     private final String PROBE_PROVIDER_CLASS_NAMES = "probe-provider-class-names";
     private final String PROBE_PROVIDER_XML_FILE_NAMES = "probe-provider-xml-file-names";
     private final String DELIMITER = ",";
     private StatsProviderManagerDelegateImpl spmd;
     private boolean ddebug = false;
     private boolean monitoringEnabled;
+    private boolean hasDiscoveredXMLProviders = false;
 
     public void postConstruct() {
         // wbn: This value sticks for the life of the bootstrapping.  If the user changes it
@@ -94,21 +94,27 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         else
             monitoringEnabled = false;
 
+        //Don't listen for any events and dont process any probeProviders or statsProviders (dont set delegate)
+        if (!monitoringEnabled)
+                return;
+
         // Register as ModuleLifecycleListener
         events.register(this);
-        registry.register(this);
 
+        enableMonitoring(false);
+    }
+
+    private void discoverProbeProviders() {
         // Iterate thru existing modules
         for (Module m : registry.getModules()) {
-                printd(" In startup, calling moduleStarted");
-                moduleStarted(m);
+            //printd(" In startup, calling moduleStarted");
+            moduleStarted(m);
         }
 
-        if(monitoringEnabled)
-            setStatsProviderManagerDelegate();
     }
 
     public void preDestroy() {
+        //We need to do the cleanup for preventing errors from server starting in Embedded mode
         ProbeRegistry.cleanup();
         if (spmd != null) {
             spmd = new StatsProviderManagerDelegateImpl(pcm, probeRegistry, mrdr, domain, monitoringService);
@@ -118,9 +124,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
 
     public void event(Event event) {
         if (event.is(EventTypes.SERVER_READY)) {
-            mprint("***************************************");
-            mprint("**** SERVER_READY event received *****");
-            mprint("***************************************");
+            // Process the XMLProviders in lib/monitor dir. Should be the last thing to do in server startup.
             discoverXMLProviders();
         }
     }
@@ -130,9 +134,10 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         if(spmd != null)
             return;
 
+        //Set the StatsProviderManagerDelegate, so we can start processing the StatsProviders
         spmd = new StatsProviderManagerDelegateImpl(pcm, probeRegistry, mrdr, domain, monitoringService);
         StatsProviderManager.setStatsProviderManagerDelegate(spmd);
-        mprint(" StatsProviderManagerDelegate is assigned ********************");
+        printd(" StatsProviderManagerDelegate is assigned ********************");
 
         // Register listener for AMX DomainRoot loaded
         MBeanListener.listenForDomainRoot(ManagementFactory.getPlatformMBeanServer(), spmd);
@@ -146,8 +151,8 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     public synchronized void moduleStarted(Module module) {
         if (module == null) return;
         String str = module.getName();
-        //mprint("moduleStarted: " + str);
         if (!map.containsKey(str)) {
+            //printd("moduleStarted: " + str);
             map.put(str, module);
             addProvider(module);
         }
@@ -156,16 +161,18 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     public synchronized void moduleStopped(Module module) {
         if (module == null) return;
         String str = module.getName();
-        //mprint("moduleStopped: " + str);
+        //Cannot really remove the Provider b'cos of a bug in BTrace. We should just not reprocess the module
+        /*
         if (map.containsKey(str)) {
             map.remove(str);
             removeProvider(module);
         }
+        */
     }
 
     private void addProvider(Module module) {
         String mname = module.getName();
-        //mprint("addProvider for " + mname + "...");
+        //printd("addProvider for " + mname + "...");
         ClassLoader mcl = module.getClassLoader();
         //get manifest entries and process
         ModuleDefinition md = module.getModuleDefinition();
@@ -193,7 +200,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                 }
                 xnames = attrs.getValue(PROBE_PROVIDER_XML_FILE_NAMES);
                 if (xnames != null) {
-                    mprint("xnames = " + xnames);
+                    printd("xnames = " + xnames);
                     StringTokenizer st = new StringTokenizer(xnames, DELIMITER);
                     while (st.hasMoreTokens()) {
                         processProbeProviderXML(mcl, st.nextToken(), true);
@@ -204,6 +211,10 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     }
 
     private void discoverXMLProviders() {
+        // Dont process if already discovered, Ideally we should do this whenever a new XML is dropped in lib/monitor
+        if (hasDiscoveredXMLProviders)
+            return;
+
         try {
             URI xmlProviderDirStr = new URI(System.getProperty(INSTALL_ROOT_URI_PROPERTY_NAME) + "/" + "lib" + "/" + "monitor");
             printd("ProviderXML's Dir = " + xmlProviderDirStr.getPath());
@@ -212,6 +223,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
             printd("ProviderXML's Dir exists = " + xmlProviderDir.exists());
             printd("ProviderXML's Dir path - " + xmlProviderDir.getAbsolutePath());
             loadXMLProviders(xmlProviderDir);
+            hasDiscoveredXMLProviders = true;
         } catch (URISyntaxException ex) {
             Logger.getLogger(MonitoringBootstrap.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -233,14 +245,13 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         for (File file : files) {
             printd("Found the provider xml - " + file.getAbsolutePath());
             int index = file.getName().indexOf("-:");
-            mprint ( "index = " + index);
             if (index != -1) {
                 String moduleName = file.getName().substring(0,index);
                 providerMap.put(moduleName, file);
-                mprint(" The provider xml belongs to - \"" + moduleName + "\"");
+                printd(" The provider xml belongs to - \"" + moduleName + "\"");
                 for (Module module:map.values()) {
                     if (module.getName().contains("grizzly"))
-                        mprint (" module = \"" + module.getName() + "\"");
+                        printd (" module = \"" + module.getName() + "\"");
                 }
                 if (!map.containsKey(moduleName)) {
                     Logger.getLogger(MonitoringBootstrap.class.getName()).log(Level.SEVERE,
@@ -248,7 +259,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                             "from XML directory : " + moduleName);
                     continue;
                 }
-                mprint (" Module found (containsKey)");
+                printd (" Module found (containsKey)");
                 Module module = map.get(moduleName);
                 if (module == null) {
                     Logger.getLogger(MonitoringBootstrap.class.getName()).log(Level.SEVERE,
@@ -256,8 +267,8 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                             "from XML directory : " + moduleName);
                 } else {
                     ClassLoader mcl = module.getClassLoader();
-                    mprint("ModuleClassLoader = " + mcl);
-                    mprint("XML File path = " + file.getAbsolutePath());
+                    printd("ModuleClassLoader = " + mcl);
+                    printd("XML File path = " + file.getAbsolutePath());
                     processProbeProviderXML(mcl, file.getAbsolutePath(), false);
                 }
 
@@ -266,17 +277,14 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         }
     }
 
-    private void printd(String pstring) {
-        if (ddebug == true)
-            System.out.println(" APK : " + pstring);
-    }
-
     private void removeProvider(Module module) {
-        mprint("removeProvider ...");
+        //Cannot really remove the Provider b'cos of a bug in BTrace (Cannot re-retransform).
+        // We should just not reprocess the module, next time around
+        printd("removeProvider ...");
     }
 
     private void processProbeProviderClass(Class cls) {
-        mprint("processProbeProviderClass for " + cls);
+        printd("processProbeProviderClass for " + cls);
         try {
 
             probeProviderFactory.getProbeProvider(cls);
@@ -290,12 +298,6 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
 
     private void processProbeProviderXML(ClassLoader mcl, String xname, boolean inBundle) {
         probeProviderFactory.processXMLProbeProviders(mcl, xname, inBundle);
-    }
-
-    private void mprint(String str) {
-        if (debug) {
-            System.out.println("MSR: " + str);
-        }
     }
 
     /*public void event(Event event) {
@@ -385,15 +387,39 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
             probeProviderFactory.dtraceEnabledChanged(enabled);
         }
         else if(propName.equals("monitoring-enabled")) {
+            //This we do it so we can (un)expose probes as DTrace
             probeProviderFactory.monitoringEnabledChanged(enabled);
 
             if(enabled) {
                 // TODO attach btrace agent dynamically
-                setStatsProviderManagerDelegate();
+                enableMonitoring(true);
+            } else { // if disabled
+                disableMonitoring();
             }
         }
     }
     
+    private void enableMonitoring(boolean isDiscoverXMLProviders) {
+        //Process all ProbeProviders from modules loaded
+        discoverProbeProviders();
+        //Start listening to any new Modules that are coming in now
+        registry.register(this);
+        //Don't do this the first time, since we need to wait till the server starts
+        // We should try to do this in a seperate thread, as we dont want to get held up in server start
+        if (isDiscoverXMLProviders) {
+            //Process all XMLProbeProviders from lib/monitor directory
+            discoverXMLProviders();
+        }
+        //Start registering the cached StatsProviders and also those that are coming in new
+        setStatsProviderManagerDelegate();
+    }
+
+    private void disableMonitoring() {
+        //Cannot do a whole lot here. The providers that are registered will remain registered.
+        //Just disable the StatsProviders, so you remove the listening overhead
+        registry.unregister(this);
+    }
+
     private boolean ok(String s) {
         return s != null && s.length() > 0;
     }
@@ -404,4 +430,10 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
 
         return true;
     }
+
+    private void printd(String pstring) {
+        if (ddebug == true)
+            System.out.println(" APK : " + pstring);
+    }
+
 }
