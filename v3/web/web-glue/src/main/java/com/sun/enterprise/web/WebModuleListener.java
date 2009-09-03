@@ -415,7 +415,7 @@ final class WebModuleListener
 
                 } catch (LifecycleException ee) {
                     _logger.log(Level.WARNING, ee.getMessage(),
-                                               ee.getThrowable());
+                                               ee.getCause());
                 }
             }
         }
@@ -433,7 +433,7 @@ final class WebModuleListener
                 }
                 ctxt.removeAttribute(CacheManager.CACHE_MANAGER_ATTR_NAME);
             } catch (LifecycleException ee) {
-                _logger.log(Level.WARNING, ee.getMessage(), ee.getThrowable());
+                _logger.log(Level.WARNING, ee.getMessage(), ee.getCause());
             }
         }
     }
