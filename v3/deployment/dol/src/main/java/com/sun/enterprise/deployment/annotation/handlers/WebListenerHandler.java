@@ -93,12 +93,12 @@ public class WebListenerHandler extends AbstractWebHandler {
             throws AnnotationProcessorException {
 
         Class listenerClass = (Class)ainfo.getAnnotatedElement();
-        if (!ServletContextListener.class.isAssignableFrom(listenerClass) ||
+        if (!(ServletContextListener.class.isAssignableFrom(listenerClass) ||
                 ServletContextAttributeListener.class.isAssignableFrom(listenerClass) ||
                 ServletRequestListener.class.isAssignableFrom(listenerClass) ||
                 ServletRequestAttributeListener.class.isAssignableFrom(listenerClass) ||
                 HttpSessionListener.class.isAssignableFrom(listenerClass) ||
-                HttpSessionAttributeListener.class.isAssignableFrom(listenerClass)) {
+                HttpSessionAttributeListener.class.isAssignableFrom(listenerClass))) {
             log(Level.SEVERE, ainfo,
                 localStrings.getLocalString(
                 "enterprise.deployment.annotation.handlers.needtoimpllistenerinterface",
