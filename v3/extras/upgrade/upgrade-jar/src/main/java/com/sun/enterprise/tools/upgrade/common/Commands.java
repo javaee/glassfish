@@ -41,11 +41,11 @@ import com.sun.enterprise.util.i18n.StringManager;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import com.sun.enterprise.tools.upgrade.UpgradeToolMain;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  *
@@ -61,86 +61,178 @@ public class Commands {
         Credentials c = commonInfo.getSource().getDomainCredentials();
         String adminUser = c.getAdminUserName();
 
+        /*
+         * As a workaround for the following issue, code to create the
+         * asadmin command is commented out and we'll just use java -jar
+         * instead. Note: we don't need the domaindir option, probably
+         * with or without the workaround, since we copy the domain to
+         * the v3 domains directory anyway. URL for issue is:
+         * https://glassfish.dev.java.net/issues/show_bug.cgi?id=9360
+         */
         String installRoot = System.getProperty(UpgradeToolMain.AS_DOMAIN_ROOT);
         File installRootF = new File(installRoot);
-        File asadminF = new File(installRootF.getParentFile(), "bin/asadmin");
-        String asadminScript = asadminF.getAbsolutePath();
+//        File asadminF = new File(installRootF.getParentFile(), "bin/asadmin");
+//        String asadminScript = asadminF.getAbsolutePath();
+//        try {
+//            asadminScript = asadminF.getCanonicalPath();
+//        } catch (IOException e) {
+//            //- no action needed use absolutePath
+//        }
+//        String ext = "";
+//        String osName = System.getProperty("os.name");
+        CommandBuilder cb = new CommandBuilder();
+//        if (osName.indexOf("Windows") != -1) {
+//            asadminScript = "cmd /c " + asadminScript;
+//            ext = ".bat";
+//        }
+//        cb.add(asadminScript + ext);
+//        cb.add("start-domain");
+//        cb.add("--upgrade");
+//        cb.add("-v");
+//        cb.add("--domaindir");
+//        cb.add(commonInfo.getTarget().getInstallDir());
+//
+//        //- V3 allows for anonymous user credentials. skip passing credentials
+//        if (adminUser != null && adminUser.length() > 0) {
+//            cb.add("--user");
+//            cb.add(adminUser);
+//            String adminPassword = c.getAdminPassword();
+//            if (adminPassword != null && adminPassword.length() > 0) {
+//                cb.add("--passwordfile ");
+//                cb.add(c.getPasswordFile());
+//            }
+//        }
+
+        // begin workaround
+        File gfJar = new File(
+            installRootF.getParentFile(), "modules/glassfish.jar");
+        String gfJarLocation = gfJar.getAbsolutePath();
+        // readability
         try {
-            asadminScript = asadminF.getCanonicalPath();
-        } catch (IOException e) {
-            //- no action needed use absolutePath
-        }
-        String ext = "";
-        String osName = System.getProperty("os.name");
-        if (osName.indexOf("Windows") != -1) {
-            ext = ".bat";
-        }
-        ArrayList<String> tmpC = new ArrayList<String>();
-        //-tmpC.add("bin/asadmin");
-        tmpC.add(asadminScript + ext);
-        tmpC.add("start-domain");
-        tmpC.add("--upgrade");
-        tmpC.add("--domaindir");
-        tmpC.add(commonInfo.getTarget().getInstallDir());
-
-        //- V3 allows for anonymous user credentials. skip passing credentials
-        if (adminUser != null && adminUser.length() > 0) {
-            tmpC.add("--user");
-            tmpC.add(adminUser);
-            String adminPassword = c.getAdminPassword();
-            if (adminPassword != null && adminPassword.length() > 0) {
-                tmpC.add("--passwordfile ");
-                tmpC.add(c.getPasswordFile());
-            }
-        }
-        tmpC.add(domainName);
-
-        String command[] = new String[tmpC.size()];
-        command = tmpC.toArray(command);
-        return executeCommand(command);
+            gfJarLocation = gfJar.getCanonicalPath();
+        } catch (IOException ioe) {}
+        cb.add("java -jar");
+        cb.add(gfJarLocation);
+        cb.add("-upgrade true -domain");
+        // end workaround
+        
+        cb.add(domainName);
+        return executeCommand(cb.getCommand());
     }
    
-    private static int executeCommand(String[] commandStrings) {
-        int exitValue = 0;
+    private static int executeCommand(String commandString) {
 
-        StringBuffer commandOneString = new StringBuffer();
-        for (int i = 0; i < commandStrings.length; i++) {
-            commandOneString.append(commandStrings[i]).append(" ");
-        }
+        // how long we want to wait for output after process dies
+        final long JOIN_TIMEOUT = 4000;
+
+        int exitValue = 0;
         logger.info(stringManager.getString("commands.executingCommandMsg") +
-            commandOneString);
+            commandString);
 
         try {
-            Process asadminProcess = Runtime.getRuntime().exec(
-                commandOneString.toString());
-            BufferedReader pInReader =
-                new BufferedReader(new InputStreamReader(
-                asadminProcess.getInputStream()));
-            BufferedReader eInReader =
-                new BufferedReader(new InputStreamReader(
-                asadminProcess.getErrorStream()));
-            String inLine = null;
-            String eLine = null;
-            while ((eLine = eInReader.readLine()) != null &&
-                (inLine = pInReader.readLine()) != null) {
-                if (eLine != null) {
-                    logger.log(Level.INFO, eLine);
-                    exitValue++;
-                }
-                if (inLine != null) {
-                    logger.log(Level.INFO, inLine);
-                }
-            }
-            asadminProcess.destroy();
-            pInReader.close();
-            eInReader.close();
+            // start process and threads to watch output
+            Process proc = Runtime.getRuntime().exec(commandString);
+            StreamWatcher errWatcher =
+                new StreamWatcher(proc.getErrorStream(), "ERR");
+            StreamWatcher outWatcher =
+                new StreamWatcher(proc.getInputStream(), "OUT");
+            errWatcher.start();
+            outWatcher.start();
+
+            // wait for everything to finish (it should)
+            exitValue = proc.waitFor();
+            logger.fine("Return value from process: " + exitValue);
+            errWatcher.join(JOIN_TIMEOUT);
+            outWatcher.join(JOIN_TIMEOUT);
         } catch (Exception e) {
-            // todo: just log the exception with log(level, throwable)
-            Throwable t = e.getCause();
-            logger.warning(stringManager.getString(
-                "upgrade.common.general_exception") +
-                (t == null ? e.getMessage() : t.getMessage()));
+            logger.log(Level.SEVERE,
+                stringManager.getString("upgrade.common.general_exception"), e);
+
+            // if the process didn't return a non-zero yet, lets do it now
+            if (exitValue == 0) {
+                exitValue = 1;
+            }
         }
         return exitValue;
     }
+
+    /*
+     * TODO:
+     * This method is not connected to anything yet, but am including
+     * it so I don't forget. Proably needs it's own bug filed.
+     *
+     * This could be connected to the Cancel button in the GUI
+     * for stopping the upgrade. Will need a class-level field
+     * for the process. Watcher threads should terminate on their
+     * own.
+     */
+    public static void killAsadminProcess() {
+//        if (asadminProcess != null) {
+//            asadminProcess.destroy();
+//        }
+    }
+
+    /*
+     * Class is used to build up a command line. It is functionally
+     * a StringBuilder that adds a space between each String that
+     * is appended. Leading and trailing spaces are trimmed when
+     * getCommand() is called.
+     */
+    private static class CommandBuilder {
+
+        private static final String SPACE = " ";
+        private final StringBuilder sb = new StringBuilder();
+
+        void add(String s) {
+            sb.append(s);
+            sb.append(SPACE);
+        }
+
+        String getCommand() {
+            return sb.toString().trim();
+        }
+    }
+
+    /*
+     * Class used to read process output stream and
+     * send to logger. It's up to the tool to log
+     * any "starting/stopping" messages around the
+     * called process. In the GUI case, logged messages
+     * above a certain level also are shown in the
+     * progress panel.
+     */
+    private static class StreamWatcher extends Thread {
+
+        private final BufferedReader reader;
+
+        public StreamWatcher(InputStream stream, String name) {
+            super(name);
+            reader = new BufferedReader(new InputStreamReader(stream));
+        }
+
+        @Override
+        public void run() {
+            try {
+                String line = reader.readLine();
+                while (line != null) {
+                    logger.finer(getName() + ": " + line);
+                    line = reader.readLine();
+                    Thread.sleep(2);
+                }
+            } catch (Throwable t) {
+                logger.log(Level.WARNING,
+                    "todo: Exception reading stream from process", t);
+            } finally {
+                try {
+                    reader.close();
+                } catch (IOException ioe) {
+                    logger.log(Level.FINE,
+                        "Exception closing reader in StreamWatcher",
+                        ioe);
+                }
+            }
+        }
+
+    }
+
 }

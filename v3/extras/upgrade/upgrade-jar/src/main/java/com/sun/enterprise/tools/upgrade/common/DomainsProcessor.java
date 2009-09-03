@@ -94,7 +94,7 @@ public class DomainsProcessor {
             }
         }
         if (sLibDir == null) {
-            logger.log(Level.WARNING,
+            logger.log(Level.FINE,
                 stringManager.getString("upgrade.common.src_lib_dir_not_found", s + "/lib"));
             logger.log(Level.WARNING,
                 stringManager.getString("upgrade.common.warning_user_must_copy_file"));

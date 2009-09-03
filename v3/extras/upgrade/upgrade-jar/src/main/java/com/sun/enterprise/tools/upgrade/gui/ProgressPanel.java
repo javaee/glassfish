@@ -37,10 +37,8 @@
 package com.sun.enterprise.tools.upgrade.gui;
 
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
-import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JProgressBar;
 
 /**
@@ -52,11 +50,12 @@ import javax.swing.JProgressBar;
  */
 public class ProgressPanel extends javax.swing.JPanel {
 
-    private static final Logger logger = LogService.getLogger();
     private StringManager stringManager =
         StringManager.getManager(MainFrame.class);
-    private static final CommonInfoModel commonInfoModel =
-        CommonInfoModel.getInstance();
+
+    // Log messages less than this will not be shown in GUI
+    private static final int DISPLAY_LOG_MIN_LEVEL =
+        Level.INFO.intValue();
     
     /** Creates new form DataCollectionPanel */
     public ProgressPanel() {
@@ -167,6 +166,9 @@ public class ProgressPanel extends javax.swing.JPanel {
      * todo: do we want red/yellow colors for different levels?
      */
     void appendResultString(String res, Level level) {
+        if (level != null && DISPLAY_LOG_MIN_LEVEL > level.intValue()) {
+            return;
+        }
         resultTextArea.append(res);
         resultTextArea.append("\n");
     }
