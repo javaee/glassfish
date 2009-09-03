@@ -341,7 +341,7 @@ public class LoggerBase
         throwable.printStackTrace(writer);
         Throwable rootCause = null;
         if (throwable instanceof LifecycleException)
-            rootCause = ((LifecycleException) throwable).getThrowable();
+            rootCause = ((LifecycleException) throwable).getCause();
         else if (throwable instanceof ServletException)
             rootCause = ((ServletException) throwable).getRootCause();
         if (rootCause != null) {
