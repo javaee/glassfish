@@ -37,87 +37,42 @@
 package org.glassfish.maven;
 
 import java.io.*;
-import java.net.*;
-import java.util.*;
 
-
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.embedded.ContainerBuilder;
-
 
 
 /**
  * @goal runwar
  */
 
-public class RunWarMojo extends AbstractMojo
-{
+public class RunWarMojo extends AbstractWebMojo {
 
-
-/**
- * @parameter expression="${serverID}" default-value="maven"
-*/
-
-    protected String serverID;
-
-/**
- * @parameter expression="${port}" default-value="8080"
-*/
-    
-    protected int port;
 /**
  * @parameter expression="${webapp}"
  */
     protected String webapp;
 
-/**
- * @parameter expression="${name}" default-value="test"
- */
-    protected String name;
 
-/**
- * @parameter expression="${contextroot}" default-value="test"
- */
-    protected String contextRoot;
-/**
- * @parameter expression="${precompilejsp}" default-value="false"
- */
-    protected Boolean precompilejsp;
+    public void execute() throws MojoExecutionException, MojoFailureException {
 
-/**
- * @parameter expression="${virtualservers}" 
- */
-    protected String virtualservers;
-
-    public void execute() throws MojoExecutionException, MojoFailureException
-    {
         try {
-            Server server = new Server.Builder(serverID).build();
-            server.createPort(port);
-            ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
-            System.out.println("builder is " + b);
-            server.addContainer(b);
+            Server server = getServer();
 
             EmbeddedDeployer deployer = server.getDeployer();
             DeployCommandParameters cmdParams = new DeployCommandParameters();
-            cmdParams.name = name;
-            cmdParams.contextroot = contextRoot;
-            cmdParams.precompilejsp = precompilejsp;
-//            cmdParams.virtualservers = virtualservers;
+            configureDeployCommandParameters(cmdParams);
+
             while(true) {
                 deployer.deploy(new File(webapp), cmdParams);
                 System.out.println("Deployed Application " + name + "[" + webapp + "]"
                         + " contextroot is " + contextRoot);
-                System.out.println("");
                 System.out.println("Hit ENTER to redeploy " + name + "[" + webapp + "]"
                         + " X to exit");
-                // wait for enter
                 String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
                 if (str.equalsIgnoreCase("X"))
                     break;

@@ -38,21 +38,14 @@ package org.glassfish.maven;
 
 import java.io.*;
 import java.util.*;
-import java.net.URL;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLConnection;
 
 
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.embedded.ContainerBuilder;
-import org.glassfish.api.embedded.EmbeddedContainer;
 import org.glassfish.api.embedded.ScatteredArchive;
 import org.glassfish.api.embedded.ScatteredArchive.Builder;
 
@@ -62,29 +55,7 @@ import org.glassfish.api.embedded.ScatteredArchive.Builder;
  * @goal runscatteredarchive
  */
 
-public class RunScatteredArchive extends AbstractMojo
-{
-
-/**
- * @parameter expression="${serverID}" default-value="maven"
-*/
-
-    protected String serverID;
-
-/**
- * @parameter expression="${port}" default-value="8080"
-*/
-    
-    protected int port;
-/**
- * @parameter expression="${name}" default-value="test"
- */
-    protected String name;
-
-/**
- * @parameter expression="${contextroot}" default-value="test"
- */
-    protected String contextRoot;
+public class RunScatteredArchive extends RunWarMojo{
 
 /**
  * @parameter expression="${rootdirectory}"
@@ -94,16 +65,6 @@ public class RunScatteredArchive extends AbstractMojo
  * @parameter expression="${resources}"
  */
     protected String resources;
-
-/**
- * @parameter expression="${precompilejsp}" default-value="false"
- */
-    protected Boolean precompilejsp;
-
-/**
- * @parameter expression="${virtualservers}" default-value="virtualservers"
- */
-    protected String virtualservers;
 
 /**
  * @parameter expression="${classpath}"
@@ -118,15 +79,14 @@ public class RunScatteredArchive extends AbstractMojo
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         try {
-            Server server = new Server.Builder(serverID).build();
-            server.createPort(port);
-            System.out.println("Starting Web " + server);
-            ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
-            server.addContainer(b);
+            Server server = getServer();
+
             EmbeddedDeployer deployer = server.getDeployer();
+            DeployCommandParameters cmdParams = new DeployCommandParameters();
+            configureDeployCommandParameters(cmdParams);
 
             File f = new File(rootdirectory);
-            ScatteredArchive.Builder builder = new ScatteredArchive.Builder("sampleweb", f);
+            ScatteredArchive.Builder builder = new ScatteredArchive.Builder(name, f);
             System.out.println("rootdir = " + f);
             if (resources == null) 
                 resources = rootdirectory;
@@ -160,8 +120,8 @@ public class RunScatteredArchive extends AbstractMojo
                     break;
                 deployer.undeploy(name);
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+           throw new MojoExecutionException(e.getMessage(), e);
         }
     }
 }
