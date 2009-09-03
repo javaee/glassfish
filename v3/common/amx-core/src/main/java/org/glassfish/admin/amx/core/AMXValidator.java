@@ -45,7 +45,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
+import java.util.regex.Pattern;;
 import javax.management.Descriptor;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanConstructorInfo;
@@ -1078,7 +1078,7 @@ public final class AMXValidator
             }
             if ( problems.size() != 0 )
             {
-                ImplUtil.getLogger().log( Level.INFO, "Unregistering non-compliant MBean: " + objectName + " for problems: " + problems );
+                System.err.println( "Unregistering non-compliant MBean: " + objectName + " for problems: " + problems );
                 unregisterNonCompliantMBean(objectName);
             }
 
