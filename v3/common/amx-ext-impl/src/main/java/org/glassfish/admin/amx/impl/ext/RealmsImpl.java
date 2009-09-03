@@ -37,6 +37,7 @@ package org.glassfish.admin.amx.impl.ext;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -44,6 +45,8 @@ import java.util.logging.Level;
 import javax.management.ObjectName;
 
 import org.glassfish.admin.amx.util.ListUtil;
+import org.glassfish.admin.amx.util.StringUtil;
+import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.base.DomainRoot;
 
 import org.glassfish.admin.amx.impl.util.ImplUtil;
@@ -85,29 +88,49 @@ public final class RealmsImpl extends AMXImplBase
     
     private volatile boolean    realmsLoaded = false;
     
-        private void 
+    private SecurityService getSecurityService()
+    {   
+        // this is ugly, the underlying API doesn't understand that there is more than one <security-service>,
+        // each with one or more <auth-realm>.  So we'll just take the first config
+        final Domain domainConfig = getDomainRootProxy().child(Domain.class);
+        final Config config = domainConfig.getConfigs().getConfig().values().iterator().next();
+        
+        return config.getSecurityService();
+    }
+    private Map<String,AuthRealm>  getAuthRealms()
+    {
+        return getSecurityService().getAuthRealm();
+    }
+    
+    /** realm names as found in configuration; some might be defective and unable to be loaded */
+    private Set<String> getConfiguredRealmNames()
+    {
+        return getAuthRealms().keySet();
+    }
+    
+        private synchronized void 
     loadRealms()
     {
-        if ( realmsLoaded ) return;
+        if ( realmsLoaded )
+        {
+            final Set<String> loaded = SetUtil.newStringSet( _getRealmNames() );
+            if ( getConfiguredRealmNames().equals( loaded ) )
+            {
+                return;
+            }
+            // reload: there are new or different realms
+            realmsLoaded = false;
+        }
         
         _loadRealms();
     }
     
-        private synchronized void 
+        private void 
     _loadRealms()
     {
         if ( realmsLoaded ) throw new IllegalStateException();
-        
-        // this is ugly, the underlying API doesn't understand that there is more than one <security-service>,
-        // each with one or more <auth-realm>
-        final Domain domainConfig = getDomainRootProxy().child(Domain.class);
-        if ( domainConfig == null ) {
-            throw new IllegalStateException("Null Domain config");
-        }
-        final Config config = domainConfig.getConfigs().getConfig().values().iterator().next();
-        final SecurityService ss = config.getSecurityService();
-        
-        final Map<String,AuthRealm> authRealmConfigs = ss.childrenMap(AuthRealm.class);
+
+        final Map<String,AuthRealm> authRealmConfigs = getAuthRealms();
         
         final List<String> goodRealms = new ArrayList<String>();
         for( final AuthRealm authRealm : authRealmConfigs.values() )
@@ -126,7 +149,7 @@ public final class RealmsImpl extends AMXImplBase
             }
             catch( final Exception e )
             {
-                ImplUtil.getLogger().log( Level.WARNING, "Can't instantiate realm: " + authRealm, e );
+                ImplUtil.getLogger().log( Level.WARNING, "Can't instantiate realm: " + StringUtil.quote(authRealm), e );
             }
         }
         
@@ -135,13 +158,13 @@ public final class RealmsImpl extends AMXImplBase
             final String goodRealm = goodRealms.iterator().next();
             try
             {
-                final String defaultRealm = ss.getDefaultRealm();
+                final String defaultRealm = getSecurityService().getDefaultRealm();
                 final Realm r = Realm.getInstance(defaultRealm);
                 Realm.setDefaultRealm(defaultRealm);
             }
             catch (final Exception e)
             {
-                ImplUtil.getLogger().log( Level.WARNING, "Can't get realm ", e );
+                ImplUtil.getLogger().log( Level.WARNING, "Can't get realm " + StringUtil.quote(goodRealm), e );
                 Realm.setDefaultRealm(goodRealms.iterator().next());
             }
         }
@@ -149,13 +172,30 @@ public final class RealmsImpl extends AMXImplBase
         realmsLoaded = true;
     }
     
-    public String[]
-    getRealmNames()
+    
+        private String[]
+    _getRealmNames()
     {
-        loadRealms();
         final List<String> items = ListUtil.newList( mRealmsManager.getRealmNames() );
         return CollectionUtil.toArray(items, String.class);
     }
+    
+    
+    public String[]
+    getRealmNames()
+    {
+        try
+        {
+            loadRealms();
+            return _getRealmNames();
+        }
+        catch( final Exception e )
+        {
+            ImplUtil.getLogger().log( Level.WARNING, "getRealmNames(): Can't get realm names ", e );
+            return new String[] {};
+        }
+    }
+
     
     public String[]
     getPredefinedAuthRealmClassNames()
