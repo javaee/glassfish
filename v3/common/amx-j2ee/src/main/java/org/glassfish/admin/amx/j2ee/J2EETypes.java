@@ -68,6 +68,7 @@ public final class J2EETypes
 	public final static String	ENTITY_BEAN					= "EntityBean";
 	public final static String	STATEFUL_SESSION_BEAN		= "StatefulSessionBean";
 	public final static String	STATELESS_SESSION_BEAN		= "StatelessSessionBean";
+	public final static String	SINGLETON_SESSION_BEAN		= "SingletonSessionBean";
 	public final static String	MESSAGE_DRIVEN_BEAN			= "MessageDrivenBean";
 	public final static String	SERVLET						= "Servlet";
 	public final static String	JAVA_MAIL_RESOURCE			= "JavaMailResource";

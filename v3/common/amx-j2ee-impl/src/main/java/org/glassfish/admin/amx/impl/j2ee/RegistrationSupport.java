@@ -81,6 +81,7 @@ import org.glassfish.admin.amx.j2ee.MessageDrivenBean;
 import org.glassfish.admin.amx.j2ee.Servlet;
 import org.glassfish.admin.amx.j2ee.StatefulSessionBean;
 import org.glassfish.admin.amx.j2ee.StatelessSessionBean;
+import org.glassfish.admin.amx.j2ee.SingletonSessionBean;
 import org.glassfish.admin.amx.j2ee.WebModule;
 import org.glassfish.admin.amx.util.ClassUtil;
 import org.glassfish.admin.amx.util.MapUtil;
@@ -308,6 +309,11 @@ final class RegistrationSupport
             {
                 intf = StatefulSessionBean.class;
                 impl = StatefulSessionBeanImpl.class;
+            }
+            else if (ejbSessionType.equals("Session")) // EJB 3.1
+            {
+                intf = SingletonSessionBean.class;
+                impl = SingletonSessionBeanImpl.class;
             }
             else
             {
