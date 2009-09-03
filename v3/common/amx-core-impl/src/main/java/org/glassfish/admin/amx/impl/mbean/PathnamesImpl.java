@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.Map;
+import java.util.logging.Level;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -57,7 +58,11 @@ import org.glassfish.admin.amx.core.PathnameParser;
 import org.glassfish.admin.amx.core.proxy.AMXProxyHandler;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ListUtil;
+import org.glassfish.admin.amx.util.ExceptionUtil;
+
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
+
+import org.glassfish.admin.amx.impl.util.ImplUtil;
 
 /**
   GlassFish V3 dotted names implementation (MBean).
@@ -224,20 +229,41 @@ public final class PathnamesImpl  extends AMXImplBase
         return ancestors;
     }
     
-    private List<AMXProxy> listChildren( final AMXProxy top, final List<AMXProxy> list, boolean recursive)
+    private void listChildren( final AMXProxy top, final List<AMXProxy> list, boolean recursive)
     {
-        final Set<AMXProxy> children = top.childrenSet();
-        if  ( children == null ) return null;
+        Set<AMXProxy> children = null;
+        try
+        {
+            children = top.childrenSet();
+            if  ( children == null ) return;
+        }
+        catch( final Exception e )
+        {
+            ImplUtil.getLogger().log( Level.WARNING,
+                "Can't get childrenSet() from MBean: " + top.objectName(),
+                ExceptionUtil.getRootCause(e));
+            // just return, nothing we can do.  Typically it could be InstanceNotFoundException
+            return;
+        }
         
         for( final AMXProxy child : children )
         {
-            list.add( child );
-            if ( recursive )
+            try
             {
-                listChildren( child, list, true );
+                list.add( child );
+                if ( recursive )
+                {
+                    listChildren( child, list, true );
+                }
+            }
+            catch( final Exception e )
+            {
+                ImplUtil.getLogger().log( Level.WARNING,
+                    "Problem with MBean: " + child.objectName(),
+                    ExceptionUtil.getRootCause(e));
+                // nothing we can do.  Typically it could be InstanceNotFoundException
             }
         }
-        return list;
     }
     
     private List<AMXProxy> listChildren( final String path, boolean recursive)
@@ -245,18 +271,31 @@ public final class PathnamesImpl  extends AMXImplBase
         final AMXProxy topProxy = resolveToProxy(path);
         if ( topProxy == null ) return null;
         
-        return listChildren(topProxy,  new ArrayList<AMXProxy>(), recursive);
+        final List<AMXProxy> list = new ArrayList<AMXProxy>();
+        listChildren(topProxy,  list, recursive);
+        
+        return list;
     }
     
     public String[] getAllPathnames()
     {
-        final String[] allButRoot = listPaths( DomainRoot.PATH, true );
-        
-        final String[] all = new String[ allButRoot.length + 1 ];
-        all[0] = DomainRoot.PATH;
-		System.arraycopy( allButRoot, 0, all, 1, allButRoot.length );
-        
-        return all;
+        try
+        {
+            final String[] allButRoot = listPaths( DomainRoot.PATH, true );
+            
+            final String[] all = new String[ allButRoot.length + 1 ];
+            all[0] = DomainRoot.PATH;
+            System.arraycopy( allButRoot, 0, all, 1, allButRoot.length );
+            
+            return all;
+        }
+        catch( final Throwable t )
+        {
+            ImplUtil.getLogger().log( Level.WARNING,
+                "PathnamesImpl.getAllPathnames(): unexpected Throwable",
+                ExceptionUtil.getRootCause(t) );
+        }
+        return new String[0];
     }
     
     public ObjectName[]  listObjectNames( final String path, final boolean recursive)
@@ -273,7 +312,14 @@ public final class PathnamesImpl  extends AMXImplBase
         final List<String> paths = new ArrayList<String>();
         for ( final AMXProxy amx: list )
         {
-            paths.add( amx.path() );
+            try
+            {
+                paths.add( amx.path() );
+            }
+            catch( final Exception e )
+            {
+                ImplUtil.getLogger().log( Level.WARNING, "Can't get path() for MBean: " + amx.objectName(), e);
+            }
         }
         
         return CollectionUtil.toArray(paths, String.class);
