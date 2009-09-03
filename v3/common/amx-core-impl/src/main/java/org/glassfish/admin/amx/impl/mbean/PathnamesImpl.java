@@ -295,7 +295,7 @@ public final class PathnamesImpl  extends AMXImplBase
                 "PathnamesImpl.getAllPathnames(): unexpected Throwable",
                 ExceptionUtil.getRootCause(t) );
         }
-        return new String[0];
+        return new String[] { DomainRoot.PATH };
     }
     
     public ObjectName[]  listObjectNames( final String path, final boolean recursive)
