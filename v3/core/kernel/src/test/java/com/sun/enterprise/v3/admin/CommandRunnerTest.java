@@ -99,9 +99,19 @@ public class CommandRunnerTest {
     
     @Test
     public void parsePropertiesEscapeCharTest() {
-        String propsStr = "connectionAttributes=\\;create\\\\=true";
+        String propsStr = "connectionAttributes=\\;create\\\\\\=true";
         Properties propsExpected = new Properties();
         propsExpected.put("connectionAttributes", ";create\\=true");
+        Properties propsActual = null;
+        propsActual = cr.convertStringToProperties(propsStr, ':');
+        assertEquals(propsExpected, propsActual);
+    }
+    
+    @Test
+    public void parsePropertiesEscapeCharTest2() {
+        String propsStr = "connectionAttributes=;create\\=true";
+        Properties propsExpected = new Properties();
+        propsExpected.put("connectionAttributes", ";create=true");
         Properties propsActual = null;
         propsActual = cr.convertStringToProperties(propsStr, ':');
         assertEquals(propsExpected, propsActual);

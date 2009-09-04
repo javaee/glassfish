@@ -1092,13 +1092,13 @@ public class CommandRunnerImpl implements CommandRunner {
         if (propsString != null) {
             ParamTokenizer stoken = new ParamTokenizer(propsString, sep);
             while (stoken.hasMoreTokens()) {
-                String token = stoken.nextToken();
+                String token = stoken.nextTokenKeepEscapes();
                 final ParamTokenizer nameTok = new ParamTokenizer(token, '=');
                 String name = null, value = null;
                 if (nameTok.hasMoreTokens())
-                    name = nameTok.nextTokenKeepEscapes();
+                    name = nameTok.nextToken();
                 if (nameTok.hasMoreTokens())
-                    value = nameTok.nextTokenKeepEscapes();
+                    value = nameTok.nextToken();
                 if (nameTok.hasMoreTokens() || name == null || value == null)
                     throw new IllegalArgumentException(
                         adminStrings.getLocalString("InvalidPropertySyntax",
