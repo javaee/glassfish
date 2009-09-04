@@ -38,7 +38,7 @@ own identifying information: Portions Copyright [yyyy]
            </graphDef>
 
        
-       <stage-module-jars graphid="all-modules" />
+       <stage-module-autostart-jars graphid="all-modules" />
        <stage-distribution-fragments graphid="all-modules" />
 
 

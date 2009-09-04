@@ -82,6 +82,19 @@ own identifying information: Portions Copyright [yyyy]
 	        <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.pom" />  
 	         <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.war" />  
         </sequential>
+   </macrodef>
+
+   <macrodef name="stage-module-autostart-jars">
+	    <attribute name="graphid" />
+	    <sequential>
+		<resolveAll todir="target/stage/${install.dir.name}/glassfish/modules/autostart" stripVersion="true">
+		    <graphRef refid="@{graphid}"/>
+                </resolveAll>
+
+		<delete dir="target/stage/${install.dir.name}/glassfish/modules/autostart" includes="*.zip" />   
+		<delete dir="target/stage/${install.dir.name}/glassfish/modules/autostart" includes="*.pom" />  
+		<delete dir="target/stage/${install.dir.name}/glassfish/modules/autostart" includes="*.war" />  
+            </sequential>
       </macrodef>
 
       <target name="create-zip-artifact">
