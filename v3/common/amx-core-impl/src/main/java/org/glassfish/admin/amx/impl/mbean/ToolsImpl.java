@@ -240,10 +240,17 @@ public class ToolsImpl extends AMXImplBase // implements Tools
     
     public String getHierarchy()
     {
-        final ParentChildren pc = ParentChildren.hierarchy(getDomainRootProxy());
-        final List<String> lines = pc.toLines(false);
+        try
+        {
+            final ParentChildren pc = ParentChildren.hierarchy(getDomainRootProxy());
+            final List<String> lines = pc.toLines(false);
         
-        return StringUtil.toLines( lines );
+            return StringUtil.toLines( lines );
+        }
+        catch( final Exception e )
+        {
+            return "";
+        }
     }
 
 }
