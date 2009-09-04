@@ -104,7 +104,7 @@ public final class AMXCoreTests extends AMXTestBase
     }
     
     @Test
-    public void testAMXComplianceMonitorFailureCount___KNOWN_FAILURE_20090904_IGNORE_FOR_NOW()
+    public void testAMXComplianceMonitorFailureCount___KNOWN_FAILURE_20090904_ISSUE_9355_IGNORE_FOR_NOW()
     {
         final int failureCount = getDomainRootProxy().getNumComplianceFailures();
         
