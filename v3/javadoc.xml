@@ -10,6 +10,9 @@
   <property name="Title" value="Java EE 6 - DRAFT" />
   <property name="remote.repository" value="http://maven.glassfish.org/content/groups/glassfish/" />
   <property name="maven.repo.local" value="${user.home}/.m2/repository" />
+  <tstamp>
+      <format property="TODAY" pattern="d-MMMM-yyyy hh:mm" locale="en,US"/>
+  </tstamp>
 
   <path id="src.dir">
     <dirset dir="${basedir}">
@@ -297,7 +300,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jstl-api.download" description="Download JSTL-API" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jstl">
-          <dependency groupId="javax.servlet.jsp.jstl" artifactId="jstl-api" version="1.2-rev-1"/>
+          <dependency groupId="javax.servlet.jsp.jstl" artifactId="jstl-api" version="1.2"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -316,8 +319,8 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="mq.download" description="Download MQ" depends="initialize.maven" >
       <artifact:dependencies filesetId="dependency.fileset" sourcesFilesetId="sources.dependency.mq" >
-          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4-011" classifier="sources" type="zip"/>
-          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4-011" type="zip"/>
+          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4-015" classifier="sources" type="zip"/>
+          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4-015" type="zip"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -340,7 +343,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="eclipse-persistence.download" description="Download Eclipse Persistence source" depends="initialize.maven" > 
       <artifact:dependencies sourcesFilesetId="sources.dependency.eclipse-persistence">
-          <dependency groupId="org.eclipse.persistence" artifactId="javax.persistence" version="2.0.0-M3"/>
+          <dependency groupId="org.eclipse.persistence" artifactId="javax.persistence" version="2.0.0-M7"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -406,7 +409,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="webbeans-api.download" description="Download WebBeans API" depends="initialize.maven" >
       <artifact:dependencies sourcesFilesetId="sources.dependency.webbeans-api" >
-          <dependency groupId="org.jboss.webbeans" artifactId="jsr299-api" version="1.0.0.PREVIEW2.SP2" classifier="sources" />
+          <dependency groupId="org.jboss.webbeans" artifactId="jsr299-api" version="1.0.0.PREVIEW3" classifier="sources" />
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -431,7 +434,7 @@ fileset refid of artifact:dependencies does not work in unjar
     <mkdir dir="${build.javadocs}"/>
     <javadoc sourcepathref="src.dir"
              destdir="${build.javadocs}"
-	     excludepackagenames="com.*,org.*,sample.*,killer.*,net.*,testing.*,java.*,javax.xml.messaging.*,javax.xml.registry.samples.*,javax.xml.namespace.*,javax.faces.bean"
+	     excludepackagenames="com.*,org.*,sample.*,killer.*,net.*,testing.*,java.*,javax.xml.messaging.*,javax.xml.registry.samples.*,javax.xml.namespace.*"
              maxmemory="2048m"
              author="true"
              version="true"
@@ -439,7 +442,7 @@ fileset refid of artifact:dependencies does not work in unjar
              encoding="ISO-8859-1"
              windowtitle="${Title}"
              doctitle="&lt;h1&gt;${Name} &lt;br&gt;API Specification&lt;/h1&gt;&lt;p&gt;This document is the API specification for version 6 of the Java&lt;sup&gt;TM&lt;/sup&gt; Platform, Enterprise Edition."
-             bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009 Sun Microsystems, Inc. All Rights Reserved. Use is subject to &lt;a href=&quot;http://java.sun.com/javaee/downloads/licenses/JavaEE6platformspec_license.txt&quot; target=&quot;_top&quot;&gt;license terms.&lt;/a&gt; &lt;/font&gt;"
+             bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009 Sun Microsystems, Inc. All Rights Reserved. Use is subject to &lt;a href=&quot;http://java.sun.com/javaee/downloads/licenses/JavaEE6platformspec_license.txt&quot; target=&quot;_top&quot;&gt;license terms. &lt;/a&gt; &lt;p&gt; Generated on ${TODAY} &lt;/font&gt; "
              Header="DRAFT" 
              Footer="DRAFT" >
     </javadoc>
