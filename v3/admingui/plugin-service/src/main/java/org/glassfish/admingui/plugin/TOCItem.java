@@ -69,7 +69,7 @@ public class TOCItem {
     /**
      *
      */
-    public String getExpand() {
+    public boolean isExpand() {
 	return this.expand;
     }
 
@@ -77,7 +77,7 @@ public class TOCItem {
      *
      */
     @Attribute(required=true)
-    void setExpand(String expand) {
+    void setExpand(boolean expand) {
 	this.expand = expand;
     }
 
@@ -147,7 +147,7 @@ public class TOCItem {
     }
 
 
-    private String expand;
+    private boolean expand;
     private String target;
     private String targetPath;
     private String text;
