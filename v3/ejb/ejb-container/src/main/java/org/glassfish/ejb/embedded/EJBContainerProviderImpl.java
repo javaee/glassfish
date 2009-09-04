@@ -92,8 +92,9 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
     // Use Bundle from another package
     private static final Logger _logger = 
-            LogDomains.getLogger(EjbContainerUtilImpl.class, LogDomains.EJB_LOGGER);
-    private static final StringManager localStrings = StringManager.getManager(EJBContainerProviderImpl.class);
+            LogDomains.getLogger(EJBContainerProviderImpl.class, LogDomains.EJB_LOGGER);
+    private static final StringManager localStrings = 
+            StringManager.getManager(EJBContainerProviderImpl.class);
 
     private static final Object lock = new Object();
 
@@ -118,7 +119,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             try {
                 Set<File> modules = addEJBModules(properties);
                 if (modules.isEmpty()) {
-                    _logger.log(Level.SEVERE, "No EJB modules found");
+                    _logger.log(Level.SEVERE, "ejb.embedded.no_modules_found");
                 }
 
                 container.deploy(properties, modules);
@@ -347,7 +348,7 @@ _logger.info("... is Requested EJB module [" + moduleName + "]: " + (moduleNames
                 installed_root_location = Which.jarFile(getClass()).
                         getParentFile().getParentFile().getAbsolutePath();
             } catch (Exception e) {
-                _logger.log(Level.SEVERE, "Cannot determine installation location");
+                _logger.log(Level.SEVERE, "ejb.embedded.cannot_determine_installation_location");
                 _logger.log(Level.FINE, e.getMessage(), e);
             }
         }
@@ -376,6 +377,13 @@ _logger.info("... is Requested EJB module [" + moduleName + "]: " + (moduleNames
                     _logger.info("+++ domain_file_location : " + domain_file_location);
                     File domain_file = getValidFile(domain_file_location);
                     if (domain_file != null) {
+                        DomainXmlTransformer dxf = new DomainXmlTransformer(domain_file, _logger);
+                        File temp_domain_file = dxf.transform();
+                        if (temp_domain_file != null) {
+                            domain_file = temp_domain_file;
+                        } else {
+                            _logger.log(Level.SEVERE, "ejb.embedded.failed_create_temporary_domain_xml_file");
+                        }
                         rs = new Result(installed_root, instance_root, domain_file);
                     }
                 }
