@@ -69,7 +69,7 @@ public class HttpServiceStatsProvider implements PostConstruct {
     //private Counter requestCount = CounterFactory.createCount();
     //Provides the cumulative value of the error count. The error count represents 
     //the number of cases where the response code was greater than or equal to 400.
-    private CountStatisticImpl errorCount = new CountStatisticImpl("ErrorCount", "count", "Number of responses with a status code greater than 400");
+    private CountStatisticImpl errorCount = new CountStatisticImpl("ErrorCount", "count", "Number of responses with a status code that is greater than or equal to 400");
     private CountStatisticImpl error200Count = new CountStatisticImpl("Count200", "count", "Number of responses with a status code equal to 200");
     private CountStatisticImpl error2xxCount = new CountStatisticImpl("Count2xx", "count", "Number of responses with a status code in the 2xx range");
     private CountStatisticImpl error302Count = new CountStatisticImpl("Count302", "count", "Number of responses with a status code equal to 302");
@@ -290,7 +290,7 @@ public class HttpServiceStatsProvider implements PostConstruct {
         if (errorCounter == null)
             errorCounter = errorMap.get("9");
         errorCounter.increment();
-        if (statusCode > 400)
+        if (statusCode >= 400)
             errorCount.increment();
     }
 }

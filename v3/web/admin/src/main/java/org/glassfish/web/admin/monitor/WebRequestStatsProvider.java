@@ -43,7 +43,7 @@ import org.glassfish.external.statistics.TimeStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.external.statistics.impl.TimeStatisticImpl;
 import org.glassfish.flashlight.statistics.*;
-import org.glassfish.flashlight.statistics.factory.CounterFactory;
+//import org.glassfish.flashlight.statistics.factory.CounterFactory;
 import org.glassfish.flashlight.statistics.factory.TimeStatsFactory;
 import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.gmbal.Description;
@@ -68,7 +68,7 @@ public class WebRequestStatsProvider {
     //private Counter requestCount = CounterFactory.createCount();
     //Provides the cumulative value of the error count. The error count represents 
     //the number of cases where the response code was greater than or equal to 400.
-    private Counter errorCount = CounterFactory.createCount();
+    private CountStatisticImpl errorCount = new CountStatisticImpl("ErrorCount", "count", "Number of responses with a status code greater than or equal to 400");
     private TimeStats requestProcessTime = TimeStatsFactory.createTimeStatsMilli();
     private Logger logger;
     
@@ -103,6 +103,12 @@ public class WebRequestStatsProvider {
         CountStatisticImpl requestCount = new CountStatisticImpl("RequestCount", "count", "Cumulative number of requests processed so far");
         requestCount.setCount(requestProcessTime.getCount());
         return requestCount;
+    }
+
+    @ManagedAttribute(id="errorcount")
+    @Description("Number of responses with a status code that is greater than or equal to 400")
+    public CountStatistic getErrorCount() {
+        return errorCount;
     }
 
     @ManagedAttribute(id="processingtime")
@@ -177,7 +183,7 @@ public class WebRequestStatsProvider {
             if ((appName != null && hostName != null) && hostName.equals(virtualServerName) && appName.equals(moduleName)){
                 //increment counts
                 requestProcessTime.exit();
-                if (statusCode > 400)
+                if (statusCode >= 400)
                     errorCount.increment();
                 logger.finest("[TM]requestEndEvent resolved - virtual-server = " +
                                     request.getServerName() + ": application = " +
@@ -190,7 +196,7 @@ public class WebRequestStatsProvider {
         }
         else {
             requestProcessTime.exit();
-            if (statusCode > 400)
+            if (statusCode >= 400)
                 errorCount.increment();
             logger.finest("[TM]requestEndEvent resolved - virtual-server = " +
                                 request.getServerName() + ": application = " +
