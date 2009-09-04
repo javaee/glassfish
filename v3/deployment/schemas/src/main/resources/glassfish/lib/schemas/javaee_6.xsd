@@ -348,7 +348,7 @@
         <xsd:annotation>
           <xsd:documentation>
 
-            JDBC DataSource Propertry.  This may be a vendor-specific
+            JDBC DataSource property.  This may be a vendor-specific
             property or a less commonly used DataSource property.
             
           </xsd:documentation>
@@ -1039,14 +1039,16 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        public enum isolation-level-type { TRANSACTION_NONE,
-        TRANSACTION_READ_UNCOMMITTED, TRANSACTION_READ_COMMITTED,
-        TRANSACTION_REPEATABLE_READ, TRANSACTION_SERIALIZABLE };
+        	The following transaction isolation levels are allowed
+        	(see documentation for the java.sql.Connection interface):
+        TRANSACTION_READ_UNCOMMITTED
+        TRANSACTION_READ_COMMITTED
+        TRANSACTION_REPEATABLE_READ
+        TRANSACTION_SERIALIZABLE
         
       </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="TRANSACTION_NONE"/>
       <xsd:enumeration value="TRANSACTION_READ_UNCOMMITTED"/>
       <xsd:enumeration value="TRANSACTION_READ_COMMITTED"/>
       <xsd:enumeration value="TRANSACTION_REPEATABLE_READ"/>
