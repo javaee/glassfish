@@ -831,7 +831,7 @@ public final class AMXValidator
             }
         }
 
-        void validateMetadataStringNonEmptyOrNull(final String fieldName)
+        void validateMetadataString(final String fieldName)
         {
             if (mFieldNames.contains(fieldName))
             {
@@ -841,11 +841,6 @@ public final class AMXValidator
                     if ( ! (value instanceof String) )
                     {
                         mProblems.add("Descriptor field " + fieldName + " must be a String!" );
-                    }
-                    
-                    if ( ((String)value).length() == 0)
-                    {
-                        mProblems.add("Descriptor field " + fieldName + " must be non-zero length String, value = " + value);
                     }
                 }
             }
@@ -916,9 +911,9 @@ public final class AMXValidator
         val.validateMetadataBoolean(DESC_SUPPORTS_ADOPTION);
         val.validateMetadataBoolean(DESC_STD_IMMUTABLE_INFO);
 
-        val.validateMetadataStringNonEmptyOrNull(DESC_STD_INTERFACE_NAME);
-        val.validateMetadataStringNonEmptyOrNull(DESC_GENERIC_INTERFACE_NAME);
-        val.validateMetadataStringNonEmptyOrNull(DESC_GROUP);
+        val.validateMetadataString(DESC_STD_INTERFACE_NAME);
+        val.validateMetadataString(DESC_GENERIC_INTERFACE_NAME);
+        val.validateMetadataString(DESC_GROUP);
 
         val.validate(DESC_SUB_TYPES, String[].class);
 
