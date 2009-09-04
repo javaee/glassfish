@@ -35,57 +35,16 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.api.amx.AMXMBeanMetadata;
-
-import org.glassfish.admin.amx.annotation.ChildGetter;
-
-
-import java.util.Map;
-
 /**
-Configuration for the &lt;resources&gt; element; it is an internal "node" which
-groups all resources under itself.
-@since Glassfish V3
+Configuration for the &lt;persistence-manager-factory-resource&gt; element.
  */
-@AMXMBeanMetadata(globalSingleton=true)
-public interface Resources
-        extends ConfigElement, ConfigCollectionElement, Singleton
+public interface PersistenceManagerFactoryResource extends Resource
 {
-    @ChildGetter
-    public Map<String, CustomResource> getCustomResource();
+    public String getFactoryClass();
 
-    @ChildGetter
-    public Map<String, JNDIResource> getJNDIResource();
+    public void setFactoryClass(final String factoryClass);
 
-    @ChildGetter
-    public Map<String, JDBCResource> getJDBCResource();
+    public String getJDBCResourceJNDIName();
 
-    @ChildGetter
-    public Map<String, JDBCConnectionPool> getJDBCConnectionPool();
-
-    @ChildGetter
-    public Map<String, ConnectorResource> getConnectorResource();
-
-    @ChildGetter
-    public Map<String, ConnectorConnectionPool> getConnectorConnectionPool();
-
-    @ChildGetter
-    public Map<String, AdminObjectResource> getAdminObjectResource();
-
-    @ChildGetter
-    public Map<String, ResourceAdapter> getResourceAdapter();
-
-    @ChildGetter
-    public Map<String, MailResource> getMailResource();
-
-    @ChildGetter
-    public Map<String, PersistenceManagerFactoryResource> getPersistenceManagerFactoryResource();
+    public void setJDBCResourceJNDIName(final String jdbcResourceJNDIName);
 }
-
-
-
-
-
-
-
