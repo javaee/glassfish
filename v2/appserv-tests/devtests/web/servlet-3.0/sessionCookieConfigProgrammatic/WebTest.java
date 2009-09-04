@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -82,52 +82,9 @@ public class WebTest {
                      + "/CreateSession";
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();
-
         int code = conn.getResponseCode();
         if (code != 200) {
             throw new Exception("Unexpected return code: " + code);
         }
-
-        String sessionCookie = conn.getHeaderField("Set-Cookie");
-        System.out.println("Response cookie: " + sessionCookie);
-
-        if (sessionCookie == null) {
-            throw new Exception("Missing Set-Cookie response header");
-        }
-
-        // name
-        if (sessionCookie.indexOf("MYJSESSIONID=") == -1) {
-            throw new Exception("Missing session id");
-        }
-
-        // comment
-        if (sessionCookie.indexOf("Comment=myComment") == -1) {
-            throw new Exception("Missing cookie comment");
-        }      
-
-        // domain
-        if (sessionCookie.indexOf("Domain=mydomain") == -1) {
-            throw new Exception("Missing cookie domain");
-        }      
-
-        // path
-        if (sessionCookie.indexOf("Path=/myPath") == -1) {
-            throw new Exception("Missing cookie path");
-        }      
-
-        // secure
-        if (sessionCookie.indexOf("Secure") == -1) {
-            throw new Exception("Missing Secure attribute");
-        }      
-
-        // http-only
-        if (sessionCookie.indexOf("HttpOnly") == -1) {
-            throw new Exception("Missing HttpOnly attribute");
-        }      
-
-        // max-age
-        if (sessionCookie.indexOf("Max-Age=123") == -1) {
-            throw new Exception("Missing max-age");
-        }      
     }
 }
