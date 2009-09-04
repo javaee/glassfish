@@ -40,9 +40,11 @@
     float: left;
     height: 100%;
     overflow: auto;
-    margin-top: -12px;
     border-right: 3px ridge #666;
 }
 .helpContentBox {
-    margin-left: 410px;
+    position: fixed;
+    left: 410px;
+    height: 100%;
+    overflow: auto;
 }
