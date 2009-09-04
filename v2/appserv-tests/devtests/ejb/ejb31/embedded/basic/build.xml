@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "file:./../../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
+<!ENTITY commonSetup SYSTEM "file:./../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../../../config/common.xml">
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
