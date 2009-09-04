@@ -1,4 +1,4 @@
-<!--
+/*
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
  Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
@@ -32,32 +32,46 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
--->
-<!-- /common/help/help.jsf -->
+*/
 
-<sun:page>
-<sun:html>
-    <sun:head title="Help!" debug="false" parseOnLoad="false"> <!-- FIXME: I18N -->
-	<sun:link url="/resource/common/help/help.css" />
-	<sun:script url="/resource/common/help/help.js" />
-	<f:verbatim>
-	    <style type="text/css">
-	    </style>
-	</f:verbatim>
-    </sun:head>
-    <sun:body>
-	"<div id="menuContent" class="helpMenuBox">
-	    <dynamicTreeNode
-		treeAdaptorClass="org.glassfish.admingui.common.help.HelpTreeAdaptor"
-		toc="$attribute{toc}">
-		    <!beforeCreate
-			getHelpTOC("en" toc="#{requestScope.toc}");
-		    />
-	    </dynamicTreeNode>
-	"</div>
-	"<div id="helpContent" class="helpContentBox">
-	"<h3>GlassFish Help</h3>
-	"</div>
-    </sun:body>
-</sun:html>
-</sun:page>
+if (typeof(admingui) === "undefined") {
+    admingui = {};
+}
+
+admingui.help = {
+    showHelpPage: function(url, targetNode) {
+	if (targetNode) {
+	    if (targetNode.toLowerCase) {
+		// We have a String
+		targetNode = document.getElementById(targetNode);
+	    }
+	}
+	if (targetNode) {
+	    var req = admingui.help.getXMLHttpRequestObject();
+	    if (req) {
+		req.onreadystatechange =
+		    function() {
+			if (req.readyState == 4) {
+			    targetNode.innerHTML = req.responseText;
+			}
+		    };
+		req.open("GET", url, true);
+		req.send("");
+	    }
+	}
+    },
+
+    getXMLHttpRequestObject: function() {
+	var reqObj = null;
+	if (window.XMLHttpRequest && !(window.ActiveXObject)) {
+	    reqObj = new XMLHttpRequest();
+	} else if (window.ActiveXObject) {
+	    try {
+		reqObj = new ActiveXObject("Msxml2.XMLHTTP");
+	    } catch (ex) {
+		reqObj = new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	}
+	return reqObj;
+    }
+}

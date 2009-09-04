@@ -108,10 +108,10 @@ update tool    updatetool 800
 	<sun:treeNode id="registration"
 	    rendered="#{sessionScope.registrationNodePage == 'registration'}"
 	    text="$resource{i18n.tree.registration}"
-	    url="#{request.contextPath}/common/sysnet/registration.jsf"
+	    url="/common/sysnet/registration.jsf"
 	    >
 	    <!facet image>
-		<sun:imageHyperlink imageURL="/resource/images/registration.gif" url="#{request.contextPath}/common/sysnet/registration.jsf"  border="0" immediate="true" />
+		<sun:imageHyperlink imageURL="/resource/images/registration.gif" url="/common/sysnet/registration.jsf"  border="0" immediate="true" />
 	    </facet>
 	</sun:treeNode>
 
@@ -120,7 +120,7 @@ update tool    updatetool 800
 	    url="/common/sysnet/support.jsf"
 	    >
 	    <!facet image>
-		<sun:imageHyperlink imageURL="/resource/images/support.gif" url="#{request.contextPath}/common/sysnet/support.jsf"  border="0" immediate="true" />
+		<sun:imageHyperlink imageURL="/resource/images/support.gif" url="/common/sysnet/support.jsf"  border="0" immediate="true" />
 	    </facet>
 	</sun:treeNode>
 
