@@ -739,18 +739,6 @@ public class WebappLoader
 
             setPermissions();
 
-            /*
-             * Start the WebappClassLoader unless it has already been started
-             * (by the deployment backend)
-             */
-            if (!classLoader.isStarted()) {
-                try {
-                    classLoader.start();
-                } catch (Exception e) {
-                    throw new LifecycleException(e);
-                } 
-            }
-
             // Binding the Webapp class loader to the directory context
             DirContextURLStreamHandler.bind(classLoader,
                     this.container.getResources());
@@ -858,6 +846,20 @@ public class WebappLoader
         classLoader = (WebappClassLoader) constr.newInstance(args);
 
         classLoader.setUseMyFaces(useMyFaces);
+
+        /*
+         * Start the WebappClassLoader here as opposed to in the course of
+         * WebappLoader#start, in order to prevent it from being started
+         * twice (during normal deployment, the WebappClassLoader is created
+         * by the deployment backend without calling
+         * WebappLoader#createClassLoader, and will have been started
+         * by the time WebappLoader#start is called)
+         */
+        try {
+            classLoader.start();
+        } catch (Exception e) {
+            throw new LifecycleException(e);
+        }
 
         return classLoader;
 
