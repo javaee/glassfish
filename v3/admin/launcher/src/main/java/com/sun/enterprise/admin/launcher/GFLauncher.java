@@ -274,7 +274,9 @@ public abstract class GFLauncher {
             else {
                 psd = ProcessStreamDrainer.save(getInfo().getDomainName(), process);
             }
-            writeSecurityTokens(process.getOutputStream());
+            if (System.getenv("AS_TO") != null)
+                Thread.sleep(Integer.parseInt(System.getenv("AS_TO")));
+            writeSecurityTokens(process);
         }
         catch (Exception e) {
             throw new GFLauncherException("jvmfailure", e, e);
@@ -288,7 +290,9 @@ public abstract class GFLauncher {
             wait(process);
     }
 
-    private void writeSecurityTokens(OutputStream os) throws Exception {
+    private void writeSecurityTokens(Process sp) throws GFLauncherException, IOException {
+        handleDeadProcess();
+        OutputStream os = sp.getOutputStream();
         BufferedWriter bw = null;
         try {
             bw = new BufferedWriter(new OutputStreamWriter(os));
@@ -297,9 +301,33 @@ public abstract class GFLauncher {
                 bw.newLine();
                 bw.flush();      //flusing once is ok too
             }
+        } catch(IOException e) {
+            handleDeadProcess();
+            throw e;   //process is not dead, but got some other exception, rethrow it
         } finally {
-            if (bw != null)
+            if (bw != null) {
+                handleDeadProcess();
                 bw.close();
+            }
+        }
+    }
+    private void handleDeadProcess() throws GFLauncherException {
+        String trace = getDeadProcessTrace(process);
+        if (trace != null)
+            throw new GFLauncherException(trace);
+    }
+    
+    private String getDeadProcessTrace(Process sp) throws GFLauncherException {
+        //returns null in case the process is NOT dead
+        try {
+            int ev = sp.exitValue();
+            ProcessStreamDrainer psd = getProcessStreamDrainer();
+            String output = psd.getOutErrString();
+            String trace = strings.get("server_process_died", ev, output);
+            return trace;
+        } catch(IllegalThreadStateException e) {
+            //the process is still running and we are ok
+            return null;
         }
     }
 
