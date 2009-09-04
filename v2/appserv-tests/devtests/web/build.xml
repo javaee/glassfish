@@ -401,6 +401,9 @@
         <ant dir="webappLoaderEmptyJar" target="all"/>
         <ant dir="welcomePageExtensionMatch" target="all"/>
         <ant dir="overrideImplicitMapping" target="all"/>
+<!-- XXX temporarily commented out, see IT 9309
+        <ant dir="monitorWebRequest" target="all"/>
+-->
     </target>
 
     <target name="security">
