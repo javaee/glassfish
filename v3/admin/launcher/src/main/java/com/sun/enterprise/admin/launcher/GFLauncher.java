@@ -274,8 +274,6 @@ public abstract class GFLauncher {
             else {
                 psd = ProcessStreamDrainer.save(getInfo().getDomainName(), process);
             }
-            if (System.getenv("AS_TO") != null)
-                Thread.sleep(Integer.parseInt(System.getenv("AS_TO")));
             writeSecurityTokens(process);
         }
         catch (Exception e) {
