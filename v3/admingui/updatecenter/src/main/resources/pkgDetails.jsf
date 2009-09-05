@@ -35,38 +35,51 @@
 -->
 <!-- updateCenter/pkgDetails.jsf -->
 
-
-<!initPage 
-    setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings")
-    setResourceBundle(key="help_uc" bundle="org.glassfish.updatecenter.admingui.Helplinks")
+<!initPage
+    setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
+    setResourceBundle(key="help_uc" bundle="org.glassfish.updatecenter.admingui.Helplinks");
 />
-<!composition template="/templates/propertySheetTemplate.tpl" 
-              pageTitle="$resource{i18nUC.pkgDetails.Title}" 
-              helpText="$resource{i18nUC.pkgDetails.TitleHelp}"
-              helpBundle="org.glassfish.updatecenter.admingui.Helplinks"
-              i18nBundle="org.glassfish.admingui.core.Strings"
-              useBottomTitle="false"
-              helpKey="$resource{help_uc.uc.pkgDetails}"
-              >
-  
-    <!define name="pageButtonsTop">
-        <sun:button id="backButton" text="$resource{i18n.button.Back}" >
-            <!command
-                redirect(page="#{fromPage}");
-            />
-        </sun:button>
-    </define>
-    
-    <!define name="properties">
-        <sun:property id="name"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nUC.detailsPkgName}" >
-            <!beforeCreate
-                if (! $pageSession{fromPage}){
+//<sun:page id="page1">
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.pkgDetails.Title}">>
+<!define name="content">
+    <event>
+        <!beforeCreate
+            if (! $pageSession{fromPage}){
                     getRequestValue(key="fromPage" value=>$page{fromPage});
                 }
                 getRequestValue(key="fmriStr" value=>$page{fmriStr});
                 getRequestValue(key="auth" value=>$page{auth});
                 getPkgDetailsInfo(fmriStr="#{fmriStr}" auth="#{auth}" details=>$page{details});
+        />
+    </event>
+
+#include "/common/shared/restart.inc"
+            <sun:form id="propertyForm">
+        <f:verbatim>
+            <script type="text/javascript">
+                admingui.nav.selectTreeNodeById('form:tree:updateCenter');
+            </script>
+        </f:verbatim>
+     //#include "/common/shared/treeBreadcrumbs.inc"
+#include "/updateCenter/ucTabs.inc"
+#include "/common/shared/alertMsg.inc"
+        <!-- Page Title -->
+ <sun:title id="propertyContentPage" title="$resource{i18nUC.pkgDetails.Title}" helpText="$resource{i18nUC.pkgDetails.TitleHelp}">
+ <!facet pageButtonsTop>
+    <sun:panelGroup id="topButtons">
+
+        <sun:button id="backButton" text="$resource{i18n.button.Back}" >
+            <!command
+                redirect(page="#{fromPage}");
             />
+        </sun:button>
+</sun:panelGroup>
+    </facet>
+</sun:title>
+"<br><br>
+<sun:propertySheet id="propertySheet">
+    <sun:propertySheetSection id="propertySectionTextField">
+        <sun:property id="name"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nUC.detailsPkgName}" >
             <staticText id="name" value="#{details.pkgName}" />
         </sun:property>
         
@@ -104,6 +117,10 @@
             <staticText id="desc" value="#{details.desc}" />
         </sun:property>
         
-        "<br /><br />
-    </define>
+    </sun:propertySheetSection >
+    </sun:propertySheet>
+        
+<sun:hidden id="helpKey" value="$resource{help_uc.uc.pkgDetails}" />
+    </sun:form>
+</define>
 </composition>
