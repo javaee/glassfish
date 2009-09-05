@@ -109,7 +109,7 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
 
     private static final Logger l = LogDomains.getLogger(EmbeddedDeployerImpl.class, LogDomains.DPL_LOGGER);
 
-    Map<String, ApplicationInfo> deployedApps = new HashMap<String, ApplicationInfo>();
+    Map<String, EmbeddedDeployedInfo> deployedApps = new HashMap<String, EmbeddedDeployedInfo>();
 
     final static Logger logger = LogDomains.getLogger(EmbeddedDeployerImpl.class, LogDomains.CORE_LOGGER);
 
@@ -193,7 +193,8 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
         if (appInfo!=null) {
-            deployedApps.put(appInfo.getName(), appInfo);
+            EmbeddedDeployedInfo info = new EmbeddedDeployedInfo(appInfo, context.getModulePropsMap());
+            deployedApps.put(appInfo.getName(), info);
             return appInfo.getName();
         }
         return null;
@@ -202,18 +203,19 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
     public void undeploy(String name) {
 
         ActionReport report = habitat.getComponent(ActionReport.class, "plain");
-        ApplicationInfo info = deployedApps.get(name);
-        if (info==null) {
-            info = deployment.get(name);
+        EmbeddedDeployedInfo info = deployedApps.get(name);
+        ApplicationInfo appInfo  = info!=null?info.appInfo:null;
+        if (appInfo==null) {
+            appInfo = deployment.get(name);
         }
-        if (info == null) {
+        if (appInfo == null) {
             report.setMessage(
                 "Cannot find deployed application of name " + name);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;            
         }
 
-        ReadableArchive source = info.getSource();
+        ReadableArchive source = appInfo.getSource();
         if (source == null) {
             report.setMessage(
                 "Cannot get source archive for undeployment");
@@ -227,6 +229,9 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         ExtendedDeploymentContext deploymentContext = null;
         try {
             deploymentContext = deployment.getContext(logger, source, params, report);
+            if (info!=null) {
+                deploymentContext.setModulePropsMap(info.map);
+            }
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Cannot create context for undeployment ", e);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -234,7 +239,7 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         }
 
 
-        if (info!=null) {
+        if (appInfo!=null) {
             deployment.undeploy(name, deploymentContext);
         }
 
@@ -253,5 +258,15 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
             undeploy(appName);
         }
 
+    }
+
+    public final class EmbeddedDeployedInfo {
+        final ApplicationInfo appInfo;
+        final Map<String, Properties> map;
+
+        public EmbeddedDeployedInfo(ApplicationInfo appInfo, Map<String, Properties> map) {
+            this.appInfo = appInfo;
+            this.map = map;
+        }
     }
 }
