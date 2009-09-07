@@ -90,7 +90,7 @@ public class UpdateCenterHandlers {
             details.put("url", fmri.getURLPath());
             if (img != null){
                 Manifest manifest = img.getManifest(fmri);
-                details.put("category", manifest.getAttribute(CATEGORY));
+                details.put("category", getCategory(manifest));
                 details.put("bytes", "" + manifest.getPackageSize() );
                 details.put("pkgSize", getPkgSize(manifest));
                 // look for description in the following order:
@@ -113,7 +113,13 @@ public class UpdateCenterHandlers {
         handlerCtx.setOutputValue("details", details);
         
     }
-    
+
+    private static String  getCategory(Manifest manifest){
+        String attr = manifest.getAttribute(CATEGORY);
+        //attr is of the form  scheme:catgory   refer to issue# 8494.
+        int index = attr.indexOf(":");
+        return (index==-1) ? attr : attr.substring(index+1);
+    }
     
     @Handler(id="getUcList",
     	input={
@@ -153,7 +159,7 @@ public class UpdateCenterHandlers {
                     putInfo(oneRow, "pkgName", fmri.getName());
                     putInfo(oneRow, "version", getPkgVersion(fmri.getVersion()));
                     putInfo(oneRow, "newVersion", "");
-                    putInfo(oneRow, "category", manifest.getAttribute(CATEGORY));
+                    putInfo(oneRow, "category", getCategory(manifest));
                     putInfo(oneRow, "pkgSize", getPkgSize(manifest));
                     oneRow.put( "size", Integer.valueOf(manifest.getPackageSize()));
                     putInfo(oneRow, "auth", fmri.getAuthority());
@@ -330,7 +336,7 @@ public class UpdateCenterHandlers {
                     putInfo(oneRow, "pkgName", name);
                     putInfo(oneRow, "newVersion", getPkgVersion(newPkg.getVersion()));
                     putInfo(oneRow, "version", getPkgVersion(oldPkg.getVersion()));
-                    putInfo(oneRow, "category", manifest.getAttribute(CATEGORY));
+                    putInfo(oneRow, "category", getCategory(manifest));
                     putInfo(oneRow, "pkgSize", convertSizeForDispay(changedSize));
                     oneRow.put( "size", Integer.valueOf(changedSize));
                     putInfo(oneRow, "auth", newPkg.getAuthority());
