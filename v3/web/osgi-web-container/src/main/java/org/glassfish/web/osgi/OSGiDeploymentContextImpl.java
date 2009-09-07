@@ -149,7 +149,7 @@ public class OSGiDeploymentContextImpl extends DeploymentContextImpl
                 StringTokenizer entries = new StringTokenizer(bcp, ",;");
                 String entry;
                 while (entries.hasMoreTokens()) {
-                    entry = entries.nextToken();
+                    entry = entries.nextToken().trim();
                     if (entry.startsWith("/")) entry = entry.substring(1);
                     try
                     {
