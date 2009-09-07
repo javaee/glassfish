@@ -37,30 +37,30 @@
 
 #include "/common/shared/alertMsg.inc"
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18n.jvm.GeneralTitle}" 
-                    helpText="$resource{i18n.jvm.GeneralPageHelp}">
+                <sun:title id="propertyContentPage" title="$resource{i18nc.jvm.GeneralTitle}" 
+                    helpText="$resource{i18nc.jvm.GeneralPageHelp}">
 #include "/common/shared/editPageButtons.inc"             
                 </sun:title>
                     <!-- PropertySheet .... -->
                     <sun:propertySheet id="propertySheet" requiredFields="true">	
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
-                            <sun:property id="javaHomeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.JavaHomeLabel}" helpText="$resource{i18n.jvm.JavaHomeHelp}">
+                            <sun:property id="javaHomeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.JavaHomeLabel}" helpText="$resource{i18nc.jvm.JavaHomeHelp}">
                                 <sun:textField id="JavaHome"  styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['JavaHome']}" required="#{true}"/> 
                             </sun:property>                       
-                            <sun:property id="JavacOptionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.JavacOptionsLabel}" helpText="$resource{i18n.jvm.JavacOptionsHelp}">                           
+                            <sun:property id="JavacOptionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.JavacOptionsLabel}" helpText="$resource{i18nc.jvm.JavacOptionsHelp}">                           
                                 <sun:textField id="JavacOptions" columns="$int{55}" text="#{pageSession.valueMap['JavacOptions']}"/>     
                             </sun:property>                        
-                          <sun:property id="debugEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.DebugLabel}" helpText="$resource{i18n.jvm.DebugHelp}">
+                          <sun:property id="debugEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.DebugLabel}" helpText="$resource{i18nc.jvm.DebugHelp}">
                                 <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['DebugEnabled']}" selectedValue="true" />      
                             </sun:property>
-                            <sun:property id="DebugOptionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.DebugOptionsLabel}" helpText="$resource{i18n.jvm.DebugOptionsHelp}">
+                            <sun:property id="DebugOptionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.DebugOptionsLabel}" helpText="$resource{i18nc.jvm.DebugOptionsHelp}">
                                 <sun:textField id="DebugOptions" columns="$int{55}" text="#{pageSession.valueMap['DebugOptions']}" />      
                             </sun:property>
-                            <sun:property id="RmicOptionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.RMICompileOptionsLabel}" helpText="$resource{i18n.jvm.RMICompileOptionsHelp}">
+                            <sun:property id="RmicOptionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.RMICompileOptionsLabel}" helpText="$resource{i18nc.jvm.RMICompileOptionsHelp}">
                                 <sun:textField id="RmicOptions" columns="$int{55}" text="#{pageSession.valueMap['RmicOptions']}"/>      
                             </sun:property> 
-                            <sun:property id="bytecodePreprocessorProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.BytecodePreprocessorLabel}" helpText="$resource{i18n.jvm.BytecodePreprocessorHelp}">
+                            <sun:property id="bytecodePreprocessorProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.BytecodePreprocessorLabel}" helpText="$resource{i18nc.jvm.BytecodePreprocessorHelp}">
                                 <sun:textArea id="bytecodePreprocessor" rows="$int{8}" columns="$int{55}" text="#{pageSession.valueMap['BytecodePreprocessors']}"/>      
                             </sun:property>                  
                             "<br /><br />

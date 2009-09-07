@@ -38,8 +38,8 @@
 
 #include "/common/shared/alertMsg.inc"
             <!-- Page Title -->
-            <sun:title id="propertyContentPage" title="$resource{i18n.jvmOptions.Title}" 
-                helpText="$resource{i18n.jvmOptions.PageHelp}">
+            <sun:title id="propertyContentPage" title="$resource{i18nc.jvmOptions.Title}"
+                helpText="$resource{i18nc.jvmOptions.PageHelp}">
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"

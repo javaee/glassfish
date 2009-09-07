@@ -46,21 +46,21 @@
 	/>
 	</sun:tab>
 
-	<sun:tab id="pathSettings" immediate="true" text="$resource{i18n.jvm.PathSettings}">
+	<sun:tab id="pathSettings" immediate="true" text="$resource{i18nc.jvm.PathSettings}">
 	    <!command
                 setSessionAttribute(key="javaConfigTab" value="pathSettings");
 		redirect(page="#{request.contextPath}/common/javaConfig/serverInstJvmPathSettings.jsf?configName=server-config");
 	    />        
 	</sun:tab>
 
-	<sun:tab id="jvmOptions" immediate="true" text="$resource{i18n.jvm.Options}" >
+	<sun:tab id="jvmOptions" immediate="true" text="$resource{i18nc.jvm.Options}" >
 	    <!command
                 setSessionAttribute(key="javaConfigTab" value="jvmOptions");
 		redirect(page="#{request.contextPath}/common/javaConfig/serverJvmOptions.jsf?configName=server-config");
 	    />        
 	</sun:tab>
 
-	<sun:tab id="profiler" immediate="true" text="$resource{i18n.jvm.Profiler}" >
+	<sun:tab id="profiler" immediate="true" text="$resource{i18nc.jvm.Profiler}" >
 	    <!command
                 setSessionAttribute(key="javaConfigTab" value="profiler");
 		redirect(page="#{request.contextPath}/common/javaConfig/serverInstProfiler.jsf?configName=server-config");

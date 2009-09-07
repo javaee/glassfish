@@ -36,8 +36,12 @@
 <!-- jvmGeneral_1.inc -->
 <!-- when including this page, should followed by including jvmGeneral_2.inc to make a complete page -->
 
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+/>
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.jvm.GeneralTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.jvm.GeneralTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate

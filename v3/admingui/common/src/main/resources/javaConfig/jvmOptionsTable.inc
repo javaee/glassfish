@@ -36,7 +36,7 @@
 <!-- shared/propertyDescTable.inc -->
 
 <!-- Table .... -->
-<sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18n.jvmOptions.TableTitle}" 
+<sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18nc.jvmOptions.TableTitle}"
             deselectMultipleButton="$boolean{true}"
             deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
             selectMultipleButton="$boolean{true}"
@@ -51,7 +51,7 @@
         <!afterCreate
                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
             />
-        <sun:button id="addSharedTableButton" disabled="#{false}" text="$resource{i18n.jvmOptions.AddJvmOption}" >   
+        <sun:button id="addSharedTableButton" disabled="#{false}" text="$resource{i18nc.jvmOptions.AddJvmOption}" >
             <!command
                 getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                 addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"Name", "Value", "Description"});

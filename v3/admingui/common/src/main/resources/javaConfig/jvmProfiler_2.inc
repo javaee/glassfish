@@ -38,11 +38,11 @@
 
 #include "/common/shared/alertMsg.inc"
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18n.jvm.ProfilerPageName}"
-                    helpText="$resource{i18n.jvm.ProfilerPageHelp}">
+                <sun:title id="propertyContentPage" title="$resource{i18nc.jvm.ProfilerPageName}"
+                    helpText="$resource{i18nc.jvm.ProfilerPageHelp}">
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
-            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.Save}"
+            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.CreateProfiler}"
                     onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
                 <!command
                     createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
@@ -70,6 +70,17 @@
                 redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />
             </sun:button>
+
+            <sun:button id="deleteButton" rendered="#{edit}" text="$resource{i18nc.button.DeleteProfiler}"
+                onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
+                    { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
+                    else {return false;} " >
+                <!command
+                    deleteChild(objectNameStr="#{pageSession.profilerObjectNameStr}" type="profiler")
+                    redirect(page="#{selfPage}?configName=#{pageSession.configName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                />
+            </sun:button>
+
         </sun:panelGroup>
     </facet>
                     </sun:title>
@@ -77,17 +88,17 @@
                     <sun:propertySheet id="propertySheet">			 
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
-                            <sun:property id="profilerNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.ProfilerName}">
+                            <sun:property id="profilerNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ProfilerName}">
                                 <sun:textField id="ProfilerName" rendered="#{!edit}" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['Name']}" required="#{true}"/> 
                                 <sun:staticText id="ProfilerName2" rendered="#{edit}" text="#{pageSession.valueMap['Name']}"/>
                             </sun:property>
-                           <sun:property id="profilerEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.Profiler}">
+                           <sun:property id="profilerEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
                                 <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" />   
                            </sun:property>
-                            <sun:property id="ClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.Classpath}" helpText="$resource{i18n.jvm.ClasspathHelp}">
+                            <sun:property id="ClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.Classpath}" helpText="$resource{i18nc.jvm.ClasspathHelp}">
                                 <sun:textField id="ClasspathLabel" columns="$int{55}" text="#{pageSession.valueMap['Classpath']}" />      
                             </sun:property>
-                            <sun:property id="NativeLibraryProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.NativeLibraryPath}" helpText="$resource{i18n.jvm.NativeLibraryPathHelp}">
+                            <sun:property id="NativeLibraryProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.NativeLibraryPath}" helpText="$resource{i18nc.jvm.NativeLibraryPathHelp}">
                                 <sun:textField id="NativeLibrary" columns="$int{55}" text="#{pageSession.valueMap['NativeLibraryPath']}"/>      
                             </sun:property> 
                             "<br /><br />

@@ -37,7 +37,12 @@
 <!-- shared/jvmOptions_1.jsf -->
 <!-- when including this page, should followed by including jvmOptions_2.inc to make a complete page -->
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.jvmOptions.Title}" >
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+/>
+
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.jvmOptions.Title}" >
 <!define name="content">
     <event>
     <!beforeCreate

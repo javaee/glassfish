@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -37,9 +37,10 @@
 <!-- jvmProfiler_1.inc -->
 <!-- when including this page, should followed by including jvmProfiler_2.inc to make a complete page -->
 <!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.jvm.ProfilerPageName}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.jvm.ProfilerPageName}" >
 <!define name="content">
     <event>
     <!beforeCreate
@@ -48,6 +49,7 @@
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverInstProfiler.jsf");
         setPageSessionAttribute(key="childType" value="profiler");
+        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteProfiler}");
         getProfilerAttrs(objectName="#{pageSession.profilerObjectNameStr}" edit="#{pageSession.edit}");
         if(#{edit}) {
             getProxyAttrs(objectNameStr="#{pageSession.profilerObjectNameStr}" valueMap="#{pageSession.valueMap}");
@@ -61,4 +63,4 @@
     </event>
 #include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
-   #include "/common/shared/treeBreadcrumbs.inc"
+    //#include "/common/shared/treeBreadcrumbs.inc"
