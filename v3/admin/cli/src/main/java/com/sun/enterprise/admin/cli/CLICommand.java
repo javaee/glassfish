@@ -245,9 +245,13 @@ public abstract class CLICommand implements PostConstruct {
         if (checkHelp())
             return 0;
         validate();
-        if (programOpts.isEcho())
+        if (programOpts.isEcho()) {
             logger.printMessage(toString());
-        else if (logger.isDebug())
+            // In order to avoid echoing commands used intenally to the
+            // implementation of *this* command, we turn off echo after
+            // having echoed this command.
+            programOpts.setEcho(false);
+        } else if (logger.isDebug())
             logger.printDebugMessage(toString());
         return executeCommand();
     }

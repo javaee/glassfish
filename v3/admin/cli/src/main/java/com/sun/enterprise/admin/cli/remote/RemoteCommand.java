@@ -360,6 +360,7 @@ public class RemoteCommand extends CLICommand {
          */
         returnOutput = true;
         execute(args);
+        returnOutput = false;
         return output;
     }
 
@@ -375,6 +376,7 @@ public class RemoteCommand extends CLICommand {
          */
         returnAttributes = true;
         execute(args);
+        returnAttributes = false;
         return attrs;
     }
 
