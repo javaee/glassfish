@@ -41,6 +41,12 @@ function submitAndDisable(button, msg) {
     return true; 
 }
 
+function disableButton(id){
+    var button = document.getElementById(id);
+    button.className='Btn1Dis'; // the LH styleClass for disabled buttons.
+    button.disabled=true; 
+}
+
 
 function getField(theForm, fieldName) {
     for (i=0; i < theForm.elements.length; i++) {
