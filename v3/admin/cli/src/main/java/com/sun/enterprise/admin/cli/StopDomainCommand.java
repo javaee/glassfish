@@ -99,12 +99,8 @@ public class StopDomainCommand extends LocalDomainCommand {
         if (domainName != null) {
             // if the local password isn't available, the domain isn't running
             // (localPassword is set by initDomain)
-            if (localPassword == null) {
-                // by definition this is not an error
-                // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
-                logger.printWarning(strings.get("StopDomain.dasNotRunning"));
-                return 0;
-            }
+            if (localPassword == null)
+                return dasNotRunning();
 
             int adminPort = getAdminPort(getDomainXml());
             programOpts.setPort(adminPort);
@@ -119,14 +115,17 @@ public class StopDomainCommand extends LocalDomainCommand {
             programOpts.setInteractive(false);
         }
 
-        // Verify that the DAS is running and reachable
-        if (!DASUtils.pingDASQuietly(programOpts, env)) {
-            // by definition this is not an error
-            // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
-            logger.printWarning(strings.get("StopDomain.dasNotRunning"));
-            return 0;
+        // in the local case, make sure we're talking to the correct DAS
+        if (domainName != null) {
+            if (!isThisDAS(domainRootDir))
+                return dasNotRunning();
+            logger.printDebugMessage("It's the correct DAS");
+        } else {
+            // Verify that the DAS is running and reachable
+            if (!DASUtils.pingDASQuietly(programOpts, env))
+                return dasNotRunning();
+            logger.printDebugMessage("DAS is running");
         }
-        logger.printDebugMessage("DAS is running");
 
         /*
          * At this point any options will have been prompted for, and
@@ -136,22 +135,30 @@ public class StopDomainCommand extends LocalDomainCommand {
          */
         programOpts.setInteractive(false);
 
-        // in the local case, make sure we're talking to the correct DAS
-        if (domainName != null) {
-            if (!isThisDAS(domainRootDir)) {
-                // by definition this is not an error
-                // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
-                logger.printWarning(strings.get("StopDomain.dasNotRunning"));
-                return 0;
-            }
-            logger.printDebugMessage("It's the correct DAS");
-        }
+        doCommand();
+        return 0;
+    }
 
+    /**
+     * Printe message and return exit code when
+     * we detect that the DAS is not running.
+     */
+    protected int dasNotRunning() {
+        // by definition this is not an error
+        // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
+        logger.printWarning(strings.get("StopDomain.dasNotRunning"));
+        return 0;
+    }
+
+    /**
+     * Execute the actual stop-domain command.
+     */
+    protected void doCommand()
+            throws CommandException, CommandValidationException {
         // run the remote stop-domain command and throw away the output
         RemoteCommand cmd = new RemoteCommand(getName(), programOpts, env);
         cmd.executeAndReturnOutput("stop-domain");
         waitForDeath();
-        return 0;
     }
 
     /**

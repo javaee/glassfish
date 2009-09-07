@@ -67,21 +67,40 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Scoped(PerLookup.class)
 public class RestartDomainCommand extends StopDomainCommand {
 
-    protected String stopCommand = "restart-domain";
     private long uptimeOldServer;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(RestartDomainCommand.class);
 
+    /**
+     * Execute the restart-domain command.
+     */
     @Override
-    protected int executeCommand()
+    protected void doCommand()
             throws CommandException, CommandValidationException {
+        // first, find out how long the server has been up
         uptimeOldServer = getUptime();  // may throw CommandException
-        int ret = super.executeCommand();
+
+        // run the remote restart-domain command and throw away the output
+        RemoteCommand cmd =
+            new RemoteCommand("restart-domain", programOpts, env);
+        cmd.executeAndReturnOutput("restart-domain");
+        waitForRestart();
         logger.printMessage(strings.get("restartDomain.success"));
-        return ret;
     }
 
+    /**
+     * If the server isn't running, that's an error.
+     */
+    @Override
+    protected int dasNotRunning() {
+        logger.printWarning(strings.get("restart.dasNotRunning"));
+        return 1;
+    }
+
+    /**
+     * Get uptime from the server.
+     */
     private long getUptime()
             throws CommandException, CommandValidationException {
         RemoteCommand cmd = new RemoteCommand("uptime", programOpts, env);
@@ -89,7 +108,7 @@ public class RestartDomainCommand extends StopDomainCommand {
         long up_ms = parseUptime(up);
 
         if (up_ms <= 0) {
-            throw new CommandException(strings.get("StopDomain.dasNotRunning"));
+            throw new CommandException(strings.get("restart.dasNotRunning"));
         }
 
         logger.printDebugMessage("server uptime: " + up_ms);
@@ -122,11 +141,9 @@ public class RestartDomainCommand extends StopDomainCommand {
     }
 
     /**
-     * Override waitForDeath in StopDomainCommand.
-     * We actually wait for the server to restart.
+     * Wait for the server to restart.
      */
-    @Override
-    protected void waitForDeath() throws CommandException {
+    private void waitForRestart() throws CommandException {
         long end = CLIConstants.WAIT_FOR_DAS_TIME_MS +
                                         System.currentTimeMillis();
 
