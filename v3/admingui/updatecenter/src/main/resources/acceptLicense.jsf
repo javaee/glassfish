@@ -84,7 +84,7 @@
                     <sun:panelGroup id="bottomButtons">
         "<div style="width: 25px; margin: auto">
         <sun:button id="acceptButton" text="$resource{i18n.button.Accept}" 
-                onClick="return submitAndDisable(this, '$resource{i18n.button.Processing}')"
+                onClick="disableButton('#{pageSession.declineButtonId}'); return submitAndDisable(this, '$resource{i18n.button.Processing}')"
         >
             <!command
                 updateCenterProcess(selectedRows="$pageSession{selectedRows}" action="#{action}" );
@@ -93,6 +93,9 @@
             />
         </sun:button>
         <sun:button id="declineButton" text="$resource{i18n.button.Decline}" >
+            <!afterCreate
+                getClientId(component="$this{component}" clientId="#{pageSession.declineButtonId}");
+            />
             <!command
                 redirect(page="#{fromPage}");
             />
