@@ -33,62 +33,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.rest.provider;
-
-import org.jvnet.hk2.config.Dom;
-
-import java.util.HashMap;
-import java.util.Set;
+package org.glassfish.admin.rest;
 
 /**
- * Response information object. Returned on call to GET method on singleton
- * resource. Information used by provider to generate the appropriate output.
- *
- * @author Rajeshwar Patil
+ * REST Interface Constants
+ * @author Rajeshwar Paitl
  */
-public class GetResult extends Result {
+public interface Constants {
 
-    /**
-     * Constructor
-     */
-    public GetResult(Dom dom, String deleteCommand,
-            String[][] commandResourcesPaths, OptionsResult metaData) {
-        __dom = dom;
-        __deleteCommand = deleteCommand;
-        __commandResourcesPaths = commandResourcesPaths;
-        __metaData = metaData;
-    }
+    public static final String INDENT = "  ";
 
-    /**
-     * Returns the Dom object associated with the resource.
-     */
-    public Dom getDom() {
-        return __dom;
-    }
+    public static final int QUERY_PARAMETER = 0;
 
-    /**
-     * Returns deleteCommand associated with the resource.
-     */
-    public String getDeleteCommand() {
-        return __deleteCommand;
-    }
+    public static final int MESSAGE_PARAMETER = 1;
 
-    /**
-     * Returns an array of command resources paths and the operation type.
-     */
-    public String[][] getCommandResourcesPaths() {
-        return __commandResourcesPaths;
-    }
+    public static final String TRUE = "true";
 
-    /**
-     * Returns OptionsResult - the meta-data of this resource.
-     */
-    public OptionsResult getMetaData() {
-        return __metaData;
-    }
+    public static final String ON = "on";
 
-    Dom __dom;
-    String __deleteCommand;
-    String[][] __commandResourcesPaths;
-    OptionsResult __metaData;
+    public static final String FALSE = "false";
+
+    public static final String OFF = "off";
 }

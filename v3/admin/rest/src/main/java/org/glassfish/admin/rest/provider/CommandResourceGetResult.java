@@ -52,11 +52,13 @@ public class CommandResourceGetResult extends Result {
      * Constructor
      */
     public CommandResourceGetResult(String commandResourceName, String command,
-            String commandDisplayName, String commandMethod) {
+            String commandDisplayName, String commandMethod,
+                OptionsResult metaData) {
         __commandResourceName = commandResourceName;
         __command = command;
         __commandDisplayName = commandDisplayName;
         __commandMethod = commandMethod;
+        __metaData = metaData;
     }
 
     /**
@@ -88,9 +90,17 @@ public class CommandResourceGetResult extends Result {
         return __commandMethod;
     }
 
+    /**
+     * Returns OptionsResult - the meta-data of this resource.
+     */
+    public OptionsResult getMetaData() {
+        return __metaData;
+    }
+
 
     String __commandResourceName;
     String __command;
     String __commandDisplayName;
     String __commandMethod;
+    OptionsResult __metaData;
 }

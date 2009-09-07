@@ -21,6 +21,7 @@ import javax.ws.rs.core.UriInfo;
 import org.glassfish.admin.rest.provider.CommandResourceGetResult;
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
+import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.api.ActionReport;
@@ -35,8 +36,8 @@ __resourceUtil = new ResourceUtil();
 public Response executeCommand(HashMap<String, String> data) {
 try {
 if (data.containsKey("error")) {
-return Response.status(415).entity(
-"Unable to parse the input entity. Please check the syntax.").build();}/*unsupported media*/
+return Response.status(400).entity(
+"Unable to parse the input entity. Please check the syntax.").build();}/*parsing error*/
 
 __resourceUtil.adjustParameters(data);
 
@@ -56,10 +57,10 @@ throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 }
 }
 @GET
-@Consumes({MediaType.TEXT_HTML})
+@Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public CommandResourceGetResult get() {
 try {
-return new CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod);
+return new CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod, options());
 } catch (Exception e) {
 throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 }
@@ -71,7 +72,9 @@ OptionsResult optionsResult = new OptionsResult(resourceName);
 try {
 //command method metadata
 MethodMetaData methodMetaData = __resourceUtil.getMethodMetaData(
-commandName, RestService.getHabitat(), RestService.logger);
+commandName, Constants.MESSAGE_PARAMETER, RestService.getHabitat(), RestService.logger);
+//GET meta data
+optionsResult.putMethodMetaData("GET", new MethodMetaData());
 optionsResult.putMethodMetaData(commandMethod, methodMetaData);
 } catch (Exception e) {
 throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);

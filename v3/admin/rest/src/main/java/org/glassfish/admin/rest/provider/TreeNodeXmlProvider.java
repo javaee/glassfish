@@ -52,6 +52,7 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
+import org.glassfish.admin.rest.Constants;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.external.statistics.Statistic;
 
@@ -142,11 +143,11 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
             if (node.hasChildNodes()) {
                 try {
                         result = result + "\n";
-                        result = result + indent; //indent
-                        result = result + getStartXmlElement(getResourceKey());
+                        result = result + Constants.INDENT; //indent
+                        result = result + getStartXmlElement(getResourcesKey());
                         elementName = node.getName();
                         result = result + getElementLink(uriInfo, elementName);
-                        result = result + getEndXmlElement(getResourceKey());
+                        result = result + getEndXmlElement(getResourcesKey());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -154,11 +155,6 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
         }
 
         return result;
-    }
-
-
-    private String getResourceKey() {
-        return "child-resource";
     }
 
 
@@ -185,7 +181,7 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
                 Object attributeValue;
 
                 result = result + "\n";
-                result = result + indent;
+                result = result + Constants.INDENT;
                 result = result + "<" + statisticObject.getName();
                 for (String attributeName: attributes) {
                     attributeValue = map.get(attributeName);
@@ -203,8 +199,5 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
 
         return result;
     }
-
-
-    private static String indent = "    ";
 
 }

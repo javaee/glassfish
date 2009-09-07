@@ -99,7 +99,7 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
         result = getHtmlForComponent(attributes, "Attributes", result);
 
         String childResourceLinks =  getResourcesLinks(proxy);
-        result = getHtmlForComponent(childResourceLinks, "Child Resources", result);
+        result = getHtmlForComponent(childResourceLinks, getResourcesKey(), result);
 
         result = result + "</html></body>";
         return result;

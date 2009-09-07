@@ -70,7 +70,7 @@ public class ProviderUtil extends Util {
      * Produce a string in double quotes with backslash sequences in all the
      * right places.
      */
-    protected String quote(String string) {
+    static protected final String quote(String string) {
         if (string == null || string.length() == 0) {
             return "\"\"";
         }
@@ -139,7 +139,8 @@ public class ProviderUtil extends Util {
     }
 
 
-    static protected final String getElementLink(UriInfo uriInfo, String elementName) {
+    static protected final String getElementLink(UriInfo uriInfo,
+        String elementName) {
         String link = uriInfo.getAbsolutePath().toString();
         return link.endsWith("/")?
             (link + elementName):(link + "/" + elementName);
@@ -284,6 +285,33 @@ public class ProviderUtil extends Util {
         result = result + "<h1 class=\"mainheader\">GlassFish REST Interface</h1>";
         result = result + "<hr>";
         return result;
+    }
+
+
+    static protected String getJsonForMethodMetaData(OptionsResult metaData, String indent) {
+        OptionsResultJsonProvider provider = new OptionsResultJsonProvider();
+        return provider.getRespresenationForMethodMetaData(metaData, indent);
+    }
+
+
+    static protected String getXmlForMethodMetaData(OptionsResult metaData, String indent) {
+        OptionsResultXmlProvider provider = new OptionsResultXmlProvider();
+        return provider.getRespresenationForMethodMetaData(metaData, indent);
+    }
+
+
+    static protected String getResourcesKey() {
+        return "Child Resources";
+    }
+
+
+    static protected String getResourceKey() {
+        return "Child Resource";
+    }
+
+
+    static protected String getMethodsKey() {
+        return "Methods";
     }
 
 

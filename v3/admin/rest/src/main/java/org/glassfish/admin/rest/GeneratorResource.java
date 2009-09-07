@@ -708,6 +708,7 @@ public class GeneratorResource {
         if (commandMethod.equals("GET")) {
             out.write("import org.glassfish.admin.rest.provider.StringResult;\n");
         }
+        out.write("import org.glassfish.admin.rest.Constants;\n");
         out.write("import org.glassfish.admin.rest.ResourceUtil;\n");
         out.write("import org.glassfish.admin.rest.RestService;\n");
         out.write("import org.glassfish.api.ActionReport;\n\n");
@@ -724,16 +725,20 @@ public class GeneratorResource {
         if (commandMethod.equals("GET")) {
             //get method
             createCommandGetMethod(commandName, commandMethod, out);
+
+            //create options method
+            createCommandOptionsMethod(out, Constants.QUERY_PARAMETER);
         } else {
             //post, put or delete method
             createCommandMethod(commandMethod, out);
 
             //get method
             createGetMethod(out);
+
+            //create options method
+            createCommandOptionsMethod(out, Constants.MESSAGE_PARAMETER);
         }
 
-        //create options method
-        createCommandOptionsMethod(out);
 
         //variable declarations
         out.write("@Context\n");
@@ -756,9 +761,9 @@ public class GeneratorResource {
         out.write("public Response executeCommand(HashMap<String, String> data) {\n");
         out.write("try {\n");
         out.write("if (data.containsKey(\"error\")) {\n");
-        out.write("return Response.status(415).entity(\n");
+        out.write("return Response.status(400).entity(\n");
         out.write("\"Unable to parse the input entity. Please check the syntax.\").build();");
-        out.write("}/*unsupported media*/\n\n");
+        out.write("}/*parsing error*/\n\n");
         out.write("__resourceUtil.adjustParameters(data);\n\n");
 
         out.write("ActionReport actionReport = __resourceUtil.runCommand(commandName, data, RestService.getHabitat());\n\n");
@@ -780,10 +785,10 @@ public class GeneratorResource {
     private void createGetMethod(BufferedWriter out)
                 throws IOException {
         out.write("@" + "GET" + "\n");
-        out.write("@Consumes({MediaType.TEXT_HTML})\n");
+        out.write("@Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})\n");
         out.write("public CommandResourceGetResult get() {\n");
         out.write("try {\n");
-        out.write("return new CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod);\n");
+        out.write("return new CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod, options());\n");
         out.write("} catch (Exception e) {\n");
         out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
         out.write("}\n");
@@ -832,7 +837,7 @@ public class GeneratorResource {
 
         out.write("ActionReport actionReport = __resourceUtil.runCommand(commandName, properties, RestService.getHabitat());\n\n");
         out.write("ActionReport.ExitCode exitCode = actionReport.getActionExitCode();\n\n");
-        out.write("StringResult results = new StringResult(commandName, actionReport.getMessage());\n");
+        out.write("StringResult results = new StringResult(commandName, actionReport.getMessage(), options());\n");
         out.write("if (exitCode == ActionReport.ExitCode.SUCCESS) {\n");
         out.write("results.setStatusCode(200); /*200 - ok*/\n");
         out.write("} else {\n");
@@ -850,7 +855,7 @@ public class GeneratorResource {
     }
 
 
-    private void createCommandOptionsMethod(BufferedWriter out) throws IOException {
+    private void createCommandOptionsMethod(BufferedWriter out, int parameterType) throws IOException {
         out.write("@OPTIONS\n");
         out.write("@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})\n");
         out.write("public OptionsResult options() {\n");
@@ -858,7 +863,16 @@ public class GeneratorResource {
         out.write("try {\n");
         out.write("//command method metadata\n");
         out.write("MethodMetaData methodMetaData = __resourceUtil.getMethodMetaData(\n");
-        out.write("commandName, RestService.getHabitat(), RestService.logger);\n");
+        if (parameterType == Constants.QUERY_PARAMETER) {
+             out.write("commandName, Constants.QUERY_PARAMETER, RestService.getHabitat(), RestService.logger);\n");
+        } else {
+            //message parameter
+            out.write("commandName, Constants.MESSAGE_PARAMETER, RestService.getHabitat(), RestService.logger);\n");
+
+            //GET meta data
+            out.write("//GET meta data\n");
+            out.write("optionsResult.putMethodMetaData(\"GET\", new MethodMetaData());\n");
+        }
 
         out.write("optionsResult.putMethodMetaData(commandMethod, methodMetaData);\n");
         out.write("} catch (Exception e) {\n");

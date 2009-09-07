@@ -53,6 +53,7 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
+import org.glassfish.admin.rest.Constants;
 
 /**
  *
@@ -95,20 +96,35 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
 
      private String getXml(GetResult proxy) {
         String result;
+        String indent = Constants.INDENT;
+
         result ="<" ;
         result = result + getTypeKey(proxy.getDom());
-
         String attributes = getAttributes(proxy.getDom());
         if ((attributes != null) && (attributes.length() > 1)) {
             result = result + " ";
             result = result + getAttributes(proxy.getDom());
         }
-
         result = result + ">";
-        result = result + "\n";
-             result = result + getResourcesLinks(proxy.getDom(),
-                 proxy.getCommandResourcesPaths());
-        result = result + getEndXmlElement(getTypeKey(proxy.getDom()));
+
+        result = result + "\n\n" + indent;
+        result = result + getStartXmlElement(getMethodsKey());
+        result = result + getXmlForMethodMetaData(proxy.getMetaData(),
+            indent + Constants.INDENT);
+        result = result + "\n" + indent + getEndXmlElement(getMethodsKey());
+
+       //do not display empty child resources array
+        if ((proxy.getDom().getElementNames().size() > 0) ||
+                (proxy.getCommandResourcesPaths().length > 0)) {
+            result = result + "\n\n" + indent;
+            result = result + getStartXmlElement(getResourcesKey().replace(' ', '-'));
+            result = result + getResourcesLinks(proxy.getDom(),
+                proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
+            result = result + "\n" + indent;
+            result = result + getEndXmlElement(getResourcesKey().replace(' ', '-'));
+        }
+
+        result = result + "\n\n" + getEndXmlElement(getTypeKey(proxy.getDom()));
         return result;
     }
 
@@ -116,11 +132,6 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
     private String getTypeKey(Dom proxy) {
         String uri = uriInfo.getAbsolutePath().toString();
         return upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
-    }
-
-
-    private String getResourceKey() {
-        return "child-resource";
     }
 
 
@@ -138,16 +149,16 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
     }
 
 
-    private String getResourcesLinks(Dom proxy, String[][] commandResourcesPaths) {
+    private String getResourcesLinks(Dom proxy,
+            String[][] commandResourcesPaths, String indent) {
         String result = "";
         Set<String> elementNames = proxy.getElementNames();
         for (String elementName : elementNames) { //for each element
             try {
-                    result = result + indent; //indent
-                    result = result + getStartXmlElement(getResourceKey());
+                    result = result + "\n" + indent;
+                    result = result + getStartXmlElement(getResourceKey().replace(' ', '-'));
                     result = result + getElementLink(uriInfo, elementName);
-                    result = result + getEndXmlElement(getResourceKey());
-                    result = result + "\n";
+                    result = result + getEndXmlElement(getResourceKey().replace(' ', '-'));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -156,11 +167,10 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
         //add command resources
         for (String[] commandResourcePath : commandResourcesPaths) {
             try {
-                result = result + indent; //indent
-                result = result + getStartXmlElement(getResourceKey());
+                result = result + "\n" + indent;
+                result = result + getStartXmlElement(getResourceKey().replace(' ', '-'));
                 result = result + getElementLink(uriInfo, commandResourcePath[0]);
-                result = result + getEndXmlElement(getResourceKey());
-                result = result + "\n";
+                result = result + getEndXmlElement(getResourceKey().replace(' ', '-'));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -169,5 +179,4 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
     }
 
 
-    private static String indent = "    ";
 }

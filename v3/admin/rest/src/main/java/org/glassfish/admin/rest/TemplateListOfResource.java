@@ -93,7 +93,7 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
         List<E> entities = getEntity();
         if (entities==null){
             return new GetResultList(domList, getPostCommand(),
-               getCommandResourcesPaths());//empty dom list
+               getCommandResourcesPaths(), options());//empty dom list
         }
         Iterator iterator = entities.iterator();
         E e;
@@ -102,7 +102,7 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
             domList.add(Dom.unwrap(e));
         }
 
-        return new GetResultList(domList, getPostCommand(), getCommandResourcesPaths());
+        return new GetResultList(domList, getPostCommand(), getCommandResourcesPaths(), options());
     }
 
 
@@ -123,7 +123,7 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
     public Response CreateResource(HashMap<String, String> data) {
         try {
             if (data.containsKey("error")) {
-                return Response.status(415).entity("Unable to parse the input entity. Please check the syntax.").build();//unsupported media
+                return Response.status(400).entity("Unable to parse the input entity. Please check the syntax.").build();//parsing error
             }
 
             __resourceUtil.purgeEmptyEntries(data);
@@ -190,6 +190,7 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
             if (command != null) {
                 MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
                     command, RestService.getHabitat(), RestService.logger);
+                postMethodMetaData.setDescription("Create");
                 optionsResult.putMethodMetaData("POST", postMethodMetaData);
             }
         } catch (Exception e) {

@@ -112,7 +112,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         }
 
         return new GetResult(Dom.unwrap(getEntity()), getDeleteCommand(),
-                getCommandResourcesPaths());
+                getCommandResourcesPaths(), options());
     }
 
     public ConfigBean getConfigBean() {
@@ -125,8 +125,8 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         try {
             data.remove("submit");
             if (data.containsKey("error")) {
-                return Response.status(415).entity(
-                        "Unable to parse the input entity. Please check the syntax.").build();//unsupported media
+                return Response.status(400).entity(
+                        "Unable to parse the input entity. Please check the syntax.").build();//parsing error
             }
 
             __resourceUtil.purgeEmptyEntries(data);
@@ -158,8 +158,8 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         //do so implicitly through asadmin command
         try {
             if (data.containsKey("error")) {
-                return Response.status(415).entity(
-                        "Unable to parse the input entity. Please check the syntax.").build();//unsupported media
+                return Response.status(400).entity(
+                        "Unable to parse the input entity. Please check the syntax.").build();//parsing error
             }
 
             __resourceUtil.purgeEmptyEntries(data);
@@ -211,18 +211,19 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             //GET meta data
             optionsResult.putMethodMetaData("GET", new MethodMetaData());
 
-            //POST meta data
-            //FIXME -- Get hold of meta-data for config bean attributes and
-            //set it in MethodMetaData object. For now, just provide POST method
-            //without any message/entity information.
-            optionsResult.putMethodMetaData("POST", new MethodMetaData());
+            /////optionsResult.putMethodMetaData("POST", new MethodMetaData());
+            MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
+                (ConfigBean) Dom.unwrap(getEntity()));
+            postMethodMetaData.setDescription("Update");
+            optionsResult.putMethodMetaData("POST", postMethodMetaData);
+
 
             //DELETE meta data
             String command = getDeleteCommand();
             if (command != null) {
-                MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
+                MethodMetaData deleteMethodMetaData = __resourceUtil.getMethodMetaData(
                         command, RestService.getHabitat(), RestService.logger);
-                optionsResult.putMethodMetaData("DELETE", postMethodMetaData);
+                optionsResult.putMethodMetaData("DELETE", deleteMethodMetaData);
             }
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);

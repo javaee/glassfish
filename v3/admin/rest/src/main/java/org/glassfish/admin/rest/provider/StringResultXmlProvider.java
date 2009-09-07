@@ -49,6 +49,8 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
+import org.glassfish.admin.rest.Constants;
+
 
 /**
  * @author Rajeshwar Patil
@@ -90,9 +92,10 @@ public class StringResultXmlProvider extends ProviderUtil implements
 
      private String getXml(StringResult proxy) {
         String result;
+        String indent = Constants.INDENT;
         result ="<" ;
-        result = result + getTypeKey(proxy.getName());
 
+        result = result + getTypeKey(proxy.getName());
         String attribute;
         if (proxy.isError()) {
             attribute = getAttribute("error", proxy.getErrorMessage());
@@ -104,8 +107,15 @@ public class StringResultXmlProvider extends ProviderUtil implements
             result = result + " ";
             result = result + attribute;
         }
-
         result = result + ">";
+
+        result = result + "\n\n" + indent;
+        result = result + "<" + getMethodsKey() + ">";
+        result = result + getXmlForMethodMetaData(proxy.getMetaData(),
+            indent + Constants.INDENT);
+        result = result + "\n" + indent + "</" + getMethodsKey() + ">";
+
+        result = result + "\n\n" + "</" + getTypeKey(proxy.getName()) + ">";
         return result;
     }
 

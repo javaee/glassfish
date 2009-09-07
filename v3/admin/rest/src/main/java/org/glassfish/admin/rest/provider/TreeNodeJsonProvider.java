@@ -97,7 +97,7 @@ public class TreeNodeJsonProvider extends ProviderUtil implements MessageBodyWri
              result = result + getAttributes(proxy);
            result = result + "}";
            result = result + ",";
-           result = result + getResourcesKey();
+           result = result + quote(getResourcesKey());
            result = result + ":";
            result = result + "[";
              result = result + getResourcesLinks(proxy);
@@ -127,11 +127,6 @@ public class TreeNodeJsonProvider extends ProviderUtil implements MessageBodyWri
         int endIndex = result.length() - 1;
         if (endIndex > 0) result = result.substring(0, endIndex );
         return result;
-    }
-
-
-    private String getResourcesKey() {
-        return quote("child-resources");
     }
 
 

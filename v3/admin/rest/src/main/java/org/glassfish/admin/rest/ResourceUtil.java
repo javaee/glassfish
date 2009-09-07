@@ -158,6 +158,22 @@ public class ResourceUtil extends Util {
      */
     public MethodMetaData getMethodMetaData(String command, Habitat habitat,
             Logger logger) {
+        return getMethodMetaData(command, Constants.MESSAGE_PARAMETER,
+                habitat, logger);
+    }
+
+
+    /**
+     * Constructs and returns the resource method meta-data.
+     * @param command the command assocaited with the resource method
+     * @param parameterType the type of parameter. Possible values are
+     *        Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
+     * @param habitat the habitat
+     * @param logger the logger to use
+     * @return MethodMetaData the meta-data store for the resource method.
+     */
+    public MethodMetaData getMethodMetaData(String command, 
+            int pamameterType, Habitat habitat, Logger logger) {
         MethodMetaData methodMetaData = new MethodMetaData();
 
         if (command != null) {
@@ -175,9 +191,53 @@ public class ResourceUtil extends Util {
                 String parameterName =
                     (paramModel.getParam().primary())?"id":paramModel.getName();
 
+                if (pamameterType == Constants.QUERY_PARAMETER) {
+                    methodMetaData.putQureyParamMetaData(parameterName,
+                        parameterMetaData);
+                } else {
+                    //message parameter
+                    methodMetaData.putParameterMetaData(parameterName,
+                        parameterMetaData);
+                }
+            }
+        }
+
+        return methodMetaData;
+    }
+
+
+    /**
+     * Constructs and returns the resource method meta-data. This method is
+     * called to get meta-data in case of update method (POST).
+     * @param configBean the config bean associated with the resource.
+     * @return MethodMetaData the meta-data store for the resource method.
+     */
+    public MethodMetaData getMethodMetaData(ConfigBean configBean) {
+        MethodMetaData methodMetaData = new MethodMetaData();
+
+        if (configBean != null) {
+            //POST meta data
+            //FIXME -- Get hold of meta-data for config bean attributes to
+            //set it in MethodMetaData object. For now, just provide POST method
+            //without any message/entity information.
+
+            /*Collection<CommandModel.ParamModel> params =
+                getParamMetaData(command, habitat, logger);
+            Iterator<CommandModel.ParamModel> iterator = params.iterator();
+            CommandModel.ParamModel paramModel;
+            while(iterator.hasNext()) {
+                paramModel = iterator.next();
+                Param param = paramModel.getParam();
+
+                ParameterMetaData parameterMetaData =
+                    getParameterMetaData(paramModel);
+
+                String parameterName =
+                    (paramModel.getParam().primary())?"id":paramModel.getName();
+
                 methodMetaData.putParameterMetaData(parameterName,
                     parameterMetaData);
-            }
+            }*/
         }
 
         return methodMetaData;

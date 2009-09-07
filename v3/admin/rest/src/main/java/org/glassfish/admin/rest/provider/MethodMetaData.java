@@ -94,6 +94,12 @@ public class MethodMetaData {
     }
 
 
+    public void setDescription(String description) {
+        __description = description;
+    }
+
+
     HashMap<String, ParameterMetaData> __parameterMetaData;
     HashMap<String, ParameterMetaData> __queryParamMetaData;
+    String __description;
 }

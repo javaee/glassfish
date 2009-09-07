@@ -56,50 +56,54 @@ import org.glassfish.admin.rest.Constants;
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class StringResultJsonProvider extends ProviderUtil
-        implements MessageBodyWriter<StringResult> {
+public class CommandResourceGetResultJsonProvider extends ProviderUtil
+        implements MessageBodyWriter<CommandResourceGetResult> {
 
-     @Context
-     protected UriInfo uriInfo;
+    @Context
+    protected UriInfo uriInfo;
 
-     public long getSize(final StringResult proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-          return -1;
-     }
-
-
-     public boolean isWriteable(final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-         try {
-             if (Class.forName("org.glassfish.admin.rest.provider.StringResult").equals(genericType)) {
-                 return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
-             }
-         } catch (java.lang.ClassNotFoundException e) {
-             return false;
-         }
-         return false;
-     }
+    public long getSize(final CommandResourceGetResult proxy,
+        final Class<?> type, final Type genericType,
+        final Annotation[] annotations, final MediaType mediaType) {
+        return -1;
+    }
 
 
-     public void writeTo(final StringResult proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType,
-               final MultivaluedMap<String, Object> httpHeaders,
-               final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getJson(proxy).getBytes());
-     }
+    public boolean isWriteable(final Class<?> type, final Type genericType,
+            final Annotation[] annotations, final MediaType mediaType) {
+        try {
+            if (Class.forName(
+                    "org.glassfish.admin.rest.provider.CommandResourceGetResult"
+                    ).equals(genericType)) {
+                return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
+            }
+        } catch (java.lang.ClassNotFoundException e) {
+            return false;
+        }
+        return false;
+    }
 
 
-     private String getJson(StringResult proxy) {
+    public void writeTo(final CommandResourceGetResult proxy,
+            final Class<?> type, final Type genericType,
+            final Annotation[] annotations, final MediaType mediaType,
+            final MultivaluedMap<String, Object> httpHeaders,
+            final OutputStream entityStream) throws IOException,
+            WebApplicationException {
+        entityStream.write(getJson(proxy).getBytes());
+    }
+
+
+    private String getJson(CommandResourceGetResult proxy) {
         String result;
         String indent = Constants.INDENT;
         result ="{" ;
 
-        result = result + getTypeKey(proxy.getName()) + ":{";
-        if (proxy.isError()) {
-            result = result + getAttribute("error", proxy.getErrorMessage());
-        } else {
-           result = result + getAttribute("value", proxy.getMessage());
-        }
+        String commandDisplayName =
+            upperCaseFirstLetter(eleminateHypen(proxy.getCommandDisplayName()));
+        result = result + quote(commandDisplayName) + ":{";
+
+        result = result + getAttributes();
         result = result + "},";
 
         result = result + "\n\n" + indent;
@@ -113,14 +117,9 @@ public class StringResultJsonProvider extends ProviderUtil
     }
 
 
-    private String getTypeKey(String name) {
-       return quote(upperCaseFirstLetter(eleminateHypen(name)));
-    }
-
-
-    private String getAttribute(String name, String value) {
-        String result ="";
-        result = result + quote(name) + " : " + quote(value);
-        return result;
+    private String getAttributes() {
+        //No attributes for this resource. This resource is an abstraction for
+        //command, for which there does not exists any actual config bean.
+        return "";
     }
 }

@@ -53,6 +53,7 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
+import org.glassfish.admin.rest.Constants;
 
 /**
  *
@@ -95,27 +96,38 @@ public class GetResultJsonProvider extends ProviderUtil implements MessageBodyWr
 
      private String getJson(GetResult proxy) {
         String result;
+        String indent = Constants.INDENT;
         result ="{" ;
-           result = result + getTypeKey(proxy.getDom());
-           result = result + ":";
-           result = result + "{";
-             result = result + getAttributes(proxy.getDom());
-           result = result + "}";
-           result = result + ",";
-           result = result + getResourcesKey();
-           result = result + ":";
-           result = result + "[";
-             result = result + getResourcesLinks(proxy.getDom(),
-                 proxy.getCommandResourcesPaths());
-           result = result + "]";
-        result = result + "}" ;
+
+        result = result + getTypeKey(proxy.getDom()) + ":{";
+        result = result + getAttributes(proxy.getDom());
+        result = result + "},";
+
+        result = result + "\n\n" + indent;
+        result = result + quote(getMethodsKey()) + ":{";
+        result = result + getJsonForMethodMetaData(proxy.getMetaData(),
+            indent + Constants.INDENT);
+        result = result + "\n" + indent + "}";
+
+        //do not display empty child resources array
+        if ((proxy.getDom().getElementNames().size() > 0) ||
+                (proxy.getCommandResourcesPaths().length > 0)) {
+            result = result + ",";
+            result = result + "\n\n" + indent;
+            result = result + quote(getResourcesKey()) + ":[";
+            result = result + getResourcesLinks(proxy.getDom(),
+                proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
+            result = result + "\n" + indent + "]";
+        }
+
+        result = result + "\n\n" + "}";
         return result;
     }
 
 
     private String getTypeKey(Dom proxy) {
         String uri = uriInfo.getAbsolutePath().toString();
-        return upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
+        return quote(upperCaseFirstLetter(eleminateHypen(getName(uri, '/'))));
     }
 
 
@@ -133,18 +145,15 @@ public class GetResultJsonProvider extends ProviderUtil implements MessageBodyWr
     }
 
 
-    private String getResourcesKey() {
-        return quote("child-resources");
-    }
-
-
-    private String getResourcesLinks(Dom proxy, String[][] commandResourcesPaths) {
+    private String getResourcesLinks(Dom proxy, 
+            String[][] commandResourcesPaths, String indent) {
         String result = "";
         Set<String> elementNames = proxy.getElementNames();
         for (String elementName : elementNames) {
             try {
                 ///List<Dom> elements = proxy.nodeElements(elementName);
                 ///for (Dom element : elements) {
+                    result = result + "\n" + indent;
                     result = result + quote(getElementLink(uriInfo, elementName/*element*/));
                     result = result + ",";
                 ///}
@@ -162,6 +171,7 @@ public class GetResultJsonProvider extends ProviderUtil implements MessageBodyWr
                 if (result.length() > 0) {
                     result = result + ",";
                 }
+                result = result + "\n" + indent;
                 result = result + quote(getElementLink(uriInfo, commandResourcePath[0]));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -169,5 +179,4 @@ public class GetResultJsonProvider extends ProviderUtil implements MessageBodyWr
         }
         return result;
     }
-
 }

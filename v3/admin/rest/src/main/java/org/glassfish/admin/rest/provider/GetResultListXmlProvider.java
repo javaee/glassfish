@@ -53,6 +53,7 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
+import org.glassfish.admin.rest.Constants;
 
 /**
  *
@@ -95,13 +96,28 @@ public class GetResultListXmlProvider extends ProviderUtil implements MessageBod
 
      private String getXml(GetResultList proxy) {
         String result;
-        result ="<" ;
-        result = result + getTypeKey();
-        result = result + ">";
-        result = result + "\n";
-             result = result + getResourcesLinks(proxy.getDomList(),
-                 proxy.getCommandResourcesPaths());
-        result = result + getEndXmlElement(getTypeKey());
+        String indent = Constants.INDENT;
+
+        result = getStartXmlElement(getTypeKey());
+
+        result = result + "\n\n" + indent;
+        result = result + getStartXmlElement(getMethodsKey());
+        result = result + getXmlForMethodMetaData(proxy.getMetaData(),
+            indent + Constants.INDENT);
+        result = result + "\n" + indent + getEndXmlElement(getMethodsKey());
+
+        //do not display empty child resources array
+        if ((proxy.getDomList().size() > 0) ||
+                (proxy.getCommandResourcesPaths().length > 0)) {
+            result = result + "\n\n" + indent;
+            result = result + getStartXmlElement(getResourcesKey().replace(' ', '-'));
+            result = result + getResourcesLinks(proxy.getDomList(),
+                proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
+            result = result + "\n" + indent;
+            result = result + getEndXmlElement(getResourcesKey().replace(' ', '-'));
+        }
+
+        result = result + "\n\n" + getEndXmlElement(getTypeKey());
         return result;
     }
 
@@ -111,23 +127,17 @@ public class GetResultListXmlProvider extends ProviderUtil implements MessageBod
     }
 
 
-    private String getResourceKey() {
-        return "child-resource";
-    }
-
-
     private String getResourcesLinks(List<Dom> proxyList,
-        String[][] commandResourcesPaths) {
+        String[][] commandResourcesPaths, String indent) {
         String result = "";
         String elementName;
         for (Dom proxy: proxyList) { //for each element
             try {
-                    result = result + indent; //indent
-                    result = result + getStartXmlElement(getResourceKey());
+                    result = result + "\n" + indent;
+                    result = result + getStartXmlElement(getResourceKey().replace(' ', '-'));
                     elementName = proxy.getKey();
                     result = result + getElementLink(uriInfo,elementName);
-                    result = result + getEndXmlElement(getResourceKey());
-                    result = result + "\n";
+                    result = result + getEndXmlElement(getResourceKey().replace(' ', '-'));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -136,11 +146,10 @@ public class GetResultListXmlProvider extends ProviderUtil implements MessageBod
         //add command resources
         for (String[] commandResourcePath : commandResourcesPaths) {
             try {
-                result = result + indent; //indent
-                result = result + getStartXmlElement(getResourceKey());
+                result = result + "\n" + indent;
+                result = result + getStartXmlElement(getResourceKey().replace(' ', '-'));
                 result = result + getElementLink(uriInfo, commandResourcePath[0]);
-                result = result + getEndXmlElement(getResourceKey());
-                result = result + "\n";
+                result = result + getEndXmlElement(getResourceKey().replace(' ', '-'));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -150,5 +159,4 @@ public class GetResultListXmlProvider extends ProviderUtil implements MessageBod
     }
 
 
-    private static String indent = "    ";
 }

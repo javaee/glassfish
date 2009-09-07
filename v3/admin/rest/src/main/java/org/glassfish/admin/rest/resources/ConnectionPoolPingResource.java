@@ -22,6 +22,7 @@ import org.glassfish.admin.rest.provider.CommandResourceGetResult;
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.StringResult;
+import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.api.ActionReport;
@@ -44,7 +45,7 @@ try {
 
 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
 
-StringResult results = new StringResult(commandName, actionReport.getMessage());
+StringResult results = new StringResult(commandName, actionReport.getMessage(), options());
 if (exitCode == ActionReport.ExitCode.SUCCESS) {
 results.setStatusCode(200); /*200 - ok*/
 } else {
@@ -66,7 +67,7 @@ OptionsResult optionsResult = new OptionsResult(resourceName);
 try {
 //command method metadata
 MethodMetaData methodMetaData = __resourceUtil.getMethodMetaData(
-commandName, RestService.getHabitat(), RestService.logger);
+commandName, Constants.QUERY_PARAMETER, RestService.getHabitat(), RestService.logger);
 optionsResult.putMethodMetaData(commandMethod, methodMetaData);
 } catch (Exception e) {
 throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);

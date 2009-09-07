@@ -47,9 +47,10 @@ public class StringResult extends Result {
     /**
      * Constructor
      */
-    public StringResult(String name, String message) {
+    public StringResult(String name, String message,  OptionsResult metaData) {
         __name = name;
         __message = message;
+        __metaData = metaData;
     }
 
 
@@ -69,6 +70,15 @@ public class StringResult extends Result {
     }
 
 
+    /**
+     * Returns OptionsResult - the meta-data of this resource.
+     */
+    public OptionsResult getMetaData() {
+        return __metaData;
+    }
+
+
     String __name;
     String __message;
+    OptionsResult __metaData;
 }
