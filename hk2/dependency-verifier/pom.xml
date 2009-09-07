@@ -50,6 +50,12 @@
             <artifactId>bcel</artifactId>
             <version>5.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>1.2.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <developers>
         <developer>
@@ -61,5 +67,6 @@
                 <role>developer</role>
             </roles>
         </developer>
+
     </developers>
 </project>
