@@ -67,6 +67,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.jvnet.hk2.osgiadapter.OSGiDirectoryBasedRepository;
+import org.jvnet.hk2.osgiadapter.OSGiFactoryImpl;
 
 /**
  * A class that inspects module definitions of a bundle and processes them
@@ -530,6 +531,7 @@ public class PackageAnalyser {
                 return files.toArray(new File[files.size()]);
             }
         };
+        OSGiFactoryImpl.initialize(null);
         Repository moduleRepository = new OSGiDirectoryBasedRepository("repo", f);
         moduleRepository.initialize();
 
