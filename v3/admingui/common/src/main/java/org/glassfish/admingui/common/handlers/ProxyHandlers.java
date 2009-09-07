@@ -157,15 +157,19 @@ public class ProxyHandlers {
 @Handler(id = "deleteChild",
         input = {
             @HandlerInput(name = "objectNameStr", type = String.class, required = true),
-            @HandlerInput(name = "name", type = String.class, required = true),
-            @HandlerInput(name = "type", type = String.class, required = true)})
+            @HandlerInput(name = "type", type = String.class, required = true),
+            @HandlerInput(name = "name", type = String.class)})
     public static void deleteChild(HandlerContext handlerCtx) {
         String type = (String) handlerCtx.getInputValue("type");
         String name = (String) handlerCtx.getInputValue("name");
         String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
         AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
         try {
-                amx.removeChild(type, name);
+                if (GuiUtil.isEmpty(name)){
+                    amx.removeChild(type);
+                }else{
+                    amx.removeChild(type, name);
+                }
        } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
