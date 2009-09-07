@@ -390,7 +390,8 @@ public class UpdateCenterHandlers {
     	input={
         @HandlerInput(name="selectedRows", type=java.util.List.class, required=true)},
         output={
-        @HandlerOutput(name="license", type=String.class)})
+        @HandlerOutput(name="license", type=String.class),
+        @HandlerOutput(name="hasLicense", type=Boolean.class)})
     public static void getLicenseText(HandlerContext handlerCtx) {
          
         List obj = (List) handlerCtx.getInputValue("selectedRows");
@@ -403,6 +404,7 @@ public class UpdateCenterHandlers {
                 allLicense.append(getLicense(image, fmri));
             }
             handlerCtx.setOutputValue("license", ""+allLicense);
+            handlerCtx.setOutputValue("hasLicense", (allLicense.length() > 0));
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
             //ex.printStackTrace();

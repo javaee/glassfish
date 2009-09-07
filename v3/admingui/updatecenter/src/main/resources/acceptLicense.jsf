@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -63,7 +63,12 @@
                 getRequestValue(key="successMsg" value=>$page{successMsg});
                 getRequestValue(key="action" value=>$page{action});
                 getRequestValue(key="selectedRows" value=>$page{selectedRows});
-                getLicenseText(selectedRows="#{selectedRows}" license=>$page{licenseText});
+                getLicenseText(selectedRows="#{selectedRows}" license="#{pageSession.licenseText}" hasLicense="#{requestScope.hasLicense}");
+                if (! #{requestScope.hasLicense}){
+                    updateCenterProcess(selectedRows="$pageSession{selectedRows}" action="#{action}" );
+                    prepareAlertMsg(summary="#{successMsg}" type="success");
+                    redirect(page="#{fromPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                }
             />
             "<pre><font size="2" />
                 //<sun:textArea id="lic" rows="$int{20}" columns="$int{90}" text="#{pageSession.licenseText}" disabled="#{true}" />
@@ -84,7 +89,7 @@
             <!command
                 updateCenterProcess(selectedRows="$pageSession{selectedRows}" action="#{action}" );
                 prepareAlertMsg(summary="#{successMsg}" type="success");
-		redirect(page="#{fromPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                redirect(page="#{fromPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />
         </sun:button>
         <sun:button id="declineButton" text="$resource{i18n.button.Decline}" >
