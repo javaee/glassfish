@@ -524,7 +524,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
             ConfigBean cb = (ConfigBean) ((ConfigView)Proxy.getInvocationHandler(c)).getMasterView();
             ServerEnvironmentImpl env = cb.getHabitat().getComponent(ServerEnvironmentImpl.class);
             LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
-            loggingConfig.setupConfigDir(env.getConfigDirPath());
+            loggingConfig.setupConfigDir(env.getConfigDirPath(), env.getLibPath());
 
             String prop = null;
             try{
@@ -538,7 +538,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
             ConfigBean cb = (ConfigBean) ((ConfigView)Proxy.getInvocationHandler(c)).getMasterView();
             ServerEnvironmentImpl env = cb.getHabitat().getComponent(ServerEnvironmentImpl.class);
             LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
-            loggingConfig.setupConfigDir(env.getConfigDirPath());
+            loggingConfig.setupConfigDir(env.getConfigDirPath(), env.getLibPath());
 
             Map <String, String> map = new HashMap<String, String>() ;
             try {
@@ -552,7 +552,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
             ConfigBean cb = (ConfigBean) ((ConfigView)Proxy.getInvocationHandler(c)).getMasterView();
             ServerEnvironmentImpl env = cb.getHabitat().getComponent(ServerEnvironmentImpl.class);
             LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
-            loggingConfig.setupConfigDir(env.getConfigDirPath());
+            loggingConfig.setupConfigDir(env.getConfigDirPath(), env.getLibPath());
 
             Map <String, String> map = new HashMap<String, String>() ;
             try {

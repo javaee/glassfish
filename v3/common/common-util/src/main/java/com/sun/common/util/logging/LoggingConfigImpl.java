@@ -63,7 +63,6 @@ import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.*;
 
-import java.util.logging.LogManager;
 
 import com.sun.enterprise.util.io.FileUtils;
 
@@ -75,7 +74,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
     	Logger logger; 
     	 
 	 	@Inject
-        ServerEnvironment env;
+        ServerEnvironmentImpl env;
     	
 		Properties props = new Properties();
 		FileInputStream fis;
@@ -83,6 +82,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 		LogManager logMgr = null;
         File loggingConfigDir = null;
         File file = null;
+        File libFolder = null;
 
    /**
      * Constructor
@@ -91,23 +91,28 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 	
 	 public void postConstruct() { 
 		// set logging.properties filename				
-        setupConfigDir(env.getConfigDirPath());
+        setupConfigDir(env.getConfigDirPath(),env.getLibPath());
           
 	}
 
     // this is so the launcher can pass in where the dir is since 
-    public void setupConfigDir(File file){
+    public void setupConfigDir(File file, File installDir){
         loggingConfigDir=file;
         loggingPropertiesName = ServerEnvironmentImpl.kLoggingPropertiesFileNAme;
         logMgr = LogManager.getLogManager();
+        libFolder = new File (installDir ,"lib");
     }
 	
 	private void openPropFile() throws IOException{
 		try {
             file =new File(loggingConfigDir, loggingPropertiesName);
             if (!file.exists()) {
-                Logger.getAnonymousLogger().log(Level.WARNING, file.getAbsolutePath() + " not found.");
-                return;
+                Logger.getAnonymousLogger().log(Level.WARNING, file.getAbsolutePath() + " not found, creating new file from template.");
+                File templateDir = new File(libFolder , "templates");
+                File src = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
+                File dest = new File(loggingConfigDir, ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
+                FileUtils.copy(src, dest);
+                file = new File(loggingConfigDir, ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
             }
 			fis = new java.io.FileInputStream (file);
         	props.load(fis);

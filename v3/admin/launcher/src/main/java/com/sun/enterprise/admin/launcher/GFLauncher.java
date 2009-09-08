@@ -140,7 +140,7 @@ public abstract class GFLauncher {
         sysPropsFromXml = parser.getSystemProperties();
         asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
         debugOptions = getDebug();
-        parser.setupConfigDir(getInfo().getConfigDir());        
+        parser.setupConfigDir(getInfo().getConfigDir(), getInfo().getInstallDir());
         logFilename = parser.getLogFilename();
         
         // TODO temporary until we define a domain.xml attribute for setting this

@@ -134,7 +134,7 @@ public final class LoggingImpl extends AMXImplBase
 // need to get reference to GFFileHandler to call methods directly.
         final ServerEnvironmentImpl env = InjectedValues.getInstance().getServerEnvironment();
         loggingConfig = new LoggingConfigImpl();
-        loggingConfig.setupConfigDir(env.getConfigDirPath());
+        loggingConfig.setupConfigDir(env.getConfigDirPath(), env.getLibPath());
         logFilter = new LogFilter();
         msgIdCatalog = new MessageIdCatalog();
 //        gfFileHandler =   InjectedValues.getInstance().getGFFileHandler();

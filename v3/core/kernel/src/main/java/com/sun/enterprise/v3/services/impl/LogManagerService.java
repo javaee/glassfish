@@ -28,6 +28,7 @@ import com.sun.enterprise.server.logging.FormatterDelegate;
 import com.sun.enterprise.server.logging.UniformLogFormatter;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.common.util.logging.LoggingOutputStream;
 import com.sun.common.util.logging.LoggingXMLNames;
 import com.sun.common.util.logging.LoggingConfigImpl;
@@ -109,10 +110,21 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
         
         // logging.properties nassaging.
         final LogManager logMgr = LogManager.getLogManager();
-        final File logging = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
+        File logging = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
         System.setProperty("java.util.logging.config.file", logging.getAbsolutePath());
         // reset settings
+
+
         try {
+            if (!logging.exists()) {
+                Logger.getAnonymousLogger().log(Level.WARNING, logging.getAbsolutePath() + " not found, creating new file from template.");
+                String rootFolder = env.getLibPath().getName();
+                String templateDir = rootFolder + File.separator + "templates";
+                File src = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
+                File dest = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
+                FileUtils.copy(src, dest);
+                logging = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
+            }
             logMgr.readConfiguration();
         } catch(IOException e) {
              logger.log(Level.SEVERE, "Cannot read logging configuration file : ", e);

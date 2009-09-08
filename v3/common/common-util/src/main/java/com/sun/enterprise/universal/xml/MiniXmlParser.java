@@ -149,8 +149,8 @@ public class MiniXmlParser {
         return adminPorts;
     }
 
-    public void setupConfigDir(File configDir) {
-        loggingConfig.setupConfigDir(configDir);
+    public void setupConfigDir(File configDir, File installDir) {
+        loggingConfig.setupConfigDir(configDir, installDir);
     }
 
     public String getLogFilename() {
