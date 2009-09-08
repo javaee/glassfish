@@ -2,14 +2,12 @@ package client;
 
 import javax.xml.ws.WebServiceRef;
 
-import endpoint.HelloService;
-import endpoint.Hello;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 public class Client {
 
-        private static SimpleReporterAdapter stat =
+   /*     private static SimpleReporterAdapter stat =
                 new SimpleReporterAdapter("appserv-tests");
 
         @WebServiceRef(name="ignoredName", mappedName="MyMappedName", wsdlLocation="http://localhost:8080/Hello/HelloService?WSDL")
@@ -55,5 +53,6 @@ public class Client {
                 stat.addStatus("Simple-mapped-name", stat.FAIL);
             }
        }
+*/
 }
 
