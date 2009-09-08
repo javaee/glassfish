@@ -37,6 +37,7 @@ package org.glassfish.admin.amx.impl.mbean;
 
 import javax.management.Attribute;
 import javax.management.MBeanAttributeInfo;
+import javax.management.AttributeNotFoundException;
 import javax.management.MBeanInfo;
 import javax.management.ObjectName;
 import javax.management.openmbean.*;
@@ -144,7 +145,11 @@ public final class SampleImpl extends AMXImplBase
 
     protected Serializable getAttributeManually(final String name)
     {
-        return (mAttributes.get(name));
+        if ( ! mAttributes.containsKey(name) )
+        {
+            throw new RuntimeException( new AttributeNotFoundException(name) );
+        }
+        return mAttributes.get(name);
     }
 
 
