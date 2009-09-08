@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.api.monitoring.TelemetryProvider;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.external.probe.provider.PluginPoint;
@@ -45,13 +44,13 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
  */
 @Service(name = "web")
 @Scoped(Singleton.class)
-public class WebStatsProviderBootstrap implements TelemetryProvider, PostConstruct, ConfigListener {
+public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener {
 
     @Inject
     Logger logger;
     @Inject
     private static Domain domain;
-            
+
     private static HttpService httpService = null;
     private static NetworkConfig networkConfig = null;
     private Server server;
@@ -268,10 +267,6 @@ public class WebStatsProviderBootstrap implements TelemetryProvider, PostConstru
             Logger.getLogger(WebStatsProviderBootstrap.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-    }
-
-    public void onLevelChange(String newLevel) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     // Handle the deploy/undeploy events

@@ -10,7 +10,6 @@ import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
-import org.glassfish.api.monitoring.TelemetryProvider;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -32,7 +31,7 @@ import org.glassfish.external.probe.provider.StatsProviderManager;
  */
 @Service(name = "http-service")
 @Scoped(Singleton.class)
-public class HttpServiceStatsProviderBootstrap implements TelemetryProvider, PostConstruct {
+public class HttpServiceStatsProviderBootstrap implements PostConstruct {
 
     @Inject
     Logger logger;
@@ -86,17 +85,6 @@ public class HttpServiceStatsProviderBootstrap implements TelemetryProvider, Pos
                     new ThreadPoolStatsProvider());
         }*/
 
-    }
-
-    public void onLevelChange(String newLevel) {
-        boolean newLevelEnabledValue = getEnabledValue(newLevel);
-        logger.finest("[Monitor]In the Http Service Level Change = " + newLevel + "  ************");
-        if (httpServiceMonitoringEnabled != newLevelEnabledValue) {
-            httpServiceMonitoringEnabled = newLevelEnabledValue;
-        } else {
-            // Might have changed from 'LOW' to 'HIGH' or vice-versa. Ignore.
-            return;
-        }
     }
 
     private boolean getEnabledValue(String enabledStr) {

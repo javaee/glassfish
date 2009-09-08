@@ -14,6 +14,7 @@ import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import org.glassfish.external.probe.provider.StatsProvider;
+import org.glassfish.external.probe.provider.PluginPoint;
 
 public class StatsProviderRegistry {
     List<StatsProviderRegistryElement> regElements = new ArrayList();
@@ -30,7 +31,7 @@ public class StatsProviderRegistry {
         this.mrdr = mrdr;
     }
 
-    public void registerStatsProvider(String configStr,
+    public void registerStatsProvider(String configStr, PluginPoint pp, String subTreePath,
                         String parentTreeNodePath, List<String> childTreeNodeNames,
                         Collection<ProbeClientMethodHandle> handles,
                         Object statsProvider,
@@ -39,7 +40,7 @@ public class StatsProviderRegistry {
 
         StatsProviderRegistryElement spre =
                     new StatsProviderRegistryElement(
-                            configStr, parentTreeNodePath, childTreeNodeNames,
+                            configStr, pp, subTreePath, parentTreeNodePath, childTreeNodeNames,
                             handles, statsProvider, mbeanName, mom);
         // add a mapping from config to StatsProviderRegistryElement, so you can easily
         // retrieve all stats element for enable/disable functionality
@@ -59,36 +60,6 @@ public class StatsProviderRegistry {
     public void unregisterStatsProvider(Object statsProvider) throws Exception {
 
         StatsProviderRegistryElement spre = statsProviderToRegistryElementMap.get(statsProvider);
-        if (spre == null)
-            throw new Exception("Invalid statsProvider, cannot unregister");
-
-        // get the Parent node and delete all children nodes (only that we know of)
-        String parentNodePath = spre.getParentTreeNodePath();
-        List<String> childNodeNames = spre.getChildTreeNodeNames();
-        TreeNode rootNode = mrdr.get("server");
-        if (rootNode != null) {
-            // This has to return one node
-            List<TreeNode> nodeList = rootNode.getNodes(parentNodePath);
-            TreeNode parentNode = nodeList.get(0);
-            //Remove each of the child nodes
-            Collection<TreeNode> childNodes = parentNode.getChildNodes();
-            for (TreeNode childNode : childNodes) {
-                if (childNodeNames.contains(childNode.getName())){
-                    parentNode.removeChild(childNode);
-                }
-            }
-        }
-
-        //get the handles and unregister the listeners from Flashlight
-        Collection<ProbeClientMethodHandle> handles = spre.getHandles();
-        for (ProbeClientMethodHandle handle : handles) {
-            // handle.remove????? Mahesh?
-            //TODO IMPLEMENTATION
-        }
-
-        //unregister the statsProvider from Gmbal
-        unregisterGmbal(spre);
-
         // Remove the entry of statsProviderRegistryElement from configToRegistryElementMap
         List<StatsProviderRegistryElement> spreList =
                     configToRegistryElementMap.get(spre.getConfigStr());
@@ -106,161 +77,20 @@ public class StatsProviderRegistry {
 
     }
 
-    public void enableStatsProvider(String configElement) {
-        List<StatsProviderRegistryElement> spreList = configToRegistryElementMap.get(configElement);
-
-        if (spreList == null)
-            return; // should throw an exception
-
-        for (StatsProviderRegistryElement spre : spreList) {
-            Object sp = spre.getStatsProvider();
-            if (sp instanceof StatsProvider) {
-                ((StatsProvider)sp).enable();
-            }
-            //Enable the child TreeNodes
-            String parentNodePath = spre.getParentTreeNodePath();
-            List<String> childNodeNames = spre.getChildTreeNodeNames();
-            TreeNode rootNode = mrdr.get("server");
-            if (rootNode != null) {
-                // This has to return one node
-                List<TreeNode> nodeList = rootNode.getNodes(parentNodePath);
-                TreeNode parentNode = nodeList.get(0);
-                //For each child Node, enable it
-                Collection<TreeNode> childNodes = parentNode.getChildNodes();
-                for (TreeNode childNode : childNodes) {
-                    if (childNodeNames.contains(childNode.getName())){
-                        if (!childNode.isEnabled())
-                            childNode.setEnabled(true);
-                    }
-                }
-            }
-
-            //Enable the Flashlight handles for this statsProvider
-            for (ProbeClientMethodHandle handle : spre.getHandles()) {
-                if (!handle.isEnabled())
-                    handle.enable();
-            }
-
-            //Reregister the statsProvider in Gmbal
-            if (isAMXReady() && isMBeanEnabled()) {
-                registerGmbal(spre);
-            }
-        }
+    StatsProviderRegistryElement getStatsProviderRegistryElement(Object statsProvider) {
+        return statsProviderToRegistryElementMap.get(statsProvider);    
     }
 
-    public void disableStatsProvider(String configElement) {
-        List<StatsProviderRegistryElement> spreList = configToRegistryElementMap.get(configElement);
-        if (spreList == null)
-            return;
-
-        for (StatsProviderRegistryElement spre : spreList) {
-            Object sp = spre.getStatsProvider();
-            if (sp instanceof StatsProvider) {
-                ((StatsProvider)sp).disable();
-            }
-            //Disable the parent TreeNode
-            String parentNodePath = spre.getParentTreeNodePath();
-            List<String> childNodeNames = spre.getChildTreeNodeNames();
-            TreeNode rootNode = mrdr.get("server");
-            if (rootNode != null) {
-                // This has to return one node
-                List<TreeNode> nodeList = rootNode.getNodes(parentNodePath);
-                TreeNode parentNode = nodeList.get(0);
-                //Disable all the child nodes
-                Collection<TreeNode> childNodes = parentNode.getChildNodes();
-                for (TreeNode childNode : childNodes) {
-                    if (childNodeNames.contains(childNode.getName())){
-                        if (childNode.isEnabled())
-                            childNode.setEnabled(false);
-                    }
-                }
-            }
-
-            //Disable the Flashlight handles for this statsProvider
-            for (ProbeClientMethodHandle handle : spre.getHandles()) {
-                if (handle.isEnabled())
-                    handle.disable();
-            }
-
-            //unregister the statsProvider from Gmbal
-            unregisterGmbal(spre);
-            
-        }
-    }
-
-    void registerGmbal(String configElement) {
-        List<StatsProviderRegistryElement> spreList = configToRegistryElementMap.get(configElement);
-        if (spreList == null)
-            return; // should throw an exception
-
-        for (StatsProviderRegistryElement spre : spreList) {
-            registerGmbal(spre);
-        }
-    }
-
-    void unregisterGmbal(String configElement) {
-        List<StatsProviderRegistryElement> spreList = configToRegistryElementMap.get(configElement);
-        if (spreList == null)
-            return; // should throw an exception
-
-        for (StatsProviderRegistryElement spre : spreList) {
-            unregisterGmbal(spre);
-        }
-    }
-
-    void registerGmbal(StatsProviderRegistryElement spre) {
-        //Reregister the statsProvider in Gmbal
-        Object statsProvider = spre.getStatsProvider();
-        ManagedObjectManager mom = spre.getManagedObjectManager();
-        if (mom == null) {
-            mom = ManagedObjectManagerFactory.createFederated(StatsProviderManagerDelegateImpl.MONITORING_SERVER);
-            spre.setManagedObjectManager(mom);
-            String mbeanName = spre.getMBeanName();
-            mom.stripPackagePrefix();
-            if (mbeanName != null && !mbeanName.isEmpty()) {
-                mom.createRoot(statsProvider, mbeanName);
-            } else {
-                mom.createRoot(statsProvider);
-            }
-        }
-    }
-
-    void unregisterGmbal(StatsProviderRegistryElement spre) {
-        //unregister the statsProvider from Gmbal
-        ManagedObjectManager mom = spre.getManagedObjectManager();
-        if (mom != null) {
-            mom.unregister(spre.getStatsProvider());
-            try {
-                mom.close();
-            } catch (IOException ioe) {
-                Logger.getLogger(StatsProviderRegistry.class.getName()).log(Level.SEVERE, null, ioe);
-            }
-            spre.setManagedObjectManager(null);
-        }
-    }
-
-    void registerAllGmbal() {
-        for (StatsProviderRegistryElement spre :  statsProviderToRegistryElementMap.values()) {
-            this.registerGmbal(spre);
-        }
-    }
-
-    void unregisterAllGmbal() {
-        for (StatsProviderRegistryElement spre :  statsProviderToRegistryElementMap.values()) {
-            this.unregisterGmbal(spre);
-        }
-    }
-
-    boolean getConfigEnabled(String configElement) {
-        return configEnabledMap.get(configElement).booleanValue();
-    }
-
-    void setConfigEnabled(String configElement, boolean enabled) {
-        configEnabledMap.put(configElement, Boolean.valueOf(enabled));
+    List<StatsProviderRegistryElement> getStatsProviderRegistryElement(String configElement) {
+        return (this.configToRegistryElementMap.get(configElement));
     }
 
     Collection<StatsProviderRegistryElement> getSpreList() {
         return statsProviderToRegistryElementMap.values();
+    }
+
+    Collection<String> getConfigElementList() {
+        return this.configToRegistryElementMap.keySet();
     }
 
     void setAMXReady(boolean ready) {
@@ -281,20 +111,25 @@ public class StatsProviderRegistry {
 
     class StatsProviderRegistryElement {
         String configStr;
+        PluginPoint pp;
+        String subTreePath;
         String parentTreeNodePath;
         List<String> childTreeNodeNames;
         Collection<ProbeClientMethodHandle> handles;
         Object statsProvider;
         String mbeanName;
         ManagedObjectManager mom;
+        boolean isEnabled = false;
 
-        public StatsProviderRegistryElement(String configStr,
+        public StatsProviderRegistryElement(String configStr, PluginPoint pp, String subTreePath,
                         String parentTreeNodePath, List<String> childTreeNodeNames,
                         Collection<ProbeClientMethodHandle> handles,
                         Object statsProvider,
                         String mbeanName,
                         ManagedObjectManager mom) {
            this.configStr = configStr;
+           this.pp = pp;
+           this.subTreePath = subTreePath;
            this.handles = handles;
            this.parentTreeNodePath = parentTreeNodePath;
            this.childTreeNodeNames = childTreeNodeNames;
@@ -305,6 +140,14 @@ public class StatsProviderRegistry {
 
         public String getConfigStr() {
            return configStr;
+        }
+
+        public PluginPoint getPluginPoint() {
+            return pp;
+        }
+
+        public String getSubTreePath() {
+            return subTreePath;
         }
 
         public List<String> getChildTreeNodeNames() {
@@ -337,6 +180,39 @@ public class StatsProviderRegistry {
 
         void setManagedObjectManager(ManagedObjectManager mom) {
             this.mom = mom;
+        }
+
+        boolean isEnabled() {
+            return isEnabled;
+        }
+
+        void setEnabled(boolean enabled) {
+            isEnabled = enabled;
+        }
+
+        public void setParentTreeNodePath(String completePathName) {
+            this.parentTreeNodePath = completePathName;
+        }
+
+        public void setChildNodeNames(List<String> childNodeNames) {
+            this.childTreeNodeNames = childNodeNames;
+        }
+
+        public void setHandles(Collection<ProbeClientMethodHandle> handles) {
+            this.handles = handles;
+        }
+
+        public String toString() {
+            this.pp = pp;
+            this.subTreePath = subTreePath;
+            this.handles = handles;
+            this.parentTreeNodePath = parentTreeNodePath;
+            String str = "    configStr = " + configStr + "\n" +
+                         "    statsProvider = " + statsProvider.getClass().getName() + "\n" +
+                         "    PluginPoint = " + pp + "\n" +
+                         "    handles = " + ((handles==null)?"null":"not null") + "\n" +
+                         "    parentTreeNodePath = " + parentTreeNodePath;
+            return str;
         }
     }
 }

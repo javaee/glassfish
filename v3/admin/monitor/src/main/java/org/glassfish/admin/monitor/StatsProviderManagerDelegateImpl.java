@@ -25,10 +25,13 @@ import org.glassfish.external.probe.provider.StatsProviderManagerDelegate;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import com.sun.enterprise.config.serverbeans.*;
 import java.lang.management.ManagementFactory;
+import java.io.IOException;
+
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
+import org.glassfish.admin.monitor.StatsProviderRegistry.StatsProviderRegistryElement;
 
 import org.glassfish.external.amx.AMXGlassfish;
 import static org.glassfish.external.amx.AMX.*;
@@ -61,6 +64,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     private boolean AMXReady = false;
     private StatsProviderRegistry statsProviderRegistry;
 
+    boolean ddebug = false;
+
     StatsProviderManagerDelegateImpl(ProbeClientMediator pcm, ProbeRegistry probeRegistry,
             MonitoringRuntimeDataRegistry mrdr, Domain domain, MonitoringService monitoringService) {
         this.pcm = pcm;
@@ -75,14 +80,261 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
 
     public void register(String configElement, PluginPoint pp,
             String subTreePath, Object statsProvider) {
+        // register the statsProvider
+        printd("registering a statsProvider ");
+        StatsProviderRegistryElement spre;
+        // First check if the configElement associated for statsProvider is 'ON'
+        if (getMonitoringEnabled() && getEnabledValue(configElement)) {
+            printd(" enabled is true ");
+            spre = statsProviderRegistry.getStatsProviderRegistryElement(statsProvider);
 
-        /* Verify if PluginPoint exists, create one if it doesn't */
-        TreeNode ppNode = getPluginPointNode(pp, serverNode);
+            if (spre == null) {
+                statsProviderRegistry.registerStatsProvider(configElement, pp, subTreePath,
+                        null, null, null, statsProvider, subTreePath, null);
+                spre = statsProviderRegistry.getStatsProviderRegistryElement(statsProvider);
+            }
+            enableStatsProvider(spre);
 
-        /* monitoring registration */
+        } else {
+            printd(" enabled is false ");
+            // Register with null values so to know that we need to register them individually and config is on
+            statsProviderRegistry.registerStatsProvider(configElement, pp, subTreePath,
+                    null, null, null, statsProvider, subTreePath, null);
+            spre = statsProviderRegistry.getStatsProviderRegistryElement(statsProvider);
+        }
 
+        printd(spre.toString());
+        printd("=========================================================");
+    }
+
+    public void unregister(Object statsProvider) {
+        // Unregisters the statsProvider
+        try {
+            StatsProviderRegistryElement spre = statsProviderRegistry.getStatsProviderRegistryElement(statsProvider);
+            if (spre == null)
+                throw new Exception("Invalid statsProvider, cannot unregister");
+
+            // get the Parent node and delete all children nodes (only that we know of)
+            String parentNodePath = spre.getParentTreeNodePath();
+            List<String> childNodeNames = spre.getChildTreeNodeNames();
+            TreeNode rootNode = mrdr.get("server");
+            if (rootNode != null) {
+                // This has to return one node
+                List<TreeNode> nodeList = rootNode.getNodes(parentNodePath);
+                TreeNode parentNode = nodeList.get(0);
+                //Remove each of the child nodes
+                Collection<TreeNode> childNodes = parentNode.getChildNodes();
+                for (TreeNode childNode : childNodes) {
+                    if (childNodeNames.contains(childNode.getName())){
+                        parentNode.removeChild(childNode);
+                    }
+                }
+            }
+
+            //get the handles and unregister the listeners from Flashlight
+            Collection<ProbeClientMethodHandle> handles = spre.getHandles();
+            for (ProbeClientMethodHandle handle : handles) {
+                // handle.remove????? Mahesh?
+                //TODO IMPLEMENTATION
+                //For now disable the handle => remove the client from invokerlist
+                handle.disable();
+            }
+
+            //unregister the statsProvider from Gmbal
+            unregisterGmbal(spre);
+
+            //Unregister from the MonitoringDataTreeRegistry and the map entries
+            statsProviderRegistry.unregisterStatsProvider(statsProvider);
+        } catch (Exception ex) {
+            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    /* called from SPMD, when monitoring-enabled flag is turned on */
+    public void updateAllStatsProviders() {
+        // Looks like the monitoring-enabled flag is just turned ON. Lets do the catchup
+        for (String configElement : statsProviderRegistry.getConfigElementList()) {
+            Collection<StatsProviderRegistryElement> spreList =
+                        statsProviderRegistry.getStatsProviderRegistryElement(configElement);
+            for (StatsProviderRegistryElement spre : spreList) {
+                boolean isConfigEnabled = getEnabledValue(configElement);
+                if (isConfigEnabled != spre.isEnabled) {
+                    if (isConfigEnabled)
+                        enableStatsProvider(spre);
+                    else
+                        disableStatsProvider(spre);
+                }
+            }
+        }
+    }
+
+    /* called from SPMD, when monitoring-enabled flag is turned off */
+    public void disableAllStatsProviders() {
+        // Looks like the monitoring-enabled flag is just turned OFF. Disable all the statsProviders which were on
+        for (String configElement : statsProviderRegistry.getConfigElementList()) {
+            Collection<StatsProviderRegistryElement> spreList =
+                        statsProviderRegistry.getStatsProviderRegistryElement(configElement);
+            for (StatsProviderRegistryElement spre : spreList) {
+                if (spre.isEnabled) {
+                    disableStatsProvider(spre);
+                }
+            }
+        }
+    }
+
+    /* called from SMPD, when monitoring level for a module is turned on */
+    public void enableStatsProviders(String configElement) {
+        //If monitoring-enabled is false, just return
+        if (!getMonitoringEnabled())
+            return;
+        //Enable all the StatsProviders for a given configElement
+        printd("Enabling all the statsProviders for - " + configElement);
+        List<StatsProviderRegistryElement> spreList = statsProviderRegistry.getStatsProviderRegistryElement(configElement);
+        if (spreList == null)
+            return;
+        for (StatsProviderRegistryElement spre : spreList) {
+            if (!spre.isEnabled())
+                enableStatsProvider(spre);
+        }
+    }
+
+    /* called from SMPD, when monitoring level for a module is turned off */
+    public void disableStatsProviders(String configElement) {
+        // I think we should still disable even when monitoring-enabled is false
+        /*
+        //If monitoring-enabled is false, just return
+        if (!getMonitoringEnabled())
+            return;
+        */
+        //Disable all the StatsProviders for a given configElement
+        printd("Disabling all the statsProviders for - " + configElement);
+        List<StatsProviderRegistryElement> spreList = statsProviderRegistry.getStatsProviderRegistryElement(configElement);
+        if (spreList == null)
+            return;
+        for (StatsProviderRegistryElement spre : spreList) {
+            if (spre.isEnabled())
+                disableStatsProvider(spre);
+        }
+    }
+
+    private boolean getMonitoringEnabled() {
+        return Boolean.parseBoolean(monitoringService.getMonitoringEnabled());
+    }
+
+    private void enableStatsProvider(StatsProviderRegistryElement spre) {
+        Object statsProvider = spre.getStatsProvider();
+        printd("Enabling the statsProvider - " + statsProvider.getClass().getName());
+
+         /* Step 1. Create the tree for the statsProvider */
+        // Check if we already have TreeNodes created
+        if (spre.getParentTreeNodePath() == null) {
+            /* Verify if PluginPoint exists, create one if it doesn't */
+            PluginPoint pp = spre.getPluginPoint();
+            String subTreePath = spre.getSubTreePath();
+
+            TreeNode ppNode = getPluginPointNode(pp, serverNode);
+            TreeNode parentNode = createSubTree(ppNode, subTreePath);
+            List<String> childNodeNames = createTreeForStatsProvider(parentNode, statsProvider);
+            spre.setParentTreeNodePath(parentNode.getCompletePathName());
+            spre.setChildNodeNames(childNodeNames);
+        } else {
+            updateTreeNodes(spre, true);
+        }
+
+        /* Step 2. register the StatsProvider to the flashlight */
+        if (spre.getHandles() == null) {
+            // register with flashlight and save the handles
+            Collection<ProbeClientMethodHandle> handles = registerStatsProviderToFlashlight(statsProvider);
+            spre.setHandles(handles);
+        } else {
+            //Enable the Flashlight handles for this statsProvider
+            for (ProbeClientMethodHandle handle : spre.getHandles()) {
+                if (!handle.isEnabled())
+                    handle.enable();
+            }
+        }
+
+        /* Step 3. gmbal registration */
+        ManagedObjectManager mom = null;
+        if (AMXReady && getMbeanEnabledValue()) {
+            //Create mom root using the statsProvider
+            String subTreePath = spre.getSubTreePath();
+            mom = registerGmbal(statsProvider, subTreePath);
+            spre.setManagedObjectManager(mom);
+        }
+
+        // Keep track of enabled flag for configElement.  Used later for register gmbal when AMXReady.
+        String configElement = spre.getConfigStr();
+        spre.setEnabled(true);
+    }
+
+    private void disableStatsProvider(StatsProviderRegistryElement spre) {
+        printd("Disabling the statsProvider - " + spre.getStatsProvider().getClass().getName());
+        /* Step 1. Disable the tree nodes for StatsProvider */
+        updateTreeNodes(spre, false);
+
+        /* Step 2. Disable flashlight handles (Ideally unregister them) */
+        for (ProbeClientMethodHandle handle : spre.getHandles()) {
+            if (!handle.isEnabled())
+                handle.disable();
+        }
+
+        /* Step 3. Unregister gmbal */
+        unregisterGmbal(spre);
+
+        spre.setEnabled(false);
+    }
+
+    public void registerAllGmbal() {
+        /* We do this when the mbean-enabled is turned on from off */
+
+        printd("Registering all the statsProviders whose enabled flag is 'on' with Gmbal");
+        for (StatsProviderRegistryElement spre : statsProviderRegistry.getSpreList()) {
+            if (spre.isEnabled()) {
+                ManagedObjectManager mom = registerGmbal(spre.getStatsProvider(), spre.getMBeanName());
+                spre.setManagedObjectManager(mom);
+            }
+        }
+    }
+
+    public void unregisterAllGmbal() {
+        /* We do this when the mbean-enabled is turned off from on */
+
+        printd("Unregistering all the statsProviders whose enabled flag is 'off' with Gmbal");
+        for (StatsProviderRegistryElement spre : statsProviderRegistry.getSpreList()) {
+            if (spre.isEnabled()) {
+                unregisterGmbal(spre);
+            }
+        }
+    }
+
+    private void updateTreeNodes(StatsProviderRegistryElement spre, boolean enable) {
+        //Enable/Disable the child TreeNodes
+        String parentNodePath = spre.getParentTreeNodePath();
+        List<String> childNodeNames = spre.getChildTreeNodeNames();
+        TreeNode rootNode = mrdr.get("server");
+        if (rootNode != null) {
+            // This has to return one node
+            List<TreeNode> nodeList = rootNode.getNodes(parentNodePath);
+            TreeNode parentNode = nodeList.get(0);
+            //For each child Node, enable it
+            Collection<TreeNode> childNodes = parentNode.getChildNodes();
+            for (TreeNode childNode : childNodes) {
+                if (childNodeNames.contains(childNode.getName())){
+                    //Enabling or Disabling the child node (based on enable flag)
+                    if (childNode.isEnabled() != enable) {
+                        printd(((enable)?"En":"Dis") + "abling the child node - " + childNode.getCompletePathName());
+                        childNode.setEnabled(enable);
+                    }
+                }
+            }
+        }
+
+    }
+
+    private List<String> createTreeForStatsProvider(TreeNode parentNode, Object statsProvider) {
         /* construct monitoring tree at PluginPoint using subTreePath */
-        TreeNode parentNode = createSubTree(ppNode, subTreePath);
         List<String> childNodeNames = new ArrayList();
 
         /* retrieve ManagedAttribute attribute id (v2 compatible) and method names */
@@ -103,8 +355,12 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
                 childNodeNames.add(attrNode.getName());
             }
         }
+        return childNodeNames;
+    }
+
+    private Collection<ProbeClientMethodHandle> registerStatsProviderToFlashlight(Object statsProvider) {
         //register the statsProvider with Flashlight
-        Collection<ProbeClientMethodHandle> handles = new ArrayList();
+        Collection<ProbeClientMethodHandle> handles = null;
         try {
             //System.out.println("****** Registering the StatsProvider (" + statsProvider.getClass().getName() + ") with flashlight");
             handles = pcm.registerListener(statsProvider);
@@ -115,46 +371,27 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             //e.printStackTrace();
             Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, "flashlight registration failed", e);
         }
-
-        //If module monitoring level = OFF, disableStatsProvider for that configElement
-        //If module monitoring level = ON and AMX DomainRoot is loaded, register with gmbal, and add mom to registry
-        if (getEnabledValue(configElement)) {
-            /* gmbal registration */
-            //Create mom root using the statsProvider
-            if (AMXReady && this.getMbeanEnabledValue()) {
-                ManagedObjectManager mom = registerGmbal(statsProvider, subTreePath);
-                //Make an entry to my own registry so I can manage the unregister, enable and disable
-                statsProviderRegistry.registerStatsProvider(configElement,
-                        parentNode.getCompletePathName(), childNodeNames,
-                        handles, statsProvider, subTreePath, mom);
-            } else {
-                statsProviderRegistry.registerStatsProvider(configElement,
-                        parentNode.getCompletePathName(), childNodeNames,
-                        handles, statsProvider, subTreePath, null);
-            }
-            // Keep track of enabled flag for configElement.  Used later for register gmbal when AMXReady.
-            statsProviderRegistry.setConfigEnabled(configElement, true);
-        } else {
-            //Make an entry to my own registry so I can manage the unregister, enable and disable
-            statsProviderRegistry.registerStatsProvider(configElement,
-                    parentNode.getCompletePathName(), childNodeNames,
-                    handles, statsProvider, subTreePath, null);
-            // Keep track of enabled flag for configElement.  Used later for register gmbal when AMXReady.
-            statsProviderRegistry.setConfigEnabled(configElement, false);
-            statsProviderRegistry.disableStatsProvider(configElement);
-        }
-
-        statsProviderRegistry.setMBeanEnabled(this.getMbeanEnabledValue());
+        return handles;
     }
 
-    public void unregister(Object statsProvider) {
-        try {
-            //Unregister from the MonitoringDataTreeRegistry and gmbal
-            statsProviderRegistry.unregisterStatsProvider(statsProvider);
-        } catch (Exception ex) {
-            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    private TreeNode createSubTree(TreeNode parent, String subTreePath) {
+        StringTokenizer st = new StringTokenizer(subTreePath, "/");
+        TreeNode parentNode = parent;
 
+        while (st.hasMoreTokens()) {
+            TreeNode subTreeNode = createSubTreeNode(parentNode, st.nextToken());
+            parentNode = subTreeNode;
+        }
+        return parentNode;
+    }
+
+    private TreeNode createSubTreeNode(TreeNode parent, String child) {
+        TreeNode childNode = parent.getNode(child);
+        if (childNode == null) {
+            childNode = TreeNodeFactory.createTreeNode(child, null, child);
+            parent.addChild(childNode);
+        }
+        return childNode;
     }
 
     public boolean hasListeners(String probeStr) {
@@ -176,7 +413,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         statsProviderRegistry.setAMXReady(true);
         if (this.getMbeanEnabledValue()) {
             for (StatsProviderRegistry.StatsProviderRegistryElement spre : statsProviderRegistry.getSpreList()) {
-                if (statsProviderRegistry.getConfigEnabled(spre.getConfigStr())) {
+                if (spre.isEnabled()) {
                     ManagedObjectManager mom = registerGmbal(spre.getStatsProvider(), spre.getMBeanName());
                     spre.setManagedObjectManager(mom);
                 }
@@ -212,13 +449,18 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         return mom;
     }
 
-    private TreeNode createSubTreeNode(TreeNode parent, String child) {
-        TreeNode childNode = parent.getNode(child);
-        if (childNode == null) {
-            childNode = TreeNodeFactory.createTreeNode(child, null, child);
-            parent.addChild(childNode);
+    private void unregisterGmbal(StatsProviderRegistryElement spre) {
+        //unregister the statsProvider from Gmbal
+        ManagedObjectManager mom = spre.getManagedObjectManager();
+        if (mom != null) {
+            mom.unregister(spre.getStatsProvider());
+            try {
+                mom.close();
+            } catch (IOException ioe) {
+                Logger.getLogger(StatsProviderRegistry.class.getName()).log(Level.SEVERE, null, ioe);
+            }
+            spre.setManagedObjectManager(null);
         }
-        return childNode;
     }
 
     private TreeNode getPluginPointNode(PluginPoint pp, TreeNode serverNode) {
@@ -228,17 +470,6 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         else
             return createSubTree(serverNode, pp.getPath());
         }
-
-    private TreeNode createSubTree(TreeNode parent, String subTreePath) {
-        StringTokenizer st = new StringTokenizer(subTreePath, "/");
-        TreeNode parentNode = parent;
-
-        while (st.hasMoreTokens()) {
-            TreeNode subTreeNode = createSubTreeNode(parentNode, st.nextToken());
-            parentNode = subTreeNode;
-        }
-        return parentNode;
-    }
 
     private TreeNode constructServerPP() {
         TreeNode srvrNode = mrdr.get("server");
@@ -261,29 +492,16 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
 
     private boolean getEnabledValue(String configElement) {
         boolean enabled = false;
-        ContainerMonitoring cm = monitoringService.getContainerMonitoring(configElement);
-        if (cm != null) {
-            String level = cm.getLevel();
-            if (level != null) {
-                if (level.equals(ContainerMonitoring.LEVEL_HIGH) ||
-                        level.equals(ContainerMonitoring.LEVEL_LOW)) {
-                    enabled = true;
-                }
-            }
+        String level = monitoringService.getMonitoringLevel(configElement);
+        if (level.equals(ContainerMonitoring.LEVEL_HIGH) ||
+            level.equals(ContainerMonitoring.LEVEL_LOW)) {
+            enabled = true;
         }
         return enabled;
     }
 
     private boolean getMbeanEnabledValue() {
-        boolean enabled = true;
-        if (this.monitoringService != null) {
-            if (this.monitoringService.getMbeanEnabled().equals("false")) {
-                enabled = false;
-            } else {
-                enabled = true;
-            }
-        }
-        return enabled;
+        return Boolean.parseBoolean(monitoringService.getMbeanEnabled());
     }
 
     public boolean isStatsProviderRegistered(Object statsProvider, String subTreePath) {
@@ -317,6 +535,11 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
 
     public String getNameValue(String subTreePath) {
         return subTreePath;
+    }
+
+    private void printd(String str) {
+        if (ddebug)
+            System.out.println("APK : " + str);
     }
 
 }

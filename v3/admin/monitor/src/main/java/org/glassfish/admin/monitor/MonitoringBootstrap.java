@@ -101,7 +101,8 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         // Register as ModuleLifecycleListener
         events.register(this);
 
-        enableMonitoring(false);
+        boolean isDiscoverXMLProbeProviders = false;
+        enableMonitoringForProbeProviders(isDiscoverXMLProbeProviders);
     }
 
     private void discoverProbeProviders() {
@@ -307,8 +308,9 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     }*/
 
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] propertyChangeEvents) {
+        printd(" spmd = " + spmd);
         StatsProviderRegistry spr = (spmd == null) ? null : spmd.getStatsProviderRegistry();
-
+        printd("spr = " + spr);
         for (PropertyChangeEvent event : propertyChangeEvents) {
             // let's get out of here ASAP if it is not our stuff!!
             if(event == null)
@@ -324,14 +326,21 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
             if(!ok(propName))
                 continue;
 
-            if (event.getSource() instanceof ContainerMonitoring) {
+            if (event.getSource() instanceof ModuleMonitoringLevels) {
+                printd("Event received from " + event.getSource().getClass().getName() + " New Level = " + newVal + " Old Level=" + oldVal);
+                boolean newEnabled = parseLevelsBoolean(newVal.toString());
+                boolean oldEnabled = (oldVal == null) ? !newEnabled : parseLevelsBoolean(oldVal.toString());
+                if((newEnabled != oldEnabled) && (spr != null)) // no spr -- means no work can be done.
+                    handleLevelChange(propName, newEnabled);
+            }
+            else if (event.getSource() instanceof ContainerMonitoring) {
                 ContainerMonitoring cm = (ContainerMonitoring)event.getSource();
                 boolean newEnabled = parseLevelsBoolean(newVal.toString());
-                
+
                 // complications!  What if old is null? we fake out the rest of
                 // the logic to think it changed...
                 boolean oldEnabled = (oldVal == null) ? !newEnabled : parseLevelsBoolean(oldVal.toString());
-                
+
                 if((newEnabled != oldEnabled) && (spr != null)) // no spr -- means no work can be done.
                     handleLevelChange(cm.getName(), newEnabled);
             }
@@ -351,23 +360,17 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     }
 
     private void handleLevelChange(String propName, boolean enabled) {
+        printd("In handleLevelChange(), spmd = " + spmd + "  Enabled="+enabled);
         if(!ok(propName))
             return;
 
         if(spmd == null)
             return; // nothing to do!
 
-        StatsProviderRegistry spr = spmd.getStatsProviderRegistry();
-
-        if(spr == null)
-            return; // nothing to do!
-
-        spr.setConfigEnabled(propName, enabled);
-
         if (enabled)
-            spr.enableStatsProvider(propName);
+            spmd.enableStatsProviders(propName);
         else
-            spr.disableStatsProvider(propName);
+            spmd.disableStatsProviders(propName);
     }
 
     private void handleServiceChange(StatsProviderRegistry spr, String propName, boolean enabled) {
@@ -379,9 +382,9 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                 return;
 
             if(enabled)
-                spr.registerAllGmbal();
+                spmd.registerAllGmbal();
             else
-                spr.unregisterAllGmbal();
+                spmd.unregisterAllGmbal();
         }
         else if(propName.equals("dtrace-enabled")) {
             probeProviderFactory.dtraceEnabledChanged(enabled);
@@ -392,14 +395,17 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
 
             if(enabled) {
                 // TODO attach btrace agent dynamically
-                enableMonitoring(true);
+                enableMonitoringForProbeProviders(true);
+                //Lets do the catch up for all the statsProviders (we might have ignored the module level changes earlier) s
+                spmd.updateAllStatsProviders();
             } else { // if disabled
-                disableMonitoring();
+                disableMonitoringForProbeProviders();
+                spmd.disableAllStatsProviders();
             }
         }
     }
     
-    private void enableMonitoring(boolean isDiscoverXMLProviders) {
+    private void enableMonitoringForProbeProviders(boolean isDiscoverXMLProviders) {
         //Process all ProbeProviders from modules loaded
         discoverProbeProviders();
         //Start listening to any new Modules that are coming in now
@@ -414,7 +420,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         setStatsProviderManagerDelegate();
     }
 
-    private void disableMonitoring() {
+    private void disableMonitoringForProbeProviders() {
         //Cannot do a whole lot here. The providers that are registered will remain registered.
         //Just disable the StatsProviders, so you remove the listening overhead
         registry.unregister(this);
