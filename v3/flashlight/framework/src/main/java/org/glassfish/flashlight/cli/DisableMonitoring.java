@@ -33,45 +33,74 @@
  * only Contract the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.flashlight.cli;
 
+import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport.ExitCode;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.tools.attach.VirtualMachine;
+import java.beans.PropertyVetoException;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.ConfigSupport;
+import com.sun.enterprise.config.serverbeans.MonitoringService;
+import java.util.HashMap;
+import java.util.Map;
+import org.glassfish.api.monitoring.ContainerMonitoring;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.Dom;
 
 /**
  * @author Sreenivas Munnangi
  */
 @Service(name="disable-monitoring")
 @I18n("disable.monitoring")
-public class DetachAgent implements AdminCommand {
+public class DisableMonitoring implements AdminCommand {
 
-    @Param(primary=true)
-    private String pid;
-
+    // list of modules separated by comma
     @Param(optional=true)
-    private String module;
+    private String modules;
+
+    @Inject
+    private MonitoringService ms;
 
     final private LocalStringManagerImpl localStrings = 
-        new LocalStringManagerImpl(DetachAgent.class);
+        new LocalStringManagerImpl(DisableMonitoring.class);
 
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         try {
-            VirtualMachine vm = VirtualMachine.attach(pid);
-            vm.detach();
+            if ((modules == null) || (modules.length() < 1)) {
+                // check if it is already false
+                boolean enabled = Boolean.parseBoolean(ms.getMonitoringEnabled());
+                // set overall monitoring-enabled to false
+                if (enabled) {
+                    MonitoringConfig.setMonitoringEnabled(ms, "false", report);
+                } else {
+                    report.setMessage(
+                        localStrings.getLocalString("disable.monitoring.alreadyfalse",
+                        "monitoring-enabled is already set to false"));
+                }
+            } else {
+                // for each module set monitoring level to OFF
+                String[] strArr = modules.split(",");
+                for (String moduleName: strArr) {
+                    if (moduleName.length() > 0) {
+                        MonitoringConfig.setMonitoringLevel(ms, moduleName, ContainerMonitoring.LEVEL_OFF, report);
+                    }
+                }
+            }
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (Exception e) {
-            report.setMessage(localStrings.getLocalString("detach.agent.exception",
-                "Encountered exception during agent detach {0}", e.getMessage()));
+            report.setMessage(localStrings.getLocalString("disable.monitoring.exception",
+                "Encountered exception during disabling monitoring {0}", e.getMessage()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         }
     }
+
 }

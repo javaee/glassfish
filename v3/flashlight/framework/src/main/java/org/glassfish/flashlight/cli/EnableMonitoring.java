@@ -51,6 +51,7 @@ import com.sun.tools.attach.VirtualMachine;
 import org.glassfish.server.ServerEnvironmentImpl;
 import java.io.File;
 import static com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
+import com.sun.enterprise.config.serverbeans.MonitoringService;
 
 /**
  * @author Sreenivas Munnangi
@@ -58,34 +59,79 @@ import static com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPE
 @Service(name="enable-monitoring")
 @Scoped(PerLookup.class)
 @I18n("enable.monitoring")
-public class AttachAgent implements AdminCommand {
+public class EnableMonitoring implements AdminCommand {
 
     @Inject
-    ServerEnvironmentImpl env;
+    MonitoringService ms;
 
-    @Param(primary=true)
+    @Param(optional=true)
     private String pid;
 
     @Param(optional=true)
     private String options;
 
     @Param(optional=true)
-    private String module;
-
-    @Param(optional=true)
     private String level;
 
+    @Param(optional=true)
+    private String mbean;
+
+    @Param(optional=true)
+    private String dtrace;
+
     final private LocalStringManagerImpl localStrings = 
-        new LocalStringManagerImpl(AttachAgent.class);
+        new LocalStringManagerImpl(EnableMonitoring.class);
 
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
+
+        // attach agent using given options
+        if ((pid != null) && (pid.length() > 0)) {
+            attachAgent(report);
+        }
+
+        // following ordering is deliberate to facilitate config change
+        // event handling by monitoring infrastructure
+        // for ex. by the time monitoring-enabled is true all its constituent
+        // elements should have been set to avoid multiple processing
+
+        // module monitoring levels
+        if ((level != null) && (level.length() > 0)) {
+            String[] strArr = level.split(":"); 
+            String[] nvArr = null;
+            for (String nv: strArr) { 
+                if (nv.length() > 0) {
+                    nvArr = nv.split("=");
+                    setModuleMonitoringLevel(nvArr[0], nvArr[1], report);
+                }
+            } 
+        }
+
+        // mbean-enabled
+        if (isValidString(mbean)) {
+            MonitoringConfig.setMBeanEnabled(ms, mbean, report);
+        }
+
+        // dtrace-enabled
+        if (isValidString(dtrace)) {
+            MonitoringConfig.setDTraceEnabled(ms, dtrace, report);
+        }
+
+        // check and set monitoring-enabled to true
+        MonitoringConfig.setMonitoringEnabled(ms, "true", report);
+    }
+
+    private void attachAgent(ActionReport report) {
+        ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+        if (options == null) {
+            options = "unsafe=true";
+        } else {
+            options = "unsafe=true"+","+options;
+        }
         try {
             VirtualMachine vm = VirtualMachine.attach(pid);
-            // attach agent
-            //File dir = env.getLibPath();
             String ir = System.getProperty(INSTALL_ROOT_PROPERTY);
-            File dir = new File(ir, "lib/monitor");
+            File dir = new File(ir, "lib" + File.separator + "monitor");
             if (dir.isDirectory()) {
                 File agentJar = new File(dir, "btrace-agent.jar");
                 if (agentJar.isFile()) {
@@ -94,23 +140,49 @@ public class AttachAgent implements AdminCommand {
                     } else {
                         vm.loadAgent(agentJar.getPath(), options);
                     }
+                    part.setMessage(localStrings.getLocalString("attach.agent.suucess",
+                        "btrace agent attached"));
                     report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                 } else {
-                    report.setMessage(localStrings.getLocalString("attach.agent.exception",
+                    part.setMessage(localStrings.getLocalString("attach.agent.exception",
                         "btrace-agent.jar does not exist under {0}", dir));
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 }
             } else {
-                report.setMessage(localStrings.getLocalString("attach.agent.exception",
+                part.setMessage(localStrings.getLocalString("attach.agent.exception",
                     "btrace-agent.jar directory {0} does not exist", dir));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             }
         } catch (Exception e) {
-            report.setMessage(localStrings.getLocalString("attach.agent.exception",
+            part.setMessage(localStrings.getLocalString("attach.agent.exception",
                 "Encountered exception during agent attach {0}", e.getMessage()));
-            e.printStackTrace();
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         }
     }
 
+    private void setModuleMonitoringLevel(String moduleName, String level, ActionReport report) {
+        ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+
+        if (! isValidString(moduleName)) {
+            part.setMessage(localStrings.getLocalString("enable.monitoring.invalid",
+                "Invalid module name {0}", moduleName));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        }
+
+        if ((!isValidString(level)) || (!isValidLevel(level))) {
+            part.setMessage(localStrings.getLocalString("enable.monitoring.invalid",
+                "Invalid level {0} for module name {1}", level, moduleName));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        }
+
+        MonitoringConfig.setMonitoringLevel(ms, moduleName, level, report);
+    }
+
+    private boolean isValidString(String str) {
+        return (str!=null && str.length()>0);
+    }
+
+    private boolean isValidLevel(String level) {
+        return ((level.equals("OFF")) || (level.equals("HIGH")) || (level.equals("LOW")));
+    }
 }
