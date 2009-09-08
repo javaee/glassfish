@@ -451,6 +451,10 @@ public class ComponentEnvManagerImpl
                 continue;
             }
 
+            if(next.getMappedName() != null) {
+                next.setName(next.getMappedName());
+            }
+            
             String name = descriptorToLogicalJndiName(next);
             WebServiceRefProxy value = new WebServiceRefProxy(next);
             jndiBindings.add(new CompEnvBinding(name,value))  ;
