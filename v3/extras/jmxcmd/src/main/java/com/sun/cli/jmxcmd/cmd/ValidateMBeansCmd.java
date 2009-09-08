@@ -52,6 +52,7 @@ import com.sun.cli.jmxcmd.util.ObjectNameComparator;
 import org.glassfish.admin.amx.util.ArrayConversion;
 import org.glassfish.admin.amx.util.ArrayUtil;
 import org.glassfish.admin.amx.util.SetUtil;
+import org.glassfish.admin.amx.util.StringUtil;
 
 
 
@@ -424,7 +425,8 @@ public class ValidateMBeansCmd extends JMXCmd
 			else if ( attrs.size() != 0 )
 			{
 				printFailure( "MBean " + quote( objectName ) +
-					" returned attributes for a non-existent name" );
+					" returned attributes " + attrs + 
+                    " for (deliberately) non-existent attribute " + StringUtil.quote(notFoundName) );
 				valid	= false;
 			}
 		}
