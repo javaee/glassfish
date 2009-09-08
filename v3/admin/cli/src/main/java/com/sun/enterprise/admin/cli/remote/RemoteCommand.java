@@ -219,8 +219,20 @@ public class RemoteCommand extends CLICommand {
     }
 
     /**
+     * If it's a help request, don't prompt for any missing options.
+     */
+    @Override
+    protected void validate()
+            throws CommandException, CommandValidationException  {
+        if (doHelp || programOpts.isHelp() || getBooleanOption("help"))
+            return;
+        super.validate();
+    }
+
+    /**
      * We do all our help processing in executeCommand.
      */
+    @Override
     protected boolean checkHelp()
             throws CommandException, CommandValidationException {
         return false;
