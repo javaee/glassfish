@@ -45,6 +45,10 @@ import com.sun.logging.*;
 import java.util.logging.*;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.internal.api.Globals;
 /** 
   * This utility class encloses all the calls to a ejb method
   * in a specified subject
@@ -349,5 +353,19 @@ public class SecurityUtil{
                 '/' + wbd.getUniqueFriendlyId();
         }
         return cid;
+    }
+     
+    public static  void removeRoleMapper(DeploymentContext dc) {
+        OpsParams params = dc.getCommandParameters(OpsParams.class);
+        if (params.origin != OpsParams.Origin.undeploy) {
+            return;
+        }
+        String appName = params.name();
+        SecurityRoleMapperFactory factory = Globals.get(SecurityRoleMapperFactory.class);
+        if (factory == null) {
+            throw new IllegalArgumentException("This application has no role mapper factory defined");
+        }
+        factory.removeRoleMapper(appName);
+
     }
 }

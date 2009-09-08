@@ -33,6 +33,7 @@ import org.glassfish.deployment.common.DummyApplication;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.security.util.IASSecurityException;
 import org.glassfish.internal.api.ServerContext;
 import com.sun.logging.LogDomains;
@@ -210,8 +211,9 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     protected void cleanArtifacts(DeploymentContext dc)
             throws DeploymentException {
         removePolicy(dc);
+        SecurityUtil.removeRoleMapper(dc);
     }
-
+    
     @Override
     public DummyApplication load(SecurityContainer container, DeploymentContext context) {
         return new DummyApplication();

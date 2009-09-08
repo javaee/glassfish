@@ -226,6 +226,8 @@ public class EjbDeployer
                             "for application " + appName + " " + ex);
                 }
             }
+            //Removing the RoleMapper
+            SecurityUtil.removeRoleMapper(dc);
         }
 
 
