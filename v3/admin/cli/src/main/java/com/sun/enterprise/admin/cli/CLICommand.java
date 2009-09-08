@@ -429,8 +429,10 @@ public abstract class CLICommand implements PostConstruct {
                 programOpts.updateOptions(params);
                 initializeLogger();
                 initializePasswords();
-                if (!programOpts.isTerse()) {
+                if (!programOpts.isTerse() &&
+                        !(params.size() == 1 && params.get("help") != null)) {
                     // warn about deprecated use of program options
+                    // (except --help)
                     // XXX - a lot of work for a nice message...
                     Set<ValidOption> programOptions =
                             ProgramOptions.getValidOptions();
