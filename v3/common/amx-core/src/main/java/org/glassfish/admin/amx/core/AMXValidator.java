@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.amx.core;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -69,6 +70,7 @@ import org.glassfish.admin.amx.base.MBeanTrackerMBean;
 import static org.glassfish.admin.amx.core.PathnameConstants.*;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import static org.glassfish.external.amx.AMX.*;
+import org.glassfish.external.amx.AMXGlassfish;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
@@ -117,6 +119,47 @@ public final class AMXValidator
         
         mValidationLevel = validationLevel;
         mUnregisterNonCompliant = unregisterNonCompliant;
+    }
+    
+    /**
+        Return a Set containing ObjectNames that appear to be AMX-compliant MBeans
+     */
+    public Set<ObjectName> filterAMX(final Set<ObjectName> candidates)
+    {
+        final Set<ObjectName> amxSet = new HashSet<ObjectName>();
+        for( final ObjectName cand : candidates )
+        {
+            if ( cand.getKeyProperty(TYPE_KEY) == null ) continue;
+            
+            // for now, require matching jmx domain "amx"
+            if ( cand.getDomain().equals( AMXGlassfish.DEFAULT_JMX_DOMAIN) )
+            {
+                amxSet.add(cand);
+            }
+            
+        }
+        return amxSet;
+    }
+    
+    /**
+        Find all MBeans that appear to be AMX MBeans
+     */
+    public Set<ObjectName> findAllAMXCompliant()
+    {
+        // query for all MBeans in all domains
+        // for now, any MBean with Parent/Name and metadata we'll guess is AMX
+        final ObjectName pattern = Util.newObjectNamePattern("*", "*");
+        Set<ObjectName> theWorld = null;
+        try
+        {
+            theWorld = mMBeanServer.queryNames(pattern, null);
+        }
+        catch( final IOException e )
+        {
+            throw new RuntimeException(e);
+        }
+        
+        return filterAMX(theWorld);
     }
 
     private static final class IllegalClassException extends Exception
@@ -1076,6 +1119,12 @@ public final class AMXValidator
         }
     }
     
+    public ValidationResult validate(final Collection<ObjectName> c)
+    {
+        final ObjectName[] targets = CollectionUtil.toArray( c, ObjectName.class );
+        return validate( targets );
+    }
+    
     public ValidationResult validate(final ObjectName[] targets)
     {
         final long startMillis = System.currentTimeMillis();
@@ -1125,7 +1174,7 @@ public final class AMXValidator
             }
             if ( problems.size() != 0 )
             {
-                System.err.println( "Unregistering non-compliant MBean: " + objectName + " for problems: " + problems );
+                //debug( "Calling unregisterNonCompliantMBean(): " + objectName + " for problems: " + problems );
                 unregisterNonCompliantMBean(objectName);
             }
 

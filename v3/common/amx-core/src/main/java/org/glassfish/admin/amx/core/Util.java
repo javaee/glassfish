@@ -35,7 +35,7 @@
  */
 package org.glassfish.admin.amx.core;
 
-import org.jvnet.hk2.config.Dom;
+import java.util.regex.Pattern;
 
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.SetUtil;
@@ -541,7 +541,7 @@ public final class Util
         if (idx >= 0) {
             simpleName = s.substring(idx + 1);
         }
-        return Dom.convertName(simpleName);
+        return domConvertName(simpleName);
     }
 
 
@@ -615,6 +615,59 @@ public final class Util
          }
          return cur;
     }
+    
+    
+    // BEGIN domConvertName
+    /* Code below is taken from Dom.java to avoid a dependency */
+    static final String[] PROPERTY_PREFIX = new String[]{"get","set","is","has"};
+    private static String domConvertName(final String nameIn)
+    {
+        String name = nameIn;
+        for (final String p : PROPERTY_PREFIX)
+        {
+            if(name.startsWith(p))
+            {
+                name = name.substring(p.length());
+                break;
+            }
+        }
+        // tokenize by finding 'x|X' and 'X|Xx' then insert '-'.
+        final StringBuilder buf = new StringBuilder(name.length()+5);
+        for( final String t : TOKENIZER.split(name))
+        {
+            if(buf.length()>0)  buf.append('-');
+            buf.append(t.toLowerCase());
+        }
+        return buf.toString();        
+    }
+
+    /**
+     * Used to tokenize the property name into XML name.
+     */
+    static final Pattern TOKENIZER;
+    private static String split(String lookback,String lookahead) {
+        return "((?<="+lookback+")(?="+lookahead+"))";
+    }
+    private static String or(String... tokens) {
+        final StringBuilder buf = new StringBuilder();
+        for (String t : tokens) {
+            if(buf.length()>0)  buf.append('|');
+            buf.append(t);
+        }
+        return buf.toString();
+    }
+    static {
+        String pattern = or(
+                split("x","X"),     // AbcDef -> Abc|Def
+                split("X","Xx"),    // USArmy -> US|Army
+                //split("\\D","\\d"), // SSL2 -> SSL|2
+                split("\\d","\\D")  // SSL2Connector -> SSL|2|Connector
+        );
+        pattern = pattern.replace("x","\\p{Lower}").replace("X","\\p{Upper}");
+        TOKENIZER = Pattern.compile(pattern);
+    }
+    // END domConvertName
+
 }
 
 
