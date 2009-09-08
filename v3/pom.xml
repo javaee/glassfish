@@ -42,7 +42,7 @@
     <parent>
         <groupId>org.glassfish</groupId>
         <artifactId>pom</artifactId>
-        <version>5</version>
+        <version>6</version>
     </parent>
     
     <groupId>org.glassfish</groupId>
@@ -87,17 +87,9 @@
     </mailingLists>
 
     <properties>
-        <ant.version>1.7.0</ant.version>
-        <javaee-api.version>6.0-alpha-1</javaee-api.version>
-        <activation-api.version>1.1.1</activation-api.version>
-        <transaction-api.version>1.1-rev-1</transaction-api.version>
         <mail.version>1.4.2</mail.version>
-        <ejb-api.version>3.0</ejb-api.version>
-        <persistence-api.version>1.0-rev-1</persistence-api.version>
-        <connector-api.version>1.6-alpha-1</connector-api.version>
         <management-api.version>1.1-rev-1</management-api.version>
         <jms-api.version>1.1-rev-1</jms-api.version>
-        <servlet-api.version>2.5</servlet-api.version>
         <jsp-api.version>2.1.3-b03</jsp-api.version>
         <jsp-impl.version>2.1.3-b15</jsp-impl.version>
         <el-api.version>2.1.2-b05</el-api.version>
@@ -108,7 +100,6 @@
         <jsf-impl.version>2.0.0-b17</jsf-impl.version>
         <jsf-ext.version>0.2</jsf-ext.version>
         <woodstock.version>4.4.0.1</woodstock.version>
-        <deployment-api.version>1.2-rev-1</deployment-api.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
         <grizzly.version>1.9.18-M2</grizzly.version>
         <grizzly-config.version>1.9.18-M2</grizzly-config.version>
