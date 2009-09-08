@@ -138,6 +138,8 @@ public class ParamTokenizer {
                     throw new IllegalArgumentException(
                         localStrings.getLocalString("UnbalancedQuotes",
                             "Unbalanced quotes"));
+                if (keep)
+                    token.append(c);
             } else if (c == delimiter) {
                 break;
             } else if (c == '\\') {

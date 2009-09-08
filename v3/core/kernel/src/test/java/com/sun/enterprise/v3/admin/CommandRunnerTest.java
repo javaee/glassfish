@@ -116,6 +116,24 @@ public class CommandRunnerTest {
         propsActual = cr.convertStringToProperties(propsStr, ':');
         assertEquals(propsExpected, propsActual);
     }
+
+    @Test
+    public void parsePropertiesQuoteTest() {
+        String propsStr =
+            "java.naming.provider.url=\"ldap://ldapserver.sun.com:389\":" +
+            "java.naming.security.authentication=simple:" +
+            "java.naming.security.credentials=changeit:" +
+            "java.naming.security.principal=\"uid=admin,ou=People,o=foo,o=something\"";
+        Properties propsExpected = new Properties();
+        propsExpected.put("java.naming.provider.url",
+                                "ldap://ldapserver.sun.com:389");
+        propsExpected.put("java.naming.security.authentication", "simple");
+        propsExpected.put("java.naming.security.credentials", "changeit");
+        propsExpected.put("java.naming.security.principal",
+                                "uid=admin,ou=People,o=foo,o=something");
+        Properties propsActual = cr.convertStringToProperties(propsStr, ':');
+        assertEquals(propsExpected, propsActual);
+    }
     
     @Test
     public void convertStringToObjectTest() throws Exception {
