@@ -1163,7 +1163,7 @@ function checkForPort(value) {
     if (value == '') return false;
     if (value.indexOf('${') == 0) return true;
     if (checkForIntValue(value) == false) return false;
-    return checkNumbericRange(value, 0, 65536);
+    return checkNumbericRange(value, 1, 65535);
 }
 
 
