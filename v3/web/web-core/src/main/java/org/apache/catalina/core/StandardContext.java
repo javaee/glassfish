@@ -4719,6 +4719,31 @@ public class StandardContext
             }
         }
 
+        /*
+         * Make sure there are no preliminary servlet or filter
+         * registrations left after all listeners have been notified
+         */
+        Collection<ServletRegistrationImpl> servletRegistrations =
+            servletRegisMap.values();
+        for (ServletRegistrationImpl regis : servletRegistrations) {
+            if (null == regis.getClassName()) {
+                throw new IllegalStateException(
+                    sm.getString(
+                        "standardContext.servletOrFilterWithoutAnyClass",
+                        "Servlet", regis.getName()));
+            }
+        }
+        Collection<FilterRegistrationImpl> filterRegistrations =
+            filterRegisMap.values();
+        for (FilterRegistrationImpl regis : filterRegistrations) {
+            if (null == regis.getClassName()) {
+                throw new IllegalStateException(
+                    sm.getString(
+                        "standardContext.servletOrFilterWithoutAnyClass",
+                        "Filter", regis.getName()));
+            }
+        }
+        
         isContextInitializedCalled = true;
     }
 
