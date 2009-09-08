@@ -34,7 +34,7 @@
  holder.
 -->
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.support.PageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.support.PageTitle}" >
 <!define name="content">
 
 <sun:script url="/resource/common/js/adminjsf.js" />
@@ -84,7 +84,7 @@
     </sun:markup>
     -->
     <!-- Page Title -->
-    //<sun:title id="propertyContentPage" title="$resource{i18n.support.PageTitle}" helpText="$resource{i18n.support.PageTitleHelp}">
+    //<sun:title id="propertyContentPage" title="$resource{i18nc.support.PageTitle}" helpText="$resource{i18nc.support.PageTitleHelp}">
     //</sun:title>
     <sun:hidden id="helpKey" value="$resource{help.support}" />
 </sun:form>
@@ -103,14 +103,14 @@
     <div id="maincontainer">
         <div id="newsBlogs" class="md1" style1="margin-left: 20px; width: 90%;">
             <div class="hd">
-                <h2>$resource{i18n.support.newsBlogs}</h2>
+                <h2>$resource{i18nc.support.newsBlogs}</h2>
             </div>
             <div id="boxbd" class="bd">
                 <div class="innerbox">
 </f:verbatim>
                     <jmaki:widget name="jmaki.blockList" id="aqua" args="{filter: 'admin.blockList.RSSFilter', count:1}" service="/xhp?key=aquarium" template="/resources/jmaki/blockList/aquarium.htm" />
 <f:verbatim>
-                    <br clear="all"><a href="$resource{i18n.support.aquariumLink}" target="_blank">$resource{i18n.support.moreAquarium}</a>
+                    <br clear="all"><a href="$resource{i18nc.support.aquariumLink}" target="_blank">$resource{i18nc.support.moreAquarium}</a>
                 </div>
             </div>
         </div>
@@ -119,12 +119,12 @@
             <div id="leftcolumn">
                 <div id="box" class="md1">
                     <div class="hd">
-                        <h2>$resource{i18n.support.events}</h2>
+                        <h2>$resource{i18nc.support.events}</h2>
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
                             <image src="#{request.contextPath}/resource/common/images/squares/#{imageList[0]}" alt="" border=0 align="right"  style="float:right; margin:5px 20px 0px 20px;" >
-                            <font face=arial size=-1> $resource{i18n.support.techDays}<br>$resource{i18n.support.techDaysDesc}</font>
+                            <font face=arial size=-1> $resource{i18nc.support.techDays}<br>$resource{i18nc.support.techDaysDesc}</font>
     </f:verbatim>
                             <jmaki:widget name="jmaki.blockList" service="/xhp?key=events" args="{count:2}" template="/resources/jmaki/blockList/events.htm" />
     <f:verbatim>
@@ -133,7 +133,7 @@
                             <jmaki:widget name="jmaki.blockList" service="/xhp?key=sdnevents" args="{count:2}" template="/resources/jmaki/blockList/sdn.htm" />
     <f:verbatim>
                             <br clear="all">
-                            <a href="$resource{i18n.support.eventsLink}" target="_blank">$resource{i18n.support.moreDevEvents}</a>
+                            <a href="$resource{i18nc.support.eventsLink}" target="_blank">$resource{i18nc.support.moreDevEvents}</a>
                         </div>
                     </div>
                 </div>
@@ -141,21 +141,21 @@
 
                 <div id="box" class="md1">
                     <div class="hd">
-                        <h2>$resource{i18n.support.techTips}</h2>
+                        <h2>$resource{i18nc.support.techTips}</h2>
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
                             <img src="#{request.contextPath}/resource/common/images/squares/#{imageList[1]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
-                            <h3>$resource{i18n.support.coreTechTips}</h3>
+                            <h3>$resource{i18nc.support.coreTechTips}</h3>
     </f:verbatim>
                             <jmaki:widget name="jmaki.blockList" service="/xhp?key=coretechtips&count=20" args="{count:4}" template="/resources/jmaki/blockList/coretechtips.htm" />
     <f:verbatim>
                             <br clear="all"><center><hr></center><p>
-                            <h3>$resource{i18n.support.entTechTips}</h3>
+                            <h3>$resource{i18nc.support.entTechTips}</h3>
     </f:verbatim>
                             <jmaki:widget name="jmaki.blockList" service="/xhp?key=techtips&count=20" args="{count:4}" template="/resources/jmaki/blockList/techtips.htm" />
     <f:verbatim>
-                            <br clear="all"><a href="$resource{i18n.support.tipsLink}" target="_blank">$resource{i18n.support.moreTechTips}</a>
+                            <br clear="all"><a href="$resource{i18nc.support.tipsLink}" target="_blank">$resource{i18nc.support.moreTechTips}</a>
                         </div>
                     </div>
                 </div>
@@ -163,7 +163,7 @@
 
                 <div id="box" class="md1">
                     <div class="hd">
-                        <h2>$resource{i18n.support.javeEENewsAndArticles}</h2>
+                        <h2>$resource{i18nc.support.javeEENewsAndArticles}</h2>
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
@@ -171,7 +171,7 @@
     </f:verbatim>
                             <jmaki:widget name="jmaki.blockList" service="/xhp?key=javaee" args="{count:2}" template="/resources/jmaki/blockList/javaee.htm" />
     <f:verbatim>
-                            <br clear="all"><a href="$resource{i18n.support.javaeeLink}" target="_blank">$resource{i18n.support.moreEnterpriseArticles}</a>
+                            <br clear="all"><a href="$resource{i18nc.support.javaeeLink}" target="_blank">$resource{i18nc.support.moreEnterpriseArticles}</a>
                         </div>
                     </div>
                 </div>
@@ -179,7 +179,7 @@
 
                 <div id="box" class="md1">
                     <div class="hd">
-                        <h2>$resource{i18n.support.sunDevNews}</h2>
+                        <h2>$resource{i18nc.support.sunDevNews}</h2>
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
@@ -195,7 +195,7 @@
     </f:verbatim>
                             <jmaki:widget name="jmaki.blockList" id="sdndevnews" service="/xhp?key=sdndevnews" args="{count:2}" template="/resources/jmaki/blockList/sdndevnews.htm" />
     <f:verbatim>
-                            <br clear="all"><a href="$resource{i18n.support.devNewsLink}" target="_blank">$resource{i18n.support.sunDevNews}</a>
+                            <br clear="all"><a href="$resource{i18nc.support.devNewsLink}" target="_blank">$resource{i18nc.support.sunDevNews}</a>
                         </div>
                     </div>
                 </div>
@@ -203,17 +203,17 @@
 
                 <div id="box" class="md1">
                     <div class="hd">
-                        <h2>$resource{i18n.support.gfIssues}</h2>
+                        <h2>$resource{i18nc.support.gfIssues}</h2>
 
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
-                            <font face=arial size=-1>$resource{i18n.support.bugList}</font>
+                            <font face=arial size=-1>$resource{i18nc.support.bugList}</font>
     </f:verbatim>
                             <jmaki:widget name="jmaki.blockList" id="issues" args="{count:5}" service="/xhp?key=issues&count=20" template="/resources/jmaki/blockList/issues.htm" />
     <f:verbatim>
                             <br clear="all">
-                            <a href="#{IssueQuery}" target="_blank">$resource{i18n.support.moreIssues}</a>
+                            <a href="#{IssueQuery}" target="_blank">$resource{i18nc.support.moreIssues}</a>
                         </div>
                     </div>
                 </div>
@@ -221,7 +221,7 @@
             <div id="rightcolumn">
                 <div id="box" class="md1">
                     <div class="hd">
-                        <h2>$resource{i18n.support.GlassFishBusiness}</h2>
+                        <h2>$resource{i18nc.support.GlassFishBusiness}</h2>
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
@@ -229,7 +229,7 @@
                             <jmaki:widget name="jmaki.blockList" id="business" service="/xhp?key=gfbusiness" args="{count:1}" template="/resources/jmaki/blockList/blogs.htm" />
     <f:verbatim>
                             <br clear="all">
-                            <a href="$resource{i18n.support.businessLink}" target="_blank">$resource{i18n.support.moreBusiness}</a>
+                            <a href="$resource{i18nc.support.businessLink}" target="_blank">$resource{i18nc.support.moreBusiness}</a>
                         </div>
                     </div>
                 </div>
@@ -237,26 +237,26 @@
 
                 <div id="box" class="md1">
                     <div class="hd">
-                        <h2>$resource{i18n.support.service}</h2>
+                        <h2>$resource{i18nc.support.service}</h2>
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
                             <font face=arial size=-1>
                             <img src="#{request.contextPath}/resource/common/images/squares/#{imageList[4]}" alt="" border=0 align="left" style="float:left; margin:5px 10px 5px 10px;" />
-                            <a href="$resource{i18n.support.appServerSubscriptionLink}" target="_blank"> $resource{i18n.support.supportAndService}</a><br>
-                            $resource{i18n.support.s1}
+                            <a href="$resource{i18nc.support.appServerSubscriptionLink}" target="_blank"> $resource{i18nc.support.supportAndService}</a><br>
+                            $resource{i18nc.support.s1}
                             <p><br>
-                            <a href="$resource{i18n.support.trainingLink}" target="_blank">$resource{i18n.support.training}</a><br>
-                            $resource{i18n.support.t1}
+                            <a href="$resource{i18nc.support.trainingLink}" target="_blank">$resource{i18nc.support.training}</a><br>
+                            $resource{i18nc.support.t1}
                             <p>
-                            <a href="$resource{i18n.support.devSupportLink}" target="_blank">$resource{i18n.support.devSupportService}</a><br>
-                            $resource{i18n.support.d1}
+                            <a href="$resource{i18nc.support.devSupportLink}" target="_blank">$resource{i18nc.support.devSupportService}</a><br>
+                            $resource{i18nc.support.d1}
                             <p>
-                            <a href="$resource{i18n.support.forumLink}" target="_blank">$resource{i18n.support.forum}</a><br>
-                            $resource{i18n.support.forum1}
+                            <a href="$resource{i18nc.support.forumLink}" target="_blank">$resource{i18nc.support.forum}</a><br>
+                            $resource{i18nc.support.forum1}
                             <p>
-                            <a href="$resource{i18n.support.issueLink}" target="_blank">$resource{i18n.support.issueTracker}</a><br>
-                            $resource{i18n.support.issueTracker1}</font>
+                            <a href="$resource{i18nc.support.issueLink}" target="_blank">$resource{i18nc.support.issueTracker}</a><br>
+                            $resource{i18nc.support.issueTracker1}</font>
                         </div>
                     </div>
                 </div>
@@ -264,7 +264,7 @@
                 <!-- sysnet / learningBox -->
                 <div id="box" class="md1">
                     <div class="hd">
-                        <h2>$resource{i18n.support.adoption}</h2>
+                        <h2>$resource{i18nc.support.adoption}</h2>
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
@@ -272,7 +272,7 @@
                             <jmaki:widget name="jmaki.blockList" id="blogs" service="/xhp?key=stories" args="{count:1}" template="/resources/jmaki/blockList/blogs.htm" />
     <f:verbatim>
                             <br clear="all">
-                            <a href="$resource{i18n.support.storyLink}" target="_blank">$resource{i18n.support.moreStories}</a>
+                            <a href="$resource{i18nc.support.storyLink}" target="_blank">$resource{i18nc.support.moreStories}</a>
                         </div>
                     </div>
                 </div>
@@ -280,7 +280,7 @@
 
                 <div id="box" class="md1">
                     <div class="hd">
-                        <h2>$resource{i18n.support.learning}</h2>
+                        <h2>$resource{i18nc.support.learning}</h2>
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
@@ -294,14 +294,14 @@
 
                 <div id="box" class="md1">
                     <div class="hd">
-                        <h2>$resource{i18n.support.podcast}</h2>
+                        <h2>$resource{i18nc.support.podcast}</h2>
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
     </f:verbatim>
                             <jmaki:widget name="jmaki.blockList" id="podcast" args="{count:1}" service="/xhp?key=podcast" template="/resources/jmaki/blockList/podcast.htm" />
     <f:verbatim>
-                            <br clear="all"><a href="$resource{i18n.support.podcastLink}" target="_blank">$resource{i18n.support.morePodCast}</a>
+                            <br clear="all"><a href="$resource{i18nc.support.podcastLink}" target="_blank">$resource{i18nc.support.morePodCast}</a>
                         </div>
                     </div>
                 </div>

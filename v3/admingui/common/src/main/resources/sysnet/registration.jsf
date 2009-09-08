@@ -40,6 +40,8 @@
    -->
 
 <!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
     setComponentRequired(id="form1:pSheet:pSection:unameProp:userName" required="$boolean{false}" );
     setComponentRequired(id="form1:pSheet:pSection:pswdProp:pswd" required="$boolean{false}" );
     setComponentRequired(id="form1:pSheet:pSection:emailAdrProp:emailAdr" required="$boolean{false}" );
@@ -52,17 +54,16 @@
     setComponentRequired(id="form1:pSheet:pSection:country:country" required="$boolean{false}" );
 
 />  
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.reg.PageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.reg.PageTitle}"  guiOnLoad="showSS(); " >
+
 <!define name="content">
 <sun:script url="/resource/common/js/adminjsf.js" />
     <event>
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
         setAttribute(key="accountGroup", value="hasAccount");
         setAttribute(key="contextRoot" value="#{request.contextPath}");
         setAttribute(key="samplePath" value="$attribute{contextRoot}/resource/common/sysnet/sample.html");
-        setAttribute(key="PageTitleHelp" value="$resource{i18n.reg.PageTitleHelp, ${samplePath}}");
+        setAttribute(key="PageTitleHelp" value="$resource{i18nc.reg.PageTitleHelp, ${samplePath}}");
     />
     
         <!beforeEncode
@@ -84,30 +85,7 @@
             <sun:form id="form1" >
 #include "/common/shared/treeBreadcrumbs.inc"
 #include "/common/shared/alertMsg.inc"                
-            <!-- Page Title -->
-                <sun:title id="title1" title="$resource{i18n.reg.PageTitle}" helpText="${PageTitleHelp}">
-                   <!-- 
-                   <!facet pageButtonsTop>
-                    <sun:panelGroup id="topButtons">
-                        <sun:button id="button1" text="$resource{i18n.button.register}" 
-                                    onClick="if (validateRegisterField()){ return submitAndDisableBoth(this, '$resource{i18n.button.Processing}', '#{button2Id}'); } else{ return false;}" onKeyPress="javascript: return true;" > 
-                            <!afterCreate
-                                getClientId(component="$this{component}" clientId=>$page{button1Id});
-                            />
-                            <!command
-                            registerAS(
-                            userName="#{userName}", pswd="#{pswd}",
-                            emailAdr="#{emailAdr}", newPswd="#{newPswd}",
-                            screenName="#{screenName}", firstName="#{firstName}",lastName="#{lastName}",
-                            country="#{country}", companyName="#{companyName}", accountStatus="#{accountGroup}");
-                            redirect("support.jsf");
-                            />
-                        </sun:button>
-                    </sun:panelGroup>
-                    </facet> 
-                    -->
-                </sun:title>
-
+            <sun:title id="title1" title="$resource{i18nc.reg.PageTitle}" helpText="${PageTitleHelp}" />
             <!-- PropertySheet .... -->
             <sun:propertySheet id="pSheet" requiredFields="true">			 
                 <sun:propertySheetSection id="pSection" >
@@ -116,17 +94,17 @@
                     />
                             
                     <sun:property id="existProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{true}" label=" "> 
-                        <sun:radioButton id="existAccount" name="accountGroup" label="$resource{i18n.reg.hasAccount}" selected="${accountGroup}" selectedValue="hasAccount" 
+                        <sun:radioButton id="existAccount" name="accountGroup" label="$resource{i18nc.reg.hasAccount}" selected="${accountGroup}" selectedValue="hasAccount" 
                         onClick="javascript: showNewAccount(false)" onKeyPress="javascript: return true;" />
                     </sun:property>
-                     <sun:property id="unameProp" style="margin-left: 17pt;" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.userName}" helpText="$resource{i18n.reg.userNameHelp}" >                           
+                     <sun:property id="unameProp" style="margin-left: 17pt;" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.userName}" helpText="$resource{i18nc.reg.userNameHelp}" >                           
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{userNameId});
                         />
                         <sun:textField id="userName" styleClass="required" columns="$int{40}" text="#{requestScope.userName}" required="#{false}" />
                     </sun:property>
                     
-                    <sun:property id="pswdProp" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.pswd}" helpText="$resource{i18n.reg.resetPswdHelp}" >                           
+                    <sun:property id="pswdProp" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.pswd}" helpText="$resource{i18nc.reg.resetPswdHelp}" >                           
                         <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{pswdId});
                         />
@@ -137,14 +115,14 @@
                         <sun:label text=""/>
                     </sun:property>
                     
-                    <sun:property id="proxy" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.proxy}"  helpText="$resource{i18n.reg.proxyHelp}">                           
+                    <sun:property id="proxy" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.proxy}"  helpText="$resource{i18nc.reg.proxyHelp}">                           
                         <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{proxyId});
                         />
                         <sun:textField id="proxy" columns="$int{40}" text="#{requestScope.proxy}" required="#{false}" />
                     </sun:property>
                     
-                    <sun:property id="port" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.port}">                           
+                    <sun:property id="port" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.port}">                           
                         <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{portId});
                         />
@@ -153,26 +131,26 @@
                     
                     <!--  Info for creating new account -->
                     <sun:property id="newProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{true}" label=" "> 
-                        <sun:radioButton id="newAccount" name="accountGroup" label="$resource{i18n.reg.doNotHaveAccount}" selected="${accountGroup}" selectedValue="createAccount" 
+                        <sun:radioButton id="newAccount" name="accountGroup" label="$resource{i18nc.reg.doNotHaveAccount}" selected="${accountGroup}" selectedValue="createAccount" 
                             onClick="javascript: showNewAccount(true)" onKeyPress="javascript: return true;" />
                             "<br /><br />
                     </sun:property>
                     
-                     <sun:property id="emailAdrProp"  visible="#{false}" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.emailAdr}" helpText="$resource{i18n.reg.emailAdrHelp}" >                           
-                          <!afterCreate
+                     <sun:property id="emailAdrProp"  visible="#{false}" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.emailAdr}" helpText="$resource{i18nc.reg.emailAdrHelp}" >                           
+                            <!afterCreate
                                 getClientId(component="$this{component}" clientId=>$page{emailAdrId});
                             />
                         <sun:textField id="emailAdr" styleClass="required" columns="$int{40}" text="#{requestScope.emailAdr}" required="#{false}" />
                     </sun:property>
                     
-                    <sun:property id="newPswdProp" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.pswd}">                           
+                    <sun:property id="newPswdProp" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.pswd}">                           
                             <!afterCreate
                                 getClientId(component="$this{component}" clientId=>$page{newPswdId});
                             />
                         <sun:passwordField id="newPswd" styleClass="required" columns="$int{40}" text="#{requestScope.newPswd}" required="#{false}" />
                     </sun:property>
                     
-                    <sun:property id="pswd2Prop" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.retypePswd}"  helpText="$resource{i18n.reg.pswdHelp}" >                           
+                    <sun:property id="pswd2Prop" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.retypePswd}"  helpText="$resource{i18nc.reg.pswdHelp}" >                           
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{newPswd2Id});
                         />
@@ -180,7 +158,7 @@
                          
                     </sun:property>
                     <!-- due to bug# 6627551
-                    <sun:property id="screenName" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.screenName}" helpText="$resource{i18n.reg.screenNameHelp}" >                           
+                    <sun:property id="screenName" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.screenName}" helpText="$resource{i18nc.reg.screenNameHelp}" >                           
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{screenNameId});
                         />
@@ -189,28 +167,28 @@
                     -->
                     
                      
-                    <sun:property id="firstName" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.firstName}" >                           
+                    <sun:property id="firstName" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.firstName}" >                           
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{firstNameId});
                         />
                          <sun:textField id="firstName" styleClass="required" columns="$int{40}" text="#{requestScope.firstName}" required="#{false}" />
                      </sun:property>
                     
-                    <sun:property id="lastName" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.lastName}" >                           
+                    <sun:property id="lastName" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.lastName}" >                           
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{lastNameId});
                         />
                         <sun:textField id="lastName" styleClass="required" columns="$int{40}" text="#{requestScope.lastName}" required="#{false}" />
                     </sun:property>
                     
-                    <sun:property id="companyName" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.companyName}" >                           
+                    <sun:property id="companyName" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.companyName}" >                           
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{companyNameId});
                         />
                         <sun:textField id="companyName" columns="$int{40}" text="#{requestScope.companyName}" required="#{false}" />
                     </sun:property>
                     
-                    <sun:property id="country" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.country}" >                           
+                    <sun:property id="country" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.country}" >                           
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{countryId});
                         />
@@ -227,34 +205,42 @@
                         <sun:label text=""/>
                     </sun:property>
                     
-                    <sun:property id="newProxy" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.proxy}"  helpText="$resource{i18n.reg.proxyHelp}" >                           
+                    <sun:property id="newProxy" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.proxy}"  helpText="$resource{i18nc.reg.proxyHelp}" >                           
                         <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{newProxyId});
                         />
                         <sun:textField id="newProxy" columns="$int{40}" text="#{requestScope.newProxy}" required="#{false}" />
                     </sun:property>
                     
-                    <sun:property id="newPort" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.port}">                           
+                    <sun:property id="newPort" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.port}">                           
                         <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{newPortId});
                         />
                         <sun:textField id="newPort"  columns="$int{8}" text="#{requestScope.newPort}" required="#{false}" />
                     </sun:property>
+                    <sun:property>
+                    <sun:textField  id="action" visible="$boolean{false}" text="#{pageSession.radioChoosen}">
+                        <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$page{radioChoosenId});
+                            setPageSessionAttribute(key="radioChoosen" value="start");
+                        />
+                    </sun:textField>
+                </sun:property>
                     
                     </sun:propertySheetSection>
             </sun:propertySheet>
             "<br/> <br/><div style="margin-left: 30px;">
-                "$resource{i18n.reg.yourPrivacy}<br><br>
-                "$resource{i18n.reg.privacy}
+                "$resource{i18nc.reg.yourPrivacy}<br><br>
+                "$resource{i18nc.reg.privacy}
                 "<br>
-                "$resource{i18n.reg.privacy2}
+                "$resource{i18nc.reg.privacy2}
             "</div>
             <sun:title id="title2" >
             <!facet pageButtonsBottom>
                 <sun:panelGroup id="bottomButtons">
-                    "<span style="left: 30px; position: absolute;"> $resource{i18n.reg.agree}</span>
+                    "<span style="left: 30px; position: absolute;"> $resource{i18nc.reg.agree}</span>
                     <sun:button id="button2" text="$resource{i18n.button.register}" 
-                        onClick="if (validateRegisterField(this.form)){ return submitAndDisable(this, '$resource{i18n.button.Processing}'); } else{ return false;}" onKeyPress="javascript: return true;" > 
+                        onClick="if (validateRegisterField(this.form)){ return submitAndDisable(this, '$resource{i18n.button.Processing}'); } else{ return false;}" onKeyPress="javascript: return true;" >
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{button2Id});
                         />
@@ -272,14 +258,14 @@
                 </facet>
         </sun:title>
         "<br />
-	<sun:hidden id="helpKey" value="$resource{help.registration}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.registration}" />
             </sun:form>
         
         
         <f:verbatim>
         <script type="text/javascript">
             function showNewAccount(value) {
-                
+                getTextElement('#{pageSession.radioChoosenId}').value = value;
                 webui.suntheme.common.setVisible('#{userNameId}', !value);
                 webui.suntheme.common.setVisible( '#{pswdId}', !value);
                 webui.suntheme.common.setVisible( '#{proxyId}', !value);
@@ -303,8 +289,15 @@
                     showNewAccount(true);
                 }
             }
-            
-            
+
+            function showSS(){
+             var comp = getTextElement('#{pageSession.radioChoosenId}');
+             var value = comp.value;
+             if (value != 'start'){
+                showNewAccount(comp.value);
+                }
+            }
+
             function validateRegisterField(form){
                 ss = getSelectedValueFromForm(form, 'accountGroup');
                 if( ss =='hasAccount'){
@@ -348,8 +341,8 @@
             }
             
             function checkEmailAdr(componentId){
-                var component = document.getElementById(componentId);
-                var emailAdr = component.getProps().value;
+                var component = getTextElement(componentId);
+                var emailAdr = component.value;
                 if (( emailAdr.indexOf("@") == -1) || (emailAdr.indexOf("@") != emailAdr.lastIndexOf("@")) ||
                     ( (emailAdr.indexOf("@")+1) == emailAdr.length)){
                     alert('$resource{i18n.msg.JS.improperEmail}');
@@ -361,20 +354,27 @@
             }
             
             function checkMatchingPswd(pswdId1, pswdId2){
-                var pswd = document.getElementById(pswdId1).getProps().value;
-                var pswd2 = document.getElementById(pswdId2).getProps().value;
-                if (pswd != pswd2){
+                var pswd = getTextElement(pswdId1);
+                var pswd2 = getTextElement(pswdId2);
+
+                if (pswd.value != pswd2.value){
                     alert('$resource{i18n.msg.JS.manageUser.passwordNotMatch}');
-                    document.getElementById(pswdId1).select();
-                    document.getElementById(pswdId1).focus();
+                    pswd2.select();
+                    pswd2.focus();
+                    return false;
+                }
+                if (pswd.value.length <= 6){
+                    alert('$resource{i18nc.msg.JS.reg.passwordLength}');
+                    pswd.select();
+                    pswd.focus();
                     return false;
                 }
                 return true;
             }
             
             function checkProxyPort(componentId){
-                var component = document.getElementById(componentId);
-                if (! checkForPortOrEmpty(component.getProps().value)) {
+                var component = getTextElement(componentId);
+                if (! checkForPortOrEmpty(component.value)) {
                     component.select();
                     component.focus();
                     return showAlert('$resource{i18n.msg.JS.enterPortValue} '+  getLabel( component ));

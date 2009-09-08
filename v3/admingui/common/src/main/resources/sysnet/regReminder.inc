@@ -48,12 +48,12 @@
     <f:verbatim>
         <div style="padding-left: 135px; font-size: 1.2em;">
 		    <br />
-		    <div class="please" >$resource{i18n.reg.pleaseReg}</div>
+		    <div class="please" >$resource{i18nc.reg.pleaseReg}</div>
 		    <div id="why" class="why">
-		        <a href="https://reg.sun.com/whyregister?program=sdn" target="_blank" >$resource{i18n.reg.whyRegister}</a>
+		        <a href="https://reg.sun.com/whyregister?program=sdn" target="_blank" >$resource{i18nc.reg.whyRegister}</a>
 		    </div>
 		    <div class="bulletList">
-		        $resource{i18n.reg.whyRegisterList}
+		        $resource{i18nc.reg.whyRegisterList}
 		    </div>
 	    </div>
 

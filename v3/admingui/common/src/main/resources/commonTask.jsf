@@ -36,12 +36,9 @@
 <!-- /common/commonTask.jsf -->
 
 <!initPage
-<!--
-    Any page-specific I18N files can be included here, core.*
-    bundles are already included.
--->
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     getProductInstanceURN();
-#include "/common/sysnet/regInit.inc"
+    #include "/common/sysnet/regInit.inc"
 />
 <!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}">
 <!define name="content">
