@@ -118,7 +118,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             String parentNodePath = spre.getParentTreeNodePath();
             List<String> childNodeNames = spre.getChildTreeNodeNames();
             TreeNode rootNode = mrdr.get("server");
-            if (rootNode != null) {
+            if ((rootNode != null) && (parentNodePath != null)) {
                 // This has to return one node
                 List<TreeNode> nodeList = rootNode.getNodes(parentNodePath);
                 TreeNode parentNode = nodeList.get(0);
@@ -133,15 +133,18 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
 
             //get the handles and unregister the listeners from Flashlight
             Collection<ProbeClientMethodHandle> handles = spre.getHandles();
-            for (ProbeClientMethodHandle handle : handles) {
-                // handle.remove????? Mahesh?
-                //TODO IMPLEMENTATION
-                //For now disable the handle => remove the client from invokerlist
-                handle.disable();
+            if (handles != null) {
+                for (ProbeClientMethodHandle handle : handles) {
+                    // handle.remove????? Mahesh?
+                    //TODO IMPLEMENTATION
+                    //For now disable the handle => remove the client from invokerlist
+                    handle.disable();
+                }
             }
 
             //unregister the statsProvider from Gmbal
-            unregisterGmbal(spre);
+            if (spre.getManagedObjectManager() != null)
+                unregisterGmbal(spre);
 
             //Unregister from the MonitoringDataTreeRegistry and the map entries
             statsProviderRegistry.unregisterStatsProvider(statsProvider);
