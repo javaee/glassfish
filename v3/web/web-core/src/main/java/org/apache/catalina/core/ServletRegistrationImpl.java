@@ -79,6 +79,11 @@ public class ServletRegistrationImpl implements ServletRegistration {
     }
 
 
+    public String getJspFile() {
+        return wrapper.getJspFile();
+    }
+
+
     public boolean setInitParameter(String name, String value) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
