@@ -43,7 +43,7 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static final String TEST_NAME = "web-servlet-jspfile-mapping";
+    private static final String TEST_NAME = "servlet-to-jsp-file-mapping";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
