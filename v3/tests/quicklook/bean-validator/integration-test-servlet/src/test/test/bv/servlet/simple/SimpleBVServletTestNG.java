@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package test.bv.servlet.simple;
+package test.bv.servlet.integration;
 
 import org.testng.annotations.*;
 import org.testng.Assert;
@@ -41,10 +41,10 @@ import org.testng.Assert;
 import java.io.*;
 import java.net.*;
 
-public class SimpleBVServletTestNG {
+public class IntegrationBVServletTestNG {
 
     private static final String TEST_NAME =
-        "bv-integration-test-servlet";
+        "bv-servlet-integration";
    
     private String strContextRoot="integration-test-servlet";
 
@@ -52,7 +52,7 @@ public class SimpleBVServletTestNG {
     String host=System.getProperty("http.host");
     String port=System.getProperty("http.port");
 
-    public SimpleBVServletTestNG() {
+    public IntegrationBVServletTestNG() {
         result = null;
     }
     
