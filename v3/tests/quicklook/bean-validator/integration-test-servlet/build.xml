@@ -146,7 +146,7 @@ connectors/connectors-runtime/src/main/java/com/sun/enterprise/connectors/module
         <antcall target="runtest-impl">
         <param name="contextroot" value="${contextroot}"/>
         <param name="testng.test.name" value="${testng.test.name}"/>
-        <param name="testng.testclient" value="IntegrationBVServletTestNG"/>
+        <param name="testng.testclient" value="SimpleBVServletTestNG"/>
         </antcall>
         
     </target>

@@ -114,11 +114,6 @@
         <class name="test.bv.servlet.simple.SimpleBVServletTestNG" />
     </classes>
   </test>
-  <test name="bv_servlet_integration">
-    <classes>
-        <class name="test.bv.servlet.integration.IntegrationBVServletTestNG" />
-    </classes>
-  </test>
   <test name="asadmin_tests">
     <classes>
       <class name="test.admin.JvmOptionTests"/>

@@ -138,11 +138,6 @@
         <class name="test.bv.servlet.simple.SimpleBVServletTestNG" />
     </classes>
   </test>
-  <test name="bv_servlet_integration">
-    <classes>
-        <class name="test.bv.servlet.integration.IntegrationBVServletTestNG" />
-    </classes>
-  </test>
   <test name="webbeans_numberguess">
     <classes>
         <class name="test.web.numberguess.NumberGuessTestNG" />
