@@ -53,6 +53,8 @@ import org.glassfish.admin.amx.util.ArrayConversion;
 import org.glassfish.admin.amx.util.ArrayUtil;
 import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.StringUtil;
+import org.glassfish.admin.amx.util.CollectionUtil;
+import org.glassfish.admin.amx.core.AMXValidator;
 
 
 
@@ -419,7 +421,7 @@ public class ValidateMBeansCmd extends JMXCmd
 			if ( attrs == null )
 			{
 				printFailure( "MBean " + quote( objectName ) +
-					" returned NULL for a missing Attribute" );
+					" returned NULL for (deliberately) non-existent attribute "  + StringUtil.quote(notFoundName));
 				valid	= false;
 			}
 			else if ( attrs.size() != 0 )
@@ -792,7 +794,6 @@ public class ValidateMBeansCmd extends JMXCmd
 			targets	= new String[] { "*" };
 		}
 		
-		
 		mPrintWarnings	= getBoolean( WARNINGS_OFF_OPTION.getShortName(), Boolean.FALSE ).booleanValue();
 			
 		establishProxy();
@@ -811,6 +812,30 @@ public class ValidateMBeansCmd extends JMXCmd
 		{
 			println( "No MBeans to validate." );
 		}
+        
+        try
+        {
+            println( "" );
+            
+            final AMXValidator validator = new AMXValidator( getConnection(), "FULL", false );
+            final Set<ObjectName> amxSet = validator.filterAMX( SetUtil.newSet(objectNames) );
+            //final Set<ObjectName> amxSet = validator.findAllAMXCompliant();
+            
+            println("Validating " + amxSet.size() + " AMX MBeans..." );
+            final AMXValidator.ValidationResult result = validator.validate(amxSet);
+            
+            println( "Success:  " + (result.numTested() - result.numFailures()) );
+            println( "Failures: " + result.numFailures() );
+            if ( result.numFailures() != 0)
+            {
+                println( result.toString() );
+                println( "*** FAILURES FOUND ***" );
+            }
+        }
+        catch( final Throwable t )
+        {
+            t.printStackTrace();
+        }
 	}
 }
 
