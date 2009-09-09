@@ -44,9 +44,9 @@ import java.net.*;
 public class SimpleBVServletTestNG {
 
     private static final String TEST_NAME =
-        "bv-servlet-simple";
+        "bv-integration-test-servlet";
    
-    private String strContextRoot="simple-bv-servlet";
+    private String strContextRoot="integration-test-servlet";
 
     static String result = "";
     String host=System.getProperty("http.host");
