@@ -52,7 +52,7 @@ import java.io.File;
 public class StartServerTask extends Task {
 
     String serverID = Constants.DEFAULT_SERVER_ID;
-    int port = Constants.DEFAULT_HTTP_PORT;
+    int port = -1;
     String installRoot = null, instanceRoot = null, configFile = null;
     ContainerBuilder.Type type = ContainerBuilder.Type.all;
 
@@ -90,14 +90,17 @@ public class StartServerTask extends Task {
             }
             else {
                 server = builder.build();
-                server.createPort(port);
             }
+            if (port != -1)
+                server.createPort(port);
 
             server.addContainer(type);
+
             ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
             for (EmbeddedContainer c : server.getContainers()) {
                 sniffers.addAll(c.getSniffers());
             }
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -105,27 +108,25 @@ public class StartServerTask extends Task {
 
 
     EmbeddedFileSystem getFileSystem() {
-        if (installRoot == null)
+        if (installRoot == null && instanceRoot == null && configFile == null)
             return null;
-        File instance;
-        if (instanceRoot == null) {
-            instance = new File(installRoot, "domains");
-            instance = new File(instance, "domain1");
+
+        if (instanceRoot == null && installRoot != null) {
+            instanceRoot = installRoot + "/domains/domain1";
         }
-        else
-            instance = new File(instanceRoot);
-        File config;
-        if (configFile == null)  {
-            config = new File(instance,"config");
-            config = new File(config, "domain.xml");
+
+        if (configFile == null && instanceRoot != null) {
+            configFile = instanceRoot + "/config/domain.xml";
         }
-        else
-            config = new File(configFile);
 
         EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-        efsb.setInstallRoot(new File(installRoot), true);
-        efsb.setInstanceRoot(instance);
-        efsb.setConfigurationFile(config);
+        if (installRoot != null)
+            efsb.setInstallRoot(new File(installRoot), true);
+        if (instanceRoot != null)
+            efsb.setInstanceRoot(new File(instanceRoot));
+        if (configFile != null)
+            efsb.setConfigurationFile(new File(configFile));
+
         return efsb.build();
     }
 
