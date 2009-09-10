@@ -40,7 +40,7 @@ import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.ChildGetter;
 import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
 
 /**

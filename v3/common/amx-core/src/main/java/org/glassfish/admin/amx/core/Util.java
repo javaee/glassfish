@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.ClassUtil;
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
 import static org.glassfish.external.amx.AMX.*;
 

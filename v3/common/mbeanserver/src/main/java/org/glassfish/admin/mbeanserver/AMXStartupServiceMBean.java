@@ -26,7 +26,7 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 
 import org.glassfish.api.amx.AMXLoader;
-import org.glassfish.api.amx.AMXUtil;
+import org.glassfish.external.amx.AMXUtil;
 
 import org.jvnet.hk2.annotations.Contract;
 

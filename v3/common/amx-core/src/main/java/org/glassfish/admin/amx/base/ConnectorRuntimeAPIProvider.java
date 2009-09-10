@@ -45,7 +45,7 @@ import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
 /**
 @since GlassFish V3

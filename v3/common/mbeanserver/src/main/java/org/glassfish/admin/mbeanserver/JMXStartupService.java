@@ -43,7 +43,7 @@ import javax.management.ObjectName;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
 
-import org.glassfish.api.amx.BootAMXMBean;
+import org.glassfish.external.amx.BootAMXMBean;
 
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;

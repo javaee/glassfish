@@ -45,7 +45,7 @@ import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
 /**
 Provides various routines for system status.

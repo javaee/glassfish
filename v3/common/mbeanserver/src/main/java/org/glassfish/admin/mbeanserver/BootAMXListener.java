@@ -39,7 +39,7 @@ import javax.management.Notification;
 import javax.management.NotificationListener;
 import javax.management.ListenerNotFoundException;
 
-import org.glassfish.api.amx.BootAMXMBean;
+import org.glassfish.external.amx.BootAMXMBean;
 
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectionNotification;

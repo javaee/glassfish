@@ -73,7 +73,8 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.component.Habitat;
 
 import org.glassfish.admin.amx.impl.util.InjectedValues;
-import org.glassfish.api.amx.BootAMXMBean;
+
+import org.glassfish.external.amx.AMXGlassfish;
 
 
 import org.glassfish.api.admin.AdminCommandContext;
@@ -84,7 +85,6 @@ import com.sun.enterprise.v3.admin.commands.JVMInformation;
 import javax.management.MBeanServer;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.util.StringUtil;
-import org.glassfish.external.amx.AMXGlassfish;
 
 /**
 AMX RealmsMgr implementation.
@@ -315,7 +315,8 @@ public final class RuntimeRootImpl extends AMXImplBase
     {
         try
         {
-            final JMXServiceURL[] items = (JMXServiceURL[])getMBeanServer().getAttribute(BootAMXMBean.OBJECT_NAME, "JMXServiceURLs");
+            final AMXGlassfish amxg = AMXGlassfish.DEFAULT;
+            final JMXServiceURL[] items = (JMXServiceURL[])getMBeanServer().getAttribute(amxg.getBootAMXMBeanObjectName(), "JMXServiceURLs");
             final String [] urls = new String[ items.length ];
             for( int i = 0; i < items.length; ++i )
             {

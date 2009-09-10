@@ -43,7 +43,7 @@ import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
 /**
 Interface for a sample MBean , used as target for sample and test code.

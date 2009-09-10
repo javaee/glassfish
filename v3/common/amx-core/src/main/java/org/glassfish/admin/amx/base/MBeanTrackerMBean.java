@@ -5,7 +5,7 @@ import javax.management.ObjectName;
 
 import java.util.Set;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 import org.glassfish.external.amx.AMXGlassfish;
 
 import org.glassfish.admin.amx.util.jmx.JMXUtil;

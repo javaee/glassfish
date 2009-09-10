@@ -45,7 +45,7 @@ import org.glassfish.admin.amx.annotation.Param;
 import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
 /**
     Server-side helper methods for config MBeans.

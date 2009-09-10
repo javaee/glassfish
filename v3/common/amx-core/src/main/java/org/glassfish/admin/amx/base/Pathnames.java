@@ -45,7 +45,7 @@ import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.PathnameConstants;
 import org.glassfish.admin.amx.core.PathnameParser;
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
 /**
     The Pathnames MBean--utilities for working with pathnames and MBeans.

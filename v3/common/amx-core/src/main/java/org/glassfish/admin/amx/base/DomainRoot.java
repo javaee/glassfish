@@ -44,7 +44,7 @@ import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
 import org.glassfish.admin.amx.core.PathnameConstants;
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 import org.glassfish.admin.amx.logging.Logging;
 
 

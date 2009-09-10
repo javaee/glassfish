@@ -28,7 +28,7 @@ import org.glassfish.admin.amx.base.RuntimeRoot;
 import org.glassfish.admin.amx.base.ConnectorRuntimeAPIProvider;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.api.amx.AMXBooter;
+import org.glassfish.external.amx.AMXGlassfish;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.intf.config.AMXConfigHelper;
 import org.glassfish.admin.amx.intf.config.Application;
@@ -88,7 +88,7 @@ public class V3AMX {
             if (mbs == null){
                 System.out.println("!!!!!!!!!!!!!!  Cannot get to MBeanServer");
             }
-            AMXBooter.bootAMX(mbs);
+            AMXGlassfish.DEFAULT.bootAMX(mbs);
             DomainRoot domainRoot = ProxyFactory.getInstance(mbs).getDomainRootProxy();
             v3amx = new V3AMX( domainRoot, mbs);
 	}

@@ -13,7 +13,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import javax.management.ObjectName;
 import javax.management.MBeanServer;
-import org.glassfish.api.amx.MBeanListener;
+
+
 import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
@@ -33,10 +34,10 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 import org.glassfish.admin.monitor.StatsProviderRegistry.StatsProviderRegistryElement;
 
+import org.glassfish.external.amx.MBeanListener;
 import org.glassfish.external.amx.AMXGlassfish;
 import static org.glassfish.external.amx.AMX.*;
 
-import org.glassfish.api.amx.AMXUtil;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
 
@@ -587,7 +588,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     public ObjectName getObjectName(Object statsProvider, String subTreePath) {
         String typeValue = getTypeValue(statsProvider);
         String nameValue = getNameValue(subTreePath);
-        return AMXUtil.newObjectName(PARENT_PATH, typeValue, nameValue);
+        return AMXGlassfish.DEFAULT.newObjectName(PARENT_PATH, typeValue, nameValue);
     }
 
     public String getTypeValue(Object statsProvider) {

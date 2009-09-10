@@ -44,7 +44,7 @@ import javax.ejb.SessionContext;
 import javax.management.*;
 import javax.management.j2ee.ListenerRegistration;
 
-import org.glassfish.api.amx.AMXBooter;
+import org.glassfish.external.amx.AMXGlassfish;
 
 /**
  * @ejbHome <{org.glassfish.admin.mejb.MEJBHome}>
@@ -77,7 +77,7 @@ public final class MEJBBean implements SessionBean
     }
 
     public void ejbCreate() throws CreateException {
-        final ObjectName domainRoot = AMXBooter.bootAMX(mbeanServer);
+        final ObjectName domainRoot = AMXGlassfish.DEFAULT.bootAMX(mbeanServer);
         
         if ( domainRoot == null )
         {

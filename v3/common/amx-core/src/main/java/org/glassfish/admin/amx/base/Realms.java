@@ -40,7 +40,7 @@ import java.util.Map;
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.annotation.*;
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
 

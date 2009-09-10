@@ -35,7 +35,7 @@
  */ 
 package org.glassfish.admin.amx.j2ee;
 
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
 
 @AMXMBeanMetadata(type=J2EETypes.JNDI_RESOURCE, leaf=true)

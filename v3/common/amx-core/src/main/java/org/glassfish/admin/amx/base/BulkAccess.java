@@ -44,7 +44,7 @@ import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
 
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
 /**
 Bulk access to various JMX constructs. The term "bulk" refers to the fact the multiple

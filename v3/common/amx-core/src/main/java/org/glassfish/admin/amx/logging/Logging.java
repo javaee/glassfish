@@ -37,7 +37,7 @@ package org.glassfish.admin.amx.logging;
 
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 import java.util.Map;
 import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;

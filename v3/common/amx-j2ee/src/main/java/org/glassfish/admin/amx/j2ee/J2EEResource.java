@@ -39,7 +39,7 @@ package org.glassfish.admin.amx.j2ee;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
 
 /**

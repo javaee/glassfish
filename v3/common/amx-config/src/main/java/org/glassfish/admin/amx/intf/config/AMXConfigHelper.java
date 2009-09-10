@@ -13,7 +13,6 @@ import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.admin.amx.config.AMXConfigConstants;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
-import org.jvnet.hk2.config.Units;
 import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
 
 /**
@@ -56,7 +55,8 @@ public class AMXConfigHelper
      */
     public Set<String> simpleAttributes()
     {
-        final String elementKind = org.jvnet.hk2.config.Element.class.getName();
+        //final String elementKind = Element.class.getName();
+        final String elementKind = "element";
         final Set<String> elementNames = attributeNamesByDescriptorField(DESC_KIND, elementKind);
         final Set<String> remaining = mAMX.attributeNames();
         remaining.removeAll(elementNames);
@@ -96,7 +96,6 @@ public class AMXConfigHelper
     /**
     Return the units (if any) for the specified attribute.
      * @param attrName
-    @see Units
      */
     public String units(final String attrName)
     {

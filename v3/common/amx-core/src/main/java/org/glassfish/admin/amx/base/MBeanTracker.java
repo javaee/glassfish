@@ -15,7 +15,7 @@ import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 import org.glassfish.external.amx.AMX;
 import org.glassfish.external.amx.AMXGlassfish;
 

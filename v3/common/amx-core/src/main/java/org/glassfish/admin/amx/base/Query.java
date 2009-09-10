@@ -49,7 +49,7 @@ import org.glassfish.external.arc.Stability;
 
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
 /**
 Supports various types of queries to find MBeans in the AMX domain only; does not

@@ -24,15 +24,12 @@ package org.glassfish.admin.amx.impl;
 
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
-import org.glassfish.api.amx.AMXUtil;
 
 import org.glassfish.admin.amx.util.TimingDelta;
 import org.glassfish.admin.amx.util.FeatureAvailability;
 import org.glassfish.admin.amx.impl.util.SingletonEnforcer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-
-import org.glassfish.api.amx.MBeanListener;
 
 import javax.management.JMException;
 import javax.management.MBeanServer;
@@ -62,7 +59,10 @@ import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.admin.mbeanserver.AMXStartupServiceMBean;
 import org.glassfish.api.amx.AMXLoader;
 import org.jvnet.hk2.component.Habitat;
-import org.glassfish.api.amx.BootAMXMBean;
+
+import org.glassfish.external.amx.BootAMXMBean;
+import org.glassfish.external.amx.AMXGlassfish;
+import org.glassfish.external.amx.MBeanListener;
 
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
@@ -174,7 +174,7 @@ public final class AMXStartupService
     {
         try
         {
-            return (JMXServiceURL[]) mMBeanServer.getAttribute(BootAMXMBean.OBJECT_NAME, "JMXServiceURLs");
+            return (JMXServiceURL[]) mMBeanServer.getAttribute(AMXGlassfish.DEFAULT.getBootAMXMBeanObjectName(), "JMXServiceURLs");
         }
         catch (final JMException e)
         {
@@ -218,8 +218,9 @@ public final class AMXStartupService
 
     public ObjectName loadAMXMBeans()
     {
-        ObjectName objectName = AMXUtil.findDomainRoot(mMBeanServer);
-        if (objectName == null)
+System.out.println( "AMXStartupService.loadAMXMBeans:  ENTER" );
+        ObjectName objectName = AMXGlassfish.DEFAULT.domainRoot();
+        if ( ! mMBeanServer.isRegistered(objectName) )
         {
             try
             {
@@ -338,9 +339,10 @@ public final class AMXStartupService
     public synchronized ObjectName _loadAMXMBeans()
     {
         // self-check important MBeans
-        final MBeanListener<MyListener> bootAMXListener = MBeanListener.listenForBootAMX(mMBeanServer, new MyListener() );
+        final AMXGlassfish amxg = AMXGlassfish.DEFAULT;
+        final MBeanListener<MyListener> bootAMXListener = amxg.listenForBootAMX(mMBeanServer, new MyListener() );
         
-        final MBeanListener<MyListener> domainRootListener = MBeanListener.listenForDomainRoot(mMBeanServer, new MyListener() );
+        final MBeanListener<MyListener> domainRootListener = amxg.listenForDomainRoot(mMBeanServer, new MyListener() );
         
         // loads the high-level AMX MBeans, like DomainRoot, QueryMgr, etc
         loadDomainRoot();

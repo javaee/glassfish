@@ -34,7 +34,8 @@ import javax.management.StandardMBean;
 import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 
-import org.glassfish.api.amx.BootAMXMBean;
+import org.glassfish.external.amx.BootAMXMBean;
+import org.glassfish.external.amx.AMXGlassfish;
 
 /**
 The MBean implementation for BootAMXMBean.
@@ -61,7 +62,7 @@ final class BootAMX implements BootAMXMBean
     {
         mHabitat = habitat;
         mMBeanServer = mbeanServer;
-        mObjectName = BootAMXMBean.OBJECT_NAME;
+        mObjectName = getBootAMXMBeanObjectName();
         mDomainRootObjectName = null;
 
         if (mMBeanServer.isRegistered(mObjectName))
@@ -70,6 +71,11 @@ final class BootAMX implements BootAMXMBean
         }
     }
 
+    public static ObjectName getBootAMXMBeanObjectName()
+    {
+        return AMXGlassfish.DEFAULT.getBootAMXMBeanObjectName();
+    }
+    
 
     /**
     Create an instance of the booter.
@@ -77,7 +83,7 @@ final class BootAMX implements BootAMXMBean
     public static synchronized BootAMX create(final Habitat habitat, final MBeanServer server)
     {
         final BootAMX booter = new BootAMX(habitat, server);
-        final ObjectName objectName = booter.OBJECT_NAME;
+        final ObjectName objectName = getBootAMXMBeanObjectName();
 
         try
         {
@@ -125,18 +131,17 @@ final class BootAMX implements BootAMXMBean
             final AMXStartupServiceMBean loader = getLoader();
 
             //debug( "Got loader for AMXStartupServiceMBean: " + loader );
-            //debug( "Booter.bootAMX: assuming that amx-impl loads through other means" );
 
             final ObjectName startupON = AMXStartupServiceMBean.OBJECT_NAME;
             if (!mMBeanServer.isRegistered(startupON))
             {
-                debug("Booter.bootAMX(): AMX MBean not yet available: " + startupON);
+                //debug("Booter.bootAMX(): AMX MBean not yet available: " + startupON);
                 throw new IllegalStateException("AMX MBean not yet available: " + startupON);
             }
 
             try
             {
-                //debug( "Booter.bootAMX: invoking startAMX() on " + startupON);
+                //debug( "Booter.bootAMX: invoking loadAMXMBeans() on " + startupON);
                 mDomainRootObjectName = (ObjectName) mMBeanServer.invoke(startupON, "loadAMXMBeans", null, null);
                 //debug( "Booter.bootAMX: domainRoot = " + mDomainRootObjectName);
             }

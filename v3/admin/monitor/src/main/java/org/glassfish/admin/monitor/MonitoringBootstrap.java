@@ -37,7 +37,9 @@ import java.util.WeakHashMap;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.StringTokenizer;
-import org.glassfish.api.amx.MBeanListener;
+
+import org.glassfish.external.amx.AMXGlassfish;
+
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
@@ -141,7 +143,8 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         printd(" StatsProviderManagerDelegate is assigned ********************");
 
         // Register listener for AMX DomainRoot loaded
-        MBeanListener.listenForDomainRoot(ManagementFactory.getPlatformMBeanServer(), spmd);
+        final AMXGlassfish amxg = AMXGlassfish.DEFAULT;
+        amxg.listenForDomainRoot(ManagementFactory.getPlatformMBeanServer(), spmd);
     }
 
     public void moduleResolved(Module module) {

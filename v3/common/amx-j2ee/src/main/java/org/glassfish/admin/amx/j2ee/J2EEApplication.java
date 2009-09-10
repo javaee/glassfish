@@ -36,7 +36,7 @@
 package org.glassfish.admin.amx.j2ee;
 
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
 @AMXMBeanMetadata(type = J2EETypes.J2EE_APPLICATION)
 public interface J2EEApplication extends J2EEDeployedObject
