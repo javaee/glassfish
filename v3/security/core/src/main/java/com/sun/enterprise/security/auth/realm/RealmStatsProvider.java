@@ -11,6 +11,7 @@ import org.glassfish.gmbal.*;
  *
  * @author nithyasubramanian
  */
+@AMXMetadata(type="security-realm-mon", group="monitoring", isSingleton=false)
 @ManagedObject
 @Description( "Security Realm Statistics" )
 public class RealmStatsProvider {

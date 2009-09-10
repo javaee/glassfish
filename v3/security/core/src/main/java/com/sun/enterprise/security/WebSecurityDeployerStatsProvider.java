@@ -10,6 +10,7 @@ import org.glassfish.external.statistics.TimeStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.external.statistics.impl.TimeStatisticImpl;
 import org.glassfish.gmbal.Description;
+import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
@@ -19,6 +20,7 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
  *
  * @author nithyasubramanian
  */
+@AMXMetadata(type="web-security-deployer-mon", group="monitoring", isSingleton=false)
 @ManagedObject
 @Description( "Web application Security Deployment statistics" )
 public class WebSecurityDeployerStatsProvider {

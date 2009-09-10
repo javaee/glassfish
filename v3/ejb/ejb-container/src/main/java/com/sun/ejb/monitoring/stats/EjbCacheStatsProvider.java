@@ -53,7 +53,9 @@ import org.glassfish.gmbal.*;
  * @author Marina Vatkina
  */
 // TODO: find the right names
-//@AMXMetadata(type="ejb-cache-mon", group="monitoring", isSingleton=false)
+// v2: com.sun.appserv:application=__ejb_container_timer_app,name=bean-cache,type=bean-cache,category=monitor,ejb-module=ejb_jar,entity-bean=TimerBean,server=server
+// v3: amx:pp=/mon/server-mon[server],type=bean-cache-mon,name=??????????
+@AMXMetadata(type="bean-cache-mon", group="monitoring", isSingleton=false)
 @ManagedObject
 @Description("Bean Cache Statistics")
 public class EjbCacheStatsProvider {

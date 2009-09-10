@@ -59,7 +59,7 @@ import com.sun.ejb.containers.EjbContainerUtilImpl;
  * @author Marina Vatkina
  */
 // TODO: find the right names
-//@AMXMetadata(type="ejb-application-mon", group="monitoring", isSingleton=false)
+@AMXMetadata(type="ejb-application-mon", group="monitoring", isSingleton=false)
 @ManagedObject
 @Description("Ejb Application Statistics")
 public class EjbMonitoringStatsProvider {

@@ -57,7 +57,9 @@ import com.sun.ejb.containers.EjbContainerUtilImpl;
  * @author Marina Vatkina
  */
 // TODO: find the right names
-//@AMXMetadata(type="ejb-method-mon", group="monitoring", isSingleton=false)
+// v2: com.sun.appserv:application=MEjbApp,name=getEJBHome,type=bean-method,category=monitor,ejb-module=mejb_jar,server=server,stateless-session-bean=MEJBBean
+// v3: amx:pp=/mon/server-mon[server],type=bean-method-mon,name=??????????
+@AMXMetadata(type="bean-method-mon", group="monitoring", isSingleton=false)
 @ManagedObject
 @Description("Ejb Method Statistics")
 public class EjbMethodStatsProvider {

@@ -46,7 +46,7 @@
 <event>
     <!beforeCreate
         getChildrenByType(parentObjectNameStr="amx:pp=/domain,type=applications" type="application" result="#{pageSession.tmpList}");
-        getProxyNamesByType(type="LoginStatsProvider" result="#{pageSession.loginList}" firstItem="#{pageSession.firstLogin}");
+        getProxyNamesByType(type="login-mon" result="#{pageSession.loginList}" firstItem="#{pageSession.firstLogin}");
         addListToApplications(oldList="#{pageSession.loginList}", newList="#{pageSession.tmpList}"  result="#{pageSession.appList}");
         if(!#{appVal}) {
             getFirstValueFromList(values="#{pageSession.appList}" firstValue="#{pageSession.firstApp}");
@@ -105,7 +105,7 @@
     <sun:tableRowGroup id="servlets" rendered="#{hasStatsSS}" data={"$attribute{servletList}"}  sourceVar="td" headerText="$resource{web.monitoring.servletStatisticsWeb} : #{appVal}"
         groupToggleButton="$boolean{true}" collapsed="#{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="ServletStatsProvider" name="#{appName}", result=>$attribute{servletList}  hasStats=>$attribute{hasStatsSS});
+            getStatsbyTypeName(type="servlet-mon" name="#{appName}", result=>$attribute{servletList}  hasStats=>$attribute{hasStatsSS});
         
          />        
 #include "/web/monitor/monitoringTableRows.inc"  
@@ -115,7 +115,7 @@
     <sun:tableRowGroup id="session" rendered="#{hasStatsSSP}" data={"$attribute{sessionList}"}  sourceVar="td" headerText="$resource{web.monitoring.sessionStatisticsWeb} : #{appVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="SessionStatsProvider" name="#{appName}", result=>$attribute{sessionList}  hasStats=>$attribute{hasStatsSSP});
+            getStatsbyTypeName(type="session-mon" name="#{appName}", result=>$attribute{sessionList}  hasStats=>$attribute{hasStatsSSP});
         
          />  
                         
@@ -125,7 +125,7 @@
     <sun:tableRowGroup id="requestStats" rendered="#{hasStatsWR}" data={"$attribute{requestStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.requestStatisticsWeb} : #{appVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="WebRequestStatsProvider" name="#{appName}", result=>$attribute{requestStatsList}  hasStats=>$attribute{hasStatsWR});
+            getStatsbyTypeName(type="web-request-mon" name="#{appName}", result=>$attribute{requestStatsList}  hasStats=>$attribute{hasStatsWR});
         
          />  
                         
@@ -135,7 +135,7 @@
     <sun:tableRowGroup id="jspStats" rendered="#{hasStatsJSP}" data={"$attribute{jspStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jspStatisticsWeb} : #{appVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="JspStatsProvider" name="#{appName}", result=>$attribute{jspStatsList}  hasStats=>$attribute{hasStatsJSP});
+            getStatsbyTypeName(type="jsp-mon" name="#{appName}", result=>$attribute{jspStatsList}  hasStats=>$attribute{hasStatsJSP});
         
          />  
                         
@@ -146,7 +146,7 @@
     <sun:tableRowGroup id="servletsWeb" rendered="#{hasStatsWSS}" data={"$attribute{servletWebList}"}  sourceVar="td" headerText="$resource{web.monitoring.servletStatisticsWeb} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="ServletStatsProvider" name="web/servlet", result=>$attribute{servletWebList}  hasStats=>$attribute{hasStatsWSS});
+            getStatsbyTypeName(type="servlet-mon" name="web/servlet", result=>$attribute{servletWebList}  hasStats=>$attribute{hasStatsWSS});
         
          />        
 #include "/web/monitor/monitoringTableRows.inc"  
@@ -156,7 +156,7 @@
     <sun:tableRowGroup id="sessionWeb" rendered="#{hasStatsWSSP}" data={"$attribute{sessionWebList}"}  sourceVar="td" headerText="$resource{web.monitoring.sessionStatisticsWeb} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="SessionStatsProvider" name="web/session", result=>$attribute{sessionWebList}  hasStats=>$attribute{hasStatsWSSP});
+            getStatsbyTypeName(type="session-mon" name="web/session", result=>$attribute{sessionWebList}  hasStats=>$attribute{hasStatsWSSP});
         
          />  
                         
@@ -166,7 +166,7 @@
     <sun:tableRowGroup id="requestWebStats" rendered="#{hasStatsWRS}" data={"$attribute{requestWebStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.requestStatisticsWeb}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="WebRequestStatsProvider" name="web/request", result=>$attribute{requestWebStatsList}  hasStats=>$attribute{hasStatsWRS});
+            getStatsbyTypeName(type="web-request-mon" name="web/request", result=>$attribute{requestWebStatsList}  hasStats=>$attribute{hasStatsWRS});
         
          />  
                         
@@ -176,7 +176,7 @@
     <sun:tableRowGroup id="jspWebStats" rendered="#{hasStatsJsp}" data={"$attribute{jspWebStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jspStatisticsWeb}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="JspStatsProvider" name="web/jsp", result=>$attribute{jspWebStatsList}  hasStats=>$attribute{hasStatsJsp});
+            getStatsbyTypeName(type="jsp-mon" name="web/jsp", result=>$attribute{jspWebStatsList}  hasStats=>$attribute{hasStatsJsp});
         
          />  
                         
@@ -216,7 +216,7 @@
     <sun:tableRowGroup id="wmStats" rendered="#{hasStatsWMS}" data={"$attribute{wmStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.WorkManagementStats} : #{appVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="WorkManagementStatsProvider" name="connector-service/#{appVal}/work-management", result=>$attribute{wmStatsList}  hasStats=>$attribute{hasStatsWMS});
+            getStatsbyTypeName(type="connector-service-mon" name="connector-service/#{appVal}/work-management", result=>$attribute{wmStatsList}  hasStats=>$attribute{hasStatsWMS});
         
          />  
                         
@@ -226,7 +226,7 @@
         <sun:tableRowGroup id="loginStats" rendered="#{hasStatsLogin}" data={"$attribute{loginStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.LoginStats} : #{appVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="LoginStatsProvider" name="webintegration/#{appVal}", result=>$attribute{loginStatsList}  hasStats=>$attribute{hasStatsLogin});
+            getStatsbyTypeName(type="login-mon" name="webintegration/#{appVal}", result=>$attribute{loginStatsList}  hasStats=>$attribute{hasStatsLogin});
 
          />
 
@@ -236,7 +236,7 @@
         <sun:tableRowGroup id="webSecurity" rendered="#{hasStatsWSD}" data={"$attribute{webSecurityStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.webSecurityStats}"
             groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="WebSecurityDeployerStatsProvider" name="web", result=>$attribute{webSecurityStatsList}  hasStats=>$attribute{hasStatsWSD});
+            getStatsbyTypeName(type="web-security-deployer-mon" name="web", result=>$attribute{webSecurityStatsList}  hasStats=>$attribute{hasStatsWSD});
         
          />  
                         

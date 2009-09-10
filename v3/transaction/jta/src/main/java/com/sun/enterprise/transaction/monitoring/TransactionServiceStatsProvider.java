@@ -56,7 +56,7 @@ import com.sun.enterprise.transaction.api.TransactionAdminBean;
  *
  * @author Marina Vatkina
  */
-//@AMXMetadata(type="transaction-service-mon", group="monitoring", isSingleton=true)
+@AMXMetadata(type="transaction-service-mon", group="monitoring")
 @ManagedObject
 @Description("Transaction Service Statistics")
 public class TransactionServiceStatsProvider {

@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.connectors.work.monitor;
 
+import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.ManagedObject;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
@@ -51,6 +52,7 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
  *
  * @author Jagadish Ramu
  */
+@AMXMetadata(type="connector-service-mon", group="monitoring")
 @ManagedObject
 @Description("Connector Container Work Management Statistics")
 public class WorkManagementStatsProvider {

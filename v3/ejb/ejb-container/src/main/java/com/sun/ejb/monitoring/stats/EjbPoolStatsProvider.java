@@ -53,7 +53,9 @@ import org.glassfish.gmbal.*;
  * @author Marina Vatkina
  */
 // TODO: find the right names
-//@AMXMetadata(type="ejb-pool-mon", group="monitoring", isSingleton=false)
+// v2: com.sun.appserv:application=MEjbApp,name=bean-pool,type=bean-pool,category=monitor,ejb-module=mejb_jar,server=server,stateless-session-bean=MEJBBean
+// v3: amx:pp=/mon/server-mon[server],type=bean-pool-mon,name=??????????
+@AMXMetadata(type="bean-pool-mon", group="monitoring", isSingleton=false)
 @ManagedObject
 @Description("Bean Pool Statistics")
 public class EjbPoolStatsProvider {

@@ -39,13 +39,17 @@ package org.glassfish.admin.monitor.jvm;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.util.List;
+import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
 
 /* jvm.garbage-collectors */
-//@AMXMetadata(type="garbage-collector-mon", group="monitoring")
+// v2 mbean: com.sun.appserv:name=Copy,type=garbage-collector,category=monitor,server=server
+// v3 mbean:
+@AMXMetadata(type="garbage-collector-mon", group="monitoring")
 @ManagedObject
 @Description( "JVM Garbage Collectors Statistics" )
 public class JVMGCStatsProvider {
@@ -53,33 +57,45 @@ public class JVMGCStatsProvider {
     private List<GarbageCollectorMXBean> gcBeanList = ManagementFactory.getGarbageCollectorMXBeans();
     private String gcName = null;
 
+    private CountStatisticImpl collectionCount = new CountStatisticImpl(
+            "CollectionCount", CountStatisticImpl.UNIT_COUNT,
+                "Total number of collections that have occurred" );
+
+    private CountStatisticImpl collectionTimeCount = new CountStatisticImpl(
+            "CollectionTime", CountStatisticImpl.UNIT_MILLISECOND,
+                "Approximate accumulated collection elapsed time in milliseconds" );
+
     public JVMGCStatsProvider(String gcName) {
         this.gcName = gcName;
     }
 
     @ManagedAttribute(id="collectioncount-count")
     @Description( "total number of collections that have occurred" )
-    public long getCollectionCount() {
+    public CountStatistic getCollectionCount() {
         long counts = -1;
         for (GarbageCollectorMXBean gcBean : gcBeanList) {
             if (gcBean.getName().equals(gcName)) {
                 counts = gcBean.getCollectionCount();
             }
         }
-        return counts;
+        collectionCount.setCount(counts);
+        collectionCount.setLastSampleTime(System.currentTimeMillis());
+        return collectionCount;
     }
 
     @ManagedAttribute(id="collectiontime-count")
     @Description( "approximate accumulated collection elapsed time in milliseconds" )
-    public long getCollectionTime() {
+    public CountStatistic getCollectionTime() {
         long times = -1;
-            int i = 0;
-            for (GarbageCollectorMXBean gcBean : gcBeanList) {
-                if (gcBean.getName().equals(gcName)) {
-                    times = gcBean.getCollectionTime();
-                }
+        int i = 0;
+        for (GarbageCollectorMXBean gcBean : gcBeanList) {
+            if (gcBean.getName().equals(gcName)) {
+                times = gcBean.getCollectionTime();
             }
-        return times;
+        }
+        collectionTimeCount.setCount(times);
+        collectionTimeCount.setLastSampleTime(System.currentTimeMillis());
+        return collectionTimeCount;
     }
 
 }

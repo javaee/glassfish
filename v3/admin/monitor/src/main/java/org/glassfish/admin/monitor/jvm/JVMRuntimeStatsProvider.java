@@ -39,94 +39,173 @@ package org.glassfish.admin.monitor.jvm;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.List;
+import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.impl.CountStatisticImpl;
+import org.glassfish.external.statistics.StringStatistic;
+import org.glassfish.external.statistics.impl.StringStatisticImpl;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
 
 /* jvm.runtime */
-//@AMXMetadata(type="runtime-mon", group="monitoring", isSingleton=true)
+// v2 mbean: com.sun.appserv:name=runtime,type=runtime,category=monitor,server=server
+// v3 mbean:
+@AMXMetadata(type="runtime-mon", group="monitoring")
 @ManagedObject
 @Description( "JVM Runtime Statistics" )
 public class JVMRuntimeStatsProvider {
     
     private RuntimeMXBean rtBean = ManagementFactory.getRuntimeMXBean();
 
+    private StringStatisticImpl bootClassPath = new StringStatisticImpl("BootClassPath", "String",
+                "Boot class path that is used by the bootstrap class loader to search for class files" );
+    private StringStatisticImpl classPath = new StringStatisticImpl("ClassPath", "String",
+                "Java class path that is used by the system class loader to search for class files" );
+    private StringStatisticImpl inputArguments = new StringStatisticImpl("InputArguments", "String",
+                "Input arguments passed to the Java virtual machine which does not include the arguments to the main method" );
+    private StringStatisticImpl libraryPath = new StringStatisticImpl("LibraryPath", "String",
+                "Java library path" );
+    private StringStatisticImpl mgmtSpecVersion = new StringStatisticImpl("ManagementSpecVersion", "String",
+                "Version of the specification for the management interface implemented by the running Java virtual machine" );
+    private StringStatisticImpl runtimeName = new StringStatisticImpl("Name", "String",
+                "Name representing the running Java virtual machine" );
+    private StringStatisticImpl specName = new StringStatisticImpl("SpecName", "String",
+                "Java virtual machine specification name" );
+    private StringStatisticImpl specVendor = new StringStatisticImpl("SpecVendor", "String",
+                "Java virtual machine specification vendor" );
+    private StringStatisticImpl specVersion = new StringStatisticImpl("SpecVersion", "String",
+                "Java virtual machine specification version" );
+    private CountStatisticImpl uptime = new CountStatisticImpl("Uptime", CountStatisticImpl.UNIT_MILLISECOND,
+            "Uptime of the Java virtual machine in milliseconds");
+    private StringStatisticImpl vmName = new StringStatisticImpl("VmName", "String",
+                "Java virtual machine implementation name" );
+    private StringStatisticImpl vmVendor = new StringStatisticImpl("VmVendor", "String",
+                "Java virtual machine implementation vendor" );
+    private StringStatisticImpl vmVersion = new StringStatisticImpl("VmVersion", "String",
+                "Java virtual machine implementation version" );
+
     @ManagedAttribute(id="bootclasspath-current")
     @Description( "boot class path that is used by the bootstrap class loader to search for class files" )
-    public String getBootClassPath() {
-        return rtBean.getBootClassPath();
+    public StringStatistic getBootClassPath() {
+        bootClassPath.setCurrent(rtBean.getBootClassPath());
+        bootClassPath.setStartTime(rtBean.getStartTime());
+        bootClassPath.setLastSampleTime(System.currentTimeMillis());
+        return bootClassPath;
     }
 
     @ManagedAttribute(id="classpath-current")
     @Description( "Java class path that is used by the system class loader to search for class files" )
-    public String getClassPath() {
-        return rtBean.getClassPath();
+    public StringStatistic getClassPath() {
+        classPath.setCurrent(rtBean.getClassPath());
+        classPath.setStartTime(rtBean.getStartTime());
+        classPath.setLastSampleTime(System.currentTimeMillis());
+        return classPath;
     }
 
     @ManagedAttribute(id="inputarguments-current")
     @Description( "input arguments passed to the Java virtual machine which does not include the arguments to the main method" )
-    public List<String> getInputArguments() {
-        return rtBean.getInputArguments();
+    public StringStatistic getInputArguments() {
+        List<String> inputList = rtBean.getInputArguments();
+        StringBuffer sb = new StringBuffer();
+        for (String arg : inputList) {
+            sb.append(arg);
+            sb.append(", ");
+        }
+        String finalString = sb.substring(0, sb.lastIndexOf(","));
+        inputArguments.setCurrent(finalString);
+        inputArguments.setStartTime(rtBean.getStartTime());
+        inputArguments.setLastSampleTime(System.currentTimeMillis());
+        return inputArguments;
     }
 
     @ManagedAttribute(id="librarypath-current")
     @Description( "Java library path" )
-    public String getLibraryPath() {
-        return rtBean.getLibraryPath();
+    public StringStatistic getLibraryPath() {
+        libraryPath.setCurrent(rtBean.getLibraryPath());
+        libraryPath.setStartTime(rtBean.getStartTime());
+        libraryPath.setLastSampleTime(System.currentTimeMillis());
+        return libraryPath;
     }
 
     @ManagedAttribute(id="managementspecversion-current")
     @Description( "version of the specification for the management interface implemented by the running Java virtual machine" )
-    public String getManagementSpecVersion() {
-        return rtBean.getManagementSpecVersion();
+    public StringStatistic getManagementSpecVersion() {
+        mgmtSpecVersion.setCurrent(rtBean.getManagementSpecVersion());
+        mgmtSpecVersion.setStartTime(rtBean.getStartTime());
+        mgmtSpecVersion.setLastSampleTime(System.currentTimeMillis());
+        return mgmtSpecVersion;
     }
 
     @ManagedAttribute(id="name-current")
     @Description( "name representing the running Java virtual machine" )
-    public String getRuntimeName() {
-        return rtBean.getName();
+    public StringStatistic getRuntimeName() {
+        runtimeName.setCurrent(rtBean.getName());
+        runtimeName.setStartTime(rtBean.getStartTime());
+        runtimeName.setLastSampleTime(System.currentTimeMillis());
+        return runtimeName;
     }
 
     @ManagedAttribute(id="specname-current")
     @Description( "Java virtual machine specification name" )
-    public String getSpecName() {
-        return rtBean.getSpecName();
+    public StringStatistic getSpecName() {
+        specName.setCurrent(rtBean.getSpecName());
+        specName.setStartTime(rtBean.getStartTime());
+        specName.setLastSampleTime(System.currentTimeMillis());
+        return specName;
     }
 
     @ManagedAttribute(id="specvendor-current")
     @Description( "Java virtual machine specification vendor" )
-    public String getSpecVendor() {
-        return rtBean.getSpecVendor();
+    public StringStatistic getSpecVendor() {
+        specVendor.setCurrent(rtBean.getSpecVendor());
+        specVendor.setStartTime(rtBean.getStartTime());
+        specVendor.setLastSampleTime(System.currentTimeMillis());
+        return specVendor;
     }
 
     @ManagedAttribute(id="specversion-current")
     @Description( "Java virtual machine specification version" )
-    public String getSpecVersion() {
-        return rtBean.getSpecVersion();
+    public StringStatistic getSpecVersion() {
+        specVersion.setCurrent(rtBean.getSpecVersion());
+        specVersion.setStartTime(rtBean.getStartTime());
+        specVersion.setLastSampleTime(System.currentTimeMillis());
+        return specVersion;
     }
 
     @ManagedAttribute(id="uptime-count")
     @Description( "uptime of the Java virtual machine in milliseconds" )
-    public long getUptime() {
-        return rtBean.getUptime();
+    public CountStatistic getUptime() {
+        uptime.setCount(rtBean.getUptime());
+        uptime.setStartTime(rtBean.getStartTime());
+        uptime.setLastSampleTime(System.currentTimeMillis());
+        return uptime;
     }
 
     @ManagedAttribute(id="vmname-current")
     @Description( "Java virtual machine implementation name" )
-    public String getVmName() {
-        return rtBean.getSpecName();
+    public StringStatistic getVmName() {
+        vmName.setCurrent(rtBean.getVmName());
+        vmName.setStartTime(rtBean.getStartTime());
+        vmName.setLastSampleTime(System.currentTimeMillis());
+        return vmName;
     }
 
     @ManagedAttribute(id="vmvendor-current")
     @Description( "Java virtual machine implementation vendor" )
-    public String getVmVendor() {
-        return rtBean.getSpecVendor();
+    public StringStatistic getVmVendor() {
+        vmVendor.setCurrent(rtBean.getVmVendor());
+        vmVendor.setStartTime(rtBean.getStartTime());
+        vmVendor.setLastSampleTime(System.currentTimeMillis());
+        return vmVendor;
     }
 
     @ManagedAttribute(id="vmversion-current")
     @Description( "Java virtual machine implementation version" )
-    public String getVmVersion() {
-        return rtBean.getSpecVersion();
+    public StringStatistic getVmVersion() {
+        vmVersion.setCurrent(rtBean.getVmVersion());
+        vmVersion.setStartTime(rtBean.getStartTime());
+        vmVersion.setLastSampleTime(System.currentTimeMillis());
+        return vmVersion;
     }   
 }

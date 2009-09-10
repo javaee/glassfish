@@ -44,6 +44,7 @@ import org.glassfish.external.statistics.impl.RangeStatisticImpl;
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.external.statistics.impl.StatisticImpl;
+import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
@@ -56,6 +57,7 @@ import org.glassfish.gmbal.ManagedObject;
  * 
  * @author Shalini M
  */
+@AMXMetadata(type="connector-connection-pool-mon", group="monitoring")
 @ManagedObject
 @Description("Connector Connection Pool Statistics")
 public class ConnectorConnPoolStatsProvider {

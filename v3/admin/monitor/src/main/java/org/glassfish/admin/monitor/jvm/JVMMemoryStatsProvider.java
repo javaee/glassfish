@@ -39,13 +39,17 @@ package org.glassfish.admin.monitor.jvm;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
+import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
 
 /* jvm.memory */
-//@AMXMetadata(type="memory-mon", group="monitoring", isSingleton=true)
+// v2 mbean: com.sun.appserv:name=memory,type=memory,category=monitor,server=server
+// v3 mbean:
+@AMXMetadata(type="memory-mon", group="monitoring")
 @ManagedObject
 @Description( "JVM Memory Statistics" )
 public class JVMMemoryStatsProvider {
@@ -54,57 +58,103 @@ public class JVMMemoryStatsProvider {
     private MemoryUsage memUsageHeap = memBean.getHeapMemoryUsage();
     private MemoryUsage memUsageNonHeap = memBean.getNonHeapMemoryUsage();
 
+    private CountStatisticImpl committedHeap = new CountStatisticImpl(
+            "CommittedHeapSize", "bytes",
+                "Amount of memory in bytes that is committed for the Java virtual machine to use" );
+    private CountStatisticImpl initHeap = new CountStatisticImpl(
+            "InitialHeapSize", "bytes",
+                "Amount of memory in bytes that the Java virtual machine initially requests from the operating system for memory management" );
+    private CountStatisticImpl maxHeap = new CountStatisticImpl(
+            "MaxHeapSize", "bytes",
+                "Maximum amount of memory in bytes that can be used for memory management" );
+    private CountStatisticImpl usedHeap = new CountStatisticImpl(
+            "UsedHeapSize", "bytes",
+                "Amount of used memory in bytes" );
+    private CountStatisticImpl committedNonHeap = new CountStatisticImpl(
+            "CommittedNonHeapSize", "bytes",
+                "Amount of memory in bytes that is committed for the Java virtual machine to use" );
+    private CountStatisticImpl initNonHeap = new CountStatisticImpl(
+            "InitialNonHeapSize", "bytes",
+                "Amount of memory in bytes that the Java virtual machine initially requests from the operating system for memory management" );
+    private CountStatisticImpl maxNonHeap = new CountStatisticImpl(
+            "MaxNonHeapSize", "bytes",
+                "Maximum amount of memory in bytes that can be used for memory management" );
+    private CountStatisticImpl usedNonHeap = new CountStatisticImpl(
+            "UsedNonHeapSize", "bytes",
+                "Amount of used memory in bytes" );
+    private CountStatisticImpl objectPendingFinalizationCount = new CountStatisticImpl(
+            "ObjectsPendingFinalization", CountStatisticImpl.UNIT_COUNT,
+                "Approximate number of objects for which finalization is pending" );
+
     @ManagedAttribute(id="committedheapsize-count")
     @Description( "amount of memory in bytes that is committed for the Java virtual machine to use" )
-    public long getCommittedHeap() {
-        return memUsageHeap.getCommitted();
+    public CountStatistic getCommittedHeap() {
+        committedHeap.setCount(memUsageHeap.getCommitted());
+        committedHeap.setLastSampleTime(System.currentTimeMillis());
+        return committedHeap;
     }
 
     @ManagedAttribute(id="initheapsize-count")
     @Description( "amount of memory in bytes that the Java virtual machine initially requests from the operating system for memory management" )
-    public long getInitHeap() {
-        return memUsageHeap.getInit();
+    public CountStatistic getInitHeap() {
+        initHeap.setCount(memUsageHeap.getInit());
+        initHeap.setLastSampleTime(System.currentTimeMillis());
+        return initHeap;
     }
 
     @ManagedAttribute(id="maxheapsize-count")
     @Description( "maximum amount of memory in bytes that can be used for memory management" )
-    public long getMaxHeap() {
-        return memUsageHeap.getMax();
+    public CountStatistic getMaxHeap() {
+        maxHeap.setCount(memUsageHeap.getMax());
+        maxHeap.setLastSampleTime(System.currentTimeMillis());
+        return maxHeap;
     }
 
     @ManagedAttribute(id="usedheapsize-count")
     @Description( "amount of used memory in bytes" )
-    public long getUsedHeap() {
-        return memUsageHeap.getUsed();
+    public CountStatistic getUsedHeap() {
+        usedHeap.setCount(memUsageHeap.getUsed());
+        usedHeap.setLastSampleTime(System.currentTimeMillis());
+        return usedHeap;
     }
 
     @ManagedAttribute(id="committednonheapsize-count")
     @Description( "amount of memory in bytes that is committed for the Java virtual machine to use" )
-    public long getCommittedNonHeap() {
-        return memUsageNonHeap.getCommitted();
+    public CountStatistic getCommittedNonHeap() {
+        committedNonHeap.setCount(memUsageNonHeap.getCommitted());
+        committedNonHeap.setLastSampleTime(System.currentTimeMillis());
+        return committedNonHeap;
     }
 
     @ManagedAttribute(id="initnonheapsize-count")
     @Description( "amount of memory in bytes that the Java virtual machine initially requests from the operating system for memory management" )
-    public long getInitNonHeap() {
-        return memUsageNonHeap.getInit();
+    public CountStatistic getInitNonHeap() {
+        initNonHeap.setCount(memUsageNonHeap.getInit());
+        initNonHeap.setLastSampleTime(System.currentTimeMillis());
+        return initNonHeap;
     }
 
     @ManagedAttribute(id="maxnonheapsize-count")
     @Description( "maximum amount of memory in bytes that can be used for memory management" )
-    public long getMaxNonHeap() {
-        return memUsageNonHeap.getMax();
+    public CountStatistic getMaxNonHeap() {
+        maxNonHeap.setCount(memUsageNonHeap.getMax());
+        maxNonHeap.setLastSampleTime(System.currentTimeMillis());
+        return maxNonHeap;
     }
 
     @ManagedAttribute(id="usednonheapsize-count")
     @Description( "amount of used memory in bytes" )
-    public long getUsedNonHeap() {
-        return memUsageNonHeap.getUsed();
+    public CountStatistic getUsedNonHeap() {
+        usedNonHeap.setCount(memUsageNonHeap.getUsed());
+        usedNonHeap.setLastSampleTime(System.currentTimeMillis());
+        return usedNonHeap;
     }
 
     @ManagedAttribute(id="objectpendingfinalizationcount-count")
     @Description( "approximate number of objects for which finalization is pending" )
-    public int getObjectPendingFinalizationCount() {
-        return memBean.getObjectPendingFinalizationCount();
+    public CountStatistic getObjectPendingFinalizationCount() {
+        objectPendingFinalizationCount.setCount(memBean.getObjectPendingFinalizationCount());
+        objectPendingFinalizationCount.setLastSampleTime(System.currentTimeMillis());
+        return objectPendingFinalizationCount;
     }
 }

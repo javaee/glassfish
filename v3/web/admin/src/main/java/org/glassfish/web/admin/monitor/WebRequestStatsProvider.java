@@ -46,6 +46,7 @@ import org.glassfish.flashlight.statistics.*;
 //import org.glassfish.flashlight.statistics.factory.CounterFactory;
 import org.glassfish.flashlight.statistics.factory.TimeStatsFactory;
 import org.glassfish.external.probe.provider.annotations.*;
+import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedObject;
 import org.glassfish.gmbal.ManagedAttribute;
@@ -55,6 +56,7 @@ import org.glassfish.gmbal.ManagedAttribute;
  *
  * @author Prashanth Abbagani
  */
+@AMXMetadata(type="web-request-mon", group="monitoring")
 @ManagedObject
 @Description("Web Request Statistics")
 public class WebRequestStatsProvider {

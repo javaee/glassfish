@@ -47,6 +47,7 @@ import org.glassfish.flashlight.statistics.*;
 import org.glassfish.flashlight.statistics.factory.TimeStatsFactory;
 import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.gmbal.Description;
+import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
 import org.jvnet.hk2.component.PostConstruct;
@@ -56,6 +57,7 @@ import org.jvnet.hk2.component.PostConstruct;
  *
  * @author Prashanth Abbagani
  */
+@AMXMetadata(type="request-mon", group="monitoring")
 @ManagedObject
 @Description( "Web Container HTTP Service Statistics" )
 public class HttpServiceStatsProvider implements PostConstruct {

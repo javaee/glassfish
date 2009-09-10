@@ -40,6 +40,7 @@ import javax.servlet.http.HttpSession;
 import org.glassfish.external.statistics.CountStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.external.probe.provider.annotations.*;
+import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
@@ -49,6 +50,7 @@ import org.glassfish.gmbal.ManagedObject;
  *
  * @author Prashanth Abbagani
  */
+@AMXMetadata(type="session-mon", group="monitoring")
 @ManagedObject
 @Description( "Web Container Session Statistics" )
 public class SessionStatsProvider{

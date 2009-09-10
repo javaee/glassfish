@@ -38,28 +38,44 @@ package org.glassfish.admin.monitor.jvm;
 
 import java.lang.management.CompilationMXBean;
 import java.lang.management.ManagementFactory;
+import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.impl.CountStatisticImpl;
+import org.glassfish.external.statistics.StringStatistic;
+import org.glassfish.external.statistics.impl.StringStatisticImpl;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
 
 /* jvm.compilation-system */
-//@AMXMetadata(type="compilation-system-mon", group="monitoring", isSingleton=true)
+// v2 mbean: com.sun.appserv:name=compilation-system,type=compilation-system,category=monitor,server=server
+// v3 mbean:
+@AMXMetadata(type="compilation-system-mon", group="monitoring")
 @ManagedObject
 @Description( "JVM Compilation Statistics" )
 public class JVMCompilationStatsProvider {
 
     private CompilationMXBean compBean = ManagementFactory.getCompilationMXBean();
 
+    private StringStatisticImpl compilerName = new StringStatisticImpl("Name", "String",
+                "Name of the Just-in-time (JIT) compiler" );
+    private CountStatisticImpl totalCompilationTime = new CountStatisticImpl(
+            "TotalCompilationTime", CountStatisticImpl.UNIT_MILLISECOND,
+                "Approximate accumlated elapsed time (in milliseconds) spent in compilation" );
+
     @ManagedAttribute(id="name-current")
     @Description( "name of the Just-in-time (JIT) compiler" )
-    public String getCompilerName() {
-        return compBean.getName();
+    public StringStatistic getCompilerName() {
+        compilerName.setCurrent(compBean.getName());
+        compilerName.setLastSampleTime(System.currentTimeMillis());
+        return compilerName;
     }
 
     @ManagedAttribute(id="totalcompilationtime-current")
     @Description( "approximate accumlated elapsed time (in milliseconds) spent in compilation" )
-    public long getTotalCompilationTime() {
-        return compBean.getTotalCompilationTime();
+    public CountStatistic getTotalCompilationTime() {
+        totalCompilationTime.setCount(compBean.getTotalCompilationTime());
+        totalCompilationTime.setLastSampleTime(System.currentTimeMillis());
+        return totalCompilationTime;
     }
 }

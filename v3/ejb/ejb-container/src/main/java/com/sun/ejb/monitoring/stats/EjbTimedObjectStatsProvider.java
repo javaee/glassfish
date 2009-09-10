@@ -52,7 +52,7 @@ import org.glassfish.gmbal.*;
  * @author Marina Vatkina
  */
 // TODO: find the right names
-//@AMXMetadata(type="ejb-timed-object-mon", group="monitoring", isSingleton=false)
+@AMXMetadata(type="ejb-timed-object-mon", group="monitoring", isSingleton=false)
 @ProbeProvider(moduleProviderName="glassfish", moduleName="ejb", probeProviderName="ejb-timers-monitoring")
 @ManagedObject
 @Description("Ejb Timed Object Statistics")

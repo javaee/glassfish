@@ -8,6 +8,7 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.external.statistics.Statistic;
 import org.glassfish.external.statistics.Stats;
 import org.glassfish.gmbal.Description;
+import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedData;
 import org.glassfish.gmbal.ManagedObject;
@@ -27,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Jitendra Kotamraju
  */
+@AMXMetadata(type="web-service-mon", group="monitoring", isSingleton=true)
 @ManagedObject
 @Description("Stats for Web Services deployed")
 public class WebServiceStatsProvider {

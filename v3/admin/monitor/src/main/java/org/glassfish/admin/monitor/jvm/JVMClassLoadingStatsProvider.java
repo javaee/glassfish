@@ -38,34 +38,51 @@ package org.glassfish.admin.monitor.jvm;
 
 import java.lang.management.ClassLoadingMXBean;
 import java.lang.management.ManagementFactory;
+import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
 
 /* jvm.class-loading-system */
-//@AMXMetadata(type="class-loading-system-mon", group="monitoring", isSingleton=true)
+// v2: com.sun.appserv:name=class-loading-system,type=class-loading-system,category=monitor,server=server
+// v3: 
+@AMXMetadata(type="class-loading-system-mon", group="monitoring")
 @ManagedObject
 @Description( "JVM Class Loading Statistics" )
 public class JVMClassLoadingStatsProvider {
 
     private ClassLoadingMXBean clBean = ManagementFactory.getClassLoadingMXBean();
 
+    private CountStatisticImpl loadedClassCount = new CountStatisticImpl("LoadedClassCount", CountStatisticImpl.UNIT_COUNT,
+            "Number of classes currently loaded in the Java virtual machine");
+    private CountStatisticImpl totalLoadedClassCount = new CountStatisticImpl("TotalLoadedClassCount", CountStatisticImpl.UNIT_COUNT,
+            "Total number of classes that have been loaded since the Java virtual machine has started execution");
+    private CountStatisticImpl unloadedClassCount = new CountStatisticImpl("UnLoadedClassCount", CountStatisticImpl.UNIT_COUNT,
+            "Total number of classes unloaded since the Java virtual machine has started execution");
+
     @ManagedAttribute(id="loadedclass-count")
     @Description( "number of classes currently loaded in the JVM" )
-    public int getLoadedClassCount() {
-        return clBean.getLoadedClassCount();
+    public CountStatistic getLoadedClassCount() {
+        loadedClassCount.setCount(clBean.getLoadedClassCount());
+        loadedClassCount.setLastSampleTime(System.currentTimeMillis());
+        return loadedClassCount;
     }
 
     @ManagedAttribute(id="totalloadedclass-count")
     @Description( "total number of classes loaded since the JVM started" )
-    public long getTotalLoadedClassCount() {
-        return clBean.getTotalLoadedClassCount();
+    public CountStatistic getTotalLoadedClassCount() {
+        totalLoadedClassCount.setCount(clBean.getTotalLoadedClassCount());
+        totalLoadedClassCount.setLastSampleTime(System.currentTimeMillis());
+        return totalLoadedClassCount;
     }
 
     @ManagedAttribute(id="unloadedclass-count")
     @Description( "total number of classes unloaded since the JVM started" )
-    public long getUnloadedClassCount() {
-        return clBean.getUnloadedClassCount();
+    public CountStatistic getUnloadedClassCount() {
+        unloadedClassCount.setCount(clBean.getUnloadedClassCount());
+        unloadedClassCount.setLastSampleTime(System.currentTimeMillis());
+        return unloadedClassCount;
     }
 }
