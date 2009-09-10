@@ -41,6 +41,7 @@ import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
 import javax.management.ObjectName;
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -229,6 +230,11 @@ public final class PathnamesImpl  extends AMXImplBase
         return ancestors;
     }
     
+    private boolean isInstanceNotFound(final Throwable t)
+    {
+        return ExceptionUtil.getRootCause(t) instanceof InstanceNotFoundException;
+    }
+    
     private void listChildren( final AMXProxy top, final List<AMXProxy> list, boolean recursive)
     {
         Set<AMXProxy> children = null;
@@ -239,10 +245,13 @@ public final class PathnamesImpl  extends AMXImplBase
         }
         catch( final Exception e )
         {
-            ImplUtil.getLogger().log( Level.WARNING,
-                "Can't get childrenSet() from MBean: " + top.objectName(),
-                ExceptionUtil.getRootCause(e));
-            // just return, nothing we can do.  Typically it could be InstanceNotFoundException
+            if ( ! isInstanceNotFound(e) )
+            {
+                ImplUtil.getLogger().log( Level.WARNING,
+                    "Can't get childrenSet() from MBean: " + top.objectName(),
+                    ExceptionUtil.getRootCause(e));
+                // just return, nothing we can do.  Typically it could be InstanceNotFoundException
+            }
             return;
         }
         
@@ -258,10 +267,13 @@ public final class PathnamesImpl  extends AMXImplBase
             }
             catch( final Exception e )
             {
-                ImplUtil.getLogger().log( Level.WARNING,
-                    "Problem with MBean: " + child.objectName(),
-                    ExceptionUtil.getRootCause(e));
-                // nothing we can do.  Typically it could be InstanceNotFoundException
+                if ( ! isInstanceNotFound(e) )
+                {
+                    ImplUtil.getLogger().log( Level.WARNING,
+                        "Problem with MBean: " + child.objectName(),
+                        ExceptionUtil.getRootCause(e));
+                // nothing we can do.
+                }
             }
         }
     }
