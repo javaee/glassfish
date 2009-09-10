@@ -120,12 +120,20 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 Set<File> modules = addEJBModules(properties);
                 if (modules.isEmpty()) {
                     _logger.log(Level.SEVERE, "ejb.embedded.no_modules_found");
+                } else {
+                    container.deploy(properties, modules);
                 }
-
-                container.deploy(properties, modules);
                 return container;
             } catch (Throwable t) {
                 // Can't throw an exception - only return null.
+                if (container != null) {
+                    try {
+                        _logger.info("==> Cleaning up on failure ...");
+                        container.close();
+                    } catch (Throwable t1) {
+                        _logger.info("==> Error cleaning up..." + t1);
+                    }
+                }
                 _logger.log(Level.SEVERE, "ejb.embedded.exception_instantiating", t);
             }
         }
@@ -201,6 +209,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         if (modules.isEmpty()) {
             // No file is specified - load from the classpath
             String path = System.getProperty("java.class.path");
+            _logger.info("==> Looking for EJB modules in classpath: " + path);
             String[] entries = path.split(File.pathSeparator);
             for (String s0 : entries) {
                 addEJBModule(modules, moduleNames, new File(s0));
@@ -238,9 +247,14 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                     new GenericAnnotationDetector(ejbAnnotations);
                 handles = detector.hasAnnotationInArchive(archive);
             }
-_logger.info("... is EJB module: " + handles);
-if (handles)
-_logger.info("... is Requested EJB module [" + moduleName + "]: " + (moduleNames.isEmpty() || moduleNames.contains(moduleName)));
+
+            if (_logger.isLogging(Level.INFO)) {
+                _logger.info("... is EJB module: " + handles);
+                if (handles) {
+                    _logger.info("... is Requested EJB module [" + moduleName + "]: " 
+                            + (moduleNames.isEmpty() || moduleNames.contains(moduleName)));
+                }
+            }
 
             return handles && (moduleNames.isEmpty() || moduleNames.contains(moduleName));
         } finally {

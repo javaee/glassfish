@@ -40,6 +40,7 @@ public class EmbeddedEjbContainer implements EmbeddedContainer {
         addSniffer(sniffers, "Security");
         addSniffer(sniffers, "jpa");
         addSniffer(sniffers, "jpaCompositeSniffer");
+        addSniffer(sniffers, "ear");
         return sniffers;
 
     }

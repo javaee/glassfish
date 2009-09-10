@@ -37,6 +37,7 @@
 package org.glassfish.ejb.embedded;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
@@ -51,11 +52,13 @@ import javax.ejb.EJBException;
 
 import com.sun.logging.LogDomains;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
+import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.LifecycleException;
-import org.glassfish.ejb.embedded.EmbeddedEjbContainer;
 import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.deployment.common.ModuleExploder;
+import org.glassfish.ejb.embedded.EmbeddedEjbContainer;
 
 /**
  * GlassFish implementation of the EJBContainer.
@@ -74,7 +77,7 @@ public class EJBContainerImpl extends EJBContainer {
 
     private final EmbeddedDeployer deployer;
 
-    private Set<String> deployedApps = new HashSet<String>();
+    private String deployedAppName;
 
     private boolean open = true;
 
@@ -91,17 +94,27 @@ public class EJBContainerImpl extends EJBContainer {
      * Construct new EJBContainerImpl instance and deploy found modules.
      */
     void deploy(Map<?, ?> properties, Set<File> modules) throws EJBException {
-        for (File f : modules) {
-            DeployCommandParameters dp = new DeployCommandParameters(f);
-            dp.name = f.getName();
-            try {
-                String appName = deployer.deploy(f, dp);
-                deployedApps.add(appName);
-            } catch (Exception e) {
-                _logger.warning("Cannot deploy file: " + f.getName() + " : " + e.getMessage());
+        File app = null;
+        try {
+            app = getOrCreateApplication(modules);
+            
+            _logger.info("==> Deploying app: " + app);
+            DeployCommandParameters dp = new DeployCommandParameters(app);
+            if (properties != null) {
+                dp.name = (String)properties.get(EJBContainer.APP_NAME);
             }
+
+            if (dp.name == null) {
+                dp.name = app.getName();
+            }
+            deployedAppName = deployer.deploy(app, dp);
+        } catch (IOException e) {
+            throw new EJBException("Failed to deploy EJB modules", e);
         }
 
+        if (deployedAppName == null) {
+            throw new EJBException("Failed to deploy EJB modules - see log for details");
+        }
     }
 
     /**
@@ -126,19 +139,18 @@ public class EJBContainerImpl extends EJBContainer {
     public void close() {
         _logger.info("IN close()");
 
-        try {
-            for (String appName : deployedApps) {
-                deployer.undeploy(appName);
+        if (deployedAppName != null) {
+            try {
+                deployer.undeploy(deployedAppName);
+            } catch (Exception e) {
+                _logger.warning("Cannot undeploy deployed modules: " + e.getMessage());
             }
-            deployedApps.clear();
-
-        } catch (Exception e) {
-            System.err.println("Cannot undeploy deployed modules: " + e.getMessage());
         }
+
         try {
             server.stop();
         } catch (LifecycleException e) {
-            System.err.println("Cannot stop embedded container " + e.getMessage());
+            _logger.warning("Cannot stop embedded container " + e.getMessage());
         } finally {
             open = false;
         }
@@ -151,4 +163,51 @@ public class EJBContainerImpl extends EJBContainer {
         return open;
     }
 
+    /** 
+     */
+    private File getOrCreateApplication(Set<File> modules)
+            throws EJBException, IOException {
+        File result = null;
+        if (modules == null || modules.size() == 0) {
+            _logger.info("==> No modules found");
+        } else if (modules.size() == 1) {
+            result = modules.iterator().next();
+        } else {
+            // Create a temp dir by creating a temp file first, then 
+            // delete the file and create a directory in its place.
+            result = File.createTempFile("ejb-app", "");
+            if (result.delete() && result.mkdirs()) {
+                _logger.info("==> temp dir created at " + result.getAbsolutePath());
+            } else {
+                throw new EJBException("Not able to create temp dir " + result.getAbsolutePath ());
+            }
+//            result.deleteOnExit();
+
+            // Copy module directories and explode module jars
+            for (File f : modules) {
+                String filename = f.toURI().getSchemeSpecificPart();
+                if (filename.endsWith(File.separator) || filename.endsWith("/")) {
+                    int length = filename.length();
+                    filename = filename.substring(0, length - 1);
+                }
+
+                int lastpart = filename.lastIndexOf(File.separatorChar);
+                if (lastpart == -1) {
+                    lastpart = filename.lastIndexOf('/');
+                }
+                String name = filename.substring(lastpart + 1);
+                _logger.info("==> Converted file name: " + filename + " to " + name);
+                if (f.isDirectory()) {
+                    File out = new File(result, name + "_jar");
+                    _logger.info("==> Copying directory to: " + out);
+                    FileUtils.copy(f, out);
+                } else {
+                    File out = new File(result, FileUtils.makeFriendlyFilename(name));
+                    _logger.info("==> Exploding jar to: " + out);
+                    ModuleExploder.explodeJar(f, out);
+                }
+            }
+        }
+        return result;
+    }
 }

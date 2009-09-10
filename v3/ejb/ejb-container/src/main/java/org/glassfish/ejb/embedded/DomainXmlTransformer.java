@@ -94,6 +94,8 @@ public class DomainXmlTransformer {
             fis = new FileInputStream(in);
             out = File.createTempFile("domain", "xml");
             _logger.info("==> Creating temp domain file: " + out);
+
+            out.deleteOnExit();
             fos = new FileOutputStream(out);
             parser = xif.createXMLEventReader(fis);
 
