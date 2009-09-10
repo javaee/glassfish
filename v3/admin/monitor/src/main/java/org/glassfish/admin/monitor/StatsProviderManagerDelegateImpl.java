@@ -129,6 +129,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
                         parentNode.removeChild(childNode);
                     }
                 }
+                if (!parentNode.hasChildNodes())
+                    removeParentNode(parentNode);
             }
 
             //get the handles and unregister the listeners from Flashlight
@@ -152,6 +154,15 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+
+    private void removeParentNode(TreeNode parentNode) {
+        TreeNode superParentNode = parentNode.getParent();
+        if (superParentNode != null) {
+            superParentNode.removeChild(parentNode);
+            if (!superParentNode.hasChildNodes())
+                removeParentNode(superParentNode);
+        }
     }
 
     /* called from SPMD, when monitoring-enabled flag is turned on */
@@ -319,21 +330,64 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         TreeNode rootNode = mrdr.get("server");
         if (rootNode != null) {
             // This has to return one node
-            List<TreeNode> nodeList = rootNode.getNodes(parentNodePath);
+            List<TreeNode> nodeList = rootNode.getNodes(parentNodePath, false, true);
             TreeNode parentNode = nodeList.get(0);
             //For each child Node, enable it
             Collection<TreeNode> childNodes = parentNode.getChildNodes();
+            boolean hasUpdatedNode = false;
             for (TreeNode childNode : childNodes) {
                 if (childNodeNames.contains(childNode.getName())){
                     //Enabling or Disabling the child node (based on enable flag)
                     if (childNode.isEnabled() != enable) {
                         printd(((enable)?"En":"Dis") + "abling the child node - " + childNode.getCompletePathName());
                         childNode.setEnabled(enable);
+                        hasUpdatedNode = true;
                     }
                 }
             }
+            if (!hasUpdatedNode)
+                return;
+            //Make sure the tree path is affected with the changes.
+            if (enable)
+                enableTreeNode(parentNode);
+            else
+                disableTreeNode(parentNode);
         }
 
+    }
+
+    private void enableTreeNode(TreeNode treeNode) {
+        if (!treeNode.isEnabled()) {
+            treeNode.setEnabled(true);
+            // recursevely call the enable on parent nodes, until the whole path is enabled
+            if (treeNode.getParent() != null) {
+                enableTreeNode(treeNode.getParent());
+            }
+        }
+    }
+
+    private void disableTreeNode(TreeNode treeNode) {
+        if (treeNode.isEnabled()) {
+            boolean isAnyChildEnabled = false;
+            Collection<TreeNode> childNodes = treeNode.getChildNodes();
+            printd("Parent Node = " + treeNode.getName() + "  childNodes.size()=" + childNodes.size());
+            if (childNodes != null) {
+                for (TreeNode childNode : childNodes) {
+                    if (childNode.isEnabled()) {
+                        isAnyChildEnabled = true;
+                        break;
+                    }
+                }
+            }
+            // if none of the childs are enabled, disable the parent
+            if (!isAnyChildEnabled) {
+                treeNode.setEnabled(false);
+                // recursevely call the disable on parent nodes
+                if (treeNode.getParent() != null) {
+                    disableTreeNode(treeNode.getParent());
+                }
+            }
+        }
     }
 
     private List<String> createTreeForStatsProvider(TreeNode parentNode, Object statsProvider) {
