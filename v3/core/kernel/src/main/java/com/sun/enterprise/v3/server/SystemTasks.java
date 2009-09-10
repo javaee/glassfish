@@ -41,12 +41,19 @@ import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
+import java.io.*;
+import java.io.File;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 import org.glassfish.internal.api.Init;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.process.ProcessUtils;
 import com.sun.enterprise.util.net.NetUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -78,13 +85,13 @@ public class SystemTasks implements Init, PostConstruct {
     @Inject
     Domain domain;
     
-    Logger _logger = Logger.getAnonymousLogger();
+    Logger _logger = Logger.getLogger(SystemTasks.class.getName());
 
     public void postConstruct() {
         setSystemPropertiesFromEnv();
         setSystemPropertiesFromDomainXml();
         resolveJavaConfig();
-        
+        writePidFile();
         _logger.fine( "SystemTasks: loaded server named: " + server.getName() );
     }
 
@@ -174,8 +181,85 @@ public class SystemTasks implements Init, PostConstruct {
         }
     }
     
+    private void writePidFile() {
+        Writer writer = null;
+        File pidFile = null;
+
+        try {
+            pidFile = getPidFile();
+            String pidString = getPidString();
+            writer = new PrintWriter(pidFile);
+            writer.write(pidString);
+        }
+        catch(PidException pe) {
+            _logger.warning(pe.getMessage());
+        }
+        catch(Exception e) {
+            _logger.warning(strings.get("internal_error", e));
+        }
+        finally {
+            if(writer != null) {
+                try {
+                    writer.flush();
+                    writer.close();
+                }
+                catch(Exception e) {
+                    //ignore
+                }
+                pidFile.setReadable(true);
+                pidFile.setWritable(true);
+                pidFile.deleteOnExit();
+            }
+        }
+    }
+
+    private String getPidString() {
+        return "" + ProcessUtils.getPid();
+    }
+
+    private File getPidFile() throws PidException{
+        try {
+            String configDirString = System.getProperty(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY);
+
+            if(!ok(configDirString))
+                throw new PidException(strings.get("internal_error",
+                        "Null or empty value for the System Property: " +
+                        SystemPropertyConstants.INSTANCE_ROOT_PROPERTY));
+
+            File configDir = new File(new File(configDirString), "config");
+
+            if(!configDir.isDirectory())
+                throw new PidException(strings.get("bad_config_dir", configDir));
+
+            File pidFile = new File(configDir, "pid");
+
+            if(pidFile.exists()) {
+                pidFile.delete();
+
+                if(pidFile.exists()) {
+                    throw new PidException(strings.get("cant_delete_pid_file", pidFile));
+                }
+            }
+            return pidFile;
+        }
+        catch(PidException pe) {
+            throw pe;
+        }
+        catch(Exception e) {
+            throw new PidException(e.getMessage());
+        }
+    }
+
     private static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
+
+    private static class PidException extends Exception {
+
+        public PidException(String s) {
+            super(s);
+        }
+    }
+    private final static LocalStringsImpl strings = new LocalStringsImpl(SystemTasks.class);
 }
 
