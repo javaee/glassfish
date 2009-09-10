@@ -53,8 +53,8 @@
 #include "/common/shared/restart.inc"    
     
             <sun:form id="form1">
-#include "/common/shared/alertMsg.inc"
 #include "/common/configuration/loggingTabs.inc"
+#include "/common/shared/alertMsg.inc"
 <sun:title id="title" title="$resource{i18n.log.LogLevelsPageTitle}"  helpText="$resource{i18n.log.LogLevelsPageTitleHelp}">
 #include "/common/configuration/loggerLevelsButtons.jsf"
 </sun:title>
