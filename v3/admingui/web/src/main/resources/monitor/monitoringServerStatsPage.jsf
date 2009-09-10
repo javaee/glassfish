@@ -184,7 +184,8 @@
         
          />  
                         
-#include "/web/monitor/jvmTableRows.inc"  
+<!--#include "/web/monitor/jvmTableRows.inc"  -->
+#include "/web/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>    
     <sun:tableRowGroup id="osStats" rendered="#{hasStatsOS}" data={"$attribute{osStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.operatingSystemJvm}"
@@ -194,7 +195,8 @@
         
          />  
                         
-#include "/web/monitor/jvmTableRows.inc"  
+<!--#include "/web/monitor/jvmTableRows.inc"  -->
+#include "/web/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>    
     <sun:tableRowGroup id="clStats" rendered="#{hasStatsJVMCL}" data={"$attribute{clStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.classLoadingJvm}"
@@ -204,12 +206,14 @@
         
          />  
                         
-#include "/web/monitor/jvmTableRows.inc"  
+<!-- #include "/web/monitor/jvmTableRows.inc"  -->
+#include "/web/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>    
     <sun:tableRowGroup id="gcMSCStats" rendered="#{hasStatsGCM}" data={"$attribute{gcMSCStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.garbageCollectorsJvm} : #{gcMSCName}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
-#include "/web/monitor/jvmTableRows.inc"
+<!--#include "/web/monitor/jvmTableRows.inc"-->
+#include "/web/monitor/monitoringTableRows.inc"
         <!beforeCreate
             getStatsbyTypeName(type="garbage-collector-mon" name="jvm/garbage-collectors/PS MarkSweep", result=>$attribute{gcMSCStatsList}  hasStats=>$attribute{hasStatsGCM});
             setAttribute(key="gcMSCName" value="PS MarkSweep");
@@ -222,7 +226,8 @@
             getStatsbyTypeName(type="garbage-collector-mon" name="jvm/garbage-collectors/PS Scavenge", result=>$attribute{gcCopyStatsList}  hasStats=>$attribute{hasStatsGCC});
             setAttribute(key="gcPSName" value="PS Scavenge");
          />
-#include "/web/monitor/jvmTableRows.inc"  
+<!--#include "/web/monitor/jvmTableRows.inc"  -->
+#include "/web/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>    
     <sun:tableRowGroup id="comStats" rendered="#{hasStatsJVMCOM}" data={"$attribute{comStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.compilationJvm}"
@@ -232,7 +237,8 @@
         
          />  
                         
-#include "/web/monitor/jvmTableRows.inc"  
+<!--#include "/web/monitor/jvmTableRows.inc"  -->
+#include "/web/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>    
     <sun:tableRowGroup id="runtimeStats" rendered="#{hasStatsJVMR}" data={"$attribute{runtimeStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.runtimeJvm}"
@@ -242,7 +248,8 @@
         
          />  
                         
-#include "/web/monitor/jvmTableRows.inc"  
+<!--#include "/web/monitor/jvmTableRows.inc"  -->
+#include "/web/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>    
     
