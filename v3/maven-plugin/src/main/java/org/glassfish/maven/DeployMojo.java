@@ -1,3 +1,4 @@
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -37,92 +38,38 @@
 package org.glassfish.maven;
 
 import java.io.*;
-import java.util.*;
 
-
+import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.embedded.ScatteredArchive;
-import org.glassfish.api.embedded.ScatteredArchive.Builder;
-
 
 
 /**
- * @goal runscatteredarchive
+ * @goal deploy
  */
-
-public class RunScatteredArchive extends AbstractDeployMojo{
-
-/**
- * @parameter expression="${rootdirectory}"
- */
-    protected String rootdirectory;
-/**
- * @parameter expression="${resources}"
- */
-    protected String resources;
+public class DeployMojo extends AbstractDeployMojo  {
 
 /**
- * @parameter expression="${classpath}"
+ * @parameter expression="${app}"
  */
-    protected ArrayList<String> classpath = new ArrayList();
+    protected String app;
 
-/**
- * @parameter expression="${metadata}"
- */
-    protected HashMap<String, File> metadata = new HashMap();
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+        Server server = new Server.Builder(serverID).build();
 
         try {
-            Server server = Util.getServer(serverID, instanceRoot, installRoot, configFile);
-
             EmbeddedDeployer deployer = server.getDeployer();
             DeployCommandParameters cmdParams = new DeployCommandParameters();
             configureDeployCommandParameters(cmdParams);
-
-            File f = new File(rootdirectory);
-            ScatteredArchive.Builder builder = new ScatteredArchive.Builder(name, f);
-            System.out.println("rootdir = " + f);
-            if (resources == null) 
-                resources = rootdirectory;
-            builder.setResources(new File(resources));
-            if (classpath.isEmpty())
-                classpath.add(rootdirectory);
-            for (String cp : classpath) {
-                builder.addClassPath(new File(cp).toURL());
-            }
-            for (Map.Entry<String, File> entry : metadata.entrySet()) {
-                String key = entry.getKey();
-                File value = entry.getValue();
-                builder.addMetadata(key, value);
-            }
-
-            DeployCommandParameters dp = new DeployCommandParameters(f);
-            dp.name = name;
-            dp.contextroot = contextRoot;
-
-            while(true) {
-                deployer.deploy(builder.buildWar(), dp);
-
-                System.out.println("Deployed Application " + name
-                        + " contextroot is " + contextRoot);
-                System.out.println("");
-                System.out.println("Hit ENTER to redeploy " + name
-                        + " X to exit");
-                // wait for enter
-                String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
-                if (str.equalsIgnoreCase("X"))
-                    break;
-                deployer.undeploy(name);
-            }
-        } catch (Exception e) {
-           throw new MojoExecutionException(e.getMessage(), e);
+            deployer.deploy(new File(app), cmdParams);
+        } catch (Exception ex) {
+           throw new MojoExecutionException(ex.getMessage(),ex);
         }
     }
-}
 
+}

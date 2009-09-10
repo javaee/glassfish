@@ -1,3 +1,4 @@
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -38,54 +39,52 @@ package org.glassfish.maven;
 
 import java.io.*;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-
 import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.EmbeddedDeployer;
-import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.embedded.ContainerBuilder;
+import org.glassfish.api.embedded.EmbeddedFileSystem;
 
 
-/**
- * @goal runweb
- */
+public  class Util {
 
-public class RunWarMojo extends AbstractDeployMojo {
+    public static Server getServer(String serverID, String installRoot, String instanceRoot, String configFile) throws IOException {
+        Server.Builder builder = new Server.Builder(serverID);
 
-/**
- * @parameter expression="${webapp}"
- */
-    protected String webapp;
-
-
-    public void execute() throws MojoExecutionException, MojoFailureException {
-
-        try {
-            Server server = Util.getServer(serverID, installRoot, instanceRoot, configFile);
-            if (port != -1)
-                server.createPort(port);
-
-            server.addContainer(ContainerBuilder.Type.web);
-
-            EmbeddedDeployer deployer = server.getDeployer();
-            DeployCommandParameters cmdParams = new DeployCommandParameters();
-            configureDeployCommandParameters(cmdParams);
-
-            while(true) {
-                deployer.deploy(new File(webapp), cmdParams);
-                System.out.println("Deployed Application " + name + "[" + webapp + "]"
-                        + " contextroot is " + contextRoot);
-                System.out.println("Hit ENTER to redeploy " + name + "[" + webapp + "]"
-                        + " X to exit");
-                String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
-                if (str.equalsIgnoreCase("X"))
-                    break;
-                deployer.undeploy(name);
-            }
-        } catch(Exception e) {
-           throw new MojoExecutionException(e.getMessage(),e);
-       }
+        EmbeddedFileSystem efs = getFileSystem(installRoot, instanceRoot, configFile);
+        Server server;
+        if (efs != null) {
+            server = builder.setEmbeddedFileSystem(efs).build();
+        }
+        else {
+            server = builder.build();
+        }
+        return server;
     }
+
+    public static EmbeddedFileSystem getFileSystem(String installRoot, String instanceRoot, String configFile) {
+        if (installRoot == null && instanceRoot == null && configFile == null)
+            return null;
+
+        System.out.println("InstallRoot = " + installRoot);
+        System.out.println("InstanceRoot = " + instanceRoot);
+        if (instanceRoot == null && installRoot != null) {
+            instanceRoot = installRoot + "/domains/domain1";
+        }
+
+        System.out.println("InstanceRoot = " + instanceRoot);
+        if (configFile == null && instanceRoot != null) {
+            configFile = instanceRoot + "/config/domain.xml";
+        }
+
+        EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
+        if (installRoot != null)
+            efsb.setInstallRoot(new File(installRoot), true);
+        if (instanceRoot != null)
+            efsb.setInstanceRoot(new File(instanceRoot));
+        if (configFile != null)
+            efsb.setConfigurationFile(new File(configFile));
+
+        return efsb.build();
+    }
+
+
 
 }

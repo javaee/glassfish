@@ -36,27 +36,12 @@
 
 package org.glassfish.maven;
 
-import java.io.*;
-
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import org.glassfish.api.embedded.Server;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.embedded.ContainerBuilder;
-import org.glassfish.api.embedded.EmbeddedFileSystem;
 
-public abstract class AbstractWebMojo extends AbstractMojo {
-/**
- * @parameter expression="${serverID}" default-value="maven"
-*/
-    protected String serverID;
-
-/**
- * @parameter expression="${port}" default-value="-1"
-*/
-    protected int port;
+public abstract class AbstractDeployMojo extends AbstractServerMojo {
 /**
  * @parameter expression="${name}" default-value="test"
  */
@@ -67,7 +52,7 @@ public abstract class AbstractWebMojo extends AbstractMojo {
  */
     protected String contextRoot;
 /**
- * @parameter expression="${precompilejsp}" default-value="false"
+ * @parameter expression="${precompilejsp}" 
  */
     protected Boolean precompilejsp;
 
@@ -76,63 +61,7 @@ public abstract class AbstractWebMojo extends AbstractMojo {
  */
     protected String virtualservers;
 
-/**
- * @parameter expression="${installRoot}"
-*/
-    protected String installRoot;
-
-/**
- * @parameter expression="${instanceRoot}"
-*/
-    protected String instanceRoot;
-/**
- * @parameter expression="${configFile}"
-*/
-    protected String configFile;
-
-
     public abstract void execute() throws MojoExecutionException, MojoFailureException;
-
-    Server getServer() throws IOException {
-        Server.Builder builder = new Server.Builder(serverID);
-        EmbeddedFileSystem efs = getFileSystem();
-        Server server;
-        if (efs != null) {
-            server = builder.setEmbeddedFileSystem(efs).build();
-        }
-        else {
-            server = builder.build();
-        }
-        if (port != -1)
-            server.createPort(port);
-
-        ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
-        server.addContainer(b);
-        return server;
-    }
-
-    EmbeddedFileSystem getFileSystem() {
-        if (installRoot == null && instanceRoot == null && configFile == null)
-            return null;
-
-        if (instanceRoot == null && installRoot != null) {
-            instanceRoot = installRoot + "/domains/domain1";
-        }
-
-        if (configFile == null && instanceRoot != null) {
-            configFile = instanceRoot + "/config/domain.xml";
-        }
-
-        EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-        if (installRoot != null)
-            efsb.setInstallRoot(new File(installRoot), true);
-        if (instanceRoot != null)
-            efsb.setInstanceRoot(new File(instanceRoot));
-        if (configFile != null)
-            efsb.setConfigurationFile(new File(configFile));
-
-        return efsb.build();
-     }
 
     void configureDeployCommandParameters(DeployCommandParameters cmdParams) {
         cmdParams.name = name;

@@ -1,3 +1,4 @@
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -36,56 +37,35 @@
 
 package org.glassfish.maven;
 
-import java.io.*;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.EmbeddedDeployer;
-import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.ContainerBuilder;
 
-
 /**
- * @goal runweb
+ * @goal start
  */
+public class StartMojo extends AbstractServerMojo {
 
-public class RunWarMojo extends AbstractDeployMojo {
-
-/**
- * @parameter expression="${webapp}"
- */
-    protected String webapp;
-
+    ContainerBuilder.Type type = ContainerBuilder.Type.all;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         try {
             Server server = Util.getServer(serverID, installRoot, instanceRoot, configFile);
+
             if (port != -1)
                 server.createPort(port);
 
-            server.addContainer(ContainerBuilder.Type.web);
 
-            EmbeddedDeployer deployer = server.getDeployer();
-            DeployCommandParameters cmdParams = new DeployCommandParameters();
-            configureDeployCommandParameters(cmdParams);
-
-            while(true) {
-                deployer.deploy(new File(webapp), cmdParams);
-                System.out.println("Deployed Application " + name + "[" + webapp + "]"
-                        + " contextroot is " + contextRoot);
-                System.out.println("Hit ENTER to redeploy " + name + "[" + webapp + "]"
-                        + " X to exit");
-                String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
-                if (str.equalsIgnoreCase("X"))
-                    break;
-                deployer.undeploy(name);
-            }
-        } catch(Exception e) {
-           throw new MojoExecutionException(e.getMessage(),e);
-       }
+            server.addContainer(ContainerBuilder.Type.all);
+        } catch (Exception ex) {
+           throw new MojoExecutionException(ex.getMessage(),ex);
+        }
     }
 
+    void setContainerType(ContainerBuilder.Type type) {
+        this.type = type;
+    }
 }
