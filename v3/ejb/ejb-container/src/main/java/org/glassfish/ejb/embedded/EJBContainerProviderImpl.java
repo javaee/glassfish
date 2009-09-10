@@ -248,7 +248,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 handles = detector.hasAnnotationInArchive(archive);
             }
 
-            if (_logger.isLogging(Level.INFO)) {
+            if (_logger.isLoggable(Level.INFO)) {
                 _logger.info("... is EJB module: " + handles);
                 if (handles) {
                     _logger.info("... is Requested EJB module [" + moduleName + "]: " 
