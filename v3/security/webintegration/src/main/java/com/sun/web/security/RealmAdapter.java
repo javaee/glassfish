@@ -168,7 +168,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      * The string manager for this package.
      */
     protected static final StringManager smgr =
-            StringManager.getManager(Constants.Package);
+            StringManager.getManager("com.sun.web.security");
 //    protected static final StringManager smRA =
 //            StringManager.getManager("com.sun.web.security");
     /**
