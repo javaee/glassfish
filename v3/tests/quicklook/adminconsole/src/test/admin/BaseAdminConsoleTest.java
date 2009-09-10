@@ -44,7 +44,7 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Parameters;
 
-import org.glassfish.api.amx.AMXBooter;
+import org.glassfish.external.amx.AMXGlassfish;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.base.DomainRoot;
 import java.io.File;
@@ -224,7 +224,7 @@ public class BaseAdminConsoleTest {
 
     protected DomainRoot _getDomainRoot(final MBeanServerConnection conn)
             throws MalformedURLException, IOException, java.net.MalformedURLException {
-        final ObjectName domainRootObjectName = AMXBooter.bootAMX(conn);
+        final ObjectName domainRootObjectName = AMXGlassfish.DEFAULT.bootAMX(conn);
         final DomainRoot domainRoot = ProxyFactory.getInstance(conn).getDomainRootProxy();
         return domainRoot;
     }

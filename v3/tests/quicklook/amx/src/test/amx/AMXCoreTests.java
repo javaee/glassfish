@@ -38,6 +38,7 @@ package amxtest;
 import javax.management.ObjectName;
 import javax.management.Attribute;
 import javax.management.AttributeList;
+import javax.management.InstanceNotFoundException;
 
 import org.testng.annotations.*;
 import org.testng.Assert;
@@ -48,16 +49,10 @@ import java.util.Map;
 import java.util.List;
 
 import  org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.DomainRoot;
-import org.glassfish.admin.amx.base.SystemStatus;
-import org.glassfish.admin.amx.core.Extra;
 import org.glassfish.admin.amx.core.Util;
-import org.glassfish.admin.amx.util.CollectionUtil;
-import org.glassfish.admin.amx.util.TimingDelta;
-import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
-import org.glassfish.admin.amx.intf.config.JDBCConnectionPool;
+import org.glassfish.admin.amx.util.ExceptionUtil;
 
 /** 
 Basic AMXProxy tests that verify connectivity and ability to
@@ -88,13 +83,24 @@ public final class AMXCoreTests extends AMXTestBase
     {
         try
         {
-        final Set<AMXProxy> all = getAllAMX();
-        assert all.size() > 20;
-        for (final AMXProxy amx : all)
-        {
-            final Set<AMXProxy> children = amx.childrenSet();
-            assert children != null;
-        }
+            final Set<AMXProxy> all = getAllAMX();
+            assert all.size() > 20 : "Expected at least 20 AMX MBeans, got: " + all.size();
+            for (final AMXProxy amx : all)
+            {
+                try
+                {
+                    final Set<AMXProxy> children = amx.childrenSet();
+                    assert children != null;
+                }
+                catch( final Exception e )
+                {
+                    if ( ExceptionUtil.getRootCause(e) instanceof InstanceNotFoundException )
+                    {
+                        continue;
+                    }
+                    throw e;
+                }
+            }
         }
         catch( final Throwable t )
         {

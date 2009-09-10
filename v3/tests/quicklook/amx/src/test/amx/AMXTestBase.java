@@ -39,6 +39,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import java.net.MalformedURLException;
 import java.io.IOException;
@@ -53,8 +54,15 @@ import org.testng.annotations.*;
 import org.testng.Assert;
 
 
-import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.Notification;
+import javax.management.NotificationListener;
+import javax.management.MBeanServerDelegateMBean;
+import javax.management.MBeanServerNotification;
+import javax.management.MBeanServerConnection;
+
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
@@ -66,8 +74,11 @@ import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.intf.config.*;
 import org.glassfish.admin.amx.util.TimingDelta;
 import org.glassfish.admin.amx.util.ListUtil;
+import org.glassfish.admin.amx.util.ExceptionUtil;
+import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
-import org.glassfish.api.amx.AMXBooter;
+
+import org.glassfish.external.amx.AMXGlassfish;
 
 /** The base class for AMX tests
  */
@@ -90,8 +101,6 @@ public class AMXTestBase
     private volatile Domain       mDomainConfig;
 
     private volatile Query mQueryMgr;
-
-    private volatile Set<AMXProxy> mAllAMX;
 
     protected static void debug(final String s)
     {
@@ -130,6 +139,98 @@ public class AMXTestBase
         }
     }
 
+    static final class MBeansListener implements NotificationListener
+    {
+        private final MBeanServerConnection mServer;
+        public MBeansListener(final MBeanServerConnection server)
+        {
+            mServer = server;
+        }
+        public void startListening()
+        {
+            final ObjectName delegate = JMXUtil.newObjectName( JMXUtil.MBEAN_SERVER_DELEGATE );
+            try
+            {
+                mServer.addNotificationListener( delegate, this, null, null);
+            }
+            catch( final Exception e )
+            {
+                throw new RuntimeException(e);
+            }
+        }
+        
+        public void handleNotification(
+            final Notification notif,
+            final Object handback) 
+        {
+            if ( ! (notif instanceof MBeanServerNotification) )
+            {
+                return;
+            }
+            final MBeanServerNotification mbs = (MBeanServerNotification)notif;
+            final ObjectName objectName = mbs.getMBeanName();
+            if ( mbs.getType().equals(MBeanServerNotification.REGISTRATION_NOTIFICATION ) )
+            {
+                debug( "Registered: " + objectName );
+            }
+            else if ( mbs.getType().equals(MBeanServerNotification.UNREGISTRATION_NOTIFICATION ) )
+            {
+                debug( "Unregistered: " + objectName );
+            }
+        }
+    }
+    
+    private static MBeansListener sMBeansListener = null;
+    protected synchronized void getMBeansListener() throws Exception
+    {
+        if ( sMBeansListener == null )
+        {
+            sMBeansListener = new MBeansListener(mMBeanServerConnection);
+            sMBeansListener.startListening();
+        }
+    }
+    
+    private static boolean sEnabledMonitoring = false;
+    
+    /** enable monitoring to HIGH for all available systems so that MBeans in those systems get tested */
+    protected synchronized void enableMonitoring() throws Exception
+    {
+        if ( ! sEnabledMonitoring )
+        {
+            sEnabledMonitoring = true;
+            
+            for( final Config config : mDomainConfig.getConfigs().getConfig().values() )
+            {
+                final MonitoringService mon = config.getMonitoringService();
+                if ( mon == null )
+                {
+                    // this can happen for temporary configs
+                    assert ! config.getName().equals("server-config");
+                    debug( "No MonitoringService in Config: " + config.objectName() );
+                    continue;
+                }
+                
+                final ModuleMonitoringLevels levels = mon.getModuleMonitoringLevels();
+                final Map<String,Object>  attrs = levels.attributesMap();
+                final AttributeList attributeList = new AttributeList();
+                for( final String attrName : attrs.keySet() )
+                {
+                    final String value = "" + attrs.get(attrName);
+                    if ( ModuleMonitoringLevels.OFF.equalsIgnoreCase(value) ||
+                        ModuleMonitoringLevels.LOW.equalsIgnoreCase(value))
+                    {
+                        debug( "Setting monitoring to HIGH for " + attrName );
+                        attributeList.add( new Attribute(attrName, ModuleMonitoringLevels.HIGH) );
+                    }
+                }
+                if ( attributeList.size() != 0 )
+                {
+                    levels.extra().setAttributes( attributeList );
+                }
+            }
+        }
+    }
+    
     /**
     Subclasses may override if desired.  AMX will have been started
     and initialized already.
@@ -153,11 +254,13 @@ public class AMXTestBase
             //debug( "AMXTestBase.setup(): millis to get QueryMgr: " + timing.elapsedMillis() );
             
             mDomainConfig = mDomainRoot.child(Domain.class);
-
-            mAllAMX = getQueryMgr().queryAll();
+            
+            getMBeansListener();
+            enableMonitoring();
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
         //debug( "AMXTestBase.setup(): total setup millis: " + overall.elapsedMillis() );
@@ -172,7 +275,9 @@ public class AMXTestBase
     Caller should use the QueryMgr if a fresh set is needed */
     protected Set<AMXProxy> getAllAMX()
     {
-        return mAllAMX;
+        final Set<AMXProxy> allAMX = getQueryMgr().queryAll();
+        assert allAMX.size() >= 30;
+        return allAMX;  
     }
 
     protected <T> Set<T> getAll(final Class<T> intf)
@@ -206,9 +311,10 @@ public class AMXTestBase
     protected final DomainRoot _getDomainRoot(final MBeanServerConnection conn)
             throws MalformedURLException, IOException, java.net.MalformedURLException
     {
-        final ObjectName domainRootObjectName = AMXBooter.bootAMX(conn);
+        final ObjectName domainRootObjectName = AMXGlassfish.DEFAULT.bootAMX(conn);
         final DomainRoot domainRoot = getProxyFactory().getDomainRootProxy();
-        return domainRoot;    }
+        return domainRoot;
+    }
 
     protected final MBeanServerConnection getMBeanServerConnection() { return mMBeanServerConnection; }
     
@@ -230,6 +336,14 @@ public class AMXTestBase
         //debug( "BaseAMXTest: connecting to: " + url );
         final MBeanServerConnection conn = jmxConn.getMBeanServerConnection();
         conn.getDomains();	// sanity check
+        try
+        {
+            final ObjectName domainRootObjectName = AMXGlassfish.DEFAULT.bootAMX(conn);
+        }
+        catch( final Exception e )
+        {
+            System.err.println( ExceptionUtil.toString(ExceptionUtil.getRootCause(e)) );
+        }
         //System.out.println( "Got connection, verified connectivity: " + (System.currentTimeMillis() - start));
         return conn;
     }
