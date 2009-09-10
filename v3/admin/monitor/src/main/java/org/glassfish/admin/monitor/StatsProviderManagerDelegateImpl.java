@@ -435,14 +435,14 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             // 1 mom per statsProvider
             mom = ManagedObjectManagerFactory.createFederated(MONITORING_SERVER);
             if (mom != null) {
-                if (!isMBeanRegistered(statsProvider, mbeanName)) {
+                //if (!isMBeanRegistered(statsProvider, mbeanName)) {
                     mom.stripPackagePrefix();
                     if (mbeanName != null && !mbeanName.isEmpty()) {
                         mom.createRoot(statsProvider, mbeanName);
                     } else {
                         mom.createRoot(statsProvider);
                     }
-                }
+                //}
             }
         //To register hierarchy in mom specify parent ManagedObject, and the ManagedObject itself
         //DynamicMBean mbean = (DynamicMBean)mom.register(parent, obj);
@@ -496,9 +496,13 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     private boolean getEnabledValue(String configElement) {
         boolean enabled = false;
         String level = monitoringService.getMonitoringLevel(configElement);
-        if (level.equals(ContainerMonitoring.LEVEL_HIGH) ||
-            level.equals(ContainerMonitoring.LEVEL_LOW)) {
-            enabled = true;
+        if (level != null) {
+            if (level.equals(ContainerMonitoring.LEVEL_HIGH) ||
+                    level.equals(ContainerMonitoring.LEVEL_LOW)) {
+                enabled = true;
+            }
+        } else {
+            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.WARNING, "module-monitoring-level or container-monitoring config element for " + configElement + " does not exist.");
         }
         return enabled;
     }
