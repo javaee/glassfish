@@ -142,9 +142,12 @@ public class AMXTestBase
     static final class MBeansListener implements NotificationListener
     {
         private final MBeanServerConnection mServer;
-        public MBeansListener(final MBeanServerConnection server)
+        private final String                mDomain;
+        
+        public MBeansListener(final MBeanServerConnection server, final String domain)
         {
-            mServer = server;
+            mServer  = server;
+            mDomain  = domain;
         }
         public void startListening()
         {
@@ -169,14 +172,17 @@ public class AMXTestBase
             }
             final MBeanServerNotification mbs = (MBeanServerNotification)notif;
             final ObjectName objectName = mbs.getMBeanName();
-            if ( mbs.getType().equals(MBeanServerNotification.REGISTRATION_NOTIFICATION ) )
+            if  ( "*".equals(mDomain) || mDomain.equals(objectName.getDomain()) )
             {
-                debug( "Registered: " + objectName );
-            }
-            else if ( mbs.getType().equals(MBeanServerNotification.UNREGISTRATION_NOTIFICATION ) )
-            {
-                debug( "Unregistered: " + objectName );
-            }
+                if ( mbs.getType().equals(MBeanServerNotification.REGISTRATION_NOTIFICATION ) )
+                {
+                    debug( "Registered: " + objectName );
+                }
+                else if ( mbs.getType().equals(MBeanServerNotification.UNREGISTRATION_NOTIFICATION ) )
+                {
+                    debug( "Unregistered: " + objectName );
+                }
+                }
         }
     }
     
@@ -185,7 +191,7 @@ public class AMXTestBase
     {
         if ( sMBeansListener == null )
         {
-            sMBeansListener = new MBeansListener(mMBeanServerConnection);
+            sMBeansListener = new MBeansListener(mMBeanServerConnection, mDomainRoot.objectName().getDomain());
             sMBeansListener.startListening();
         }
     }
@@ -221,6 +227,10 @@ public class AMXTestBase
                     {
                         debug( "Setting monitoring to HIGH for " + attrName );
                         attributeList.add( new Attribute(attrName, ModuleMonitoringLevels.HIGH) );
+                    }
+                    else if ( ModuleMonitoringLevels.HIGH.equalsIgnoreCase(value) )
+                    {
+                        debug( "Monitoring at " + value + " for " + attrName );
                     }
                 }
                 if ( attributeList.size() != 0 )

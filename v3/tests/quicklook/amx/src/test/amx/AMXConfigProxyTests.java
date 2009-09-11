@@ -389,7 +389,7 @@ public final class AMXConfigProxyTests extends AMXTestBase
         
         // create 100 <property> children
         // this is in part ot ensure that the AMXValidator doens't barf when objects register/unregister
-        final int NUM_PROPS = 100;
+        final int NUM_PROPS = 20;
         final Map<String,Object>[] propMaps = newPropertyMaps( "AMXConfigProxyTests.testCreateProperties-", NUM_PROPS);
         
         final Set<String> propNames = new HashSet<String>();
