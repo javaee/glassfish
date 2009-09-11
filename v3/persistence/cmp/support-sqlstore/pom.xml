@@ -60,6 +60,11 @@
             </roles>
         </developer>
     </developers>
+
+    <properties>
+        <findbugs.exclude>exclude.xml</findbugs.exclude>
+    </properties>
+
     <build>
         <resources>
             <resource>

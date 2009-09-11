@@ -1,0 +1,12 @@
+<FindBugsFilter>
+    <!--
+	Tim Quinn's code: forces garbage collection;
+	extremely dubious except in benchmarking code (H).
+    -->
+    <Match>
+	<Class name="com.sun.enterprise.util.io.FileUtils"/>
+	<Method name="doWithRetry"/>
+	<Bug pattern="DM_GC"/>
+	<Priority value="1"/>
+    </Match>
+</FindBugsFilter>
