@@ -16,5 +16,5 @@ call "%CONFIG_HOME%\asenv.bat"
 
 set AS_JAVA=%JAVA_HOME%
 
-"%AS_JAVA%\bin\java" -Dcom.sun.aas.utool.LogLevel="INFO" -Dcom.sun.aas.domainRoot="%DIRNAME%\%AS_DEF_DOMAINS_PATH%"  -Dcom.sun.aas.java.home="%AS_JAVA%" -jar "%AS_INSTALL_MOD%/upgrade-tool.jar" %*
+"%AS_JAVA%\bin\java" -Dcom.sun.aas.domainRoot="%DIRNAME%\%AS_DEF_DOMAINS_PATH%"  -Dcom.sun.aas.java.home="%AS_JAVA%" -jar "%AS_INSTALL_MOD%/upgrade-tool.jar" %*
 endlocal

@@ -18,4 +18,4 @@ LD_LIBRARY_PATH="$AS_INSTALL/lib":"$LD_LIBRARY_PATH";export LD_LIBRARY_PATH
 AS_JAVA=${JAVA_HOME}
 
 # note: $AS_DEF_DOMAINS_PATH is relative to config dir
-"${AS_JAVA}/bin/java" -Dcom.sun.aas.utool.LogLevel="INFO" -Dcom.sun.aas.domainRoot="${DIRNAME}/$AS_DEF_DOMAINS_PATH" -Dcom.sun.aas.java.home="$AS_JAVA"  -jar "$AS_INSTALL_MOD/upgrade-tool.jar" "$@"
+"${AS_JAVA}/bin/java" -Dcom.sun.aas.domainRoot="${DIRNAME}/$AS_DEF_DOMAINS_PATH" -Dcom.sun.aas.java.home="$AS_JAVA"  -jar "$AS_INSTALL_MOD/upgrade-tool.jar" "$@"
