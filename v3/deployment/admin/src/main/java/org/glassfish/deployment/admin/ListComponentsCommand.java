@@ -103,7 +103,14 @@ public class ListComponentsCommand  implements AdminCommand {
          * @return true if application is of the specified type else return
          *  false.
          */
-    boolean isApplicationOfThisType(final Application app, final String type) {
+    boolean isApplicationOfThisType(final Application app, String type) {
+        // do the type conversion to be compatible with v2 syntax
+        if (type.equals("application")) {
+            type = "ear";
+        } else if (type.equals("webservice")) {
+            type = "webservices";
+        }
+
         List <Engine> engineList = getAppEngines(app);
         for (Engine engine : engineList) {
             if (engine.getSniffer().equals(type)) {
