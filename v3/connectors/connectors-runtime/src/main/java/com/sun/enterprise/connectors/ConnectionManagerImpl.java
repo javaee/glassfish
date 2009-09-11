@@ -270,7 +270,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
             return getResource(txLevel, poolmgr, mcf, spec, subject, cxRequestInfo, info, desc, shareable);
 
         } catch (PoolingException ex) {
-            Object[] params = new Object[]{poolName, ex.getMessage()};
+            Object[] params = new Object[]{poolName, ex};
             _logger.log(Level.WARNING, "poolmgr.get_connection_failure", params);
             StringManager localStrings = StringManager.getManager(ConnectionManagerImpl.class);
             String i18nMsg = localStrings.getString("con_mgr.error_creating_connection", ex.getMessage());
