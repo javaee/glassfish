@@ -178,8 +178,12 @@ public class AsadminMain {
             po.setProgramArguments(copyOfArgs);
             po.setClassPath(classPath);
             po.setClassName(className);
-            if (argv.length == 0)
-                argv = new String[] { "multimode" };
+            if (argv.length == 0) {
+                if (po.isHelp())
+                    argv = new String[] { "help" };
+                else
+                    argv = new String[] { "multimode" };
+            }
             command = argv[0];
 
             habitat.addComponent("environment", env);
