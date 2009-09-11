@@ -614,6 +614,10 @@ public class ApplicationArchivist extends Archivist<Application>
                 embeddedArchive.close();
             }
             if (descriptor != null && descriptor instanceof BundleDescriptor) {
+                descriptor.getModuleDescriptor().setArchiveUri(
+                    aModule.getArchiveUri());
+                aModule.setModuleName(
+                    descriptor.getModuleDescriptor().getModuleName());
                 aModule.setDescriptor((BundleDescriptor) descriptor);
                 ((BundleDescriptor) descriptor).setApplication(app);
                 aModule.setManifest(newArchivist.getManifest());
