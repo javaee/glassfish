@@ -660,8 +660,9 @@ public final class AMXConfigLoader extends MBeanImplBase
         return spt.getTypeString();
     }
     
+    /** Get the key value eg the name to be used in an ObjectName */
         static String
-    getName(final ConfigBean cb)
+    getKey(final ConfigBean cb)
     {
         final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance( cb );
         
@@ -722,7 +723,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         }
         
         final String type = getType( cb );
-        String name = getName( cb ) ;
+        String name = getKey( cb ) ;
         
         final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance( cb );
         if ( (! spt.isSingleton()) && (name == null || name.length() == 0) )

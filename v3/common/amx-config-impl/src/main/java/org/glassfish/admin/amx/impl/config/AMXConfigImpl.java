@@ -248,13 +248,19 @@ public class AMXConfigImpl extends AMXImplBase
     /**
     The actual name could be different than the 'name' property in the ObjectName if it
     contains characters that are illegal for an ObjectName.
+    Also, there can be a Name attribute which is not a key value.
      */
     @Override
     public String getName()
     {
         final ConfigBean cb = getConfigBean();
 
-        String name = AMXConfigLoader.getName(cb);
+        String name = AMXConfigLoader.getKey(cb);
+        if ( name == null )
+        {
+            // deal with annoying and rare case of name existing, but not a key value
+            name = cb.rawAttribute( "name" );
+        }
         
         return name == null ? NO_NAME : name;
     }

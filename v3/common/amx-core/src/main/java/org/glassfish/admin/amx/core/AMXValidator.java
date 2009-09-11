@@ -676,10 +676,13 @@ public final class AMXValidator
         {
             // no name property, it's by definition a singleton
             final String name = proxy.getName();
+            /*
+                A Name attribute is legal on a singleton (it might not be a key value)
             if (!name.equals(NO_NAME))
             {
                 fail(objectName, "getName() returned a non-empty name for a singleton: " + name);
             }
+            */
             if (!proxy.extra().singleton())
             {
                 fail(objectName, "Metadata claims named (non-singleton), but no name property present in ObjectName");
