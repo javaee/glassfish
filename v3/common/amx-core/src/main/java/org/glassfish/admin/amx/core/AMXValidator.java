@@ -36,6 +36,8 @@
 package org.glassfish.admin.amx.core;
 
 import java.io.IOException;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -88,10 +90,46 @@ the validation is in progress— that is not a test failure, since it is perfect
 @Taxonomy(stability = Stability.UNCOMMITTED)
 public final class AMXValidator
 {
-    private static void debug(final Object o)
+    /** we can run in the client or server, so use a fixed-name Logger */
+    private static final Logger sLogger = Logger.getLogger( AMXValidator.class.getName() );
+    private static void log(
+        final Level     level,
+        final String    msg,
+        final Throwable t)
     {
-        System.out.println(o.toString());
+        sLogger.log(level, msg, t);
     }
+    private static void logWarning(
+        final String    msg,
+        final Throwable t)
+    {
+        log(Level.WARNING, msg, t);
+    }
+    private static void progress(
+        final Object... args)
+    {
+        log(Level.FINE, toString(args), null);
+    }
+    
+    private static String toString(final Object... args)
+    {
+        final StringBuilder buf = new StringBuilder();
+        for( final Object o : args )
+        {
+            buf.append( "" + o );
+        }
+        return buf.toString();
+    }
+    
+    private static final Level LEVEL_DEBUG = Level.FINE;
+    private static void debug(final Object... args)
+    {
+        if ( sLogger.isLoggable(LEVEL_DEBUG) )
+        {
+            log( LEVEL_DEBUG, toString(args), null );
+        }
+    }
+    
 
     private static final String NL = StringUtil.NEWLINE();
 
@@ -387,7 +425,7 @@ public final class AMXValidator
     
     private List<String> _validate(final AMXProxy proxy)
     {
-        //debug( "Validate: " + proxy.objectName() );
+        progress( "Validate: ", proxy.objectName() );
         final List<String> problems = new ArrayList<String>();
         final ObjectName objectName = proxy.objectName();
 
@@ -494,7 +532,15 @@ public final class AMXValidator
             }
             catch (final Throwable t)
             {
-                addToProblems( "Attribute failed: '" + attrName + "': ", problems, t);
+                if ( attrName.equals(ATTR_NAME) || attrName.equals(ATTR_PARENT) || attrName.equals(ATTR_CHILDREN) )
+                {
+                    addToProblems( "Attribute failed: '" + attrName + "': ", problems, t);
+                }
+                else   // too stringer to consider the MBean non-compliant because of a general attribute failure.
+                {
+                    // this code can run in a client; a logger is not advisable
+                    logWarning( "Attribute '" + attrName + "' failed for " + proxy.objectName(), ExceptionUtil.getRootCause(t));
+                }
             }
         }
 
@@ -578,7 +624,8 @@ public final class AMXValidator
 
         return problems;
     }
-
+    
+    
     private void fail(final ObjectName objectName, final String msg)
             throws ValidationFailureException
     {
@@ -1114,10 +1161,10 @@ public final class AMXValidator
         {
             try {
                 mMBeanServer.unregisterMBean(objectName);
-                debug( "Unregistered non-compliant MBean " + objectName );
+                logWarning( "Unregistered non-compliant MBean " + objectName, null);
             }
             catch( final Exception ignore ) {
-                debug( "Unable to unregister non-compliant MBean " + objectName );
+                logWarning( "Unable to unregister non-compliant MBean " + objectName, null);
             }
         }
     }
@@ -1151,7 +1198,7 @@ public final class AMXValidator
             {
                 if ( ! instanceNotFound(e) )
                 {
-                    debug( "Unable to create AMXProxy for " + objectName );
+                    progress( "Unable to create AMXProxy for " + objectName );
                     
                     final String msg = "Cannot create AMXProxy for MBean \"" + objectName + "\" -- MBean is  non-compliant, unregistering it.";
                     problems.add(msg);
@@ -1166,7 +1213,7 @@ public final class AMXValidator
                 }
                 catch( final Exception e )
                 {
-                    //debug( "AMXValidator.validate(): got exception from _validate for " + objectName + " : " + e );
+                    progress( "AMXValidator.validate(): got exception from _validate for " + objectName + " : " + e );
                     problems = new ArrayList<String>();
                     addToProblems( "Validation failure for MBean " + objectName + ", ", problems, e);
                 }
