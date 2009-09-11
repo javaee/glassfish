@@ -50,6 +50,7 @@ import java.util.Iterator;
 import java.util.List;
 //import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -148,7 +149,7 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
             JdbcConnPoolStatsProvider jdbcPoolStatsProvider =
                     new JdbcConnPoolStatsProvider(poolName, logger);
             StatsProviderManager.register(
-                    "jdbc",
+                    ContainerMonitoring.JDBC_CONNECTION_POOL,
                     PluginPoint.SERVER,
                     "resources/" + poolName, jdbcPoolStatsProvider);            
             String jdbcPoolName = jdbcPoolStatsProvider.getJdbcPoolName();
@@ -173,7 +174,7 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
             ConnectorConnPoolStatsProvider ccPoolStatsProvider =
                     new ConnectorConnPoolStatsProvider(poolName, logger);
             StatsProviderManager.register(
-                    "connector",
+                    ContainerMonitoring.CONNECTOR_CONNECTION_POOL,
                     PluginPoint.SERVER,
                     "resources/" + poolName, ccPoolStatsProvider);            
             String ccPoolName = ccPoolStatsProvider.getCcPoolName();
