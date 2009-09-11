@@ -218,7 +218,6 @@ public final class AMXStartupService
 
     public ObjectName loadAMXMBeans()
     {
-System.out.println( "AMXStartupService.loadAMXMBeans:  ENTER" );
         ObjectName objectName = AMXGlassfish.DEFAULT.domainRoot();
         if ( ! mMBeanServer.isRegistered(objectName) )
         {
