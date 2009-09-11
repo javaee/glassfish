@@ -66,7 +66,7 @@ public class VersionCommand extends CLICommand {
     protected void prepare()
             throws CommandException, CommandValidationException {
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, "verbose", '\0', "BOOLEAN", false, "false");
+        addOption(opts, "verbose", 'v', "BOOLEAN", false, "false");
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandType = "STRING";
@@ -97,11 +97,17 @@ public class VersionCommand extends CLICommand {
     private void invokeLocal() {
         logger.printMessage(
             strings.get("version.local", Version.getFullVersion()));
+        if (getBooleanOption(("verbose")))
+            logger.printMessage(strings.get("version.local.java", System.getProperty("java.version")));
     }
 
     private void printRemoteException(Exception e) {
-        logger.printMessage(strings.get("remote.version.failed", 
+        if (CLIConstants.debug())
+            logger.printMessage(strings.get("remote.version.failed.debug",
                 programOpts.getHost(), programOpts.getPort() + ""));
-        logger.printDebugMessage(e.getMessage());        
+        else
+            logger.printMessage(strings.get("remote.version.failed.non-debug", 
+                programOpts.getHost(), programOpts.getPort() + ""));
+        logger.printDebugMessage(e.getMessage());
     }
 }

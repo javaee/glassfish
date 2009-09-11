@@ -69,4 +69,7 @@ public class CLIConstants {
     private CLIConstants() {
        // no instances allowed!
     }
+    public static final boolean debug() {
+        return debugMode;
+    }
 }

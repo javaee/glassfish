@@ -30,6 +30,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.appserv.server.util.Version;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.Param;
 import org.jvnet.hk2.annotations.Inject;
 
@@ -42,16 +43,25 @@ import org.jvnet.hk2.annotations.Inject;
 @I18n("version.command")
 public class VersionCommand implements AdminCommand {
     
-    @Param(optional=true, defaultValue="false")
+    @Param(optional=true, defaultValue="false", shortName = "v")
     Boolean verbose;
     
     @Inject
     Version version;
 
+    final private static LocalStringManagerImpl strings = new LocalStringManagerImpl(VersionCommand.class);
+
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);
-        report.setMessage(version.getFullVersion());
+        StringBuilder vsb = new StringBuilder(strings.getLocalString("version", "Server version: {0}", version.getFullVersion()));
+        if (verbose) {
+            vsb.append(System.getProperty("line.separator"));
+            vsb.append(strings.getLocalString("version.java", "Server's Java Runtime Environment version: {0}", System.getProperty("java.version")));
+            vsb.append(System.getProperty("line.separator"));
+            vsb.append(strings.getLocalString("version.more.0", "Use the command: 'list-modules' to see more information"));
+        }
+        report.setMessage(vsb.toString());
     }
     /* Implementation note: Currently (Aug 2008) the --verbose
      * option does not do anything special. Please see:
