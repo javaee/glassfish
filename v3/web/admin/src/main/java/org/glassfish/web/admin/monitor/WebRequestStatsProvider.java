@@ -35,6 +35,7 @@
  */
 package org.glassfish.web.admin.monitor;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -131,14 +132,18 @@ public class WebRequestStatsProvider {
 
     @ProbeListener("glassfish:web:http-service:requestStartEvent")
     public void requestStartEvent(
-        @ProbeParam("request") HttpServletRequest request,
-        @ProbeParam("response") HttpServletResponse response,
-        @ProbeParam("hostName") String hostName) {
-        logger.finest("[TM]requestStartEvent Unprocessed received - virtual-server = " +
-                            request.getServerName() + ":" + request.getServerPort() + 
-                            ": application = " + request.getContextPath() + " : servlet = " +
-                            request.getServletPath() + " : Expecting (vsName, appName) = (" +
-                            virtualServerName + ", " + moduleName + ")");
+            @ProbeParam("request") HttpServletRequest request,
+            @ProbeParam("response") HttpServletResponse response,
+            @ProbeParam("hostName") String hostName) {
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest(
+                "[TM]requestStartEvent Unprocessed received - virtual-server = " +
+                request.getServerName() + ":" + request.getServerPort() + 
+                ": application = " + request.getContextPath() +
+                " : servlet = " + request.getServletPath() +
+                " : Expecting (vsName, appName) = (" +
+                virtualServerName + ", " + moduleName + ")");
+        }
         if ((virtualServerName != null) && (moduleName != null)) {
             //String vs = WebTelemetryBootstrap.getVirtualServerName(
             //    hostName, String.valueOf(request.getServerPort()));
@@ -148,34 +153,43 @@ public class WebRequestStatsProvider {
             if ((appName != null && hostName != null) && hostName.equals(virtualServerName) && appName.equals(moduleName)){
                 //increment counts
                 requestProcessTime.entry();
-                logger.finest("[TM]requestStartEvent resolved - virtual-server = " +
-                                    request.getServerName() + ": application = " +
-                                    contextPath + " :appName = " + appName + " : servlet = " +
-                                    request.getServletPath() + " : port = " +
-                                    request.getServerPort());
+                if (logger.isLoggable(Level.FINEST)) {
+                    logger.finest(
+                        "[TM]requestStartEvent resolved - virtual-server = " +
+                        request.getServerName() + ": application = " +
+                        contextPath + " :appName = " + appName + " : servlet = " +
+                        request.getServletPath() + " : port = " +
+                        request.getServerPort());
+                }
             }
         }
         else {
             requestProcessTime.entry();
-            logger.finest("[TM]requestStartEvent resolved - virtual-server = " +
-                                request.getServerName() + ": application = " +
-                                request.getContextPath() + " : servlet = " +
-                                request.getServletPath());
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest(
+                    "[TM]requestStartEvent resolved - virtual-server = " +
+                    request.getServerName() + ": application = " +
+                    request.getContextPath() + " : servlet = " +
+                    request.getServletPath());
+            }
         }
     }
 
     @ProbeListener("glassfish:web:http-service:requestEndEvent")
     public void requestEndEvent(
-        @ProbeParam("request") HttpServletRequest request,
-        @ProbeParam("response") HttpServletResponse response,
-        @ProbeParam("hostName") String hostName,
-        @ProbeParam("statusCode") int statusCode) {
-        logger.finest("[TM]requestEndEvent Unprocessed received - virtual-server = " +
-                            request.getServerName() + ": application = " +
-                            request.getContextPath() + " : servlet = " +
-                            request.getServletPath() + " :Response code = " +
-                            statusCode + " : Expecting (vsName, appName) = (" +
-                            virtualServerName + ", " + moduleName + ")");
+            @ProbeParam("request") HttpServletRequest request,
+            @ProbeParam("response") HttpServletResponse response,
+            @ProbeParam("hostName") String hostName,
+            @ProbeParam("statusCode") int statusCode) {
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest(
+                "[TM]requestEndEvent Unprocessed received - virtual-server = " +
+                request.getServerName() + ": application = " +
+                request.getContextPath() + " : servlet = " +
+                request.getServletPath() + " :Response code = " +
+                statusCode + " : Expecting (vsName, appName) = (" +
+                virtualServerName + ", " + moduleName + ")");
+        }
         if ((virtualServerName != null) && (moduleName != null)) {
             //String vs = WebTelemetryBootstrap.getVirtualServerName(
             //    hostName, String.valueOf(request.getServerPort()));
@@ -185,28 +199,38 @@ public class WebRequestStatsProvider {
             if ((appName != null && hostName != null) && hostName.equals(virtualServerName) && appName.equals(moduleName)){
                 //increment counts
                 requestProcessTime.exit();
-                if (statusCode >= 400)
+                if (statusCode >= 400) {
                     errorCount.increment();
-                logger.finest("[TM]requestEndEvent resolved - virtual-server = " +
-                                    request.getServerName() + ": application = " +
-                                    contextPath + " :appName = " + appName + " : servlet = " +
-                                    request.getServletPath() + " : port = " +
-                                    request.getServerPort() + " :Response code = " +
-                            statusCode + " :Response time = " +
-                            requestProcessTime.getTime());
+                }
+                if (logger.isLoggable(Level.FINEST)) {
+                    logger.finest(
+                        "[TM]requestEndEvent resolved - virtual-server = " +
+                        request.getServerName() +
+                        ": application = " + contextPath +
+                        " :appName = " + appName +
+                        " : servlet = " + request.getServletPath() +
+                        " : port = " + request.getServerPort() +
+                        " :Response code = " + statusCode +
+                        " :Response time = " +
+                        requestProcessTime.getTime());
+                }
             }
         }
         else {
             requestProcessTime.exit();
-            if (statusCode >= 400)
+            if (statusCode >= 400) {
                 errorCount.increment();
-            logger.finest("[TM]requestEndEvent resolved - virtual-server = " +
-                                request.getServerName() + ": application = " +
-                                request.getContextPath() + " : servlet = " +
-                                request.getServletPath() + " : port = " +
-                                request.getServerPort()  + " :Response code = " +
-                                statusCode + " :Response time = " +
-                                requestProcessTime.getTime());
+            }
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest(
+                    "[TM]requestEndEvent resolved - virtual-server = " +
+                    request.getServerName() + ": application = " +
+                    request.getContextPath() + " : servlet = " +
+                    request.getServletPath() + " : port = " +
+                    request.getServerPort()  + " :Response code = " +
+                    statusCode + " :Response time = " +
+                    requestProcessTime.getTime());
+            }
         }
     }
 

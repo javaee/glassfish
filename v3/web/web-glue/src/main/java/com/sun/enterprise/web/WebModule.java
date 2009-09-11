@@ -1997,11 +1997,19 @@ public class WebModule extends PwcWebModule {
      */
 
     public void servletInitializedEvent(Servlet servlet) {
-        servletProbeProvider.servletInitializedEvent(servlet, _id, vsId);
+        String servletName = null;
+        if (servlet.getServletConfig() != null) {
+            servletName = servlet.getServletConfig().getServletName();
+        }
+        servletProbeProvider.servletInitializedEvent(servletName, _id, vsId);
     }
 
     public void servletDestroyedEvent(Servlet servlet) {
-        servletProbeProvider.servletDestroyedEvent(servlet, _id, vsId);
+        String servletName = null;
+        if (servlet.getServletConfig() != null) {
+            servletName = servlet.getServletConfig().getServletName();
+        }
+        servletProbeProvider.servletDestroyedEvent(servletName, _id, vsId);
     }
 
 
@@ -2011,12 +2019,13 @@ public class WebModule extends PwcWebModule {
 
     @Override
     public void sessionCreatedEvent(HttpSession session) {
-        sessionProbeProvider.sessionCreatedEvent(session, _id, vsId);
+        sessionProbeProvider.sessionCreatedEvent(session.getId(), _id, vsId);
     }
 
     @Override
     public void sessionDestroyedEvent(HttpSession session) {
-        sessionProbeProvider.sessionDestroyedEvent(session, _id, vsId);
+        sessionProbeProvider.sessionDestroyedEvent(session.getId(), _id,
+            vsId);
     }
 
     @Override
@@ -2026,37 +2035,43 @@ public class WebModule extends PwcWebModule {
 
     @Override
     public void sessionExpiredEvent(HttpSession session) {
-        sessionProbeProvider.sessionExpiredEvent(session, _id, vsId);
+        sessionProbeProvider.sessionExpiredEvent(session.getId(), _id, vsId);
     }
 
     @Override
     public void sessionPersistedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionPersistedStartEvent(session, _id, vsId);
+        sessionProbeProvider.sessionPersistedStartEvent(session.getId(), _id,
+            vsId);
     }
 
     @Override
     public void sessionPersistedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionPersistedEndEvent(session, _id, vsId);
+        sessionProbeProvider.sessionPersistedEndEvent(session.getId(), _id,
+            vsId);
     }
 
     @Override
     public void sessionActivatedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionActivatedStartEvent(session, _id, vsId);
+        sessionProbeProvider.sessionActivatedStartEvent(session.getId(), _id,
+            vsId);
     }
 
     @Override
     public void sessionActivatedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionActivatedEndEvent(session, _id, vsId);
+        sessionProbeProvider.sessionActivatedEndEvent(session.getId(), _id,
+            vsId);
     }
 
     @Override
     public void sessionPassivatedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionPassivatedStartEvent(session, _id, vsId);
+        sessionProbeProvider.sessionPassivatedStartEvent(session.getId(), _id,
+            vsId);
     }
 
     @Override
     public void sessionPassivatedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionPassivatedEndEvent(session, _id, vsId);
+        sessionProbeProvider.sessionPassivatedEndEvent(session.getId(), _id,
+            vsId);
     }
 
 

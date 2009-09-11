@@ -35,8 +35,8 @@
  */
 package org.glassfish.web.admin.monitor;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.Servlet;
 import org.glassfish.external.statistics.CountStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.external.probe.provider.annotations.*;
@@ -58,7 +58,8 @@ public class ServletStatsProvider {
     private String vsName;
     private Logger logger;
     
-    public ServletStatsProvider(String moduleName, String vsName, Logger logger) {
+    public ServletStatsProvider(String moduleName, String vsName,
+            Logger logger) {
         this.logger = logger;
         this.moduleName = moduleName;
         this.vsName = vsName;
@@ -88,12 +89,15 @@ public class ServletStatsProvider {
     
     @ProbeListener("glassfish:web:servlet:servletInitializedEvent")
     public void servletInitializedEvent(
-                    @ProbeParam("servlet") Servlet servlet,
+                    @ProbeParam("servletName") String servletName,
                     @ProbeParam("appName") String appName,
                     @ProbeParam("hostName") String hostName) {
-	// handle the servlet loaded probe events
-        logger.finest("Servlet Loaded event received - servletName = " + 
-                             ": appName = " + appName + ": hostName = " + hostName);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Servlet Loaded event received - " +
+                          "servletName = " + servletName +
+                          ": appName = " + appName + ": hostName = " +
+                          hostName);
+        }
         if (!isValidEvent(appName, hostName)) {
             return;
         }
@@ -107,12 +111,15 @@ public class ServletStatsProvider {
 
     @ProbeListener("glassfish:web:servlet:servletDestroyedEvent")
     public void servletDestroyedEvent(
-                    @ProbeParam("servlet") Servlet servlet,
+                    @ProbeParam("servletName") String servletName,
                     @ProbeParam("appName") String appName,
                     @ProbeParam("hostName") String hostName) {
-	// handle the servlet loaded probe events
-        logger.finest("Servlet Destroyed event received - servletName = " + 
-                             ": appName = " + appName + ": hostName = " + hostName);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Servlet Destroyed event received - " +
+                          "servletName = " + servletName +
+                          ": appName = " + appName + ": hostName = " +
+                          hostName);
+        }
         if (!isValidEvent(appName, hostName)) {
             return;
         }

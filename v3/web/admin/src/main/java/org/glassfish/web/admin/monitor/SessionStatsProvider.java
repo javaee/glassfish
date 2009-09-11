@@ -35,8 +35,8 @@
  */
 package org.glassfish.web.admin.monitor;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpSession;
 import org.glassfish.external.statistics.CountStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.external.probe.provider.annotations.*;
@@ -54,11 +54,13 @@ import org.glassfish.gmbal.ManagedObject;
 @ManagedObject
 @Description( "Web Container Session Statistics" )
 public class SessionStatsProvider{
+
     private String moduleName;
     private String vsName;
     private Logger logger;    
     
-    public SessionStatsProvider(String moduleName, String vsName, Logger logger) {
+    public SessionStatsProvider(String moduleName, String vsName,
+                                Logger logger) {
         this.logger = logger;
         this.moduleName = moduleName;
         this.vsName = vsName;
@@ -123,13 +125,15 @@ public class SessionStatsProvider{
     
     @ProbeListener("glassfish:web:session:sessionCreatedEvent")
     public void sessionCreatedEvent(
-        @ProbeParam("session") HttpSession session,
+        @ProbeParam("sessionId") String sessionId,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
 
-        logger.finest("[TM]sessionCreatedEvent received - session = " + 
-                            session.toString() + ": appname = " + appName + 
-                            ": hostName = " + hostName);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("[TM]sessionCreatedEvent received - session = " + 
+                          sessionId + ": appname = " + appName + 
+                          ": hostName = " + hostName);
+        }
         if (!isValidEvent(appName, hostName)) {
             return;
         }
@@ -139,13 +143,15 @@ public class SessionStatsProvider{
 
     @ProbeListener("glassfish:web:session:sessionDestroyedEvent")
     public void sessionDestroyedEvent(
-        @ProbeParam("session") HttpSession session,
+        @ProbeParam("sessionId") String sessionId,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        logger.finest("[TM]sessionDestroyedEvent received - session = " + 
-                            session.toString() + ": appname = " + appName + 
-                            ": hostName = " + hostName);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("[TM]sessionDestroyedEvent received - session = " + 
+                          sessionId + ": appname = " + appName + 
+                          ": hostName = " + hostName);
+        }
         if (!isValidEvent(appName, hostName)) {
             return;
         }
@@ -157,10 +163,12 @@ public class SessionStatsProvider{
         @ProbeParam("maxThresholdSize") int maxSessions,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
-        
-        logger.finest("[TM]sessionRejectedEvent received - max sessions = " + 
-                            maxSessions + ": appname = " + appName + 
-                            ": hostName = " + hostName);
+
+        if (logger.isLoggable(Level.FINEST)) {        
+            logger.finest("[TM]sessionRejectedEvent received - max sessions = " + 
+                          maxSessions + ": appname = " + appName + 
+                          ": hostName = " + hostName);
+        }
         if (!isValidEvent(appName, hostName)) {
             return;
         }
@@ -171,13 +179,15 @@ public class SessionStatsProvider{
 
     @ProbeListener("glassfish:web:session:sessionExpiredEvent")
     public void sessionExpiredEvent(
-        @ProbeParam("session") HttpSession session,
+        @ProbeParam("sessionId") String sessionId,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        logger.finest("[TM]sessionExpiredEvent received - session = " + 
-                            session.toString() + ": appname = " + appName + 
-                            ": hostName = " + hostName);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("[TM]sessionExpiredEvent received - session = " + 
+                          sessionId + ": appname = " + appName + 
+                          ": hostName = " + hostName);
+        }
         if (!isValidEvent(appName, hostName)) {
             return;
         }
@@ -186,13 +196,15 @@ public class SessionStatsProvider{
 
     @ProbeListener("glassfish:web:session:sessionPersistedStartEvent")
     public void sessionPersistedStartEvent(
-        @ProbeParam("session") HttpSession session,
+        @ProbeParam("sessionId") String sessionId,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        logger.finest("[TM]sessionPersistedStartEvent received - session = " + 
-                            session.toString() + ": appname = " + appName + 
-                            ": hostName = " + hostName);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("[TM]sessionPersistedStartEvent received - session = " + 
+                          sessionId + ": appname = " + appName + 
+                          ": hostName = " + hostName);
+        }
         if (!isValidEvent(appName, hostName)) {
             return;
         }
@@ -200,13 +212,15 @@ public class SessionStatsProvider{
 
     @ProbeListener("glassfish:web:session:sessionPersistedEndEvent")
     public void sessionPersistedEndEvent(
-        @ProbeParam("session") HttpSession session,
+        @ProbeParam("sessionId") String sessionId,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        logger.finest("[TM]sessionPersistedEndEvent received - session = " + 
-                            session.toString() + ": appname = " + appName + 
-                            ": hostName = " + hostName);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("[TM]sessionPersistedEndEvent received - session = " + 
+                          sessionId + ": appname = " + appName + 
+                          ": hostName = " + hostName);
+        }
         if (!isValidEvent(appName, hostName)) {
             return;
         }
@@ -215,13 +229,15 @@ public class SessionStatsProvider{
 
     @ProbeListener("glassfish:web:session:sessionActivatedStartEvent")
     public void sessionActivatedStartEvent(
-        @ProbeParam("session") HttpSession session,
+        @ProbeParam("sessionId") String sessionId,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        logger.finest("[TM]sessionActivatedStartEvent received - session = " + 
-                            session.toString() + ": appname = " + appName + 
-                            ": hostName = " + hostName);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("[TM]sessionActivatedStartEvent received - session = " + 
+                          sessionId + ": appname = " + appName + 
+                          ": hostName = " + hostName);
+        }
         if (!isValidEvent(appName, hostName)) {
             return;
         }
@@ -229,13 +245,15 @@ public class SessionStatsProvider{
 
     @ProbeListener("glassfish:web:session:sessionActivatedEndEvent")
     public void sessionActivatedEndEvent(
-        @ProbeParam("session") HttpSession session,
+        @ProbeParam("sessionId") String sessionId,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        logger.finest("[TM]sessionActivatedEndEvent received - session = " + 
-                            session.toString() + ": appname = " + appName + 
-                            ": hostName = " + hostName);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("[TM]sessionActivatedEndEvent received - session = " + 
+                          sessionId + ": appname = " + appName + 
+                          ": hostName = " + hostName);
+        }
         if (!isValidEvent(appName, hostName)) {
             return;
         }
@@ -245,13 +263,15 @@ public class SessionStatsProvider{
 
     @ProbeListener("glassfish:web:session:sessionPassivatedStartEvent")
     public void sessionPassivatedStartEvent(
-        @ProbeParam("session") HttpSession session,
+        @ProbeParam("sessionId") String sessionId,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        logger.finest("[TM]sessionPassivatedStartEvent  received - session = " + 
-                            session.toString() + ": appname = " + appName + 
-                            ": hostName = " + hostName);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("[TM]sessionPassivatedStartEvent  received - session = " + 
+                          sessionId + ": appname = " + appName + 
+                          ": hostName = " + hostName);
+        }
         if (!isValidEvent(appName, hostName)) {
             return;
         }
@@ -259,13 +279,15 @@ public class SessionStatsProvider{
 
     @ProbeListener("glassfish:web:session:sessionPassivatedEndEvent")
     public void sessionPassivatedEndEvent(
-        @ProbeParam("session") HttpSession session,
+        @ProbeParam("sessionId") String sessionId,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        logger.finest("[TM]sessionPassivatedEndEvent received - session = " + 
-                            session.toString() + ": appname = " + appName + 
-                            ": hostName = " + hostName);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("[TM]sessionPassivatedEndEvent received - session = " + 
+                          sessionId + ": appname = " + appName + 
+                          ": hostName = " + hostName);
+        }
         if (!isValidEvent(appName, hostName)) {
             return;
         }

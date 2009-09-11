@@ -37,7 +37,6 @@
 package org.glassfish.web.admin.monitor;
 
 import java.security.Principal;
-import javax.servlet.Servlet;
 import org.glassfish.external.probe.provider.annotations.Probe;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.external.probe.provider.annotations.ProbeProvider;
@@ -56,14 +55,14 @@ public class ServletProbeProvider {
      * and on the returned ServletConfig, getServletName() (or any of the
      * other getters).
      *
-     * @param servlet the servlet that was initialized
+     * @param servletName the name of the servlet that was initialized
      * @param appName the name of the app to which the servlet belongs
      * @param hostName the name of the virtual server on which the app has 
      * been deployed
      */
     @Probe(name="servletInitializedEvent")
     public void servletInitializedEvent(
-        @ProbeParam("servlet") Servlet servlet,
+        @ProbeParam("servletName") String servletName,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName) {}
 
@@ -76,14 +75,14 @@ public class ServletProbeProvider {
      * and on the returned ServletConfig, getServletName() (or any of the
      * other getters).
      *
-     * @param servlet the servlet that was destroyed
+     * @param servletName the name of the servlet that was destroyed
      * @param appName the name of the app to which the servlet belongs
      * @param hostName the name of the virtual server on which the app has 
      * been deployed
      */
     @Probe(name="servletDestroyedEvent")
     public void servletDestroyedEvent(
-        @ProbeParam("servlet") Servlet servlet,
+        @ProbeParam("servletName") String servletName,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName) {}
 
