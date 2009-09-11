@@ -97,7 +97,7 @@ public class LoginContextDriver  {
     public static final String CERT_REALMNAME = "certificate";
   
     //NOTE: This AuditManager is initialized in SecurityLifecycle
-    public  static AuditManager AUDIT_MANAGER;
+    public  static volatile AuditManager AUDIT_MANAGER;
     
     /** This class cannot be instantiated
      *
@@ -329,7 +329,7 @@ public class LoginContextDriver  {
             if (_logger.isLoggable(Level.FINEST)) {
                 _logger.log(Level.FINEST, "doPasswordLogin fails", e);
             }
-            if(AUDIT_MANAGER.isAuditOn()){
+            if(AUDIT_MANAGER != null && AUDIT_MANAGER.isAuditOn()){
                 AUDIT_MANAGER.authentication(user, realm, false);
             }
             if( e instanceof LoginException )
@@ -338,7 +338,7 @@ public class LoginContextDriver  {
                 throw (LoginException)
                     new LoginException("Login failed: " + e.toString()).initCause(e);
         }
-        if(AUDIT_MANAGER.isAuditOn()){
+        if(AUDIT_MANAGER != null && AUDIT_MANAGER.isAuditOn()){
             AUDIT_MANAGER.authentication(user, realm, true);
         }
         if (_logger.isLoggable(Level.FINE)) {
