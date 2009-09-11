@@ -36,11 +36,9 @@
 package org.glassfish.api.embedded;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Apr 9, 2009
- * Time: 10:11:10 PM
- * To change this template use File | Settings | File Templates.
+ * BindException are thrown when port cannot be bound to a port number
+ *
+ * @author Jerome Dochez
  */
 public class BindException extends Exception {
 }

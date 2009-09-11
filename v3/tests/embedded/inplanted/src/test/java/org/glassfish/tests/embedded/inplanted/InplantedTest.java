@@ -55,7 +55,7 @@ public class InplantedTest {
         Page page =  webClient.getPage("http://localhost:8080/test-classes/hello");
         System.out.println("Got response " + page.getWebResponse().getContentAsString());
         Assert.assertTrue("Servlet returned wrong content", page.getWebResponse().getContentAsString().startsWith("Hello World"));
-        server.getDeployer().undeploy(appName);
+        server.getDeployer().undeploy(appName, null);
     }
 
     @Test

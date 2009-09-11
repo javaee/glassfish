@@ -47,7 +47,7 @@ public class EmbeddedTest {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-        deployer.undeploy(appName);
+        deployer.undeploy(appName, null);
         try {
             server.stop();
         } catch (LifecycleException e) {

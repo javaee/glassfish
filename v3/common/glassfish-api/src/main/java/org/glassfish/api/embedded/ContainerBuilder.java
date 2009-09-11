@@ -48,13 +48,54 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface ContainerBuilder<T extends EmbeddedContainer> {
 
-    public enum Type { ejb, web, jruby, jpa, webservices, all }
+    /**
+     * Types of container that can be built.
+     * Other containers can be added not using one of the predefined types.
+     */
+    public enum Type {
+        /**
+         * ejb container type
+         */
+        ejb,
+        /**
+         * web container type
+         */
+        web,
+        /**
+         * jruby container type
+         */
+        jruby,
+        /**
+         * persistence container type 
+         */
+        jpa,
+        /**
+         * webservices container type
+         */
+        webservices,
+        /**
+         * all installed containers
+         */
+        all }
 
-    // we will need more port types.
+    /**
+     * Types of port supported by the embedded server
+     */
     public enum PortType { http, https, iiop };
 
-
+    /**
+     * Attach a port instance to a container
+     *
+     * @param type port type
+     * @param port port instance
+     */
     void attach(PortType type, Port port);
 
+    /**
+     * Creates a embedded container
+     *
+     * @param server the embedded server in which the container resides.
+     * @return the embedded container instance
+     */
     T create(Server server);
 }

@@ -85,6 +85,12 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
             this.topDir = topDir;
         }
 
+        /**
+         * Construct a new scattered archive builder with a set of URLs as repository
+         * for locating archive resources (like .class files).
+         * @param name archive name
+         * @param urls set of resources repository
+         */
         public Builder(String name, Collection<URL> urls) {
             this.name = name;
             for (URL u : urls) {
@@ -92,33 +98,85 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
             }
         }
 
+        /**
+         * Sets the location of resources files
+         *
+         * @param resources the resources directory
+         * @return itself
+         */
         public Builder setResources(File resources) {
             this.resources = resources;
             return this;
         }
 
+        /**
+         * Add a new metadata locator for this scattered archive. A metadata is identified
+         * by its name (like WEB-INF/web.xml) and the location of the metadata is used when
+         * the embedded server is requesting the metadata file.
+         * The name for this metadata will be obtained by doing metadata.getName()
+         *
+         * @param metadata the metadata file location
+         *
+         * @return itself
+         */
+        public Builder addMetadata(File metadata) {
+            return addMetadata(metadata.getName(), metadata);
+        }
+
+        /**
+         * Add a new metadata locator for this scattered archive. A metadata is identified
+         * by its name (like WEB-INF/web.xml) and the location of the metadata is used when
+         * the embedded server is requesting the metadata file.
+         *
+         * @param name name of the metadata (eg WEB-INF/web.xml or web.xml or META-INF/ejb.xml
+         * or ejb.xml).
+         *
+         * @param metadata the metadata file location
+         *
+         * @return itself
+         */
         public Builder addMetadata(String name, File metadata) {
             this.metadata.put(name, metadata);
             return this;
         }
 
-        public Builder addMetadata(File metadata) {
-            return addMetadata(metadata.getName(), metadata);
-        }
+        /**
+         * Adds a URL for the classes classpath. Will be used to retrieve requested .class files
+         *
+         * @param classpath the new classpath element.
+         * @return itself
+         */
 
         public Builder addClassPath(URL classpath) {
             this.urls.add(classpath);
             return this;
         }
 
+        /**
+         * Creates a new scattered jar file using this builder instance configuration.
+         * The resulting instance will behave like a jar file when introspected by the
+         * embedded instance.
+         *
+         * @return new scattered instance jar file
+         */
         public ScatteredArchive buildJar() {
             return new ScatteredArchive(this, Builder.type.jar);
         }
 
+        /**
+         * Creates a new scattered war file using this builder instance configuration.
+         * The resulting instance will behave like a war file when introspected by the
+         * embedded instance.
+         *
+         * @return the scattered instance war file
+         */
         public ScatteredArchive buildWar() {
             return new ScatteredArchive(this, Builder.type.war);
         }
 
+        /**
+         * Suppeored types of scattered archives.
+         */
         enum type {
             jar, war
         }

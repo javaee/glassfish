@@ -36,7 +36,7 @@
 package org.glassfish.api.embedded;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.deployment.*;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.util.Properties;
@@ -91,8 +91,9 @@ public interface EmbeddedDeployer {
      * Undeploys a previously deployed application
      *
      * @param name name returned by {@link EmbeddedDeployer#deploy(File, org.glassfish.api.deployment.DeployCommandParameters}
+     * @param params the undeployment parameters, can be null for default values
      */
-    public void undeploy(String name);
+    public void undeploy(String name, UndeployCommandParameters params);
 
     /**
      * Undeploys all deployed applications.

@@ -46,6 +46,11 @@ import java.io.File;
  */
 public class EmbeddedFileSystem implements PreDestroy {
 
+    /**
+     * EmbeddedFileSystem builder class. Clients must use one these builder instances
+     * to create an EmbeddedFileSystem instance.
+     * 
+     */
     public static class Builder {
         boolean autoDelete=false;
         boolean cookedMode=false;
@@ -53,27 +58,66 @@ public class EmbeddedFileSystem implements PreDestroy {
         File installRoot=null;
         File instanceRoot=null;
 
+        /**
+         * Sets the auto delete flag. If on, the embedded file system backing store will be
+         * deleted once the embedded server is shutdown.
+         *
+         * @param b true to delete the instance root directory on server shutdown
+         * @return itself
+         */
         public Builder setAutoDelete(boolean b) {
             this.autoDelete = b;
             return this;
         }
 
+        /**
+         * Sets the location of the domain.xml configuration file. The file can be named anything
+         * but must have a valid domain.xml content.
+         *
+         * @param f location of the configuration file
+         * @return itself
+         */
         public Builder setConfigurationFile(File f) {
             this.configFile = f;
             return this;
 
         }
 
+        /**
+         * Sets the installation directory, using the installation module directory content
+         * as the application server classpath. The classloader used to load this class will
+         * be the parent class loader to the embedded server classloader  which will use the
+         * modules located in the passed installation directory.
+         *
+         * @param f location of the glassfish installation
+         * @return itself
+         */
         public Builder setInstallRoot(File f) {
             return setInstallRoot(f, false);
         }
 
+        /**
+         * Sets the installation directory and direct whether or not to use the installation's
+         * module directory content in the embedded server classpath. If cookMode is on, the
+         * embedded server will be loaded using the classloader used to load this class.
+         *
+         * @param f location of the installation
+         * @param cookedMode true to use this class classloader, false to create a new classloader
+         * with the installation modules directory content.
+         * @return itself
+         */
         public Builder setInstallRoot(File f, boolean cookedMode) {
             this.installRoot = f;
             this.cookedMode = cookedMode;
             return this;
         }
 
+        /**
+         * Sets the location of the domain directory used to load this instance of the
+         * embedded server.
+         * @param f location of the domain directory
+         * @return itself
+         */
         public Builder setInstanceRoot(File f) {
             this.instanceRoot=f;
             if (this.configFile==null) {
@@ -86,6 +130,12 @@ public class EmbeddedFileSystem implements PreDestroy {
             return this;
         }
 
+        /**
+         * Builds a configured embedded file system instance that can be used to configure
+         * an embedded server.
+         *
+         * @return an immutable configured instance of an EmbeddedFileSystem
+         */
         public EmbeddedFileSystem build() {
             return new EmbeddedFileSystem(this);
         }

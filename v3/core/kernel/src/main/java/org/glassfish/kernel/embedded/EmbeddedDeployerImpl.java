@@ -200,7 +200,7 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         return null;
     }
 
-    public void undeploy(String name) {
+    public void undeploy(String name, UndeployCommandParameters params) {
 
         ActionReport report = habitat.getComponent(ActionReport.class, "plain");
         EmbeddedDeployedInfo info = deployedApps.get(name);
@@ -223,7 +223,9 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
             return;
         }
 
-        UndeployCommandParameters params = new UndeployCommandParameters(name);
+        if (params==null) {
+            params = new UndeployCommandParameters(name);
+        }
         params.origin = UndeployCommandParameters.Origin.undeploy;
         
         ExtendedDeploymentContext deploymentContext = null;
@@ -255,7 +257,7 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
 
     public void undeployAll() {
         for (String appName : deployedApps.keySet()) {
-            undeploy(appName);
+            undeploy(appName, null);
         }
 
     }

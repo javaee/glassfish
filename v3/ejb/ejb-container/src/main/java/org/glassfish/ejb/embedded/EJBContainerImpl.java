@@ -141,7 +141,7 @@ public class EJBContainerImpl extends EJBContainer {
 
         if (deployedAppName != null) {
             try {
-                deployer.undeploy(deployedAppName);
+                deployer.undeploy(deployedAppName, null);
             } catch (Exception e) {
                 _logger.warning("Cannot undeploy deployed modules: " + e.getMessage());
             }

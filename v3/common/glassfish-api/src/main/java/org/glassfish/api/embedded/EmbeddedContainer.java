@@ -50,10 +50,26 @@ import java.util.List;
 @Contract
 public interface EmbeddedContainer {
 
+    /**
+     * Returns the list of sniffers associated with this container.
+     *
+     * @return a list of sniffers that will be used when application are
+     * deployed to the embedded server.
+     */
     public List<Sniffer> getSniffers();
 
+    /**
+     * Starts the embedded container instance
+     *
+     * @throws LifecycleException if the container cannot started
+     */
     public void start() throws LifecycleException;
 
+    /**
+     * Stops the embedded container instance
+     * 
+     * @throws LifecycleException if the container cannot be stopped
+     */
     public void stop() throws LifecycleException;
 
 }

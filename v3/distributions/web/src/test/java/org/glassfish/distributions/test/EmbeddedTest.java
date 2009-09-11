@@ -158,7 +158,7 @@ public class EmbeddedTest {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-        deployer.undeploy(appName);
+        deployer.undeploy(appName, null);
         System.out.println("Done with EJB");
     }
 
@@ -205,7 +205,7 @@ public class EmbeddedTest {
             // e.printStackTrace();
         }
         if (appName!=null)
-            deployer.undeploy(appName);
+            deployer.undeploy(appName, null);
 
     }
 

@@ -36,24 +36,33 @@
 package org.glassfish.api.embedded;
 
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.Inject;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.ActionReport;
-
-import java.util.Properties;
 
 /**
+ *
  * Port abstraction, used to bind several containers to the same port.
  *
  * @author Jerome Dochez
  */
 @Contract
 public interface Port {
-    
+
+    /**
+     * Binds a port instance to a particular port number, opening underlying network resources.
+     *
+     * @param portNumber the port number to operate
+     */
     public void bind(int portNumber);
 
+    /**
+     * Returns the port number occupied by this instance.
+     *
+     * @return port number
+     */
     public int getPortNumber();
 
+    /**
+     * Unbinds (close) this port instance, releasing network resources at portNumber
+     */
     public void unbind();
 
 }

@@ -53,14 +53,19 @@ import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 
 /**
- * Defines a embedded Server, capable of attaching containers (entities running
- * users applications).
+ * Instances of server are embedded application servers, capable of attaching various containers
+ * (entities running users applications).
  *
  * @author Jerome Dochez
  */
 @Contract
 public class Server {
 
+    /**
+     * Builder for create embedded server instance. Builder can be used to configure
+     * the logger, the verbosity and the embedded file system which acts as a
+     * virtual file system to the embedded server instance.
+     */
     public static class Builder {
         final String serverName;
         boolean loggerEnabled;
@@ -70,7 +75,8 @@ public class Server {
 
         /**
          * Creates an unconfigured instance. The habitat will be obtained
-         * by scanning the inhabitants files using this class classloader
+         * by scanning the inhabitants files using this class's classloader
+         *
          * @param id the server name
          */
         public Builder(String id) {
@@ -122,6 +128,16 @@ public class Server {
             return this;
         }
 
+        /**
+         * Uses this builder instance and its name to create or return an existing embedded
+         * server instance.
+         * The embedded server will be using the configured parameters
+         * of this builder. If no embedded file system is used, the embedded instance will use
+         * a temporary instance root with a default basic configuration. That temporary instance
+         * root will be deleted once the server is shutdown.
+         *
+         * @return the configured server instance
+         */
         public Server build() {
             synchronized(servers) {
                 if (!servers.containsKey(serverName)) {
@@ -131,6 +147,11 @@ public class Server {
             }
         }
 
+        /**
+         * Returns the list of existing embedded instances
+         *
+         * @return list of the instanciated embedded instances.
+         */
         public static List<String> getServerNames() {
             List<String> names = new ArrayList<String>();
             names.addAll(servers.keySet());
@@ -150,11 +171,11 @@ public class Server {
 
     private final static Map<String, Server> servers = new HashMap<String, Server>();
 
-    public final String serverName;
-    public final boolean loggerEnabled;
-    public final boolean verbose;
-    public final File loggerFile;
-    public final Inhabitant<EmbeddedFileSystem> fileSystem;
+    private final String serverName;
+    private final boolean loggerEnabled;
+    private final boolean verbose;
+    private final File loggerFile;
+    private final Inhabitant<EmbeddedFileSystem> fileSystem;
     private final Habitat habitat;
     private final List<Container> containers = new ArrayList<Container>();
 
@@ -170,7 +191,7 @@ public class Server {
         File instanceRoot=null;
 
         if (builder.fileSystem==null || builder.fileSystem.instanceRoot==null) {
-            File f = null;
+            File f;
             try {
                 f = File.createTempFile("gfembed", "tmp", new File(System.getProperty("user.dir")));
             } catch (IOException e) {
@@ -197,7 +218,12 @@ public class Server {
             fs.instanceRoot.mkdirs();
             // todo : dochez : temporary fix for docroot
             File f = new File(fs.instanceRoot, "docroot");
-            f.mkdirs();
+            if (!f.mkdirs()) {
+                if (Logger.getAnonymousLogger().isLoggable(Level.FINE)) {
+                    Logger.getAnonymousLogger().fine("Cannot create docroot embedded directory at "
+                        + f.getAbsolutePath());
+                }
+            }
         }
         
         fileSystem = new ExistingSingletonInhabitant<EmbeddedFileSystem>(fs);
@@ -249,7 +275,7 @@ public class Server {
     }
 
     /**
-     * Get the embedded container configuration of a type.
+     * Get the embedded container configuration of a particular type.
      *
      * @param configType the type of the embedded container configuration
      * @param <T> type of the embedded container
@@ -260,7 +286,10 @@ public class Server {
     }
 
     /**
+     * Adds a container of a particular type using the default operating
+     * configuration for the container.
      *
+     * @param type type of the container to be added (like web, ejb).
      */
     public void addContainer(final ContainerBuilder.Type type) {
         containers.add(new Container(new EmbeddedContainer() {
@@ -376,6 +405,7 @@ public class Server {
      *
      * @param portNumber port number for this port
      * @return a new port abstraction.
+     * @throws IOException if the port cannot be opened.
      */
     public Port createPort(int portNumber) throws IOException {
         Ports ports = habitat.getComponent(Ports.class);
@@ -410,7 +440,10 @@ public class Server {
     }
 
     /**
-     * Starts the server
+     * Starts the embedded server, opening ports, and running the startup
+     * services.
+     *
+     * @throws LifecycleException if the server cannot be started propertly
      */
     public void start() throws LifecycleException {
         for (Container c : containers) {
@@ -425,7 +458,10 @@ public class Server {
     }
 
     /**
-     * Stops the container
+     * stops the embedded server instance, any deployed application will be stopped
+     * ports will be closed and shutdown services will be ran.
+     *
+     * @throws LifecycleException if the server cannot shuts down properly
      */
     public void stop() throws LifecycleException {
         for (Container c : containers) {
