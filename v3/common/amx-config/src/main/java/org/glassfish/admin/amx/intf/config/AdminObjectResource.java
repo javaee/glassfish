@@ -49,7 +49,11 @@ public interface AdminObjectResource extends Resource
      */
     public String getResAdapter();
 
+    public String getClassName();
+
     public void setResType(final String resType);
 
     public void setResAdapter(final String resAdapter);
+
+    public void setClassName(final String className);
 }

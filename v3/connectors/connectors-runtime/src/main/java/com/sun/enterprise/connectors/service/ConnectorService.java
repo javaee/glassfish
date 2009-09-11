@@ -190,8 +190,7 @@ public class ConnectorService implements ConnectorConstants {
             URI uri = new URI(loc);
             path = uri.getPath();
         } catch (URISyntaxException use) {
-            use.printStackTrace();
-            ConnectorRuntimeException cre = new ConnectorRuntimeException("Invalid path");
+            ConnectorRuntimeException cre = new ConnectorRuntimeException("Invalid path [ "+use.getMessage()+" ]");
             cre.setStackTrace(use.getStackTrace());
             _logger.log(Level.WARNING, cre.getMessage(), cre);
             throw cre;

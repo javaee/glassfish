@@ -346,6 +346,18 @@ public interface ConnectorRuntime extends ConnectorConstants{
                throws ConnectorRuntimeException ;
 
     /**
+     * checks whether the specified intfName, className has presence in
+     * admin objects of the RAR
+     * @param rarName resource-adapter name
+     * @param intfName admin object interface name
+     * @param className admin object class name
+     * @return boolean indicating the presence of admin object
+     * @throws ConnectorRuntimeException when unable to determine the presence
+     */
+    public boolean hasAdminObject(String rarName, String intfName, String className)
+                throws ConnectorRuntimeException;
+
+    /**
      *  Retrieves the Resource adapter javabean properties with default values.
      *  The default values will the values present in the ra.xml. If the
      *  value is not present in ra.xxml, javabean is introspected to obtain

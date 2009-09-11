@@ -73,6 +73,9 @@ public class CreateAdminObject implements AdminCommand {
     @Param(name="restype")
     String resType;
 
+    @Param(name="classname", optional=true)
+    String className;
+
     @Param(name="raname")
     String raName;
 
@@ -113,6 +116,7 @@ public class CreateAdminObject implements AdminCommand {
         
         HashMap attrList = new HashMap();
         attrList.put(RES_TYPE, resType);
+        attrList.put(ADMIN_OBJECT_CLASS_NAME, className);
         attrList.put(ENABLED, enabled.toString());
         attrList.put(JNDI_NAME, jndiName);
         attrList.put(ServerTags.DESCRIPTION, description);

@@ -94,6 +94,7 @@ public class AdminObjectManager implements ResourceManager{
         new LocalStringManagerImpl(AdminObjectManager.class);
 
     private String resType = null;
+    private String className = null;
     private String raName = null;
     private String enabled = Boolean.TRUE.toString();
     private String jndiName = null;
@@ -124,13 +125,7 @@ public class AdminObjectManager implements ResourceManager{
                             "A resource named {0} already exists.", jndiName);
                     return new ResourceStatus(ResourceStatus.FAILURE, msg);
                 }
-            }/* else if (resource instanceof ResourcePool) {
-                if (((ResourcePool) resource).getName().equals(jndiName)) {
-                    String msg = localStrings.getLocalString("create.admin.object.duplicate",
-                            "A resource named {0} already exists.", jndiName);
-                    return new ResourceStatus(ResourceStatus.FAILURE, msg);
-                }
-            }*/
+            }
         }
 
         ResourceStatus status = isValidRAName();
@@ -138,7 +133,7 @@ public class AdminObjectManager implements ResourceManager{
             return status;
         }
 
-        status = isResTypeValid();
+        status = isValidAdminObject();
         if (status.getStatus() == ResourceStatus.FAILURE) {
             return status;
         }
@@ -155,6 +150,7 @@ public class AdminObjectManager implements ResourceManager{
                     }
                     newResource.setResAdapter(raName);
                     newResource.setResType(resType);
+                    newResource.setClassName(className);
                     newResource.setEnabled(enabled.toString());
                     if (props != null) {
                         for ( Map.Entry e : props.entrySet()) {
@@ -191,6 +187,7 @@ public class AdminObjectManager implements ResourceManager{
 
     public void setParams(HashMap attrList) {
         resType = (String) attrList.get(RES_TYPE);
+        className = (String)attrList.get(ADMIN_OBJECT_CLASS_NAME);
         enabled = (String) attrList.get(ENABLED);
         jndiName = (String) attrList.get(JNDI_NAME);
         description = (String) attrList.get(DESCRIPTION);
@@ -198,38 +195,67 @@ public class AdminObjectManager implements ResourceManager{
     }
     
      //TODO Error checking taken from v2, need to refactor for v3
-    private ResourceStatus isResTypeValid() {
+    private ResourceStatus isValidAdminObject() {
         // Check if the restype is valid -
         // To check this, we need to get the list of admin-object-interface
         // names and then find out if this list contains the restype.
-        //boolean isResTypeValid = true;
-        boolean isResTypeValid = false;
-        String[] resTypes;
-        try {
-            resTypes = connectorRuntime.getAdminObjectInterfaceNames(raName);
-        } catch(ConnectorRuntimeException cre) {
-            Logger.getLogger(AdminObjectManager.class.getName()).log(Level.SEVERE,
-                    "Could not find admin-ojbect-interface names (resTypes) from ConnectorRuntime for resource adapter.", cre);
-            String msg = localStrings.getLocalString(
-                  "admin.mbeans.rmb.null_ao_intf",
-                  "Resource Adapter {0} does not contain any resource type for admin-object. Please specify another res-adapter.",
-                  raName) + " " + cre.getLocalizedMessage();
-            return new ResourceStatus(ResourceStatus.FAILURE, msg);
-        }
-        if (resTypes == null || resTypes.length <= 0) {
-            String msg = localStrings.getLocalString("admin.mbeans.rmb.null_ao_intf",
-                "Resource Adapter {0} does not contain any resource type for admin-object. Please specify another res-adapter.", raName);
-            return new ResourceStatus(ResourceStatus.FAILURE, msg);
-        }
+        //boolean isValidAdminObject = true;
+         boolean isValidAdminObject = false;
 
-        for (int i = 0; i < resTypes.length; i++) {
-            if (resTypes[i].equals(resType)) {
-                isResTypeValid = true;
-                break;
-            }
-        }
+         //if classname is null, check whether the resType is present and only one adminobject must
+         //be using that resType
+         if (className == null) {
 
-        if (!isResTypeValid) {
+             String[] resTypes;
+             try {
+                 resTypes = connectorRuntime.getAdminObjectInterfaceNames(raName);
+             } catch (ConnectorRuntimeException cre) {
+                 Logger.getLogger(AdminObjectManager.class.getName()).log(Level.SEVERE,
+                         "Could not find admin-ojbect-interface names (resTypes) from ConnectorRuntime for resource adapter.", cre);
+                 String msg = localStrings.getLocalString(
+                         "admin.mbeans.rmb.null_ao_intf",
+                         "Resource Adapter {0} does not contain any resource type for admin-object. Please specify another res-adapter.",
+                         raName) + " " + cre.getLocalizedMessage();
+                 return new ResourceStatus(ResourceStatus.FAILURE, msg);
+             }
+             if (resTypes == null || resTypes.length <= 0) {
+                 String msg = localStrings.getLocalString("admin.mbeans.rmb.null_ao_intf",
+                         "Resource Adapter {0} does not contain any resource type for admin-object. Please specify another res-adapter.", raName);
+                 return new ResourceStatus(ResourceStatus.FAILURE, msg);
+             }
+
+             int count = 0;
+             for (int i = 0; i < resTypes.length; i++) {
+                 if (resTypes[i].equals(resType)) {
+                     isValidAdminObject = true;
+                     count++;
+                 }
+             }
+             if(count > 1){
+                 String msg = localStrings.getLocalString(
+                         "admin.mbeans.rmb.multiple_admin_objects.found.for.restype",
+                         "Need to specify admin-object classname parameter (--classname) as multiple admin objects " +
+                                 "use this resType [ {0} ]",  resType);
+
+                 return new ResourceStatus(ResourceStatus.FAILURE, msg);
+             }
+         }else{
+             try{
+                isValidAdminObject = connectorRuntime.hasAdminObject(raName, resType, className);
+             } catch (ConnectorRuntimeException cre) {
+                 Logger.getLogger(AdminObjectManager.class.getName()).log(Level.SEVERE,
+                         "Could not find admin-object-interface names (resTypes) and admin-object-classnames from " +
+                                 "ConnectorRuntime for resource adapter.", cre);
+                 String msg = localStrings.getLocalString(
+                         "admin.mbeans.rmb.ao_intf_impl_check_failed",
+                         "Could not determine admin object resource information of Resource Adapter [ {0} ] for" +
+                                 "resType [ {1} ] and classname [ {2} ] ",
+                         raName, resType, className) + " " + cre.getLocalizedMessage();
+                 return new ResourceStatus(ResourceStatus.FAILURE, msg);
+             }
+         }
+
+         if (!isValidAdminObject) {
             String msg = localStrings.getLocalString("admin.mbeans.rmb.invalid_res_type",
                 "Invalid Resource Type: {0}", resType);
             return new ResourceStatus(ResourceStatus.FAILURE, msg);

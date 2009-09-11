@@ -172,4 +172,30 @@ public class AdminObjectConfigParserImpl implements AdminObjectConfigParser {
         return adminObjectInterfaceNames;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public boolean hasAdminObject(ConnectorDescriptor desc, String intfName, String className)
+            throws ConnectorRuntimeException {
+        if (desc == null || intfName == null || className == null) {
+            throw new ConnectorRuntimeException("Invalid arguments");
+        }
+
+        Set adminObjectSet = desc.getAdminObjects();
+        if (adminObjectSet == null || adminObjectSet.size() == 0) {
+            return false;
+        }
+
+        Iterator it = adminObjectSet.iterator();
+        AdminObject aor = null;
+        for (int i = 0; it.hasNext(); ++i) {
+            aor = (AdminObject) it.next();
+            if(aor.getAdminObjectInterface().equals(intfName) &&
+                    aor.getAdminObjectClass().equals(className)){
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

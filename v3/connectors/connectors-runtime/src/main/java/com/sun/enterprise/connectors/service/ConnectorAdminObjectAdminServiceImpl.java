@@ -66,6 +66,7 @@ public class ConnectorAdminObjectAdminServiceImpl extends
             String connectorName,
             String jndiName,
             String adminObjectType,
+            String adminObjectClassName, 
             Properties props)
             throws ConnectorRuntimeException {
         ActiveResourceAdapter ar =
@@ -75,10 +76,10 @@ public class ConnectorAdminObjectAdminServiceImpl extends
             ar = _registry.getActiveResourceAdapter(connectorName);
         }
         if (ar instanceof ActiveOutboundResourceAdapter) {
-            ActiveOutboundResourceAdapter air =
+            ActiveOutboundResourceAdapter aor =
                     (ActiveOutboundResourceAdapter) ar;
-            air.addAdminObject(appName, connectorName, jndiName,
-                    adminObjectType, props);
+            aor.addAdminObject(appName, connectorName, jndiName,
+                    adminObjectType, adminObjectClassName, props);
         } else {
             ConnectorRuntimeException cre = new ConnectorRuntimeException(
                     "This adapter is not 1.5 compliant");

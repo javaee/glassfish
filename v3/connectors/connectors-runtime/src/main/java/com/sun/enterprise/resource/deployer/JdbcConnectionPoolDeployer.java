@@ -128,10 +128,8 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
             ConnectorConnectionPool connConnPool = createConnectorConnectionPool(adminPool);
             //now do internal book keeping
             runtime.createConnectorConnectionPool(connConnPool);
-        } catch (ConnectorRuntimeException cre) {
-            cre.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
+            _logger.log(Level.WARNING, "Exception while creating connection pool [ "+adminPool.getName()+" ] : ", e);
         }
     }
 
@@ -641,7 +639,8 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                 _logger.finest("Pool recreation done");
             }
         } catch (ConnectorRuntimeException cre) {
-            cre.printStackTrace();
+            _logger.log(Level.WARNING, "Exception while redeploying jdbc-connection-pool " +
+                    "[ "+adminPool.getName()+" ]", cre);
             throw cre;
         }
     }

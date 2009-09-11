@@ -108,6 +108,25 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Bindab
     @NotNull
     String getResAdapter();
 
+
+    /**
+     * Gets the value of the (admin object) classname property.
+     * Name of the admin object class
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute
+    String getClassName();
+
+    /**
+     * Sets the value of the (admin object) classname property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setClassName(String value) throws PropertyVetoException;
+
     /**
      * Sets the value of the resAdapter property.
      *

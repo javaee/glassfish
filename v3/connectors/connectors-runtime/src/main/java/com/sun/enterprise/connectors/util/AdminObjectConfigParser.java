@@ -53,5 +53,18 @@ public interface AdminObjectConfigParser extends ConnectorConfigParser {
      */
     public String[] getAdminObjectInterfaceNames(ConnectorDescriptor desc)
                       throws ConnectorRuntimeException;
+
+    /**
+     *  Checks whether the provided interfacename and classname combination
+     *  is present in any of the admin objects for the resource-adapter
+     *  @param desc ConnectorDescriptor pertaining to rar.
+     *  @param intfName interface-name
+     *  @param className class-name
+     *  @return boolean indicating the presence of adminobject
+     *  @throws ConnectorRuntimeException If rar is not exploded or
+     *                                    incorrect ra.xml
+     */
+    public boolean hasAdminObject(ConnectorDescriptor desc, String intfName, String className)
+        throws ConnectorRuntimeException;
 }
 

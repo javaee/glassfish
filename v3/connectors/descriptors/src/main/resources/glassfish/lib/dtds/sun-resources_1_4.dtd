@@ -178,6 +178,10 @@
         Name of the inbound resource adapter.                         
     res-type                                                                   
         Interface definition for the administered object              
+    class-name
+        admin-object class-name (when more than one implementation class
+        is specified for same res-type in the resource-adapter,
+        class-name must be specified)
 
   Used in:
     resources                                                         
@@ -187,6 +191,7 @@
 <!ATTLIST admin-object-resource
     jndi-name CDATA #REQUIRED
     res-type CDATA #REQUIRED
+    class-name CDATA #IMPLIED
     res-adapter CDATA #REQUIRED
     object-type %object-type; "user"
     enabled %boolean; "true">

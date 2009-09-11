@@ -92,7 +92,7 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
         _logger.log(Level.FINE,
                 "Calling backend to add adminObject", aor.getJndiName());
         runtime.addAdminObject(null, aor.getResAdapter(), aor.getJndiName(),
-                aor.getResType(), transformProps(aor.getProperty()));
+                aor.getResType(), aor.getClassName(),  transformProps(aor.getProperty()));
         _logger.log(Level.FINE,
                 "Added adminObject in backend", aor.getJndiName());
     }

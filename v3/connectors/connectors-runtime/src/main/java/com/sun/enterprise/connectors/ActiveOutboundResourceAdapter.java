@@ -134,7 +134,6 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
                 throw cre;
             } catch (Throwable t) {
                 _logger.log(Level.SEVERE, "rardeployment.start_failed", t);
-                t.printStackTrace();
                 String i18nMsg = localStrings.getString("rardeployment.start_failed", t.getMessage());
                 ConnectorRuntimeException cre = new ConnectorRuntimeException(i18nMsg);
                 if (t.getCause() != null) {
@@ -335,6 +334,7 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
             String connectorName,
             String jndiName,
             String adminObjectType,
+            String adminObjectClassName,
             Properties props)
             throws ConnectorRuntimeException {
         if (props == null) {
@@ -345,8 +345,21 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
         ConnectorRegistry registry = ConnectorRegistry.getInstance();
 
         ConnectorDescriptor desc = registry.getDescriptor(connectorName);
-        AdminObject aoDesc =
-                desc.getAdminObjectByType(adminObjectType);
+
+        AdminObject aoDesc = null;
+        if(adminObjectClassName == null){
+            List<AdminObject> adminObjects =
+                    desc.getAdminObjectsByType(adminObjectType);
+            if(adminObjects.size() > 1){
+                //TODO V3 logstrings
+                throw new ConnectorRuntimeException("Could not determine appropriate admin object as " +
+                        "there are multiple admin object classes for admin object of type [ " + adminObjectType + " ] ");
+            }else{
+                aoDesc = adminObjects.get(0);
+            }
+        }else{
+            aoDesc = desc.getAdminObject(adminObjectType, adminObjectClassName);
+        }
 
         AdministeredObjectResource aor = new AdministeredObjectResource(jndiName);
         aor.initialize(aoDesc);

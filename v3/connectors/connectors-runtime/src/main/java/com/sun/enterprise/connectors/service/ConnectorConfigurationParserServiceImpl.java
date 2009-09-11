@@ -350,6 +350,29 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
     }
 
     /**
+     * checks whether the specified intfName, className has presence in
+     * admin objects of the RAR
+     * @param rarName resource-adapter name
+     * @param intfName admin object interface name
+     * @param className admin object class name
+     * @return boolean indicating the presence of admin object
+     * @throws ConnectorRuntimeException when unable to determine the presence
+     */
+    public boolean hasAdminObject(String rarName, String intfName, String className)
+        throws ConnectorRuntimeException{
+        ConnectorDescriptor desc = getConnectorDescriptor(rarName);
+        if(desc != null) {
+            AdminObjectConfigParser adminObjectConfigParser =
+                 (AdminObjectConfigParser)
+                 ConnectorConfigParserFactory.getParser(
+                 ConnectorConfigParser.AOR);
+            return adminObjectConfigParser.hasAdminObject(desc, intfName, className);
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Finds the properties of a RA JavaBean bundled in a RAR
      * without exploding the RAR
      *

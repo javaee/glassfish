@@ -513,6 +513,14 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     /**
      * {@inheritDoc}
      */
+    public boolean hasAdminObject(String rarName, String intfName, String className)
+                throws ConnectorRuntimeException{
+        return configParserAdmService.hasAdminObject(rarName, intfName, className);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Map<String,String> getResourceAdapterConfigProps(String rarName)
                 throws ConnectorRuntimeException {
         Properties properties =
@@ -946,9 +954,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     public void addAdminObject(String appName, String connectorName,
-                               String jndiName, String adminObjectType, Properties props)
+                               String jndiName, String adminObjectType, String adminObjectClassName, Properties props)
             throws ConnectorRuntimeException {
-        adminObjectAdminService.addAdminObject(appName, connectorName, jndiName, adminObjectType, props);
+        adminObjectAdminService.addAdminObject(appName, connectorName, jndiName, adminObjectType, adminObjectClassName,
+                props);
     }
 
     public void deleteAdminObject(String jndiName) throws ConnectorRuntimeException {
@@ -1097,7 +1106,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
             ArchivistFactory archivistFactory = habitat.getComponent(ArchivistFactory.class);
             return (ConnectorArchivist)archivistFactory.getArchivist(XModuleType.RAR);
         }catch(IOException ioe){
-            ioe.printStackTrace();
+            _logger.log(Level.WARNING, "unable to get Connector Archivist : ", ioe);
             ConnectorRuntimeException cre = new ConnectorRuntimeException(ioe.getMessage());
             cre.setStackTrace(ioe.getStackTrace());
             throw cre;

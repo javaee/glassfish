@@ -673,21 +673,20 @@ public class ConnectorDescriptor extends BundleDescriptor {
         return null;
     }
 
-    //TODO V3 its possible that multiple admin-object-impls can be present for a particular type, need to take care.
-    public AdminObject getAdminObjectByType(String type) 
+    public List<AdminObject> getAdminObjectsByType(String type)
     {
+        List<AdminObject> adminObjects = new ArrayList<AdminObject>();
         Iterator i = getAdminObjects().iterator();
         while (i.hasNext())
         {
             AdminObject ao = (AdminObject) i.next();
             if (type.equals(ao.getAdminObjectInterface()))
-                return ao;
+                adminObjects.add(ao);
         }
-        
-        return null;
+        return adminObjects;
     }
 
-        
+
     /**
      * A formatted string representing my state.
      */

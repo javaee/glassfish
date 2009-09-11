@@ -156,6 +156,8 @@ public final class ResourceConstants {
     //Admin Object resource
     public static final String RES_ADAPTER = "res-adapter";
 
+    public static final String ADMIN_OBJECT_CLASS_NAME = "class-name";
+
     //Connector resource
     public static final String RESOURCE_TYPE = "resource-type";
 
