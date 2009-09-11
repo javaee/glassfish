@@ -37,14 +37,11 @@ package org.glassfish.web.admin.monitor;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.glassfish.external.statistics.CountStatistic;
 import org.glassfish.external.statistics.TimeStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.external.statistics.impl.TimeStatisticImpl;
 import org.glassfish.flashlight.statistics.*;
-//import org.glassfish.flashlight.statistics.factory.CounterFactory;
 import org.glassfish.flashlight.statistics.factory.TimeStatsFactory;
 import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.gmbal.AMXMetadata;
@@ -132,22 +129,23 @@ public class WebRequestStatsProvider {
 
     @ProbeListener("glassfish:web:http-service:requestStartEvent")
     public void requestStartEvent(
-            @ProbeParam("request") HttpServletRequest request,
-            @ProbeParam("response") HttpServletResponse response,
-            @ProbeParam("hostName") String hostName) {
+            @ProbeParam("hostName") String hostName,
+            @ProbeParam("serverName") String serverName,
+            @ProbeParam("serverPort") int serverPort,
+            @ProbeParam("contextPath") String contextPath,
+            @ProbeParam("servletPath") String servletPath) {
         if (logger.isLoggable(Level.FINEST)) {
             logger.finest(
                 "[TM]requestStartEvent Unprocessed received - virtual-server = " +
-                request.getServerName() + ":" + request.getServerPort() + 
-                ": application = " + request.getContextPath() +
-                " : servlet = " + request.getServletPath() +
+                serverName + ":" + serverPort + 
+                ": application = " + contextPath +
+                " : servlet = " + servletPath +
                 " : Expecting (vsName, appName) = (" +
                 virtualServerName + ", " + moduleName + ")");
         }
         if ((virtualServerName != null) && (moduleName != null)) {
             //String vs = WebTelemetryBootstrap.getVirtualServerName(
             //    hostName, String.valueOf(request.getServerPort()));
-            String contextPath = request.getContextPath();
             String appName = (contextPath == null)? null : 
                                 WebStatsProviderBootstrap.getAppName(contextPath);
             if ((appName != null && hostName != null) && hostName.equals(virtualServerName) && appName.equals(moduleName)){
@@ -156,10 +154,10 @@ public class WebRequestStatsProvider {
                 if (logger.isLoggable(Level.FINEST)) {
                     logger.finest(
                         "[TM]requestStartEvent resolved - virtual-server = " +
-                        request.getServerName() + ": application = " +
-                        contextPath + " :appName = " + appName + " : servlet = " +
-                        request.getServletPath() + " : port = " +
-                        request.getServerPort());
+                        serverName + ": application = " +
+                        contextPath + " :appName = " + appName +
+                        " : servlet = " + servletPath + " : port = " +
+                        serverPort);
                 }
             }
         }
@@ -168,32 +166,32 @@ public class WebRequestStatsProvider {
             if (logger.isLoggable(Level.FINEST)) {
                 logger.finest(
                     "[TM]requestStartEvent resolved - virtual-server = " +
-                    request.getServerName() + ": application = " +
-                    request.getContextPath() + " : servlet = " +
-                    request.getServletPath());
+                    serverName + ": application = " + contextPath +
+                    " : servlet = " + servletPath);
             }
         }
     }
 
     @ProbeListener("glassfish:web:http-service:requestEndEvent")
     public void requestEndEvent(
-            @ProbeParam("request") HttpServletRequest request,
-            @ProbeParam("response") HttpServletResponse response,
             @ProbeParam("hostName") String hostName,
+            @ProbeParam("serverName") String serverName,
+            @ProbeParam("serverPort") int serverPort,
+            @ProbeParam("contextPath") String contextPath,
+            @ProbeParam("servletPath") String servletPath,
             @ProbeParam("statusCode") int statusCode) {
         if (logger.isLoggable(Level.FINEST)) {
             logger.finest(
                 "[TM]requestEndEvent Unprocessed received - virtual-server = " +
-                request.getServerName() + ": application = " +
-                request.getContextPath() + " : servlet = " +
-                request.getServletPath() + " :Response code = " +
+                serverName + ": application = " +
+                contextPath + " : servlet = " +
+                servletPath + " :Response code = " +
                 statusCode + " : Expecting (vsName, appName) = (" +
                 virtualServerName + ", " + moduleName + ")");
         }
         if ((virtualServerName != null) && (moduleName != null)) {
             //String vs = WebTelemetryBootstrap.getVirtualServerName(
             //    hostName, String.valueOf(request.getServerPort()));
-            String contextPath = request.getContextPath();
             String appName = (contextPath == null)? null : 
                                 WebStatsProviderBootstrap.getAppName(contextPath);
             if ((appName != null && hostName != null) && hostName.equals(virtualServerName) && appName.equals(moduleName)){
@@ -205,11 +203,10 @@ public class WebRequestStatsProvider {
                 if (logger.isLoggable(Level.FINEST)) {
                     logger.finest(
                         "[TM]requestEndEvent resolved - virtual-server = " +
-                        request.getServerName() +
-                        ": application = " + contextPath +
+                        serverName + ": application = " + contextPath +
                         " :appName = " + appName +
-                        " : servlet = " + request.getServletPath() +
-                        " : port = " + request.getServerPort() +
+                        " : servlet = " + servletPath +
+                        " : port = " + serverPort +
                         " :Response code = " + statusCode +
                         " :Response time = " +
                         requestProcessTime.getTime());
@@ -224,10 +221,10 @@ public class WebRequestStatsProvider {
             if (logger.isLoggable(Level.FINEST)) {
                 logger.finest(
                     "[TM]requestEndEvent resolved - virtual-server = " +
-                    request.getServerName() + ": application = " +
-                    request.getContextPath() + " : servlet = " +
-                    request.getServletPath() + " : port = " +
-                    request.getServerPort()  + " :Response code = " +
+                    serverName + ": application = " +
+                    contextPath + " : servlet = " +
+                    servletPath + " : port = " +
+                    serverPort  + " :Response code = " +
                     statusCode + " :Response time = " +
                     requestProcessTime.getTime());
             }

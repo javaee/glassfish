@@ -36,9 +36,8 @@
 package org.glassfish.web.admin.monitor;
 
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.glassfish.external.statistics.CountStatistic;
 import org.glassfish.external.statistics.TimeStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
@@ -240,43 +239,41 @@ public class HttpServiceStatsProvider implements PostConstruct {
 
     @ProbeListener("glassfish:web:http-service:requestStartEvent")
     public void requestStartEvent(
-        @ProbeParam("request") HttpServletRequest request,
-        @ProbeParam("response") HttpServletResponse response,
-        @ProbeParam("hostName") String hostName) {
-        //String vsName = HttpServiceTelemetryBootstrap.getVirtualServer(
-        //    hostName, String.valueOf(request.getServerPort()));
-        //if ((vsName != null) && (vsName.equals(virtualServerName))) {
+            @ProbeParam("hostName") String hostName,
+            @ProbeParam("serverName") String serverName,
+            @ProbeParam("serverPort") int serverPort,
+            @ProbeParam("contextPath") String contextPath,
+            @ProbeParam("servletPath") String servletPath) {
         if ((hostName != null) && (hostName.equals(virtualServerName))) {
             requestProcessTime.entry();
-            Logger.getLogger(HttpServiceStatsProvider.class.getName()).finest(
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest(
                     "[TM]requestStartEvent received - virtual-server = " +
-                                request.getServerName() + " : port = " +
-                                request.getServerPort());
-            logger.finest("[TM]requestStartEvent received - virtual-server = " +
-                                request.getServerName() + " : port = " +
-                                request.getServerPort());
+                    serverName + " : port = " + serverPort);
+            }
         }
     }
 
     @ProbeListener("glassfish:web:http-service:requestEndEvent")
     public void requestEndEvent(
-        @ProbeParam("request") HttpServletRequest request,
-        @ProbeParam("response") HttpServletResponse response,
-        @ProbeParam("hostName") String hostName,
-        @ProbeParam("statusCode") int statusCode) {
-
-    //    String vsName = HttpServiceTelemetryBootstrap.getVirtualServer(
-    //        hostName, String.valueOf(request.getServerPort()));
-   //     if ((vsName != null) && (vsName.equals(virtualServerName))) {
+            @ProbeParam("hostName") String hostName,
+            @ProbeParam("serverName") String serverName,
+            @ProbeParam("serverPort") int serverPort,
+            @ProbeParam("contextPath") String contextPath,
+            @ProbeParam("servletPath") String servletPath,
+            @ProbeParam("statusCode") int statusCode) {
         if ((hostName != null) && (hostName.equals(virtualServerName))) {
             requestProcessTime.exit();
             incrementStatsCounter(statusCode);
-            logger.finest("[TM]requestEndEvent received - virtual-server = " +
-                                request.getServerName() + ": application = " +
-                                request.getContextPath() + " : servlet = " +
-                                request.getServletPath() + " :Response code = " +
-                                statusCode + " :Response time = " +
-                                requestProcessTime.getTime());
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest(
+                    "[TM]requestEndEvent received - virtual-server = " +
+                    serverName + ": application = " +
+                    contextPath + " : servlet = " +
+                    servletPath + " :Response code = " +
+                    statusCode + " :Response time = " +
+                    requestProcessTime.getTime());
+            }
         }
     }
 

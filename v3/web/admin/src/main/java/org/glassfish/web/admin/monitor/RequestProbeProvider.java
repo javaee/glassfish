@@ -36,9 +36,6 @@
 
 package org.glassfish.web.admin.monitor;
 
-import java.security.Principal;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.glassfish.external.probe.provider.annotations.*;
 
 /**
@@ -49,14 +46,18 @@ public class RequestProbeProvider {
 
     @Probe(name="requestStartEvent")
     public void requestStartEvent(
-        @ProbeParam("request") HttpServletRequest request,
-        @ProbeParam("response") HttpServletResponse response,
-        @ProbeParam("hostName") String hostName) {}
+        @ProbeParam("hostName") String hostName,
+        @ProbeParam("serverName") String serverName,
+        @ProbeParam("serverPort") int serverPort,
+        @ProbeParam("contextPath") String contextPath,
+        @ProbeParam("servletPath") String servletPath) {}
     
     @Probe(name="requestEndEvent")
     public void requestEndEvent(
-        @ProbeParam("request") HttpServletRequest request,
-        @ProbeParam("response") HttpServletResponse response,
         @ProbeParam("hostName") String hostName,
+        @ProbeParam("serverName") String serverName,
+        @ProbeParam("serverPort") int serverPort,
+        @ProbeParam("contextPath") String contextPath,
+        @ProbeParam("servletPath") String servletPath,
         @ProbeParam("statusCode") int statusCode) {}
 }

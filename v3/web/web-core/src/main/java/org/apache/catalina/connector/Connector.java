@@ -1433,12 +1433,10 @@ public class Connector
      * been entered the web container.
      *
      * @param request the request object
-     * @param response the response object
      * @param hostName the name of the virtual server to which the request
      * was mapped
      */
     public void requestStartEvent(HttpServletRequest request,
-                                  HttpServletResponse response,
                                   String hostName) {
         // Deliberate noop
     };
@@ -1448,13 +1446,11 @@ public class Connector
      * to exit from the web container.
      *
      * @param request the request object
-     * @param response the response object
      * @param hostName the name of the virtual server to which the request
      * was mapped
      * @param statusCode the response status code
      */
     public void requestEndEvent(HttpServletRequest request,
-                                HttpServletResponse response,
                                 String hostName,
                                 int statusCode) {
         // Deliberate noop

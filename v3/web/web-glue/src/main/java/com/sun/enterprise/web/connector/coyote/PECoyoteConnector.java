@@ -1214,16 +1214,15 @@ public class PECoyoteConnector extends Connector {
      * been entered the web container.
      *
      * @param request the request object
-     * @param response the response object
      * @param hostName the name of the virtual server to which the request
      * was mapped
      */
     public void requestStartEvent(HttpServletRequest request,
-                                  HttpServletResponse response,
                                   String hostName) {
         if (requestProbeProvider != null) {
-            requestProbeProvider.requestStartEvent(request, response,
-                                                   hostName);
+            requestProbeProvider.requestStartEvent(hostName,
+                request.getServerName(), request.getServerPort(), 
+                request.getContextPath(), request.getServletPath());
         }
     };
 
@@ -1232,18 +1231,18 @@ public class PECoyoteConnector extends Connector {
      * to exit from the web container.
      *
      * @param request the request object
-     * @param response the response object
      * @param hostName the name of the virtual server to which the request
      * was mapped
      * @param statusCode the response status code
      */
     public void requestEndEvent(HttpServletRequest request,
-                                HttpServletResponse response,
                                 String hostName,
                                 int statusCode) {
         if (requestProbeProvider != null) {
-            requestProbeProvider.requestEndEvent(request, response,
-                                                 hostName, statusCode);
+            requestProbeProvider.requestEndEvent(hostName,
+                request.getServerName(), request.getServerPort(), 
+                request.getContextPath(), request.getServletPath(),
+                statusCode);
         }
     };
 
