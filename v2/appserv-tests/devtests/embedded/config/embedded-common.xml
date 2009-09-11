@@ -3,9 +3,9 @@
       value="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar:${env.GF_HOME}/extras/embedded/web/target/glassfish-embedded-web.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar:${s1as.classpath}:${db.classpath}:${Derby.classpath}"/>
 </target>
 
-<taskdef name="glassfish-embedded-deploy" classname="org.glassfish.ant.embedded.tasks.DeployTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar;/Users/Amy/v3-8-21/v3/extras/embedded/web/target/glassfish-embedded-web.jar"/>
-    <taskdef name="glassfish-embedded-deploy-scattered" classname="org.glassfish.ant.embedded.tasks.DeployScatteredTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar;/Users/Amy/v3-8-21/v3/extras/embedded/web/target/glassfish-embedded-web.jar"/>
-    <taskdef name="glassfish-embedded-stop"   classname="org.glassfish.ant.embedded.tasks.StopServerTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar;/Users/Amy/v3-8-21/v3/extras/embedded/web/target/glassfish-embedded-web.jar"/>
-    <taskdef name="glassfish-embedded-web-start"   classname="org.glassfish.ant.embedded.tasks.StartWebTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar;/Users/Amy/v3-8-21/v3/extras/embedded/web/target/glassfish-embedded-web.jar"/>
-    <taskdef name="glassfish-embedded-start"  classname="org.glassfish.ant.embedded.tasks.StartServerTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar;/Users/Amy/v3-8-21/v3/extras/embedded/web/target/glassfish-embedded-web.jar"/>
-    <taskdef name="glassfish-embedded-admin"  classname="org.glassfish.ant.embedded.tasks.AdminTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar;/Users/Amy/v3-8-21/v3/extras/embedded/web/target/glassfish-embedded-web.jar"/>
+<taskdef name="glassfish-embedded-deploy" classname="org.glassfish.ant.embedded.tasks.DeployTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar:${env.GF_HOME}/extras/embedded/web/target/glassfish-embedded-web.jar"/>
+    <taskdef name="glassfish-embedded-deploy-scattered" classname="org.glassfish.ant.embedded.tasks.DeployScatteredTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar:${env.GF_HOME}/extras/embedded/web/target/glassfish-embedded-web.jar"/>
+    <taskdef name="glassfish-embedded-stop"   classname="org.glassfish.ant.embedded.tasks.StopServerTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar:${env.GF_HOME}/extras/embedded/web/target/glassfish-embedded-web.jar"/>
+    <taskdef name="glassfish-embedded-web-start"   classname="org.glassfish.ant.embedded.tasks.StartWebTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar:${env.GF_HOME}/extras/embedded/web/target/glassfish-embedded-web.jar"/>
+    <taskdef name="glassfish-embedded-start"  classname="org.glassfish.ant.embedded.tasks.StartServerTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar:${env.GF_HOME}/extras/embedded/web/target/glassfish-embedded-web.jar"/>
+    <taskdef name="glassfish-embedded-admin"  classname="org.glassfish.ant.embedded.tasks.AdminTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar:${env.GF_HOME}/extras/embedded/web/target/glassfish-embedded-web.jar"/>
