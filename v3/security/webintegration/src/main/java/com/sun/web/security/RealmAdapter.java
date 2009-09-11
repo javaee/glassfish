@@ -94,6 +94,7 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.SecurityUtil;
+import com.sun.enterprise.security.WebSecurityDeployerProbeProvider;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
 import com.sun.enterprise.security.integration.RealmInitializer;
@@ -139,6 +140,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     public static final String FORM = "FORM";
     private static final String SERVER_AUTH_CONTEXT = "__javax.security.auth.message.ServerAuthContext";
     private static final String MESSAGE_INFO = "__javax.security.auth.message.MessageInfo";
+    private static WebSecurityDeployerProbeProvider websecurityProbeProvider = new WebSecurityDeployerProbeProvider();
 
     // name of system property that can be used to define 
     // corresponding default provider for system apps.
@@ -1537,6 +1539,9 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             webSecurityManagerFactory.createManager(wbd,true, serverContext);
             String context = WebSecurityManager.getContextID(wbd);
             SecurityUtil.generatePolicyFile(context);
+            if (isSystem && context.equals("__admingui/__admingui")) {
+                websecurityProbeProvider.policyConfigurationCreationEvent(context);
+            }
         } catch (Exception ce) {
             _logger.log(Level.SEVERE, "policy.configure", ce);
             throw new RuntimeException(ce);
