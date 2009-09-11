@@ -44,13 +44,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Iterator;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -80,7 +76,6 @@ import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.deploy.SecurityConstraint;
 import org.apache.catalina.realm.Constants;
 import org.apache.catalina.realm.RealmBase;
-import org.apache.catalina.util.StringManager;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.internal.api.ServerContext;
@@ -135,6 +130,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
 
     private static final String UNCONSTRAINED = "unconstrained";
     private static final Logger _logger = LogDomains.getLogger(RealmAdapter.class, LogDomains.WEB_LOGGER);
+    private static final ResourceBundle rb = _logger.getResourceBundle();
     public static final String SECURITY_CONTEXT = "SecurityContext";
     public static final String BASIC = "BASIC";
     public static final String FORM = "FORM";
@@ -165,13 +161,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      */
     private String CONTEXT_ID = null;
     private Container virtualServer;
-    /**
-     * The string manager for this package.
-     */
-    protected static final StringManager smgr =
-            StringManager.getManager("com.sun.web.security");
-//    protected static final StringManager smRA =
-//            StringManager.getManager("com.sun.web.security");
+
     /**
      * A <code>WebSecurityManager</code> object associated with a CONTEXT_ID
      */
@@ -319,9 +309,8 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                 webSecurityManager = webSecurityManagerFactory.getManager(CONTEXT_ID,null, false);
             }
             if (webSecurityManager == null && logNull) {
-                //TODO: V3 String msg = smRA.getString("realmAdapter.noWebSecMgr", CONTEXT_ID);
-                String msg = "No WebSecurityManager found for context";
-                _logger.warning(msg);
+                _logger.log(Level.WARNING, "realmAdapter.noWebSecMgr",
+                            CONTEXT_ID);
             }
         }
 
@@ -734,7 +723,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         } catch (Throwable ex) {
              _logger.log(Level.SEVERE,"web_server.excep_authenticate_realmadapter", ex);
             ((HttpServletResponse) response.getResponse()).sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-            response.setDetailMessage(smgr.getString("realmBase.forbidden"));
+            response.setDetailMessage(rb.getString("realmBase.forbidden"));
             return isGranted;
         }
 
@@ -742,7 +731,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             return isGranted;
         } else {
             ((HttpServletResponse) response.getResponse()).sendError(HttpServletResponse.SC_FORBIDDEN);
-            response.setDetailMessage(smgr.getString("realmBase.forbidden"));
+            response.setDetailMessage(rb.getString("realmBase.forbidden"));
             // invoking secureResponse
             invokePostAuthenticateDelegate(request, response, context);
             return isGranted;
@@ -881,12 +870,8 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         } catch (IllegalArgumentException e) {
             //end the request after getting IllegalArgumentException while checking
             //user data permission
-            //TODO: V3 String msg = smRA.getString("realmAdapter.badRequest", e.getMessage());
-            String msg = "There are some problems in the request";
-            _logger.warning(msg);
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, msg, e);
-            }
+            String msg = rb.getString("realmAdapter.badRequest");
+            _logger.log(Level.WARNING, msg, e);
             ((HttpServletResponse) response.getResponse()).sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
             return false;
         }
@@ -908,7 +893,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
 
         if (isGranted == 0) {
             ((HttpServletResponse) response.getResponse()).sendError(HttpServletResponse.SC_FORBIDDEN,
-                    smgr.getString("realmBase.forbidden"));
+                    rb.getString("realmBase.forbidden"));
             return false;
         }
 
@@ -1101,7 +1086,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         } catch (Throwable ex) {
             _logger.log(Level.SEVERE,"web_server.excep_authenticate_realmadapter", ex);
             ((HttpServletResponse) response.getResponse()).sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-            response.setDetailMessage(smgr.getString("realmBase.forbidden"));
+            response.setDetailMessage(rb.getString("realmBase.forbidden"));
             return Realm.AUTHENTICATED_NOT_AUTHORIZED;
         }
 
@@ -1141,7 +1126,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             return Realm.AUTHENTICATE_NOT_NEEDED;
         } else if (((HttpServletRequest) request).getUserPrincipal() != null) {
             ((HttpServletResponse) response.getResponse()).sendError(HttpServletResponse.SC_FORBIDDEN);
-            response.setDetailMessage(smgr.getString("realmBase.forbidden"));
+            response.setDetailMessage(rb.getString("realmBase.forbidden"));
             return Realm.AUTHENTICATED_NOT_AUTHORIZED;
         } else {
             disableProxyCaching(request, response, disableProxyCaching, securePagesWithPragma);
