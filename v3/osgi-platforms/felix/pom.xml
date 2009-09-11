@@ -57,7 +57,7 @@
                              <artifactItem>
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.main</artifactId>
-                               <version>1.8.1</version>
+                               <version>2.0.0</version>
                                <outputDirectory>${felix.outdir}/bin</outputDirectory>
                                <destFileName>felix.jar</destFileName>
                              </artifactItem>
@@ -67,14 +67,14 @@
                              <artifactItem>
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.shell</artifactId>
-                               <version>1.0.2</version>
+                               <version>1.4.0</version>
                                <type>jar</type>
                                <outputDirectory>${glassfish.modulesdir}</outputDirectory>
                              </artifactItem>
                              <artifactItem>
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.shell.tui</artifactId>
-                               <version>1.0.2</version>
+                               <version>1.4.0</version>
                                <type>jar</type>
                                <outputDirectory>${glassfish.modulesdir}</outputDirectory>
                              </artifactItem>
@@ -98,7 +98,7 @@
                              <artifactItem>
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.configadmin</artifactId>
-                               <version>1.0.10</version>
+                               <version>1.2.4</version>
                                <type>jar</type>
                                <outputDirectory>${glassfish.modulesdir}</outputDirectory>
                              </artifactItem>
