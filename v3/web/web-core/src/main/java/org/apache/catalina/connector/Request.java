@@ -224,7 +224,7 @@ public class Request
     /* 
      * Event notification types for async mode
      */
-    private enum AsyncEventType { COMPLETE, TIMEOUT }
+    private enum AsyncEventType { COMPLETE, TIMEOUT, ERROR }
 
     /**
      * The set of cookies associated with this Request.
@@ -3808,7 +3808,8 @@ public class Request
             new CompletionHandler<Request>() {
 
                 public void resumed(Request attachment) {
-                    attachment.notifyAsyncListeners(AsyncEventType.COMPLETE);
+                    attachment.notifyAsyncListeners(AsyncEventType.COMPLETE,
+                        null);
                 }
 
                 public void cancelled(Request attachment) {
@@ -3960,7 +3961,7 @@ public class Request
     }
 
     /*
-     * Invokes any registered AsyncListener instances at their
+     * Invokes all registered AsyncListener instances at their
      * <tt>onTimeout</tt> method
      * 
      * If none of the <tt>onTimeout</tt> handlers call complete or dispatch,
@@ -4002,7 +4003,7 @@ public class Request
              */
             asyncComplete();
         } else {
-            notifyAsyncListeners(AsyncEventType.TIMEOUT);
+            notifyAsyncListeners(AsyncEventType.TIMEOUT, null);
             /*
              * Must not call asyncComplete if already completed or
              * one of the listeners called AsyncContext#dispatch, in which
@@ -4014,40 +4015,38 @@ public class Request
         }
     }
 
+    void asyncError(Throwable t) {
+        if (asyncListenerHolders == null ||
+                asyncListenerHolders.isEmpty()) {
+            // XXX
+        } else {
+            notifyAsyncListeners(AsyncEventType.ERROR, t);
+        }
+    }
+   
     /*
      * Notifies all AsyncListeners of the given async event type
      */
-    private void notifyAsyncListeners(AsyncEventType asyncEventType) {
-
-        AsyncListener asyncListener = null;
-        ServletRequest asyncEventRequest = null;
-        ServletResponse asyncEventResponse = null;
+    private void notifyAsyncListeners(AsyncEventType asyncEventType,
+                                      Throwable t) {
         if (asyncListenerHolders != null) {
-            for (AsyncListenerHolder asyncListenerHolder : asyncListenerHolders) {
-                asyncListener = asyncListenerHolder.getAsyncListener();
-                asyncEventRequest = asyncListenerHolder.getRequest();
-                if (asyncEventRequest == null) {
-                    // No request had been passed to addAsyncListener.
-                    // Use the one from the AsyncContext
-                    asyncEventRequest = asyncContext.getRequest();
-                }
-                asyncEventResponse = asyncListenerHolder.getResponse();
-                if (asyncEventResponse == null) {
-                    // No response had been passed to addAsyncListener.
-                    // Use the one from the AsyncContext
-                    asyncEventResponse = asyncContext.getResponse();
-                }
+            for (AsyncListenerHolder asyncListenerHolder :
+                            asyncListenerHolders) {
+                AsyncListener asyncListener =
+                    asyncListenerHolder.getAsyncListener();
+                AsyncEvent asyncEvent = new AsyncEvent(
+                    asyncContext, asyncListenerHolder.getRequest(),
+                    asyncListenerHolder.getResponse(), t);
                 try {
                     switch (asyncEventType) {
                     case COMPLETE:
-                        asyncListener.onComplete(
-                            new AsyncEvent(asyncEventRequest,
-                            asyncEventResponse));
+                        asyncListener.onComplete(asyncEvent);
                         break;
                     case TIMEOUT:
-                        asyncListener.onTimeout(
-                            new AsyncEvent(asyncEventRequest,
-                            asyncEventResponse));
+                        asyncListener.onTimeout(asyncEvent);
+                        break;
+                    case ERROR:
+                        asyncListener.onError(asyncEvent);
                         break;
                     }
                 } catch (IOException ioe) {

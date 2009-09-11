@@ -127,9 +127,10 @@ public class AsyncContextImpl implements AsyncContext {
             if (dispatcher != null) {
                 origRequest.setOkToReinitializeAsync(true);
                 origRequest.setAsyncStarted(false);
-                pool.execute(new Handler(this, dispatcher, servletRequest,
-                                         servletResponse));
+                pool.execute(new Handler(this, dispatcher));
             } else {
+                // Should never happen, because any unmapped paths will be 
+                // mapped to the DefaultServlet
                 log.warning("Unable to acquire RequestDispatcher for " +
                             zeroArgDispatchTarget);
             }
@@ -148,9 +149,10 @@ public class AsyncContextImpl implements AsyncContext {
         if (dispatcher != null) {
             origRequest.setOkToReinitializeAsync(true);
             origRequest.setAsyncStarted(false);
-            pool.execute(new Handler(this, dispatcher, servletRequest,
-                                     servletResponse));
+            pool.execute(new Handler(this, dispatcher));
         } else {
+            // Should never happen, because any unmapped paths will be 
+            // mapped to the DefaultServlet
             log.warning("Unable to acquire RequestDispatcher for " + path);
         }
     }
@@ -167,9 +169,10 @@ public class AsyncContextImpl implements AsyncContext {
         if (dispatcher != null) {
             origRequest.setOkToReinitializeAsync(true);
             origRequest.setAsyncStarted(false);
-            pool.execute(new Handler(this, dispatcher, servletRequest,
-                                     servletResponse));
+            pool.execute(new Handler(this, dispatcher));
         } else {
+            // Should never happen, because any unmapped paths will be 
+            // mapped to the DefaultServlet
             log.warning("Unable to acquire RequestDispatcher for " + path +
                         "in servlet context " + context.getContextPath());
         }
@@ -183,6 +186,11 @@ public class AsyncContextImpl implements AsyncContext {
 
     private void complete(boolean checkIsAsyncStarted) {
         origRequest.asyncComplete(checkIsAsyncStarted);
+    }
+
+
+    void asyncError(Throwable t) {
+        origRequest.asyncError(t);
     }
 
 
@@ -239,32 +247,28 @@ public class AsyncContextImpl implements AsyncContext {
 
     static class Handler implements Runnable {
 
-        private final AsyncContextImpl asyncCtxt;
+        private final AsyncContextImpl asyncContext;
         private final ApplicationDispatcher dispatcher;
-        private final ServletRequest request;
-        private final ServletResponse response;
 
-        Handler(AsyncContextImpl asyncCtxt, ApplicationDispatcher dispatcher,
-                ServletRequest request, ServletResponse response) {
-            this.asyncCtxt = asyncCtxt;
+        Handler(AsyncContextImpl asyncContext,
+                ApplicationDispatcher dispatcher) {
+            this.asyncContext = asyncContext;
             this.dispatcher = dispatcher;
-            this.request = request;
-            this.response = response;
         }
        
         public void run() {
             try {
-                dispatcher.dispatch(request, response, DispatcherType.ASYNC);
-            } catch (Exception e) {
-                log.log(Level.WARNING, "Error during ASYNC dispatch", e);
-            } finally {
+                dispatcher.dispatch(asyncContext.getRequest(),
+                    asyncContext.getResponse(), DispatcherType.ASYNC);
                 /* 
                  * Close the response after the dispatch target has
                  * completed execution, unless startAsync was called.
                  */
-                if (!request.isAsyncStarted()) {
-                    asyncCtxt.complete(false);
+                if (!asyncContext.getRequest().isAsyncStarted()) {
+                    asyncContext.complete(false);
                 }
+            } catch (Throwable t) {
+                asyncContext.asyncError(t);
             }
         }
     }
