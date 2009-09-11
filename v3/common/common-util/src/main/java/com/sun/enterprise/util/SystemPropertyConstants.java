@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -217,7 +217,7 @@ public class SystemPropertyConstants
     
     /** Name of the default config that determines the configuration for the instances */
     public static final String TEMPLATE_CONFIG_NAME = "default-config";
-    public static final String DEFAULT_ADMIN_USER = "anonymous";
+    public static final String DEFAULT_ADMIN_USER = "admin";
     public static final String DEFAULT_ADMIN_PASSWORD = "";
     
     private static final StringManager sm = StringManager.getManager(SystemPropertyConstants.class);

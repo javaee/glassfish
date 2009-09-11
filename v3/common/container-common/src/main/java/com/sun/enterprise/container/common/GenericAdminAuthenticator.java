@@ -89,7 +89,6 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
 
     @Inject
     volatile SecurityService ss;
-    private final String defaultAdminUser = SystemPropertyConstants.DEFAULT_ADMIN_USER;
 
     @Inject
     volatile AdminService as;
@@ -145,14 +144,13 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     }
 
     private boolean ensureGroupMembership(String user, String realm) {
-        final String ADMIN_GROUP = "asadmin";
         try {
             SecurityContext sc = SecurityContext.getCurrent();
             Set ps = sc.getPrincipalSet(); //before generics
             for (Object principal : ps) {
                 if (principal instanceof Group) {
                     Group group = (Group) principal;
-                    if (ADMIN_GROUP.equals(group.getName()))
+                    if (group.getName().equals(AdminConstants.DOMAIN_ADMIN_GROUP_NAME))
                         return true;
                 }
             }
@@ -169,14 +167,23 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
         /* I decided to handle FileRealm  as a special case. Maybe it is not such a good idea, but
            loading the security subsystem for FileRealm is really not required.
          */
-        boolean anonok = serverAllowsAnonymousFileRealmLogin();
-        if (anonok) {
-            return anonok;
-        }
 
         boolean isLocal = isLocalPassword(user, password);
         if (isLocal)
             return true;
+
+        /*
+         * If no user name was supplied, assume the default admin user name,
+         * if there is one.
+         */
+        if (user == null || user.length() == 0) {
+            String defuser = getDefaultAdminUser();
+            if (defuser != null) {
+                user = defuser;
+                logger.fine("Using default user: " + defuser);
+            } else
+                logger.fine("No default user");
+        }
 
         try {
             AuthRealm ar = as.getAssociatedAuthRealm();
@@ -200,39 +207,48 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
         return false;
     }
 
-    /* All bets are off when this method returns true, so implement it carefully. */
-    private boolean serverAllowsAnonymousFileRealmLogin() {
+    /**
+     * Return the default admin user.  A default admin user only
+     * exists if the admin realm is a file realm and the file
+     * realm contains exactly one user.  If so, that's the default
+     * admin user.
+     */
+    private String getDefaultAdminUser() {
         AuthRealm realm = as.getAssociatedAuthRealm();
         if (realm == null) {
             //this is really an assertion -- admin service's auth-realm-name points to a non-existent realm
             throw new RuntimeException("Warning: Configuration is bad, realm: " + as.getAuthRealmName() + " does not exist!");
         }
         if (! FileRealm.class.getName().equals(realm.getClassname())) {
-            logger.fine("NOT ALLOWING ANONYMOUS ADMIN LOGIN, SINCE IT's NOT A FILE");
-            return false;  //only file realm allows anonymous login
+            logger.fine("CAN'T FIND DEFAULT ADMIN USER: IT'S NOT A FILE REALM");
+            return null;  // can only find default admin user in file realm
         }
         String pv = realm.getPropertyValue("file");  //the property named "file"
         File   rf = null;
         if (pv == null || !(rf=new File(pv)).exists()) {
-            //an incompletely formed file property or the file property points to a non-existent file, allow access
-            logger.fine("ALLOWING ANONYMOUS ADMIN LOGIN AS THE KEYFILE DOES NOT EXIST");
-            return true;
+            //an incompletely formed file property or the file property points to a non-existent file, can't allow access
+            logger.fine("CAN'T FIND DEFAULT ADMIN USER: THE KEYFILE DOES NOT EXIST");
+            return null;
         }
         try {
             FileRealm fr = new FileRealm(rf.getAbsolutePath());
             Enumeration users = fr.getUserNames();
             if (users.hasMoreElements()) {
                 String au = (String) users.nextElement();
-                if (defaultAdminUser.equals(au) && !users.hasMoreElements()) {
-                    //there is only one user and that is anonymous
-                    logger.fine("Allowing anonymous access");
-                    return true;
+                if (!users.hasMoreElements()) {
+                    FileRealmUser fru = (FileRealmUser)fr.getUser(au);
+                    for (String group : fru.getGroups()) {
+                        if (group.equals(AdminConstants.DOMAIN_ADMIN_GROUP_NAME))
+                            // there is only one admin user, in the right group, default to it
+                            logger.fine("Attempting access using default admin user: " + au);
+                            return au;
+                    }
                 }
             }
         } catch(Exception e) {
-            return false;
+            return null;
         }
-        return false;
+        return null;
     }
 
     /**
@@ -249,34 +265,34 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
         return true;
     }
 
+    /**
+     * The JMXAUthenticator's authenticate method.
+     */
+    @Override
     public Subject authenticate(Object credentials) {
-        if (this.serverAllowsAnonymousFileRealmLogin()) {  //all bets are off if server allows anonymous login
-            logger.fine("Allowing anonymous login for JMX Access");
-            return null;
+        String user = "", password = "";
+        if (credentials instanceof String[]) {
+            // this is supposed to be 2-string array with user name and password
+            String[] up = (String[])credentials;
+            if (up.length == 1) {
+                user = up[0];
+            } else if (up.length >= 2) {
+                user = up[0];
+                password = up[1];
+                if (password == null)
+                    password = "";
+            }
         }
-        if (!(credentials instanceof String[])) {
-            String msg = lsm.getLocalString("two.elem.array",
-                    "The JMX Connector should access with a two-element string array containing user name and password");
-            throw new SecurityException(msg);
-        }
-        //this is supposed to be 2-string array with user name and password
-        String[] up = (String[])credentials;
-        if (up.length < 2) {
-            String msg = lsm.getLocalString("invalid.array",
-                    "JMX Connector (client) provided an invalid array {0}, access denied", java.util.Arrays.toString(up));
-            throw new SecurityException(msg);
-        }
-        String u = up[0], p = up[1];
+
         String realm = as.getSystemJmxConnector().getAuthRealmName(); //yes, for backward compatibility;
         if (realm == null)
             realm = as.getAuthRealmName();
 
-        // XXX - allow local password for JMX?
         try {
-            boolean ok = this.loginAsAdmin(u, p, realm);
+            boolean ok = this.loginAsAdmin(user, password, realm);
             if (!ok) {
                 String msg = lsm.getLocalString("authentication.failed",
-                        "User [{0}] does not have administration access", u);
+                        "User [{0}] does not have administration access", user);
                 throw new SecurityException(msg);
             }
             return null; //for now;

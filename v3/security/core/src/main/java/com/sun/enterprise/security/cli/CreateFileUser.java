@@ -98,7 +98,6 @@ public class CreateFileUser implements AdminCommand {
 
     @Inject
     Configs configs;
-    public final String FIXED_REALM = "admin-realm";
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -215,7 +214,6 @@ public class CreateFileUser implements AdminCommand {
                 fr.writeKeyFile(keyFile);
             }
             refreshRealm(authRealmName);
-            setAdminRelatedMessage(fr, userName, report);
         } catch (Exception e) {
             report.setMessage(
                 localStrings.getLocalString("create.file.user.useraddfailed",
@@ -224,20 +222,6 @@ public class CreateFileUser implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }        
-    }
-
-    private void setAdminRelatedMessage(FileRealm fr, String user, ActionReport report) {
-        if (FIXED_REALM.equals(authRealmName)) {
-            try {
-                if (fr.getUser(SystemPropertyConstants.DEFAULT_ADMIN_USER) != null) {
-                    report.setMessage(localStrings.getLocalString("create.user.ok.anon.allowed",
-                            "A new ''admin user'' {0} is now created for immediate use, however, this domain still allows anonymous admin access.", user));
-                }
-            } catch (NoSuchUserException e) {
-                report.setMessage(localStrings.getLocalString("create.user.ok",
-                    "A new ''admin user'' {0} is now created for immediate use", user));
-            }
-        }
     }
 
     /* private String fetchPassword(ActionReport report) {

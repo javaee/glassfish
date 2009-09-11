@@ -176,10 +176,6 @@ public abstract class LocalDomainCommand extends CLICommand {
                 logger.printDebugMessage("Using local password");
                 programOpts.setPassword(pwd);
                 localPassword = pwd;
-                // if no user specified, use the default
-                if (programOpts.getUser() == null)
-                    programOpts.setUser(
-                                    SystemPropertyConstants.DEFAULT_ADMIN_USER);
             }
         } catch (IOException ex) {
             logger.printDebugMessage(

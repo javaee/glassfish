@@ -87,32 +87,41 @@ public class LoginCommand extends CLICommand {
         // Step 1: Get admin username and password
         programOpts.setInteractive(true);       // force it
         adminUser = getAdminUser();
-        if (adminUser.equals(SystemPropertyConstants.DEFAULT_ADMIN_USER) 
-            && (adminPassword == null || adminPassword.length() == 0)) {
-            adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
-        } else {                            
-            adminPassword = getAdminPassword();
-        }
         programOpts.setUser(adminUser);
+        adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
         programOpts.setPassword(adminPassword);
+        boolean interactive = programOpts.isInteractive();      // save value
         programOpts.setInteractive(false);      // no more prompting allowed
-        
+ 
         // Step 2: Invoke version command to validate the authentication info
-        switch (DASUtils.pingDASWithAuth(programOpts, env)) {
-        case NONE:
-            break;
-        case AUTHENTICATION:
-            throw new CommandException(
-                    strings.get("InvalidCredentials", programOpts.getUser()));
-        case CONNECTION:
-            throw new CommandException(strings.get("ConnectException",
-                programOpts.getHost(), "" + programOpts.getPort()));
-        case IO:
-            throw new CommandException(strings.get("IOException",
-                programOpts.getHost(), "" + programOpts.getPort()));
-        case UNKNOWN:
-            throw new CommandException(strings.get("UnknownException",
-                programOpts.getHost(), "" + programOpts.getPort()));
+        boolean tryAgain = true;
+        while (tryAgain) {
+            switch (DASUtils.pingDASWithAuth(programOpts, env)) {
+            case NONE:
+                tryAgain = false;
+                break;
+            case AUTHENTICATION:
+                if (!tryAgain)
+                    throw new CommandException(strings.get("InvalidCredentials",
+                                                    programOpts.getUser()));
+                tryAgain = false;       // only try twice
+
+                // maybe we need a password?
+                programOpts.setInteractive(interactive);
+                adminPassword = getAdminPassword();
+                programOpts.setPassword(adminPassword);
+                programOpts.setInteractive(false);
+                break;
+            case CONNECTION:
+                throw new CommandException(strings.get("ConnectException",
+                    programOpts.getHost(), "" + programOpts.getPort()));
+            case IO:
+                throw new CommandException(strings.get("IOException",
+                    programOpts.getHost(), "" + programOpts.getPort()));
+            case UNKNOWN:
+                throw new CommandException(strings.get("UnknownException",
+                    programOpts.getHost(), "" + programOpts.getPort()));
+            }
         }
 
         // Step 3: Save in <userhomedir>/.asadminpass the string 

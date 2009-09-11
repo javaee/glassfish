@@ -230,16 +230,14 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
     private String[] getUserPassword(Request req) throws Exception {
         String authHeader = req.getHeader("Authorization");
-        String du = SystemPropertyConstants.DEFAULT_ADMIN_USER;
-        String dp = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
         if (authHeader == null) {
-            return new String[]{du, dp};
+            return new String[]{"", ""};
         }
         String enc = authHeader.substring(BASIC.length());
         String dec = new String(decoder.decodeBuffer(enc));
         String[] up = dec.split(":");        
-        if (up == null || up.length == 0 || (up.length == 1 && du.equals(up[0]))) {
-            return new String[]{du, dp};
+        if (up == null || up.length == 0) {
+            return new String[]{"", ""};
         }
         return up;  
     }

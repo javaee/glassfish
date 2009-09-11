@@ -705,7 +705,7 @@ public abstract class CLICommand implements PostConstruct {
 
         String passwordName = opt.getName();
         String password = passwords.get(passwordName);
-        if (ok(password))
+        if (password != null)
             return password;
 
         if (opt.isValueRequired() != ValidOption.REQUIRED)

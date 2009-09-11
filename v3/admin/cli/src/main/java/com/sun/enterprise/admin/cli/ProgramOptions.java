@@ -94,8 +94,7 @@ public class ProgramOptions {
                 CLIConstants.DEFAULT_HOSTNAME);
         addMetaOption(opts, PORT, 'p', "STRING", false,
                 "" + CLIConstants.DEFAULT_ADMIN_PORT);
-        addMetaOption(opts, USER, 'u', "STRING", false,
-                SystemPropertyConstants.DEFAULT_ADMIN_USER);
+        addMetaOption(opts, USER, 'u', "STRING", false, null);
         addMetaOption(opts, PASSWORDFILE, 'W', "FILE", false, null);
         addMetaOption(opts, SECURE, 's', "BOOLEAN", false, "false");
         addMetaOption(opts, TERSE, 't', "BOOLEAN", false, "false");
@@ -505,9 +504,6 @@ public class ProgramOptions {
             sb.append("--port ").append(getPort()).append(' ');
         if (ok(getUser()))
             sb.append("--user ").append(getUser()).append(' ');
-        else
-            sb.append("--user ").
-                append(SystemPropertyConstants.DEFAULT_ADMIN_USER).append(' ');
         if (ok(getPasswordFile()))
             sb.append("--passwordfile ").
                 append(getPasswordFile()).append(' ');

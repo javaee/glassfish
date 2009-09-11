@@ -415,9 +415,10 @@ public class RemoteCommand extends CLICommand {
             logger.printDebugMessage("Using auth info: User: " +
                 programOpts.getUser() + ", Password: " +
                 (ok(programOpts.getPassword()) ? "<non-null>" : "<null>"));
-            url.setAuthenticationInfo(
-                new AuthenticationInfo(programOpts.getUser(),
-                                        programOpts.getPassword()));
+            String user = programOpts.getUser();
+            String pwd = programOpts.getPassword();
+            if (user != null || pwd != null)
+                url.setAuthenticationInfo(new AuthenticationInfo(user, pwd));
 
             urlConnection = (HttpURLConnection)
                     url.openConnection(uriString.toString());
@@ -889,10 +890,8 @@ public class RemoteCommand extends CLICommand {
             // only prompt for a user name if the user name is set to
             // the default.  otherwise, assume the user specified the
             // correct username to begin with and all we need is the password.
-            if (programOpts.getUser() == null || programOpts.getUser().
-                    equals(SystemPropertyConstants.DEFAULT_ADMIN_USER)) {
-                cons.printf("%s ",
-                    strings.get("AdminUserPrompt", programOpts.getUser()));
+            if (programOpts.getUser() == null) {
+                cons.printf("%s ", strings.get("AdminUserPrompt"));
                 user = cons.readLine();
                 if (user == null)
                     return false;

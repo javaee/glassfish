@@ -96,6 +96,7 @@ public final class CreateDomainCommand extends CLICommand {
     private static final String PORTBASE_OPTION = "portbase";
     private static final String SAVELOGIN_OPTION = "savelogin";
     private static final String KEYTOOLOPTIONS = "keytooloptions";
+    private static final String NOPASSWORD = "nopassword";
 
     private static final int DEFAULT_HTTPSSL_PORT = 8181;
     private static final int DEFAULT_IIOPSSL_PORT = 3820;
@@ -159,6 +160,7 @@ public final class CreateDomainCommand extends CLICommand {
         addOption(opts, SAVELOGIN_OPTION, '\0', "BOOLEAN", false, "false");
         addOption(opts, CHECKPORTS_OPTION, '\0', "BOOLEAN", false, "true");
         addOption(opts, ADMIN_PASSWORD, '\0', "PASSWORD", false, null);
+        addOption(opts, NOPASSWORD, '\0', "BOOLEAN", false, "false");
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandName = "domain_name";
@@ -208,8 +210,7 @@ public final class CreateDomainCommand extends CLICommand {
             // prompt for it (if interactive)
             Console cons = System.console();
             if (cons != null && programOpts.isInteractive()) {
-                cons.printf("%s",
-                    strings.get("AdminUserRequiredPrompt"));
+                cons.printf("%s", strings.get("AdminUserRequiredPrompt"));
                 String val = cons.readLine();
                 if (ok(val))
                     programOpts.setUser(val);
@@ -321,46 +322,45 @@ public final class CreateDomainCommand extends CLICommand {
 
         /*
          * The admin user is specified with the --user program option.
-         * If not specified, we use the default, which allows anonymous
-         * unauthenticated login.
+         * If not specified (because the user hit Enter at the prompt),
+         * we use the default, which allows unauthenticated login.
          */
         adminUser = programOpts.getUser();
         if (!ok(adminUser)) {
             adminUser = SystemPropertyConstants.DEFAULT_ADMIN_USER;
             adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
             masterPassword = DEFAULT_MASTER_PASSWORD;
+        } else if (getBooleanOption(NOPASSWORD)) {
+            adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
+            masterPassword = DEFAULT_MASTER_PASSWORD;
         } else {
-            if (adminUser.equals(SystemPropertyConstants.DEFAULT_ADMIN_USER) &&
-                    !ok(adminPassword)) {
-                adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
-                masterPassword = DEFAULT_MASTER_PASSWORD;
+            /*
+             * If the admin password was supplied in the password
+             * file, and no master password is suppied, we use the
+             * default master password without prompting.
+             *
+             * The admin password can be supplied using the deprecated
+             * AS_ADMIN_ADMINPASSWORD option in the password file.
+             */
+            boolean haveAdminPwd = false;
+            adminPassword = passwords.get(ADMIN_ADMINPASSWORD);
+            if (adminPassword != null) {
+                haveAdminPwd = true;
+                logger.printWarning(strings.get("DeprecatedAdminPassword"));
             } else {
-                /*
-                 * If the admin password was supplied in the password
-                 * file, and no master password is suppied, we use the
-                 * default master password without prompting.
-                 *
-                 * The admin password can be supplied using the deprecated
-                 * AS_ADMIN_ADMINPASSWORD option in the password file.
-                 */
-                boolean haveAdminPwd = false;
-                adminPassword = passwords.get(ADMIN_ADMINPASSWORD);
-                if (adminPassword != null) {
-                    haveAdminPwd = true;
-                    logger.printWarning(strings.get("DeprecatedAdminPassword"));
-                } else {
-                    haveAdminPwd = passwords.get(ADMIN_PASSWORD) != null;
-                    adminPassword = getAdminPassword();
-                }
-                validatePassword(adminPassword, ADMIN_PASSWORD);
-                if (haveAdminPwd) {
-                    masterPassword = passwords.get(MASTER_PASSWORD);
-                    if (masterPassword == null)
-                        masterPassword = DEFAULT_MASTER_PASSWORD;
-                } else
-                    masterPassword = getMasterPassword();
-                validatePassword(masterPassword, MASTER_PASSWORD);
+                haveAdminPwd = passwords.get(ADMIN_PASSWORD) != null;
+                adminPassword = getAdminPassword();
             }
+            // allow empty admin password
+            if (ok(adminPassword))
+                validatePassword(adminPassword, ADMIN_PASSWORD);
+            if (haveAdminPwd) {
+                masterPassword = passwords.get(MASTER_PASSWORD);
+                if (masterPassword == null)
+                    masterPassword = DEFAULT_MASTER_PASSWORD;
+            } else
+                masterPassword = getMasterPassword();
+            validatePassword(masterPassword, MASTER_PASSWORD);
         }
 
 
@@ -625,8 +625,9 @@ public final class CreateDomainCommand extends CLICommand {
         logger.printMessage(strings.get("DomainCreated", domainName));
         logger.printMessage(
             strings.get("DomainPort", domainName, Integer.toString(adminPort)));
-        if (adminUser.equals(SystemPropertyConstants.DEFAULT_ADMIN_USER))
-            logger.printMessage(strings.get("DomainAllowsAnon", domainName));
+        if (adminPassword.equals(SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD))
+            logger.printMessage(strings.get("DomainAllowsUnauth", domainName,
+                                                                    adminUser));
         else
             logger.printMessage(
                 strings.get("DomainAdminUser", domainName, adminUser));
@@ -821,7 +822,7 @@ public final class CreateDomainCommand extends CLICommand {
      * @throws CommandValidationException if could not get the admin password
      */
     protected String getAdminPassword() throws CommandValidationException {
-        return getPassword(adminPasswordOption, null, true);
+        return getPassword(adminPasswordOption, "", true);
     }
 
     /**

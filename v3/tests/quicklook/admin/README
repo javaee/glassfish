@@ -31,7 +31,7 @@ Limitations:
 Note:
 1- ../testng.xml
   <parameter name="admin.url" value="http://localhost:4848/__asadmin"/>
-  <parameter name="admin.user" value="anonymous"/>
+  <parameter name="admin.user" value="admin"/>
   <parameter name="admin.password" value=""/>
   are the real parameters available to every test. You don't have to worry
   about this.
