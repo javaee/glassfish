@@ -40,13 +40,14 @@
 package org.glassfish.appclient.client.acc;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.URLStreamHandlerFactory;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,22 +82,58 @@ public class ACCClassLoader extends URLClassLoader {
         return instance;
     }
 
+    /**
+     * Constructor invoked by the VM (because of the -Djava.system.class.loader
+     * setting).
+     *
+     * @param parent
+     */
+    public ACCClassLoader(ClassLoader parent) {
+        /*
+         * Equip this new loader to load all classes and resources on the
+         * current class path, and set its parent so it skips the VM's launcher
+         * class loader.
+         */
+        super(classPathToURLs(), parent.getParent());
+        instance = this;
+    }
+
+    private static URL[] classPathToURLs() {
+        List<URL> urls = new ArrayList<URL>();
+        classPathToURLs(urls, System.getProperty("java.class.path"));
+        final String appcpath = System.getenv("APPCPATH");
+        if (appcpath != null && appcpath.length() > 0) {
+            classPathToURLs(urls, appcpath);
+        }
+        return urls.toArray(new URL[urls.size()]);
+    }
+    
+    private static void classPathToURLs(final List<URL> urls, final String classpath) {
+        try {
+            for (String s : classpath.split(File.pathSeparator)) {
+                 urls.add(new File(s).toURI().toURL());
+                }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public ACCClassLoader(ClassLoader parent, final boolean shouldTransform) {
         super(new URL[0], parent);
         this.shouldTransform = shouldTransform;
     }
-    
-    public ACCClassLoader(URL[] urls) {
-        super(urls);
-    }
+//
+//    public ACCClassLoader(URL[] urls) {
+//        super(urls);
+//    }
 
     public ACCClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);
     }
 
-    public ACCClassLoader(URL[] urls, ClassLoader parent, URLStreamHandlerFactory factory) {
-        super(urls, parent, factory);
-    }
+//    public ACCClassLoader(URL[] urls, ClassLoader parent, URLStreamHandlerFactory factory) {
+//        super(urls, parent, factory);
+//    }
 
     public synchronized void appendURL(final URL url) {
         addURL(url);
@@ -107,6 +144,10 @@ public class ACCClassLoader extends URLClassLoader {
 
     public void addTransformer(final ClassFileTransformer xf) {
         transformers.add(xf);
+    }
+
+    public void setShouldTransform(final boolean shouldTransform) {
+        this.shouldTransform = shouldTransform;
     }
 
     synchronized ACCClassLoader shadow() {

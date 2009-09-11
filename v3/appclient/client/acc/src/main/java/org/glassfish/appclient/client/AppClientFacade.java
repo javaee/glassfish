@@ -327,10 +327,13 @@ public class AppClientFacade {
 
     private static ACCClassLoader initClassLoader(
             final boolean loaderShouldTransform) throws MalformedURLException {
-        ACCClassLoader newLoader = ACCClassLoader.newInstance(
+        ACCClassLoader loader = ACCClassLoader.instance();
+        if (loader == null) {
+            loader = ACCClassLoader.newInstance(
                 Thread.currentThread().getContextClassLoader(),
                 loaderShouldTransform);
-        return newLoader;
+        }
+        return loader;
     }
 
     private static Builder createBuilder(
