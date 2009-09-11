@@ -96,7 +96,7 @@ public class WebSecurityDeployerProbeProvider {
     }
 
     @Probe(name = "policyConfigurationCreationEvent")
-    public void policyConfirationCreationEvent(
+    public void policyConfigurationCreationEvent(
             @ProbeParam("contextId") String appName) {
     }
 

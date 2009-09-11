@@ -123,7 +123,7 @@ public class WebSecurityDeployerStatsProvider {
     }
 
     @ProbeListener("glassfish:security:web:policyConfigurationCreationEvent")
-    public void policyConfirationCreationEvent(
+    public void policyConfigurationCreationEvent(
             @ProbeParam("contextId") String contextId) {
         policyConfCount.increment();
     }

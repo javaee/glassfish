@@ -183,12 +183,12 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
                                  wsmf.createManager(wbd,false,serverContext);
                             }
                             SecurityUtil.generatePolicyFile(name);
-                            websecurityProbeProvider.policyConfirationCreationEvent(name);
+                            websecurityProbeProvider.policyConfigurationCreationEvent(name);
                         }
                         for (EjbBundleDescriptor ejbd : ejbDesc) {
                             String name = SecurityUtil.getContextID(ejbd);
                             SecurityUtil.generatePolicyFile(name);
-                            ejbProbeProvider.ejbPCCreationEvent(linkName);
+                            ejbProbeProvider.ejbPCCreationEvent(name);
                         }
                     }
 
