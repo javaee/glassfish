@@ -237,7 +237,6 @@ public final class EJBSecurityManager
     }
 
     public void loadPolicyConfiguration(EjbDescriptor eDescriptor) throws Exception {
-        probeProvider.ejbPCCreationStartEvent(contextId);
         
         boolean inService = getPolicyFactory().inService(contextId);
 
@@ -922,10 +921,11 @@ public final class EJBSecurityManager
         try {
 
             boolean wasInService = getPolicyFactory().inService(this.contextId);
-            probeProvider.ejbPCDestructionStartEvent(contextId);
+           
             getPolicyFactory().getPolicyConfiguration(this.contextId, true);
 
             if (wasInService) {
+                probeProvider.ejbPCDestructionEvent(contextId);
                 policy.refresh();
                 PermissionCacheFactory.removePermissionCache(uncheckedMethodPermissionCache);
                 uncheckedMethodPermissionCache = null;
@@ -937,8 +937,8 @@ public final class EJBSecurityManager
             // Just log it.
             _logger.log(Level.WARNING, msg, pce);
         }
-
-         ejbSFM.getManager(contextId,ejbName,true);
+        ejbSFM.getManager(contextId,ejbName,true);
+        probeProvider.ejbSMDestructionEvent(ejbName);
     }
 
     /**

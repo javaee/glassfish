@@ -56,6 +56,7 @@ import java.util.logging.Level;
 
 import java.util.logging.Logger;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.ejb.security.application.EjbSecurityProbeProvider;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -88,6 +89,8 @@ public final class EJBSecurityManagerFactory extends SecurityManagerFactory {
 
     @Inject
     AuditManager auditManager;
+
+    private EjbSecurityProbeProvider probeProvider = new EjbSecurityProbeProvider();
     /**
      * Creates a new instance of EJBSecurityManagerFactory
      */
@@ -200,6 +203,7 @@ public final class EJBSecurityManagerFactory extends SecurityManagerFactory {
             try {
                 manager = new EJBSecurityManager(ejbDesc, this.invMgr, this);
                 if (register) {
+                    probeProvider.ejbSMCreationEvent(ejbName);
                     String appName = ejbDesc.getApplication().getRegistrationName();
                     addManagerToApp(ctxId, ejbName, appName, manager);
                 }
