@@ -53,76 +53,6 @@
          </apt:visual>
          </apt:property>
 
-      <apt:property apt:name="ANONYMOUS"
-                apt:label="" 
-                apt:dataPath="Administration.ANONYMOUS"
-                apt:type="xs:string">
-                
-            <apt:visual>
-                <apt:radioButtons apt:toolTip=""/>
-            </apt:visual>
-            
-            <apt:constraints>
-                <apt:enumeration
-                    apt:value="ANONYMOUS"
-                    apt:label="$ANONYMOUS"/>
-            </apt:constraints>
-
-          <apt:scriptHandler apt:scriptLanguage="beanshell" >
-                <apt:scriptCode><![CDATA[
-import java.lang.String;
-import java.util.List;
-import org.openinstaller.provider.conf.ConfigHelper;
-import org.openinstaller.bus.*;
-import org.openinstaller.core.*;
-
-theAL = new ActionListener() {
-    actionPerformed(e) {
-        setRegOption("ANONYMOUS");
-        ValidateCredentials();
-    }
-};
-return theAL;
-                ]]></apt:scriptCode>
-            </apt:scriptHandler>
-
-        </apt:property>
-
-
-
-       <apt:property apt:name="NON_ANONYMOUS"
-                apt:label=""
-                apt:dataPath="Administration.NON_ANONYMOUS"
-                apt:type="xs:string">
-
-            <apt:visual>
-                <apt:radioButtons apt:toolTip=""/>
-            </apt:visual>
-
-            <apt:constraints>
-                <apt:enumeration
-                    apt:value="NON_ANONYMOUS"
-                    apt:label="$NON_ANONYMOUS"/>
-            </apt:constraints>
-
-          <apt:scriptHandler apt:scriptLanguage="beanshell" >
-                <apt:scriptCode><![CDATA[
-import java.lang.String;
-import java.util.List;
-import org.openinstaller.provider.conf.ConfigHelper;
-
-theAL = new ActionListener() {
-    actionPerformed(e) {
-        setRegOption("NON_ANONYMOUS");
-        ValidateCredentials();
-    }
-};
-return theAL;
-                ]]></apt:scriptCode>
-            </apt:scriptHandler>
-
-        </apt:property>
-
            <apt:property apt:name="ADMIN_PORT"
               apt:label="Admin Port"
               apt:dataPath="Administration.ADMIN_PORT"
@@ -174,18 +104,10 @@ wizard.enableBack(true);
 ValidateCredentials()  {
 	if (isSilentMode())
 		return;
-        String regOption = getRegOption();
 
         usernameTF = getComponentByName(content, "ADMIN_USER");
         passwdTF = getComponentByName(content, "ADMIN_PASSWORD");
 
-        if ((regOption != null) && regOption.equals("NON_ANONYMOUS"))  {
-           usernameTF.setEnabled(true);
-           passwdTF.setEnabled(true);
-        } else  {
-           usernameTF.setEnabled(false);
-           passwdTF.setEnabled(false);
-        }
     }
 
 /* Helper to determine installation mode */
@@ -364,32 +286,6 @@ isPortFreeServer(InetAddress addr, int port) {
       return null;
     }
 
-/* Set status trackers */
-    setRegOption(String s)  {
-        ConfigHelper.setValue("glassfish.Administration.LOGIN_MODE", s);
-
-        List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
-
-        if (activeModes.contains("ANONYMOUS"))  {
-            activeModes.remove("ANONYMOUS");
-        }
-        if (activeModes.contains("NON_ANONYMOUS"))  {
-            activeModes.remove("NON_ANONYMOUS");
-        }
-    
-        activeModes.add(s);
-
-        ConfigHelper.setValue("PageFlow.Mode.ACTIVE_MODES_LIST", activeModes);
-    }
-
-    getRegOption()  {
-        String regOption =
-            (String)ConfigHelper.getValue("glassfish.Administration.LOGIN_MODE");
-
-        return (regOption);
-    }
-
-
 run() {
 
        if (System.getProperty("os.name").toLowerCase().startsWith("mac")) {
@@ -407,28 +303,10 @@ run() {
 		activeModes.add("IS_AIX");
      }
 
-	// Group the options.
-      radio1 = getComponentByName(content, "ANONYMOUS");
-      radio2 = getComponentByName(content, "NON_ANONYMOUS");
-
-      ButtonGroup bg = new ButtonGroup();
-      bg.add(radio1);
-      bg.add(radio2);
-      
-      // Select first radio button when first displayed.
-      radio1.setSelected(true);
-      usernameTF = getComponentByName(content, "ADMIN_USER");
-      passwdTF = getComponentByName(content, "ADMIN_PASSWORD");
-      usernameTF.setEnabled(false);
-      passwdTF.setEnabled(false);
-
-      radio2.setSelected(false);
-      
       wizard.enableNext(true);
       wizard.enableCancel(true);
       wizard.enableBack(true);
       
-      setRegOption("ANONYMOUS");
      
       List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
      

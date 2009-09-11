@@ -123,8 +123,7 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
 		adminPort,
                 aSheet.getProperty("Administration.HTTP_PORT"),
                 aSheet.getProperty("Administration.ADMIN_USER"),
-                aSheet.getProperty("Administration.ADMIN_PASSWORD"),
-                aSheet.getProperty("Administration.LOGIN_MODE"));
+                aSheet.getProperty("Administration.ADMIN_PASSWORD"));
 		
 	String folderName = 
 		(String)TemplateProcessor.getInstance().getFromDataModel("PRODUCT_NAME");
@@ -209,7 +208,7 @@ public void handleNotification (final Notification aNotification,
 }
 
 /* Returns true if configuration is successful, else false */
-boolean configureGlassfish(String installDir, String adminPort, String httpPort, String adminUser, String adminPwd, String loginMode) throws Exception {
+boolean configureGlassfish(String installDir, String adminPort, String httpPort, String adminUser, String adminPwd) throws Exception {
 
     boolean success = true;
 
@@ -338,10 +337,7 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
         FileWriter writer = null;
         File pwdFile = null;        
 
-        String pwd = "";
-        if (!loginMode.equals("ANONYMOUS")) {
-            pwd = adminPwd;
-        }
+        String pwd = adminPwd;
         try {            
             pwdFile = File.createTempFile("asadminTmp", null);                        
             pwdFile.deleteOnExit();            
@@ -447,10 +443,7 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
             }
 
             // determine admin user
-            String user = "anonymous";
-            if (!loginMode.equals("ANONYMOUS")) {
-                user = adminUser;
-            }
+            String user = adminUser;
 
             String[] asadminCommandArray = { asadminCommand,
 		"--user", user,

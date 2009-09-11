@@ -18,25 +18,6 @@
  <component>
     <group oor:name="Administration">
 
-   <prop oor:name="ANONYMOUS" oor:type="xs:string" oor:transient="true">
-            <value>
-            ANONYMOUS
-            </value>
-            <info>
-                <desc xml:lang="en-US">Anonymous</desc>
-            </info>
-        </prop>
-        
-        <prop oor:name="NON_ANONYMOUS" oor:type="xs:string" oor:transient="true">
-            <value>
-            NON_ANONYMOUS
-            </value>
-            <info>
-                <desc xml:lang="en-US">Non Anonymous</desc>
-            </info>
-        
-        </prop>
-
        <prop oor:name="ADMIN_PORT" oor:type="xs:string">
            <value>4848</value>
            <info>
@@ -81,7 +62,7 @@
 	</actions>
         </prop>       
        <prop oor:name="ADMIN_USER" oor:type="xs:string" oor:transient="true">
-          <value/>
+           <value>admin</value>
           <info>
             <desc xml:lang="en-US">User Name</desc>
           </info>
@@ -91,16 +72,11 @@ import java.lang.String;
 import java.util.List;
 import org.openinstaller.provider.conf.ConfigHelper;
 
-String regOption = (String)ConfigHelper.getValue(
-                "glassfish.Administration.LOGIN_MODE");
-
-if (regOption.equals("NON_ANONYMOUS"))  {
        String enteredValue = (String)thisProperty.getUnconfirmedValue();
         if ((enteredValue == null) || enteredValue.equals("")) {
             ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
             throw new EnhancedException("NULL_OR_EMPTY_VALUE", new String[]{});
         }
-}         
           ]]></onSet>
         </actions>
         </prop>
@@ -116,16 +92,11 @@ import java.lang.String;
 import java.util.List;
 import org.openinstaller.provider.conf.ConfigHelper;
 
-String regOption = (String)ConfigHelper.getValue(
-                "glassfish.Administration.LOGIN_MODE");
-
-if (regOption.equals("NON_ANONYMOUS"))  {
        String enteredValue = (String)thisProperty.getUnconfirmedValue();
         if ((enteredValue == null) || (enteredValue.length() < 8)) {
             ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
             throw new EnhancedException("SHORT_ADMIN_PASSWORD",new String[]{});
         }
-}         
           ]]></onSet>
         </actions>
         </prop>
@@ -138,13 +109,6 @@ if (regOption.equals("NON_ANONYMOUS"))  {
 	<actions>
 	</actions>
         </prop>
-       <prop oor:name="LOGIN_MODE" oor:type="xs:string" oor:transient="true">
-          <value/>
-          <info>
-            <desc xml:lang="en-US">User Password</desc>
-          </info>
-        </prop>
-            
         <prop oor:name="DUMMY_PROP" oor:type="xs:string" oor:transient="true">
           <value/>
           <info>

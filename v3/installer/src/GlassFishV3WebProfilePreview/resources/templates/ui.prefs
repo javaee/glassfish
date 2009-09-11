@@ -409,10 +409,11 @@ GlassFish Usage Metrics&lt;/a&gt; page \
 (http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3).&lt;BR&gt;\
 &lt;/BODY&gt;&lt;/HTML&gt;
 
-ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;p&gt;&lt;font face='Sans-Serif'&gt;\
-Configure the administration settings for the server. You may configure \
-the server username and password as anonymous OR provide a valid \
-administration username and password for login.\
+ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY;font face='Sans-Serif'&gt;\
+Configure the administration settings for the server. Please provide \
+username and password for the server. You may leave the password \
+field empty if you would like to configure the server for unauthenticated \
+logins.\
 &lt;/font&gt;&lt;/p&gt;&lt;/BODY&gt;&lt;/HTML&gt;
 
 #ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
