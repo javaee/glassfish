@@ -267,6 +267,7 @@
         <fileset dir="web/jsp"/>
         <classes dir="${class.output}">
             <include name="**/*Servlet.class"/>
+            <include name="**/*Interface.class"/>
         </classes>
         <webinf dir="metadata">
             <include name="**/web.xml"/>

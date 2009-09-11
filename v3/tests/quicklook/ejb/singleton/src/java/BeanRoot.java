@@ -44,13 +44,13 @@ import javax.ejb.Startup;
 
 @Singleton
 @Startup
-public class BeanRoot {
+public class BeanRoot implements BeanRootInterface{
 
     @EJB
     private BeanLeaf bl;
 
     @EJB
-    private BeanMessage msg;
+    private BeanMessageInterface msg;
 
     String MESSAGE_POST = "PostBeanRoot";
     String MESSAGE_HELLO = "HelloBeanRoot";

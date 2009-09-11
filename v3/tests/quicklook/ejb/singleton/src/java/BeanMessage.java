@@ -42,7 +42,7 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
 @Singleton
-public class BeanMessage {
+public class BeanMessage implements BeanMessageInterface{
 
     private String message = "";
 

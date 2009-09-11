@@ -47,10 +47,10 @@ import javax.servlet.http.*;
 public class TestServlet extends HttpServlet {
    
     @EJB
-    private BeanRoot root;
+    private BeanRootInterface root;
 
     @EJB
-    private BeanMessage msg;
+    private BeanMessageInterface msg;
 
     private ServletContext sc;
 
@@ -91,7 +91,7 @@ public class TestServlet extends HttpServlet {
               // app-name -- name of ear file (option)
               // module-name -- name of war or jar file
               // bean-name -- name of ejb
-	      BeanRoot root2 = (BeanRoot) ic.lookup("java:global/singleton/singletonEJB/BeanRoot");
+	      BeanRootInterface root2 = (BeanRootInterface) ic.lookup("java:global/singleton/singletonEJB/BeanRoot");
 
 	      // out.println("global root: " + root2);
 	      String hello2 = root2.sayHello();

@@ -45,7 +45,7 @@ import javax.ejb.Singleton;
 public class BeanLeaf {
 
     @EJB
-    private BeanMessage msg;
+    private BeanMessageInterface msg;
 
     String MESSAGE_POST = "PostBeanLeaf";
     String MESSAGE_HELLO = "HelloBeanLeaf";
