@@ -74,21 +74,19 @@ public final class OneWork implements com.sun.corba.se.spi.orbutil.threadpool.Wo
      */
     public void doWork() {
         coordinator.preInvoke(); // pre-invoke will set work state to "started",
+
         // validation of work context should be after this
         //so as to throw WorkCompletedException in case of error.
-        try {
-            //TODO V3 validation happens during execution of work, shouldn't it be done before submitting
-            //TODO V3 the work to JavaSE/EE ThreadPoolManager ?
-
-            //TODO V3 check coordinator.getEC() - what happens when an EC
-            //TODO V3 is set and the case where work is ICP with TIC
-            //validateWork(work, coordinator.getExecutionContext());
-            coordinator.setupContext(this);
-        } catch (Throwable e) {
-            coordinator.setException(e);
+        if (coordinator.proceed()) {
+            try {
+                coordinator.setupContext(this);
+            } catch (Throwable e) {
+                coordinator.setException(e);
+            }
         }
 
-        if (coordinator.proceed()) {
+        //there may be failure in context setup
+        if(coordinator.proceed()){
             try {
                 work.run();
             } catch (Throwable t) {

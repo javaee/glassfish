@@ -194,7 +194,7 @@ public final class WorkCoordinator {
 
     }
 
-    public void setupContext(OneWork oneWork) {
+    public void setupContext(OneWork oneWork) throws WorkException {
         contextHandler.setupContext(getExecutionContext(ec, work), this, oneWork);
         if (probeProvider != null) {
             probeProvider.workProcessingStarted(raName);
@@ -228,7 +228,7 @@ public final class WorkCoordinator {
 
                 //If exception is not null, the work has already been rejected.
                 if (listener != null) {
-                    if ((!isTimedOut()) && (exception == null)) {
+                    if (!isTimedOut()) {
                         listener.workCompleted(
                                 new WorkEvent(this, WorkEvent.WORK_COMPLETED, work,
                                         getException()));

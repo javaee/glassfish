@@ -195,17 +195,26 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
         //JSR-322-WORK-CONTEXT-REQ If work instance is a Work Context provider, handle them
         if (work instanceof WorkContextProvider) {
 
+            WorkContextProvider icp = (WorkContextProvider) work;
+
             //JSR-322-WORK-CONTEXT-REQ
             //TODO V3 hack - ec & getEC() test
-            if (ec != null && getExecutionContext(work) != ec) {
+            ExecutionContext transactionContext = getExecutionContext(work);
+            if (ec != null && transactionContext != ec) {
                 WorkRejectedException wre =
                         new WorkRejectedException();
+                wre.setErrorCode(WorkContextErrorCodes.CONTEXT_SETUP_FAILED);
+
                 Object params[] = {ec, wre};
                 logger.log(Level.WARNING, "workcontext.context_is_context_provider_and_execcontext", params);
+
+                if(transactionContext instanceof WorkContext){
+                    WorkContextLifecycleListener listener = getListener((WorkContext)transactionContext);
+                    notifyContextSetupFailure(listener, WorkContextErrorCodes.CONTEXT_SETUP_FAILED);
+                }
+
                 throw wre;
             }
-
-            WorkContextProvider icp = (WorkContextProvider) work;
 
             List<WorkContext> contexts = icp.getWorkContexts();
             for (WorkContext ic : contexts) {
@@ -266,7 +275,7 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
      * @param ec ExecutionContext
      * @param wc Work coordinator
      */
-    public void setupContext(ExecutionContext ec, WorkCoordinator wc, OneWork work) {
+    public void setupContext(ExecutionContext ec, WorkCoordinator wc, OneWork work) throws WorkCompletedException {
         boolean useExecutionContext = true;
         for (WorkContext ic : validContexts) {
             WorkContextLifecycleListener listener = getListener(ic);
@@ -413,7 +422,8 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
      * @param raName                resource-adapter name
      */
     private void setupSecurityWorkContext(SecurityContext securityWorkContext,
-                                            WorkContextLifecycleListener listener, String raName) {
+                                            WorkContextLifecycleListener listener, String raName)
+                                            throws WorkCompletedException{
         try {
             Subject executionSubject = new Subject();
             Subject serviceSubject = new Subject(); //TODO need to populate with server's credentials ?
@@ -426,6 +436,9 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
         } catch (Exception e) {
             logger.log(Level.WARNING, "workcontext.security_context_setup_failure", e);
             notifyContextSetupFailure(listener, WorkContextErrorCodes.CONTEXT_SETUP_FAILED);
+            WorkCompletedException wce = new WorkCompletedException(e.getMessage());
+            wce.initCause(e);
+            throw wce;
         }
     }
 
@@ -560,12 +573,16 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
      * @param listener listener that has to be notified
      */
     private void setupTransactionWorkContext(TransactionContext tic,
-                                               WorkContextLifecycleListener listener) {
+                                               WorkContextLifecycleListener listener) throws WorkCompletedException {
         try {
             setupExecutionContext(tic);
             notifyContextSetupComplete(listener);
         } catch (Exception e) {
             notifyContextSetupFailure(listener, WorkContextErrorCodes.CONTEXT_SETUP_FAILED); //TODO
+            WorkCompletedException wce = new WorkCompletedException(e.getMessage());
+            wce.initCause(e);
+            throw wce;
+
         }
     }
 
