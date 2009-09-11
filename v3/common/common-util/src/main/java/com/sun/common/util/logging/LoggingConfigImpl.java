@@ -105,7 +105,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 	
 	private void openPropFile() throws IOException{
 		try {
-            file =new File(loggingConfigDir, loggingPropertiesName);
+            file =new File(loggingConfigDir, loggingPropertiesName); /*
             if (!file.exists()) {
                 Logger.getAnonymousLogger().log(Level.WARNING, file.getAbsolutePath() + " not found, creating new file from template.");
                 File templateDir = new File(libFolder , "templates");
@@ -114,6 +114,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
                 FileUtils.copy(src, dest);
                 file = new File(loggingConfigDir, ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
             }
+            */
 			fis = new java.io.FileInputStream (file);
         	props.load(fis);
             fis.close();            

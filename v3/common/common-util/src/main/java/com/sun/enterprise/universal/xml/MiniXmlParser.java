@@ -159,6 +159,7 @@ public class MiniXmlParser {
             logFilename = map.get(LoggingPropertyNames.file);
         } catch (IOException e) {
             // error message already sent to logfile.
+            return null;                        
         }
         return logFilename;
     }
