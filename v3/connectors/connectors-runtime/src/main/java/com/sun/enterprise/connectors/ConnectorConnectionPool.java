@@ -38,8 +38,11 @@ package com.sun.enterprise.connectors;
 
 import com.sun.enterprise.connectors.authentication.ConnectorSecurityMap;
 import com.sun.enterprise.deployment.ConnectorConfigProperty;
+import com.sun.logging.LogDomains;
 
 import java.io.Serializable;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * This class abstracts a connection connection pool. It contains
@@ -112,6 +115,7 @@ public class ConnectorConnectionPool implements Serializable {
     public static final String DEFAULT_VALIDATE_ATMOST_ONCE_PERIOD = "0";
     public static final String DEFAULT_LEAK_TIMEOUT = "0";
 
+    private static Logger _logger = LogDomains.getLogger(ConnectorConnectionPool.class, LogDomains.RSR_LOGGER);
     //TODO V3 temporary replacement for JavaEEResourceBase super class
     private String name;
 
@@ -759,7 +763,7 @@ public class ConnectorConnectionPool implements Serializable {
             }
             returnVal = sb.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            _logger.log(Level.WARNING, "Exception while computing toString() of connection pool [ "+name+" ]", e);
         }
         return returnVal;
     }

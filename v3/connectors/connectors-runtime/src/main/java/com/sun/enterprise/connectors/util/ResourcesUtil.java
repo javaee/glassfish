@@ -53,6 +53,7 @@ import com.sun.logging.LogDomains;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.List;
 import java.io.File;
 import java.net.URI;
@@ -567,8 +568,7 @@ public class ResourcesUtil {
             com.sun.enterprise.deployment.Application application = archivist.open(in);
             return application.getRarDescriptorByUri(raLoc);
         } catch (Exception e) {
-            //TODO V3 log warning
-            e.printStackTrace();
+            _logger.log(Level.WARNING, "Exception while getting connector descriptor for RAR [ "+rarName+" ]", e);
         }
         return null;
     }

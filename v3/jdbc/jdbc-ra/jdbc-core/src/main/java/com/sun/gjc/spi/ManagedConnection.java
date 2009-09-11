@@ -746,7 +746,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         try {
             actualConnection.setAutoCommit(false);
         } catch (Exception e) {
-            e.printStackTrace();
+            _logger.log(Level.WARNING, "XA Start [ setAutoCommit ] failure ", e);
             connectionErrorOccurred(e, null);
         }
     }
@@ -759,7 +759,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         try {
             actualConnection.setAutoCommit(true);
         } catch (Exception e) {
-            e.printStackTrace();
+            _logger.log(Level.WARNING, "XA End [ setAutoCommit ] failure ", e);
             connectionErrorOccurred(e, null);
         }
     }

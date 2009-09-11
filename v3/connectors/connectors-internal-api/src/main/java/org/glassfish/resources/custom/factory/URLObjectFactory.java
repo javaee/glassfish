@@ -35,11 +35,15 @@
  */
 package org.glassfish.resources.custom.factory;
 
+import com.sun.logging.LogDomains;
+
 import javax.naming.spi.ObjectFactory;
 import javax.naming.*;
 import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.net.URL;
 
 public class URLObjectFactory implements Serializable, ObjectFactory {
@@ -67,8 +71,10 @@ public class URLObjectFactory implements Serializable, ObjectFactory {
                 try{
                     port = Integer.parseInt(content);
                 }catch(NumberFormatException nfe){
-                    //log
-                    nfe.printStackTrace();
+                    Logger.getLogger(LogDomains.RSR_LOGGER).log(Level.WARNING, "Error occurred", nfe);
+                    IllegalArgumentException iae = new IllegalArgumentException("Invalid value for port");
+                    iae.initCause(nfe);
+                    throw iae;
                 }
             }else if(type.equalsIgnoreCase("file")){
                 file = content;
@@ -85,6 +91,6 @@ public class URLObjectFactory implements Serializable, ObjectFactory {
             return new URL(spec);
         }
 
-        throw new NameNotFoundException("URLObjectFactory does not have necessary parameters for URL construction");
+        throw new IllegalArgumentException("URLObjectFactory does not have necessary parameters for URL construction");
     }
 }
