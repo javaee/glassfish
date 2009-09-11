@@ -37,7 +37,6 @@
 package com.sun.enterprise.iiop.security;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.ssl.J2EEKeyManager;
 import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.logging.LogDomains;
@@ -51,6 +50,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509KeyManager;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.glassfish.enterprise.iiop.api.IIOPSSLUtil;
+import org.glassfish.internal.api.SharedSecureRandom;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -133,7 +133,7 @@ public class IIOPSSLUtilImpl implements IIOPSSLUtil {
     }
 
     public SecureRandom getInitializedSecureRandom() {
-        return SecurityServicesUtil.secureRandom;
+        return SharedSecureRandom.get();
     }
     
      public Object getSSLPortsAsSocketInfo(Object ior) {         

@@ -37,7 +37,6 @@ package com.sun.web.security;
 
 import java.io.*;
 import java.net.*;
-import java.security.SecureRandom;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
@@ -48,7 +47,6 @@ import com.sun.enterprise.security.ssl.SSLUtils;
 //V3:Commented import com.sun.enterprise.ServerConfiguration;
 //V3:Commented import com.sun.web.server.*;
 //V3:Commented import com.sun.enterprise.server.J2EEServer;
-import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.ssl.J2EEKeyManager;
 
 import java.util.logging.*;
@@ -58,6 +56,7 @@ import javax.net.ssl.X509KeyManager;
 
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.api.SharedSecureRandom;
 
 
 /**
@@ -81,9 +80,6 @@ public class SSLSocketFactory implements org.apache.catalina.net.ServerSocketFac
     private javax.net.ssl.SSLServerSocketFactory factory = null;
     private String cipherSuites[];
     
-    public static final SecureRandom secureRandom = SecurityServicesUtil.secureRandom;
-    
-    //V3:Commented private static SecureRandom sr = J2EEServer.secureRandom;
     private static KeyManager[] keyManagers = null;
     private static TrustManager[] trustManagers = null;
 
@@ -101,7 +97,7 @@ public class SSLSocketFactory implements org.apache.catalina.net.ServerSocketFac
 		initStoresAtStartup();
 	    }
 	    context = SSLContext.getInstance("TLS");
-	    context.init(keyManagers, trustManagers, secureRandom);
+	    context.init(keyManagers, trustManagers, SharedSecureRandom.get());
 
 	    factory = context.getServerSocketFactory();
 	    cipherSuites = factory.getSupportedCipherSuites();

@@ -180,8 +180,9 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             //And since LoginContextDriver has too many static methods that use AuditManager
             //we have to make this workaround here.
             LoginContextDriver.AUDIT_MANAGER = secServUtil.getAuditManager();
-            
-            secServUtil.initSecureSeed();
+
+            //replaced with SharedSecureRandom API
+            //secServUtil.initSecureSeed();
 
             //jmac
             initializeJMAC();

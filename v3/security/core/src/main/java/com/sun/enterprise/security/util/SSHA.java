@@ -44,6 +44,7 @@ import java.security.spec.*;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.universal.GFBase64Decoder;
 import com.sun.enterprise.universal.GFBase64Encoder;
+import org.glassfish.internal.api.SharedSecureRandom;
 
 /**
  * Util class for salted SHA processing.
@@ -117,7 +118,7 @@ public class SSHA
     public static byte[] compute(int saltBytes, byte[] password)
         throws IASSecurityException
     {
-        SecureRandom rng=new SecureRandom();
+        SecureRandom rng=SharedSecureRandom.get();
         byte[] salt=new byte[saltBytes];
         rng.nextBytes(salt);
 
@@ -179,7 +180,7 @@ public class SSHA
     public static String computeAndEncode(int saltBytes, byte[] password)
         throws IASSecurityException
     {
-        SecureRandom rng=new SecureRandom();
+        SecureRandom rng=SharedSecureRandom.get();
         byte[] salt=new byte[saltBytes];
         rng.nextBytes(salt);
 

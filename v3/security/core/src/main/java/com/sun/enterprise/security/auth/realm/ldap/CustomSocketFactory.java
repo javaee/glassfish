@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.security.auth.realm.ldap;
 
+import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
@@ -48,12 +49,10 @@ import java.util.logging.Logger;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import java.net.InetAddress;
-import java.security.SecureRandom;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.api.SharedSecureRandom;
 /**
  * Custom socket factory for ldaps (SSL).
  *
@@ -80,7 +79,7 @@ public class CustomSocketFactory extends SocketFactory implements Comparator<Soc
         SSLContext sc = null;
         try {
             sc = SSLContext.getInstance(SSL);
-            sc.init(sslUtils.getKeyManagers(), sslUtils.getTrustManagers(), new SecureRandom());
+            sc.init(sslUtils.getKeyManagers(), sslUtils.getTrustManagers(), SharedSecureRandom.get());
         } catch (Exception ex) {
             _logger.log(Level.WARNING, "security.exception", ex);
         }        

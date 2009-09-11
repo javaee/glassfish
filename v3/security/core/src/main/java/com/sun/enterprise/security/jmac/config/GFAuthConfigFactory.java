@@ -573,8 +573,12 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
 
             if (wasRegistered && (provider != prevProvider)) {
                 listeners = id2RegisListenersMap.get(regisID);
+                if (listeners != null) {
+                    // remove listeners to avoid concurrent modification error
+                    id2RegisListenersMap.remove(regisID);
+                }
             }
-	} finally {
+        } finally {
 	    wLock.unlock();
 	    if (persist) {
 		_storeRegistration(regisID, rc, provider,properties);

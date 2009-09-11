@@ -50,6 +50,7 @@ import com.sun.enterprise.security.util.*;
 import com.sun.enterprise.security.auth.realm.IASRealm;
 import com.sun.enterprise.security.common.Util;
 import org.glassfish.api.embedded.Server;
+import org.glassfish.internal.api.SharedSecureRandom;
 import org.jvnet.hk2.annotations.Service;
 
 
@@ -964,7 +965,7 @@ final public class FileRealm extends IASRealm
         assert (user != null);
         byte[] pwdBytes = pwd.getBytes();
         
-        SecureRandom rng=new SecureRandom();
+        SecureRandom rng=SharedSecureRandom.get();
         byte[] salt=new byte[SALT_SIZE];
         rng.nextBytes(salt);
         user.setSalt(salt);
