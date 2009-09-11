@@ -89,6 +89,10 @@ public interface Realms extends AMXProxy, Utility, Singleton
     /** @return true if anonymous login is in use */
     @ManagedAttribute
     public boolean getAnonymousLogin();
+    
+    /** @return the username of any user that uses an empty password */
+    @ManagedAttribute
+    public String getAnonymousUser();
 }
 
 
