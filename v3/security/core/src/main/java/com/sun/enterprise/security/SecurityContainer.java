@@ -65,6 +65,7 @@ public class SecurityContainer implements Container, PostConstruct{
      * This has to be the same value as is in j2ee/WebModule.cpp.
      */
     public static final String DEFAULT_WEB_MODULE_NAME = "__default-web-module";
+    private static WebSecurityDeployerProbeProvider websecurityProbeProvider = new WebSecurityDeployerProbeProvider();
 
     public String getName() {
         return "Security";
@@ -106,6 +107,7 @@ public class SecurityContainer implements Container, PostConstruct{
             // it to the security component.
             name = WebSecurityManager.getContextID(wbd);
             SecurityUtil.generatePolicyFile(name);
+            websecurityProbeProvider.policyConfirationCreationEvent(name);
 
         } catch (IASSecurityException se) {
             String msg = "Error in generating security policy for " + name;

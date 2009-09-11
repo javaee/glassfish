@@ -284,9 +284,10 @@ public class WebSecurityManagerFactory extends SecurityManagerFactory {
          } 
          if (manager == null || !register) {
              try {
-                 probeProvider.securityManagerCreationEvent(ctxId);
+
                  manager = new WebSecurityManager(wbd, context, this, register);
                  if (register) {
+                    probeProvider.securityManagerCreationEvent(ctxId);
                     String appName = wbd.getApplication().getRegistrationName();
                     addManagerToApp(ctxId, null, appName, manager);
                  }

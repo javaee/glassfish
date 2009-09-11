@@ -273,7 +273,7 @@ public class WebSecurityManager  {
     
      public void loadPolicyConfiguration() throws PolicyContextException {
          
-        probeProvider.policyConfirationCreationEvent(CONTEXT_ID);
+        
 
 	boolean inService = getPolicyFactory().inService(CONTEXT_ID);
 

@@ -139,7 +139,6 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     public static final String FORM = "FORM";
     private static final String SERVER_AUTH_CONTEXT = "__javax.security.auth.message.ServerAuthContext";
     private static final String MESSAGE_INFO = "__javax.security.auth.message.MessageInfo";
-    private LoginProbeProvider probeProvider = new LoginProbeProvider();
 
     // name of system property that can be used to define 
     // corresponding default provider for system apps.
@@ -458,12 +457,9 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         if (authenticate(username, password, null)) {
             SecurityContext secCtx = SecurityContext.getCurrent();
             assert (secCtx != null); // or auth should've failed
-            //Monitoring probe
-            probeProvider.loginSuccessfulEvent(username);
             return new WebPrincipal(username, password, secCtx);
             
         } else {
-            probeProvider.loginFailedEvent(username);
             return null;
         }
     }
@@ -472,11 +468,8 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         if (authenticate(null, null, certs)) {
             SecurityContext secCtx = SecurityContext.getCurrent();
             assert (secCtx != null); // or auth should've failed
-                        //Monitoring probe
-            probeProvider.loginSuccessfulEvent(null);
             return new WebPrincipal(certs, secCtx);
         } else {
-            probeProvider.loginFailedEvent(null);
             return null;
         }
     }
@@ -525,10 +518,8 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                 LoginContextDriver.login(username, password, realm_name);
             }
             success = true;
-            probeProvider.loginSuccessfulEvent(username);
         } catch (Exception le) {
             success = false;
-            probeProvider.loginFailedEvent(username);
             if (_logger.isLoggable(Level.WARNING)) {
                 _logger.warning("Web login failed: " + le.getMessage());
             }
@@ -1491,7 +1482,6 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         webDesc = (WebBundleDescriptor) descriptor;
         Application app = webDesc.getApplication();
 
-        StatsProviderManager.register("security", PluginPoint.SERVER, "webintegration/"+app.getAppName(), new LoginStatsProvider());
        
         mapper = app.getRoleMapper();
         LoginConfiguration loginConfig = webDesc.getLoginConfiguration();
