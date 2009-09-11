@@ -65,6 +65,7 @@ import org.glassfish.admin.amx.intf.config.Domain;
 import org.glassfish.admin.amx.base.Realms;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.util.CollectionUtil;
+import org.glassfish.admin.amx.impl.util.InjectedValues;
 
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 
@@ -366,57 +367,7 @@ public final class RealmsImpl extends AMXImplBase
     private static final String FILE_REALM_CLASSNAME = "com.sun.enterprise.security.auth.realm.file.FileRealm";
             
     public boolean getAnonymousLogin() {
-        final DomainRoot domainRoot = getDomainRootProxy();
-
-        final Domain domainConfig = domainRoot.child(Domain.class);
-        final Configs cc = domainConfig.getConfigs();
-        final Map<String,Config> configs = cc.childrenMap(Config.class);
-
-        // find the ADMIN_REALM
-        AuthRealm adminFileAuthRealm = null;
-        for( final Config config : configs.values() )
-        {
-            if ( config.getSecurityService() == null ) continue;
-            
-            for( final AuthRealm auth : config.getSecurityService().childrenMap(AuthRealm.class).values() )
-            {
-                if ( auth.getName().equals(ADMIN_REALM) )
-                {
-                    adminFileAuthRealm = auth;
-                    break;
-                }
-            } 
-        }
-        if (adminFileAuthRealm == null) {
-            // There must always be an admin realm
-            throw new IllegalStateException( "Cannot find admin realm" );
-        }
-
-        // Get FileRealm class name
-        final String fileRealmClassName = adminFileAuthRealm.getClassname();
-        if (fileRealmClassName != null && ! fileRealmClassName.equals(FILE_REALM_CLASSNAME)) {
-            // This condition can arise if admin-realm is not a File realm. Then the API to extract
-            // the anonymous user should be integrated for the logic below this line of code. for now,
-            // we treat this as an error and instead of throwing exception return false;
-            return false;
-        }
-
-        final Map<String,Property>  props = adminFileAuthRealm.childrenMap(Property.class);
-        final Property keyfileProp = props.get("file");
-        if ( keyfileProp == null ) {
-            throw new IllegalStateException( "Cannot find property 'file'" );
-        }
-        //System.out.println( "############### keyFileProp: " + keyfileProp.getName() + " = " + keyfileProp.getValue() );
-        final String keyFile = keyfileProp.resolveAttribute( "Value" );
-        //System.out.println( "############### keyFile: " + keyfileProp.getValue() + " ===> " + keyFile);
-        if (keyFile == null) {
-            throw new IllegalStateException( "Cannot find key file" );
-        }
-        
-        //System.out.println( "############### keyFile: " + keyFile);
-
-        final String[] usernames = getUserNames(adminFileAuthRealm.getName());
-        return usernames.length == 1 && usernames[0].equals(ANONYMOUS_USER);
+        return getAnonymousUser() != null;
     }
     
      public String getAnonymousUser() {
@@ -472,8 +423,7 @@ public final class RealmsImpl extends AMXImplBase
         {
             try
             {
-                getRealm(ADMIN_REALM).getUserNames();
-                System.out.println( "Attempting login for " + usernames[0] );
+                InjectedValues.getInstance().getHabitat().getByType(com.sun.enterprise.security.SecurityLifecycle.class);
                 LoginContextDriver.login( usernames[0], "", ADMIN_REALM);
                 user = usernames[0];
             }
