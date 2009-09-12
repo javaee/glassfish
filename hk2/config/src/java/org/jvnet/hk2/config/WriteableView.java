@@ -249,6 +249,18 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         return currentTx==t;
     }
 
+     
+    /** remove @ or <> eg "@foo" => "foo" or "<foo>" => "foo" */
+    public static String stripMarkers(final String s ) {
+        if ( s.startsWith("@") ) {
+            return s.substring(1);
+        }
+        else if ( s.startsWith("<") ) {
+            return s.substring(1, s.length()-1);
+        }
+        return s;
+    }
+    
     /**
      * Commit this Transaction.
      *
@@ -265,7 +277,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         final ConfigBean master = getMasterView();
         final String keyStr = master.model.key;
         if ( keyStr != null) {
-            final String key = keyStr.substring(1);  // remove leading @
+            final String key = stripMarkers(keyStr);
             final String value = getPropertyValue(key);
             if ( value == null ) {
                 throw new TransactionFailure( "Key value cannot be null: " + key );
