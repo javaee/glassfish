@@ -45,7 +45,7 @@ import org.glassfish.gmbal.Description;
  * @author Marina Vatkina
  */
 // TODO: find the right names
-@ProbeProvider(moduleProviderName="glassfish", moduleName="ejb", probeProviderName="ejb-timers-monitoring")
+@ProbeProvider(moduleProviderName="glassfish", moduleName="ejb", probeProviderName="timers")
 public class EjbTimedObjectProbeProvider {
 
     @Probe(name="timerCreatedEvent")

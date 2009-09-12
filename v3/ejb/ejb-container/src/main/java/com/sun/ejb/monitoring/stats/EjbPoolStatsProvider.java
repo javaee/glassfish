@@ -149,17 +149,17 @@ public class EjbPoolStatsProvider {
         return jmsStat;
     }
 
-    @ProbeListener("glassfish:ejb:ejb-pool-monitoring:objectAddedEvent")
+    @ProbeListener("glassfish:ejb:pool:objectAddedEvent")
     public void ejbObjectAddedEvent() {
         createdStat.increment();
     }
 
-    @ProbeListener("glassfish:ejb:ejb-pool-monitoring:objectAddFailedEvent")
+    @ProbeListener("glassfish:ejb:pool:objectAddFailedEvent")
     public void ejbObjectAddFailedEvent() {
         createdStat.decrement();
     }
 
-    @ProbeListener("glassfish:ejb:ejb-pool-monitoring:objectDestroyedEvent")
+    @ProbeListener("glassfish:ejb:pool:objectDestroyedEvent")
     public void ejbObjectDestroyedEvent() {
         destroyedStat.increment();
     }

@@ -53,7 +53,6 @@ import org.glassfish.gmbal.*;
  */
 // TODO: find the right names
 @AMXMetadata(type="ejb-timed-object-mon", group="monitoring", isSingleton=false)
-@ProbeProvider(moduleProviderName="glassfish", moduleName="ejb", probeProviderName="ejb-timers-monitoring")
 @ManagedObject
 @Description("Ejb Timed Object Statistics")
 public class EjbTimedObjectStatsProvider {
@@ -97,19 +96,19 @@ public class EjbTimedObjectStatsProvider {
         }
     }
 
-    @ProbeListener("glassfish:ejb:ejb-timers-monitoring:timerCreatedEvent")
+    @ProbeListener("glassfish:ejb:timers:timerCreatedEvent")
     public void ejbTimerCreatedEvent() {
         _logger.fine("=== timerCreatedEvent");
         timerCreateStat.increment();
     }
 
-    @ProbeListener("glassfish:ejb:ejb-timers-monitoring:timerRemovedEvent")
+    @ProbeListener("glassfish:ejb:timers:timerRemovedEvent")
     public void ejbTimerRemovedEvent() {
         _logger.fine("=== timerRemovedEvent");
         timerDeliveredStat.increment();
     }
 
-    @ProbeListener("glassfish:ejb:ejb-timers-monitoring:timerDeliveredEvent")
+    @ProbeListener("glassfish:ejb:timers:timerDeliveredEvent")
     public void ejbTimerDeliveredEvent() {
         _logger.fine("=== timerDeliveredEvent");
         timerDeliveredStat.increment();

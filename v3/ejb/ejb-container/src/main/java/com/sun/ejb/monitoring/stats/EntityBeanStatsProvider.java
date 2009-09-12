@@ -56,7 +56,6 @@ import org.glassfish.gmbal.*;
 // v2: com.sun.appserv:application=__ejb_container_timer_app,name=TimerBean,type=entity-bean,category=monitor,ejb-module=ejb_jar,server=server
 // v3: amx:pp=/mon/server-mon[server],type=entity-bean-mon,name=??????????
 @AMXMetadata(type="entity-bean-mon", group="monitoring", isSingleton=false)
-@ProbeProvider(moduleProviderName="glassfish", moduleName="ejb", probeProviderName="ejb-timers-monitoring")
 @ManagedObject
 @Description("Entity Bean Statistics")
 public class EntityBeanStatsProvider {

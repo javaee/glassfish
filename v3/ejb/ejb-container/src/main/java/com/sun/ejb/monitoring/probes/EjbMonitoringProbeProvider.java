@@ -45,7 +45,7 @@ import org.glassfish.gmbal.Description;
  * @author Marina Vatkina
  */
 // TODO: find the right names
-@ProbeProvider(moduleProviderName="glassfish", moduleName="ejb", probeProviderName="ejb-monitoring")
+@ProbeProvider(moduleProviderName="glassfish", moduleName="ejb", probeProviderName="bean")
 public class EjbMonitoringProbeProvider {
 
     @Probe(name="containerEnteringEvent")

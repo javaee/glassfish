@@ -121,7 +121,7 @@ public class EjbMonitoringStatsProvider {
         }
     }
 
-    @ProbeListener("glassfish:ejb:ejb-monitoring:methodStartEvent")
+    @ProbeListener("glassfish:ejb:bean:methodStartEvent")
     public void ejbMethodStartEvent(
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
@@ -136,7 +136,7 @@ public class EjbMonitoringStatsProvider {
         }
     }
 
-    @ProbeListener("glassfish:ejb:ejb-monitoring:methodEndEvent")
+    @ProbeListener("glassfish:ejb:bean:methodEndEvent")
     public void ejbMethodEndEvent(
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
@@ -152,7 +152,7 @@ public class EjbMonitoringStatsProvider {
         }
     }
 
-    @ProbeListener("glassfish:ejb:ejb-monitoring:beanCreatedEvent")
+    @ProbeListener("glassfish:ejb:bean:beanCreatedEvent")
     public void ejbBeanCreatedEvent(
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
@@ -163,7 +163,7 @@ public class EjbMonitoringStatsProvider {
         }
     }
 
-    @ProbeListener("glassfish:ejb:ejb-monitoring:beanDestroyedEvent")
+    @ProbeListener("glassfish:ejb:bean:beanDestroyedEvent")
     public void ejbBeanDestroyedEvent(
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
@@ -174,7 +174,7 @@ public class EjbMonitoringStatsProvider {
         }
     }
 
-    @ProbeListener("glassfish:ejb:ejb-monitoring:beanActivatedEvent")
+    @ProbeListener("glassfish:ejb:bean:beanActivatedEvent")
     public void ejbBeanActivatedEvent(
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
@@ -184,7 +184,7 @@ public class EjbMonitoringStatsProvider {
         }
     }
 
-    @ProbeListener("glassfish:ejb:ejb-monitoring:beanPassivatedEvent")
+    @ProbeListener("glassfish:ejb:bean:beanPassivatedEvent")
     public void ejbBeanPassivatedEvent(
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
