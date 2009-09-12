@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -109,12 +109,10 @@ public class ListCommandsCommand extends CLICommand {
         for (String pat : operands)
             patterns.add(Pattern.compile(globToRegex(pat)));
 
-        if (!remoteOnly) {
-            localCommands = matchCommands(CLIUtil.getLocalCommands(habitat));
-            printLocalCommands();
-        }
-        if (!localOnly && !remoteOnly)
-            logger.printMessage("");            // a blank line between them
+        /*
+         * If we need the remote commands, get them first so that
+         * we prompt for any passwords before printing anything.
+         */
         if (!localOnly) {
             try {
                 remoteCommands = matchCommands(
@@ -127,8 +125,16 @@ public class ListCommandsCommand extends CLICommand {
                  */
                 throw new CommandException(ce.getMessage());
             }
-            printRemoteCommands();
         }
+
+        if (!remoteOnly) {
+            localCommands = matchCommands(CLIUtil.getLocalCommands(habitat));
+            printLocalCommands();
+        }
+        if (!localOnly && !remoteOnly)
+            logger.printMessage("");            // a blank line between them
+        if (!localOnly)
+            printRemoteCommands();
         logger.printMessage("");
         return 0;
     }
