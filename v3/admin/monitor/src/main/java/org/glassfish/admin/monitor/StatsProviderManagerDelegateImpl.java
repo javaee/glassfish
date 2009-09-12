@@ -121,17 +121,19 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             TreeNode rootNode = mrdr.get("server");
             if ((rootNode != null) && (parentNodePath != null)) {
                 // This has to return one node
-                List<TreeNode> nodeList = rootNode.getNodes(parentNodePath);
-                TreeNode parentNode = nodeList.get(0);
-                //Remove each of the child nodes
-                Collection<TreeNode> childNodes = parentNode.getChildNodes();
-                for (TreeNode childNode : childNodes) {
-                    if (childNodeNames.contains(childNode.getName())){
-                        parentNode.removeChild(childNode);
+                List<TreeNode> nodeList = rootNode.getNodes(parentNodePath, false, true);
+                if (nodeList.size() > 0) {
+                    TreeNode parentNode = nodeList.get(0);
+                    //Remove each of the child nodes
+                    Collection<TreeNode> childNodes = parentNode.getChildNodes();
+                    for (TreeNode childNode : childNodes) {
+                        if (childNodeNames.contains(childNode.getName())){
+                            parentNode.removeChild(childNode);
+                        }
                     }
+                    if (!parentNode.hasChildNodes())
+                        removeParentNode(parentNode);
                 }
-                if (!parentNode.hasChildNodes())
-                    removeParentNode(parentNode);
             }
 
             //get the handles and unregister the listeners from Flashlight
