@@ -40,6 +40,8 @@ import java.io.StringWriter;
 import java.io.PrintWriter;
 
 import org.glassfish.api.branding.Branding;
+import org.glassfish.internal.api.*;
+
 /**
  * UniformLogFormatter conforms to the logging format defined by the
  * Log Working Group in Java Webservices Org. 
@@ -79,10 +81,6 @@ public class UniformLogFormatter extends Formatter {
     private static boolean RECORD_NUMBER_IN_KEY_VALUE = false;
 
     private FormatterDelegate _delegate = null;
-
-    // it would be lovely to use injection here, but this lifecycle
-    // of this formatter is handled by the jdk.
-    public static Branding branding = null;
 
     static {
         String logSource = System.getProperty(
@@ -156,6 +154,15 @@ public class UniformLogFormatter extends Formatter {
      * Sun One AppServer SE/EE can override to specify their product version
      */
     protected String getProductId( ) {
+
+        Branding branding = null;
+        // I have to use Globals rather than injection because the formatter lifecyle
+        // is managed by the JDK and therefore this instance can be "in-use" long
+        // before the habitat is ready. We still need to function, even in a degraded
+        // mode.
+        if (Globals.getDefaultHabitat()!=null) {
+            branding = Globals.getDefaultHabitat().getByContract(Branding.class);
+        }
         return (branding!=null?branding.getAbbreviatedVersion():"");
     }
 

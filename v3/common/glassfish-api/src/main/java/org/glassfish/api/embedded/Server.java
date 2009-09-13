@@ -62,7 +62,7 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
 public class Server {
 
     /**
-     * Builder for create embedded server instance. Builder can be used to configure
+     * Builder for creating embedded server instance. Builder can be used to configure
      * the logger, the verbosity and the embedded file system which acts as a
      * virtual file system to the embedded server instance.
      */
@@ -129,7 +129,7 @@ public class Server {
         }
 
         /**
-         * Uses this builder instance and its name to create or return an existing embedded
+         * Uses this builder's name to create or return an existing embedded
          * server instance.
          * The embedded server will be using the configured parameters
          * of this builder. If no embedded file system is used, the embedded instance will use
@@ -275,7 +275,14 @@ public class Server {
     }
 
     /**
-     * Get the embedded container configuration of a particular type.
+     * Get an embedded container configuration. The type of the expected
+     * configuration is passed to the method and is not necessarily known to
+     * the glassfish embedded API. This type of configuration is used for
+     * extensions which are not defined by the core glassfish project.
+     *
+     * The API stability of the interfaces returned by this method is outside the
+     * scope of the glassfish-api stability contract, it's a private contract
+     * between the provider of that configuration and the user.
      *
      * @param configType the type of the embedded container configuration
      * @param <T> type of the embedded container
@@ -368,7 +375,7 @@ public class Server {
     /**
      * Adds a container to this server.
      *
-     * Uing the configuration instance for the container of type <T>,
+     * Using the configuration instance for the container of type <T>,
      * creating the container from that configuration and finally adding the
      * container instance to the list of managed containers
      *
@@ -401,7 +408,7 @@ public class Server {
 
     /**
      * Creates a port to attach to embedded containers. Ports can be attached to many
-     * embedded containers and containers may accept more than one port.
+     * embedded containers and some containers may accept more than one port.
      *
      * @param portNumber port number for this port
      * @return a new port abstraction.

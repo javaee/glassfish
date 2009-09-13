@@ -99,9 +99,6 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
      * Initialize the loggers
      */
     public void postConstruct() {
-
-        // get the branding info and set it on the UniformLogFormatter
-        UniformLogFormatter.branding = habitat.getByContract(Branding.class);
         
         // if the system property is already set, we don't need to do anything
         if (System.getProperty("java.util.logging.config.file")!=null) {
