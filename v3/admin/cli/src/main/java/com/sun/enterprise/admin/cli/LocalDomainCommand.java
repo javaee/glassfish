@@ -304,6 +304,11 @@ public abstract class LocalDomainCommand extends CLICommand {
      * @return true if it's the DAS at this domain directory
      */
     protected boolean isThisDAS(File domainDir) {
+        try {
+            domainDir = SmartFile.sanitize(domainDir).getCanonicalFile();
+        } catch (IOException ioex) {
+            // should never happen
+        }
         logger.printDebugMessage("Check if server is at location " + domainDir);
         try {
             RemoteCommand cmd =
