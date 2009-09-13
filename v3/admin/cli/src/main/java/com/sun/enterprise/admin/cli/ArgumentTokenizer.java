@@ -133,9 +133,6 @@ public class ArgumentTokenizer {
                     throw new ArgumentTokenizer.ArgumentException(
                                 strings.get("token.escapeAtEOL"));
                 c = str.charAt(currentPosition++);
-                if (!(c == '\\' || c == '"' || c == '\'' ||
-                        Character.isWhitespace(c)))
-                    token.append('\\');
                 token.append(c);
             } else if (Character.isWhitespace(c)) {
                 break;
