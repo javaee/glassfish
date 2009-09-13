@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -61,8 +61,8 @@ import java.util.ArrayList;
 public class ListJMSHosts implements AdminCommand {
         final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListJMSHosts.class);
 
-    @Param(name="target")
-    String target;
+    @Param(name="target", optional=true)
+    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
     @Inject
     Configs configs;
@@ -81,13 +81,6 @@ public class ListJMSHosts implements AdminCommand {
 
         Server targetServer = domain.getServerNamed(target);
         String configRef = targetServer.getConfigRef();
-
-         if (target == null) {
-            report.setMessage(localStrings.getLocalString("list.jms.host.noTarget",
-                            "No Target specified for JMS Host."));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
 
             JmsService jmsService = null;
             for (Config c : configs.getConfig()) {
