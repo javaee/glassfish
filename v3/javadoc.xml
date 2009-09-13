@@ -36,7 +36,6 @@
       <include name="external/jsf/**"/>
       <include name="external/jsp/**"/>
       <include name="external/jsr181/**"/>
-      <include name="external/jsr250/api/src/**"/>
       <include name="external/jsr311/**"/>
       <include name="external/jstl-api/**"/>
       <include name="external/mq-distribution/mq/src/share/java/**"/>
@@ -77,13 +76,12 @@
       <antcall target="jaxr-api.checkout" />
       <antcall target="javamail.download" />
       <antcall target="jaxrpc.checkout" />
-      <antcall target="jaxb-api.checkout" />
+      <antcall target="jaxb-api.download" />
       <antcall target="jaxr.checkout" />
       <antcall target="jaxws-api.checkout" />
       <antcall target="jsf.download" />
       <antcall target="jsp.download" />
       <antcall target="jsr181.download" />
-      <antcall target="jsr250.checkout" />
       <antcall target="jsr311.download" />
       <antcall target="jstl-api.download" />
       <antcall target="mq.download" />
@@ -166,20 +164,22 @@ fileset refid of artifact:dependencies does not work in unjar
 	</exec>
   </target>
 
-
-  <target name="jaxb-api.checkout" description="Checkout JAXB-API"> 
+  <target name="jaxb-api.download" description="Download JAXB-API" depends="initialize.maven">
+      <artifact:dependencies sourcesFilesetId="sources.dependency.jaxb-api">
+          <dependency groupId="javax.xml.bind" artifactId="jaxb-api" version="2.2"/>
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
       <mkdir dir="${external.dir}/jaxb-api" />
-      <get
-           src="${jaxb-api.url}"
-           dest="${external.dir}/jaxb-api/jaxb-api-src.zip"
-           verbose="true"
-           usetimestamp="true"
-           ignoreerrors="true" />
-      <unzip dest="${external.dir}/jaxb-api"  >
+      <copy todir="${external.dir}/jaxb-api" verbose="true">
+          <fileset refid="sources.dependency.jaxb-api" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/jaxb-api"  >
           <fileset dir="${external.dir}/jaxb-api">
-              <include name="**/*.zip"/>
+              <include name="**/jaxb-api*.jar"/>
           </fileset>
-      </unzip>
+      </unjar>
   </target>
 
   <target name="jaxr.checkout" description="Checkout JAXR" >
@@ -266,18 +266,6 @@ fileset refid of artifact:dependencies does not work in unjar
               <include name="**/*.jar"/>
           </fileset>
       </unjar>
-  </target>
-
-  <target name="jsr250.checkout" description="Checkout JSR250"> 
-      <echo message="checkout jsr250 from ${cvsroot}."/>
-      <exec executable="cvs" dir="${external.dir}" failonerror="true" >
-	  <arg line="-d" />
-          <arg line="${cvsroot}" />
-          <arg line="co" />
-	  <arg line="-d" />
-	  <arg line="jsr250" />
-	  <arg line="${jsr250.cvs.location}" />
-	</exec>
   </target>
 
   <target name="jsr311.download" description="Download JSR 311" depends="initialize.maven">
