@@ -343,7 +343,10 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
             pwdFile.deleteOnExit();            
             writer = new FileWriter(pwdFile);            
             writer.write("AS_ADMIN_ADMINPASSWORD=" + pwd + "\n");
-            writer.write("AS_ADMIN_PASSWORD=" + pwd + "\n");
+            if (pwd != null && pwd.trim().length() > 0)
+            	writer.write("AS_ADMIN_PASSWORD=" + pwd + "\n");
+            else	
+            	writer.write("AS_ADMIN_PASSWORD=\n");
             writer.write("AS_ADMIN_MASTERPASSWORD=changeit\n");
             writer.close();
             writer = null;
