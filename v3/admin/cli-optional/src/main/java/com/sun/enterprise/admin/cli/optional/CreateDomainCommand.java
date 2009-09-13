@@ -354,14 +354,14 @@ public final class CreateDomainCommand extends CLICommand {
             }
             // allow empty admin password
             if (ok(adminPassword))
-                validatePassword(adminPassword, ADMIN_PASSWORD);
+                validatePassword(adminPassword, adminPasswordOption);
             if (haveAdminPwd) {
                 masterPassword = passwords.get(MASTER_PASSWORD);
                 if (masterPassword == null)
                     masterPassword = DEFAULT_MASTER_PASSWORD;
             } else
                 masterPassword = getMasterPassword();
-            validatePassword(masterPassword, MASTER_PASSWORD);
+            validatePassword(masterPassword, masterPasswordOption);
         }
 
 
@@ -806,11 +806,16 @@ public final class CreateDomainCommand extends CLICommand {
     }
 
     /* validates adminpassword and masterpassword */
-    public void validatePassword(String password, String type)
+    public void validatePassword(String password, ValidOption pwdOpt)
             throws CommandValidationException {
         if (!isPasswordValid(password)) {
+            String pwdname = pwdOpt.getName();
+            // XXX - hack alert!  the description is stored in the default value
+            String description = pwdOpt.getDefaultValue();
+            if (!ok(description))
+                description = pwdname;
             throw new CommandValidationException(
-                                strings.get("PasswordLimit", type));
+                                strings.get("PasswordLimit", description));
         }
         logger.printDebugMessage("domainName = " + domainName);
     }
