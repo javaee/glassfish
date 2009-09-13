@@ -718,17 +718,29 @@ public abstract class CLICommand implements PostConstruct {
         String description = opt.getDefaultValue();
         String newprompt;
         if (ok(description)) {
-            if (defaultPassword != null)
-                newprompt = strings.get("NewPasswordDescriptionDefaultPrompt",
+            if (defaultPassword != null) {
+                if (defaultPassword.length() == 0)
+                    newprompt =
+                        strings.get("NewPasswordDescriptionDefaultEmptyPrompt",
                                             description);
-            else
+                else
+                    newprompt =
+                        strings.get("NewPasswordDescriptionDefaultPrompt",
+                                            description, defaultPassword);
+            } else
                 newprompt =
                     strings.get("NewPasswordDescriptionPrompt", description);
         } else {
-            if (defaultPassword != null)
-                newprompt =
-                    strings.get("NewPasswordDefaultPrompt", passwordName);
-            else
+            if (defaultPassword != null) {
+                if (defaultPassword.length() == 0)
+                    newprompt =
+                        strings.get("NewPasswordDefaultEmptyPrompt",
+                                            passwordName);
+                else
+                    newprompt =
+                        strings.get("NewPasswordDefaultPrompt",
+                                            passwordName, defaultPassword);
+            } else
                 newprompt = strings.get("NewPasswordPrompt", passwordName);
         }
 
