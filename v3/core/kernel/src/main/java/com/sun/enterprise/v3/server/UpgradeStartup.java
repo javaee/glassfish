@@ -226,8 +226,6 @@ public class UpgradeStartup implements ModuleStartup {
             File repackagedFile = null;
             try {
                 repackagedFile = repackageArchive(app);
-                logger.log(Level.INFO, "Repackaged application " + app.getName()
-                    + " at " + repackagedFile.getPath()); 
             } catch (IOException ioe) {
                 logger.log(Level.SEVERE, "Repackaging of application " + app.getName() + " failed: " + ioe.getMessage(), ioe);
                 return false;
@@ -236,6 +234,8 @@ public class UpgradeStartup implements ModuleStartup {
                 logger.log(Level.SEVERE, "Repackaging of application " + app.getName() + " failed.");
                 return false;
             }
+            logger.log(Level.INFO, "Repackaged application " + app.getName()
+                + " at " + repackagedFile.getPath()); 
             deployParams.path = repackagedFile;
         }
 
