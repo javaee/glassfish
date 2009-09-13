@@ -113,9 +113,7 @@ public final class ListDomainsCommand extends LocalDomainCommand {
                 logger.printDetailMessage(strings.get("NoDomainsToList"));
             }
         } catch (Exception ex) {
-            logger.printDetailMessage(ex.getLocalizedMessage());
-            throw new CommandException(
-                            strings.get("CommandUnSuccessful", name), ex);
+            throw new CommandException(ex.getLocalizedMessage());
         }
         return 0;
     }
