@@ -110,9 +110,7 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
             manager.deleteDomain(domainConfig);
             deleteLoginInfo();
         } catch (Exception e) {
-	    logger.printDetailMessage(e.getLocalizedMessage());
-	    throw new CommandException(
-                    strings.get("CouldNotDeleteDomain", domainName));
+	    throw new CommandException(e.getLocalizedMessage());
         }
 
 	logger.printDetailMessage(strings.get("DomainDeleted", domainName));
