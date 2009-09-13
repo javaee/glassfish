@@ -115,6 +115,9 @@ public abstract class LocalDomainCommand extends CLICommand {
         domainRootDir = SmartFile.sanitize(domainRootDir);
         domainsDir    = SmartFile.sanitize(domainsDir);
 
+        // make sure the domain.xml file exists
+        getDomainXml();
+
         initializeLocalPassword(domainRootDir);
     }
     
