@@ -210,7 +210,8 @@ public final class CreateDomainCommand extends CLICommand {
             // prompt for it (if interactive)
             Console cons = System.console();
             if (cons != null && programOpts.isInteractive()) {
-                cons.printf("%s", strings.get("AdminUserRequiredPrompt"));
+                cons.printf("%s", strings.get("AdminUserRequiredPrompt",
+                    SystemPropertyConstants.DEFAULT_ADMIN_USER));
                 String val = cons.readLine();
                 if (ok(val))
                     programOpts.setUser(val);
