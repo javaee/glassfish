@@ -321,7 +321,7 @@ public class JavaWebStartInfo implements ConfigListener {
 
         tHelper.setProperty(APP_LIBRARY_EXTENSION_PROPERTY_NAME, 
                 jarElementsForExtensions(extensionFileManager.findExtensionTransitiveClosure(
-                new File(helper.appClientServerURI(dc)), 
+                new File(helper.appClientServerURI(dc)).getParentFile(),
                 dc.getSource().getManifest().getMainAttributes())));
 
     }
