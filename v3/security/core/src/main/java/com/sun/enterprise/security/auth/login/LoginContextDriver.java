@@ -48,6 +48,7 @@ import sun.security.x509.X500Name;
 import com.sun.logging.*;
 import com.sun.enterprise.common.iiop.security.GSSUPName;
 import com.sun.enterprise.common.iiop.security.AnonCredential;
+import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.common.AppservAccessController;
 //import com.sun.enterprise.security.SecurityContext;
@@ -69,6 +70,7 @@ import com.sun.enterprise.security.common.ClientSecurityContext;
 //import com.sun.enterprise.appclient.AppContainer;
 import com.sun.enterprise.security.common.SecurityConstants;
 import com.sun.enterprise.security.common.Util;
+import org.glassfish.internal.api.Globals;
 
 
 /** 
@@ -97,12 +99,20 @@ public class LoginContextDriver  {
     public static final String CERT_REALMNAME = "certificate";
   
     //NOTE: This AuditManager is initialized in SecurityLifecycle
-    public  static volatile AuditManager AUDIT_MANAGER;
+    private  static volatile AuditManager AUDIT_MANAGER;
     
     /** This class cannot be instantiated
      *
      */
     private LoginContextDriver(){
+    }
+    
+    private static AuditManager getAuditManager() {
+        if(AUDIT_MANAGER == null) {
+            SecurityServicesUtil secServUtil  = Globals.get(SecurityServicesUtil.class);
+            AUDIT_MANAGER = secServUtil.getAuditManager(); 
+        }
+        return AUDIT_MANAGER;
     }
     /**
      * This method is  just a convenience wrapper for
@@ -114,6 +124,7 @@ public class LoginContextDriver  {
      * @param String realmName the name of the realm to login into, if realmName
      * is null, we login into the default realm	 
      */
+    
     public static void login(String username, String password, String realmName){
 
         if(realmName == null || !(Realm.isValidRealm(realmName))){    
@@ -239,7 +250,7 @@ public class LoginContextDriver  {
 
         } catch (InvalidOperationException ex) {
             _logger.warning("Realm " + realmName + ": " + ex.toString());
-        } catch (NoSuchUserException ex) {
+        } catch (NoSuchUserException ex){
             _logger.warning("Realm " + realmName + ": " + ex.toString());
         } catch (NoSuchRealmException ex) {
             LoginException lex = new LoginException(ex.toString());
@@ -329,8 +340,8 @@ public class LoginContextDriver  {
             if (_logger.isLoggable(Level.FINEST)) {
                 _logger.log(Level.FINEST, "doPasswordLogin fails", e);
             }
-            if(AUDIT_MANAGER != null && AUDIT_MANAGER.isAuditOn()){
-                AUDIT_MANAGER.authentication(user, realm, false);
+            if(getAuditManager() != null && getAuditManager().isAuditOn()){
+                getAuditManager().authentication(user, realm, false);
             }
             if( e instanceof LoginException )
                 throw (LoginException)e;
@@ -338,8 +349,8 @@ public class LoginContextDriver  {
                 throw (LoginException)
                     new LoginException("Login failed: " + e.toString()).initCause(e);
         }
-        if(AUDIT_MANAGER != null && AUDIT_MANAGER.isAuditOn()){
-            AUDIT_MANAGER.authentication(user, realm, true);
+        if(getAuditManager() != null && getAuditManager().isAuditOn()){
+            getAuditManager().authentication(user, realm, true);
         }
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("Password login succeeded for : " + user);
@@ -412,8 +423,8 @@ public class LoginContextDriver  {
                 _logger.log(Level.INFO, "java_security.audit_auth_refused",
                             username);
             }
-            if(AUDIT_MANAGER.isAuditOn()){
-                AUDIT_MANAGER.authentication(username, realmName, false);
+            if(getAuditManager().isAuditOn()){
+                getAuditManager().authentication(username, realmName, false);
             }
 
             if( e instanceof LoginException )
@@ -422,8 +433,8 @@ public class LoginContextDriver  {
                 throw (LoginException)
                     new LoginException("Login failed: " + e.toString()).initCause(e);
         }
-        if(AUDIT_MANAGER.isAuditOn()){
-            AUDIT_MANAGER.authentication(username, realmName, true);
+        if(getAuditManager().isAuditOn()){
+            getAuditManager().authentication(username, realmName, true);
         }
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("jmac Password login succeeded for : " + username);
@@ -463,8 +474,8 @@ public class LoginContextDriver  {
                 _logger.log(Level.INFO, "java_security.audit_auth_refused",
                             userName);
             }
-            if (AUDIT_MANAGER.isAuditOn()){
-                AUDIT_MANAGER.authentication(userName,
+            if (getAuditManager().isAuditOn()){
+                getAuditManager().authentication(userName,
                     CertificateRealm.AUTH_TYPE, false);
             }
             if (ex instanceof LoginException) {
@@ -479,8 +490,8 @@ public class LoginContextDriver  {
             _logger.fine("jmac cert login succeeded for: " + userName);
         }
 
-        if (AUDIT_MANAGER.isAuditOn()){
-            AUDIT_MANAGER.authentication(userName,
+        if (getAuditManager().isAuditOn()){
+            getAuditManager().authentication(userName,
                 CertificateRealm.AUTH_TYPE, true);
         }
         // do not set the security Context
@@ -510,12 +521,12 @@ public class LoginContextDriver  {
                 _logger.log(Level.FINE,"Set security context as user: "+user);
             }
             setSecurityContext(user, s, realm);
-            if(AUDIT_MANAGER.isAuditOn()){
-                AUDIT_MANAGER.authentication(user, realm, true);
+            if(getAuditManager().isAuditOn()){
+                getAuditManager().authentication(user, realm, true);
             }
         } catch(LoginException le){
-            if(AUDIT_MANAGER.isAuditOn()){
-                AUDIT_MANAGER.authentication(user, realm, false);
+            if(getAuditManager().isAuditOn()){
+                getAuditManager().authentication(user, realm, false);
             }
             throw le;
         }
@@ -557,15 +568,15 @@ public class LoginContextDriver  {
             user = ((GSSUPName)obj).getUser();
     
             setSecurityContext(user, s, realm);
-            if(AUDIT_MANAGER.isAuditOn()){
-                AUDIT_MANAGER.authentication(user, realm, true);        
+            if(getAuditManager().isAuditOn()){
+                getAuditManager().authentication(user, realm, true);        
             }
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.fine("GSSUP login succeeded for : " + user);
             }
        } catch (LoginException le){
-           if(AUDIT_MANAGER.isAuditOn()){
-               AUDIT_MANAGER.authentication(user, realm, false);
+           if(getAuditManager().isAuditOn()){
+               getAuditManager().authentication(user, realm, false);
            }
            throw le;
        }
@@ -607,8 +618,8 @@ public class LoginContextDriver  {
                 CertificateRealm certRealm = (CertificateRealm)realm;
                 certRealm.authenticate(s, x500name);
                 realm_name = CertificateRealm.AUTH_TYPE;
-                if(AUDIT_MANAGER.isAuditOn()){
-                    AUDIT_MANAGER.authentication(user, realm_name, true);
+                if(getAuditManager().isAuditOn()){
+                    getAuditManager().authentication(user, realm_name, true);
                 }
             } else {            
                 _logger.warning("certlogin.badrealm");            
@@ -620,8 +631,8 @@ public class LoginContextDriver  {
                 _logger.fine("X.500 name login succeeded for : " + user);
             }
        } catch (LoginException le){
-           if(AUDIT_MANAGER.isAuditOn()){
-               AUDIT_MANAGER.authentication(user, realm_name, false);
+           if(getAuditManager().isAuditOn()){
+               getAuditManager().authentication(user, realm_name, false);
            }
            throw le;
        } catch (Exception ex) {
@@ -903,8 +914,8 @@ public class LoginContextDriver  {
             if (_logger.isLoggable(Level.FINEST)) {
                 _logger.log(Level.FINEST, "doPasswordLogin fails", e);
             }
-            if (AUDIT_MANAGER.isAuditOn()) {
-                AUDIT_MANAGER.authentication(digestCred.getUserName(), digestCred.getRealmName(), false);
+            if (getAuditManager().isAuditOn()) {
+                getAuditManager().authentication(digestCred.getUserName(), digestCred.getRealmName(), false);
             }
             if (e instanceof LoginException) {
                 throw (LoginException) e;

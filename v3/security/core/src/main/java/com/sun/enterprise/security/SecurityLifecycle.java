@@ -179,7 +179,8 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             //TODO:V3 LoginContextDriver has a static variable dependency on AuditManager
             //And since LoginContextDriver has too many static methods that use AuditManager
             //we have to make this workaround here.
-            LoginContextDriver.AUDIT_MANAGER = secServUtil.getAuditManager();
+             //Commenting this since this is being handles in LoginContextDriver
+        //    LoginContextDriver.AUDIT_MANAGER = secServUtil.getAuditManager();
 
             //replaced with SharedSecureRandom API
             //secServUtil.initSecureSeed();

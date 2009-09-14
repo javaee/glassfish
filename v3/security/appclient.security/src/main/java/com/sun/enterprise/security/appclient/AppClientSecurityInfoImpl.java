@@ -142,7 +142,8 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
         //TODO:V3 LoginContextDriver has a static variable dependency on AuditManager
         //And since LoginContextDriver has too many static methods that use AuditManager
         //we have to make this workaround here.
-        LoginContextDriver.AUDIT_MANAGER = secServUtil.getAuditManager();
+        //Handles in LoginContextDriver
+        //LoginContextDriver.AUDIT_MANAGER = secServUtil.getAuditManager();
 
         //secServUtil.initSecureSeed();
 
