@@ -107,15 +107,15 @@ public class CreateConnectorSecurityMap extends ConnectorSecurityMap implements 
         }
 
         if (principals == null && userGroups == null) {
-            report.setMessage(localStrings.getLocalString("create.connector.security.map.specifyPrincipalsOrGroupsMap",
-                    "A security map named must have either principals or groups, not both"));
+            report.setMessage(localStrings.getLocalString("create.connector.security.map.noPrincipalsOrGroupsMap",
+                    "Either the principal or the user group has to be specified while creating a security map. Both cannot be null."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
         if (principals != null && userGroups != null) {
             report.setMessage(localStrings.getLocalString("create.connector.security.map.specifyPrincipalsOrGroupsMap",
-                    "A security map named must have either principals or groups"));
+                    "A work-security-map can have either (any number of) group mapping or (any number of) principals mapping but not both. Specify --principalsmap or --groupsmap."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
