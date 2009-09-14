@@ -65,11 +65,11 @@ public class MonitorableEmbeddedHttp extends GrizzlyEmbeddedHttp {
     }
 
     @Override
-    protected DefaultThreadPool newThreadPool(int minThreads, int maxThreads,
-            int maxQueueSize, long keepAlive, TimeUnit timeunit) {
+    protected DefaultThreadPool newThreadPool(String name, int minThreads,
+            int maxThreads, int maxQueueSize, long keepAlive, TimeUnit timeunit) {
 
-        return new MonitorableThreadPool(monitoring, listenerName, minThreads,
-                maxThreads, maxQueueSize, keepAlive, timeunit);
+        return new MonitorableThreadPool(monitoring, listenerName, name,
+                minThreads, maxThreads, maxQueueSize, keepAlive, timeunit);
     }
 
     @Override

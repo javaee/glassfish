@@ -25,7 +25,7 @@ felix_version="1.8.0,0-0"
 javadb_version="10.4.2.1,0-0"
 corba_version="3.0.0,0-20"
 jsf_version="2.0.0,0-17"
-grizzly_version="1.9.18,0-2"
+grizzly_version="1.9.18,0-3"
 metro_version="2.0,0-19"
 
 #description
