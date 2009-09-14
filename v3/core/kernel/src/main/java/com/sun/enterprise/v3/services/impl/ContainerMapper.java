@@ -29,8 +29,8 @@ import java.util.logging.Level;
 import com.sun.enterprise.v3.server.HK2Dispatcher;
 import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.config.GrizzlyEmbeddedHttp;
-//import com.sun.grizzly.config.ContextRootInfo;
-//import com.sun.grizzly.config.FileCacheAware;
+import com.sun.grizzly.config.ContextRootInfo;
+import com.sun.grizzly.config.FileCacheAware;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
@@ -58,7 +58,7 @@ import org.jvnet.hk2.component.Habitat;
  * @author Alexey Stashok
  */
 @SuppressWarnings({"NonPrivateFieldAccessedInSynchronizedContext"})
-public class ContainerMapper extends StaticResourcesAdapter /* implements FileCacheAware */{
+public class ContainerMapper extends StaticResourcesAdapter  implements FileCacheAware {
     private final static String ROOT = "";
     private Mapper mapper;
     private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
@@ -358,7 +358,5 @@ public class ContainerMapper extends StaticResourcesAdapter /* implements FileCa
             mapper.removeContext(host, contextRoot);
         }
     }
-
-    // -------------------------------------------------------------------- //
 
 }
