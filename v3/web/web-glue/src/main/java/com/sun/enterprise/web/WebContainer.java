@@ -523,9 +523,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 configListener.httpService);
         httpServiceBean.addListener(configListener);
          
-        ObservableBean managerBean = (ObservableBean) ConfigSupport.getImpl(
+        // embedded mode does not have manager-propertie in domain.xml
+        if (configListener.managerProperties!=null) {
+            ObservableBean managerBean = (ObservableBean) ConfigSupport.getImpl(
                 configListener.managerProperties);
-        managerBean.addListener(configListener);       
+            managerBean.addListener(configListener);      
+        }
         
         configListener.setContainer(this);
         configListener.setLogger(_logger);
