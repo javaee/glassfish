@@ -165,8 +165,10 @@ public class StopDomainCommand extends LocalDomainCommand {
      * Wait for the server to die.
      */
     protected void waitForDeath() throws CommandException {
-        // use stderr because logger always appends a newline
-        System.err.print(strings.get("StopDomain.WaitDASDeath") + " ");
+        if (!programOpts.isTerse()) {
+            // use stderr because logger always appends a newline
+            System.err.print(strings.get("StopDomain.WaitDASDeath") + " ");
+        }
         long startWait = System.currentTimeMillis();
         boolean alive = true;
 
@@ -177,13 +179,15 @@ public class StopDomainCommand extends LocalDomainCommand {
             }
             try {
                 Thread.sleep(100);
-                System.err.print(".");
+                if (!programOpts.isTerse())
+                    System.err.print(".");
             } catch (InterruptedException ex) {
                 // don't care
             }
         }
 
-        System.err.println();
+        if (!programOpts.isTerse())
+            System.err.println();
 
         if (alive) {
             throw new CommandException(strings.get("StopDomain.DASNotDead",

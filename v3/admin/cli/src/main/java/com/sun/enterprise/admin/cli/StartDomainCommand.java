@@ -272,7 +272,7 @@ public class StartDomainCommand extends LocalDomainCommand {
                     strings.get("CommandUnSuccessfulWithArg", name, msg));
         }
         long startWait = System.currentTimeMillis();
-        logger.printMessage(strings.get("WaitDAS"));
+        logger.printDetailMessage(strings.get("WaitDAS"));
 
         boolean alive = false;
 
