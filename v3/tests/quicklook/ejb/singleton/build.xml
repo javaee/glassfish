@@ -48,7 +48,9 @@
 
    
     <target name="build" depends="compile-tests">
-        <antcall target="build-impl"/>
+        <antcall target="build-impl">
+          <param name="war.classes" value="**/*Servlet.class,**/*Interface.class"/>
+	</antcall>
     </target>
     
     <target name="deploy">

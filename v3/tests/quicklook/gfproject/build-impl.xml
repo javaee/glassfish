@@ -262,13 +262,11 @@
     srcdir="src/java"
     failonerror="false"
     destdir="${class.output}"/>
+    <echo message="war.classes ============== : ${war.classes}"/>
     <war destfile="${dist.dir}/${app.file}Web.war" webxml="metadata/web.xml">
         <fileset dir="web/html"/>
         <fileset dir="web/jsp"/>
-        <classes dir="${class.output}">
-            <include name="**/*Servlet.class"/>
-            <include name="**/*Interface.class"/>
-        </classes>
+        <classes dir="${class.output}" includes="${war.classes}"/>
         <webinf dir="metadata">
             <include name="**/web.xml"/>
         </webinf>
