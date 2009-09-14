@@ -39,6 +39,8 @@
 
 package org.glassfish.web.plugin.common;
 
+import com.sun.enterprise.config.serverbeans.Engine;
+import java.beans.PropertyVetoException;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -46,6 +48,9 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  * Sets the value of an env-entry customization for a web application.
@@ -71,19 +76,115 @@ import org.jvnet.hk2.component.PerLookup;
     @Param(name="ignoreDescriptorItem", optional=true)
     private Boolean ignoreDescriptorItem;
 
+    @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
 
         try {
-            final WebModuleConfig config = webModuleConfigCreateIfNeeded(report);
-            if (config == null) {
-                return;
-            }
-            config.setEnvEntry(name, description, ignoreDescriptorItem, value, envEntryType);
+            setEnvEntry(engine(report),
+                    name, description, ignoreDescriptorItem, value, envEntryType);
         } catch (Exception e) {
             fail(report, e, "errSetEnvEntry", "Error setting env entry");
         }
 
     }
 
+    private void setEnvEntry(final Engine owningEngine,
+            final String name,
+            final String description,
+            final Boolean ignoreDescriptorItem,
+            final String value,
+            final String envEntryType) throws PropertyVetoException, TransactionFailure {
+
+        WebModuleConfig config = WebModuleConfig.Duck.webModuleConfig(owningEngine);
+        if (config == null) {
+            createEnvEntryOnNewWMC(owningEngine, name, value, envEntryType,
+                    description, ignoreDescriptorItem);
+        } else {
+            EnvEntry entry = config.getEnvEntry(name);
+            if (entry == null) {
+                createEnvEntryOnExistingWMC(config, name,
+                        value, envEntryType, description, ignoreDescriptorItem);
+            } else {
+                modifyEnvEntry(entry, value, envEntryType, description,
+                            ignoreDescriptorItem);
+            }
+        }
+    }
+
+    private void createEnvEntryOnNewWMC(final Engine owningEngine,
+            final String name,
+            final String value,
+            final String envEntryType,
+            final String description,
+            final Boolean ignoreDescriptorItem) throws PropertyVetoException, TransactionFailure {
+
+        ConfigSupport.apply(new SingleConfigCode<Engine>() {
+
+            @Override
+            public Object run(Engine e) throws PropertyVetoException, TransactionFailure {
+                final WebModuleConfig config = e.createChild(WebModuleConfig.class);
+                e.getApplicationConfigs().add(config);
+                final EnvEntry envEntry = config.createChild(EnvEntry.class);
+                config.getEnvEntry().add(envEntry);
+                set(envEntry, name, value, envEntryType, description, ignoreDescriptorItem);
+                return config;
+             }
+        }, owningEngine);
+    }
+
+    private void createEnvEntryOnExistingWMC(final WebModuleConfig config,
+            final String name,
+            final String value,
+            final String envEntryType,
+            final String description,
+            final Boolean ignoreDescriptorItem) throws PropertyVetoException, TransactionFailure {
+
+        ConfigSupport.apply(new SingleConfigCode<WebModuleConfig>() {
+            @Override
+            public Object run(WebModuleConfig cf) throws PropertyVetoException, TransactionFailure {
+                final EnvEntry envEntry = cf.createChild(EnvEntry.class);
+                cf.getEnvEntry().add(envEntry);
+                set(envEntry, name, value, envEntryType, description, ignoreDescriptorItem);
+                return envEntry;
+             }
+        }, config);
+    }
+
+    private void modifyEnvEntry(final EnvEntry envEntry,
+            final String value,
+            final String envEntryType,
+            final String description,
+            final Boolean ignoreDescriptorItem) throws PropertyVetoException, TransactionFailure {
+        ConfigSupport.apply(new SingleConfigCode<EnvEntry>() {
+
+            @Override
+            public Object run(EnvEntry ee) throws PropertyVetoException, TransactionFailure {
+                set(ee, ee.getEnvEntryName(), value, envEntryType, description, ignoreDescriptorItem);
+                return ee;
+            }
+        }, envEntry);
+    }
+
+    private void set(final EnvEntry envEntry,
+            final String name,
+            final String value,
+            final String envEntryType,
+            final String description,
+            final Boolean ignoreDescriptorItem) throws PropertyVetoException, TransactionFailure {
+
+        envEntry.setEnvEntryName(name);
+        if (envEntryType != null) {
+            envEntry.setEnvEntryType(envEntryType);
+        }
+        if (value != null) {
+            envEntry.setEnvEntryValue(value);
+        }
+        if (description != null) {
+            envEntry.setDescription(description);
+        }
+        if (ignoreDescriptorItem != null) {
+            envEntry.setIgnoreDescriptorItem(ignoreDescriptorItem.toString());
+        }
+    }
 }

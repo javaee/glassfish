@@ -39,6 +39,8 @@
 
 package org.glassfish.web.plugin.common;
 
+import com.sun.enterprise.config.serverbeans.Engine;
+import java.beans.PropertyVetoException;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -46,6 +48,9 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  *
@@ -68,17 +73,114 @@ public class SetWebContextParamCommand extends WebModuleConfigCommand {
     @Param(name="ignoreDescriptorItem", optional=true)
     private Boolean ignoreDescriptorItem;
 
+    @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
 
         try {
-            final WebModuleConfig config = webModuleConfigCreateIfNeeded(report);
-            if (config == null) {
-                return;
-            }
-            WebModuleConfig.Duck.setContextParam(config, name, value, description, ignoreDescriptorItem);
+            setContextParam(engine(report),
+                    name, value, description, ignoreDescriptorItem);
         } catch (Exception e) {
             fail(report, e, "errSetContextParam", "Error setting context param");
         }
     }
-}
+
+    private void setContextParam(final Engine owningEngine,
+            final String paramName,
+            final String paramValue,
+            final String description,
+            final Boolean ignoreDescriptorItem) throws PropertyVetoException, TransactionFailure {
+
+        WebModuleConfig config = WebModuleConfig.Duck.webModuleConfig(owningEngine);
+        if (config == null) {
+            createContextParamOnNewWMC(owningEngine, paramName, paramValue,
+                    description, ignoreDescriptorItem);
+        } else {
+            ContextParam cp = config.getContextParam(paramName);
+            if (cp == null) {
+                createContextParamOnExistingWMC(config, paramName,
+                        paramValue, description, ignoreDescriptorItem);
+            } else {
+                modifyContextParam(cp, paramValue, description,
+                            ignoreDescriptorItem);
+            }
+        }
+    }
+
+    private void createContextParamOnNewWMC(
+            final Engine owningEngine,
+            final String paramName,
+            final String paramValue,
+            final String description,
+            final Boolean ignoreDescriptorItem) throws PropertyVetoException, TransactionFailure {
+
+
+        ConfigSupport.apply(new SingleConfigCode<Engine>() {
+
+            @Override
+            public Object run(Engine e) throws PropertyVetoException, TransactionFailure {
+                final WebModuleConfig config = e.createChild(WebModuleConfig.class);
+                e.getApplicationConfigs().add(config);
+                final ContextParam newParam = config.createChild(ContextParam.class);
+                config.getContextParam().add(newParam);
+                set(newParam, paramName, paramValue, description, ignoreDescriptorItem);
+                return config;
+            }
+        }, owningEngine);
+
+    }
+
+    private void createContextParamOnExistingWMC(
+            final WebModuleConfig config,
+            final String paramName,
+            final String paramValue,
+            final String description,
+            final Boolean ignoreDescriptorItem) throws PropertyVetoException, TransactionFailure {
+
+        ConfigSupport.apply(new SingleConfigCode<WebModuleConfig>() {
+
+            @Override
+            public Object run(WebModuleConfig cf) throws PropertyVetoException, TransactionFailure {
+                final ContextParam param = cf.createChild(ContextParam.class);
+                cf.getContextParam().add(param);
+                set(param, paramName, paramValue, description, ignoreDescriptorItem);
+                return param;
+            }
+        }, config);
+    }
+
+    private void modifyContextParam(
+            final ContextParam param,
+            final String paramValue,
+            final String description,
+            final Boolean ignoreDescriptorItem) throws PropertyVetoException, TransactionFailure {
+        ConfigSupport.apply(new SingleConfigCode<ContextParam>() {
+
+            @Override
+            public Object run(ContextParam cp) throws PropertyVetoException, TransactionFailure {
+                set(cp, cp.getParamName(), paramValue, description, ignoreDescriptorItem);
+                return cp;
+            }
+        }, param);
+    }
+
+    private void set(final ContextParam param,
+            final String paramName,
+            final String paramValue,
+            final String description,
+            final Boolean ignoreDescriptorItem) throws PropertyVetoException, TransactionFailure {
+        if (ignoreDescriptorItem != null) {
+            param.setIgnoreDescriptorItem(ignoreDescriptorItem.toString());
+        }
+        if (description != null) {
+            param.setDescription(description);
+        }
+        if (paramValue != null) {
+            param.setParamValue(paramValue);
+        }
+        if (paramName != null) {
+            param.setParamName(paramName);
+        }
+    }
+
+ }

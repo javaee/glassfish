@@ -81,18 +81,6 @@ public abstract class WebModuleConfigCommand implements AdminCommand {
         return config;
     }
 
-    protected WebModuleConfig webModuleConfigCreateIfNeeded(final ActionReport report) throws TransactionFailure {
-        Engine e = engine(report);
-        if (e == null) {
-            return null;
-        }
-
-        WebModuleConfig config = (WebModuleConfig) e.getApplicationConfig();
-        if (config == null) {
-            config = e.newApplicationConfig(WebModuleConfig.class);
-        }
-        return config;
-    }
     /**
      * Returns the Application corresponding to the app specified in the
      * command arguments.
@@ -123,7 +111,7 @@ public abstract class WebModuleConfigCommand implements AdminCommand {
         return module;
     }
 
-    private Engine engine(final ActionReport report) {
+    protected Engine engine(final ActionReport report) {
         Module module = module(report);
         if (module == null) {
             return null;

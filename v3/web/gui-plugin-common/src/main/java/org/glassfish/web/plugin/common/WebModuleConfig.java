@@ -83,17 +83,6 @@ public interface WebModuleConfig extends ConfigBeanProxy, ApplicationConfig, Inj
 
     @DuckTyped public void deleteContextParam(final String name) throws PropertyVetoException, TransactionFailure;
 
-    @DuckTyped public void setEnvEntry(final String name,
-                final String description,
-                final Boolean ignoreDescriptorItem,
-                final String value,
-                final String envEntryType) throws PropertyVetoException, TransactionFailure;
-
-    @DuckTyped public void setContextParam(final String paramName,
-                final String paramValue,
-                final String description,
-                final Boolean ignoreDescriptorItem) throws PropertyVetoException, TransactionFailure;
-
     @DuckTyped public List<EnvEntry> envEntriesMatching(final String nameOrNull);
 
     @DuckTyped public List<ContextParam> contextParamsMatching(final String nameOrNull);
@@ -128,6 +117,7 @@ public interface WebModuleConfig extends ConfigBeanProxy, ApplicationConfig, Inj
             }
             ConfigSupport.apply(new SingleConfigCode<WebModuleConfig>(){
 
+                @Override
                 public Object run(WebModuleConfig config) throws PropertyVetoException, TransactionFailure {
                     return config.getEnvEntry().remove(entry);
                 }
@@ -143,6 +133,7 @@ public interface WebModuleConfig extends ConfigBeanProxy, ApplicationConfig, Inj
             }
             ConfigSupport.apply(new SingleConfigCode<WebModuleConfig>(){
 
+                @Override
                 public Object run(WebModuleConfig config) throws PropertyVetoException, TransactionFailure {
                     return config.getContextParam().remove(param);
                 }
@@ -151,105 +142,7 @@ public interface WebModuleConfig extends ConfigBeanProxy, ApplicationConfig, Inj
 
         }
 
-        public static void setEnvEntry(final WebModuleConfig instance,
-                final String name,
-                final String description,
-                final Boolean ignoreDescriptorItem,
-                final String value,
-                final String envEntryType) throws PropertyVetoException, TransactionFailure {
-            ConfigSupport.apply(new SingleConfigCode<WebModuleConfig>() {
-
-                public Object run(WebModuleConfig config) throws PropertyVetoException, TransactionFailure {
-                    final EnvEntry existingEntry = config.getEnvEntry(name);
-                    EnvEntry newEntry = config.createChild(EnvEntry.class);
-
-                    if (existingEntry != null) {
-                        newEntry.setDescription(existingEntry.getDescription());
-                        newEntry.setEnvEntryName(existingEntry.getEnvEntryName());
-                        newEntry.setEnvEntryType(existingEntry.getEnvEntryType());
-                        newEntry.setEnvEntryValue(existingEntry.getEnvEntryValue());
-                        newEntry.setIgnoreDescriptorItem(existingEntry.getIgnoreDescriptorItem());
-                    }
-
-                    if (name != null) {
-                        newEntry.setEnvEntryName(name);
-                    }
-                    if (ignoreDescriptorItem != null) {
-                        newEntry.setIgnoreDescriptorItem(ignoreDescriptorItem.toString());
-                    }
-                    if (description != null) {
-                        newEntry.setDescription(description);
-                    }
-                    if (value != null) {
-                        newEntry.setEnvEntryValue(value);
-                    }
-                    if (envEntryType != null) {
-                        newEntry.setEnvEntryType(envEntryType);
-                    }
-
-                    final List<EnvEntry> envEntries = config.getEnvEntry();
-                    if (existingEntry != null) {
-                        envEntries.remove(existingEntry);
-                    }
-                    envEntries.add(newEntry);
-                    return newEntry;
-                }
-            }, instance);
-        }
-
-        public static void setContextParam(final WebModuleConfig instance,
-                final String paramName,
-                final String paramValue,
-                final String description,
-                final Boolean ignoreDescriptorItem) throws PropertyVetoException, TransactionFailure {
-
-            ConfigSupport.apply(new SingleConfigCode<WebModuleConfig>() {
-
-                public Object run(WebModuleConfig config) throws PropertyVetoException, TransactionFailure {
-                    ContextParam existingParam = null;
-                    final List<ContextParam> contextParams = config.getContextParam();
-                    for (ContextParam cp : contextParams) {
-                        if (cp.getParamName().equals(paramName)) {
-                            existingParam = cp;
-                            break;
-                        }
-                    }
-                    /*
-                     * To modify an existing param, it looks as if we need to
-                     * create a new one, populate it from the old one, apply
-                     * whatever changes were specified in the command, 
-                     * then remove the old one. (Don't forget to add the new one.)
-                     */
-                    ContextParam newParam = config.createChild(ContextParam.class);
-
-                    if (existingParam != null) {
-                        newParam.setDescription(existingParam.getDescription());
-                        newParam.setIgnoreDescriptorItem(existingParam.getIgnoreDescriptorItem());
-                        newParam.setParamName(existingParam.getParamName());
-                        newParam.setParamValue(existingParam.getParamValue());
-                    }
-
-                    if (ignoreDescriptorItem != null) {
-                        newParam.setIgnoreDescriptorItem(ignoreDescriptorItem.toString());
-                    }
-                    if (description != null) {
-                        newParam.setDescription(description);
-                    }
-
-                    if (paramValue != null) {
-                        newParam.setParamValue(paramValue);
-                    }
-                    if (paramName != null) {
-                        newParam.setParamName(paramName);
-                    }
-                    if (existingParam != null) {
-                        contextParams.remove(existingParam);
-                    }
-                    contextParams.add(newParam);
-                    return newParam;
-                }
-            }, instance);
-        }
+        
 
         public static List<EnvEntry> envEntriesMatching(final WebModuleConfig instance,
                 final String nameOrNull) {
@@ -284,6 +177,10 @@ public interface WebModuleConfig extends ConfigBeanProxy, ApplicationConfig, Inj
             }
             return result;
 
+        }
+
+        static WebModuleConfig webModuleConfig(final Engine engine) {
+            return (WebModuleConfig) engine.getApplicationConfig();
         }
     }
 
