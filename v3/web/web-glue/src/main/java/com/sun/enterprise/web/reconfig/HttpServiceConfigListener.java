@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 
 import com.sun.enterprise.config.serverbeans.AccessLog;
 import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.ManagerProperties;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.v3.services.impl.MapperUpdateListener;
 import com.sun.enterprise.web.WebContainer;
@@ -71,6 +72,9 @@ public class HttpServiceConfigListener implements ConfigListener, MapperUpdateLi
     
     @Inject(optional=true)
     public AccessLog accessLog;
+    
+    @Inject(optional=true)
+    public ManagerProperties managerProperties;
 
     @Inject(optional=true)
     public List<Property> property;
@@ -86,7 +90,7 @@ public class HttpServiceConfigListener implements ConfigListener, MapperUpdateLi
     private Logger logger;
 
     volatile boolean received=false;
-
+    
     /**
      * Set the Web Container for this ConfigListener.
      * Must be set in order to perform dynamic configuration
@@ -133,7 +137,9 @@ public class HttpServiceConfigListener implements ConfigListener, MapperUpdateLi
                         return null;
                     } else if (t instanceof AccessLog) {
                         container.updateAccessLog(httpService);
-                    }
+                    } else if (t instanceof ManagerProperties) {
+                        return new NotProcessed("ManagerProperties requires restart");
+                    } 
                     container.updateHttpService(httpService);
                 } catch (LifecycleException le) {
                     logger.log(Level.SEVERE, "Exception processing HttpService config change", le);
