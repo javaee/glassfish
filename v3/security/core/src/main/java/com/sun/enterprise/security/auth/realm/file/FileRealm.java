@@ -49,6 +49,7 @@ import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.util.*;
 import com.sun.enterprise.security.auth.realm.IASRealm;
 import com.sun.enterprise.security.common.Util;
+import java.util.logging.Logger;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.internal.api.SharedSecureRandom;
 import org.jvnet.hk2.annotations.Service;
@@ -799,6 +800,21 @@ final public class FileRealm extends IASRealm
         String file = this.getProperty(PARAM_KEYFILE);
 
         _logger.fine("Reading file realm: "+file);
+
+        //Adding this feature of creating the empty keyfile
+        // to satisfy some admin requirements.
+        //allow the file creation only if it is inside glassfish domain-config
+        File filePath = new File(file);
+        if ((file != null) && !filePath.exists()) {
+            try {
+                if (file.indexOf("domains") > 0 && file.indexOf("config") > 0) {
+                    filePath.createNewFile();
+                }
+            } catch (IOException ex) {
+                //ignore any exception, so the code below
+                //will then throw No such file or directory
+            }
+        }
 
         userTable = new Hashtable();
         groupSizeMap = new Hashtable();
