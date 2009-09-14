@@ -75,8 +75,8 @@ public abstract class LocalDomainCommand extends CLICommand {
         super.validate();
         initDomain();
     }
-    
-    protected void initDomain() throws CommandValidationException {
+ 
+    protected void initDomain() throws CommandException {
         if (!operands.isEmpty()) {
             domainName = operands.get(0);
         }
@@ -86,18 +86,13 @@ public abstract class LocalDomainCommand extends CLICommand {
 
         if (ok(domaindir)) {
             domainsDir = new File(domaindir);
-            if (!domainsDir.isDirectory()) {
-                throw new CommandValidationException(
-                        strings.get("Domain.badDomainsDir", domainsDir));
-            }
-        }
-        if (domainsDir == null) {
+        } else {
             domainsDir = new File(getSystemProperty(
                             SystemPropertyConstants.DOMAINS_ROOT_PROPERTY));
         }
 
         if (!domainsDir.isDirectory()) {
-            throw new CommandValidationException(
+            throw new CommandException(
                     strings.get("Domain.badDomainsDir", domainsDir));
         }
 
@@ -109,7 +104,7 @@ public abstract class LocalDomainCommand extends CLICommand {
         }
 
         if (!domainRootDir.isDirectory()) {
-            throw new CommandValidationException(
+            throw new CommandException(
                     strings.get("Domain.badDomainDir", domainRootDir));
         }
         domainRootDir = SmartFile.sanitize(domainRootDir);
@@ -121,8 +116,7 @@ public abstract class LocalDomainCommand extends CLICommand {
         initializeLocalPassword(domainRootDir);
     }
     
-    private File getTheOneAndOnlyDomain(File parent)
-            throws CommandValidationException {
+    private File getTheOneAndOnlyDomain(File parent) throws CommandException {
         // look for subdirs in the parent dir -- there must be one and only one
 
         File[] files = parent.listFiles(new FileFilter() {
@@ -132,24 +126,24 @@ public abstract class LocalDomainCommand extends CLICommand {
         });
 
         if (files == null || files.length == 0) {
-            throw new CommandValidationException(
+            throw new CommandException(
                     strings.get("Domain.noDomainDirs", parent));
         }
 
         if (files.length > 1) {
-            throw new CommandValidationException(
+            throw new CommandException(
                     strings.get("Domain.tooManyDomainDirs", parent));
         }
         return files[0];
     }
     
-    protected File getDomainXml() throws CommandValidationException {
+    protected File getDomainXml() throws CommandException {
         // root-dir/config/domain.xml
         File domainXml = new File(new File(domainRootDir, "config"),
                                     "domain.xml");
 
         if (!domainXml.canRead()) {
-            throw new CommandValidationException(
+            throw new CommandException(
                     strings.get("Domain.noDomainXml", domainXml));
         }
         return domainXml;
@@ -250,10 +244,9 @@ public abstract class LocalDomainCommand extends CLICommand {
      * @param domainXml the domain.xml file
      * @return an integer that represents admin port
      * @throws CommandException in case of parsing errors
-     * @throws CommandValidationException in case of parsing errors 
      */
     protected int getAdminPort(File domainXml)
-                        throws CommandValidationException, CommandException {
+                        throws CommandException {
         Integer[] ports;
 
         try {

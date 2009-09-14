@@ -83,12 +83,12 @@ public class StopDomainCommand extends LocalDomainCommand {
      * case, when no --host has been specified.
      */
     @Override
-    protected void initDomain() throws CommandValidationException {
+    protected void initDomain() throws CommandException {
         // only initialize local domain information if it's a local operation
         if (programOpts.getHost().equals(CLIConstants.DEFAULT_HOSTNAME))
             super.initDomain();
         else if (operands.size() > 0)   // remote case
-            throw new CommandValidationException(
+            throw new CommandException(
                 strings.get("StopDomain.noDomainNameAllowed"));
     }
 
