@@ -35,7 +35,6 @@
  */
 package com.sun.ejb.monitoring.stats;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -79,11 +78,11 @@ public class EjbMethodStatsProvider {
     private MutableTimeStatisticImpl methodStat = null;
 
     private static ThreadLocal  execThreadLocal = new ThreadLocal();
-    private Method m = null;
+    private String mname = null;
     private boolean registered = false;
 
-    EjbMethodStatsProvider (Method m) {
-        this.m = m;
+    EjbMethodStatsProvider (String mname) {
+        this.mname = mname;
 
         long now = System.currentTimeMillis();
         methodStat = new MutableTimeStatisticImpl(

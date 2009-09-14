@@ -64,8 +64,9 @@ import com.sun.ejb.containers.EjbContainerUtilImpl;
 @Description("Ejb Application Statistics")
 public class EjbMonitoringStatsProvider {
 
-    private Map<Method, EjbMethodStatsProvider> methodMonitorMap = 
-            new HashMap<Method, EjbMethodStatsProvider>();
+    private Map<Method, String> methodMappingMap = new HashMap<Method, String>();
+    private Map<String, EjbMethodStatsProvider> methodMonitorMap = 
+            new HashMap<String, EjbMethodStatsProvider>();
     private String appName = null;
     private String moduleName = null;
     private String beanName = null;
@@ -86,8 +87,13 @@ public class EjbMonitoringStatsProvider {
         this.moduleName = moduleName;
         this.beanName = beanName;
         for (Method m : methods) {
-            EjbMethodStatsProvider monitor = new EjbMethodStatsProvider(m);
-            methodMonitorMap.put(m, monitor);
+            String mname = EjbMonitoringUtils.stringify(m);
+            methodMappingMap.put(m, mname);
+            if (methodMonitorMap.get(mname) == null) {
+                // Use 1 monitor for all methods that represent the same method in the bean
+                EjbMethodStatsProvider monitor = new EjbMethodStatsProvider(mname);
+                methodMonitorMap.put(mname, monitor);
+            }
         }
     }
 
@@ -96,14 +102,12 @@ public class EjbMonitoringStatsProvider {
                 appName, moduleName, beanName, this);
         if ( beanSubTreeNode != null) {
             registered = true;
-            for ( Method m : methodMonitorMap.keySet()) {
-                EjbMethodStatsProvider monitor = methodMonitorMap.get(m);
-/** Cases NPE on asadmin get --monitor=true "*"
-                String node = EjbMonitoringUtils.registerMethod(beanSubTreeNode, m, monitor);
+            for ( String mname : methodMonitorMap.keySet()) {
+                EjbMethodStatsProvider monitor = methodMonitorMap.get(mname);
+                String node = EjbMonitoringUtils.registerMethod(beanSubTreeNode, mname, monitor);
                 if (node != null) {
                     monitor.registered();
                 }
-**/
             }
         }
     }
@@ -129,7 +133,8 @@ public class EjbMonitoringStatsProvider {
             @ProbeParam("method") Method method) {
         if (isValidEvent(appName, modName, ejbName)) {
             log ("ejbMethodStartEvent", method);
-            EjbMethodStatsProvider monitor = methodMonitorMap.get(method);
+            EjbMethodStatsProvider monitor = methodMonitorMap.get(
+                    methodMappingMap.get(EjbMonitoringUtils.stringify(method)));
             if (monitor != null) {
                 monitor.methodStart();
             }
@@ -145,7 +150,8 @@ public class EjbMonitoringStatsProvider {
             @ProbeParam("method") Method method) {
         if (isValidEvent(appName, modName, ejbName)) {
             log ("ejbMethodEndEvent", method);
-            EjbMethodStatsProvider monitor = methodMonitorMap.get(method);
+            EjbMethodStatsProvider monitor = methodMonitorMap.get(
+                    methodMappingMap.get(EjbMonitoringUtils.stringify(method)));
             if (monitor != null) {
                 monitor.methodEnd((exception == null));
             }

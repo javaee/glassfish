@@ -97,8 +97,8 @@ public class EjbMonitoringUtils {
         return subTreeNode;
     }
 
-    static String registerMethod(String parentNode, Method m, Object listener) {
-        String subTreeNode = parentNode + METHOD_NODE + stringify(m);
+    static String registerMethod(String parentNode, String mname, Object listener) {
+        String subTreeNode = parentNode + METHOD_NODE + mname;
         _logger.info("METHOD NODE NAME: " + subTreeNode);
         try {
             StatsProviderManager.register(EJB_MONITORING_NODE,
@@ -115,6 +115,7 @@ public class EjbMonitoringUtils {
 
 
     static String stringify(Method m) {
+        _logger.info("==> Converting method to String: " + m);
         StringBuffer sb = new StringBuffer();
         sb.append(m.getName());
         Class[] args = m.getParameterTypes();
