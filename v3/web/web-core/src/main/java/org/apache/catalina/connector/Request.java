@@ -1893,47 +1893,48 @@ public class Request
                     "user identity already exists");
         }
         
-        if (context == null) {
-            return false;
+        if (context == null) {//TODO: throw an exception
+            throw new ServletException("Internal error: Context null");
         }
             
         AuthenticatorBase authBase = (AuthenticatorBase)context.getAuthenticator();
+        
+        if(authBase == null) {
+           throw new ServletException("Internal error: Authenticator null"); 
+        }
 
         byte[] alreadyCalled = (byte[]) reentrancyStatus.get();
         if (alreadyCalled[0] == 1) {
             //Re-entrancy from a JSR 196  module, so call the authenticate directly
-            if (authBase != null) {
-                try {
-                    return authBase.authenticate(this, (HttpResponse) getResponse(), 
-                            context.getLoginConfig());
-                } catch (Exception ex) {
-                   throw new ServletException("Exception thrown while attempting to authenticate "+ex);
-                }
+            try {
+                return authBase.authenticate(this, (HttpResponse) getResponse(), 
+                        context.getLoginConfig());
+            } catch (Exception ex) {
+               throw new ServletException("Exception thrown while attempting to authenticate "+ex);
             }
+            
          } else {
             //No re-entrancy, so call invokeAuthenticateDelegate to check if 
             //JSR196 module is present
             alreadyCalled[0] = 1;
-            try {
-                if (authBase != null) {
-                    Realm realm = context.getRealm();
-                    if (realm == null) {
-                        return false;
-                    }
-                    try {
-                        return realm.invokeAuthenticateDelegate(this, (HttpResponse) getResponse(), 
-                                context, (AuthenticatorBase) authBase);
-
-                    } catch (Exception ex) {
-                       throw new ServletException("Exception thrown while attempting to authenticate "+ex);
-                    }
+            try {                
+                Realm realm = context.getRealm();
+                if (realm == null) {//TODO: throw an exception
+                    throw new ServletException("Internal error: realm null");
                 }
+                try {
+                    return realm.invokeAuthenticateDelegate(this, (HttpResponse) getResponse(), 
+                            context, (AuthenticatorBase) authBase);
+
+                } catch (Exception ex) {
+                   throw new ServletException("Exception thrown while attempting to authenticate "+ex);
+                }
+                
             } finally {
                 //Reset the threadlocal re-entrancy check variable
                 alreadyCalled[0] = 0;
             }
         }
-        return false;
     }
 
     @Override
@@ -1960,22 +1961,25 @@ public class Request
         }
         try {
             //Support only BASIC and FORM  auth methods            
-            if (!("BASIC".equals(authMethod) || "FORM".equals(authMethod))) {
+            if ("CLIENT-CERT".equals(authMethod) || "NONE".equals(authMethod)) {
                 throw new ServletException("Invalid LoginConfig, Auth Method " +
                         "Required is BASIC or FORM, but found  " + authMethod);
 
             }
             Principal webPrincipal = realm.authenticate(username, password);
-            if (webPrincipal != null) {
-                setUserPrincipal(webPrincipal);
+            if (webPrincipal == null) {
+                throw new ServletException("Failed login while attempting to authenticate " +
+                    "user: " + username);
             }
+          
+        setUserPrincipal(webPrincipal);
+            
         } catch (Exception ex) {
             throw new ServletException("Exception thrown while attempting to authenticate " +
                     "for user: " + username + " " + ex);
 
         }
 
-    //What should be the authtype to be set?
         setAuthType("LOGIN");
     }
 
