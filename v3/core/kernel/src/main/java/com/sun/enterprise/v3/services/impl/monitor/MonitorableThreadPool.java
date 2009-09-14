@@ -61,10 +61,9 @@ public class MonitorableThreadPool extends StatsThreadPool {
 
     public MonitorableThreadPool(
             GrizzlyMonitoring monitoring, String threadPoolMonitoringName,
-            String threadPoolName, int corePoolSize, int maximumPoolSize,
-            int maxTasksCount, long keepAliveTime, TimeUnit unit) {
-        super(threadPoolName, corePoolSize, maximumPoolSize, maxTasksCount,
-                keepAliveTime, unit);
+            int corePoolSize, int maximumPoolSize, int maxTasksCount,
+            long keepAliveTime, TimeUnit unit) {
+        super(corePoolSize, maximumPoolSize, maxTasksCount, keepAliveTime, unit);
         this.monitoring = monitoring;
         this.threadPoolMonitoringName = threadPoolMonitoringName;
         setThreadFactory(new ProbeWorkerThreadFactory());

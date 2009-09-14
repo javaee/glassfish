@@ -26,12 +26,9 @@ import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.config.dom.ThreadPool;
 import com.sun.grizzly.config.dom.Transport;
-import java.util.ArrayList;
-import java.util.List;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.types.Property;
 
 /**
  * This is a dummy implementation of the NetworkListener interface. This is used to create a fake
@@ -50,10 +47,6 @@ public class DummyNetworkListener implements NetworkListener {
     private String pool;
     private String transport;
     private String jkEnabled;
-    private final List<Property> properties = new ArrayList();
-
-    public DummyNetworkListener() {
-    }
 
     public String getAddress() {
         return address;
@@ -156,33 +149,6 @@ public class DummyNetworkListener implements NetworkListener {
         throw new UnsupportedOperationException();
     }
 
-    public List<Property> getProperty() {
-        return properties;
-    }
 
-    public Property getProperty(String name) {
-        if (name == null) return null;
-        
-        for(Property property : properties) {
-            if (name.equals(property.getName())) {
-                return property;
-            }
-        }
-
-        return null;
-    }
-
-    public String getPropertyValue(String name) {
-        return getPropertyValue(name, null);
-    }
-
-    public String getPropertyValue(String name, String defaultValue) {
-        final Property property = getProperty(name);
-        if (property != null) {
-            return property.getValue();
-        }
-
-        return defaultValue;
-    }
 }
 
