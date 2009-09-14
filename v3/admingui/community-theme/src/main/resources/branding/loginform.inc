@@ -47,7 +47,7 @@
         <table>
         <tr>
             <td><label for="Login.username" style="font-weight: bold;">$resource{i18n.common.username}</label></td>
-            <td><input type="text" name="j_username" id="Login.username" tabindex="1" value="#{anonLogin ? 'anonymous' : ''}"></td>
+            <td><input type="text" name="j_username" id="Login.username" tabindex="1" value="admin"></td>
         </tr>
         <tr>
             <td><label for="Login.password" style="font-weight: bold;">$resource{i18n.common.password}</label>

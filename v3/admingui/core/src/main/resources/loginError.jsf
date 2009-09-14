@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -37,8 +37,6 @@
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     initProductInfoAttributes();
-    getProxyAttribute( objectNameStr="amx:pp=/ext,type=realms" attrName="AnonymousLogin" value="#{pageSession.anonymousLogin}" )
-    convertStrToBoolean(str="#{pageSession.anonymousLogin}" out="#{pageSession.anonLogin}")
     getThemeFromIntegrationPoints(themeContext=>$application{com.sun.webui.theme.THEME_CONTEXT});
 />
 <!-- WE MAY HAVE TO LOCALIZE THE PRODUCT IMAGE. CHECKING IN FOR NOW UNTIL LOGIN COMPONENT IS READY -->
@@ -58,7 +56,7 @@
     <script type="text/javascript">loadInTopWindow();</script>
     <div id="header"class="LogTopBnd" style="background: url('#{themeImages.LOGIN_GRADIENT_TOP}') repeat-x; height: 30px;"></div>
     <div class="middle" style="background-image: url(#{themeImages.LOGIN_GRADIENT_SIDES});background-repeat:repeat-x;background-position:left top; background-color: #D4DCE1;">
-        <div class="plugincontent" style="width1: 1px; visibility: #{anonLogin ? 'hidden' : 'visible'};">
+        <div class="plugincontent" style="width1: 1px; ">
 </f:verbatim>
             <event>
                 <!afterCreate
@@ -84,9 +82,6 @@
             <script type="text/javascript">
                 var left = document.getElementById('body3').clientWidth;
                 document.getElementById('error').style.left = (left/2- 100) + 'px';
-                if ('#{anonLogin}' == 'true') {
-                    submitAndDisable(document.getElementById('loginButton'), '$resource{i18n.loginPageTitle}');
-                }
             </script>
         </div>
     </div>
