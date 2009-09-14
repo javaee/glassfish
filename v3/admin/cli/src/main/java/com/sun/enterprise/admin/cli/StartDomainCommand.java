@@ -118,9 +118,10 @@ public class StartDomainCommand extends LocalDomainCommand {
                 info.setDomainParentDir(parent);
 
             boolean verbose = getBooleanOption("verbose");
+            boolean upgrade = getBooleanOption("upgrade");
             info.setVerbose(verbose);
             info.setDebug(getBooleanOption("debug"));
-            info.setUpgrade(getBooleanOption("upgrade"));
+            info.setUpgrade(upgrade);
 
             info.setRespawnInfo(programOpts.getClassName(),
                             programOpts.getClassPath(),
@@ -146,7 +147,7 @@ public class StartDomainCommand extends LocalDomainCommand {
             // if verbose is set then it returns after the domain dies
             launcher.launch();
 
-            if (verbose) { // we can potentially loop forever here...
+            if (verbose || upgrade) { // we can potentially loop forever here...
                 while (launcher.getExitValue() == RESTART_EXIT_VALUE) {
                     logger.printMessage(strings.get("restart"));
 
@@ -156,11 +157,12 @@ public class StartDomainCommand extends LocalDomainCommand {
 
                     launcher.relaunch();
                 }
+                return launcher.getExitValue();
             } else {
                 waitForDAS(info.getAdminPorts());
                 report(info);
+                return SUCCESS;
             }
-            return SUCCESS;
         } catch (GFLauncherException gfle) {
             throw new CommandException(gfle.getMessage());
         } catch (MiniXmlParserException me) {
@@ -263,8 +265,6 @@ public class StartDomainCommand extends LocalDomainCommand {
         }
     }
 
-    // bnevins: note to me -- this String handling is EVIL.
-    // Need to add plenty of utilities...
     private void waitForDAS(Set<Integer> ports) throws CommandException {
         if (ports == null || ports.size() <= 0) {
             String msg = strings.get("noPorts");
