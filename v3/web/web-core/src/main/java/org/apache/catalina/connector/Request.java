@@ -1910,7 +1910,7 @@ public class Request
                 return authBase.authenticate(this, (HttpResponse) getResponse(), 
                         context.getLoginConfig());
             } catch (Exception ex) {
-               throw new ServletException("Exception thrown while attempting to authenticate "+ex);
+               throw new ServletException("Exception thrown while attempting to authenticate", ex);
             }
             
          } else {
@@ -1927,7 +1927,7 @@ public class Request
                             context, (AuthenticatorBase) authBase);
 
                 } catch (Exception ex) {
-                   throw new ServletException("Exception thrown while attempting to authenticate "+ex);
+                   throw new ServletException("Exception thrown while attempting to authenticate", ex);
                 }
                 
             } finally {
@@ -1962,21 +1962,24 @@ public class Request
         try {
             //Support only BASIC and FORM  auth methods            
             if ("CLIENT-CERT".equals(authMethod) || "NONE".equals(authMethod)) {
-                throw new ServletException("Invalid LoginConfig, Auth Method " +
-                        "Required is BASIC or FORM, but found  " + authMethod);
+                throw new ServletException(
+                    "Invalid LoginConfig, Auth Method " +
+                    "Required is BASIC or FORM, but found  " + authMethod);
 
             }
             Principal webPrincipal = realm.authenticate(username, password);
             if (webPrincipal == null) {
-                throw new ServletException("Failed login while attempting to authenticate " +
+                throw new ServletException(
+                    "Failed login while attempting to authenticate " +
                     "user: " + username);
             }
           
         setUserPrincipal(webPrincipal);
             
         } catch (Exception ex) {
-            throw new ServletException("Exception thrown while attempting to authenticate " +
-                    "for user: " + username + " " + ex);
+            throw new ServletException(
+                "Exception thrown while attempting to authenticate " +
+                "for user: " + username, ex);
 
         }
 
