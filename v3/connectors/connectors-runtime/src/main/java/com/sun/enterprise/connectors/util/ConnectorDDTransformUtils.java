@@ -222,16 +222,13 @@ public class ConnectorDDTransformUtils {
      *         <connection-definition> element.
      */
     public static ConnectionDefDescriptor[] getConnectionDefs(ConnectorDescriptor connectorDesc) {
-        ConnectionDefDescriptor[] connectionDefDescs = null;
+        ConnectionDefDescriptor[] connectionDefDescs = new ConnectionDefDescriptor[0];
         OutboundResourceAdapter ora =
                 connectorDesc.getOutboundResourceAdapter();
         if (ora != null) {
             Set connectionDefs = ora.getConnectionDefs();
-            int size = connectionDefs.size();
-            if (size == 0) {
-                return null;
-            }
             Iterator iter = connectionDefs.iterator();
+            int size = connectionDefs.size();
             connectionDefDescs = new ConnectionDefDescriptor[size];
             for (int i = 0; i < size; ++i) {
                 connectionDefDescs[i] =
