@@ -125,10 +125,6 @@
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
                 <configuration>
-                    <configFiles>
-                        <configFile>src/main/resources/asadmin</configFile>
-                        <configFile>src/main/resources/asenv</configFile>
-                    </configFiles>
                     <destDir>target/classes</destDir>
                     <!-- optional: <forPlatform></forPlatform> -->
                     <archive>
@@ -141,14 +137,6 @@
                         </manifestEntries>
                     </archive>
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>createscripts</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
