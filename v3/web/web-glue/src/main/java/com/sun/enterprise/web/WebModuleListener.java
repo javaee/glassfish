@@ -298,70 +298,65 @@ final class WebModuleListener
         SunWebApp bean = webModule.getIasWebAppConfigBean();
 
         // Find the default jsp servlet
-        String name = webModule.findServletMapping(Constants.JSP_URL_PATTERN);
-        Wrapper wrapper = (Wrapper)webModule.findChild(name);
-        if (wrapper == null)
+        Wrapper wrapper = (Wrapper) webModule.findChild(
+            org.apache.catalina.core.Constants.JSP_SERVLET_NAME);
+        if (wrapper == null) {
             return;
-
-        String servletClass = wrapper.getServletClassName();
-        // If the jsp maps to the default JspServlet, then add 
-        // the init parameters
-        if (servletClass != null
-                && servletClass.equals(Constants.APACHE_JSP_SERVLET_CLASS)) {
-
-            if (webModule.getTldValidation()) {
-                wrapper.addInitParameter("enableTldValidation", "true");
-            }
-            if (bean != null && bean.getJspConfig()  != null) {
-                WebProperty[]  props = bean.getJspConfig().getWebProperty();
-                for (int i = 0; i < props.length; i++) {
-                    String pname = props[i].getAttributeValue("name");
-                    String pvalue = props[i].getAttributeValue("value");
-                    if (_debugLog) {
-                        _logger.fine("jsp-config property for ["
-                                     + webModule.getID() + "] is [" + pname
-                                     + "] = [" + pvalue + "]");
-                    }
-                    wrapper.addInitParameter(pname, pvalue);
-                }
-            }
-           
-            // Override any log setting with the container wide logging level
-            wrapper.addInitParameter("logVerbosityLevel",getJasperLogLevel());
-
-            ResourceInjectorImpl resourceInjector = new ResourceInjectorImpl();
-            resourceInjector.setContext(webModule.getServletContext());
-            webModule.getServletContext().setAttribute(
-                    "com.sun.appserv.jsp.resource.injector",
-                    resourceInjector);
-
-            // START SJSAS 6311155
-            String sysClassPath = ASClassLoaderUtil.getModuleClassPath(
-                    serverContext.getDefaultHabitat(), webModule.getID(), null
-            );
-            // If the configuration flag usMyFaces is set, remove jsf-api.jar
-            // and jsf-impl.jar from the system class path
-            Boolean useMyFaces = (Boolean)webModule.getServletContext().
-                        getAttribute("com.sun.faces.useMyFaces");
-            if (useMyFaces != null && useMyFaces) {
-                sysClassPath =
-                    sysClassPath.replace("jsf-api.jar", "$disabled$.raj");
-                sysClassPath =
-                    sysClassPath.replace("jsf-impl.jar", "$disabled$.raj");
-                // jsf-connector.jar manifest has a Class-Path to jsf-impl.jar
-                sysClassPath =
-                    sysClassPath.replace("jsf-connector.jar", "$disabled$.raj");
-            }
-            // TODO: combine with classpath from
-            // servletContext.getAttribute(("org.apache.catalina.jsp_classpath")
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.fine(" sysClasspath for " + webModule.getID() + " is \n" 
-                                                               + sysClassPath + "\n");
-            }
-            wrapper.addInitParameter("com.sun.appserv.jsp.classpath",
-                                     sysClassPath);
-            // END SJSAS 6311155
         }
+
+        if (webModule.getTldValidation()) {
+            wrapper.addInitParameter("enableTldValidation", "true");
+        }
+        if (bean != null && bean.getJspConfig()  != null) {
+            WebProperty[]  props = bean.getJspConfig().getWebProperty();
+            for (int i = 0; i < props.length; i++) {
+                String pname = props[i].getAttributeValue("name");
+                String pvalue = props[i].getAttributeValue("value");
+                if (_debugLog) {
+                    _logger.fine("jsp-config property for [" +
+                                 webModule.getID() + "] is [" + pname +
+                                 "] = [" + pvalue + "]");
+                }
+                wrapper.addInitParameter(pname, pvalue);
+            }
+        }
+           
+        // Override any log setting with the container wide logging level
+        wrapper.addInitParameter("logVerbosityLevel",getJasperLogLevel());
+
+        ResourceInjectorImpl resourceInjector = new ResourceInjectorImpl();
+        resourceInjector.setContext(webModule.getServletContext());
+        webModule.getServletContext().setAttribute(
+                "com.sun.appserv.jsp.resource.injector",
+                resourceInjector);
+
+        // START SJSAS 6311155
+        String sysClassPath = ASClassLoaderUtil.getModuleClassPath(
+            serverContext.getDefaultHabitat(), webModule.getID(), null
+        );
+        // If the configuration flag usMyFaces is set, remove jsf-api.jar
+        // and jsf-impl.jar from the system class path
+        Boolean useMyFaces = (Boolean)
+            webModule.getServletContext().getAttribute(
+                "com.sun.faces.useMyFaces");
+        if (useMyFaces != null && useMyFaces) {
+            sysClassPath =
+                sysClassPath.replace("jsf-api.jar", "$disabled$.raj");
+            sysClassPath =
+                sysClassPath.replace("jsf-impl.jar", "$disabled$.raj");
+            // jsf-connector.jar manifest has a Class-Path to jsf-impl.jar
+            sysClassPath =
+                sysClassPath.replace("jsf-connector.jar", "$disabled$.raj");
+        }
+        // TODO: combine with classpath from
+        // servletContext.getAttribute(("org.apache.catalina.jsp_classpath")
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine(" sysClasspath for " + webModule.getID() + " is \n"  +
+                sysClassPath + "\n");
+        }
+        wrapper.addInitParameter("com.sun.appserv.jsp.classpath",
+            sysClassPath);
+        // END SJSAS 6311155
 
         // Configure JSP monitoring
         webModule.getServletContext().setAttribute(
