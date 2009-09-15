@@ -89,7 +89,7 @@ public class MCFConfigParserImpl implements MCFConfigParser {
 
         ConnectionDefDescriptor cdd[] = ddTransformUtil.getConnectionDefs(desc);
 
-        String[] connDefNames = null;
+        String[] connDefNames = new String[0];
         if(cdd != null) {
             connDefNames = new String[cdd.length];
             for(int i=0;i<cdd.length;++i) {

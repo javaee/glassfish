@@ -108,13 +108,14 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
                throws ConnectorRuntimeException
     {
 
+        String[] result = new String[0];
         ConnectorDescriptor desc = getConnectorDescriptor(rarName);
         if(desc != null) {
             MCFConfigParser mcfConfigParser = (MCFConfigParser)
               ConnectorConfigParserFactory.getParser(ConnectorConfigParser.MCF);
             return mcfConfigParser.getConnectionDefinitionNames(desc);
         } else {
-            return null;
+            return result;
         }
     }
 
