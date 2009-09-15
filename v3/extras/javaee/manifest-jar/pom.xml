@@ -3,7 +3,7 @@
 /* 
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 * 
-* Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved. 
+* Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved. 
 * 
 * The contents of this file are subject to the terms of either the GNU 
 * General Public License Version 2 only ("GPL") or the Common Development 
@@ -35,7 +35,7 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
---> 
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -43,17 +43,21 @@
         <groupId>org.glassfish</groupId>
         <artifactId>glassfish-parent</artifactId>
         <version>3.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
-	<groupId>org.glassfish.extras</groupId>
-    <artifactId>extras</artifactId>
-    <packaging>pom</packaging>
-    <name>GlassFish Extras modules</name>  
-    <modules>
-        <module>grizzly-container</module>
-        <module>osgi-container</module>
-        <!--module>embedded-shell</module-->
-        <module>upgrade</module>
-        <module>javaee</module>
-    </modules>
+
+    <artifactId>javaee</artifactId>
+    <packaging>jar</packaging>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
