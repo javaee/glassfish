@@ -61,6 +61,10 @@ own identifying information: Portions Copyright [yyyy]
        <stage-module-jars graphid="all-modules" />
        <stage-distribution-fragments graphid="all-modules" />
 
+       <mkdir dir="target/stage/${install.dir.name}/glassfish/modules/autostart"/>
+
+       <move file="target/stage/${install.dir.name}/glassfish/modules/osgi-web-container.jar" todir="target/stage/${install.dir.name}/glassfish/modules/autostart" failonerror="false"/>
+
 
        <if test="${compression}">
 	       <antcall target="pack.compression" />
