@@ -34,6 +34,11 @@
  holder.
 -->
 
+
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+	setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+/>
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.support.PageTitle}" >
 <!define name="content">
 
@@ -66,8 +71,7 @@
 
 <sun:form id="propertyForm">
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+        
         getSupportImages(count="5", imageList=>$page{imageList});
         getIssueQueryString(query=>$page{IssueQuery});
     />
@@ -86,7 +90,7 @@
     <!-- Page Title -->
     //<sun:title id="propertyContentPage" title="$resource{i18nc.support.PageTitle}" helpText="$resource{i18nc.support.PageTitleHelp}">
     //</sun:title>
-    <sun:hidden id="helpKey" value="$resource{help.support}" />
+    <sun:hidden id="helpKey" value="$resource{help_common.support}" />
 </sun:form>
 <f:verbatim>
     <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resource/common/sysnet/support.css"/>
