@@ -119,7 +119,7 @@ public class StartDomainCommand extends LocalDomainCommand {
 
             boolean verbose = getBooleanOption("verbose");
             boolean upgrade = getBooleanOption("upgrade");
-            info.setVerbose(verbose);
+            info.setVerbose(verbose || upgrade);
             info.setDebug(getBooleanOption("debug"));
             info.setUpgrade(upgrade);
 
