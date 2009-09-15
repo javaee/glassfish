@@ -55,7 +55,7 @@
         <sun:helpWindow id="helpLink" windowTitle="$resource{i18n.helpWindowTitle}" text="$resource{i18n.masthead.Help}" toolTip="$resource{i18n.helpWindowTooltip}" helpFile="CONTEXT_HELP.html" onClick="admingui.help.launchHelp(this); return false;" />
     </facet>
     <!facet logoutLink>
-        <sun:button id="logoutLink" rendered="#{!anonLogin}" toolTip="$resource{i18n.logoutTooltip}" target="_top" text="$resource{i18n.masthead.Logout}"
+        <sun:button id="logoutLink" rendered="#{showLogoutButton}" toolTip="$resource{i18n.logoutTooltip}" target="_top" text="$resource{i18n.masthead.Logout}"
             onClick="if (!confirm('$resource{i18n.msg.JS.confirmLogout}')) return false;" onKeyPress="javascript: return true;" url="/" >
                 <!command
                     logout();

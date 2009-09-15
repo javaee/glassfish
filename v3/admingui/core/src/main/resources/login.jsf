@@ -37,7 +37,8 @@
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     initProductInfoAttributes();
-    testLoginBypass(loginUser="#{pageSession.loginUser}" byPass="#{pageSession.byPass}")
+    testLoginBypass(loginUser="#{pageSession.loginUser}" byPass="#{pageSession.byPassLogin}")
+    setSessionAttribute(key="showLogoutButton" value="#{! pageSession.byPassLogin}")
     getThemeFromIntegrationPoints(themeContext=>$application{com.sun.webui.theme.THEME_CONTEXT});
 />
 <!-- WE MAY HAVE TO LOCALIZE THE PRODUCT IMAGE. CHECKING IN FOR NOW UNTIL LOGIN COMPONENT IS READY -->
@@ -57,7 +58,7 @@
     <script type="text/javascript">loadInTopWindow();</script>
     <div id="header"class="LogTopBnd" style="background: url('#{themeImages.LOGIN_GRADIENT_TOP}') repeat-x; height: 30px;"></div>
     <div class="middle" style="background-image: url(#{themeImages.LOGIN_GRADIENT_SIDES});background-repeat:repeat-x;background-position:left top; background-color: #D4DCE1;">
-        <div class="plugincontent" style="width1: 1px; visibility: #{byPass ? 'hidden' : 'visible'};">
+        <div class="plugincontent" style="width1: 1px; visibility: #{byPassLogin ? 'hidden' : 'visible'};">
 </f:verbatim>
             <event>
                 <!afterCreate
@@ -68,7 +69,7 @@
             </event>
 <f:verbatim>
             <script type="text/javascript">
-                if (#{byPass}) {
+                if (#{byPassLogin}) {
                     submitAndDisable(document.getElementById('loginButton'), '$resource{i18n.loginPageTitle}');
                 }
             </script>

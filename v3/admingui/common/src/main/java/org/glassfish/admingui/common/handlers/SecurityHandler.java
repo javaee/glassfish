@@ -285,7 +285,15 @@ public class SecurityHandler {
             String[] groups = GuiUtil.stringToArray(grouplist, ",");
             String password = (String)handlerCtx.getInputValue("Password");
             String userid = (String)handlerCtx.getInputValue("UserId");
+            if (password == null){
+                password = "";
+            }
             V3AMX.getInstance().getRealmsMgr().updateUser(realmName, userid, userid, password, groups);
+            if (! ((Boolean) GuiUtil.getSessionValue("showLogoutButton"))){
+                if (V3AMX.getInstance().getRealmsMgr().getAnonymousUser() == null){
+                    GuiUtil.setSessionValue("showLogoutButton", Boolean.TRUE);
+                }
+            }
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -311,6 +319,11 @@ public class SecurityHandler {
             String password = (String)handlerCtx.getInputValue("Password");
             String userid = (String)handlerCtx.getInputValue("UserId");
             V3AMX.getInstance().getRealmsMgr().addUser(realmName, userid, password, groups);
+            if (! ((Boolean) GuiUtil.getSessionValue("showLogoutButton"))){
+                if (V3AMX.getInstance().getRealmsMgr().getAnonymousUser() == null){
+                    GuiUtil.setSessionValue("showLogoutButton", Boolean.TRUE);
+                }
+            }
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -390,7 +403,9 @@ public class SecurityHandler {
             List<Map> selectedRows = (List) obj;
             for(Map oneRow : selectedRows){
                 String user = (String)oneRow.get("users");
-                if (realmName.equals("admin-realm") && user.equals(GuiUtil.getSessionValue("userName"))){
+                AMXProxy amx = V3AMX.getInstance().getConfig("server-config").getAdminService().getJMXConnector().get("system");
+                String authRealm = (String) amx.attributesMap().get("AuthRealmName");
+                if (realmName.equals(authRealm) && user.equals(GuiUtil.getSessionValue("userName"))){
                     error = GuiUtil.getMessage(COMMON_BUNDLE, "msg.error.cannotDeleteCurrent");
                     continue;
                 }else{
@@ -410,6 +425,7 @@ public class SecurityHandler {
      *	<p> This handler checks to see if the current login user exists in current Realm,
      *  if it doesn't, invalidate the session.
      */
+    /*  This handler is no longer used.  We already disallow the deletion of current admin user.
     @Handler(id="checkCurrentUser",
         input={
             @HandlerInput(name="Realm", type=String.class, required=true)},
@@ -419,7 +435,9 @@ public class SecurityHandler {
      public static void checkCurrentUser(HandlerContext handlerCtx){
         boolean endSession = false;
         String realmName = (String) handlerCtx.getInputValue("Realm");
-        if (realmName.equals("admin-realm")){
+        AMXProxy amx = V3AMX.getInstance().getConfig("server-config").getAdminService().getJMXConnector().get("system");
+        String authRealm = (String) amx.attributesMap().get("AuthRealmName");
+        if (realmName.equals(authRealm)){
             String[] userNames = V3AMX.getInstance().getRealmsMgr().getUserNames(realmName);
             if (userNames == null || userNames.length ==0){
                 endSession = true;
@@ -440,6 +458,7 @@ public class SecurityHandler {
         }
         handlerCtx.setOutputValue("endSession", endSession);
     }
+     */
 
 
      /**

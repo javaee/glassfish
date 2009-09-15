@@ -45,10 +45,12 @@
     getRequestValue(key="configName" value=>$page{configName} default="server-config");
     getRequestValue(key="name" value=>$page{name});
     getFileUsers(Realm="#{name}" result=>$attribute{listOfRows} );
-    if ("#{pageSession.name}=admin-realm"){
+    getProxyAttribute( objectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/admin-service,type=jmx-connector,name=system"
+                attrName="AuthRealmName" value="#{pageSession.authRealm}" )
+    if ("#{pageSession.name}=#{pageSession.authRealm}"){
             setPageSessionAttribute(key="tableTitle", value="$resource{i18nc.manageAdminUsers.TableTitle}")
         }
-        if ("!(#{pageSession.name}=admin-realm)"){
+        if ("!(#{pageSession.name}=#{pageSession.authRealm})"){
             setPageSessionAttribute(key="tableTitle", value="$resource{i18nc.manageUsers.TableTitle}")
         }
     />
@@ -107,11 +109,6 @@
                         getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
                         getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                         removeUser(Realm="#{name}", selectedRows="${selectedRows}");
-                        //We dis-allow the deletion of current admin user.
-                        //checkCurrentUser(Realm="#{name}", endSession=>$attribute{endSession});
-                        //if( ${endSession}){
-                            //redirect("#{request.contextPath}/index.jsf");
-                        //}
                         redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.name}&configName=#{pageSession.configName}");
                         />
                     </sun:button>

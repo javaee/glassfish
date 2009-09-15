@@ -42,13 +42,15 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        getRequestValue(key="configName" value="#{pageSession.configName}" default="server-config");
         getRequestValue(key="name" value=>$page{name});
-        if ("#{pageSession.name}=admin-realm"){
+        getProxyAttribute( objectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/admin-service,type=jmx-connector,name=system"
+                attrName="AuthRealmName" value="#{pageSession.authRealm}" )
+        if ("#{pageSession.name}=#{pageSession.authRealm}"){
             setPageSessionAttribute(key="isAdminRealm", value="true")
             setPageSessionAttribute(key="groupList", value="asadmin")
         }
-        if ("!(#{pageSession.name}=admin-realm)"){
+        if ("!(#{pageSession.name}=#{pageSession.authRealm})"){
             setPageSessionAttribute(key="isAdminRealm", value="false")
         }
     />
@@ -102,14 +104,14 @@
                             </sun:property>
 
                             <sun:property id="newPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.NewPassword}">                           
-                                <sun:passwordField id="NewPassword" styleClass="required" columns="$int{25}" text="#{requestScope.password}" required="#{true}" >
+                                <sun:passwordField id="NewPassword"  columns="$int{25}" text="#{requestScope.password}"  >
                                     <!afterCreate
                                         getClientId(component="$this{component}" clientId=>$page{ps1});
                                     />
                                 </sun:passwordField>
                             </sun:property>  
                             <sun:property id="confirmPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.ConfirmNewPassword}">                           
-                                <sun:passwordField id="ConfirmPassword" styleClass="required" columns="$int{25}" text="#{requestScope.confirmPassword}" required="#{true}" >
+                                <sun:passwordField id="ConfirmPassword"  columns="$int{25}" text="#{requestScope.confirmPassword}" >
                                     <!afterCreate
                                         getClientId(component="$this{component}" clientId=>$page{ps2});
                                     />
