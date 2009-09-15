@@ -159,7 +159,8 @@ public class RemoteCommand extends CLICommand {
     }
 
     @Override
-    protected void prepare() throws CommandException {
+    protected void prepare()
+            throws CommandException, CommandValidationException  {
         try {
             processProgramOptions();
 
