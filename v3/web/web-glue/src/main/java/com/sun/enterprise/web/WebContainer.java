@@ -87,7 +87,7 @@ import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.logger.FileLoggerHandler;
 import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
-import com.sun.enterprise.web.reconfig.HttpServiceConfigListener;
+import com.sun.enterprise.web.reconfig.WebConfigListener;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import org.jvnet.hk2.config.types.Property;
@@ -368,7 +368,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     protected Habitat habitat;
 
-    protected HttpServiceConfigListener configListener = null;
+    protected WebConfigListener configListener = null;
 
     // Indicates whether we are being shut down
     private boolean isShutdown = false;
@@ -512,9 +512,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         initInstanceSessionProperties();
 
-        ConstructorWomb<HttpServiceConfigListener> womb =
-                new ConstructorWomb<HttpServiceConfigListener>(
-                HttpServiceConfigListener.class,
+        ConstructorWomb<WebConfigListener> womb =
+                new ConstructorWomb<WebConfigListener>(
+                WebConfigListener.class,
                 habitat,
                 null);
         configListener = womb.get(null);

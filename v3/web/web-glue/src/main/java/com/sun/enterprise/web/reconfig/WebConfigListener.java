@@ -61,11 +61,11 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 
 /**
- * Http service dynamic configuration
+ * Web container dynamic configuration handler
  *
  * @author amyroh
  */
-public class HttpServiceConfigListener implements ConfigListener, MapperUpdateListener {
+public class WebConfigListener implements ConfigListener, MapperUpdateListener {
 
     @Inject
     public HttpService httpService;
@@ -112,7 +112,7 @@ public class HttpServiceConfigListener implements ConfigListener, MapperUpdateLi
         return ConfigSupport.sortAndDispatch(events, new Changed() {
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tClass, T t) {
                 if (logger.isLoggable(Level.FINE)) {
-                    logger.fine("HttpService config changed "+type+" "+tClass+" "+t);
+                    logger.fine("Web container config changed "+type+" "+tClass+" "+t);
                 }
                 try {
                     if (t instanceof VirtualServer) {
