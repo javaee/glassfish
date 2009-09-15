@@ -44,32 +44,11 @@ public class TestServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
-        if (req.getAttribute("MYNAME") == null) {
-            // First time this request is being dispatched by the container
-            if (!req.isAsyncSupported()) {
-                throw new ServletException(
-                    "Async not supported when it should");
-            }
-            if (req.getAttribute(RequestDispatcher.ERROR_STATUS_CODE) != null) {
-                throw new ServletException("Unexpected request attribute " +
-                    RequestDispatcher.ERROR_STATUS_CODE);
-            }
-            req.setAttribute("MYNAME", "MYVALUE");
-            req.setAsyncTimeout(10);
-            req.startAsync();
-        } else {
-            if (Integer.valueOf
-                    (HttpServletResponse.SC_INTERNAL_SERVER_ERROR).equals(
-                        req.getAttribute(
-                            RequestDispatcher.ERROR_STATUS_CODE)) &&
-                    res.getStatus() ==
-                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR) {
-                // Error dispatch, as expected. Reset response status to 200 OK
-                res.setStatus(HttpServletResponse.SC_OK);
-                res.getWriter().println("SUCCESS");
-            } else {
-                res.getWriter().println("FAILURE");
-            }
+        if (!req.isAsyncSupported()) {
+            throw new ServletException(
+                "Async not supported when it should");
         }
+        req.setAsyncTimeout(10);
+        req.startAsync();
     }
 }

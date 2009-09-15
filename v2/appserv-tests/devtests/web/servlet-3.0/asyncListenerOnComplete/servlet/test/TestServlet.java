@@ -71,6 +71,6 @@ public class TestServlet extends HttpServlet implements AsyncListener {
     }
 
     public void onError(AsyncEvent event) throws IOException {
-       // do nothing
+        // do nothing
     }
 }

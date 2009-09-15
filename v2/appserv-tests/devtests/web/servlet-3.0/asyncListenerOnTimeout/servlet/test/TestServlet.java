@@ -67,11 +67,13 @@ public class TestServlet extends HttpServlet implements AsyncListener {
 
 
     public void onTimeout(AsyncEvent event) throws IOException {
-        event.getAsyncContext().getResponse().getWriter().println("Hello world");
+        AsyncContext ac = event.getAsyncContext();
+        ac.getResponse().getWriter().println("Hello world");
+        ac.complete();
     }
 
     public void onError(AsyncEvent event) throws IOException {
-      // do nothing
-   }
+        // do nothing
+    }
 
 }
