@@ -823,7 +823,10 @@ public class ResourcesXMLParser implements EntityResolver
         Node resTypeNode = attributes.getNamedItem(RES_TYPE);
         String resType = resTypeNode.getNodeValue();
         Node classNameNode = attributes.getNamedItem(ADMIN_OBJECT_CLASS_NAME);
-        String className = classNameNode.getNodeValue();
+        String className = null;
+        if(classNameNode != null){
+            className = classNameNode.getNodeValue();
+        }
         Node resAdapterNode = attributes.getNamedItem(RES_ADAPTER);
         String resAdapter = resAdapterNode.getNodeValue();
         Node enabledNode = attributes.getNamedItem(ENABLED);
@@ -832,7 +835,9 @@ public class ResourcesXMLParser implements EntityResolver
                     new Resource(Resource.ADMIN_OBJECT_RESOURCE);
         adminObjectResource.setAttribute(JNDI_NAME, jndiName);
         adminObjectResource.setAttribute(RES_TYPE, resType);
-        adminObjectResource.setAttribute(ADMIN_OBJECT_CLASS_NAME, className);
+        if(classNameNode != null){
+            adminObjectResource.setAttribute(ADMIN_OBJECT_CLASS_NAME, className);
+        }
         adminObjectResource.setAttribute(RES_ADAPTER, resAdapter);
 
         if (enabledNode != null) {
