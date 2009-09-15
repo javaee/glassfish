@@ -221,7 +221,9 @@ public final class LoggingImpl extends AMXImplBase
     {
         try {
             Map<String, String> props = loggingConfig.getLoggingProperties();
-            return props.get(module+".level");
+            if (props != null)
+                return props.get(module+".level");
+            return null;
         } catch (java.io.IOException e){
           logger.log (Level.SEVERE, "Can not get module log level");
           return null;
@@ -290,6 +292,8 @@ public final class LoggingImpl extends AMXImplBase
     String sysHandler = "com.sun.enterprise.server.logging.SyslogHandler";
         try {
             Map<String, String> props = loggingConfig.getLoggingProperties();
+            if ( props == null)
+                return null;
             Map<String,String> attributes = new HashMap<String,String>();
             attributes.put(gfHandler+".file", props.get(gfHandler+".file"));
             attributes.put(gfHandler+".rotationTimelimitInMinutes", props.get(gfHandler+".rotationTimelimitInMinutes"));

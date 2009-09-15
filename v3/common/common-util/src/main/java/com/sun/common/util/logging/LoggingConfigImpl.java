@@ -103,7 +103,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
         libFolder = new File (installDir ,"lib");
     }
 	
-	private void openPropFile() throws IOException{
+	private boolean openPropFile() throws IOException{
 		try {
             file =new File(loggingConfigDir, loggingPropertiesName); /*
             if (!file.exists()) {
@@ -117,7 +117,8 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
             */
 			fis = new java.io.FileInputStream (file);
         	props.load(fis);
-            fis.close();            
+            fis.close();
+            return true;
 		} catch (java.io.FileNotFoundException e ) {
 			Logger.getAnonymousLogger().log(Level.INFO, "Cannot read logging.properties file. ");
             throw new IOException();
@@ -163,8 +164,9 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
      */		
 	public String setLoggingProperty(String propertyName, String propertyValue) throws IOException
 		{
-		try {		
-			openPropFile();		
+		try {
+			if (!openPropFile())
+                return null;		
 			// update the property			
             if (propertyValue == null ) return null;
             // may need to map the domain.xml name to the new name in logging.properties file
@@ -196,7 +198,8 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 	{
         Map<String, String> m = new HashMap<String, String>();
 		try {
-			openPropFile();
+			if (!openPropFile())
+                return null;
 		
 	    	// need to map the name given to the new name in logging.properties file
 			String key = null;
@@ -232,7 +235,8 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 	public Map<String, String> getLoggingProperties() throws IOException {
 		Map<String, String> m = new HashMap<String, String>(); 
 		try {
-			openPropFile();
+			if (!openPropFile())
+                return null;
 			Enumeration e = props.propertyNames();
 		
 			while (e.hasMoreElements()) {

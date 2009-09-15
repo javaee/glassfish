@@ -186,7 +186,9 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                     synchronized(gfHandlers) {
                         try {
 
-                             Map<String,String> props = loggingConfig.getLoggingProperties();
+                            Map<String,String> props = loggingConfig.getLoggingProperties();
+                            if ( props == null)
+                                return;
                             Set<String> keys = props.keySet();
                             for (String a : keys)   {
                                 if (a.endsWith(".level")) {

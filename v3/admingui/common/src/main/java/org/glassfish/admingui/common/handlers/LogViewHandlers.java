@@ -671,10 +671,12 @@ public class LogViewHandlers {
         List loggernames = new ArrayList();
         Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
         Map<String, String> loggers = logging.getLoggingProperties();
-        for(String oneLogger:  loggers.keySet()){
-            if (oneLogger.endsWith(".level")&& !oneLogger.equals(".level") ){
-                loggernames.add(oneLogger.substring(0,oneLogger.lastIndexOf(".level")));
+        if (loggers != null)   {
+            for(String oneLogger:  loggers.keySet()){
+                if (oneLogger.endsWith(".level")&& !oneLogger.equals(".level") ){
+                    loggernames.add(oneLogger.substring(0,oneLogger.lastIndexOf(".level")));
                 
+                }
             }
         }
         handlerCtx.setOutputValue("LoggerList", loggernames);

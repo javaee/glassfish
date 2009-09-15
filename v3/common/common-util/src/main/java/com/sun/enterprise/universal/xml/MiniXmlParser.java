@@ -154,9 +154,11 @@ public class MiniXmlParser {
     }
 
     public String getLogFilename() {
+        logFilename = null;
         try {
             Map<String, String> map = loggingConfig.getLoggingProperties();
-            logFilename = map.get(LoggingPropertyNames.file);
+            if (map != null)
+                logFilename = map.get(LoggingPropertyNames.file);
         } catch (IOException e) {
             // error message already sent to logfile.
             return null;                        

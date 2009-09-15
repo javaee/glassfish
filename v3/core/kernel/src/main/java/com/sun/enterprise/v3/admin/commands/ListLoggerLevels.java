@@ -8,6 +8,8 @@ import com.sun.common.util.logging.LoggingConfigImpl;
 
 import java.util.logging.Logger;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.Iterator;
 import java.util.Set;
 
 import java.io.IOException;
@@ -31,13 +33,22 @@ public class ListLoggerLevels implements AdminCommand {
         final ActionReport report = context.getActionReport();
         try {
             Map<String,String>  props = loggingConfig.getLoggingProperties();
+            Map sortedMap = new TreeMap();
+            
             Set<String> keys = props.keySet();
+            
             for (String name : keys)   {
+                sortedMap.put(name, props.get(name));
+            }
+            Iterator it = sortedMap.keySet().iterator();
+            String name;
+            while (it.hasNext()) {
+                name = (String)it.next();
                 if (name.endsWith(".level") && !name.equals(".level")) {
                 final ActionReport.MessagePart part = report.getTopMessagePart()
                     .addChild();
                 String n = name.substring(0,name.lastIndexOf(".level"));
-                part.setMessage(n + ": "+ (String)props.get(name));
+                part.setMessage(n + ": "+ (String)sortedMap.get(name));
                 }
             }
         } catch (IOException ex){

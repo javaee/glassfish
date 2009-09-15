@@ -229,7 +229,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     Engine engine;
     String instanceName;
 
-    private String logLevel;
+    private String logLevel="INFO";
     
     
     private WebConnector jkConnector;

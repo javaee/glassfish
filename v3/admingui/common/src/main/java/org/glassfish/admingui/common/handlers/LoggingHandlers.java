@@ -81,13 +81,15 @@ public class LoggingHandlers {
         List result = new ArrayList();
         Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
         Map<String, String> loggerLevels = logging.getLoggingProperties();
-        for(String oneLogger:  loggerLevels.keySet()){
-            if (oneLogger.endsWith(".level")&& !oneLogger.equals(".level") ){
-                Map oneRow = new HashMap();
-                oneRow.put("loggerName", oneLogger.substring(0,oneLogger.lastIndexOf(".level")));
-                oneRow.put("level", loggerLevels.get(oneLogger));
-                oneRow.put("selected", false);
-                result.add(oneRow);
+        if (loggerLevels != null)    {
+            for(String oneLogger:  loggerLevels.keySet()){
+                if (oneLogger.endsWith(".level")&& !oneLogger.equals(".level") ){
+                    Map oneRow = new HashMap();
+                    oneRow.put("loggerName", oneLogger.substring(0,oneLogger.lastIndexOf(".level")));
+                    oneRow.put("level", loggerLevels.get(oneLogger));
+                    oneRow.put("selected", false);
+                    result.add(oneRow);
+                }
             }
         }
         handlerCtx.setOutputValue("loggerList",  result);
