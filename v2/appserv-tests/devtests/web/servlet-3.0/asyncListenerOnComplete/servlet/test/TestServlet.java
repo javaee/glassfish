@@ -62,7 +62,7 @@ public class TestServlet extends HttpServlet implements AsyncListener {
 
 
     public void onComplete(AsyncEvent event) throws IOException {
-        event.getSuppliedResponse().getWriter().println("Hello world");
+        event.getAsyncContext().getResponse().getWriter().println("Hello world");
     }
 
 
