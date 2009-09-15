@@ -38,10 +38,11 @@
 
 import imp
 
+conf = imp.load_source("pkg_conf", "../pkg_conf.py")
 
 pkg = {
     "name"          : "sun-javaee-engine",
-    "version"       : "3.0,0-0",
+    "version"       : conf.glassfish_version,
     "attributes"    : { "pkg.summary" : "Java EE Service Engine",
                         "pkg.description" : 
 "The Sun Java EE Engine is a JSR 208 compliant Java Business Integration (JBI) runtime component that connects Java EE web services to JBI components. It is essentially designed to act as a bridge between the application server and the JBI runtime environment, facilitating interaction between Java EE components and JBI components.",
