@@ -171,7 +171,8 @@ public abstract class LocalDomainCommand extends CLICommand {
             if (ok(pwd)) {
                 // use the local password
                 logger.printDebugMessage("Using local password");
-                programOpts.setPassword(pwd);
+                programOpts.setPassword(pwd,
+                    ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
                 localPassword = pwd;
             }
         } catch (IOException ex) {

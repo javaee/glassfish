@@ -493,8 +493,9 @@ public abstract class CLICommand implements PostConstruct {
                                         passwords);
             String password = passwords.get(
                     Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD");
-            if (ok(password) && programOpts.getPassword() == null)
-                programOpts.setPassword(password);
+            if (password != null && programOpts.getPassword() == null)
+                programOpts.setPassword(password,
+                    ProgramOptions.PasswordLocation.PASSWORD_FILE);
         }
     }
 

@@ -89,7 +89,8 @@ public class ChangeAdminPasswordCommand extends RemoteCommand {
         // first, prompt for the passwords
         try {
             String password = getPasswords();
-            programOpts.setPassword(password);
+            programOpts.setPassword(password,
+                ProgramOptions.PasswordLocation.USER);
         } catch (CommandValidationException cve) {
             throw new CommandException(cve);
         }

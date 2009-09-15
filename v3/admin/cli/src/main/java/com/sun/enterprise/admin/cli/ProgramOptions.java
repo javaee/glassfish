@@ -49,9 +49,13 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * In GlassFish v3, asadmin program options are normally specified
  * before the asadmin command name, with command options after the
  * command name (although intermixed program and command options
- * are still supported for comaptibility).
+ * are still supported for compatibility).
  */
 public class ProgramOptions {
+
+    public enum PasswordLocation {
+        DEFAULT, USER, PASSWORD_FILE, LOGIN_FILE, LOCAL_PASSWORD
+    };
 
     private static final Set<ValidOption> programOptions;
 
@@ -75,6 +79,7 @@ public class ProgramOptions {
     private Environment                     env;
     private boolean                         optionsSet;
     private String                          password;
+    private PasswordLocation                location;
 
     /*
      * Information passed in from AsadminMain and used by start-domain.
@@ -292,12 +297,20 @@ public class ProgramOptions {
     }
 
     /**
+     * @return the password location
+     */
+    public PasswordLocation getPasswordLocation() {
+        return location;
+    }
+
+    /**
      * @param password the password to set
      */
-    public void setPassword(String password) {
+    public void setPassword(String password, PasswordLocation location) {
         logger.printDebugMessage("Setting password to: " +
                                     (ok(password) ? "<non-null>" : "<null>"));
         this.password = password;
+        this.location = location;
     }
 
     /**

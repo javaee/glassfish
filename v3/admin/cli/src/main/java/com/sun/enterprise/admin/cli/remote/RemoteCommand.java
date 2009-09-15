@@ -50,6 +50,7 @@ import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.GFBase64Encoder;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.util.*;
+import com.sun.enterprise.admin.cli.ProgramOptions.PasswordLocation;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.net.NetUtils;
 import org.glassfish.admin.payload.PayloadFilesManager;
@@ -466,8 +467,26 @@ public class RemoteCommand extends CLICommand {
                 try {
                     int rc = urlConnection.getResponseCode();
                     if (HttpURLConnection.HTTP_UNAUTHORIZED == rc) {
-                        msg = strings.get("InvalidCredentials",
-                                            programOpts.getUser());
+                        PasswordLocation pwloc =
+                            programOpts.getPasswordLocation();
+                        if (pwloc == PasswordLocation.PASSWORD_FILE) {
+                            msg = strings.get("InvalidCredentialsFromFile",
+                                                programOpts.getUser(),
+                                                programOpts.getPasswordFile());
+                        } else if (pwloc == PasswordLocation.LOGIN_FILE) {
+                            try {
+                                LoginInfoStore store =
+                                    LoginInfoStoreFactory.getDefaultStore();
+                                msg = strings.get("InvalidCredentialsFromLogin",
+                                                    programOpts.getUser(),
+                                                    store.getName());
+                            } catch (StoreException ex) {
+                                // ignore it
+                            }
+                        } else {
+                            msg = strings.get("InvalidCredentials",
+                                                programOpts.getUser());
+                        }
                         throw new AuthenticationException(msg);
                     } else {
                         msg = "Status: " + rc;
@@ -887,6 +906,22 @@ public class RemoteCommand extends CLICommand {
     protected boolean updateAuthentication() {
         Console cons;
         if (programOpts.isInteractive() && (cons = System.console()) != null) {
+            // if appropriate, tell the user why authentication failed
+            PasswordLocation pwloc = programOpts.getPasswordLocation();
+            if (pwloc == PasswordLocation.PASSWORD_FILE) {
+                logger.printDetailMessage(strings.get("BadPasswordFromFile",
+                                                programOpts.getPasswordFile()));
+            } else if (pwloc == PasswordLocation.LOGIN_FILE) {
+                try {
+                    LoginInfoStore store =
+                        LoginInfoStoreFactory.getDefaultStore();
+                    logger.printDetailMessage(
+                        strings.get("BadPasswordFromLogin", store.getName()));
+                } catch (StoreException ex) {
+                    // ignore it
+                }
+            }
+
             String user = null;
             // only prompt for a user name if the user name is set to
             // the default.  otherwise, assume the user specified the
@@ -902,7 +937,7 @@ public class RemoteCommand extends CLICommand {
                 return false;
             if (ok(user))      // if none entered, don't change
                 programOpts.setUser(user);
-            programOpts.setPassword(password);
+            programOpts.setPassword(password, PasswordLocation.USER);
             return true;
         }
         return false;
@@ -940,14 +975,16 @@ public class RemoteCommand extends CLICommand {
                 // not in passwordfile and in .asadminpass
                 logger.printDebugMessage(
                     "Getting password from ~/.asadminpass");
-                programOpts.setPassword(li.getPassword());
+                programOpts.setPassword(li.getPassword(),
+                    ProgramOptions.PasswordLocation.LOGIN_FILE);
             }                
         } else if (programOpts.getUser().equals(li.getUser())) {
             if (programOpts.getPassword() == null) {
                 // not in passwordfile and in .asadminpass
                 logger.printDebugMessage(
                     "Getting password from ~/.asadminpass");
-                programOpts.setPassword(li.getPassword());
+                programOpts.setPassword(li.getPassword(),
+                    ProgramOptions.PasswordLocation.LOGIN_FILE);
             }                
         }
     }

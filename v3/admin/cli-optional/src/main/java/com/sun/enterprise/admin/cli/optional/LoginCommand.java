@@ -89,7 +89,8 @@ public class LoginCommand extends CLICommand {
         adminUser = getAdminUser();
         programOpts.setUser(adminUser);
         adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
-        programOpts.setPassword(adminPassword);
+        programOpts.setPassword(adminPassword,
+            ProgramOptions.PasswordLocation.DEFAULT);
         boolean interactive = programOpts.isInteractive();      // save value
         programOpts.setInteractive(false);      // no more prompting allowed
  
@@ -109,7 +110,8 @@ public class LoginCommand extends CLICommand {
                 // maybe we need a password?
                 programOpts.setInteractive(interactive);
                 adminPassword = getAdminPassword();
-                programOpts.setPassword(adminPassword);
+                programOpts.setPassword(adminPassword,
+                    ProgramOptions.PasswordLocation.USER);
                 programOpts.setInteractive(false);
                 break;
             case CONNECTION:
