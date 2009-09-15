@@ -106,6 +106,7 @@ import org.apache.catalina.Host;
 import org.apache.catalina.HttpRequest;
 import org.apache.catalina.HttpResponse;
 import org.apache.catalina.Manager;
+import org.apache.catalina.Pipeline;
 // START SJSAS 6406580
 import org.apache.catalina.session.PersistentManagerBase;
 // END SJSAS 6406580
@@ -134,6 +135,8 @@ import com.sun.appserv.ProxyHandler;
 import com.sun.enterprise.security.integration.RealmInitializer;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.deploy.LoginConfig;
+
+import org.glassfish.web.valve.GlassFishValve;
 
 /**
  * Wrapper object for the Coyote request.
@@ -531,6 +534,9 @@ public class Request
     protected Context context = null;
     protected ServletContext servletContext = null;
 
+    // Associated StandardHost valve for error dispatches
+    protected GlassFishValve hostValve;
+
     /*
      * The components of the request path
      */
@@ -728,6 +734,10 @@ public class Request
         this.context = context;
         if (context != null) {
             this.servletContext = context.getServletContext();
+            Pipeline p = context.getParent().getPipeline();
+            if (p != null) {
+                hostValve = p.getBasic();
+            }
         }
         // START GlassFish 896
         initSessionTracker();
@@ -3955,12 +3965,9 @@ public class Request
      * <tt>onComplete</tt> method
      */
     void asyncComplete() {
-        asyncComplete(true);
-    }
-
-    void asyncComplete(boolean checkIsAsyncStarted) {
-        if (checkIsAsyncStarted && !isAsyncStarted()) {
-            throw new IllegalStateException("Request not in async mode");
+        if (isAsyncComplete) {
+            throw new IllegalStateException("Request already released from " +
+                "asynchronous mode");
         }
         isAsyncComplete = true;
         asyncStarted = false;
@@ -3969,65 +3976,62 @@ public class Request
 
     /*
      * Invokes all registered AsyncListener instances at their
-     * <tt>onTimeout</tt> method
-     * 
-     * If none of the <tt>onTimeout</tt> handlers call complete or dispatch,
-     * have the container complete the async operation.
+     * <tt>onTimeout</tt> method.
+     *
+     * This method also performs an error dispatch and completes the response
+     * if none of the listeners have done so.
      */
     void asyncTimeout() {
-        if (asyncListenerHolders == null ||
-                asyncListenerHolders.isEmpty()) {
-            /*
-             * If there are no AsyncListeners registered, the container
-             * MUST do an ERROR dispatch to the original URI with a response
-             * code of 500
-             */
-            ((HttpServletResponse) response).setStatus(
-                HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            // Determine dispatch target
-            StringBuilder sb = new StringBuilder();
-            if (getServletPath() != null) {
-                sb.append(getServletPath());
-            }
-            if (getPathInfo() != null) {
-                sb.append(getPathInfo());
-            }
-            // Do the dispatch
-            setAttribute(RequestDispatcher.ERROR_STATUS_CODE,
-                Integer.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
-            ApplicationDispatcher dispatcher = (ApplicationDispatcher)
-                getRequestDispatcher(sb.toString());
-            try {
-                dispatcher.dispatch(getRequest(), getResponse().getResponse(), 
-                    DispatcherType.ERROR);
-            } catch (Exception e) {
-                log.log(Level.WARNING, "Unable to perform ERROR dispatch", e);
-            }
-            /*
-             * Complete the response. No worries, there are no listeners
-             * that could be called at their onComplete methods, because there
-             * are no listeners registered, or we would not have gotten here
-             */
-            asyncComplete();
-        } else {
+        if (asyncListenerHolders != null && !asyncListenerHolders.isEmpty()) {
             notifyAsyncListeners(AsyncEventType.TIMEOUT, null);
-            /*
-             * Must not call asyncComplete if already completed or
-             * one of the listeners called AsyncContext#dispatch, in which
-             * case asyncStarted will have been set to false
-             */
-            if (!isAsyncComplete && isAsyncStarted()) {
-                asyncComplete();
-            }
         }
+        errorDispatchAndComplete(null);
     }
 
+    /*
+     * Invokes all registered AsyncListener instances at their
+     * <tt>onError</tt> method.
+     *
+     * This method also performs an error dispatch and completes the response
+     * if none of the listeners have done so.
+     */
     void asyncError(Throwable t) {
-        if (asyncListenerHolders == null ||
-                asyncListenerHolders.isEmpty()) {
-            // XXX
-        } else {
+        if (asyncListenerHolders != null && !asyncListenerHolders.isEmpty()) {
             notifyAsyncListeners(AsyncEventType.ERROR, t);
+        }
+        errorDispatchAndComplete(t);
+    }
+
+    private void errorDispatchAndComplete(Throwable t) {
+        /*
+         * If no listeners, or none of the listeners called
+         * AsyncContext#complete or any of the AsyncContext#dispatch
+         * methods (in which case asyncStarted would have been set to false),
+         * perform an error dispatch with a status code equal to 500.
+         */
+        if (!isAsyncComplete && isAsyncStarted()) {
+            ((HttpServletResponse) response).setStatus(
+                HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setError();
+            if (t != null) {
+                setAttribute(RequestDispatcher.ERROR_EXCEPTION, t);
+            }
+            try {
+                if (hostValve != null) {
+                    hostValve.postInvoke(this, response);
+                }
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Unable to perform error dispatch", e);
+            } finally {
+                /*
+                 * If no matching error page was found, or the error page
+                 * did not call AsyncContext#complete or any of the
+                 * AsyncContext#dispatch methods, call AsyncContext#complete
+                 */
+                if (!isAsyncComplete && isAsyncStarted()) {
+                    asyncComplete();
+                }
+            }
         }
     }
    

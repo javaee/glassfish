@@ -68,7 +68,6 @@ public class AsyncContextImpl implements AsyncContext {
     // The target of zero-argument async dispatches
     private String zeroArgDispatchTarget = null;
 
-
     /**
      * Constructor
      *
@@ -100,22 +99,26 @@ public class AsyncContextImpl implements AsyncContext {
         }
     }
 
-
+    @Override
     public ServletRequest getRequest() {
         return servletRequest;
     }
 
+    Request getOriginalRequest() {
+        return origRequest;
+    }
 
+    @Override
     public ServletResponse getResponse() {
         return servletResponse;
     }
 
-
+    @Override
     public boolean hasOriginalRequestAndResponse() {
         return isOriginalRequestAndResponse;
     }
 
-
+    @Override
     public void dispatch() {
         if (zeroArgDispatchTarget == null) {
             log.severe("Unable to determine target of zero-arg dispatch");
@@ -137,7 +140,7 @@ public class AsyncContextImpl implements AsyncContext {
         }
     } 
 
-
+    @Override
     public void dispatch(String path) {
         if (path == null) {
             throw new IllegalArgumentException("Null path");
@@ -157,7 +160,7 @@ public class AsyncContextImpl implements AsyncContext {
         }
     }
 
-
+    @Override
     public void dispatch(ServletContext context, String path) {
         if (path == null || context == null) {
             throw new IllegalArgumentException("Null context or path");
@@ -178,26 +181,15 @@ public class AsyncContextImpl implements AsyncContext {
         }
     }
 
-
+    @Override
     public void complete() {
-        complete(true);
+        origRequest.asyncComplete();
     }
 
-
-    private void complete(boolean checkIsAsyncStarted) {
-        origRequest.asyncComplete(checkIsAsyncStarted);
-    }
-
-
-    void asyncError(Throwable t) {
-        origRequest.asyncError(t);
-    }
-
-
+    @Override
     public void start(Runnable run) {
         pool.execute(run);
     }
-
 
     /*
      * Reinitializes this AsyncContext with the given request and response.
@@ -226,7 +218,6 @@ public class AsyncContextImpl implements AsyncContext {
         }
     }
 
-
     /**
      * Determines the target of a zero-argument async dispatch for the
      * given request.
@@ -243,7 +234,6 @@ public class AsyncContextImpl implements AsyncContext {
         }
         return sb.toString();
     }
-
 
     static class Handler implements Runnable {
 
@@ -265,10 +255,10 @@ public class AsyncContextImpl implements AsyncContext {
                  * completed execution, unless startAsync was called.
                  */
                 if (!asyncContext.getRequest().isAsyncStarted()) {
-                    asyncContext.complete(false);
+                    asyncContext.complete();
                 }
             } catch (Throwable t) {
-                asyncContext.asyncError(t);
+                asyncContext.getOriginalRequest().asyncError(t);
             }
         }
     }
