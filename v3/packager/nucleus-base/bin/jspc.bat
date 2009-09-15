@@ -16,4 +16,4 @@ set JSF_API=%AS_INSTALL_LIB%\jsf-api.jar
 set JSF_IMPL=%AS_INSTALL_LIB%\jsf-impl.jar
 set AS_LIB=%~dp0..\lib
 
-java -cp "%SERVLET_API%;%JSP_API%;%JSTL_API%;%JSF_API%;%ANT_LIB%;%EL_IMPL%;%JSP_IMPL%;%AS_LIB%" org.apache.jasper.JspC -classpath "%JSTL_IMPL%;%JSF_IMPL%" -schemas "/schemas/" -dtds "/dtds/" %*
+java -cp "%SERVLET_API%;%JSP_API%;%JSTL_API%;%JSF_API%;%ANT_LIB%;%EL_IMPL%;%JSP_IMPL%;%AS_LIB%" org.apache.jasper.JspC -sysClasspath "%JSTL_IMPL%;%JSF_IMPL%" -schemas "/schemas/" -dtds "/dtds/" %*
