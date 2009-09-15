@@ -57,7 +57,7 @@
    
     <target name="build" depends="compile-tests">
         <antcall target="build-impl">
-          <param name="war.classes" value="**/*Servlet.class,**/Roster.class,**/RosterHome,**/*Details.class,**/Debug.class"/>
+          <param name="war.classes" value="**/*Servlet.class,**/Roster.class,**/RosterHome.class,**/*Details.class,**/Debug.class"/>
         </antcall>
     </target>
     
