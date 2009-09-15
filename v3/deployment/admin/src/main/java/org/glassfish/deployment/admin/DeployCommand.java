@@ -296,7 +296,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             }
             if(retrieve != null) {
-                retrieveArtifacts(context, name, retrieve, downloadableArtifacts);
+                retrieveArtifacts(context, name, retrieve, downloadableArtifacts,
+                        false);
             }
         } catch(Throwable e) {
             report.failure(logger,localStrings.getLocalString(
@@ -406,12 +407,19 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         return null;
     }
 
-    public static void retrieveArtifacts(AdminCommandContext context, String appName,
-            String targetLocalDir,
-            DownloadableArtifacts downloadableArtifacts) {
+    public static void retrieveArtifacts(final AdminCommandContext context,
+            final String appName,
+            final String targetLocalDir,
+            final DownloadableArtifacts downloadableArtifacts) {
+        retrieveArtifacts(context, appName, targetLocalDir, downloadableArtifacts, true);
+    }
+
+    public static void retrieveArtifacts(final AdminCommandContext context,
+            final String appName,
+            final String targetLocalDir,
+            final DownloadableArtifacts downloadableArtifacts,
+            final boolean reportErrorsInTopReport) {
         Logger logger = context.getLogger();
-        final ActionReport report = context.getActionReport();
-        report.setMessage("File download results");
         try {
             Payload.Outbound outboundPayload = context.getOutboundPayload();
             Properties props = new Properties();
@@ -423,15 +431,20 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 outboundPayload.attachFile("application/octet-stream",
                         uriPair.getPart(),"files",props,
                         new File(uriPair.getFull().getSchemeSpecificPart()));
-                ActionReport subReport = report.addSubActionsReport();
-                subReport.setActionDescription("Downloading " + uriPair.getPart());
-                subReport.setMessage("Success");
-                subReport.setActionExitCode(ExitCode.SUCCESS);
             }
-            report.setActionExitCode(ExitCode.SUCCESS);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Failed to download artifacts.", e);
-            report.setActionExitCode(ExitCode.FAILURE);
+            final String errorMsg = localStrings.getLocalString(
+                    "download.errDownloading", "Error while downloading generated files");
+            logger.log(Level.SEVERE, errorMsg, e);
+            ActionReport report = context.getActionReport();
+            if ( ! reportErrorsInTopReport) {
+                report = report.addSubActionsReport();
+                report.setActionExitCode(ExitCode.WARNING);
+            } else {
+                report.setActionExitCode(ExitCode.FAILURE);
+            }
+            report.setMessage(errorMsg);
+            report.setFailureCause(e);
         }
     }
 
