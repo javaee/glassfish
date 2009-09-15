@@ -37,85 +37,55 @@
 package com.sun.enterprise.tools.upgrade.common;
 
 import com.sun.enterprise.tools.upgrade.logging.LogService;
+import com.sun.enterprise.tools.upgrade.UpgradeToolMain;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import com.sun.enterprise.tools.upgrade.UpgradeToolMain;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-/**
- *
- * @author  hans
- */
 public class Commands {
 
     private static final Logger logger = LogService.getLogger();
     private static final StringManager stringManager =
         StringManager.getManager(Commands.class);
     
-    public static int startDomain(String domainName, CommonInfoModel commonInfo) {
-        Credentials c = commonInfo.getSource().getDomainCredentials();
-        String adminUser = c.getAdminUserName();
+    public static int startDomain(String domainName, CommonInfoModel cInfo) {
+        Credentials c = cInfo.getSource().getDomainCredentials();
 
-        /*
-         * As a workaround for the following issue, code to create the
-         * asadmin command is commented out and we'll just use java -jar
-         * instead. Note: we don't need the domaindir option, probably
-         * with or without the workaround, since we copy the domain to
-         * the v3 domains directory anyway. URL for issue is:
-         * https://glassfish.dev.java.net/issues/show_bug.cgi?id=9360
-         */
         String installRoot = System.getProperty(UpgradeToolMain.AS_DOMAIN_ROOT);
         File installRootF = new File(installRoot);
-//        File asadminF = new File(installRootF.getParentFile(), "bin/asadmin");
-//        String asadminScript = asadminF.getAbsolutePath();
-//        try {
-//            asadminScript = asadminF.getCanonicalPath();
-//        } catch (IOException e) {
-//            //- no action needed use absolutePath
-//        }
-//        String ext = "";
-//        String osName = System.getProperty("os.name");
-        CommandBuilder cb = new CommandBuilder();
-//        if (osName.indexOf("Windows") != -1) {
-//            asadminScript = "cmd /c " + asadminScript;
-//            ext = ".bat";
-//        }
-//        cb.add(asadminScript + ext);
-//        cb.add("start-domain");
-//        cb.add("--upgrade");
-//        cb.add("-v");
-//        cb.add("--domaindir");
-//        cb.add(commonInfo.getTarget().getInstallDir());
-//
-//        //- V3 allows for anonymous user credentials. skip passing credentials
-//        if (adminUser != null && adminUser.length() > 0) {
-//            cb.add("--user");
-//            cb.add(adminUser);
-//            String adminPassword = c.getAdminPassword();
-//            if (adminPassword != null && adminPassword.length() > 0) {
-//                cb.add("--passwordfile ");
-//                cb.add(c.getPasswordFile());
-//            }
-//        }
-
-        // begin workaround
-        File gfJar = new File(
-            installRootF.getParentFile(), "modules/glassfish.jar");
-        String gfJarLocation = gfJar.getAbsolutePath();
-        // readability
+        File asadminF = new File(installRootF.getParentFile(), "bin/asadmin");
+        String asadminScript = asadminF.getAbsolutePath();
         try {
-            gfJarLocation = gfJar.getCanonicalPath();
-        } catch (IOException ioe) {}
-        cb.add("java -jar");
-        cb.add(gfJarLocation);
-        cb.add("-upgrade true -domain");
-        // end workaround
-        
+            // this is just for readability in output
+            asadminScript = asadminF.getCanonicalPath();
+        } catch (IOException e) {
+            //- no action needed use absolutePath
+        }
+        String ext = "";
+        String osName = System.getProperty("os.name");
+        CommandBuilder cb = new CommandBuilder();
+        if (osName.indexOf("Windows") != -1) {
+            asadminScript = "cmd /c " + asadminScript;
+            ext = ".bat";
+        }
+        cb.add(asadminScript + ext);
+        cb.add("start-domain");
+
+        String masterPassword = c.getMasterPassword();
+        if (masterPassword != null && masterPassword.length() > 0) {
+            cb.add("--passwordfile ");
+            cb.add(c.getPasswordFile());
+        }
+
+        cb.add("--upgrade");
+        cb.add("--domaindir");
+        cb.add(cInfo.getTarget().getInstallDir());
+
         cb.add(domainName);
         return executeCommand(cb.getCommand());
     }
@@ -226,6 +196,7 @@ public class Commands {
                 try {
                     reader.close();
                 } catch (IOException ioe) {
+                    // seriously?
                     logger.log(Level.FINE,
                         "Exception closing reader in StreamWatcher",
                         ioe);

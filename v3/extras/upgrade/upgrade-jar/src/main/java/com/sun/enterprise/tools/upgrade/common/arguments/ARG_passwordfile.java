@@ -36,16 +36,13 @@
 
 package com.sun.enterprise.tools.upgrade.common.arguments;
 
+import com.sun.enterprise.tools.upgrade.common.CLIConstants;
 import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.enterprise.tools.upgrade.common.CLIConstants;
-import com.sun.enterprise.tools.upgrade.common.ArgsParser;
-import com.sun.enterprise.tools.upgrade.common.UpgradeConstants;
-import com.sun.enterprise.tools.upgrade.common.UpgradeUtils;
 /**
  *
  * @author Hans Hrasna
@@ -56,6 +53,8 @@ public class ARG_passwordfile extends ArgumentHandler {
 	public ARG_passwordfile() {
         super();
 	}
+
+    @Override
 	public void setRawParameters(String p){
 		rawParameters = p;
 		if (p != null){
@@ -67,35 +66,26 @@ public class ARG_passwordfile extends ArgumentHandler {
 		}
 	}
 
+    @Override
 	public List<ArgumentHandler> getChildren(){
-		Vector<ArgumentHandler> v = new Vector<ArgumentHandler>();
+		List<ArgumentHandler> list = new ArrayList<ArgumentHandler>();
         try {
 			File userPasswordFile = new File(rawParameters);
-            BufferedReader reader = new BufferedReader(new FileReader(userPasswordFile));
+            BufferedReader reader =
+                new BufferedReader(new FileReader(userPasswordFile));
             while( reader.ready() ) {
                 String line = reader.readLine();
-                if (line.startsWith("AS_ADMIN_ADMINPASSWORD=")) {
-					ARG_adminpassword tmpA = new ARG_adminpassword();
-					tmpA.setRawParameters(line.substring(line.indexOf("=") + 1));					
-					tmpA.setCmd(CLIConstants.ADMINPASSWORD_SHORT);
-					v.add(tmpA);
-                } else if ( line.startsWith("AS_ADMIN_MASTERPASSWORD=") ) {
+                if ( line.startsWith("AS_ADMIN_MASTERPASSWORD=") ) {
 					ARG_masterpassword tmpA = new ARG_masterpassword();
 					tmpA.setRawParameters(line.substring(line.indexOf("=") + 1));
 					tmpA.setCmd(CLIConstants.MASTERPASSWORD_SHORT);
-					v.add(tmpA);
+					list.add(tmpA);
                 }
             }
             reader.close();
         } catch (Exception e) {
             logger.severe(sm.getString("upgrade.common.general_exception") + " " + e.getMessage());
         }
-		if (commonInfo.getSource().getDomainCredentials().getAdminUserName() == null){
-			ARG_adminuser tmpA = new ARG_adminuser();
-			tmpA.setRawParameters(CLIConstants.DEFAULT_ADMIN_USER);
-			tmpA.setCmd(CLIConstants.ADMINUSER_SHORT);
-			v.add(tmpA);
-		}
-		return v;
+		return list;
     }
 }

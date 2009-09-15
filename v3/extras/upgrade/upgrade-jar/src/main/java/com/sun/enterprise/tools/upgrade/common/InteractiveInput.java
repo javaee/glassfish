@@ -33,17 +33,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-/*
- * InteractiveInput.java
- *
- * Created on August 26, 2005, 3:20 PM
- */
-
 package com.sun.enterprise.tools.upgrade.common;
 
-import java.util.ArrayList;
 import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
+import java.util.ArrayList;
 
 /**
  *

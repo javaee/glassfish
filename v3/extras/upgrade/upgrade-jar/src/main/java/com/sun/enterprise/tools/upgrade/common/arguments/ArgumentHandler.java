@@ -36,14 +36,13 @@
 
 package com.sun.enterprise.tools.upgrade.common.arguments;
 
-import java.util.Vector;
-import java.util.List;
-import java.util.logging.Logger;
-
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
 import com.sun.enterprise.tools.upgrade.common.UpgradeUtils;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.i18n.StringManager;
+import java.util.logging.Logger;
+import java.util.List;
+import java.util.Vector;
 
 
 /**

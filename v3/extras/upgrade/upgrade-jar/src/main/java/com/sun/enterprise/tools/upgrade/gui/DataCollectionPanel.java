@@ -108,30 +108,21 @@ public class DataCollectionPanel extends javax.swing.JPanel {
             targetTextField.setText(tempStr);
         }
 
-        // set initial values for credentials
-        // todo: why do we check for default only in master pw case?
         Credentials cred = commonInfoModel.getSource().getDomainCredentials();
-        if (cred.getAdminUserName() != null) {
-            adminUserTextField.setText(cred.getAdminUserName());
-        }
-        if (cred.getAdminPassword() != null) {
-            adminPWField.setText(cred.getAdminPassword());
-        }
         String masPW = cred.getMasterPassword();
-        if (masPW != null &&
-            !CLIConstants.DEFAULT_MASTER_PASSWORD.equals(masPW)) {
+        if (masPW != null) {
             masterPWField.setText(cred.getMasterPassword());
         }
 
         // add listeners for source/target browse buttons
         sourceBrowseButton.addActionListener(new ActionListener() {
-
+            @Override
             public void actionPerformed(ActionEvent arg0) {
                 sourceBrowseButtonActionPerformed();
             }
         });
         targetBrowseButton.addActionListener(new ActionListener() {
-
+            @Override
             public void actionPerformed(ActionEvent arg0) {
                 targetBrowseButtonActionPerformed();
             }
@@ -139,7 +130,6 @@ public class DataCollectionPanel extends javax.swing.JPanel {
 
         // create file chooser for source and target directories
         chooser = new JFileChooser();
-//        chooser.setBounds(668, 49, 500, 300);
         chooser.setDialogTitle(stringManager.getString(
             "upgrade.gui.detailspanel.fileChooseTitle"));
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -163,10 +153,6 @@ public class DataCollectionPanel extends javax.swing.JPanel {
         javax.swing.JLabel targetLabel = new javax.swing.JLabel();
         targetTextField = new javax.swing.JTextField();
         targetBrowseButton = new javax.swing.JButton();
-        javax.swing.JLabel adminUserLabel = new javax.swing.JLabel();
-        adminUserTextField = new javax.swing.JTextField();
-        javax.swing.JLabel adminPWLabel = new javax.swing.JLabel();
-        adminPWField = new javax.swing.JPasswordField();
         javax.swing.JLabel masterPWLabel = new javax.swing.JLabel();
         masterPWField = new javax.swing.JPasswordField();
         javax.swing.JLabel reqTextLabel = new javax.swing.JLabel();
@@ -188,19 +174,6 @@ public class DataCollectionPanel extends javax.swing.JPanel {
 
         targetBrowseButton.setText(stringManager.getString("upgrade.gui.detailspanel.browseButtonText"));
 
-        adminUserLabel.setLabelFor(adminUserTextField);
-        adminUserLabel.setText(stringManager.getString("upgrade.gui.detailspanel.adminUserLabel"));
-
-        adminUserTextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                adminUserTextFieldActionPerformed(evt);
-            }
-        });
-
-        adminPWLabel.setLabelFor(adminPWField);
-        adminPWLabel.setText(stringManager.getString("upgrade.gui.detailspanel.adminPWLabel"));
-
-        masterPWLabel.setLabelFor(adminPWField);
         masterPWLabel.setText(stringManager.getString("upgrade.gui.detailspanel.masterPWLabel"));
 
         reqTextLabel.setText(REQUIRED_TEXT_LABEL);
@@ -212,31 +185,31 @@ public class DataCollectionPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(contentLabel)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
-                    .addComponent(headerLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(sourceLabel)
-                            .addComponent(targetLabel)
-                            .addComponent(targetTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE)
-                            .addComponent(sourceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(targetBrowseButton)
-                            .addComponent(sourceBrowseButton)))
-                    .addComponent(masterPWLabel)
+                            .addComponent(contentLabel)
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
+                            .addComponent(headerLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(sourceLabel)
+                                    .addComponent(targetLabel)
+                                    .addComponent(targetTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE)
+                                    .addComponent(sourceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(targetBrowseButton)
+                                    .addComponent(sourceBrowseButton))))
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(masterPWField, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
+                        .addGap(266, 266, 266))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(adminUserLabel)
-                            .addComponent(adminUserTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                            .addComponent(masterPWField))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(reqTextLabel)
-                            .addComponent(adminPWLabel)
-                            .addComponent(adminPWField, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap())
+                        .addComponent(masterPWLabel)
+                        .addContainerGap(419, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(reqTextLabel)
+                        .addContainerGap(419, Short.MAX_VALUE))))
         );
 
         layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {sourceBrowseButton, targetBrowseButton});
@@ -263,29 +236,16 @@ public class DataCollectionPanel extends javax.swing.JPanel {
                     .addComponent(targetTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(targetBrowseButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(adminUserLabel)
-                    .addComponent(adminPWLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(adminUserTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(adminPWField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(masterPWLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(masterPWField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(reqTextLabel))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addComponent(masterPWField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(reqTextLabel)
+                .addContainerGap(52, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void adminUserTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminUserTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_adminUserTextFieldActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPasswordField adminPWField;
-    private javax.swing.JTextField adminUserTextField;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPasswordField masterPWField;
     private javax.swing.JButton sourceBrowseButton;
@@ -316,16 +276,16 @@ public class DataCollectionPanel extends javax.swing.JPanel {
         return targetTextField.getText();
     }
 
-    public String getAdminUserName() {
-        return adminUserTextField.getText();
-    }
-
-    public String getAdminPassword() {
-        return adminPWField.getPassword().toString();
-    }
-
     public String getMasterPassword() {
-        return masterPWField.getPassword().toString();
+        String retVal = null;
+        char [] pwd = masterPWField.getPassword();
+        if (pwd != null) {
+            retVal = new String(pwd);
+            for (int i=0; i<pwd.length; i++) {
+                pwd[i] = 0;
+            }
+        }
+        return retVal;
     }
     /*** end getters ***/
 

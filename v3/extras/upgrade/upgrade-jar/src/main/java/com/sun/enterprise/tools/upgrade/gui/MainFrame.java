@@ -41,8 +41,6 @@ import com.sun.enterprise.tools.upgrade.common.Credentials;
 import com.sun.enterprise.tools.upgrade.common.DirectoryMover;
 import com.sun.enterprise.tools.upgrade.common.UpgradeConstants;
 import com.sun.enterprise.tools.upgrade.common.UpgradeUtils;
-import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminpassword;
-import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminuser;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_masterpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_source;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_target;
@@ -332,6 +330,7 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
     private javax.swing.JButton nextButton;
     // End of variables declaration//GEN-END:variables
 
+    @Override
     public boolean moveDirectory(File dir) {
         String message = String.format(stringManager.getString(
             "upgrade.gui.util.domainRenameOption", dir.getName()));
@@ -431,12 +430,6 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
         }
 
         // check credentials
-        ARG_adminuser argUser = new ARG_adminuser();
-        argUser.setRawParameters(dataCollectionPanel.getAdminUserName());
-        argUser.exec();
-        ARG_adminpassword argPW = new ARG_adminpassword();
-        argPW.setRawParameters(dataCollectionPanel.getAdminPassword());
-        argPW.exec();
         ARG_masterpassword argMasterPW = new ARG_masterpassword();
         argMasterPW.setRawParameters(dataCollectionPanel.getMasterPassword());
         argMasterPW.exec();
@@ -451,9 +444,7 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
         logger.info(UpgradeConstants.ASUPGRADE + " -s " +
             commonInfoModel.getSource().getInstallDir() +
             "\t -t " + commonInfoModel.getTarget().getInstallDir() +
-            "\t -a " + c.getAdminUserName() + "\t -w " +
-            c.getAdminPassword().replaceAll(".", "*") + "\t -m " +
-            c.getMasterPassword().replaceAll(".", "*"));
+            "\t -m " + c.getMasterPassword().replaceAll(".", "*"));
     }
 
 }

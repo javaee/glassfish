@@ -106,6 +106,7 @@ public class UpgradeToolMain {
 
         final UpgradeToolMain thisToolMain = this;
         EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new MainFrame(thisToolMain).setVisible(true);
             }
@@ -141,8 +142,7 @@ public class UpgradeToolMain {
     private void printArgs(ArrayList<ArgumentHandler> aList) {
         StringBuilder sb = new StringBuilder();
         for (ArgumentHandler tmpAh : aList) {
-            if (tmpAh instanceof ARG_w || tmpAh instanceof ARG_adminpassword ||
-                tmpAh instanceof ARG_m || tmpAh instanceof ARG_masterpassword) {
+            if (tmpAh instanceof ARG_m || tmpAh instanceof ARG_masterpassword) {
                 //- don't reveal passwords
                 sb.append("-" + tmpAh.getCmd() + " " +
                     tmpAh.getRawParameter().replaceAll(".", "*"));

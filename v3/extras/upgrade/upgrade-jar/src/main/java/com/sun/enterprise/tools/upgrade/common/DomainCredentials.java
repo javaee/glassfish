@@ -49,62 +49,45 @@ import java.util.logging.Logger;
  */
 public class DomainCredentials implements Credentials {
 
-	private String adminUserName = null;
-    private String adminPassword = null;
-    private File passwordFile = null;
-    private String masterPassword = CLIConstants.DEFAULT_MASTER_PASSWORD;
+    private File passwordFile;
+    private String masterPassword;
 
     private static final Logger logger = LogService.getLogger();
 
-	private static final StringManager stringManager =
-            StringManager.getManager(DomainCredentials.class);
-	
-	public void setAdminUserName(String s){
-		adminUserName = s;
-	}
+    private static final StringManager stringManager =
+        StringManager.getManager(DomainCredentials.class);
 
-	public String getAdminUserName(){
-		return adminUserName;
-	}
-
-	public void setAdminPassword(String s){
-		adminPassword = s;
-	}
-
-	public String getAdminPassword(){
-		return adminPassword;
-	}
-
+    @Override
 	public void setMasterPassword(String s){
 		masterPassword = s;
 	}
-    
+
+    @Override
 	public String getMasterPassword(){
 		return masterPassword;
 	}
-	
-	public String getPasswordFile(){
-		if (passwordFile == null) {
-			try {
-				passwordFile = java.io.File.createTempFile("ugpw", null);
-				FileWriter writer = new FileWriter(passwordFile);
-                if (getAdminPassword() != null) {
-                    writer.write("AS_ADMIN_PASSWORD=" + getAdminPassword() +"\n");
-                    writer.write("AS_ADMIN_ADMINPASSWORD=" + getAdminPassword() +"\n");
+
+    @Override
+    public String getPasswordFile() {
+        if (passwordFile == null) {
+            try {
+                passwordFile = java.io.File.createTempFile("ugpw", null);
+                FileWriter writer = new FileWriter(passwordFile);
+                if (getMasterPassword() != null) {
+                    writer.write("AS_ADMIN_MASTERPASSWORD=" +
+                        getMasterPassword() + "\n");
                 }
-                if (getMasterPassword() != null){
-                    writer.write("AS_ADMIN_MASTERPASSWORD=" + getMasterPassword() + "\n");
-                }
-				writer.close();
-			} catch (IOException ioe) {
-				logger.severe(stringManager.getString(
-                    "upgrade.common.general_exception") + " " +
-                    ioe.getMessage());
-			}
-		}
-		return passwordFile.getAbsolutePath();
-	}
-	
+                writer.close();
+            } catch (IOException ioe) {
+                logger.severe(stringManager.getString(
+                    "upgrade.common.general_exception") +
+                    " " + ioe.getMessage());
+            }
+        }
+        return passwordFile.getAbsolutePath();
+    }
+
+    @Override
 	public void deletePasswordFile() {
         if (passwordFile != null) {
             passwordFile.delete();

@@ -34,43 +34,18 @@
  * holder.
  */
 
-/*
- * Credentials.java
- *
- * Created on December 11, 2007, 4:13 PM
- *
- */
-
 package com.sun.enterprise.tools.upgrade.common;
 
 
 /**
- *
- * @author rebeccas
+ * Stores the master password and password file when used with
+ * a v3 domain. The admin username and password are no longer needed.
  */
 public interface Credentials {
-	/**
-	 * The admin user name of the appserver's domain
-	 */
-	public void setAdminUserName(String s);
-	public String getAdminUserName();
-	
-	/**
-	 * The admin password of the appserver's domain
-	 */
-	public void setAdminPassword(String s);
-	public String getAdminPassword();
-	
-	/**
-	 * The admin master password of the appserver's domain
-	 */
-	public void setMasterPassword(String s);
+
+    public void setMasterPassword(String s);
 	public String getMasterPassword();
 	
-	/**
-	 * Internally generated file of passwords for temp use
-	 * by this tool.
-	 */
 	public String getPasswordFile();
 	public void deletePasswordFile();
 }

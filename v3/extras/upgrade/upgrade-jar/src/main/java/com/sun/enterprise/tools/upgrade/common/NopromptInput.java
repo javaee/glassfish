@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.tools.upgrade.common;
 
-import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_masterpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
@@ -57,13 +56,14 @@ public class NopromptInput implements InteractiveInput {
     private static final StringManager sm =
         StringManager.getManager(NopromptInput.class);
     private static final Logger log = LogService.getLogger();
-	
+
+    @Override
     public void processArguments(ArrayList<ArgumentHandler> aList) {
         for (ArgumentHandler v : aList) {
             if (v.isValidParameter()) {
                 v.exec();
             } else {
-                if (v instanceof ARG_adminpassword || v instanceof ARG_masterpassword) {
+                if (v instanceof ARG_masterpassword) {
                     //- don't print security info
                     log.severe(sm.getString("enterprise.tools.upgrade.cli._invalid_option_or_value",
                         v.getCmd(), ""));

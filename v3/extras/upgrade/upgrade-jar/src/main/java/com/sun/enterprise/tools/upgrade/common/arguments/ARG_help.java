@@ -46,6 +46,8 @@ public class ARG_help extends ArgumentHandler {
 	public ARG_help() {
         super();
     }
+
+    @Override
 	public void exec(){
 		System.out.println(sm.getString("enterprise.tools.upgrade.cli.usage"));
 		System.out.println(sm.getString("enterprise.tools.upgrade.cli.command_string"));

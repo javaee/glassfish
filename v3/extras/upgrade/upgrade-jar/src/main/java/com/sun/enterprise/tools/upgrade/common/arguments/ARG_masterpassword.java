@@ -36,9 +36,6 @@
 
 package com.sun.enterprise.tools.upgrade.common.arguments;
 
-import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
-import com.sun.enterprise.tools.upgrade.common.UpgradeConstants;
-
 /**
  *
  * @author Hans Hrasna 
@@ -49,10 +46,14 @@ public class ARG_masterpassword extends ArgumentHandler {
 	public ARG_masterpassword() {
         super();
 	}
+
+    @Override
 	public void setRawParameters(String p){
 		rawParameters = p;
 		super._isValidParameter = true;
 	}
+    
+    @Override
 	public void exec(){
 		commonInfo.getSource().getDomainCredentials().setMasterPassword(rawParameters);
 	}

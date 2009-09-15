@@ -46,8 +46,6 @@ import java.io.IOException;
 
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.cli.framework.*;
-import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminuser;
-import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_masterpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_source;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_target;
@@ -69,7 +67,7 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
     private static final CommonInfoModel commonInfoModel =
         CommonInfoModel.getInstance();
 
-	
+	@Override
     public void processArguments(ArrayList<ArgumentHandler> aList) {
         int cnt = aList.size();
         this.inputMap = new HashMap<String, ArgumentHandler>();
@@ -84,8 +82,6 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
             if (!CommonInfoModel.getInstance().isUpgradeSupported()) {
                 System.exit(1);
             }
-            adminPrompt();
-            adminPasswordPrompt();
             masterPasswordPrompt();
         } catch (IOException e) {
             logger.log(Level.SEVERE,
@@ -160,38 +156,6 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
         }
     }
 	
-    private void adminPrompt() throws IOException {
-        ArgumentHandler tmpA = inputMap.get(CLIConstants.ADMINUSER_SHORT);
-        if (tmpA == null) {
-            tmpA = inputMap.get(CLIConstants.ADMINUSER);
-        }
-        if (tmpA == null) {
-            System.out.print(
-                sm.getString("enterprise.tools.upgrade.cli.adminuser_input"));
-
-            String admiuser = getResponse();
-            tmpA = new ARG_adminuser();
-            tmpA.setRawParameters(admiuser);
-            inputMap.put(CLIConstants.ADMINUSER, tmpA);
-        }
-        tmpA.exec();
-    }
-	
-    private void adminPasswordPrompt() throws IOException {
-        ArgumentHandler tmpA = inputMap.get(CLIConstants.ADMINPASSWORD_SHORT);
-        if (tmpA == null) {
-            tmpA = inputMap.get(CLIConstants.ADMINPASSWORD);
-        }
-
-        if (tmpA == null) {
-            String adminPassword = getPasswordResponse(sm.getString("enterprise.tools.upgrade.cli.adminpassword_input"));
-            tmpA = new ARG_adminpassword();
-            tmpA.setRawParameters(adminPassword);
-            inputMap.put(CLIConstants.ADMINPASSWORD, tmpA);
-        }
-        tmpA.exec();
-    }
-	
     private void masterPasswordPrompt() throws IOException {
         ArgumentHandler tmpA = inputMap.get(CLIConstants.MASTERPASSWORD_SHORT);
         if (tmpA == null) {
@@ -206,6 +170,7 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
         tmpA.exec();
     }
 
+    // todo: fix for issue 9257 here
     private String getPasswordResponse(String prompt) {
         String optionValue;
         try {
@@ -247,6 +212,7 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
      * Ask the user whether or not to move the
      * conflicting directory.
      */
+    @Override
     public boolean moveDirectory(File dir) {
         try {
             System.out.print(sm.getString(

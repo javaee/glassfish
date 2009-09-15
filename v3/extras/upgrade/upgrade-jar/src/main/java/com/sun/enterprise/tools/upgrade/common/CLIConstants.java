@@ -49,6 +49,7 @@ public class CLIConstants {
     
     private static StringManager stringManager =
         StringManager.getManager(CLIConstants.class);
+
     private static final StringBuilder cliInstructions = new StringBuilder();
     static {
         cliInstructions.append("\n");
@@ -61,19 +62,11 @@ public class CLIConstants {
     }
     public static final String CLI_USER_INSTRUCTIONS = cliInstructions.toString();
 	
-    public static final String DEFAULT_ADMIN_USER = "admin";
-    public static final String DEFAULT_ADMIN_PASSWORD = "adminadmin";
-    public static final String DEFAULT_MASTER_PASSWORD = "changeit";
-	
     //- CLI options
     public static final String SOURCE = "source";
     public static final String SOURCE_SHORT = "s";
     public static final String TARGET = "target";
     public static final String TARGET_SHORT = "t";
-    public static final String ADMINUSER = "adminuser";
-    public static final String ADMINUSER_SHORT = "a";
-    public static final String ADMINPASSWORD = "adminpassword";
-    public static final String ADMINPASSWORD_SHORT = "w";
     public static final String MASTERPASSWORD = "masterpassword";
     public static final String MASTERPASSWORD_SHORT = "m";
 	

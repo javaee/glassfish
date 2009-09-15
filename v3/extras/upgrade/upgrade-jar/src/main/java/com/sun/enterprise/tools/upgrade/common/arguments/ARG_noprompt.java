@@ -42,6 +42,7 @@ package com.sun.enterprise.tools.upgrade.common.arguments;
  * @author Hans Hrasna
  */
 public class ARG_noprompt extends ArgumentHandler {
+
     /** Creates a new instance of ARG_noprompt */
 	public ARG_noprompt() {
         super();
@@ -49,7 +50,11 @@ public class ARG_noprompt extends ArgumentHandler {
 		_isValidParameter = true;
 		commonInfo.setNoprompt(true);
 	}
+
+    @Override
 	public void setRawParameters(String p){
 	}
+
+    @Override
 	public void exec(){}
 }
