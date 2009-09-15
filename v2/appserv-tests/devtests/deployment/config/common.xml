@@ -250,7 +250,7 @@
   <property name="user.password.file" value="asadminuserpassword.txt"/>
   <echo file="${user.password.file}" append="false">
 AS_ADMIN_USERPASSWORD=${password}
-AS_ADMIN_ADMINPASSWORD=${admin.password}
+AS_ADMIN_PASSWORD=
 AS_ADMIN_MASTERPASSWORD=changeit
   </echo>
   <antcall target="common.run.asadmin">
@@ -578,14 +578,14 @@ AS_ADMIN_MASTERPASSWORD=changeit
 <target name="common.run.jsr88" depends="init, compile.util" unless="run.jsr88" >
     <delete file="${testsRoot}/build/archives/DEPLOY_RESULT"/>
 
-    <echo message="JSR88Deployer ${command} ${jsr88.uri} ${admin.user} ${admin.password} ${arg.list}"/>
+    <echo message="JSR88Deployer ${command} ${jsr88.uri} ${admin.user} ${admin.password}  ${arg.list}"/>
     <javaWithResult
             fork="true" 
             failonerror="false"
             jvm="${JAVA}"
             classname="devtests.deployment.util.JSR88Deployer"
             resultproperty="deployActionResult">
-        <arg line="${command} ${jsr88.uri} ${admin.user} ${admin.password} ${arg.list}"/>
+        <arg line="${command} ${jsr88.uri} ${admin.user} &quot;&quot; ${arg.list}"/>
         <classpath>
             <path refid="gfv3.classpath"/>
             <path location="${junit.jar}"/>
@@ -622,9 +622,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
 </target>
 
 <target name="all" depends="init">
-    <echo file="${testsRoot}/password.txt" append="false">AS_ADMIN_PASSWORD=${admin.password}
-AS_ADMIN_MASTERPASSWORD=changeit
-AS_ADMIN_ADMINPASSWORD=${admin.password}
+    <echo file="${testsRoot}/password.txt" append="false">AS_ADMIN_MASTERPASSWORD=changeit
 </echo>
     <delete file="client.log"/>
     <touch file="client.log"/>
@@ -639,9 +637,7 @@ AS_ADMIN_ADMINPASSWORD=${admin.password}
 </target>
 
 <target name="all-ee" depends="init">
-    <echo file="${testsRoot}/password.txt" append="false">AS_ADMIN_PASSWORD=${admin.password}
-AS_ADMIN_MASTERPASSWORD=changeit
-AS_ADMIN_ADMINPASSWORD=${admin.password}
+    <echo file="${testsRoot}/password.txt" append="false">AS_ADMIN_MASTERPASSWORD=changeit
 </echo>
     <delete file="client.log"/>
     <touch file="client.log"/>
