@@ -60,6 +60,7 @@ import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.deploy.shared.Util;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.config.serverbeans.DasConfig;
@@ -67,8 +68,10 @@ import com.sun.enterprise.config.serverbeans.DasConfig;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.*;
 import java.util.logging.Level;
+import java.net.URLClassLoader;
+import java.net.URL;
 
-/**
+/*;
  * Created by IntelliJ IDEA.
  * User: dochez
  * Date: Jan 16, 2009
@@ -231,7 +234,30 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                         sub.setParentArchive(context.getSource());
 
                         ClassLoader subCl = handler.getClassLoader(cl, subContext);
-                        cl.addModuleClassLoader(moduleUri, subCl);
+                        if (md.getModuleType().equals(XModuleType.EJB)) {
+                            // for ejb module, we just add the ejb urls 
+                            // to EarClassLoader and use that to load 
+                            // ejb module
+                            URL[] moduleURLs =
+                                ((URLClassLoader)subCl).getURLs();
+                            for (URL moduleURL : moduleURLs) {
+                                cl.addURL(moduleURL);
+                            }
+                            cl.addModuleClassLoader(moduleUri, cl);
+                        } else {
+                            if (subCl instanceof URLClassLoader && 
+                                context.getTransientAppMetaData(ExtendedDeploymentContext.IS_TEMP_CLASSLOADER, Boolean.class)) {
+                                // for temp classloader, we add all the module
+                                // urls to the top level EarClassLoader
+                                URL[] moduleURLs = 
+                                    ((URLClassLoader)subCl).getURLs();
+                                for (URL moduleURL : moduleURLs) {
+                                    cl.addURL(moduleURL);
+                                }
+                            } else {
+                                cl.addModuleClassLoader(moduleUri, subCl);
+                            }
+                        }
                     }
                 } catch (IOException e) {
                     _logger.log(Level.SEVERE, strings.get("noClassLoader", moduleUri), e);

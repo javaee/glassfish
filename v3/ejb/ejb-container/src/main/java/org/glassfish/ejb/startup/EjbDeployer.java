@@ -125,6 +125,8 @@ public class EjbDeployer
             throw new RuntimeException("Null EjbBundleDescriptor " + dc.getSourceDir() + " in EjbDeployer.load()");
         }
 
+        ejbBundle.setClassLoader(dc.getClassLoader());
+
         // Get application-level properties (*not* module-level)
         Properties appProps = dc.getAppProps();
 

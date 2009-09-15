@@ -434,9 +434,11 @@ public class ManagedBeanDescriptor extends JndiEnvironmentRefsGroupDescriptor {
     }
 
     @Override
-    public InjectionInfo getInjectionInfoByClass(String className) {
+    public InjectionInfo getInjectionInfoByClass(Class clazz) {
 
         // TODO This is invariant data so we could cache it
+
+        String className = clazz.getName();
 
         LifecycleCallbackDescriptor postConstructDesc =
                 getPostConstructDescriptorByClass(className);

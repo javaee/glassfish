@@ -56,6 +56,8 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
     
     public enum Phase { UNKNOWN, PREPARE, LOAD, START, STOP, UNLOAD, CLEAN }
 
+    public static final String IS_TEMP_CLASSLOADER = "isTempClassLoader";
+
 
     /**
      * Sets the phase of the deployment activity.
@@ -63,6 +65,8 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
      * @param newPhase
      */
     public void setPhase(Phase newPhase);
+
+    public Phase getPhase();
 
     /**
      * Returns the list of transformers registered to this context.

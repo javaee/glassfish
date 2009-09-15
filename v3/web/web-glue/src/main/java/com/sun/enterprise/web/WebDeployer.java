@@ -172,6 +172,11 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
     @Override
     public WebApplication load(WebContainer container, DeploymentContext dc) {
         super.load(container, dc);
+        WebBundleDescriptor wbd = dc.getModuleMetaData(
+            WebBundleDescriptor.class);
+        if (wbd != null) {
+            wbd.setClassLoader(dc.getClassLoader());
+        }
         WebModuleConfig wmInfo = loadWebModuleConfig(dc);
         com.sun.enterprise.config.serverbeans.Application config =
                 domain.getApplications().getModule(com.sun.enterprise.config.serverbeans.Application.class,

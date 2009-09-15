@@ -451,7 +451,12 @@ public class EarDeployer implements Deployer, PostConstruct {
                     public ClassLoader getClassLoader() {
                         try {
                             EarClassLoader appCl = EarClassLoader.class.cast(context.getClassLoader());
-                            return appCl.getModuleClassLoader(moduleUri);
+                            if (((ExtendedDeploymentContext)context).
+                                getPhase() == Phase.PREPARE) {
+                                return appCl;
+                            } else {
+                                return appCl.getModuleClassLoader(moduleUri);
+                            }
                         } catch (ClassCastException e) {
                             return context.getClassLoader();
                         }                        

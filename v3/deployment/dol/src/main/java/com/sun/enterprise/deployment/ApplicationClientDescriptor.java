@@ -292,8 +292,8 @@ public class ApplicationClientDescriptor extends BundleDescriptor
         return getPreDestroyDescriptorByClass(className, this);
     }
 
-    public InjectionInfo getInjectionInfoByClass(String className) {
-        return getInjectionInfoByClass(className, this);
+    public InjectionInfo getInjectionInfoByClass(Class clazz) {
+        return getInjectionInfoByClass(clazz, this);
     }
 
     public Set getServiceReferenceDescriptors() {

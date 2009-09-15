@@ -348,7 +348,7 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
         while((nextClass != Object.class) && (nextClass != null)) {
 
             InjectionInfo injInfo = 
-                envDescriptor.getInjectionInfoByClass(nextClass.getName());
+                envDescriptor.getInjectionInfoByClass(nextClass);
 
             if( injInfo.getInjectionResources().size() > 0 ) {
                 _inject(nextClass, instance, componentId, injInfo.getInjectionResources());
@@ -399,7 +399,7 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
         while((nextClass != Object.class) && (nextClass != null)) {
 
             InjectionInfo injInfo = 
-                envDescriptor.getInjectionInfoByClass(nextClass.getName());
+                envDescriptor.getInjectionInfoByClass(nextClass);
 
             if( injInfo.getPreDestroyMethodName() != null ) {
                 
@@ -440,7 +440,7 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
         while ((nextClass != Object.class) && (nextClass != null)) {
 
             InjectionInfo injInfo = 
-                envDescriptor.getInjectionInfoByClass(nextClass.getName());
+                envDescriptor.getInjectionInfoByClass(nextClass);
 
             if (injInfo.getPostConstructMethodName() != null) {
                 

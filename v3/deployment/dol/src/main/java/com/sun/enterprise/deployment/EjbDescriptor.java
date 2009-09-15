@@ -1849,8 +1849,8 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
                 (className, this);
     }
 
-    public InjectionInfo getInjectionInfoByClass(String className) {
-        return bundleDescriptor.getInjectionInfoByClass(className, this);
+    public InjectionInfo getInjectionInfoByClass(Class clazz) {
+        return bundleDescriptor.getInjectionInfoByClass(clazz, this);
     }
 
     /**

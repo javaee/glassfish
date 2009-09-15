@@ -190,7 +190,7 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
         while ((!Object.class.equals(nextClass)) && (nextClass != null)) {
 
             InjectionInfo injInfo =
-                 envDescriptor.getInjectionInfoByClass(nextClass.getName());
+                 envDescriptor.getInjectionInfoByClass(nextClass);
 
             if (injInfo.getPostConstructMethodName() != null) {
 

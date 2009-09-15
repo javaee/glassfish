@@ -224,9 +224,12 @@ public class AppClientDeployer
         // if the populated DOL object does not container appclient 
         // descriptor, this is an indication that appclient deployer
         // should not handle this module
-        if (dc.getModuleMetaData(ApplicationClientDescriptor.class) == null) { 
+        ApplicationClientDescriptor appclientDesc = 
+            dc.getModuleMetaData(ApplicationClientDescriptor.class);
+        if (appclientDesc == null) { 
             return null;
         }
+        appclientDesc.setClassLoader(dc.getClassLoader());
         AppClientDeployerHelper helper = savedHelper(dc);
         helper.addGroupFacadeToEARDownloads();
         final AppClientServerApplication newACServerApp = newACServerApp(dc, helper);

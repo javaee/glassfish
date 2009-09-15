@@ -449,7 +449,7 @@ public abstract class JndiEnvironmentRefsGroupDescriptor extends Descriptor
         throw new UnsupportedOperationException();
     }    
 
-    public InjectionInfo getInjectionInfoByClass(String className) {
+    public InjectionInfo getInjectionInfoByClass(Class clazz) {
         throw new UnsupportedOperationException();
     }
 }

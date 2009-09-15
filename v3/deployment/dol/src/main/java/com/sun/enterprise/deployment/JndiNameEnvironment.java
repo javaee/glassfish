@@ -194,6 +194,6 @@ public interface JndiNameEnvironment {
      *
      */
     public List<InjectionCapable> getInjectableResourcesByClass(String className);
-    public InjectionInfo getInjectionInfoByClass(String className);
+    public InjectionInfo getInjectionInfoByClass(Class clazz);
 
 }

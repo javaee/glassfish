@@ -78,8 +78,8 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
 
 
     // table for caching InjectionInfo with the class name as index
-    private Hashtable<String, InjectionInfo> injectionInfos =
-            new Hashtable<String, InjectionInfo>();
+    private Hashtable<InjectionInfoCacheKey, InjectionInfo> injectionInfos =
+            new Hashtable<InjectionInfoCacheKey, InjectionInfo>();
 
     /**
      * Construct a new BundleDescriptor
@@ -388,14 +388,51 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
         return pairs;
     }
 
-    public InjectionInfo getInjectionInfoByClass(String className,
+    private static final class InjectionInfoCacheKey {
+        String beanName;
+        Class clazz;
+        int hc;
+
+        InjectionInfoCacheKey(String beanName, Class clazz) {
+            this.beanName = beanName;
+            this.clazz = clazz;
+            hc = beanName.hashCode();
+        }
+
+        public int hashCode() {
+            return hc;
+        }
+
+        public boolean equals(Object o) {
+            boolean result = false;
+            if (o instanceof InjectionInfoCacheKey) {
+                InjectionInfoCacheKey other = (InjectionInfoCacheKey) o;
+                if (hc == other.hc) {
+                    return ((clazz == other.clazz) && (beanName.equals(other.beanName)));
+                }
+            }
+            return result;
+        }
+    }
+
+    public InjectionInfo getInjectionInfoByClass(Class clazz,
                                                  JndiNameEnvironment jndiNameEnv) {
 
         // first look in the cache
-        InjectionInfo injectionInfo = injectionInfos.get(className);
+        InjectionInfoCacheKey key = null;
+        if (jndiNameEnv instanceof EjbDescriptor) {
+            EjbDescriptor jndiEjbDesc = (EjbDescriptor) jndiNameEnv;
+            key = new InjectionInfoCacheKey(jndiEjbDesc.getName(), clazz);
+        } else {
+            key = new InjectionInfoCacheKey(clazz.getName(), clazz);
+        }
+
+        InjectionInfo injectionInfo = injectionInfos.get(key);
         if (injectionInfo != null) {
             return injectionInfo;
         }
+
+        String className = clazz.getName();
 
         // if it's not in the cache, create a new one
         LifecycleCallbackDescriptor postConstructDesc =
@@ -410,8 +447,9 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
                 postConstructMethodName, preDestroyMethodName,
                 getInjectableResourcesByClass(className,
                         jndiNameEnv));
+
         // store it in the cache and return
-        injectionInfos.put(className, injectionInfo);
+        injectionInfos.put(key, injectionInfo);
         return injectionInfo;
     }
 

@@ -35,14 +35,9 @@
  */
 package org.glassfish.javaee.full.deployment;
 
-import java.net.URLClassLoader;
 import java.net.URL;
 import java.util.*;
-import java.lang.reflect.Method;
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.reflect.InvocationTargetException;
 import java.io.IOException;
-import org.glassfish.api.deployment.InstrumentableClassLoader;
 import com.sun.enterprise.loader.EJBClassLoader;
 
 /**
@@ -51,42 +46,15 @@ import com.sun.enterprise.loader.EJBClassLoader;
  *
  * @author Jerome Dochez
  */
-public class EarClassLoader extends URLClassLoader implements InstrumentableClassLoader {
+public class EarClassLoader extends EJBClassLoader {
 
     private final List<ClassLoaderHolder> delegates = new LinkedList<ClassLoaderHolder>();
-    private final Method findClass;
-    private final Method findLoadedClass;
-    private final Method findResource;
-    private final Method findResources;
-    private final static String EAR_LIB_MODULE = " __ear_lib_module";
 
     public EarClassLoader(URL[] urls, ClassLoader classLoader) {
-        super(new URL[0], classLoader); 
+        super(classLoader); 
 
-        // the classloader to load library jars at ear level
-        EJBClassLoader earLibClassLoader = new EJBClassLoader(this);
         for (URL url : urls) {
-            earLibClassLoader.addURL(url);
-        }
-        addModuleClassLoader(EAR_LIB_MODULE, earLibClassLoader);
-
-        try {
-            findClass = ClassLoader.class.getDeclaredMethod("findClass", new Class[] {String.class});
-            findClass.setAccessible(true);
-
-            findLoadedClass = ClassLoader.class.getDeclaredMethod("findLoadedClass", new Class[] {String.class});
-            findLoadedClass.setAccessible(true);
-
-
-            findResource = ClassLoader.class.getDeclaredMethod("findResource", new Class[] {String.class});
-            findResource.setAccessible(true);
-
-            findResources = ClassLoader.class.getDeclaredMethod("findResources", new Class[] {String.class});
-            findResources.setAccessible(true);
-            
-        } catch(NoSuchMethodException e) {
-            // this is impossible.
-            throw new RuntimeException(e);
+            addURL(url);
         }
     }
 
@@ -103,58 +71,6 @@ public class EarClassLoader extends URLClassLoader implements InstrumentableClas
         return null;
     }
 
-    public ClassLoader copy() {
-        ClassLoader cLoader = getModuleClassLoader(EAR_LIB_MODULE);
-        if (cLoader instanceof InstrumentableClassLoader) {
-            return ((InstrumentableClassLoader)getModuleClassLoader(
-                EAR_LIB_MODULE)).copy();
-        }
-        return null;
-    }
-
-    public synchronized void addTransformer(ClassFileTransformer transformer) {
-        ClassLoader cLoader = getModuleClassLoader(EAR_LIB_MODULE);
-        if (cLoader instanceof InstrumentableClassLoader) {
-            ((InstrumentableClassLoader)getModuleClassLoader(
-                EAR_LIB_MODULE)).addTransformer(transformer);
-        }
-    }
-
-    @Override
-    protected Class<?> findClass(String s) throws ClassNotFoundException {
-        
-        for (ClassLoaderHolder clh : delegates) {
-            try {
-                Class<?> clazz = (Class<?>) findLoadedClass.invoke(clh.loader, s);
-                if (clazz!=null) {
-                    return clazz;
-                }
-            } catch (IllegalAccessException e) {
-            } catch (InvocationTargetException e) {
-            }
-        }
-        
-        try {
-            return super.findClass(s);
-        } catch(ClassNotFoundException e) {
-                // ignore
-        }
-
-        for (ClassLoaderHolder clh : delegates) {
-            try {
-                Class<?> clazz = (Class<?>) findClass.invoke(clh.loader, s);
-                if (clazz!=null) {
-                    return clazz;
-                }
-            } catch(IllegalAccessException e) {
-                
-            } catch(InvocationTargetException e) {
-                // not found most likely.   
-            }
-        }
-        throw new ClassNotFoundException(s);
-    }
-
     private class ClassLoaderHolder {
         final ClassLoader loader;
         final String moduleName;
@@ -163,49 +79,5 @@ public class EarClassLoader extends URLClassLoader implements InstrumentableClas
             this.loader = loader;
             this.moduleName = moduleName;
         }
-    }
-
-    @Override
-    public URL findResource(String s) {
-        URL url = null;
-        url = super.findResource(s);
-        if (url!=null) {
-            return url;
-        }
-        for(ClassLoaderHolder clh : delegates) {
-            try {
-                url = (URL) findResource.invoke(clh.loader, s);
-            } catch (IllegalAccessException e) {
-
-            } catch (InvocationTargetException e) {
-
-            }
-            if (url!=null) {
-                return url;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Enumeration<URL> findResources(String s) throws IOException {
-        Enumeration<URL> result = super.findResources(s);
-        if (result!=null) {
-            return result;
-        }
-        Vector<URL> urls = new Vector<URL>();
-        for(ClassLoaderHolder clh : delegates) {
-            try {
-                Enumeration<URL> enumeration = (Enumeration<URL>) findResources.invoke(clh.loader, s);
-                while (enumeration.hasMoreElements()) {
-                    urls.add(enumeration.nextElement());
-                }
-            } catch (IllegalAccessException e) {
-
-            } catch (InvocationTargetException e) {
-
-            }
-        }
-        return urls.elements();
     }
 }

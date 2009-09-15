@@ -1171,8 +1171,8 @@ public class EjbBundleDescriptor extends BundleDescriptor implements WritableJnd
         return (getInjectableResourcesByClass(className, this));
     }
 
-    public InjectionInfo getInjectionInfoByClass(String className) {
-        return (getInjectionInfoByClass(className, this));
+    public InjectionInfo getInjectionInfoByClass(Class clazz) {
+        return (getInjectionInfoByClass(clazz, this));
     }
 
     //

@@ -141,6 +141,11 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         File sourceDir = context.getSourceDir();
         String sourcePath = sourceDir.getAbsolutePath();
         String moduleName = sourceDir.getName();
+        ConnectorDescriptor connDesc = 
+            context.getModuleMetaData(ConnectorDescriptor.class);
+        if (connDesc != null) {
+            connDesc.setClassLoader(context.getClassLoader());
+        }
 
         boolean isEmbedded = ConnectorsUtil.isEmbedded(context);
         ClassLoader classLoader = null;

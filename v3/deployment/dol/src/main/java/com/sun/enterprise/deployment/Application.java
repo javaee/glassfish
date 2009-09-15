@@ -579,8 +579,8 @@ public class Application extends BundleDescriptor
         return (getInjectableResourcesByClass(className, this));
     }
 
-    public InjectionInfo getInjectionInfoByClass(String className) {
-        return (getInjectionInfoByClass(className, this));
+    public InjectionInfo getInjectionInfoByClass(Class clazz) {
+        return (getInjectionInfoByClass(clazz, this));
     }
 
     public void setGeneratedXMLDirectory(String xmlDir) {

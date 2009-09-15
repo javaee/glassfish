@@ -163,12 +163,14 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
     // and the prepare
     public void createDeploymentClassLoader(ClassLoaderHierarchy clh, ArchiveHandler handler)
             throws URISyntaxException, MalformedURLException {
+        this.addTransientAppMetaData(ExtendedDeploymentContext.IS_TEMP_CLASSLOADER, Boolean.TRUE);
         this.sharableTemp = createClassLoader(clh, handler, null); 
     }
 
     // this classloader will used to load and start the application
     public void createApplicationClassLoader(ClassLoaderHierarchy clh, ArchiveHandler handler)
             throws URISyntaxException, MalformedURLException {
+        this.addTransientAppMetaData(ExtendedDeploymentContext.IS_TEMP_CLASSLOADER, Boolean.FALSE);
         this.cloader = createClassLoader(clh, handler, parameters.name());
     }
 

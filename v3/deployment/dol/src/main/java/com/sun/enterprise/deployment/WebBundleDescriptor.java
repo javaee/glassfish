@@ -1057,8 +1057,8 @@ public class WebBundleDescriptor extends BundleDescriptor
         return (getInjectableResourcesByClass(className, this));
     }
 
-    public InjectionInfo getInjectionInfoByClass(String className) {
-        return (getInjectionInfoByClass(className, this));
+    public InjectionInfo getInjectionInfoByClass(Class clazz) {
+        return (getInjectionInfoByClass(clazz, this));
     }
 
     /**
