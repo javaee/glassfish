@@ -527,9 +527,14 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         //TODO
         if (pp.getName().equals(serverNode.getName()))
             return serverNode;
-        else
-            return createSubTree(serverNode, pp.getPath());
+        else {
+            String subTreePath = pp.getPath();
+            // skip the "server", to avoid duplicate server node
+            if (subTreePath.startsWith("server"))
+                subTreePath = subTreePath.substring(subTreePath.indexOf("/") + 1 , subTreePath.length());
+            return createSubTree(serverNode, subTreePath);
         }
+    }
 
     private TreeNode constructServerPP() {
         TreeNode srvrNode = mrdr.get("server");

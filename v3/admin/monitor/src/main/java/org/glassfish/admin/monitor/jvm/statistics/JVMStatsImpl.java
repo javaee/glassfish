@@ -40,6 +40,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.j2ee.statistics.Statistic;
 import org.glassfish.j2ee.statistics.CountStatistic; 
@@ -54,6 +55,7 @@ import org.glassfish.flashlight.datatree.MethodInvoker;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.config.serverbeans.MonitoringService;
 
 /** 
  *
@@ -73,7 +75,10 @@ public class JVMStatsImpl implements MonitorContract {
     @Inject
     Logger logger;
 
-     private final LocalStringManagerImpl localStrings =
+    @Inject(optional=true)
+    MonitoringService monitoringService = null;
+
+    private final LocalStringManagerImpl localStrings =
              new LocalStringManagerImpl(JVMStatsImpl.class);
 
     private final String name = "jvm";
@@ -83,6 +88,16 @@ public class JVMStatsImpl implements MonitorContract {
     }
 
     public ActionReport process(final ActionReport report, final String filter) {
+
+        if (monitoringService != null) {
+            String level = monitoringService.getMonitoringLevel(ContainerMonitoring.JVM);
+            if ((level != null) && (level.equals(ContainerMonitoring.LEVEL_OFF))) {
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(localStrings.getLocalString("level.off",
+                                "Monitoring level for jvm is off"));
+                return report;
+            }
+        }
 
         if (mrdr == null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
