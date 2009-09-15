@@ -42,6 +42,7 @@ import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 
 import javax.resource.spi.ResourceAdapter;
 import javax.resource.spi.ActivationSpec;
@@ -58,7 +59,7 @@ import org.jvnet.hk2.component.PerLookup;
 /**
  * Represents the active (runtime) inbound resource-adapter
  */
-@Service
+@Service(name= ConnectorConstants.AIRA)
 @Scoped(PerLookup.class)
 public class ActiveInboundResourceAdapterImpl extends ActiveOutboundResourceAdapter
         implements ActiveInboundResourceAdapter {

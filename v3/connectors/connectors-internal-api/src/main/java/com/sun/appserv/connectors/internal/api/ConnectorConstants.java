@@ -387,4 +387,12 @@ public interface ConnectorConstants {
             "org.glassfish.resources.custom.factory.PrimitivesAndStringFactory";
     public static final String URL_OBJECTS_FACTORY = "org.glassfish.resources.custom.factory.URLObjectFactory";
     public static final String PROPERTIES_FACTORY = "org.glassfish.resources.custom.factory.PropertiesFactory";
+
+    //service-names for the ActiveResourceAdapter contract's implementations
+
+    // service providing inbound support
+    public static final String AIRA = "ActiveInboundResourceAdapter";
+    // service providing outbound support
+    public static final String AORA = "ActiveOutboundResourceAdapter";
+
 }

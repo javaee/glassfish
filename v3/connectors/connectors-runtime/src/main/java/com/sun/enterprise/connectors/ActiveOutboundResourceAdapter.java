@@ -37,6 +37,7 @@
 package com.sun.enterprise.connectors;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Service;
@@ -70,7 +71,7 @@ import java.util.logging.Logger;
  *
  * @author Binod P G, Sivakumar Thyagarajan
  */
-@Service
+@Service(name= ConnectorConstants.AORA)
 @Scoped(PerLookup.class)
 public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
 

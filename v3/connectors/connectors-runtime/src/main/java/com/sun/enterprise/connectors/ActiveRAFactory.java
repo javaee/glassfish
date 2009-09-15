@@ -145,6 +145,16 @@ public class ActiveRAFactory {
                 return activeRA;
             }
         }
+
+        if(cd.getInBoundDefined()){
+            // did not find a suitable Active RA above.
+            // [Possibly the profile (eg: WEB profile) does not support it]
+            // Let us provide outbound support.
+            _logger.log(Level.INFO, "Deployed RAR [ "+moduleName+" ] has inbound artifacts, but the runtime " +
+                    "does not support it. Providing only outbound support ");
+
+            return activeRAHabitat.getComponent(ActiveResourceAdapter.class, ConnectorConstants.AORA);
+        }
         //could not fine any impl.
         throw new ConnectorRuntimeException("Unable to get active RA for module " + moduleName);
     }
