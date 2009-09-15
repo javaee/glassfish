@@ -36,6 +36,7 @@ import com.sun.enterprise.universal.xml.MiniXmlParser;
 import java.util.logging.Level;
 import static com.sun.enterprise.util.SystemPropertyConstants.*;
 import static com.sun.enterprise.admin.launcher.GFLauncherConstants.*;
+import java.util.logging.Logger;
 //import com.sun.enterprise.security.store.PasswordAdapter;
 //import com.sun.enterprise.security.store.IdentityManager;
 
@@ -141,7 +142,7 @@ public abstract class GFLauncher {
         asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
         debugOptions = getDebug();
         parser.setupConfigDir(getInfo().getConfigDir(), getInfo().getInstallDir());
-        logFilename = parser.getLogFilename();
+        logFilename = getLogFilename(parser);
         
         // TODO temporary until we define a domain.xml attribute for setting this
         // I'm pulling this out and putting the options into the default domain.xml
@@ -205,6 +206,15 @@ public abstract class GFLauncher {
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
     abstract void internalLaunch() throws GFLauncherException;
+
+    private String getLogFilename(MiniXmlParser parser) throws GFLauncherException {
+        String filename = parser.getLogFilename();
+
+        if(filename == null)
+            filename = new File(getInfo().getInstanceRootDir(), "logs/server.log").getPath();
+
+        return filename;
+    }
 
     // unit tests will want 'fake' so that the process is not really started.
     enum LaunchType

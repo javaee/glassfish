@@ -153,15 +153,22 @@ public class MiniXmlParser {
         loggingConfig.setupConfigDir(configDir, installDir);
     }
 
+    /** 
+     * loggingConfig will return an IOException if there is no
+     * logging properties file.
+     * 
+     * @return the log filename if available, otherwise return null
+     */
     public String getLogFilename() {
         logFilename = null;
+
         try {
             Map<String, String> map = loggingConfig.getLoggingProperties();
-            if (map != null)
-                logFilename = map.get(LoggingPropertyNames.file);
-        } catch (IOException e) {
-            // error message already sent to logfile.
-            return null;                        
+            if(map != null)
+				logFilename = map.get(LoggingPropertyNames.file);
+        } 
+        catch(Exception e) {
+            // just return null
         }
         return logFilename;
     }
