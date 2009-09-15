@@ -106,14 +106,22 @@ public class LoginContextDriver  {
      */
     private LoginContextDriver(){
     }
-    
+
     private static AuditManager getAuditManager() {
+        if(AUDIT_MANAGER != null) {
+            return AUDIT_MANAGER;
+        }
+        return _getAuditManager();
+    }
+
+    private static synchronized AuditManager _getAuditManager() {
         if(AUDIT_MANAGER == null) {
             SecurityServicesUtil secServUtil  = Globals.get(SecurityServicesUtil.class);
-            AUDIT_MANAGER = secServUtil.getAuditManager(); 
+            AUDIT_MANAGER = secServUtil.getAuditManager();
         }
         return AUDIT_MANAGER;
     }
+
     /**
      * This method is  just a convenience wrapper for
      * <i>login(Subject, Class)</i> method. It will construct a
