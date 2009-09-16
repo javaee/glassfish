@@ -17,13 +17,11 @@ public class WebHello extends HttpServlet {
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
-
-
         PrintWriter pw = res.getWriter();
         try {
-			pw.println("Hello World !");
-  		} catch(Exception e) {
-        	e.printStackTrace();
+            pw.println("Hello World !");
+        } catch(Exception e) {
+            e.printStackTrace();
         }
     }
 }

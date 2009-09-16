@@ -184,17 +184,18 @@ public class EmbeddedTest {
         String appName = null;
         try {
             appName = deployer.deploy(builder.buildWar(), dp);
-
+            System.out.println("Deployed " + appName);
+            Assert.assertTrue(appName != null); 
             try {
                 URL servlet = new URL("http://localhost:8080/test-classes/hello");
                 URLConnection yc = servlet.openConnection();
                 BufferedReader in = new BufferedReader(
                                         new InputStreamReader(
                                         yc.getInputStream()));
-                String inputLine;
-
-                while ((inputLine = in.readLine()) != null)
+                String inputLine = in.readLine();
+                if (inputLine != null)
                     System.out.println(inputLine);
+                Assert.assertEquals(inputLine.trim(), "Hello World !");
                 in.close();
             } catch(Exception e) {
                 e.printStackTrace();
