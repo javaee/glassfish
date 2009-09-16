@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -49,9 +49,15 @@
             <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['Name']}" />
         </sun:property>
 
+ 
         <sun:property id="resTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}"  helpText="$resource{i18njca.adminObjectResource.resTypeHelp}">
             <sun:textField id="ResType" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['ResType']}" required="#{true}"/>
-        </sun:property>   
+        </sun:property>  
+
+       <sun:property id="className"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.adminObjectResource.classname}" helpText="$resource{i18njca.adminObjectResource.classnameHelp}">
+            <sun:textField id="className"  columns="$int{55}" text="#{pageSession.valueMap['ClassName']}" />
+        </sun:property>
+
 
         <sun:property id="resAdaptorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njca.adminObjectResource.resourceAdapterHelp}">
             <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['ResAdapter']}" labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" >
