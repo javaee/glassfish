@@ -29,7 +29,6 @@ import com.sun.grizzly.config.dom.NetworkListener;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 /**
  * This class extends Grizzly's GrizzlyServiceListener class to customize it for GlassFish
@@ -38,11 +37,6 @@ import java.util.logging.Logger;
  * @author Vijay Ramachandran
  */
 public class GrizzlyListener extends MonitorableServiceListener {
-    /**
-     * The logger to use for logging messages.
-     */
-    protected static final Logger logger = Logger.getLogger(GrizzlyListener.class.getName());
-
     private boolean isGenericListener = false;
     private ServiceInitializerThread serviceInitializer;
     private NetworkListener listener;
@@ -79,6 +73,7 @@ public class GrizzlyListener extends MonitorableServiceListener {
         return this.listener;
     }
 
+    @Override
     public void start() throws IOException, InstantiationException {
         if(isGenericListener) {
             serviceInitializer.initController();
@@ -89,6 +84,7 @@ public class GrizzlyListener extends MonitorableServiceListener {
         }
     }
 
+    @Override
     public void stop() {
         if(isGenericListener) {
             serviceInitializer.stopEndpoint();

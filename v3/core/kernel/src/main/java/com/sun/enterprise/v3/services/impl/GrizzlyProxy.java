@@ -170,10 +170,12 @@ public class GrizzlyProxy implements NetworkProxy {
     /**
      * Stops the Grizzly service.
      */
+    @Override
     public void stop() {
         grizzlyListener.stop();
     }
 
+    @Override
     public void destroy() {
         if(!grizzlyListener.isGenericListener()) {
             grizzlyService.getHabitat().removeIndex(Mapper.class.getName(),
@@ -195,6 +197,7 @@ public class GrizzlyProxy implements NetworkProxy {
     * @param contextRoot for the adapter
     * @param endpointAdapter servicing requests.
     */
+    @Override
     public void registerEndpoint(String contextRoot, Collection<String> vsServers, Adapter endpointAdapter,
         ApplicationContainer container) throws EndpointRegistrationException {
         if(grizzlyListener.isGenericListener()) {
@@ -211,6 +214,7 @@ public class GrizzlyProxy implements NetworkProxy {
     /**
      * Removes the contex-root from our list of endpoints.
      */
+    @Override
     public void unregisterEndpoint(String contextRoot, ApplicationContainer app) throws EndpointRegistrationException {
         if(grizzlyListener.isGenericListener()) {
             return;
@@ -219,8 +223,10 @@ public class GrizzlyProxy implements NetworkProxy {
             .unregister(contextRoot);
     }
 
+    @Override
     public Future<Result<Thread>> start() {
         final GrizzlyFuture future = new GrizzlyFuture();
+        final long t1 = System.currentTimeMillis();
         final Thread thread = new Thread() {
             @Override
             public void run() {
@@ -228,20 +234,29 @@ public class GrizzlyProxy implements NetworkProxy {
                     final Thread t = Thread.currentThread();                    
                     grizzlyListener.initEndpoint();
                     grizzlyListener.getController().addStateListener(new ControllerStateListener() {
+                        @Override
                         public void onStarted() {
                         }
 
+                        @Override
                         public void onReady() {
+                            logger.info("Grizzly Framework started in: "
+                                    + (System.currentTimeMillis() - t1)
+                                    + "ms listening on port " + grizzlyListener.getPort());
+
                             future.setResult(new Result<Thread>(t));
                         }
 
+                        @Override
                         public void onStopped() {
                         }
 
+                        @Override
                         public void onException(Throwable throwable) {
                             future.setResult(new Result<Thread>(throwable));
                         }
                     });
+
                     grizzlyListener.startEndpoint();
                 } catch (InstantiationException e) {
                     logger.log(Level.SEVERE, "Cannot start grizzly listener", e);
@@ -254,11 +269,12 @@ public class GrizzlyProxy implements NetworkProxy {
                 }
             }
         };
+        thread.setPriority(Thread.MAX_PRIORITY);
         thread.start();
-        logger.info("Listening on port " + grizzlyListener.getPort());
         return future;
     }
 
+    @Override
     public int getPort() {
         return portNumber;
     }
@@ -293,23 +309,28 @@ public class GrizzlyProxy implements NetworkProxy {
             latch.countDown();
         }
 
+        @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
             return false;
         }
 
+        @Override
         public boolean isCancelled() {
             return false;
         }
 
+        @Override
         public boolean isDone() {
             return latch.getCount() == 0;
         }
 
+        @Override
         public Result<Thread> get() throws InterruptedException {
             latch.await();
             return result;
         }
 
+        @Override
         public Result<Thread> get(long timeout, TimeUnit unit) throws InterruptedException {
             latch.await(timeout, unit);
             return result;
