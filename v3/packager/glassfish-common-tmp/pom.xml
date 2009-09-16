@@ -225,13 +225,14 @@
         </dependency>
 
         <!-- javaee.jar containing Manifest Classpath of JavaEE API jars -->
+        <!--  temporary disable 
         <dependency>
            <groupId>org.glassfish</groupId>
            <artifactId>javaee-frag</artifactId>
            <version>${project.version}</version>
            <type>distribution-fragment</type>
         </dependency>
-
+        -->
     
       	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
