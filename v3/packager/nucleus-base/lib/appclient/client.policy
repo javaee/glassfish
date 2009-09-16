@@ -27,6 +27,10 @@ grant codeBase "file:${com.sun.aas.installRoot}/lib/-" {
 	permission java.security.AllPermission;
 };
 
+grant codeBase "file:${com.sun.aas.installRoot}/modules/-" {
+        permission java.security.AllPermission;
+};
+
 //iMQ classes get all permissions by default
 grant codeBase "file:${com.sun.aas.imqLib}/-" {
 	permission java.security.AllPermission;

@@ -53,7 +53,10 @@ var appcPath = envVars("APPCPATH");
 var accJar="\"" + AS_INSTALL_MOD + "\\gf-client.jar\"";
 
 var fso = WScript.CreateObject("Scripting.FileSystemObject");
-var jvmArgs="-Djava.system.class.loader=org.glassfish.appclient.client.acc.ACCClassLoader";
+var jvmArgs="-Dcom.sun.aas.installRoot=" + AS_INSTALL +
+    " -Djava.security.policy=" + AS_INSTALL + "\\lib\\appclient\\client.policy" +
+    " -Djava.system.class.loader=org.glassfish.appclient.client.acc.ACCClassLoader" +
+    " -Djava.security.auth.login.config=" + AS_INSTALL + "\\lib\\appclient\\appclientlogin.conf";
 var VMARGS = envVars("VMARGS");
 if (VMARGS != "") {
     jvmArgs += " " + VMARGS;

@@ -102,7 +102,7 @@ AS_INSTALL_MOD=$AS_INSTALL/modules
 builtinEndorsedDirsValue=$AS_INSTALL/lib/endorsed:$AS_INSTALL_MOD/endorsed
 userEndorsedDirsSetting=
 
-jvmArgs=-Djava.system.class.loader=org.glassfish.appclient.client.acc.ACCClassLoader
+jvmArgs=-Dcom.sun.aas.installRoot=$AS_INSTALL\ -Djava.security.policy=$AS_INSTALL/lib/appclient/client.policy\ -Djava.system.class.loader=org.glassfish.appclient.client.acc.ACCClassLoader\ -Djava.security.auth.login.config=$AS_INSTALL/lib/appclient/appclientlogin.conf
 if [ "$VMARGS" != "" ]; then
     jvmArgs=$jvmArgs\ $VMARGS
 fi
