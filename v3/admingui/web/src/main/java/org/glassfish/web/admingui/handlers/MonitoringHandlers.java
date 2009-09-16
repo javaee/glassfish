@@ -93,7 +93,7 @@ public class MonitoringHandlers {
             final Map<String, Object> attrs = helper.simpleAttributesMap();
             for (String oneMonComp : attrs.keySet()) {
                 //if (oneMonComp.endsWith(".level")){
-                if ((!oneMonComp.equals("Parent")) && (!oneMonComp.equals("Children")) && (!oneMonComp.equals("Name"))) {
+                if ((!oneMonComp.equals("Parent")) && (!oneMonComp.equals("Children")) && (!oneMonComp.equals("Name")) && (!oneMonComp.equals("Property"))) {
                     Map oneRow = new HashMap();
                     oneRow.put("monCompName", oneMonComp);
                     oneRow.put("level", attrs.get(oneMonComp));
