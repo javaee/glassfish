@@ -71,7 +71,7 @@ public class WebBeansApplicationContainer implements ApplicationContainer {
     public boolean stop(ApplicationContext stopContext) {
 
         try {
-            webBeansBootstrap.shutdown();
+            webBeansBootstrap.shutdown();  // TODO move this to an application-level action
         } catch(Exception e) {
             _logger.log(Level.WARNING, "JCDI shutdown error", e);    
         }

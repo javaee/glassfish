@@ -130,6 +130,43 @@ public class EjbContainerServicesImpl implements EjbContainerServices {
 
     }
 
+
+    public boolean isRemoved(Object ejbRef) {
+
+        EJBLocalObjectImpl localObjectImpl = getEJBLocalObject(ejbRef);
+
+        if( localObjectImpl == null ) {
+            throw new UnsupportedOperationException("Invalid ejb ref");
+        }
+
+        Container container = localObjectImpl.getContainer();
+        EjbDescriptor ejbDesc = container.getEjbDescriptor();
+        boolean isStatefulBean = false;
+
+        if( ejbDesc.getType().equals(EjbSessionDescriptor.TYPE) ) {
+
+            EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDesc;
+            isStatefulBean = sessionDesc.isStateful();
+
+        }
+
+        if( !isStatefulBean ) {
+            throw new UnsupportedOperationException("ejbRef for ejb " +
+                    ejbDesc.getName() + " is not a stateful bean ");
+        }
+
+        boolean removed = false;
+
+        try {
+            ((BaseContainer)container).checkExists(localObjectImpl);    
+        } catch(Exception e) {
+            removed = true;
+        }
+
+        return removed;
+
+    }
+
     private EJBLocalObjectImpl getEJBLocalObject(Object ejbRef) {
 
         // ejbRef is assumed to be either a local business view or

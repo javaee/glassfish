@@ -66,6 +66,22 @@ public interface InjectionManager {
     public void injectInstance(Object instance)
         throws InjectionException;
 
+     /**
+     * Inject the given object instance with the resources from its
+     * component environment.  The applicable component naming environment
+     * information will be retrieved from the current invocation context.
+     *
+     * If invokePostConstruct is true, any @PostConstruct methods on the
+     * instance's class(and super-classes) will be invoked after injection.  
+     *
+     * @exception InjectionException Thrown if an error occurs during injection
+     *
+     */
+    public void injectInstance(Object instance, boolean invokePostConstruct)
+        throws InjectionException;
+
+
+
     /**
      * Inject the injectable resources from the given component environment
      * into an object instance. The specified componentEnv must match the

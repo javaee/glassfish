@@ -72,6 +72,8 @@ import org.glassfish.ejb.api.EjbEndpointFacade;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.deployment.common.DeploymentException;
 
+import com.sun.enterprise.container.common.spi.JCDIService;
+
 import com.sun.ejb.monitoring.stats.*;
 import com.sun.ejb.monitoring.probes.*;
 import org.glassfish.external.probe.provider.StatsProviderManager;
@@ -1535,6 +1537,36 @@ public abstract class BaseContainer
 
 
         return javaGlobalPrefix.toString();
+    }
+
+    protected void injectEjbInstance(Object instance, EJBContextImpl context) throws Exception {
+        
+        Habitat h = ejbContainerUtilImpl.getDefaultHabitat();
+
+        JCDIService jcdiService = h.getByContract(JCDIService.class);
+
+        // TODO handle interceptors
+
+        if( (jcdiService != null) && jcdiService.isJCDIEnabled(ejbDescriptor.getEjbBundleDescriptor())) {
+
+            JCDIService.JCDIInjectionContext jcdiCtx =
+                    jcdiService.injectEJBInstance(ejbDescriptor, instance);
+
+            context.setJCDIInjectionContext(jcdiCtx);
+
+        } else {
+             injectionManager.injectInstance(instance, ejbDescriptor, false);
+        }
+
+    }
+
+    protected void cleanupInstance(EJBContextImpl context) {
+
+        JCDIService.JCDIInjectionContext jcdiCtx = context.getJCDIInjectionContext();
+        if( jcdiCtx != null ) {
+            jcdiCtx.cleanup(context.getEJB());
+        }
+
     }
     
     /**

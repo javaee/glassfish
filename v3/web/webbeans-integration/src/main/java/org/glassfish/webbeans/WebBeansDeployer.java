@@ -39,15 +39,12 @@ package org.glassfish.webbeans;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.AppListenerDescriptorImpl;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.InterceptorDescriptor;
-import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
-import com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.web.WebComponentInvocation;
-import com.sun.enterprise.web.WebModule;
+import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.Application;
+import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
+
 
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
@@ -67,21 +64,18 @@ import org.jvnet.hk2.component.PostConstruct;
 
 import org.jboss.webbeans.bootstrap.WebBeansBootstrap;
 import org.jboss.webbeans.bootstrap.api.Environments;
-import org.jboss.webbeans.bootstrap.spi.Deployment;
-import org.jboss.webbeans.context.api.BeanStore;
 import org.jboss.webbeans.context.api.helpers.ConcurrentHashMapBeanStore;
 import org.jboss.webbeans.ejb.spi.EjbServices;
 import org.jboss.webbeans.servlet.api.ServletServices;
 
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import org.jboss.webbeans.injection.spi.InjectionServices;
+
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
-
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.AroundTimeout;
-import javax.annotation.PreDestroy;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.HashMap;
 
 @Service
 public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeansApplicationContainer> 
@@ -95,11 +89,19 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
     private static final String WEB_BEAN_LISTENER = "org.jboss.webbeans.servlet.WebBeansListener";
 
+
+
     @Inject
     private Events events;
 
     @Inject
     private Habitat habitat;
+
+    private Map<Application, WebBeansBootstrap> appToBootstrap =
+            new HashMap<Application, WebBeansBootstrap>();
+
+    private Map<BundleDescriptor, BeanDeploymentArchive> bundleToBeanDeploymentArchive =
+            new HashMap<BundleDescriptor, BeanDeploymentArchive>();
 
     @Override
     public MetaData getMetaData() {
@@ -120,18 +122,53 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
             ApplicationInfo appInfo = (ApplicationInfo)event.hook();
             WebBeansBootstrap bootstrap = (WebBeansBootstrap)appInfo.getTransientAppMetaData(WEB_BEAN_BOOTSTRAP, 
                 WebBeansBootstrap.class);
-            DeploymentImpl deploymentImpl = (DeploymentImpl)appInfo.getTransientAppMetaData(
-                WEB_BEAN_DEPLOYMENT, DeploymentImpl.class);
-            bootstrap.startContainer(Environments.SERVLET, deploymentImpl, new ConcurrentHashMapBeanStore());
-            bootstrap.startInitialization();
-            bootstrap.deployBeans();
+            if( bootstrap != null ) {
+                DeploymentImpl deploymentImpl = (DeploymentImpl)appInfo.getTransientAppMetaData(
+                    WEB_BEAN_DEPLOYMENT, DeploymentImpl.class);
+                bootstrap.startContainer(Environments.SERVLET, deploymentImpl, new ConcurrentHashMapBeanStore());
+                bootstrap.startInitialization();
+                bootstrap.deployBeans();
+            }
         } else if ( event.is(org.glassfish.internal.deployment.Deployment.APPLICATION_STARTED) ) {
             ApplicationInfo appInfo = (ApplicationInfo)event.hook();
             WebBeansBootstrap bootstrap = (WebBeansBootstrap)appInfo.getTransientAppMetaData(WEB_BEAN_BOOTSTRAP, 
                 WebBeansBootstrap.class);
-            bootstrap.validateBeans();
-            bootstrap.endInitialization();
+            if( bootstrap != null ) {
+                bootstrap.validateBeans();
+                bootstrap.endInitialization();
+            }
+        } else if ( event.is(org.glassfish.internal.deployment.Deployment.APPLICATION_STOPPED) ||
+                    event.is(org.glassfish.internal.deployment.Deployment.APPLICATION_UNLOADED)) {
+            ApplicationInfo appInfo = (ApplicationInfo)event.hook();
+
+            // TODO move bootstrap shutdown logic here
+
+            Application app = appInfo.getMetaData(Application.class);
+
+            if( app != null ) {
+
+                for(BundleDescriptor next : app.getBundleDescriptors()) {
+                    if( next instanceof EjbBundleDescriptor || next instanceof WebBundleDescriptor ) {
+                        bundleToBeanDeploymentArchive.remove(next);
+                    }
+                }
+
+                appToBootstrap.remove(app);
+            }
+
         }
+    }
+
+    BeanDeploymentArchive getBeanDeploymentArchiveForBundle(BundleDescriptor bundle) {
+        return bundleToBeanDeploymentArchive.get(bundle);
+    }
+
+    boolean is299Enabled(BundleDescriptor bundle) {
+        return bundleToBeanDeploymentArchive.containsKey(bundle);
+    }
+
+    WebBeansBootstrap getBootstrapForApp(Application app) {
+        return appToBootstrap.get(app);
     }
 
     protected void generateArtifacts(DeploymentContext dc) throws DeploymentException {
@@ -144,35 +181,6 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
     public <V> V loadMetaData(Class<V> type, DeploymentContext context) {
         return null;
-    }
-
-    @Override
-    public boolean prepare(DeploymentContext context) {
-
-        // If the app contains any ejbs associate the web beans interceptor
-        // with each of the ejbs so it's available during the ejb load phase
-
-
-        EjbBundleDescriptor ejbBundle = getEjbBundleFromContext(context);
-
-        if( ejbBundle != null ) {
-
-            Set<EjbDescriptor> ejbs = ejbBundle.getEjbs();
-
-            InterceptorDescriptor interceptor = createEjbInterceptor(ejbBundle);
-
-            for(EjbDescriptor next : ejbs) {
-
-                if( next.getType().equals(EjbSessionDescriptor.TYPE) ||
-                    next.getType().equals(EjbMessageBeanDescriptor.TYPE) ) {
-                    next.addFrameworkInterceptor(interceptor);
-                }
-
-            }
-        }
-        
-
-        return true;
     }
 
 
@@ -189,38 +197,59 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
                 WebBeansBootstrap.class);
         if (null == bootstrap) {
             bootstrap = new WebBeansBootstrap();
+
+            Application app = context.getModuleMetaData(Application.class);
+            appToBootstrap.put(app, bootstrap);
         }
 
         Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
-
-        EjbServices ejbServices = null;
-        
         EjbBundleDescriptor ejbBundle = getEjbBundleFromContext(context);
 
-        DeploymentImpl deploymentImpl = new DeploymentImpl(archive, ejbs);
+        EjbServices ejbServices = null;
 
         if( ejbBundle != null ) {
 
             ejbs = ejbBundle.getEjbs();
 
-            ejbServices = new EjbServicesImpl(habitat, ejbs);
-
-            deploymentImpl.getServices().add(EjbServices.class, ejbServices);
+            ejbServices = new EjbServicesImpl(habitat);
 
         }
 
+        DeploymentImpl deploymentImpl = new DeploymentImpl(archive, ejbs);
+
+        if( ejbBundle != null ) {
+
+            deploymentImpl.getBeanDeploymentArchives().iterator().next().getServices().add(EjbServices.class, ejbServices);
+
+        }
+
+        // TODO change this -- can't assume that 299-enabled module is a web module
         ServletServices servletServices = new ServletServicesImpl(context);
         deploymentImpl.getServices().add(ServletServices.class, servletServices);
-        
 
-//        bootstrap.getServices().add(Deployment.class, new DeploymentImpl(archive, ejbs) {});
+        /**        TODO enable injection manager      when enabled, numberguess app stops working
+        InjectionManager injectionMgr = habitat.getByContract(InjectionManager.class);
+        InjectionServices injectionServices = new InjectionServicesImpl(injectionMgr);
+        deploymentImpl.getServices().add(InjectionServices.class, injectionServices);
+         **/
+
+
+
 
         WebBundleDescriptor wDesc = context.getModuleMetaData(WebBundleDescriptor.class);
         if( wDesc != null) {
+
+
             wDesc.setExtensionProperty(WEB_BEAN_EXTENSION, "true");
 
             // Add the Web Beans Listener if it does not already exist..
             wDesc.addAppListenerDescriptor(new AppListenerDescriptorImpl(WEB_BEAN_LISTENER));
+        }
+
+        BundleDescriptor bundle = (wDesc != null) ? wDesc : ejbBundle;
+        if( bundle != null ) {
+            // TODO change logic to support multiple 299 enabled modules in app
+            bundleToBeanDeploymentArchive.put(bundle, deploymentImpl.getBeanDeploymentArchives().iterator().next());
         }
         
 
@@ -252,45 +281,6 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
         }
 
         return ejbBundle;
-
-    }
-
-    private InterceptorDescriptor createEjbInterceptor(EjbBundleDescriptor ejbBundle) {
-
-        InterceptorDescriptor interceptor = new InterceptorDescriptor();
-
-        Class wbInterceptor = org.jboss.webbeans.ejb.SessionBeanInterceptor.class;
-        String wbInterceptorName = wbInterceptor.getName();
-
-        interceptor.setInterceptorClass(wbInterceptor);
-
-        for(Method m : wbInterceptor.getDeclaredMethods() ) {
-
-           if( m.getAnnotation(javax.annotation.PostConstruct.class) != null ) {
-               LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
-               desc.setLifecycleCallbackClass(wbInterceptorName);
-               desc.setLifecycleCallbackMethod(m.getName());
-               interceptor.addCallbackDescriptor(CallbackType.POST_CONSTRUCT, desc);
-           } else if( m.getAnnotation(PreDestroy.class) != null ) {
-               LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
-               desc.setLifecycleCallbackClass(wbInterceptorName);
-               desc.setLifecycleCallbackMethod(m.getName());
-               interceptor.addCallbackDescriptor(CallbackType.PRE_DESTROY, desc);
-           } else if( m.getAnnotation(AroundInvoke.class) != null ) {
-               LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
-               desc.setLifecycleCallbackClass(wbInterceptorName);
-               desc.setLifecycleCallbackMethod(m.getName());
-               interceptor.addAroundInvokeDescriptor(desc);
-           } else if( m.getAnnotation(AroundTimeout.class) != null ) {
-               LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
-               desc.setLifecycleCallbackClass(wbInterceptorName);
-               desc.setLifecycleCallbackMethod(m.getName());
-               interceptor.addAroundTimeoutDescriptor(desc);
-           }
-
-        }
-
-        return interceptor;
 
     }
 

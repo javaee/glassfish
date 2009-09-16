@@ -59,7 +59,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
 
     private final List<Class<?>> wbClasses;
     private final List<URL> wbUrls;
-    private final Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbDescs;
+    private final Collection<EjbDescriptor<?>> ejbDescImpls;
 
     private SimpleServiceRegistry simpleServiceRegistry = null;
 
@@ -67,7 +67,16 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
                                      Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs) {
         this.wbClasses = wbClasses;
         this.wbUrls = wbUrls;
-        this.ejbDescs = ejbs;
+
+        ejbDescImpls = new HashSet<EjbDescriptor<?>>();
+
+        for(com.sun.enterprise.deployment.EjbDescriptor next : ejbs) {
+
+            EjbDescriptorImpl wbEjbDesc = new EjbDescriptorImpl(next);
+            ejbDescImpls.add(wbEjbDesc);
+
+        }
+
     }
 
     public Collection<BeanDeploymentArchive> getBeanDeploymentArchives() {
@@ -89,16 +98,20 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     */
     public Collection<EjbDescriptor<?>> getEjbs() {
 
-        Set<EjbDescriptor<?>> ejbs = new HashSet<EjbDescriptor<?>>();
+       return ejbDescImpls;
+    }
 
-        for(com.sun.enterprise.deployment.EjbDescriptor next : ejbDescs) {
+    public EjbDescriptor getEjbDescriptor(String ejbName) {
+        EjbDescriptor match = null;
 
-            EjbDescriptorImpl wbEjbDesc = new EjbDescriptorImpl(next);
-            ejbs.add(wbEjbDesc);
-
+        for(EjbDescriptor next : ejbDescImpls) {
+            if( next.getEjbName().equals(ejbName) ) {
+                match = next;
+                break;
+            }
         }
 
-       return ejbs;
+        return match;
     }
 
     public ServiceRegistry getServices() {

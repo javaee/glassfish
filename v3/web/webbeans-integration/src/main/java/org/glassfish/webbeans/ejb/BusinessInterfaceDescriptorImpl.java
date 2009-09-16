@@ -45,11 +45,10 @@ public class BusinessInterfaceDescriptorImpl<T> implements BusinessInterfaceDesc
 {
     
     private Class clientViewType;
-    private String jndiName;
 
-    public BusinessInterfaceDescriptorImpl(Class clientViewType, String jndiName) {
+
+    public BusinessInterfaceDescriptorImpl(Class clientViewType) {
 	    this.clientViewType = clientViewType;
-	    this.jndiName = jndiName;
     }
 
     /**

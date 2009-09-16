@@ -497,6 +497,8 @@ public final class MessageBeanContainer extends BaseContainer implements
 					beanContext.setInEjbRemove(true);
 					interceptorManager.intercept(CallbackType.PRE_DESTROY,
 							beanContext);
+
+                    cleanupInstance(beanContext);
 					ejbProbeNotifier.ejbBeanDestroyedEvent(
                                                 containerInfo.appName, containerInfo.modName,
                                                 containerInfo.ejbName);
@@ -685,7 +687,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 			// would be called. This is important since injection methods
 			// have the same "operations allowed" permissions as
 			// setMessageDrivenContext.
-			injectionManager.injectInstance(ejb, ejbDescriptor, false);
+			injectEjbInstance(ejb, context);
 			for (Object interceptorInstance : context.getInterceptorInstances()) {
 				injectionManager.injectInstance(interceptorInstance,
 						ejbDescriptor, false);

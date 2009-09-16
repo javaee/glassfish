@@ -475,7 +475,8 @@ public class StatelessSessionContainer
             // would be called.  This is important since injection methods
             // have the same "operations allowed" permissions as
             // setSessionContext.
-            injectionManager.injectInstance(ejb, ejbDescriptor, false);
+            injectEjbInstance(ejb, context);
+
             for (Object interceptorInstance : context.getInterceptorInstances()) {
                 injectionManager.injectInstance(interceptorInstance,
                         ejbDescriptor, false);
@@ -726,6 +727,7 @@ public class StatelessSessionContainer
                 //So need to call ejb.ejbRemove()
                 // mark context as destroyed
                 sessionCtx.setState(EJBContextImpl.BeanState.DESTROYED);
+
                 EjbInvocation ejbInv = null;
                 try {
                     // NOTE : Context class-loader is already set by Pool
@@ -741,6 +743,7 @@ public class StatelessSessionContainer
                 } catch ( Throwable t ) {
                      _logger.log(Level.FINE, "ejbRemove exception", t);
                 } finally {
+
                     sessionCtx.setInEjbRemove(false);
                     if( ejbInv != null ) {
                         invocationManager.postInvoke(ejbInv);
@@ -760,6 +763,8 @@ public class StatelessSessionContainer
                      _logger.log(Level.FINE,"forceDestroyBean exception", ex);
                 }
             }
+
+            cleanupInstance(sessionCtx);
 
             // tell the TM to release resources held by the bean
             transactionManager.componentDestroyed(sessionCtx);   

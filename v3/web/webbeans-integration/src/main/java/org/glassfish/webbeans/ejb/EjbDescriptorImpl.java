@@ -63,9 +63,8 @@ public class EjbDescriptorImpl<T> implements org.jboss.webbeans.ejb.spi.EjbDescr
     }
 
 
-    // PENDING
     public String getEjbName() {
-        return null;
+        return ejbDesc.getName();
     }
 
     public EjbDescriptor getEjbDescriptor() {
@@ -110,9 +109,8 @@ public class EjbDescriptorImpl<T> implements org.jboss.webbeans.ejb.spi.EjbDescr
                 try {
 
                     Class localClass = sessionDesc.getEjbBundleDescriptor().getClassLoader().loadClass(local);
-                    String jndiName = sessionDesc.getPortableJndiName(local);
                     BusinessInterfaceDescriptor busIntfDesc =
-                            new BusinessInterfaceDescriptorImpl(localClass, jndiName);
+                            new BusinessInterfaceDescriptorImpl(localClass);
                     localBusIntfs.add(busIntfDesc);
 
                 } catch(ClassNotFoundException e) {
@@ -194,5 +192,24 @@ public class EjbDescriptorImpl<T> implements org.jboss.webbeans.ejb.spi.EjbDescr
 	    return (ejbDesc.getType().equals(EjbMessageBeanDescriptor.TYPE));
     }
 
+    /*  enabled for debugging 
+    public int hashCode() {
+        return getEjbName().hashCode();
+    }
+
+    public boolean equals(Object o) {
+
+        boolean equal = false;
+
+        if( (o != null) && (o instanceof EjbDescriptorImpl) ) {
+
+            equal = getEjbName().equals( ((EjbDescriptorImpl)o).getEjbName() );
+
+        }
+
+        return equal;
+
+    }
+    */
 
 }

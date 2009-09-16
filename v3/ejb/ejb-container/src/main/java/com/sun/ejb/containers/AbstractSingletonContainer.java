@@ -478,7 +478,7 @@ public abstract class AbstractSingletonContainer
             // would be called.  This is important since injection methods
             // have the same "operations allowed" permissions as
             // setSessionContext.
-            injectionManager.injectInstance(ejb, ejbDescriptor, false);
+            injectEjbInstance(ejb, context);
             for (Object interceptorInstance : context.getInterceptorInstances()) {
                 injectionManager.injectInstance(interceptorInstance,
                         ejbDescriptor, false);
@@ -743,11 +743,7 @@ public abstract class AbstractSingletonContainer
                     }
                 }
 
-                // TODO
-                // It's not clear whether we need to tell the transaction manager
-                // to release the resources for this bean.  Where can we reliably
-                // get the resource list since it's stored in the invocation?
-                //
+                cleanupInstance(singletonCtx);
 
                 singletonCtx.deleteAllReferences();
             }

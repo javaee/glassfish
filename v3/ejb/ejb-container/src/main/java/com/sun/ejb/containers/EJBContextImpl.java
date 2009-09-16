@@ -45,6 +45,8 @@ import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.invocation.ComponentInvocation;
 
+import com.sun.enterprise.container.common.spi.JCDIService;
+
 import javax.ejb.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -116,6 +118,9 @@ public abstract class EJBContextImpl
     transient protected boolean inEjbRemove;
     
     private Object[]    interceptorInstances;
+
+    // TODO how to handle this for passivated SFSBs?
+    transient protected JCDIService.JCDIInjectionContext jcdiInjectionContext;
     
     EJBContextImpl(Object ejb, BaseContainer container) {
         this.ejb = ejb;
@@ -203,6 +208,14 @@ public abstract class EJBContextImpl
     
     boolean isInEjbRemove() {
         return inEjbRemove;
+    }
+
+    void setJCDIInjectionContext(JCDIService.JCDIInjectionContext ctx) {
+        jcdiInjectionContext = ctx;
+    }
+
+    JCDIService.JCDIInjectionContext getJCDIInjectionContext() {
+        return jcdiInjectionContext;
     }
 
 

@@ -61,4 +61,6 @@ public interface EjbContainerServices {
 
     public void remove(Object ejbRef);
 
+    public boolean isRemoved(Object ejbRef);
+
 }

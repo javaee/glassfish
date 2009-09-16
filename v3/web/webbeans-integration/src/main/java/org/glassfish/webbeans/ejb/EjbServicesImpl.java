@@ -41,26 +41,17 @@ import org.jboss.webbeans.ejb.spi.EjbServices;
 
 import org.jboss.webbeans.ejb.api.SessionObjectReference;
 
-import javax.enterprise.inject.spi.InjectionPoint;
-
 import org.jboss.webbeans.ejb.spi.EjbDescriptor;
 import com.sun.enterprise.deployment.*;
 
 
-import org.glassfish.webbeans.InjectionPointHelper;
-import java.util.Vector;
-import java.util.Iterator;
 import java.util.Set;
-import java.util.HashSet;
+
 
 import org.jvnet.hk2.component.Habitat;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 import org.glassfish.ejb.api.EjbContainerServices;
 
@@ -69,61 +60,12 @@ import org.glassfish.ejb.api.EjbContainerServices;
 public class EjbServicesImpl implements EjbServices
 {
 
-    private Set<com.sun.enterprise.deployment.EjbDescriptor> ejbDescs;
     private Habitat habitat;
-    private InjectionPointHelper injectionPointHelper;
 
-    public EjbServicesImpl(Habitat h, Set<com.sun.enterprise.deployment.EjbDescriptor> ejbs) {
+    public EjbServicesImpl(Habitat h) {
         habitat = h;
-        ejbDescs = ejbs;
-        injectionPointHelper = new InjectionPointHelper(h);
     }
 
-    /**
-    * Resolve the value for the given @EJB injection point
-    * 
-    * @param injectionPoint
-    *           the injection point metadata
-    * @return an instance of the EJB
-    * @throws IllegalArgumentException
-    *            if the injection point is not annotated with @EJB, or, if the
-    *            injection point is a method that doesn't follow JavaBean
-    *            conventions
-   
-    */
-    public Object resolveEjb(InjectionPoint injectionPoint) {
-
-        EjbContainerServices containerServices = habitat.getByContract(EjbContainerServices.class);
-
-        // Look for @EJB annotation.  (Do it by class name matching to avoid direct dependency
-        // from this module on javax.ejb)
-        Annotation ejbAnnotation = null;
-
-        for(Annotation annotation : injectionPoint.getAnnotated().getAnnotations()) {
-            if( annotation.annotationType().getName().equals("javax.ejb.EJB")) {
-                ejbAnnotation = annotation;
-                break;
-            }
-        }
-
-        if( ejbAnnotation == null ) {
-            throw new IllegalArgumentException("injection point is not annotated with @EJB " +
-                injectionPoint);
-        }
-
-        Object resolvedEjb = null;
-
-        try {
-            Application app = ejbDescs.iterator().next().getApplication();
-            resolvedEjb = injectionPointHelper.resolveInjectionPoint(injectionPoint.getMember(), app);    
-        } catch(NamingException ne) {
-            throw new IllegalArgumentException("Unable to resolve injection point " +
-                    injectionPoint, ne);
-        }
-
-        return resolvedEjb;
-
-    }
    
    /**
     * Request a reference to an EJB session object from the container. If the
@@ -164,52 +106,6 @@ public class EjbServicesImpl implements EjbServices
 	    return sessionObj;
 
     }
-   
-   /**
-    * Resolve a remote EJB reference. At least one of the parameters will not be
-    * null.
-    * 
-    * @param jndiName the JNDI name
-    * @param mappedName the mapped name
-    * @param ejbLink the EJB link name
-    * @return the remote EJB reference
-    * @throws IllegalStateException
-    *            if no EJBs can be resolved for injection
-    * @throws IllegalArgumentException
-    *            if jndiName, mappedName and ejbLink are null
-    */
-    public Object resolveRemoteEjb(String jndiName, String mappedName, String ejbLink) {
-        Object remoteRef = null;
-
-        if( (jndiName == null) && (mappedName == null) && (ejbLink == null) ) {
-            throw new IllegalArgumentException("All linking arguments are null");
-        }
-
-        String lookupString = jndiName;
-
-	    try {
-
-            InitialContext ic = new InitialContext();
-
-            if( lookupString == null ) {
-
-                // TODO Need extra processing of ejbLink.  Also need interface in the
-                // case that ejbLink is provided
-
-                lookupString = (mappedName != null) ? mappedName :
-                        "java:module/" + ejbLink;
-            }
-
-            remoteRef = ic.lookup(lookupString);
-
-        } catch(NamingException ne) {
-             throw new IllegalStateException("Error resolving session object reference for name " +
-                       lookupString, ne);
-        }
-
-        return remoteRef;
-    }
-   
    
 
     private String getDefaultGlobalJndiName(EjbDescriptor ejbDesc) {

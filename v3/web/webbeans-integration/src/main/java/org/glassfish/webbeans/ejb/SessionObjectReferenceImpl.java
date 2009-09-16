@@ -67,9 +67,8 @@ public class SessionObjectReferenceImpl implements SessionObjectReference
 
     }
 
-    //PENDING
     public boolean isRemoved() {
-        return false;
+        return ejbContainerServices.isRemoved(ejbRef);
     }
 
 }

@@ -39,11 +39,14 @@ import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.container.common.spi.ManagedBeanManager;
+import com.sun.enterprise.container.common.spi.JCDIService;
 import com.sun.enterprise.deployment.InjectionCapable;
 import com.sun.enterprise.deployment.InjectionInfo;
 import com.sun.enterprise.deployment.InjectionTarget;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
@@ -121,14 +124,21 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
     public void injectInstance(Object instance)
         throws InjectionException {
 
+        injectInstance(instance, true);
+
+    }
+
+    public void injectInstance(Object instance, boolean invokePostConstruct)
+        throws InjectionException {
+
         ComponentInvocation inv = invocationMgr.getCurrentInvocation();
-        
+
         if( inv != null ) {
 
             JndiNameEnvironment componentEnv = compEnvManager.getJndiNameEnvironment(inv.getComponentId());
 
             if( componentEnv != null ) {
-                inject(instance.getClass(), instance, componentEnv, null, true);
+                inject(instance.getClass(), instance, componentEnv, null, invokePostConstruct);
             } else {
                 throw new InjectionException("No descriptor registered for " +
                                              " current invocation : " + inv);
@@ -264,26 +274,36 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
 
         try {
 
-            // TODO if ( 299 enabled app ) Use 299 SPI to create/inject managed bean
-
             ManagedBean managedBeanAnn = (ManagedBean) clazz.getAnnotation(ManagedBean.class);
+
+            ManagedBeanManager managedBeanMgr = habitat.getByContract(ManagedBeanManager.class);
 
             if( managedBeanAnn != null ) {
 
-                ManagedBeanManager managedBeanMgr = habitat.getByContract(ManagedBeanManager.class);
+                // EE style @ManagedBean
 
                 // Create , inject, and call PostConstruct via managed bean manager
                 managedObject = managedBeanMgr.createManagedBean(clazz);
 
             } else {
 
-                Constructor noArgCtor = clazz.getConstructor();
+                JCDIService jcdiService = habitat.getByContract(JCDIService.class);
 
-                managedObject = noArgCtor.newInstance();
+                if( (jcdiService != null) && jcdiService.isCurrentModuleJCDIEnabled() ) {
 
-                // Inject and call PostConstruct
-                injectInstance(managedObject);
+                    // Create , inject, and call PostConstruct via managed bean manager
+                    managedObject = managedBeanMgr.createManagedBean(clazz);
+                        
+                } else {
 
+                    Constructor noArgCtor = clazz.getConstructor();
+
+                    managedObject = noArgCtor.newInstance();
+
+                    // Inject and call PostConstruct
+                    injectInstance(managedObject);
+
+                }
             }
 
         } catch(Exception e) {

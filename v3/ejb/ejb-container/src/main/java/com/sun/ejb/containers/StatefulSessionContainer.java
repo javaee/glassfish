@@ -565,7 +565,7 @@ public final class StatefulSessionContainer
             // would be called.  This is important since injection methods
             // have the same "operations allowed" permissions as
             // setSessionContext.
-            injectionManager.injectInstance(ejb, ejbDescriptor, false);
+            injectEjbInstance(ejb, context);
             for (Object interceptorInstance : context.getInterceptorInstances()) {
                 injectionManager.injectInstance(interceptorInstance,
                         ejbDescriptor, false);
@@ -993,6 +993,7 @@ public final class StatefulSessionContainer
                 _logger.log(TRACE_LEVEL, "[SFSBContainer] Removing "
                         + "session: " + sc.getInstanceKey());
             }
+
             sc.setInEjbRemove(true);
             try {
                 interceptorManager.intercept(
@@ -1035,6 +1036,9 @@ public final class StatefulSessionContainer
 
             // mark context as destroyed so no more invocations happen on it
             sc.setState(BeanState.DESTROYED);
+
+            cleanupInstance(ctx);
+            
             if (_logger.isLoggable(TRACE_LEVEL)) {
                 _logger.log(TRACE_LEVEL, "[SFSBContainer] (Force)Destroying "
                         + "session: " + sc.getInstanceKey());
