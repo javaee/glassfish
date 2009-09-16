@@ -67,7 +67,7 @@ public class ServletStatsProvider {
 
     private CountStatisticImpl activeServletsLoadedCount = new CountStatisticImpl("ActiveServletsLoaded", "count", "Number of currently loaded servlets");
     private CountStatisticImpl maxServletsLoadedCount = new CountStatisticImpl("MaxServletsLoaded", "count", "Maximum number of servlets loaded which were active");
-    private CountStatisticImpl totalServletsLoadedCount = new CountStatisticImpl("TotalServletsLoaded", "count", "Cumulative number of servlets that have been loaded into the web module");
+    private CountStatisticImpl totalServletsLoadedCount = new CountStatisticImpl("TotalServletsLoaded", "count", "Cumulative number of servlets that have been loaded");
 
     @ManagedAttribute(id="activeservletsloadedcount")
     @Description( "Number of currently loaded servlets" )

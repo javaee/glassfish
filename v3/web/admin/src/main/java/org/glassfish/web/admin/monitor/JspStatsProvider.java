@@ -65,7 +65,7 @@ public class JspStatsProvider{
 
     private CountStatisticImpl activeJspsLoadedCount = new CountStatisticImpl("ActiveJspsLoaded", "count", "Number of currently loaded JSPs");
     private CountStatisticImpl maxJspsLoadedCount = new CountStatisticImpl("MaxJspsLoaded", "count", "Maximum number of JSPs loaded which were active");
-    private CountStatisticImpl totalJspsLoadedCount = new CountStatisticImpl("TotalJspsLoaded", "count", "Cumulative number of JSP pages that have been loaded into the web module");
+    private CountStatisticImpl totalJspsLoadedCount = new CountStatisticImpl("TotalJspsLoaded", "count", "Cumulative number of JSP pages that have been loaded");
 
     @ManagedAttribute(id="activejspsloadedcount")
     @Description("Number of currently loaded JSPs")
