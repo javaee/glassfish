@@ -120,7 +120,6 @@ public class LocalTxConnectorAllocator extends AbstractConnectorAllocator {
             }
 
         } catch (Exception ex) {
-            _logger.log(Level.WARNING, ex.getMessage());
             throw new PoolingException(ex);
         }
     }

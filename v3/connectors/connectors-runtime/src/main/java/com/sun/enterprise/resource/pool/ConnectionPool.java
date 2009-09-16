@@ -857,7 +857,10 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         try {
             resourceHandle.getResourceAllocator().destroyResource(resourceHandle);
         } catch (Exception ex) {
-            _logger.log(Level.WARNING, "poolmgr.destroy_resource_failed");
+            Object[] args = new Object[] {
+                    resourceHandle.getResourceSpec().getConnectionPoolName(),
+                    ex.getMessage() == null ? "" : ex.getMessage() };
+            _logger.log(Level.WARNING, "poolmgr.destroy_resource_failed", args);
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "poolmgr.destroy_resource_failed", ex);
             }

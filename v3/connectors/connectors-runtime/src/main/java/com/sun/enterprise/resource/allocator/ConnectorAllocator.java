@@ -187,7 +187,6 @@ public class ConnectorAllocator extends AbstractConnectorAllocator {
             ManagedConnection mc = (ManagedConnection) resource.getResource();
             mc.destroy();
         } catch (Exception ex) {
-            _logger.log(Level.WARNING, ex.getMessage());
             throw new PoolingException(ex);
         }
 
