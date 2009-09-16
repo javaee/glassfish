@@ -66,7 +66,7 @@
             <param name="webclient.war.classes" value="**/*.class"/> 
         </antcall>
 
-        <javac srcdir="." classpath="${env.APS_HOME}/lib/reporter.jar"
+        <javac srcdir="." classpath="${env.APS_HOME}/lib/reporter.jar:${s1as.classpath}"
                includes="WebTest.java"/>
 
     </target> 
@@ -90,16 +90,14 @@
     </target>
     
     <target name="run" depends="init-common">
-        <java classname="WebTest">
+        <java classname="WebTest" classpath="${env.APS_HOME}/lib/reporter.jar:${s1as.classpath}:.">
           <arg value="${admin.host}"/>
           <arg value="${admin.port}"/>
+          <arg value="${admin.user}"/>
+          <arg value="${admin.password}"/>
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
           <arg value="${contextroot}"/>
-          <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
-           <pathelement location="."/>
-         </classpath>
         </java>
     </target>
  

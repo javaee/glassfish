@@ -37,6 +37,7 @@ import java.io.*;
 import java.net.*;
 import java.net.HttpURLConnection;
 import com.sun.ejte.ccl.reporter.*;
+import org.apache.catalina.util.Base64;
 
 /*
  * Unit test for Issue 9309: [monitoring] request-count is incorrect
@@ -53,6 +54,8 @@ public class WebTest {
 
     private String adminHost;
     private String adminPort;
+    private String adminUser;
+    private String adminPassword;
     private String host;
     private String port;
     private String contextRoot;
@@ -60,9 +63,11 @@ public class WebTest {
     public WebTest(String[] args) {
         adminHost = args[0];
         adminPort = args[1];
-        host = args[2];
-        port = args[3];
-        contextRoot = args[4];
+        adminUser = args[2];
+        adminPassword = args[3];
+        host = args[4];
+        port = args[5];
+        contextRoot = args[6];
     }
     
     public static void main(String[] args) {
@@ -123,6 +128,10 @@ public class WebTest {
         System.out.println("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.addRequestProperty("accept", "application/json");
+        if (adminPassword != null) {
+            conn.setRequestProperty("Authorization", "Basic " +
+                new String(Base64.encode((adminUser + ":" + adminPassword).getBytes())));
+        }
         conn.connect();
         int responseCode = conn.getResponseCode();
 
