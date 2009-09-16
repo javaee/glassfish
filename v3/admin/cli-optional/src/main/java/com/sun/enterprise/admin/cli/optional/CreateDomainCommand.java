@@ -352,15 +352,13 @@ public final class CreateDomainCommand extends CLICommand {
                 haveAdminPwd = passwords.get(ADMIN_PASSWORD) != null;
                 adminPassword = getAdminPassword();
             }
-            // allow empty admin password
-            if (ok(adminPassword))
-                validatePassword(adminPassword, adminPasswordOption);
-            if (haveAdminPwd) {
+            validatePassword(adminPassword, adminPasswordOption);
+            if (haveAdminPwd)
                 masterPassword = passwords.get(MASTER_PASSWORD);
-                if (masterPassword == null)
-                    masterPassword = DEFAULT_MASTER_PASSWORD;
-            } else
+            else
                 masterPassword = getMasterPassword();
+            if (masterPassword == null)
+                masterPassword = DEFAULT_MASTER_PASSWORD;
             validatePassword(masterPassword, masterPasswordOption);
         }
 
@@ -808,16 +806,18 @@ public final class CreateDomainCommand extends CLICommand {
     /* validates adminpassword and masterpassword */
     public void validatePassword(String password, ValidOption pwdOpt)
             throws CommandValidationException {
-        if (!isPasswordValid(password)) {
-            String pwdname = pwdOpt.getName();
-            // XXX - hack alert!  the description is stored in the default value
-            String description = pwdOpt.getDefaultValue();
-            if (!ok(description))
-                description = pwdname;
+        // XXX - hack alert!  the description is stored in the default value
+        String description = pwdOpt.getDefaultValue();
+        if (!ok(description))
+            description = pwdOpt.getName();
+
+        if (password == null)
+            throw new CommandValidationException(
+                                strings.get("PasswordMissing", description));
+        // allow zero length password
+        if (password.length() > 0 && !isPasswordValid(password))
             throw new CommandValidationException(
                                 strings.get("PasswordLimit", description));
-        }
-        logger.printDebugMessage("domainName = " + domainName);
     }
 
     /**

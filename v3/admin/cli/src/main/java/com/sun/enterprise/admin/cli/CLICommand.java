@@ -774,8 +774,8 @@ public abstract class CLICommand implements PostConstruct {
         }
 
         if (!isPasswordValid(newpassword)) {
-            throw new CommandValidationException(
-                    strings.get("PasswordLimit", passwordName));
+            throw new CommandValidationException(strings.get("PasswordLimit",
+                            ok(description) ? description : passwordName));
         }
 
         String confirmationPrompt;
