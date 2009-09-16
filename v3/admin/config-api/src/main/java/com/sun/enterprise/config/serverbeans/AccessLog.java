@@ -119,7 +119,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="yyyyMMdd")
+    @Attribute (defaultValue="yyyy-MM-dd")
     String getRotationSuffix();
 
     /**
