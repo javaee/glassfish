@@ -98,52 +98,50 @@ public class PortImpl implements Port {
                 }
             }, config.getProtocols());
             ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
-                    public Object run(NetworkListeners param) throws TransactionFailure {
-                        final NetworkListener listener = param.createChild(NetworkListener.class);
-                        listener.setName(listenerName);
-                        listener.setAddress("127.0.0.1");
-                        listener.setPort(Integer.toString(portNumber));
-                        listener.setProtocol(listenerName);
-                        listener.setThreadPool("http-thread-pool");
-                        if (listener.findThreadPool() == null) {
-                            final ThreadPool pool = config.getNetworkListeners().createChild(ThreadPool.class);
-                            pool.setName(listenerName);
-                            listener.setThreadPool(listenerName);
-                        }
-                        listener.setTransport("tcp");
-                        if (listener.findTransport() == null) {
-                            final Transport transport = config.getTransports().createChild(Transport.class);
-                            transport.setName(listenerName);
-                            listener.setTransport(listenerName);
-                        }
-                        param.getNetworkListener().add(listener);
-                        return listener;
-
+                public Object run(NetworkListeners param) throws TransactionFailure {
+                    final NetworkListener listener = param.createChild(NetworkListener.class);
+                    listener.setName(listenerName);
+                    listener.setAddress("127.0.0.1");
+                    listener.setPort(Integer.toString(portNumber));
+                    listener.setProtocol(listenerName);
+                    listener.setThreadPool("http-thread-pool");
+                    if (listener.findThreadPool() == null) {
+                        final ThreadPool pool = config.getNetworkListeners().createChild(ThreadPool.class);
+                        pool.setName(listenerName);
+                        listener.setThreadPool(listenerName);
                     }
-                }, config.getNetworkListeners());
-                VirtualServer vs = httpService.getVirtualServerByName(defaultVirtualServer);
-                ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
-                    public Object run(VirtualServer avs) throws PropertyVetoException {
-                        String DELIM = ",";
-                        String lss = avs.getNetworkListeners();
-                        boolean listenerShouldBeAdded = true;
-                        if (lss == null || lss.length() == 0) {
-                            lss = listenerName; //the only listener in the list
-                        } else if (!lss.contains(listenerName)) { //listener does not already exist
-                            if (!lss.endsWith(DELIM)) {
-                                lss += DELIM;
-                            }
-                            lss += listenerName;
-                        } else { //listener already exists in the list, do nothing
-                            listenerShouldBeAdded = false;
-                        }
-                        if (listenerShouldBeAdded) {
-                            avs.setNetworkListeners(lss);
-                        }
-                        return avs;
+                    listener.setTransport("tcp");
+                    if (listener.findTransport() == null) {
+                        final Transport transport = config.getTransports().createChild(Transport.class);
+                        transport.setName(listenerName);
+                        listener.setTransport(listenerName);
                     }
-                }, vs);
-
+                    param.getNetworkListener().add(listener);
+                    return listener;
+                }
+            }, config.getNetworkListeners());
+            VirtualServer vs = httpService.getVirtualServerByName(defaultVirtualServer);
+            ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
+                public Object run(VirtualServer avs) throws PropertyVetoException {
+                    String DELIM = ",";
+                    String lss = avs.getNetworkListeners();
+                    boolean listenerShouldBeAdded = true;
+                    if (lss == null || lss.length() == 0) {
+                        lss = listenerName; //the only listener in the list
+                    } else if (!lss.contains(listenerName)) { //listener does not already exist
+                        if (!lss.endsWith(DELIM)) {
+                            lss += DELIM;
+                        }
+                        lss += listenerName;
+                    } else { //listener already exists in the list, do nothing
+                        listenerShouldBeAdded = false;
+                    }
+                    if (listenerShouldBeAdded) {
+                        avs.setNetworkListeners(lss);
+                    }    
+                    return avs;
+                }
+            }, vs);
         } catch (Exception e) {
             e.printStackTrace();
         }
