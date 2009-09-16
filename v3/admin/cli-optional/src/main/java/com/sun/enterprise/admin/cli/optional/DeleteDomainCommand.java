@@ -44,6 +44,9 @@ import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.DomainsManager;
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
+import com.sun.appserv.management.client.prefs.LoginInfoStore;
+import com.sun.appserv.management.client.prefs.StoreException;
 
 /**
  *  This is a local command that deletes a domain.
@@ -57,6 +60,7 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(DeleteDomainCommand.class);
 
+    private int adminPort;  //this is single threaded code, deliberately avoiding volatile/atomic
     /**
      * The prepare method must ensure that the commandOpts,
      * operandType, operandMin, and operandMax fields are set.
@@ -94,6 +98,7 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
         if (options.containsKey("terse"))
             programOpts.setTerse(getBooleanOption("terse"));
         initializeLogger();     // in case program options changed
+        adminPort = super.getAdminPort(super.getDomainXml());
     }
  
     /**
@@ -103,25 +108,33 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
             throws CommandException, CommandValidationException {
 
         try {            
-            // XXX - could allow more than one domain name operand
             DomainConfig domainConfig =
                 new DomainConfig(domainName, domainsDir.getPath());
+            checkRunning();
             DomainsManager manager = new PEDomainsManager();
             manager.deleteDomain(domainConfig);
-            deleteLoginInfo();
+            //By default, do as what v2 does -- don't delete the entry - might need a revisit (Kedar: 09/16/2009)
+            //deleteLoginInfo();
         } catch (Exception e) {
-	    throw new CommandException(e.getLocalizedMessage());
+	        throw new CommandException(e.getLocalizedMessage());
         }
 
 	logger.printDetailMessage(strings.get("DomainDeleted", domainName));
         return 0;
     }
 
+    private void checkRunning() throws CommandException {
+        if (super.isRunning(adminPort)) {
+            String msg = strings.get("domain.is.running", super.domainName, super.domainRootDir);
+            throw new IllegalStateException(msg);
+        }
+    }
+
     /**
      * This method will delete the entry in the .asadminpass file if exists
      */
-    private void deleteLoginInfo() throws CommandValidationException {
-        // XXX - not yet implemented
-        return;
+    private void deleteLoginInfo() throws CommandException, StoreException {
+        LoginInfoStore store = LoginInfoStoreFactory.getDefaultStore();
+        store.remove("localhost", adminPort);  //the host is always "localhost" in this case
     }
 }

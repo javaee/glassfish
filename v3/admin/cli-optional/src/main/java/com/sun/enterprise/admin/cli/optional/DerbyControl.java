@@ -169,7 +169,7 @@ public final class DerbyControl
             }
         }
         else {
-            System.out.println(lsm.getString("InvalidDirectory", dbHome));
+            System.out.println(lsm.getString("InvalidDBDirectory", dbHome));
 	        System.out.println(lsm.getString("ContinueStartingDatabase"));
 	        //if directory does not exist then create a temporary log file
 	        //and persist on starting the database

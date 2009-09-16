@@ -448,7 +448,7 @@ public final class CreateDomainCommand extends CLICommand {
      *
      * @param port the port number
      * @return the port number as an int
-     * @throws CommandValidationExeption if port string is not numeric
+     * @throws CommandValidationException if port string is not numeric
      */
     private int convertPortStr(final String port)
             throws CommandValidationException {
