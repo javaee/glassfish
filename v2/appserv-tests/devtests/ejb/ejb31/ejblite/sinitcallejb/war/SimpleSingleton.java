@@ -3,6 +3,8 @@ package com.acme;
 import javax.ejb.*;
 import javax.annotation.*;
 
+import javax.naming.InitialContext;
+
 @Singleton
 @Startup
 public class SimpleSingleton {
@@ -13,6 +15,8 @@ public class SimpleSingleton {
     @PostConstruct
     private void init() {
 	 System.out.println("In SimpleSingleton:init()");
+
+	 
 
 	 /** NOTE : Uncomment to test issue 9035
 	 try {
@@ -32,6 +36,8 @@ public class SimpleSingleton {
 	     SimpleStateless ss = (SimpleStateless)
 		 sessionCtx.lookup("java:app/env/slref");
 	     ss.hello();
+
+	     // assumes 299 enabled new InitialContext().lookup("java:comp/BeanManager");
 	 } catch(Exception e) {
 	     throw new EJBException(e);
 	 }

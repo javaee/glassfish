@@ -22,14 +22,14 @@
         <antcall target="compile-common">
             <param name="src" value="war"/>
         </antcall>
-        <antcall target="compile-common">
-            <param name="src" value="client"/>
-        </antcall>
     </target>
 
     <target name="build" depends="compile">
       <antcall target="webclient-war-common">
           <param name="hasWebclient" value="false"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
         </antcall>
     </target> 
     

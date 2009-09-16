@@ -55,6 +55,7 @@ public class HelloServlet extends HttpServlet {
 		     throw new RuntimeException("invalid returned env entry prefix");
 		 }
 	    }
+	    // assumes 299 enabled new InitialContext().lookup("java:comp/BeanManager");
 	} catch(Exception e) {
 	    throw new ServletException(e);
 	}
