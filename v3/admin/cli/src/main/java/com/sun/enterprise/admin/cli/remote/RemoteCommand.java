@@ -431,6 +431,7 @@ public class RemoteCommand extends CLICommand {
             urlConnection.setRequestMethod(httpMethod);
             urlConnection.setReadTimeout(readTimeout);
             cmd.doCommand(urlConnection);
+            logger.printDebugMessage("doHttpCommand succeeds");
 
         } catch (ConnectException ce) {
             logger.printDebugMessage("doHttpCommand: connect exception " + ce);
@@ -454,15 +455,15 @@ public class RemoteCommand extends CLICommand {
                     String msg = strings.get("ServerMaybeSecure",
                             programOpts.getHost(), programOpts.getPort() + "");
                     logger.printError(msg);
-                    throw new CommandException(se);
                 }
+                throw new CommandException(se);
             } catch(IOException io) {
                 logger.printExceptionStackTrace(io);
                 throw new CommandException(io);
             }
         } catch (IOException e) {
             logger.printDebugMessage("doHttpCommand: IO exception " + e);
-            String msg = "Unknown I/O Error";
+            String msg = "I/O Error: " + e.getMessage();
             if (urlConnection != null) {
                 try {
                     int rc = urlConnection.getResponseCode();
