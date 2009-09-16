@@ -265,7 +265,7 @@ public class AMXTestBase
             
             mDomainConfig = mDomainRoot.child(Domain.class);
             
-            getMBeansListener();
+            //getMBeansListener();
             enableMonitoring();
         }
         catch (Exception e)
