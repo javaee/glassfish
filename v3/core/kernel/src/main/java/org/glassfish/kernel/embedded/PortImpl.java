@@ -11,8 +11,12 @@ import org.glassfish.api.embedded.Port;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.ActionReport;
 
+import java.beans.PropertyVetoException;
 import java.util.Properties;
 import java.util.List;
+
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
 
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
@@ -37,8 +41,11 @@ public class PortImpl implements Port {
     PortsImpl ports;
     @Inject
     NetworkConfig config;
+    @Inject
+    HttpService httpService;
     String listenerName;
     int number;
+    String defaultVirtualServer = "server";
 
     public void bind(final int portNumber) {
         number = portNumber;
@@ -50,12 +57,12 @@ public class PortImpl implements Port {
                     protocol.setName(listenerName);
                     param.getProtocol().add(protocol);
                     final Http http = protocol.createChild(Http.class);
-                    http.setDefaultVirtualServer("server");
+                    http.setDefaultVirtualServer(defaultVirtualServer);
                     protocol.setHttp(http);
                     return protocol;
                 }
             }, config.getProtocols());
-                ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
+            ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
                     public Object run(NetworkListeners param) throws TransactionFailure {
                         final NetworkListener listener = param.createChild(NetworkListener.class);
                         listener.setName(listenerName);
@@ -79,6 +86,29 @@ public class PortImpl implements Port {
 
                     }
                 }, config.getNetworkListeners());
+                VirtualServer vs = httpService.getVirtualServerByName(defaultVirtualServer);
+                ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
+                    public Object run(VirtualServer avs) throws PropertyVetoException {
+                        String DELIM = ",";
+                        String lss = avs.getNetworkListeners();
+                        boolean listenerShouldBeAdded = true;
+                        if (lss == null || lss.length() == 0) {
+                            lss = listenerName; //the only listener in the list
+                        } else if (!lss.contains(listenerName)) { //listener does not already exist
+                            if (!lss.endsWith(DELIM)) {
+                                lss += DELIM;
+                            }
+                            lss += listenerName;
+                        } else { //listener already exists in the list, do nothing
+                            listenerShouldBeAdded = false;
+                        }
+                        if (listenerShouldBeAdded) {
+                            avs.setNetworkListeners(lss);
+                        }
+                        return avs;
+                    }
+                }, vs);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
