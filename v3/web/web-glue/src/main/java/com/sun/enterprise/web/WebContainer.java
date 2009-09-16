@@ -565,13 +565,24 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                        
         //_lifecycle.fireLifecycleEvent(START_EVENT, null);
         _started = true;
-        // start the embedded container
+
+        /*
+         * Start the embedded container.
+         * Make sure to set the thread's context classloader to the
+         * classloader of this class (see IT 8866 for details)
+         */
+        ClassLoader current = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(
+            getClass().getClassLoader());
         try {
             _embedded.start();
         } catch (LifecycleException le) {
             _logger.log(Level.SEVERE,
                                "Unable to start web container", le);
             return;
+        } finally {
+            // Restore original context classloader
+            Thread.currentThread().setContextClassLoader(current);
         }
 
         /*
