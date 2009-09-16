@@ -115,6 +115,8 @@ public class NavigationNodeFactory extends ComponentFactoryBase {
         }
         if (target != null) {
             setOption(context, comp, descriptor, "target", target);
+        } else {
+            setOption(context, comp, descriptor, "target", "buffer");
         }
         if (expanded != null) {
             setOption(context, comp, descriptor, "expanded", expanded);
@@ -141,6 +143,7 @@ public class NavigationNodeFactory extends ComponentFactoryBase {
                 setOption(context, imageHyperlink, descriptor, "url", url);
                 setOption(context, imageHyperlink, descriptor, "border", 0);
                 setOption(context, imageHyperlink, descriptor, "immediate", true);
+                setOption(context, imageHyperlink, descriptor, "target", "buffer");
                 comp.getFacets().put("image", imageHyperlink);
             }
         }

@@ -36,9 +36,9 @@
 <!-- updateCenter/ucTable.inc -->
 
 <sun:table id="ucTable" title="$attribute{tableTitle}" sortPanelToggleButton="#{false}" deselectMultipleButton="$boolean{true}"
-        deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
+        deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
         selectMultipleButton="$boolean{true}"
-        selectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)" width="100%">
+        selectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" width="100%">
 
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
@@ -89,7 +89,7 @@
             <sun:checkbox id="select" 
                 selected="#{td.value.selected}" 
                 selectedValue="$boolean{true}" 
-                onClick="setTimeout('initAllRows(); changeOneTableButton()', 0)" 
+                onClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
             />
     </sun:tableColumn>    
     

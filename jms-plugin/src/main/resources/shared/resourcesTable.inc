@@ -35,9 +35,9 @@
 -->
 <sun:table id="resourcesTable" title="#{tableTitle}"
            deselectMultipleButton="$boolean{true}"
-           deselectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)"
+           deselectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
            selectMultipleButton="$boolean{true}"
-           selectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)" >
+           selectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{tableId});
     />
@@ -52,7 +52,7 @@
             <sun:checkbox id="select"
                           selected="#{td.value.selected}"
                           selectedValue="$boolean{true}"
-                          onClick="setTimeout('initAllRows(); changeThreeTableButtons()', 0)"/>
+                          onClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"/>
         </sun:tableColumn>
 
         <sun:tableColumn id="colName" headerText="$resource{i18njms.resourcesTable.colJndiName}" sort="Name" rowHeader="$boolean{true}">

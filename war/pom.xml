@@ -72,6 +72,7 @@
       <artifactId>console-core</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!--
     <dependency>
 	<groupId>com.sun.mojarra</groupId>
 	<artifactId>mojarra-scales</artifactId>
@@ -83,6 +84,7 @@
                 </exclusion>
             </exclusions>
 	</dependency>
+    -->
     <dependency>
 	<groupId>org.glassfish.docs</groupId>
 	<artifactId>console-common-help</artifactId>

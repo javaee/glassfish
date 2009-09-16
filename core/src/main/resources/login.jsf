@@ -50,7 +50,7 @@
 </f:verbatim>
     <sun:themeLinks/>
     <sun:link url="/resource/css/css_ns6up.css" />
-    <sun:script url="/resource/js/adminjsf.js" />
+    <sun:script url="/resource/common/js/adminjsf.js1" />
 <f:verbatim>
 </head>
 
@@ -70,7 +70,8 @@
 <f:verbatim>
             <script type="text/javascript">
                 if (#{byPassLogin}) {
-                    submitAndDisable(document.getElementById('loginButton'), '$resource{i18n.loginPageTitle}');
+                    //submitAndDisable(document.getElementById('loginButton'), '$resource{i18n.loginPageTitle}');
+                    document.getElementById('loginButton').form.submit();
                 }
             </script>
         </div>

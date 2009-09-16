@@ -110,3 +110,26 @@ function fixedIsTreeHandle(event) {
     // Not a tree handle
     return false;
 }
+
+function treeNodeIsExpanded(treeNode) {
+    // Find the div containing the tree images for this TreeNode row
+    var node = document.getElementById(treeNode.id + "LineImages");
+    node = this.findNodeByTypeAndProp(node, "IMG", "src", "tree_handle");
+    if (!node || (typeof(node.src) == 'undefined')) {
+        // This shouldn't happen, but if it does return true b/c nothing
+        // happens in this case
+        return true;
+    }
+    // If the image contains this string, it is not expanded
+    return (node.src.indexOf("tree_handleright") == -1);
+}
+
+function findContainingTreeNode(link) {
+    var linkId = link.id;
+    if (linkId) {
+        var nodeId = linkId.substring(0, linkId.lastIndexOf(":"));
+        return document.getElementById(nodeId);
+    } else {
+        return undefined;
+    }
+}

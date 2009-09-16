@@ -40,22 +40,16 @@
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{locationPropId});
     />
-    <sun:radioButton id="uploadRdBtn" name="uploadRdBtn"
-        label="$resource{i18n.deploy.chooseJarLabel}"
-        selected="#{uploadRdBtn}"
-        selectedValue="client"
-        onClick="uploadRdBtnAction();"
+    <sun:radioButton id="uploadRdBtn" name="uploadRdBtn" label="$resource{i18n.deploy.chooseJarLabel}" selected="#{uploadRdBtn}" selectedValue="client"
+        onClick="admingui.deploy.uploadRdBtnAction('#{dirPathId}','#{requestScope.restartRequired}','#{dirPathId}','#{dirSelectBtnId}','#{filSelectBtnId}','#{fileuploadId}');"
     >
         <!beforeCreate
             setPageSessionAttribute(key="uploadRdBtn", value="client");
-      />
+        />
    </sun:radioButton>
     "<br />
-    <sun:upload id="fileupload" style="margin-left: 17pt" columns="$int{50}"
-        uploadedFile="#{requestScope.uploadedFile}"
-        onChange="javascript:
-            setFieldValue('#{appNameId}', this.value,  '#{dropDownProp}', '#{typeId}', '#{contextRootId}', '#{extensionId}', window);"
-        >
+    <sun:upload id="fileupload" style="margin-left: 17pt" columns="$int{50}" uploadedFile="#{requestScope.uploadedFile}"
+        onChange="javascript:admingui.deploy.setFieldValue('#{appNameId}', this.value,  '#{dropDownProp}', '#{typeId}', '#{contextRootId}', '#{extensionId}', window, '#{sessionScope.appTypeString}');">
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{fileuploadId});
         />
@@ -63,36 +57,26 @@
 
 
     "<br /><br/><br/>
-    <sun:radioButton id="fileChooseRdBtn" name="uploadRdBtn"
-        selected="#{uploadRdBtn}"  selectedValue="serverSide"
-        label="$resource{i18n.deploy.chooseLocal}"
-        onClick="fileChooseAction()"
+    <sun:radioButton id="fileChooseRdBtn" name="uploadRdBtn" selected="#{uploadRdBtn}"  selectedValue="serverSide" label="$resource{i18n.deploy.chooseLocal}" 
+        onClick="admingui.deploy.fileChooseAction('#{dirPathId}','#{dirSelectBtnId}','#{filSelectBtnId}','#{fileuploadId}','#{pageSession.radioChoosenId}')"
     />
     "<br />
 
     <sun:textField id="dirPath" required="#{false}" text="#{dirPath}" submitForm="false" style="margin-left: 17pt" columns="$int{50}"
-        onChange="javascript:
-            setFieldValue('#{appNameId}', this.value, '#{dropDownProp}', '#{typeId}', '#{contextRootId}', '#{extensionId}', window); "
-       >
+        onChange="javascript:admingui.deploy.setFieldValue('#{appNameId}', this.value, '#{dropDownProp}', '#{typeId}', '#{contextRootId}', '#{extensionId}', window, '#{sessionScope.appTypeString}'); ">
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{dirPathId});
         />
     </sun:textField>
 
-    <sun:button id="filSelectBtn"
-         text="$resource{i18n.button.BrowseFile}"
-         disabled="#{true}"
-         primary="#{false}"
+    <sun:button id="filSelectBtn" text="$resource{i18n.button.BrowseFile}" disabled="#{true}" primary="#{false}"
         onClick="javascript: var win = window.open('../applications/fileChooser.jsf?dirPathId=#{dirPathId}&appNameId=#{appNameId}&ctxRootId=#{contextRootId}&typeId=#{typeId}&extensionId=#{extensionId}&dropDownProp=#{dropDownProp}', 'fileChooserPopup', 'height=580, width=650, top='+((screen.height - (screen.height/1.618))-(500/2))+',left='+((screen.width-650)/2)+', scrollbars, resizable');win.focus(); return false" >
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{filSelectBtnId});
         />
     </sun:button>
     "&nbsp;
-    <sun:button id="dirSelectBtn"
-         text="$resource{i18n.button.BrowseFolder}"
-         disabled="#{true}"
-         primary="#{false}"
+    <sun:button id="dirSelectBtn" text="$resource{i18n.button.BrowseFolder}" disabled="#{true}" primary="#{false}"
          onClick="javascript: var win = window.open('../applications/fileChooser.jsf?folderOnly=true&dirPathId=#{dirPathId}&appNameId=#{appNameId}&ctxRootId=#{contextRootId}&typeId=#{typeId}&extensionId=#{extensionId}&dropDownProp=#{dropDownProp}', 'fileChooserPopup', 'height=580, width=650, top='+((screen.height - (screen.height/1.618))-(500/2))+',left='+((screen.width-650)/2)+', scrollbars, resizable');win.focus(); return false" >
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{dirSelectBtnId});

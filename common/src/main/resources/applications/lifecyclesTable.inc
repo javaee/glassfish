@@ -35,11 +35,11 @@
 -->
 <!-- applications/lifecyclesTable.inc -->
 
- <sun:table id="deployTable" sortPanelToggleButton="#{false}"  title="$resource{i18n.deployTable.lifeCycle}" 
-       deselectMultipleButton="$boolean{true}"
-        deselectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)"
+<sun:table id="deployTable" sortPanelToggleButton="#{false}"  title="$resource{i18n.deployTable.lifeCycle}" 
+        deselectMultipleButton="$boolean{true}"
+        deselectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
         selectMultipleButton="$boolean{true}"
-        selectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)" >
+        selectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');()', 0)" >
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
@@ -50,7 +50,7 @@
             getClientId(component="$this{component}" clientId=>$page{topActionGroup});
         />
         <sun:button id="deployButton" text="$resource{i18n.button.New}" primary="#{true}">
-                <!command redirect(page="#{pageSession.nextPageLink}") />
+                <!command redirect(page="#{pageSession.nextPageLink}&bare=true") />
         </sun:button>
         <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
                 onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
@@ -93,7 +93,7 @@
             <sun:checkbox id="select" 
                 selected="#{td.value.selected}" 
                 selectedValue="$boolean{true}" 
-                onClick="setTimeout('initAllRows(); changeThreeTableButtons()', 0)" 
+                onClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0)"
             />
     </sun:tableColumn>
 

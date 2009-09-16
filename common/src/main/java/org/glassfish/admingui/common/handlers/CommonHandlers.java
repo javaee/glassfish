@@ -56,11 +56,13 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import com.sun.jsftemplating.util.Util;
 
+import java.io.IOException;
 import javax.faces.context.ExternalContext;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 
 
+import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import org.glassfish.admingui.common.util.MiscUtil;
@@ -416,6 +418,120 @@ public class CommonHandlers {
             handlerCtx.setOutputValue("supportHADB", false);
     }
     
+    /**
+     *	<p> This handler navigates to the given page.  <code>page</code> may
+     *	    either be a <code>UIViewRoot</code> or a <code>String</code>
+     *	    representing a <code>UIViewRoot</code>.  Passing in a
+     *	    <code>String</code> name of a <code>UIViewRoot</code> will always
+     *	    create a new <code>UIViewRoot</code>.  Passing in the
+     *	    <code>UIViewRoot</code> provides an opportunity to customize the
+     *	    <code>UIComponent</code> tree that will be displayed.</p>
+     *
+     *	<p> The {@link #getUIViewRoot(HandlerContext)} handler provides a way
+     *	    to obtain a <code>UIViewRoot</code>.</p>
+     *
+     *	<p> Input value: "page" -- Type: <code>Object</code> (should be a
+     *	    <code>String</code> or a <code>UIViewRoot</code>).</p>
+     *
+     *	@param	context	The {@link HandlerContext}.
+     */
+    @Handler(id="navigate",
+	input={
+	    @HandlerInput(name="page", type=Object.class, required=true)
+	})
+    public static void navigate(HandlerContext context) {
+	Object page = context.getInputValue("page");
+	UIViewRoot root = null;
+	FacesContext ctx = context.getFacesContext();
+	if (page instanceof String) {
+	    // Create a new UIViewRoot with the given id
+	    String strPage = (String) page;
+            strPage = handleBareAttribute(strPage);
+
+	    if (strPage.charAt(0) != '/') {
+		// Ensure we start w/ a '/'
+		strPage = "/" + strPage;
+	    }
+	    root = ctx.getApplication().getViewHandler().
+		createView(ctx, strPage);
+	} else if (page instanceof UIViewRoot) {
+	    // We recieved a UIViewRoot, use it...
+	    root = (UIViewRoot) page;
+	} else {
+	    throw new IllegalArgumentException("Type '"
+		+ page.getClass().getName()
+		+ "' is not valid.  It must be a String or UIViewRoot.");
+	}
+
+	// Set the UIViewRoot so that it will be displayed
+	ctx.setViewRoot(root);
+    }
+
+    /**
+     *	<p> This handler redirects to the given page.</p>
+     *
+     *	<p> Input value: "page" -- Type: <code>String</code></p>
+     *
+     *	@param	context	The {@link HandlerContext}.
+     */
+    @Handler(id="redirect",
+	input={
+	    @HandlerInput(name="page", type=String.class, required=true)
+	})
+    public static void redirect(HandlerContext context) {
+	String page = (String) context.getInputValue("page");
+	FacesContext ctx = context.getFacesContext();
+	try {
+            page = handleBareAttribute(page);
+	    ctx.getExternalContext().redirect(page);
+	    ctx.responseComplete();
+	} catch (IOException ex) {
+	    throw new RuntimeException(
+		"Unable to navigate to page '" + page + "'!", ex);
+	}
+    }
+
+    /**
+     * If the bare attribute is found in the query string and the value is "true",
+     * then add "bare=true" to the specified url string.
+     * @param url
+     * @return
+     */
+    private static String handleBareAttribute(String url) {
+        String request = (String)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("bare");
+        Boolean page = (Boolean)FacesContext.getCurrentInstance().getViewRoot().getAttributes().get("bare");
+        if ("true".equalsIgnoreCase(request) || Boolean.TRUE.equals(page)) {
+            url = addQueryStringParam((String) url, "bare", "true");
+        }
+        return url;
+    }
+
+    /**
+     * Add the name/value pair to the given url.
+     * @param url
+     * @param name
+     * @param value
+     * @return
+     */
+    private static String addQueryStringParam(String url, String name, String value) {
+        String sep = "?";
+        // If a query string exists (i.e., the url already has "?foo=bar", then we
+        // want to append to that string rather than starting a new one
+        if (url.indexOf("?") > -1) {
+            sep = "&";
+        }
+        String insert = sep + name + "=" + value; // TODO: HTML encode this
+
+        // Should the url have a hash in it, we need the query string (addition) to
+        // be inserted before that.
+        int hash = url.indexOf("#");
+        if (hash > -1) {
+            url = url.substring(0, hash-1) + insert + url.substring(hash);
+        } else {
+            url = url + insert;
+        }
+        return url;
+    }
 
     private static final int INDEX=0;
     

@@ -4,7 +4,6 @@
         <event>
         <!beforeCreate
             getRequestValue(key="name" value=>$page{jndiName});
-            setAttribute(key="enabled" value="#{true}");
         />
         </event>
         <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}" helpText="$resource{i18n.common.jndiNameHelp}" >
@@ -23,11 +22,17 @@
             <sun:textField id="desc" columns="$int{55}" text="#{pageSession.valueMap['Description']}" />
         </sun:property>
 
-        <sun:property labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="#{pageSession.valueMap2['Enabled']}">
-        </sun:property>
+        <sun:property labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="#{pageSession.valueMap2['Enabled']}"/>
+        <sun:property labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="#{pageSession.valueMap2['Enabled'].class.name}"/>
         
         <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status} - #{pageSession.valueMap2['Enabled']}">
-            <sun:checkbox id="cb" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['Enabled']}" selectedValue="true"/>
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['Enabled']}" selectedValue="true">
+            </sun:checkbox>
+                <event>
+                <!beforeEncode
+                    println("============================== beforeEncode #{pageSession.valueMap2['Enabled']} =========")
+                />
+                </event>
         </sun:property>
         
         "<br /><br />

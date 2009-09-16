@@ -41,12 +41,8 @@
 
     <sun:propertySheetSection>
         <sun:property id="type" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.TypeLabel}"  visible="#{true}" >
-            <sun:dropDown id="appType" selected="#{pageSession.appType}" required="#{true}"
-                value=""
-                labels="$attribute{labels}"
-                values="$attribute{values}"
-                onChange="javascript:
-                    showPropertySheet(this.value, window, '#{appNameId}', '#{contextRootId}' )" >
+            <sun:dropDown id="appType" selected="#{pageSession.appType}" required="#{true}" value="" labels="$attribute{labels}" values="$attribute{values}"
+                onChange="javascript:admingui.deploy.showPropertySheet(this.value, window, '#{appNameId}', '#{contextRootId}', '#{sessionScope.appTypeString}' )" >
                 <!beforeCreate
                     getContentOfIntegrationPoints(type="org.glassfish.admingui:appTypeDropdown" labels="#{requestScope.labels}" values="#{requestScope.values}" );
                     listAdd(list="#{requestScope.labels}" value="",  index="0");
@@ -65,8 +61,10 @@
 </sun:propertySheet>
 <event>
     <!afterCreate
+        gui.log(message="formId = #{formId}");
         getUIComponent(clientId="#{formId}"  component=>$attribute{component})
         includeIntegrations(type="org.glassfish.admingui:uploadPropertySheet" );
+        gui.log(message="integrations included");
     />
 </event>
 

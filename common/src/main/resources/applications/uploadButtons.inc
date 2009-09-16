@@ -37,7 +37,7 @@
 <sun:button id="uploadButton" text="$resource{i18n.button.OK}" 
     onClick="javascript:
         if(getTextElement('#{pageSession.radioChoosenId}').value=='client') {
-            result = (checkFileInputRequired('#{fileuploadId}', '#{reqMsg}'));
+            result = (admingui.deploy.checkFileInputRequired('#{fileuploadId}', '#{reqMsg}'));
         } else {
             result = (checkRequired('#{dirPathId}', '#{reqMsg}'));
         }

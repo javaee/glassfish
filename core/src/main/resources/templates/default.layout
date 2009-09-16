@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core">
 
@@ -10,8 +10,13 @@
 	if ("!#{sessionScope.guiNavScheme}") {
 	    setSessionAttribute(key="guiNavScheme" value="tree");
 	}
+        if ("!#{pageSession.bare}") {
+            setPageSessionAttribute(key="bare", value="#{param.bare == 'true'}");
+        }
+
+        println("pageSession.bare = #{pageSession.bare}");
     </ui:event>
 
-    <ui:composition template="/templates/#{sessionScope.guiNavScheme}Layout.xhtml" />
+    <ui:composition template="/templates/#{pageSession.bare == 'true' ? 'bareLayout.xhtml' : 'treeLayout.xhtml'}" />
 
 </html>

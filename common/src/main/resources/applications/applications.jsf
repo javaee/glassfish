@@ -65,6 +65,6 @@
 #include "/common/applications/deployTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.applications}" />
             </sun:form>
-#include "/common/shared/changeButtonsJS.inc"
+//#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>
