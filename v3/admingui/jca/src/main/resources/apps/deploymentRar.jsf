@@ -42,7 +42,7 @@
         setAttribute(key="fieldMap" value="rar");
         createMap(result="#{pageSession.rar}")
         mapPut(map="#{pageSession.deployMap}", key="rar", value="#{pageSession.rar}");
-        mapPut(map="#{pageSession.rar}", key="convertToFalseList", value={"enabled", "verify"} );
+        mapPut(map="#{pageSession.rar}", key="convertToFalseList", value={"enabled", "verify" ,"force" } );
      />
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{rarId});
@@ -67,6 +67,12 @@
 <sun:property id="v2" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.run}" helpText="$resource{i18n.deploy.runHelp}">
         <sun:checkbox id="ver2" label="$resource{i18n.common.Enabled}" selected="#{pageSession.rar['verify']}" selectedValue="true" />
 </sun:property>
+
+
+<sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
+        <sun:checkbox id="force"  selected="#{pageSession.rar['force']}" selectedValue="true" />
+</sun:property>
+
 
 <sun:property id="threadPoolId" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.threadpoolid}" helpText="$resource{i18n.deploy.threadpoolidHelp}" >
 	<sun:textField id="threadPoolId" columns="$int{40}" text="#{pageSession.rar['PROPERTY-ThreadPool-id']}" />

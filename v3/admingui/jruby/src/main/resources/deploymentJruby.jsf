@@ -43,7 +43,7 @@
     <!beforeCreate
         createMap(result="#{pageSession.jruby}")
         mapPut(map="#{pageSession.deployMap}", key="jruby", value="#{pageSession.jruby}");
-        mapPut(map="#{pageSession.jruby}", key="convertToFalseList", value={"enabled"} );
+        mapPut(map="#{pageSession.jruby}", key="convertToFalseList", value={"enabled" ,"force" } );
         setResourceBundle(key="i18n_jruby" bundle="org.glassfish.jruby.admingui.Strings")
         setResourceBundle(key="help_jruby" bundle="org.glassfish.jruby.admingui.Helplinks");
         setPageSessionAttribute(key="jHomeObj" value="amx:pp=/domain/configs/config[server-config],type=jruby-container")

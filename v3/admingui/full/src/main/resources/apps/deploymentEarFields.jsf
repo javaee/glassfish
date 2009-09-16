@@ -81,6 +81,12 @@
 	<sun:checkbox id="jwc" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ear['PROPERTY-javaWebStartEnabled']}" selectedValue="true" />
 </sun:property>
 
+
+<sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
+        <sun:checkbox id="force"  selected="#{pageSession.ear['force']}" selectedValue="true" />
+</sun:property>
+
+
 <sun:property id="librariesProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Libraries}" helpText="$resource{i18n.deploy.libraryHelp}" >
 	<sun:textField id="library" columns="$int{40}" text="#{pageSession.ear['libraries']}" />
 </sun:property>

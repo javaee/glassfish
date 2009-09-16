@@ -43,7 +43,7 @@
     <!beforeCreate
         createMap(result="#{pageSession.jython}")
         mapPut(map="#{pageSession.deployMap}", key="jython", value="#{pageSession.jython}");
-        mapPut(map="#{pageSession.jython}", key="convertToFalseList", value={"enabled"} );
+        mapPut(map="#{pageSession.jython}", key="convertToFalseList", value={"enabled" ,"force" } );
         setResourceBundle(key="i18n_jython" bundle="org.glassfish.jython.admingui.Strings")
         setResourceBundle(key="help_jython" bundle="org.glassfish.jython.admingui.Helplinks");
      />

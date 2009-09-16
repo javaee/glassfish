@@ -43,7 +43,7 @@
     <!beforeCreate
         createMap(result="#{pageSession.war}")
         mapPut(map="#{pageSession.deployMap}", key="war", value="#{pageSession.war}");
-        mapPut(map="#{pageSession.war}", key="convertToFalseList", value={"enabled", "precompilejsp" , "verify" } );
+        mapPut(map="#{pageSession.war}", key="convertToFalseList", value={"enabled", "precompilejsp" , "verify" ,"force" } );
      />
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{warId});

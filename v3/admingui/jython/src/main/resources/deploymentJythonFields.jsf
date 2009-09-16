@@ -52,6 +52,10 @@
     </sun:checkbox>
 </sun:property>
 
+<sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
+        <sun:checkbox id="force"  selected="#{pageSession.jython['force']}" selectedValue="true" />
+</sun:property>
+
 <sun:property id="jythonHome" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jython.jythonHome}" helpText="$resource{i18n_jython.jythonHomeHelp}">
     <sun:textField id="jythonHome" columns="$int{60}" text="#{pageSession.jython['PROPERTY-jython.home']}" />
 </sun:property>

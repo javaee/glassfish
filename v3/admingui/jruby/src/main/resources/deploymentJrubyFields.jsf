@@ -60,6 +60,11 @@
     </sun:checkbox>
 </sun:property>
 
+
+<sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
+        <sun:checkbox id="force"  selected="#{pageSession.jruby['force']}" selectedValue="true" />
+</sun:property>
+
 <sun:property id="jhome" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.jrubyHome}" helpText="$resource{i18n_jruby.jrubyHomeHelp}">
     <sun:textField id="jhome" columns="$int{40}" text="#{pageSession.jruby['PROPERTY-jruby.home']}" />
 </sun:property>
