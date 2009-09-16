@@ -27,12 +27,17 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Module;
 import java.io.ByteArrayOutputStream;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.XMLEvent;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.lang.annotation.Annotation;
@@ -40,6 +45,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.stream.events.StartDocument;
 
 /**
  * Generic implementation of the Sniffer service that can be programmatically instantiated
@@ -54,6 +60,8 @@ public abstract class GenericSniffer implements Sniffer {
     final private String containerName;
     final private String appStigma;
     final private String urlPattern;
+    
+    final private static XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
 
     public GenericSniffer(String containerName, String appStigma, String urlPattern) {
         this.containerName = containerName;
@@ -162,6 +170,13 @@ public abstract class GenericSniffer implements Sniffer {
         } 
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 71 * hash + (getModuleType() != null ? getModuleType().hashCode() : 0);
+        return hash;
+    }
     
     /**
      * Returns a map of deployment configurations composed by reading from a
@@ -192,18 +207,14 @@ public abstract class GenericSniffer implements Sniffer {
      */
     public Map<String,String> getDeploymentConfigurations(final ReadableArchive location) throws IOException {
         final Map<String,String> deploymentConfigs = new HashMap<String,String>();
+
         for (String path : getDeploymentConfigurationPaths()) {
             InputStream is = null;
             try {
                 is = location.getEntry(path);
                 if (is != null) {
-                    final ByteArrayOutputStream os = new ByteArrayOutputStream();
-                    int bytesRead;
-                    final byte [] buffer = new byte[1024];
-                    while (( bytesRead = is.read(buffer)) != -1 ) {
-                        os.write(buffer, 0, bytesRead);
-                    }
-                    deploymentConfigs.put(path, os.toString());
+                    String dc = readDeploymentConfig(is);
+                    deploymentConfigs.put(path, dc);
                 }
             } finally {
                 if (is != null) {
@@ -213,7 +224,7 @@ public abstract class GenericSniffer implements Sniffer {
         }
         return deploymentConfigs;
     }
-    
+
     /**
      * Returns a list of paths within an archive that represents deployment
      * configuration files.  
@@ -241,5 +252,32 @@ public abstract class GenericSniffer implements Sniffer {
      */
     public String[] getIncompatibleSnifferTypes() {
         return null;
+    }
+
+    private String readDeploymentConfig(final InputStream is) throws IOException {
+        String encoding = "UTF-8";
+        try {
+            is.mark(Integer.MAX_VALUE);
+            XMLEventReader rdr = xmlInputFactory.createXMLEventReader(
+                    new InputStreamReader(is));
+            while (rdr.hasNext()) {
+                final XMLEvent ev = rdr.nextEvent();
+                if (ev.isStartDocument()) {
+                    final StartDocument sd = (StartDocument) ev;
+                    encoding = sd.getCharacterEncodingScheme();
+                }
+            }
+        } catch (XMLStreamException e) {
+            throw new IOException(e);
+        }
+        is.reset();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int bytesRead;
+        final byte [] buffer = new byte[1024];
+        while (( bytesRead = is.read(buffer)) != -1 ) {
+            baos.write(buffer, 0, bytesRead);
+        }
+        is.close();
+        return new String(baos.toByteArray(), encoding);
     }
 }
