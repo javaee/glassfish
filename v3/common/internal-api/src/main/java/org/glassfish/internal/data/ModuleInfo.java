@@ -109,6 +109,12 @@ public class ModuleInfo {
         return name;
     }
 
+    public Properties getModuleProps() {
+        Properties props =  new Properties();
+        props.putAll(moduleProps);
+        return props;
+    }
+
 
     /**
      * Returns the list of sniffers that participated in loaded this

@@ -49,7 +49,6 @@ public class NamingActivator implements BundleActivator
 {
     public void start(BundleContext context) throws Exception
     {
-        System.out.println(this + " called");
         ObjectInputOutputStreamFactoryFactory.setFactory(
                 new OSGiObjectInputOutputStreamFactoryImpl(context));
     }

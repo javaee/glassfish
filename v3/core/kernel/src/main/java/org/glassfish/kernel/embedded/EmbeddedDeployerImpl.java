@@ -57,7 +57,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.SnifferManager;
-import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -232,6 +232,10 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         try {
             deploymentContext = deployment.getContext(logger, source, params, report);
             if (info!=null) {
+                for (ModuleInfo module : appInfo.getModuleInfos()) {
+                    info.map.put(module.getName(), module.getModuleProps());
+                    deploymentContext.getModuleProps().putAll(module.getModuleProps());
+                }
                 deploymentContext.setModulePropsMap(info.map);
             }
         } catch (IOException e) {
