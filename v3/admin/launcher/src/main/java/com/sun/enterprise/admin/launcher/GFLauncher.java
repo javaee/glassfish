@@ -151,7 +151,7 @@ public abstract class GFLauncher {
         //jvmOptions.addJvmLogging();
         
         resolveAllTokens();
-        GFLauncherLogger.addLogFileHandler(logFilename);
+        GFLauncherLogger.addLogFileHandler(logFilename, info);
         setJavaExecutable();
         setClasspath();
         setCommandLine();
@@ -211,7 +211,7 @@ public abstract class GFLauncher {
         String filename = parser.getLogFilename();
 
         if(filename == null)
-            filename = new File(getInfo().getInstanceRootDir(), "logs/server.log").getPath();
+            filename = "logs/server.log";
 
         return filename;
     }

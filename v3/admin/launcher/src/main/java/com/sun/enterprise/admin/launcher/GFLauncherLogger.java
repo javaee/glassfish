@@ -23,6 +23,7 @@
 package com.sun.enterprise.admin.launcher;
 
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
@@ -72,8 +73,9 @@ public class GFLauncherLogger {
      * is that Windows will not be able to delete that server after stopping it.
      * Solution: remove the file handler when done.
      * @param logFile The logfile
+     * @throws GFLauncherException if the info object has not been setup
      */
-    static synchronized void addLogFileHandler(String logFile)
+    static synchronized void addLogFileHandler(String logFile, GFLauncherInfo info) throws GFLauncherException
     {
         try
         {
@@ -81,10 +83,17 @@ public class GFLauncherLogger {
                 return;
             }
 
+            File f = new File(logFile);
+
+            if(!f.isAbsolute()) {
+                // this is quite normal.  Logging Service will by default return
+                // a relative path!
+                f = new File(info.getInstanceRootDir(), logFile);
+            }
+
             // if the file doesn't exist -- make sure the parent dir exists
             // this is common in unit tests AND the first time the instance is
             // started....
-            File f = new File(logFile);
             
             if(!f.exists()) {
                 File parent = f.getParentFile();
@@ -95,7 +104,7 @@ public class GFLauncherLogger {
                     }
                 }
             }
-            logfileHandler = new FileHandler(logFile, true);
+            logfileHandler = new FileHandler(SmartFile.sanitize(f).getPath(), true);
             logfileHandler.setFormatter(new SimpleFormatter());
             logfileHandler.setLevel(Level.INFO);
             logger.addHandler(logfileHandler);
