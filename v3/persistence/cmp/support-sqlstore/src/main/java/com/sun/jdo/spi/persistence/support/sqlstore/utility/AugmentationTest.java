@@ -40,7 +40,7 @@
  * Create on April 19, 2001
  */
 
-package com.sun.jdo.api.persistence.support.util;
+package com.sun.jdo.spi.persistence.support.sqlstore.utility;
 
 
 import java.lang.reflect.*;

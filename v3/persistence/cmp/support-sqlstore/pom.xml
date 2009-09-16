@@ -103,6 +103,11 @@
     <dependencies>
         <dependency>
             <groupId>org.glassfish.persistence.cmp</groupId>
+            <artifactId>cmp-internal-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+		<dependency>
+            <groupId>org.glassfish.persistence.cmp</groupId>
             <artifactId>cmp-model</artifactId>
             <version>${project.version}</version>
         </dependency>
