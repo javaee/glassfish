@@ -1,4 +1,0 @@
-<foo name="The Parent">
-  <bar id="123" title="The First Child"/>
-  <bar id="456" title="The Second Child"/>
-</foo>

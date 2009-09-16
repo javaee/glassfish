@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<sun-application-client>
-    <java-web-start-access>
-        <context-root>/TestAPPCPATH</context-root>
-        <vendor>Tests</vendor>
-    </java-web-start-access>
-</sun-application-client>

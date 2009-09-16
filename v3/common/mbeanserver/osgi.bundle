@@ -1,1 +1,0 @@
--exportcontents: org.glassfish.admin.mbeanserver; version=${project.osgi.version}

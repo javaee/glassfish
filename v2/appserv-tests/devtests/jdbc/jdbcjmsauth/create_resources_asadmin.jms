@@ -1,4 +1,0 @@
-create-jms-resource --restype javax.jms.QueueConnectionFactory jms/jdbcjmsauth_QCF1 
-create-jms-resource --restype javax.jms.QueueConnectionFactory jms/jdbcjmsauth_QCF2 
-
-quit

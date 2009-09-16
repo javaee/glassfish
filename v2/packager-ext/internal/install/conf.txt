@@ -1,5 +1,0 @@
-domainRoot = /var/appserver/domains
-adminPort = 4848
-adminUser = admin
-adminPasswd = adminadmin
-serverPort = 8080

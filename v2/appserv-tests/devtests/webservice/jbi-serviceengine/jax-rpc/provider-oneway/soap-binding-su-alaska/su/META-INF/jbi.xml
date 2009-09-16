@@ -1,9 +1,0 @@
-<?xml version='1.0' ?>
-<jbi version="1.0" 
-	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	 xmlns="http://java.sun.com/xml/ns/jbi" 
-	 xmlns:tns="http://hello.org/wsdl"
-	 xsi:schemaLocation="http://java.sun.com/xml/ns/jbi jbi.xsd">
-	<services binding-component="true">		
-	</services>
-</jbi>

@@ -1,1 +1,0 @@
--exportcontents: com.sun.appserv.connectors.spi; version=${project.osgi.version}

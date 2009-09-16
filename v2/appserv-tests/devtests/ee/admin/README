@@ -1,7 +1,0 @@
-Directory: appserv-tests/devtests/ee/admin
-Purpose: All the devtests pertaining to AS PE/SE/EE 8.1 administration. Various subdirectories here are supposed to test the specific feature described in its README. Note that these tests are slightly different than unit tests, because they test the feature when the server is started.
-
-
-UPDATE: date: 08/05/2005, by km105526
-
-The admin devtests are in <appserv-tests>/devtests/admin, not here.

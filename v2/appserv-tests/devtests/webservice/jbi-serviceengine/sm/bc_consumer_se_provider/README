@@ -1,1 +1,0 @@
-Client <-----> servicemix-http <------> NMR <------> Java EE Service Engine <----> Webservice

@@ -1,5 +1,0 @@
--exportcontents: org.glassfish.flashlight.agent; version=${project.osgi.version}
-Premain-Class: org.glassfish.flashlight.agent.ProbeAgentMain
-Agent-Class: org.glassfish.flashlight.agent.ProbeAgentMain
-Can-Redefine-Classes: true
-Can-Retransform-Classes: true

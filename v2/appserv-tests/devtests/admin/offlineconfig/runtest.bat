@@ -1,2 +1,0 @@
-REM -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9009
-java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9009 -cp /gfroot/publish/glassfish/lib/appserv-rt.jar;/gfroot/publish/glassfish/lib/appserv-se.jar;/gfroot/publish/glassfish/lib/appserv-admin.jar;build/internal/testclasses com.sun.enterprise.admin.config.OfflineCommander -testpath build/internal/testclasses/asadmintest

@@ -1,3 +1,0 @@
-This test uses a ConnectionPoolDataSource.
-It simply tries to get a connection using the CPDS
-for various Application managed authentication scenarios

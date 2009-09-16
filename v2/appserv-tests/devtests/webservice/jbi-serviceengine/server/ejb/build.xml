@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE project [
-]>
-<project name="jsr108-integration tests" default="all" basedir=".">
-    <target name="all">
-	<ant dir="hello" target="all"/>
-    </target>
-</project>

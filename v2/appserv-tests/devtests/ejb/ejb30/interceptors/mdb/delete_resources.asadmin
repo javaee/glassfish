@@ -1,9 +1,0 @@
-delete-jms-resource jms/ejb_ejb30_interceptors_mdb_QCF
-
-delete-jms-resource jms/ejb_ejb30_interceptors_mdb_InQueue
-delete-jmsdest --desttype queue ejb_ejb30_interceptors_mdb_InQueue
-
-delete-jms-resource jms/ejb_ejb30_interceptors_mdb_OutQueue
-delete-jmsdest --desttype queue ejb_ejb30_interceptors_mdb_OutQueue
-
-quit

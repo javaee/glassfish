@@ -1,3 +1,0 @@
-<Context>
-  <Environment name="virtual-server-env" type="java.lang.String" value="virtual-server-env-value"/>
-</Context>

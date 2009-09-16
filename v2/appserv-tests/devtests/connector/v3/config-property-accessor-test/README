@@ -1,2 +1,0 @@
-This test case will check whether if there is a config-property with boolean type
-whose getter can be "isXXX" or "getXXX" will work fine

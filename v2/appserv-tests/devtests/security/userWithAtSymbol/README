@@ -1,2 +1,0 @@
-Fix for CR: 5040224
-Previous appserver builds would not allow usernames of the form "username@blahblah". This test checks against regressions for this fix.

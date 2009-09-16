@@ -1,3 +1,0 @@
-Directory: appserv-tests/ee.
-Purpose: Checkin all the devtests that are required for AS 8.1 SE/EE functionality. It is not necessary that the tests are "specific" to SE/EE because an SE/EE installation has to work like a PE installation too. It is expected that all the tests are uniformly written and produce the reports properly.
-Date Created: 27 Feb 2004
