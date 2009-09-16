@@ -45,6 +45,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.logging.LogDomains;
+import com.sun.hk2.component.*;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.event.*;
 import org.glassfish.api.event.EventListener.Event;
@@ -112,9 +113,6 @@ public class ApplicationLifecycle implements Deployment {
 
     @Inject
     ModulesRegistry modulesRegistry;
-
-    @Inject
-    protected ArchiveFactory archiveFactory;
 
     @Inject
     protected Applications applications;
@@ -289,14 +287,12 @@ public class ApplicationLifecycle implements Deployment {
                         }
                     }
 
-                    // remove the temp application info from the registry
-                    // first, then register the real one
-                    appRegistry.remove(appName);
-                    appRegistry.add(appName, appInfo);
+                // remove the temp application info from the registry
+                // first, then register the real one
+                appRegistry.remove(appName);
+                appRegistry.add(appName, appInfo);
 
-                if (events!=null) {
-                    events.send(new Event<DeploymentContext>(Deployment.APPLICATION_PREPARED, context), false);
-                }
+                events.send(new Event<DeploymentContext>(Deployment.APPLICATION_PREPARED, context), false);
 
                 // now were falling back into the mainstream loading/starting sequence, at this
                 // time the containers are set up, all the modules have been prepared in their
@@ -927,7 +923,7 @@ public class ApplicationLifecycle implements Deployment {
 
         ReadableArchive archive = null;
         if (source!=null) {
-             archive = archiveFactory.openArchive(source);
+             archive = habitat.getComponent(ArchiveFactory.class).openArchive(source);
             if (archive==null) {
                 throw new IOException("Invalid archive type : " + source.getAbsolutePath());
             }
@@ -960,7 +956,7 @@ public class ApplicationLifecycle implements Deployment {
         context.getAppProps().put("default-EE6-app-name", 
             DeploymentUtils.getDefaultEEName(sourceFile.getName()));   
 
-        if (source != null && !(sourceFile.isDirectory())) {
+        if (!(sourceFile.isDirectory())) {
             // create a temporary deployment context
             File expansionDir = new File(domain.getApplicationRoot(), 
                 params.name());
@@ -975,6 +971,7 @@ public class ApplicationLifecycle implements Deployment {
             }
             try {
                 Long start = System.currentTimeMillis();
+                ArchiveFactory archiveFactory = habitat.getComponent(ArchiveFactory.class);
                 archiveHandler.expand(source, archiveFactory.createArchive(expansionDir), context);
                 System.out.println("Deployment expansion took " + (System.currentTimeMillis() - start));
 

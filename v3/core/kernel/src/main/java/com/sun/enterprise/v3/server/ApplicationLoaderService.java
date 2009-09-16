@@ -33,6 +33,7 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
 import com.sun.logging.LogDomains;
+import com.sun.hk2.component.*;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -68,7 +69,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
-import org.glassfish.deployment.common.DeploymentProperties;
 
 /**
  * This service is responsible for loading all deployed applications...
@@ -84,7 +84,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
     Deployment deployment;
 
     @Inject
-    ArchiveFactory archiveFactory;
+    Holder<ArchiveFactory> archiveFactory;
 
     @Inject
     SnifferManager snifferManager;
@@ -165,7 +165,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                 sourceFile = sourceFile.getAbsoluteFile();
                 ReadableArchive sourceArchive=null;
                 try {
-                    sourceArchive = archiveFactory.openArchive(sourceFile);
+                    sourceArchive = archiveFactory.get().openArchive(sourceFile);
 
                     DeployCommandParameters parameters = new DeployCommandParameters(sourceFile);
                     parameters.name = sourceFile.getName();
@@ -180,7 +180,9 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     // ok we need to explode the directory somwhere and remember to delete it on shutdown
                         final File tmpFile = File.createTempFile(sourceFile.getName(),"");
                         final String path = tmpFile.getAbsolutePath();
-                        tmpFile.delete();
+                        if (!tmpFile.delete()) {
+                            logger.log(Level.SEVERE, "Cannot delete created temporary file " + path);
+                        }
                         File tmpDir = new File(path);
                         tmpDir.deleteOnExit();
                         events.register(new org.glassfish.api.event.EventListener() {
@@ -195,9 +197,9 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                         if (tmpDir.mkdirs()) {
                             ArchiveHandler handler = deployment.getArchiveHandler(sourceArchive);
                             final String appName = handler.getDefaultApplicationName(sourceArchive);
-                            handler.expand(sourceArchive, archiveFactory.createArchive(tmpDir), depContext);
+                            handler.expand(sourceArchive, archiveFactory.get().createArchive(tmpDir), depContext);
                             sourceArchive = 
-                                archiveFactory.openArchive(tmpDir);
+                                archiveFactory.get().openArchive(tmpDir);
                             depContext.setSource(sourceArchive);
                             depContext.setArchiveHandler(handler);
                             logger.info("Source is not a directory, using temporary location " + tmpDir.getAbsolutePath());
@@ -211,8 +213,10 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                                 + sourceFile.getAbsolutePath());
                         logger.severe("Was the container or sniffer removed ?");
                     }
-                } catch(Exception e) {
-                    logger.log(Level.SEVERE, "IOException while deploying", e);
+                } catch(RuntimeException e) {
+                    logger.log(Level.SEVERE, "Exception while deploying", e);
+                } catch(IOException ioe) {
+                    logger.log(Level.SEVERE, "IOException while deploying", ioe);                    
                 } finally {
                     if (sourceArchive!=null) {
                         try {
@@ -254,7 +258,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
             logger.severe("Cannot determine application type at " + source);
             return;
         }
-        URI uri = null;
+        URI uri;
         try {
             uri = new URI(source);
         } catch (URISyntaxException e) {
@@ -271,7 +275,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                         app.getDeployParameters(appRef);
                     deploymentParams.origin = DeployCommandParameters.Origin.load;
 
-                    archive = archiveFactory.openArchive(sourceFile, deploymentParams);
+                    archive = archiveFactory.get().openArchive(sourceFile, deploymentParams);
 
                     ActionReport report = new HTMLActionReporter();
                     ExtendedDeploymentContext depContext = deployment.getContext(logger, archive, deploymentParams, report);

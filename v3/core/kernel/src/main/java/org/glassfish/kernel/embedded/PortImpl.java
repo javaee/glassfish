@@ -55,8 +55,7 @@ public class PortImpl implements Port {
                     return protocol;
                 }
             }, config.getProtocols());
-            final NetworkListener listener =
-                (NetworkListener) ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
+                ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
                     public Object run(NetworkListeners param) throws TransactionFailure {
                         final NetworkListener listener = param.createChild(NetworkListener.class);
                         listener.setName(listenerName);

@@ -203,14 +203,18 @@ public class AppServerStartup implements ModuleStartup {
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine(init.type() + " Init started in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
             }
+            //logger.info(init.type() + " Init started in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+            //long start = System.currentTimeMillis();
             init.get();
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine(init.type() + " Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
             }
+            //logger.info(init.type() + " Init done in \t\t" + (System.currentTimeMillis() - start) + " ms");
         }
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
         }
+        //logger.info("Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
 
         // run the startup services
         final Collection<Inhabitant<? extends Startup>> startups = habitat.getInhabitants(Startup.class);
@@ -229,10 +233,12 @@ public class AppServerStartup implements ModuleStartup {
         ArrayList<Future<Result<Thread>>> futures = new ArrayList<Future<Result<Thread>>>();
         for (final Inhabitant<? extends Startup> i : startups) {
             if (i.type().getAnnotation(Async.class)==null) {
+                //long start = System.currentTimeMillis();
                 try {
                     if (logger.isLoggable(Level.FINE)) {
-                        logger.info(i.type() + " startup started at " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+                        logger.fine(i.type() + " startup started at " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
                     }
+                    //logger.info(i.type() + " startup started at " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
                     Startup startup = i.get();
                     // the synchronous service was started successfully, let's check that it's not in fact a FutureProvider
                     if (startup instanceof FutureProvider) {
@@ -245,6 +251,7 @@ public class AppServerStartup implements ModuleStartup {
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine(i.type() + " startup done at " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
                 }
+                //logger.info(i.type() + " startup done in \t\t" + (System.currentTimeMillis() - start) + " ms");
             }
         }
 

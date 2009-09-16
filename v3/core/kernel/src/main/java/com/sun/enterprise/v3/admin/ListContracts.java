@@ -110,7 +110,7 @@ public class ListContracts implements AdminCommand {
 
         SortedSet<String> contracts = new TreeSet<String>();
 
-        while(it != null && it.hasNext())
+        while(it.hasNext())
             contracts.add(it.next());
 
         // now the contracts are sorted...
@@ -127,7 +127,7 @@ public class ListContracts implements AdminCommand {
         Iterator<String> it = habitat.getAllContracts();
         while (it.hasNext()) {
             String cn = it.next();
-            if (cn.toLowerCase().indexOf(pattern.toLowerCase()) < 0)
+            if (cn.toLowerCase(Locale.ENGLISH).indexOf(pattern.toLowerCase(Locale.ENGLISH)) < 0)
                     continue;
              sb.append("\n-----------------------------\n");
              for (Inhabitant i : habitat.getInhabitantsByContract(cn)) {

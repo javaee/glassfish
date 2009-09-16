@@ -74,8 +74,6 @@ public class ContainerStarter {
         assert sniffer!=null;
         String containerName = sniffer.getModuleType();
         assert containerName!=null;
-        // version is null so far...
-        String version = null;
         
         // get the container installation
         String containerHome = StringUtils.getProperty(containerName + ".home");
@@ -131,7 +129,7 @@ public class ContainerStarter {
                             }
                         }
                     } catch (ClassNotFoundException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        logger.log(Level.SEVERE, "Exception while loading container class ", e);
                     }
 
                     if (provider==null) {
@@ -141,13 +139,11 @@ public class ContainerStarter {
                     }
                 }
                 Thread.currentThread().setContextClassLoader(containerClassLoader);
-                if (provider!=null) {
-                    EngineInfo info = new EngineInfo(provider, sniffer, containerClassLoader);
+                EngineInfo info = new EngineInfo(provider, sniffer, containerClassLoader);
 
-                    ContainerRegistry registry = habitat.getComponent(ContainerRegistry.class);
-                    registry.addContainer(name, info);
-                    containers.add(info);
-                }
+                ContainerRegistry registry = habitat.getComponent(ContainerRegistry.class);
+                registry.addContainer(name, info);
+                containers.add(info);
             } catch (ComponentException e) {
                 logger.log(Level.SEVERE, "Cannot create or inject Container", e);
                 return null;
@@ -184,7 +180,7 @@ public class ContainerStarter {
     }
 
 
-    public static void explodeJar(File source, File destination) throws IOException {
+    public void explodeJar(File source, File destination) throws IOException {
 
         JarFile jarFile = null;
         try {
@@ -196,7 +192,9 @@ public class ContainerStarter {
                 File out = new File(destination, fileSystemName);
 
                 if (entry.isDirectory()) {
-                    out.mkdirs();
+                    if (!out.mkdirs()) {
+                       logger.log(Level.INFO, "Cannot create directory " + out.getAbsolutePath());
+                    }
                 } else {
                     InputStream is = null;
                     FileOutputStream fos = null;

@@ -245,9 +245,7 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         }
 
 
-        if (appInfo!=null) {
-            deployment.undeploy(name, deploymentContext);
-        }
+        deployment.undeploy(name, deploymentContext);
 
 
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
@@ -266,7 +264,7 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
 
     }
 
-    public final class EmbeddedDeployedInfo {
+    private final static class EmbeddedDeployedInfo {
         final ApplicationInfo appInfo;
         final Map<String, Properties> map;
 
