@@ -234,9 +234,23 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @DuckTyped
     void createResourceRef(String enabled, String refName) throws TransactionFailure;
 
+    @DuckTyped
+    ApplicationRef getApplicationRef(String appName);
+
+
     class Duck {
         public static String getReference(Server server) {
             return server.getConfigRef();
+        }
+
+        public static ApplicationRef getApplicationRef(Server server, 
+            String appName) {
+            for (ApplicationRef appRef : server.getApplicationRef()) {
+                if (appRef.getRef().equals(appName)) {
+                    return appRef;
+                }
+            }
+            return null;
         }
 
         public static ResourceRef getResourceRef(Server server, String refName) {
