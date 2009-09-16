@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,13 @@
     </sun:button>
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}" onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
+             onClick=" if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
+                    if  ( checkPSW() ){
+                        return submitAndDisable(this, '$resource{i18n.button.Processing}');
+                    }
+                  }
+                  return false; " >
                 <!command
                     saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}", attrs="#{pageSession.valueMap}");
                     prepareSuccessfulMsg();
@@ -51,7 +57,14 @@
                 />
             </sun:button>
 
-            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}" onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}" 
+                        onClick=" if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
+                    if  ( checkPSW() ){
+                        return submitAndDisable(this, '$resource{i18n.button.Processing}');
+                    }
+                  }
+                  return false; " >
+
                 <!command
                     createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}");
@@ -83,14 +96,26 @@
             <sun:textField id="Host" columns="$int{55}"  text="#{pageSession.valueMap['Host']}" />
         </sun:property>
         <sun:property id="PortProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.portLabel}" helpText="$resource{i18njms.edJmsHost.portHelp}" >
-            <sun:textField id="Port" columns="$int{20}" styleClass="port"text="#{pageSession.valueMap['Port']}" />
+            <sun:textField id="Port" columns="$int{25}" styleClass="port"text="#{pageSession.valueMap['Port']}" />
         </sun:property>
         <sun:property id="AdminUserProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.adminUserLabel}" helpText="$resource{i18njms.edJmsHost.adminUserHelp}" >
-            <sun:textField id="AdminUser" columns="$int{20}" text="#{pageSession.valueMap['AdminUserName']}" />
+            <sun:textField id="AdminUser" columns="$int{25}" text="#{pageSession.valueMap['AdminUserName']}" styleClass="required"  required="#{true}" />
         </sun:property>
-        <sun:property id="AdminPwdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.adminPwdLabel}" helpText="$resource{i18njms.edJmsHost.adminPwdHelp}" >
-            <sun:passwordField id="AdminPwd" columns="$int{20}" text="#{pageSession.valueMap['AdminPassword']}" />
+        <sun:property id="newPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.adminPwdLabel}" helpText="$resource{i18njms.edJmsHost.adminPwdHelp}">
+        <sun:passwordField id="NewPassword" columns="$int{25}" text="#{pageSession.valueMap['AdminPassword']}" styleClass="required"  required="#{true}">
+             <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{ps1});
+            />
+        </sun:passwordField>
         </sun:property>
+        <sun:property id="confirmPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.ConfirmNewPassword}">
+            <sun:passwordField id="ConfirmPassword"  columns="$int{25}" text="#{pageSession.valueMap['AdminPassword']}" styleClass="required" required="#{true}"  >
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{ps2});
+                />
+            </sun:passwordField>
+        </sun:property>
+
         "<br /><br />
     </sun:propertySheetSection>
 </sun:propertySheet>    

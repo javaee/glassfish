@@ -60,5 +60,20 @@
 #include "/jms/jmsHost.inc"
         <sun:hidden id="helpKey" value="$resource{helpjms.jmsHostEdit}" />
     </sun:form>
+
+<f:verbatim>
+    <script type="text/javascript">
+    function checkPSW() {
+    var ps1 = getTextElement('#{ps1}').value;
+    var ps2 = getTextElement('#{ps2}').value;
+    if (ps1 != ps2){
+        return showAlert('$resource{i18njms.msg.JS.edJmsHost.passwordNotMatch}');
+        }
+    return true;
+    }
+     </script>
+</f:verbatim>
+
+
 </define>
 </composition>
