@@ -133,20 +133,30 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
     public void postConstruct() {
         
         assert env!=null;
-        for (Named m : applications.getModules()) {
-            if (m instanceof Application) {
-                Application module = (Application) m;
-                for (ApplicationRef appRef : server.getApplicationRef()) {
-                    if (appRef.getRef().equals(module.getName())) {
-                        if (appRef.getEnabled().equals(String.valueOf(
-                            Boolean.TRUE))) {
-                            // only process the application when the enable
-                            // attribute is true
-                            processApplication(module, appRef, logger);
-                        }
-                        break;
-                    }
-                }
+
+        List<Application> allApplications = applications.getApplications();
+
+        List<Application> standaloneAdapters =
+            applications.getApplicationsWithSnifferType("connector", true);
+
+        // load standalone resource adapters first
+        for (Application standaloneAdapter : standaloneAdapters) {
+            ApplicationRef appRef = server.getApplicationRef(
+                standaloneAdapter.getName());
+            if (appRef != null && Boolean.valueOf(appRef.getEnabled())) {
+                processApplication(standaloneAdapter, appRef, logger);
+            }
+        }
+
+        // then the rest of the applications
+        for (Application app : allApplications) {
+            if (app.isStandaloneModule() && 
+                app.containsSnifferType("connector")) {
+                continue;
+            }
+            ApplicationRef appRef = server.getApplicationRef(app.getName());
+            if (appRef != null && Boolean.valueOf(appRef.getEnabled())) {
+                processApplication(app, appRef, logger);
             }
         }
 
