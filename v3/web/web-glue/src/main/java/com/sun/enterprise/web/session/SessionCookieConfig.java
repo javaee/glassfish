@@ -38,7 +38,7 @@ package com.sun.enterprise.web.session;
 
 import java.net.URLEncoder;
 import org.apache.catalina.Globals;
-
+import org.apache.catalina.util.ServerInfo;
 
 /**
  * Representation of the session cookie configuration element for a web 
@@ -54,12 +54,6 @@ public final class SessionCookieConfig {
     // ----------------------------------------------------- Manifest Constants
 
     /**
-     * The default value for the session tracking cookie's comment.
-     */
-    public static final String SESSION_COOKIE_DEFAULT_COMMENT =
-        URLEncoder.encode("Sun ONE Application Server Session Tracking Cookie");
-
-    /**
      * The value that allows the JSESSIONID cookie's secure attribute to
      * be configured based on the connection i.e. secure if HTTPS.
      */
@@ -72,6 +66,11 @@ public final class SessionCookieConfig {
      */
     public SessionCookieConfig() {
         super();
+        String serverInfo = ServerInfo.getPublicServerInfo();
+        if (serverInfo != null && !serverInfo.isEmpty()) {
+            _comment = URLEncoder.encode(serverInfo +
+                " Session Tracking Cookie");
+        }
     }
 
     // ----------------------------------------------------- Instance Variables
@@ -111,7 +110,7 @@ public final class SessionCookieConfig {
      * browser's cookie file. Applications may choose to provide a more
      * specific name for this cookie.
      */
-    private String _comment = SESSION_COOKIE_DEFAULT_COMMENT;
+    private String _comment = null;
 
     /**
      * When set to "dynamic", the cookie is marked as secure only if the
