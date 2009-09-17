@@ -1729,8 +1729,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         SunWebApp iasBean = null;
 
         // The default context is the only case when wbd == null
-        if (wbd != null)
+        if (wbd != null) {
             iasBean = wbd.getSunDescriptor();
+        }
 
         // set the sun-web config bean
         ctx.setIasWebAppConfigBean(iasBean);
@@ -1747,28 +1748,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         Loader loader = ctx.configureLoader(iasBean);
 
         // Set the class loader on the DOL object
-        if (wbd != null && wbd.hasWebServices())
+        if (wbd != null && wbd.hasWebServices()) {
             wbd.addExtraAttribute("WEBLOADER", loader);
-
-        // Enable dynamic reloading
-        /*
-        if (_reloadingEnabled) {
-            if (_reloadManager == null) {
-                _reloadManager = new StandaloneWebModulesManager(
-                                                            _id,
-                                                            _modulesRoot,
-                                                            _pollInterval);
-            }
-            _reloadManager.addWebModule(wmInfo.getBean());
         }
-        */
 
         // Configure the session manager and other related settings
-        // HERCULES:mod - take into account if app is distributable
-        // passing in WebBundleDescriptor which has info about whether
-        // app is distributable
         ctx.configureSessionSettings(wbd, wmInfo);
-        // END HERCULES:mod
 
         // set i18n info from locale-charset-info tag in sun-web.xml
         ctx.setI18nInfo();

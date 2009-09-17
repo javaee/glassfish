@@ -79,6 +79,7 @@ import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.ProtocolHandler;
 
 import org.apache.catalina.Container;
+import org.apache.catalina.Context;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
@@ -1433,10 +1434,11 @@ public class Connector
      * been entered the web container.
      *
      * @param request the request object
+     * @param context the Context to which the request was mapped
      * @param hostName the name of the virtual server to which the request
      * was mapped
      */
-    public void requestStartEvent(HttpServletRequest request,
+    public void requestStartEvent(HttpServletRequest request, Context context,
                                   String hostName) {
         // Deliberate noop
     };
@@ -1446,13 +1448,13 @@ public class Connector
      * to exit from the web container.
      *
      * @param request the request object
+     * @param context the Context to which the request was mapped
      * @param hostName the name of the virtual server to which the request
      * was mapped
      * @param statusCode the response status code
      */
-    public void requestEndEvent(HttpServletRequest request,
-                                String hostName,
-                                int statusCode) {
+    public void requestEndEvent(HttpServletRequest request, Context context,
+                                String hostName, int statusCode) {
         // Deliberate noop
     };
 
@@ -1603,7 +1605,7 @@ public class Connector
         if ( protocolHandler == null ) {
             try {
                 Class clazz = Class.forName(protocolHandlerClassName);
-             
+
                 // use no-arg constructor for JkCoyoteHandler
                 if (protocolHandlerClassName.equals("org.apache.jk.server.JkCoyoteHandler")) {
                     protocolHandler = 

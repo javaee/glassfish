@@ -592,29 +592,6 @@ public class VirtualServer extends StandardHost {
     }
 
     /**
-     * Creates and returns an object that contains information about
-     * the web module's configuration such as the information specified
-     * in server.xml, the deployment descriptor objects etc.
-     *
-     * @return null if an error occured while reading/parsing the
-     *              deployment descriptors.
-     */
-    protected WebModuleConfig loadWebModuleConfig(WebModule wm) {
-
-        WebModuleConfig wmInfo = new WebModuleConfig();
-        wmInfo.setBean(wm);
-        String wmID = wm.getName();
-        String location = wm.getLocation();
-
-        /*ApplicationInfo<WebBundleDescriptor> appInfo =
-                ContainerRegistry.getRegistry().find(wmID);
-        WebBundleDescriptor wbd = appInfo.getDescriptor();
-        wmInfo.setDescriptor(wbd);
-        */
-        return wmInfo;
-    }
-
-    /**
      * Determines whether the specified web module is "active" under this
      * virtual server.
      */

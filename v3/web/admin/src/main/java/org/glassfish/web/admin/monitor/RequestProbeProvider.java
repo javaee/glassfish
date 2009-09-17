@@ -46,6 +46,7 @@ public class RequestProbeProvider {
 
     @Probe(name="requestStartEvent")
     public void requestStartEvent(
+        @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName,
         @ProbeParam("serverName") String serverName,
         @ProbeParam("serverPort") int serverPort,
@@ -54,6 +55,7 @@ public class RequestProbeProvider {
     
     @Probe(name="requestEndEvent")
     public void requestEndEvent(
+        @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName,
         @ProbeParam("serverName") String serverName,
         @ProbeParam("serverPort") int serverPort,

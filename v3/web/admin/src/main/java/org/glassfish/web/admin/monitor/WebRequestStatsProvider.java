@@ -129,6 +129,7 @@ public class WebRequestStatsProvider {
 
     @ProbeListener("glassfish:web:http-service:requestStartEvent")
     public void requestStartEvent(
+            @ProbeParam("appName") String appName,
             @ProbeParam("hostName") String hostName,
             @ProbeParam("serverName") String serverName,
             @ProbeParam("serverPort") int serverPort,
@@ -146,9 +147,9 @@ public class WebRequestStatsProvider {
         if ((virtualServerName != null) && (moduleName != null)) {
             //String vs = WebTelemetryBootstrap.getVirtualServerName(
             //    hostName, String.valueOf(request.getServerPort()));
-            String appName = (contextPath == null)? null : 
-                                WebStatsProviderBootstrap.getAppName(contextPath);
-            if ((appName != null && hostName != null) && hostName.equals(virtualServerName) && appName.equals(moduleName)){
+            if ((appName != null && hostName != null) &&
+                    hostName.equals(virtualServerName) &&
+                    appName.equals(moduleName)){
                 //increment counts
                 requestProcessTime.entry();
                 if (logger.isLoggable(Level.FINEST)) {
@@ -174,6 +175,7 @@ public class WebRequestStatsProvider {
 
     @ProbeListener("glassfish:web:http-service:requestEndEvent")
     public void requestEndEvent(
+            @ProbeParam("appName") String appName,
             @ProbeParam("hostName") String hostName,
             @ProbeParam("serverName") String serverName,
             @ProbeParam("serverPort") int serverPort,
@@ -192,9 +194,9 @@ public class WebRequestStatsProvider {
         if ((virtualServerName != null) && (moduleName != null)) {
             //String vs = WebTelemetryBootstrap.getVirtualServerName(
             //    hostName, String.valueOf(request.getServerPort()));
-            String appName = (contextPath == null)? null : 
-                                WebStatsProviderBootstrap.getAppName(contextPath);
-            if ((appName != null && hostName != null) && hostName.equals(virtualServerName) && appName.equals(moduleName)){
+            if ((appName != null && hostName != null) &&
+                    hostName.equals(virtualServerName) &&
+                    appName.equals(moduleName)){
                 //increment counts
                 requestProcessTime.exit();
                 if (statusCode >= 400) {

@@ -232,21 +232,21 @@ public class CoyoteAdapter
         }
 
         connector.requestStartEvent(request.getRequest(),
-                                    hostName);
+            (Context) request.getMappingData().context, hostName);
         try {
             doService(req, request, res, response);
         } catch (IOException e) {
             connector.requestEndEvent(request.getRequest(),
-                                      hostName,
-                                      response.getStatus());
+                (Context) request.getMappingData().context, hostName,
+                response.getStatus());
             // Recycle the wrapper request and response
             request.recycle();
             response.recycle();
         } catch (Throwable t) {
             log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
             connector.requestEndEvent(request.getRequest(),
-                                      hostName,
-                                      response.getStatus());
+                (Context) request.getMappingData().context, hostName,
+                response.getStatus());
             // Recycle the wrapper request and response
             request.recycle();
             response.recycle();
@@ -382,8 +382,8 @@ public class CoyoteAdapter
                 hostName = ((Host) md.host).getName();
             }
             connector.requestEndEvent(request.getRequest(),
-                                      hostName,
-                                      response.getStatus());
+                (Context) request.getMappingData().context, hostName,
+                response.getStatus());
             if (!res.isSuspended()){
                 // Recycle the wrapper request and response
                 request.recycle();

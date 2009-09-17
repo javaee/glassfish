@@ -185,6 +185,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         if (config!=null) {
             moduleConfig = config.getModule(wmInfo.getDescriptor().getName());
         }
+        wmInfo.setBean(config);
         WebApplication webApp = new WebApplication(container, wmInfo, moduleConfig,
             (Boolean.parseBoolean(dc.getAppProps().getProperty(DeploymentProperties.KEEP_SESSIONS))?
                 dc.getAppProps():null), 

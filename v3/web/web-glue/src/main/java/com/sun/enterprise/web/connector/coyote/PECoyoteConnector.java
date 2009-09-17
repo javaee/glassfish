@@ -40,6 +40,7 @@ import com.sun.appserv.ProxyHandler;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.web.WebContainer;
+import com.sun.enterprise.web.WebModule;
 import com.sun.enterprise.web.connector.extension.GrizzlyConfig;
 import com.sun.enterprise.web.pwc.connector.coyote.PwcCoyoteRequest;
 import com.sun.grizzly.config.dom.Http;
@@ -50,6 +51,7 @@ import com.sun.grizzly.config.dom.Transport;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.util.IntrospectionUtils;
 import com.sun.logging.LogDomains;
+import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
@@ -1214,13 +1216,23 @@ public class PECoyoteConnector extends Connector {
      * been entered the web container.
      *
      * @param request the request object
+     * @param context the Context to which the request was mapped
      * @param hostName the name of the virtual server to which the request
      * was mapped
      */
     public void requestStartEvent(HttpServletRequest request,
-                                  String hostName) {
+            Context context, String hostName) {
         if (requestProbeProvider != null) {
-            requestProbeProvider.requestStartEvent(hostName,
+            String appName = null;
+            if (context != null) {
+                com.sun.enterprise.config.serverbeans.Application bean =
+                    ((WebModule) context).getBean();
+                if (bean != null) {
+                    appName = bean.getName();
+                }
+            }
+            requestProbeProvider.requestStartEvent(
+                appName, hostName,
                 request.getServerName(), request.getServerPort(), 
                 request.getContextPath(), request.getServletPath());
         }
@@ -1231,15 +1243,24 @@ public class PECoyoteConnector extends Connector {
      * to exit from the web container.
      *
      * @param request the request object
+     * @param context the Context to which the request was mapped
      * @param hostName the name of the virtual server to which the request
      * was mapped
      * @param statusCode the response status code
      */
     public void requestEndEvent(HttpServletRequest request,
-                                String hostName,
-                                int statusCode) {
+            Context context, String hostName, int statusCode) {
         if (requestProbeProvider != null) {
-            requestProbeProvider.requestEndEvent(hostName,
+            String appName = null;
+            if (context != null) {
+                com.sun.enterprise.config.serverbeans.Application bean =
+                    ((WebModule) context).getBean();
+                if (bean != null) {
+                    appName = bean.getName();
+                }
+            }
+            requestProbeProvider.requestEndEvent(
+                appName, hostName,
                 request.getServerName(), request.getServerPort(), 
                 request.getContextPath(), request.getServletPath(),
                 statusCode);

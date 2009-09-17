@@ -217,26 +217,6 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
         }
     }
 
-    public static String getAppName(String contextRoot) {
-        if (contextRoot == null)
-            return null;
-        // first check in web modules
-        List<WebModule> lm = domain.getApplications().getModules(WebModule.class);
-        for (WebModule wm : lm) {
-            if (contextRoot.equals(wm.getContextRoot())) {
-                return (wm.getName());
-            }
-        }
-        // then check under applications (introduced in V3 not j2ee app)
-        List<Application> la = domain.getApplications().getModules(Application.class);
-        for (Application sapp : la) {
-            if (contextRoot.equals(sapp.getContextRoot())) {
-                return (sapp.getName());
-            }
-        }
-        return null;
-    }
-
     public static String getVirtualServerName(String hostName, String listenerPort) {
         try {
             //

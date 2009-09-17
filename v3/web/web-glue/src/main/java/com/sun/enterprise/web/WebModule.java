@@ -48,11 +48,10 @@ import javax.annotation.security.RunAs;
 import javax.servlet.*;
 import javax.servlet.http.HttpSession;
 
+import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.deployment.AbsoluteOrderingDescriptor;
-import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -151,14 +150,7 @@ public class WebModule extends PwcWebModule {
      */
     protected Object[] cachedFinds;
 
-    private com.sun.enterprise.config.serverbeans.WebModule bean;
-
-    /**
-     * The bean corresponding to the j2ee-application element in domain.xml
-     * representing the application (EAR file) in which this web module has
-     * been embedded
-     */
-    protected J2eeApplication appBean = null;
+    private Application bean;
 
     private WebBundleDescriptor webBundleDescriptor;
 
@@ -193,7 +185,6 @@ public class WebModule extends PwcWebModule {
         notifyContainerListeners = false;
     }
 
-
     /**
      * set the sun-web.xml config bean
      */
@@ -201,14 +192,12 @@ public class WebModule extends PwcWebModule {
        this.iasBean = iasBean;
     }
 
-
     /**
      * gets the sun-web.xml config bean
      */
     public SunWebApp getIasWebAppConfigBean() {
        return iasBean;
     }
-
 
     /**
      * Gets the web container in which this web module was loaded.
@@ -218,7 +207,6 @@ public class WebModule extends PwcWebModule {
     public WebContainer getWebContainer() {
         return webContainer;
     }
-
 
     /**
      * Sets the web container in which this web module was loaded.
@@ -283,14 +271,12 @@ public class WebModule extends PwcWebModule {
         }
     }
 
-
     /**
      * return locale-charset-map
      */
     public LocaleCharsetMap[] getLocaleCharsetMap() {
         return _lcMap;
     }
-
 
     /**
      * Returns true if this web module specifies a locale-charset-map in its
@@ -304,7 +290,6 @@ public class WebModule extends PwcWebModule {
         LocaleCharsetMap[] locCharsetMap = getLocaleCharsetMap();
         return (locCharsetMap != null && locCharsetMap.length > 0);
     }
-
 
     /**
      * Matches the given request locales against the charsets specified in
@@ -366,7 +351,6 @@ public class WebModule extends PwcWebModule {
         return encoding;
     }
 
-
     /**
      * Creates an ObjectInputStream that provides special deserialization
      * logic for classes that are normally not serializable (such as
@@ -400,7 +384,6 @@ public class WebModule extends PwcWebModule {
         return ois;
     }
 
-
     /**
      * Creates an ObjectOutputStream that provides special serialization
      * logic for classes that are normally not serializable (such as
@@ -424,7 +407,6 @@ public class WebModule extends PwcWebModule {
         return oos;
     }
 
-
     /**
      * Set to <code>true</code> when the default-web.xml has been read for
      * this module.
@@ -433,7 +415,6 @@ public class WebModule extends PwcWebModule {
         this.hasBeenXmlConfigured = hasBeenXmlConfigured;
     }
 
-
     /**
      * Return <code>true</code> if the default=web.xml has been read for
      * this module.
@@ -441,7 +422,6 @@ public class WebModule extends PwcWebModule {
     public boolean hasBeenXmlConfigured(){
         return hasBeenXmlConfigured;
     }
-
 
     /**
      * Cache the result of doing findXX on this object
@@ -452,7 +432,6 @@ public class WebModule extends PwcWebModule {
         this.cachedFinds = cachedFinds;
     }
 
-
     /**
      * Return the cached result of doing findXX on this object
      * NOTE: this method MUST be used only when loading/using
@@ -461,7 +440,6 @@ public class WebModule extends PwcWebModule {
     public Object[] getCachedFindOperation(){
         return cachedFinds;
     }
-
 
     @Override
     public void setRealm(Realm realm) {
@@ -475,7 +453,6 @@ public class WebModule extends PwcWebModule {
             super.setRealm(realm);
         }
     }
-
 
     /**
      * Starts this web module.
@@ -514,7 +491,6 @@ public class WebModule extends PwcWebModule {
         hasStarted = true;
     }
 
-
     /**
      * Stops this web module.
      */
@@ -530,14 +506,12 @@ public class WebModule extends PwcWebModule {
 
         if (webBundleDescriptor != null && webBundleDescriptor.getServiceReferenceDescriptors() != null) {
             for (Object obj: webBundleDescriptor.getServiceReferenceDescriptors()) {
-                //ClientPipeCloser.getInstance().cleanupClientPipe((ServiceReferenceDescriptor)obj);
             }
         }
 
         // Stop and unregister Tomcat mbeans
         super.stop(getWebContainer().isShutdown());
     }
-
 
     /**
      * Sets the virtual server parent of this web module, and passes it on to
@@ -581,7 +555,6 @@ public class WebModule extends PwcWebModule {
         return this.hasAdHocPaths;
     }
 
-
     /**
      * Indicates whether this web module contains any ad-hoc subtrees.
      *
@@ -591,7 +564,6 @@ public class WebModule extends PwcWebModule {
     public boolean hasAdHocSubtrees() {
         return this.hasAdHocSubtrees;
     }
-
 
     /*
      * Adds the given ad-hoc path and subtree, along with information about
@@ -629,7 +601,6 @@ public class WebModule extends PwcWebModule {
         }
     }
 
-
     /*
      * Adds the given ad-hoc path to servlet mappings to this web module.
      *
@@ -654,7 +625,6 @@ public class WebModule extends PwcWebModule {
 
         hasAdHocPaths = true;
     }
-
 
     /*
      * Adds the given ad-hoc subtree path to servlet mappings to this web
@@ -681,7 +651,6 @@ public class WebModule extends PwcWebModule {
         hasAdHocSubtrees = true;
     }
 
-
     /*
      * Gets the ad-hoc path to servlet mappings managed by this web module.
      *
@@ -691,7 +660,6 @@ public class WebModule extends PwcWebModule {
     Map<String, AdHocServletInfo> getAdHocPaths() {
         return adHocPaths;
     }
-
 
     /*
      * Gets the ad-hoc subtree path to servlet mappings managed by this
@@ -703,7 +671,6 @@ public class WebModule extends PwcWebModule {
     Map<String, AdHocServletInfo> getAdHocSubtrees() {
         return adHocSubtrees;
     }
-
 
     /**
      * Returns the name of the ad-hoc servlet responsible for servicing the
@@ -748,24 +715,20 @@ public class WebModule extends PwcWebModule {
         }
     }
 
-
     /*
      * Removes the given ad-hoc path from this web module.
      *
      * @param path The ad-hoc path to remove
      */
     void removeAdHocPath(String path) {
-
         if (path == null) {
             return;
         }
-
         adHocPaths.remove(path);
         if (adHocPaths.isEmpty()) {
             this.hasAdHocPaths = false;
         }
     }
-
 
     /*
      * Removes the given ad-hoc path from this web module.
@@ -773,17 +736,14 @@ public class WebModule extends PwcWebModule {
      * @param subtree The ad-hoc subtree to remove
      */
     void removeAdHocSubtree(String subtree) {
-
         if (subtree == null) {
             return;
         }
-
         adHocSubtrees.remove(subtree);
         if (adHocSubtrees.isEmpty()) {
             this.hasAdHocSubtrees = false;
         }
     }
-
 
     /**
      * Adds the given valve to this web module's ad-hoc pipeline.
@@ -794,7 +754,6 @@ public class WebModule extends PwcWebModule {
         adHocPipeline.addValve(valve);
     }
 
-
     /**
      * Removes the given valve from this web module's ad-hoc pipeline.
      *
@@ -803,7 +762,6 @@ public class WebModule extends PwcWebModule {
     public void removeAdHocValve(GlassFishValve valve) {
         adHocPipeline.removeValve(valve);
     }
-
 
     /**
      * Gets this web module's ad-hoc pipeline.
@@ -814,7 +772,6 @@ public class WebModule extends PwcWebModule {
         return adHocPipeline;
     }
 
-
     /**
      * Sets the file encoding of all static resources of this web module.
      *
@@ -823,7 +780,6 @@ public class WebModule extends PwcWebModule {
     public void setFileEncoding(String enc) {
         this.fileEncoding = enc;
     }
-
 
     /**
      * Gets the file encoding of all static resources of this web module.
@@ -834,7 +790,6 @@ public class WebModule extends PwcWebModule {
         return fileEncoding;
     }
 
-
     /**
      * Sets the context attribute with the given name and value.
      *
@@ -844,7 +799,6 @@ public class WebModule extends PwcWebModule {
     public void setAttribute(String name, Object value) {
         context.setAttribute(name, value);
     }
-
 
     /**
      * Configures this web module with the filter mappings specified in the
@@ -877,7 +831,6 @@ public class WebModule extends PwcWebModule {
         addFilterMaps(filterMaps);
     }
 
-
     /**
      * Creates an ad-hoc servlet wrapper from the given ad-hoc servlet info.
      *
@@ -901,8 +854,6 @@ public class WebModule extends PwcWebModule {
 
         return adHocWrapper;
     }
-
-
 
     /**
      * Configure the <code>WebModule</code> valves.
@@ -944,7 +895,6 @@ public class WebModule extends PwcWebModule {
         }
     }
 
-
     /**
      * Configure the <code>WebModule</code< properties.
      * @param propName the property name
@@ -965,7 +915,6 @@ public class WebModule extends PwcWebModule {
             addCatalinaListener(propValue);
         }
     }
-
 
     /**
      * Instantiates a <tt>Valve</tt> from the given <tt>className</tt>
@@ -1109,36 +1058,13 @@ public class WebModule extends PwcWebModule {
         return propName;
     }
 
-    public com.sun.enterprise.config.serverbeans.WebModule getBean() {
+    public Application getBean() {
         return bean;
     }
 
 
-    public void setBean(com.sun.enterprise.config.serverbeans.WebModule bean) {
+    public void setBean(Application bean) {
         this.bean = bean;
-    }
-
-    /**
-     * Sets the bean corresponding to the j2ee-application element in
-     * domain.xml representing the application (EAR file) in which this
-     * web module has been embedded.
-     *
-     * @param appBean The application bean
-     */
-    void setApplicationBean(J2eeApplication appBean) {
-        this.appBean = appBean;
-    }
-
-    /**
-     * Gets the bean corresponding to the j2ee-application element in
-     * domain.xml representing the application (EAR file) in which this
-     * web module has been embedded.
-     *
-     * @return The application bean, or null if this web module
-     * is standalone
-     */
-    public J2eeApplication getApplicationBean() {
-        return appBean;
     }
 
     /**
@@ -1200,7 +1126,6 @@ public class WebModule extends PwcWebModule {
         }
     }
 
-
     void parseAlternateDocBase(String propName, String propValue) {
 
         if (propName == null || propValue == null) {
@@ -1256,7 +1181,6 @@ public class WebModule extends PwcWebModule {
         addAlternateDocBase(urlPattern, docBase);
     }
 
-
     private boolean validateURLPattern(String urlPattern) {
 
         if (urlPattern == null) {
@@ -1284,7 +1208,6 @@ public class WebModule extends PwcWebModule {
             return (false);
         }
     }
-
 
     /**
      * Configure miscellaneous settings such as the pool size for
@@ -1394,7 +1317,6 @@ public class WebModule extends PwcWebModule {
         setAllowLinking(allowLinking);
     }
 
-
     /**
      * Determines and sets the alternate deployment descriptor for
      * this web module.
@@ -1407,7 +1329,7 @@ public class WebModule extends PwcWebModule {
             return;
         }
 
-        Application app = wbd.getApplication();
+        com.sun.enterprise.deployment.Application app = wbd.getApplication();
         if (app == null || app.isVirtual()) {
             // Alternate deployment descriptors are only supported for
             // WAR files embedded inside EAR files
@@ -1434,7 +1356,6 @@ public class WebModule extends PwcWebModule {
 
         setAltDDName(altDDName);
     }
-
 
     /*
      * Configures this web module with its web services, based on its
@@ -1467,7 +1388,6 @@ public class WebModule extends PwcWebModule {
             setHasWebServices(false);
         }
     }
-
 
     /**
      * Configure the class loader for the web module based on the
@@ -1524,12 +1444,12 @@ public class WebModule extends PwcWebModule {
         return loader;
     }
 
-
     /**
      * Saves all active sessions to the given deployment context, so they
      * can be restored following a redeployment.
      *
-     * @param props the deployment context properties to which to save the sessions
+     * @param props the deployment context properties to which to save the
+     * sessions
      */
     void saveSessions(Properties props) {
         if (props == null) {
@@ -1552,12 +1472,12 @@ public class WebModule extends PwcWebModule {
         }
     }
 
-
     /**
      * Loads any sessions that were stored in the given deployment context
      * prior to a redeployment of this web module.
      *
-     * @param deploymentProperties the deployment context properties from which to load the sessions
+     * @param deploymentProperties the deployment context properties from
+     * which to load the sessions
      */
     void loadSessions(Properties deploymentProperties) {
         if (deploymentProperties == null) {
@@ -1584,7 +1504,6 @@ public class WebModule extends PwcWebModule {
         }
     }
 
-
     /**
      * Loads and instantiates the listener with the specified classname.
      *
@@ -1609,7 +1528,6 @@ public class WebModule extends PwcWebModule {
             throw e;
         }
     }
-
 
     /**
      * Create and configure the session manager for this web application
@@ -1759,7 +1677,6 @@ public class WebModule extends PwcWebModule {
             }
         }
     }
-
 
     /**
      * Configure the session manager according to the persistence-type
@@ -2088,7 +2005,6 @@ public class WebModule extends PwcWebModule {
     }
 
 }
-
 
 class V3WebappLoader extends WebappLoader {
 

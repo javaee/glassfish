@@ -329,22 +329,15 @@ public class ServerConfigLookup {
         }        
 
         String webModuleAvailabilityString = null;
-        J2eeApplication j2eeApp = ctx.getApplicationBean();
-        if (j2eeApp == null) {
-            // the stand-alone web module case
-            ConfigBeanProxy bean = ctx.getBean();
-            if (bean != null) {
-                if (bean instanceof com.sun.enterprise.config.serverbeans.WebModule) {
-                    webModuleAvailabilityString =
-                        ((com.sun.enterprise.config.serverbeans.WebModule) bean).getAvailabilityEnabled();
-                } else if (bean instanceof ExtensionModule) {
-                    webModuleAvailabilityString =
-                        ((ExtensionModule) bean).getAvailabilityEnabled();
-                }
+        ConfigBeanProxy bean = ctx.getBean();
+        if (bean != null) {
+            if (bean instanceof com.sun.enterprise.config.serverbeans.WebModule) {
+                webModuleAvailabilityString =
+                    ((com.sun.enterprise.config.serverbeans.WebModule) bean).getAvailabilityEnabled();
+            } else if (bean instanceof ExtensionModule) {
+                webModuleAvailabilityString =
+                    ((ExtensionModule) bean).getAvailabilityEnabled();
             }
-        } else {
-            // the j2ee application case
-            webModuleAvailabilityString = j2eeApp.getAvailabilityEnabled();
         }
 
         boolean webModuleAvailability = false;

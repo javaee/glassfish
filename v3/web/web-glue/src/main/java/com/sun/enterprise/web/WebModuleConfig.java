@@ -38,9 +38,8 @@ package com.sun.enterprise.web;
 
 import java.io.File;
 import java.util.HashMap;
-import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.deployment.DeploymentContext;
 
@@ -56,7 +55,7 @@ public class WebModuleConfig {
      * The config bean containing the properties specified in the web-module
      * element in server.xml.
      */
-    private WebModule _wmBean = null;
+    private Application _wmBean = null;
 
     /**
      * The parent directory under which the work directory for files generated
@@ -123,7 +122,7 @@ public class WebModuleConfig {
      * Set the elements of information specified in the web-module element
      * in server.xml.
      */
-    public void setBean(WebModule wmBean) {
+    public void setBean(Application wmBean) {
         _wmBean = wmBean;
     }
 
@@ -131,7 +130,7 @@ public class WebModuleConfig {
     /**
      * Return the configuration information specified in server.xml.
      */
-    public WebModule getBean() {
+    public Application getBean() {
         return _wmBean;
     }
 
@@ -336,7 +335,7 @@ public class WebModuleConfig {
         StringBuilder dir = new StringBuilder(baseDir);
         dir.append(File.separator);
 
-        Application app = _wbd.getApplication();
+        com.sun.enterprise.deployment.Application app = _wbd.getApplication();
         if (app != null && !app.isVirtual()) {
             dir.append(FileUtils.makeFriendlyFilename(
                 app.getRegistrationName()));
