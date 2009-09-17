@@ -2247,30 +2247,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
-    // Begin EE: 4927099 load only associated applications
-    /**
-     * Returns true if the names application is referenced by this server.
-     *
-     * @param  appName  name of the application id
-     * @return true if the names application is referenced by this server
-     */
-    private boolean isReferenced(String appName) {
-
-        Servers servers = domain.getServers();
-        for (Server server : servers.getServer()) {
-            if (server.getName().equals(_serverContext.getInstanceName())) {
-                for (ApplicationRef ref : server.getApplicationRef()) {
-                    if (ref.getRef().equals(appName)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-    // End EE: 4927099 load only associated applications
-
-
     /**
      * Return the parent/top-level container in _embedded for virtual
      * servers.
