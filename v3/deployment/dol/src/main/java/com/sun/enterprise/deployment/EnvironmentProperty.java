@@ -287,6 +287,10 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
     public String getLookupName() {
         return (lookupName != null)? lookupName : "";
     }
+
+    public boolean hasLookupName() {
+        return (lookupName != null);
+    }
     
      /** 
     ** Sets the value of the environment property to the given string.
@@ -299,7 +303,7 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
     }
 
     public boolean hasAValue() {
-        return setValueCalled;
+        return ( setValueCalled || hasLookupName() );
     }
     
      /** 

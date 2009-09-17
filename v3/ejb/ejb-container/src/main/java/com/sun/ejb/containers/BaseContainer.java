@@ -2737,7 +2737,7 @@ public abstract class BaseContainer
                 Method targetMethod = optionalLocalBusView ? beanMethod : method;
 
                 boolean isAsync = ((EjbSessionDescriptor) ejbDescriptor).
-                        isAsynchronousMethod(targetMethod, methodIntf);
+                        isAsynchronousMethod(targetMethod);
 
                 if( isAsync ) {
 

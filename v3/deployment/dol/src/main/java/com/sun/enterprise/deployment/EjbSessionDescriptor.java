@@ -223,36 +223,20 @@ public class EjbSessionDescriptor extends EjbDescriptor {
     }
 
     public void addAsynchronousMethod(MethodDescriptor m) {
-        String methodIntf = m.getEjbClassSymbol();
-        if( methodIntf == null ) {
-            if( isLocalBean() || isLocalBusinessInterfacesSupported() ) {
-                MethodDescriptor localMethodDesc = new MethodDescriptor(m.getName(), "",
-                        m.getJavaParameterClassNames(), MethodDescriptor.EJB_LOCAL);
-                asyncMethods.add(localMethodDesc);
-            }
-            if( isRemoteBusinessInterfacesSupported() ) {
-                MethodDescriptor remoteMethodDesc = new MethodDescriptor(m.getName(), "",
-                        m.getJavaParameterClassNames(), MethodDescriptor.EJB_REMOTE);
-                asyncMethods.add(remoteMethodDesc);
-            }
-        } else {         
-            asyncMethods.add(m);
-        }
-
+        asyncMethods.add(m);
     }
 
     public List<MethodDescriptor> getAsynchronousMethods() {
         return new ArrayList<MethodDescriptor>(asyncMethods);
     }
 
-    public boolean isAsynchronousMethod(Method m, String methodIntf) {
+    public boolean isAsynchronousMethod(Method m) {
 
         boolean async = false;
         for(MethodDescriptor next : asyncMethods) {
             Method nextMethod = next.getMethod(this);
             if( (nextMethod != null)  &&
-                TypeUtil.sameMethodSignature(m, nextMethod) &&
-                methodIntf.equals(next.getEjbClassSymbol()) ) {
+                TypeUtil.sameMethodSignature(m, nextMethod)) {
                 async = true;
                 break;
             }

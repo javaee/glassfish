@@ -50,6 +50,7 @@ import org.glassfish.enterprise.iiop.api.GlassFishORBLifeCycleListener;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.omg.CORBA.ORB;
 
+import com.sun.enterprise.util.Utility;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -538,9 +539,9 @@ public final class GlassFishORBManager {
              * Having an IORInterceptor (TxSecIORInterceptor) get called during ORB init always results in a
              * nested ORB.init call because of the call to getORB in the IORInterceptor.
              */
-            final ClassLoader prevCL = Thread.currentThread().getContextClassLoader();
+            final ClassLoader prevCL = Utility.getClassLoader();
             try {
-                Thread.currentThread().setContextClassLoader(GlassFishORBManager.class.getClassLoader());
+                Utility.setContextClassLoader(GlassFishORBManager.class.getClassLoader());
 
                 if( processType == ProcessType.Server) {
 
@@ -571,7 +572,7 @@ public final class GlassFishORBManager {
                 orb = ORBFactory.create(args, orbInitProperties, useOSGI);
 
             } finally {
-                Thread.currentThread().setContextClassLoader(prevCL);
+                Utility.setContextClassLoader(prevCL);
             }
 
             // Done to indicate this is a server and

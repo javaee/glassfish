@@ -63,6 +63,8 @@ public class InjectionServicesImpl implements InjectionServices {
             // in this case 299 impl is responsible for calling it.
             injectionManager.injectInstance(injectionContext.getTarget(), false);
 
+            injectionContext.proceed();
+
         } catch(InjectionException ie) {
             throw new IllegalStateException(ie.getMessage(), ie);
         }

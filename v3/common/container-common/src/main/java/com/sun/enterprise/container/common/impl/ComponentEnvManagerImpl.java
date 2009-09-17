@@ -336,9 +336,14 @@ public class ComponentEnvManagerImpl
             // eligible for look up
             if (next.hasAValue()) {
                 String name = descriptorToLogicalJndiName(next);
-                Object value = next.getValueObject();
-                jndiBindings.add(new CompEnvBinding(name,
-                        namingUtils.createSimpleNamingObjectFactory(name, value)));
+
+                Object value = next.hasLookupName() ?
+                    namingUtils.createLazyNamingObjectFactory(name, next.getLookupName(), true) :
+                    namingUtils.createSimpleNamingObjectFactory(name, next.getValueObject());                                                           
+
+                jndiBindings.add(new CompEnvBinding(name, value));
+
+
             }
         }
 

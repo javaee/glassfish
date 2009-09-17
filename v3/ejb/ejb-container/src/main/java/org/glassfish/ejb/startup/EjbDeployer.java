@@ -122,7 +122,8 @@ public class EjbDeployer
         EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
         
         if( ejbBundle == null ) {
-            throw new RuntimeException("Null EjbBundleDescriptor " + dc.getSourceDir() + " in EjbDeployer.load()");
+            throw new RuntimeException("Unable to load EJB module.  DeploymentContext does not contain any EJB " +
+                    " Check archive to ensure correct packaging for " + dc.getSourceDir());
         }
 
         ejbBundle.setClassLoader(dc.getClassLoader());
