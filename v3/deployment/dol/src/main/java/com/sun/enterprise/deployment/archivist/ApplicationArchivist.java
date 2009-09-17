@@ -516,6 +516,9 @@ public class ApplicationArchivist extends Archivist<Application>
     public boolean readModulesDescriptors(Application app, ReadableArchive appArchive)
         throws IOException, SAXParseException { 
         
+        List<ModuleDescriptor> nonexistentModules = 
+            new ArrayList<ModuleDescriptor>();
+
         for (ModuleDescriptor aModule : app.getModules()) {
             if(DOLUtils.getDefaultLogger().isLoggable(Level.FINE)) {
                 DOLUtils.getDefaultLogger().fine("Opening sub-module " + aModule);
@@ -607,7 +610,8 @@ public class ApplicationArchivist extends Archivist<Application>
                         "enterprise.deployment.cannotfindmodule",
                         "Cannot find module {0} in application bundle", 
                         new Object[] {aModule.getArchiveUri()}));
-                    return false;
+                    nonexistentModules.add(aModule);
+                    continue;
                 }
             }
             if (embeddedArchive!=null) {
@@ -632,6 +636,11 @@ public class ApplicationArchivist extends Archivist<Application>
                 return false;
             }
         }        
+        // now remove all the non-existent modules from app so these modules
+        // don't get processed further
+        for (ModuleDescriptor nonexistentModule : nonexistentModules) {
+            app.removeModule(nonexistentModule);
+        }
         return true;
     }
     
