@@ -80,8 +80,10 @@ public class JndiHandlers {
         List result = new ArrayList();
         try{
             Map<String, Object> entries = (Map)V3AMX.getInstance().getConnectorRuntime().attributesMap().get("BuiltInCustomResources");
-            Map emap = (Map)entries.get(MAP_KEY);
-            result.addAll(emap.keySet());
+            Map emap = (Map)entries.get(CUSTOM_RESOURCES_MAP_KEY);
+            if(emap != null) {
+                result.addAll(emap.keySet());
+            }
             handlerCtx.setOutputValue("result",result);
             handlerCtx.setOutputValue("classnameOption", "predefine");
             Map attrMap = new HashMap();
@@ -104,7 +106,7 @@ public class JndiHandlers {
         try {
             if (!GuiUtil.isEmpty(resType)) {
                 Map<String, Object> entries = (Map) V3AMX.getInstance().getConnectorRuntime().attributesMap().get("BuiltInCustomResources");
-                Map emap = (Map) entries.get(MAP_KEY);
+                Map emap = (Map) entries.get(CUSTOM_RESOURCES_MAP_KEY);
                 fc = (String) emap.get(resType);
             }
         } catch (Exception ex) {
@@ -125,8 +127,10 @@ public class JndiHandlers {
     public static void getJndiResourceAttrForEdit(HandlerContext handlerCtx) {
         List result = new ArrayList();
         Map<String, Object> entries = (Map) V3AMX.getInstance().getConnectorRuntime().attributesMap().get("BuiltInCustomResources");
-        Map emap = (Map) entries.get(MAP_KEY);
-        result.addAll(emap.keySet());
+        Map emap = (Map) entries.get(CUSTOM_RESOURCES_MAP_KEY);
+        if(emap != null) {
+            result.addAll(emap.keySet());
+        }
         handlerCtx.setOutputValue("result", result);
         String resType = (String) handlerCtx.getInputValue("resType");
         Map attrMap = new HashMap();
@@ -169,7 +173,7 @@ public class JndiHandlers {
             handlerCtx.setOutputValue("resType", restype);
         } 
 
-    public static final String MAP_KEY = "MapKey";
+    public static final String CUSTOM_RESOURCES_MAP_KEY = "BuiltInCustomResourcesKey";
 
 
 }

@@ -173,14 +173,15 @@ public class ConnectorsHandlers {
             @HandlerOutput(name = "result", type = List.class)
             })
     public static void addSystemConnectors(HandlerContext handlerCtx) {
-        //When getSystemConnectorsAllowingPoolCreation() API is available, we should call use that API
-        //instead of hardcoding the list.  refer to issue# 8941
         List rarList = (List) handlerCtx.getInputValue("rarList");
         if (rarList == null){
             rarList = new ArrayList();
         }
-        rarList.add("jmsra");
-        rarList.add("jaxr-ra");
+        Map<String, Object> entries = (Map)V3AMX.getInstance().getConnectorRuntime().attributesMap().get("SystemConnectorsAllowingPoolCreation");
+        String[] emap = (String[])entries.get(SYSTEM_CONNECTORS_KEY);
+        if(emap != null) {
+            rarList.addAll(Arrays.asList(emap));
+        }
         handlerCtx.setOutputValue("result", rarList);
     }
     
@@ -265,6 +266,7 @@ public class ConnectorsHandlers {
     
     public static final String CONNECTION_DEFINITION_NAMES_KEY = "ConnectionDefinitionNamesKey";
     public static final String MCF_CONFIG_PROPS_KEY = "McfConfigPropsKey";
+    public static final String SYSTEM_CONNECTORS_KEY = "SystemConnectorsKey";
 
 
 }
