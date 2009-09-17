@@ -78,7 +78,7 @@ public class CreateNetworkListener implements AdminCommand {
     @Param(name="address", optional=true)
     String address;
 
-    @Param(name="port", optional=false)
+    @Param(name="listenerport", optional=false)
     String port;
              
     @Param(name="threadpool", optional=true, defaultValue = "http-thread-pool")
