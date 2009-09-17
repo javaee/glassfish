@@ -18,6 +18,7 @@
         <antcall target="asynchronous"/>
         <antcall target="timer31"/>
         <antcall target="security"/>
+        <antcall target="embedded"/>
     </target>
 
     <target name="ejblite">
@@ -54,6 +55,12 @@
         <record name="security.output" action="start" />
             <ant dir="security" target="all"/>
         <record name="security.output" action="stop" />
+    </target>
+
+    <target name="embedded">
+        <record name="embedded.output" action="start" />
+            <ant dir="embedded" target="all"/>
+        <record name="embedded.output" action="stop" />
     </target>
 
     <target name="usage">
