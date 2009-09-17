@@ -42,19 +42,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.StringTokenizer;
 
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
 import com.sun.logging.LogDomains;
 
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.container.EndpointRegistrationException;
-import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventTypes;
@@ -97,6 +99,9 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     @Inject
     Habitat habitat;
 
+    @Inject(name="server-config")
+    Config config;
+
     CountDownLatch latch = new CountDownLatch(1);
 
     @Inject
@@ -110,6 +115,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
 
     public void postConstruct() {
+        epd = new AdminEndpointDecider(config, logger);
         events.register(this);
     }
 
@@ -227,6 +233,33 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     }
 
 
+    /**
+     * Checks whether this adapter has been registered as a network endpoint.
+     */
+    public boolean isRegistered() {
+        return isRegistered;
+    }
+
+
+    /**
+     * Marks this adapter as having been registered or unregistered as a
+     * network endpoint
+     */
+    public void setRegistered(boolean isRegistered) {
+        this.isRegistered = isRegistered;
+    }
+
+
+    public int getListenPort() {
+        return epd.getListenPort();
+    }
+
+
+    public List<String> getVirtualServers() {
+        return epd.getAsadminHosts();
+    }
+
+
     protected abstract ResourceConfig getResourceConfig();
 
 
@@ -280,11 +313,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         String context = getContextRoot();
         logger.fine("Exposing rest resource context root: " +  context);
         if ((context != null) || (!"".equals(context))) {
-            RequestDispatcher rd =
-                    habitat.getComponent(RequestDispatcher.class);
-            Collection<String> virtualserverName = new ArrayList<String>();
-            virtualserverName.add("__asadmin");
-
             ResourceConfig rc = getResourceConfig();
 
             //Use common classloader. Jersey artifacts are not visible through
@@ -300,7 +328,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
             ((GrizzlyAdapter) adapter).setResourcesContextPath(context);
 
-            rd.registerEndpoint(context, virtualserverName, this, null);
             logger.info("Listening to REST requests at context: " +
                     context + "/domain");
         }
@@ -322,4 +349,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
 
     private com.sun.grizzly.tcp.Adapter adapter = null;
+    private boolean isRegistered = false;
+    private AdminEndpointDecider epd = null;
 }

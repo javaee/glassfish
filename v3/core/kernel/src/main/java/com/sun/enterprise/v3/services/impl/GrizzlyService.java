@@ -399,25 +399,9 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
             //@TODO change EndportRegistrationException processing if required
             try {
-                if (subAdapter instanceof AdminAdapter) {
-                    AdminAdapter aa = (AdminAdapter)subAdapter;
-                    // Once registered, do not register again.
-                    // See GlassFish issues 5892 and 5972
-                    if (!aa.isRegistered()) {
-                        registerAdminAdapter(aa);
-                        aa.setRegistered(true);
-                    }
-                } else if (subAdapter instanceof AdminConsoleAdapter) {
-                    AdminConsoleAdapter aca = (AdminConsoleAdapter)subAdapter;
-                    // Once registered, do not register again.
-                    // See GlassFish issues 5892 and 5972
-                    if (!aca.isRegistered()) {
-                        registerAdminConsoleAdapter(aca);
-                        aca.setRegistered(true);
-                    }
-                } else {
-                    registerEndpoint(subAdapter.getContextRoot(), port, hosts,
-                        subAdapter, null);
+                if (!subAdapter.isRegistered()) {
+                    registerAdapter(subAdapter);
+                    subAdapter.setRegistered(true);
                 }
             } catch(EndpointRegistrationException e) {
                 logger.log(Level.WARNING, 
@@ -539,18 +523,11 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         }
     }
 
-    private void registerAdminAdapter(AdminAdapter aa) throws EndpointRegistrationException {
-        int port        = aa.getListenPort();
-        List<String> vs = aa.getVirtualServers();
-        String cr       = aa.getContextRoot();
-        this.registerEndpoint(cr, port, vs, aa, null);
-    }
-    
-    private void registerAdminConsoleAdapter(AdminConsoleAdapter aca) throws EndpointRegistrationException {
-        int port        = aca.getListenPort();
-        List<String> vs = aca.getVirtualServers();
-        String cr       = aca.getContextRoot();
-        this.registerEndpoint(cr, port, vs, aca, null);
+    private void registerAdapter(org.glassfish.api.container.Adapter a) throws EndpointRegistrationException {
+        int port        = a.getListenPort();
+        List<String> vs = a.getVirtualServers();
+        String cr       = a.getContextRoot();
+        this.registerEndpoint(cr, port, vs, a, null);
     }
 
     // get the ports from the http listeners that are associated with 

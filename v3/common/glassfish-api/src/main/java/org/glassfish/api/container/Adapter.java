@@ -23,6 +23,7 @@
 
 package org.glassfish.api.container;
 
+import java.util.List;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -41,4 +42,28 @@ public interface Adapter extends com.sun.grizzly.tcp.Adapter {
      * @return context root
      */
     public String getContextRoot();
+
+    /**
+     * Returns the listener port for this adapter
+     * @return listener port
+     */
+    public int getListenPort();
+
+    /**
+     * Returns the virtaul servers supported by this adapter
+     * @return List<String> the virtual server list supported by the adapter
+     */
+    public List<String> getVirtualServers();
+
+    /**
+     * Checks whether this adapter has been registered as a network endpoint.
+     */
+    public boolean isRegistered();
+
+
+    /**
+     * Marks this adapter as having been registered or unregistered as a
+     * network endpoint
+     */
+    public void setRegistered(boolean isRegistered);
 }
