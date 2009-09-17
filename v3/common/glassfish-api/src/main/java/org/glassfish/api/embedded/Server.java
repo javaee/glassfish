@@ -45,7 +45,6 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 
 import com.sun.enterprise.module.bootstrap.PlatformMain;
 import com.sun.enterprise.module.bootstrap.StartupContext;
@@ -89,7 +88,7 @@ public class Server {
          * @param enabled true to enable, false to disable
          * @return this instance
          */
-        public Builder setLogger(boolean enabled) {
+        public Builder logger(boolean enabled) {
             loggerEnabled = enabled;
             return this;
         }
@@ -100,7 +99,7 @@ public class Server {
          * @param f a valid file location
          * @return this instance
          */
-        public Builder setLogFile(File f) {
+        public Builder logFile(File f) {
             loggerFile = f;
             return this;
         }
@@ -111,7 +110,7 @@ public class Server {
          * @param b true to turn on, false to turn off
          * @return this instance
          */
-        public Builder setVerbose(boolean b) {
+        public Builder verbose(boolean b) {
             this.verbose = b;
             return this;
         }
@@ -123,7 +122,7 @@ public class Server {
          * @param fileSystem a virtual filesystem
          * @return this instance
          */
-        public Builder setEmbeddedFileSystem(EmbeddedFileSystem fileSystem) {
+        public Builder embeddedFileSystem(EmbeddedFileSystem fileSystem) {
             this.fileSystem = fileSystem;
             return this;
         }
@@ -138,28 +137,37 @@ public class Server {
          *
          * @return the configured server instance
          */
+        // todo : make creating an existing server a failure.
         public Server build() {
             synchronized(servers) {
                 if (!servers.containsKey(serverName)) {
-                    servers.put(serverName, new Server(this));
+                    Server s = new Server(this);
+                    servers.put(serverName, s);
+                    return s;
                 }
-                return servers.get(serverName);
+                throw new IllegalStateException("An embedded server of this name already exists");
             }
         }
 
-        /**
-         * Returns the list of existing embedded instances
-         *
-         * @return list of the instanciated embedded instances.
-         */
-        public static List<String> getServerNames() {
-            List<String> names = new ArrayList<String>();
-            names.addAll(servers.keySet());
-            return names;
+
+        // TOdO : move getServer() on the server
+    }
+
+    private final static class ContainerStatus {
+
+        int status=0;
+
+        private void started() { status=1; }
+        private void stopped() { status=0; }
+        private boolean isStopped() {
+            return status==0;
+        }
+        private boolean isStarted() {
+            return status==1;
         }
     }
 
-    private class Container {
+    private final static class Container {
         private final EmbeddedContainer container;
         boolean started;
 
@@ -175,6 +183,7 @@ public class Server {
     private final boolean loggerEnabled;
     private final boolean verbose;
     private final File loggerFile;
+    private final ContainerStatus status = new ContainerStatus();
     private final Inhabitant<EmbeddedFileSystem> fileSystem;
     private final Habitat habitat;
     private final List<Container> containers = new ArrayList<Container>();
@@ -203,12 +212,12 @@ public class Server {
 
             // not pretty, revisit when more time is available.
             if (builder.fileSystem!=null) {
-                fsBuilder.setInstallRoot(builder.fileSystem.installRoot, builder.fileSystem.cookedMode);
-                fsBuilder.setConfigurationFile(builder.fileSystem.configFile);
+                fsBuilder.installRoot(builder.fileSystem.installRoot, builder.fileSystem.cookedMode);
+                fsBuilder.configurationFile(builder.fileSystem.configFile);
             }
 
-            fsBuilder.setInstanceRoot(instanceRoot);
-            fsBuilder.setAutoDelete(true);
+            fsBuilder.instanceRoot(instanceRoot);
+            fsBuilder.autoDelete(true);
             fs = fsBuilder.build();
         } else {
             fs = builder.fileSystem;
@@ -221,6 +230,13 @@ public class Server {
             if (!f.mkdirs()) {
                 if (Logger.getAnonymousLogger().isLoggable(Level.FINE)) {
                     Logger.getAnonymousLogger().fine("Cannot create docroot embedded directory at "
+                        + f.getAbsolutePath());
+                }
+            }
+            f = new File(fs.instanceRoot, "config");
+            if (!f.mkdirs()) {
+                if (Logger.getAnonymousLogger().isLoggable(Level.FINE)) {
+                    Logger.getAnonymousLogger().fine("Cannot create config embedded directory at "
                         + f.getAbsolutePath());
                 }
             }
@@ -265,13 +281,46 @@ public class Server {
     }
 
     /**
-     * Get the embedded container configuration for a container type
+     * Returns the list of existing embedded instances
+     *
+     * @return list of the instanciated embedded instances.
+     */
+    public static List<String> getServerNames() {
+        List<String> names = new ArrayList<String>();
+        names.addAll(servers.keySet());
+        return names;
+    }
+
+    /**
+     * Returns the embedded server instance of a particular name
+     *
+     * @param name requested server name
+     * @return a server instance if it exists, null otherwise
+     */
+    public static Server getServer(String name) {
+        return servers.get(name);
+    }
+
+    // todo : have the same name, and make it clear we use the type string().
+
+    /**
+     * Get the embedded container configuration for a container type.
      * @param type the container type (e.g. Type.ejb)
      * @return the embedded configuration for this container
      */
+    public ContainerBuilder<EmbeddedContainer> createConfig(ContainerBuilder.Type type) {
+        return createConfig(type.toString());
+    }
+
+    /**
+     * Get the embedded container builder for a container type identified by its
+     * name.
+     * @param name the container name, which is the name used on the @Service annotation
+     * @return the embedded builder for this container
+     */
     @SuppressWarnings("unchecked")
-    public ContainerBuilder<EmbeddedContainer> getConfig(ContainerBuilder.Type type) {
-        return habitat.getComponent(ContainerBuilder.class, type.toString());
+    public ContainerBuilder<EmbeddedContainer> createConfig(String name) {
+        return habitat.getComponent(ContainerBuilder.class, name);
     }
 
     /**
@@ -297,8 +346,13 @@ public class Server {
      * configuration for the container.
      *
      * @param type type of the container to be added (like web, ejb).
+     * @throws IllegalStateException if the container is already started.
      */
-    public void addContainer(final ContainerBuilder.Type type) {
+    public synchronized void addContainer(final ContainerBuilder.Type type) {
+
+        if (status.isStarted()) {
+            throw new IllegalStateException("Cannot add container to a started embedded instance");
+        }
         containers.add(new Container(new EmbeddedContainer() {
 
             final List<Container> delegates = new ArrayList<Container>();
@@ -324,8 +378,14 @@ public class Server {
                 return sniffers;
             }
 
+            public void bind(Port port, String protocol) {
+                for (Container delegate : delegates) {
+                    delegate.container.bind(port, protocol);
+                }
+            }
+
             private Container getContainerFor(final ContainerBuilder.Type type) {
-                ContainerBuilder b = getConfig(type);
+                ContainerBuilder b = createConfig(type);
                 if (b!=null) {
                     return new Container(b.create(Server.this));
                 } else {
@@ -338,6 +398,10 @@ public class Server {
                                 sniffers.add(s);
                             }
                             return sniffers;
+                        }
+
+                        public void bind(Port port, String protocol) {
+
                         }
 
                         public void start() throws LifecycleException {
@@ -372,6 +436,11 @@ public class Server {
         }));
     }
 
+
+
+    // todo : clarify that adding containers after the server is created is illegal
+    // todo : makes the return of those APIs return void.
+
     /**
      * Adds a container to this server.
      *
@@ -382,8 +451,12 @@ public class Server {
      * @param info the configuration for the container
      * @param <T> type of the container
      * @return instance of the container <T>
+     * @throws IllegalStateException if the container is already started.
      */
-    public <T extends EmbeddedContainer> T addContainer(ContainerBuilder<T> info) {
+    public synchronized <T extends EmbeddedContainer> T addContainer(ContainerBuilder<T> info) {
+        if (status.isStarted()) {
+            throw new IllegalStateException("Cannot add containers to an already started embedded instance");
+        }
         T container = info.create(this);
         if (container!=null && containers.add(new Container(container))) {
             return container;
@@ -416,7 +489,7 @@ public class Server {
      */
     public Port createPort(int portNumber) throws IOException {
         Ports ports = habitat.getComponent(Ports.class);
-        return ports.open(portNumber);
+        return ports.createPort(portNumber);
     }
 
     /**
@@ -429,7 +502,7 @@ public class Server {
     }
 
     /**
-     * Returns the container name, as specified in {@link org.glassfish.api.embedded.Server.Builder#Builder(String)}
+     * Returns the server name, as specified in {@link org.glassfish.api.embedded.Server.Builder#Builder(String)}
      *
      * @return container name
      */
@@ -452,7 +525,11 @@ public class Server {
      *
      * @throws LifecycleException if the server cannot be started propertly
      */
-    public void start() throws LifecycleException {
+    public synchronized void start() throws LifecycleException {
+        if (status.isStarted()) {
+            return;
+        }
+
         for (Container c : containers) {
             try {
                 c.container.start();
@@ -462,6 +539,7 @@ public class Server {
                 c.started=false;
             }
         }
+        status.started();
     }
 
     /**
@@ -470,7 +548,11 @@ public class Server {
      *
      * @throws LifecycleException if the server cannot shuts down properly
      */
-    public void stop() throws LifecycleException {
+    public synchronized void stop() throws LifecycleException {
+
+        if (status.isStopped()) {
+            return;
+        }
         for (Container c : containers) {
             try {
                 if (c.started) {
@@ -487,6 +569,9 @@ public class Server {
         synchronized(servers) {
             servers.remove(serverName);
         }
+        //todo : change to DEAD
+        status.stopped();
+
         for (EmbeddedLifecycle lifecycle : habitat.getAllByContract(EmbeddedLifecycle.class)) {
             try {
                 lifecycle.destruction(this);

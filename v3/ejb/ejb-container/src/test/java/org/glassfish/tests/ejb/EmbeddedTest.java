@@ -16,13 +16,14 @@ import java.net.URL;
 public class EmbeddedTest {
 
     @Test
-    public void test() {
+    public void test() throws LifecycleException {
 
         Server.Builder builder = new Server.Builder("build");
 
         Server server = builder.build();
-        server.addContainer(server.getConfig(ContainerBuilder.Type.ejb));
+        server.addContainer(server.createConfig(ContainerBuilder.Type.ejb));
         EmbeddedDeployer deployer = server.getDeployer();
+        server.start();
 
         URL source = SimpleEjb.class.getClassLoader().getResource("org/glassfish/tests/ejb/sample/SimpleEjb.class");
         String p = source.getPath().substring(0, source.getPath().length()-"org/glassfish/tests/ejb/sample/SimpleEjb.class".length());

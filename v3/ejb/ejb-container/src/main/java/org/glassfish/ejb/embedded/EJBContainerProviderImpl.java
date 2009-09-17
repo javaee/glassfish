@@ -51,14 +51,10 @@ import java.util.jar.Attributes;
 import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import javax.ejb.spi.EJBContainerProvider;
-import com.sun.ejb.containers.EjbContainerUtilImpl;
 
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.embedded.ContainerBuilder;
-import org.glassfish.api.embedded.EmbeddedDeployer;
-import org.glassfish.api.embedded.EmbeddedFileSystem;
-import org.glassfish.api.embedded.Server;
+import org.glassfish.api.embedded.*;
 
 import org.glassfish.deployment.common.GenericAnnotationDetector;
 import org.glassfish.deployment.common.DeploymentUtils;
@@ -151,11 +147,11 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                     server = builder.build();
                 } else {
                     EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-                    efsb.setConfigurationFile(rs.domain_file);
-                    efsb.setInstallRoot(rs.installed_root, true);
-                    efsb.setInstanceRoot(rs.instance_root);
+                    efsb.configurationFile(rs.domain_file);
+                    efsb.installRoot(rs.installed_root, true);
+                    efsb.instanceRoot(rs.instance_root);
 
-                    builder.setEmbeddedFileSystem(efsb.build());
+                    builder.embeddedFileSystem(efsb.build());
                     server = builder.build();
 
                 }
@@ -167,6 +163,11 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
                 EmbeddedEjbContainer ejbContainer = server.addContainer(ejb);
                 server.addContainer(ContainerBuilder.Type.jpa);
+                try {
+                    server.start();
+                } catch (LifecycleException e) {
+                    throw new EJBException(e);
+                }
                 EmbeddedDeployer deployer = server.getDeployer();
 
                 Sniffer sniffer = habitat.getComponent(Sniffer.class, "Ejb");

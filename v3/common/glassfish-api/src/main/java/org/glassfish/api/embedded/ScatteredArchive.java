@@ -104,7 +104,7 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
          * @param resources the resources directory
          * @return itself
          */
-        public Builder setResources(File resources) {
+        public Builder resources(File resources) {
             this.resources = resources;
             return this;
         }
@@ -137,6 +137,25 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
          */
         public Builder addMetadata(String name, File metadata) {
             this.metadata.put(name, metadata);
+            return this;
+        }
+
+        /**
+         * Adds a directory to the classes classpath. Will be used to retrieve requested .class
+         * files.
+         *
+         * @param location must be a directory location
+         * @return itself
+         */
+        public Builder addClassPath(File location) {
+            if (!location.isDirectory()) {
+                throw new IllegalArgumentException("location is not a directory");
+            }
+            try {
+                this.urls.add(location.toURI().toURL());
+            } catch (MalformedURLException e) {
+                throw new IllegalArgumentException(e);
+            }
             return this;
         }
 
@@ -199,6 +218,8 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
         this.type = type;
         prefix = type==Builder.type.war?"WEB-INF/classes":null;
     }
+
+    // todo : look at Open(URI), is it ok ?
 
     /**
      * Get the classpath URLs

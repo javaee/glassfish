@@ -33,6 +33,9 @@ public class EmbeddedEjbContainer implements EmbeddedContainer {
         this.habitat = builder.habitat;
     }
 
+    public void bind(Port port, String protocol) {
+
+    }
 
     public List<Sniffer> getSniffers() {
         List<Sniffer> sniffers = new ArrayList<Sniffer>();

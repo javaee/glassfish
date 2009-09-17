@@ -70,6 +70,10 @@ public class EmbeddedAdminCtrImpl implements EmbeddedAdminContainer {
         return empty;
     }
 
+    public void bind(Port port, String protocol) {
+
+    }
+
     public void start() throws LifecycleException {
 
     }

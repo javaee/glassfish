@@ -33,7 +33,7 @@ public class EmbeddedWebAPIConfigTest {
             server = builder.build();
             f = new File(System.getProperty("basedir"));
             System.out.println("Starting Web " + server);
-            ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
+            ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
             System.out.println("builder is " + b);
             server.addContainer(b);
             System.out.println("Added Web with base directory "+f.getAbsolutePath());

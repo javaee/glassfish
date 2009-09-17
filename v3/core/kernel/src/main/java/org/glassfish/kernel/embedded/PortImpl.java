@@ -161,7 +161,7 @@ public class PortImpl implements Port {
         return false;
     }
 
-    public void unbind() {
+    public void close() {
         final List<NetworkListener> list = config.getNetworkListeners().getNetworkListener();
         for (NetworkListener listener : list) {
             if (listener.getName().equals(listenerName)) {

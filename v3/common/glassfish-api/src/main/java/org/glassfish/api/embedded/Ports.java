@@ -13,13 +13,14 @@ import java.util.Collection;
 @Contract
 public interface Ports {
 
+
     /**
      * Creates a port, binds it to a port number and returns it
      * @param number the port number
      * @return the bound port to the port number
      * @throws IOException if the port is already taken or another network exception occurs
      */
-    Port open(int number) throws IOException;
+    Port createPort(int number) throws IOException;
 
 
     /**
@@ -28,12 +29,4 @@ public interface Ports {
      * @return the allocated ports
      */
     Collection<Port> getPorts();
-
-    /**
-     * Unbinds a port implementation from a port number, and removes it
-     * from the list of active ports.
-     *
-     * @param port the port instance to close
-     */
-    void close(Port port);
 }

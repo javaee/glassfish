@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.logging.*;
 import org.glassfish.web.embed.ConfigException;
 import org.glassfish.web.embed.WebBuilder;
-import org.glassfish.api.embedded.LifecycleException;
+import org.glassfish.api.embedded.*;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.web.embed.config.*;
 import org.jvnet.hk2.annotations.Service;
@@ -125,6 +125,10 @@ public class EmbeddedWebContainer implements
             sniffers.add(security);
         }
         return sniffers;
+    }
+
+    public void bind(Port port, String protocol) {
+
     }
 
     /**

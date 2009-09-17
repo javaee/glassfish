@@ -51,6 +51,9 @@ import java.io.File;
 @Contract
 public interface EmbeddedDeployer {
 
+
+    // todo : is this still used ?
+
     /**
      * Returns the location of the applications directory, where deployed applications
      * are saved.
@@ -60,14 +63,19 @@ public interface EmbeddedDeployer {
     public File getApplicationsDir();
 
     /**
-     * Enables the auto-deployment
+     * Returns the location of the auto-deploy directory.
+     *
+     * @return the auto-deploy directory
+     *
      */
-    public void enableAutoDeploy();
+    public File getAutoDeployDir();
 
     /**
-     * Disables the auto-deployment
+     * Enables or disables the auto-deployment feature
+     *
+     * @param flag set to true to enable, false to disable
      */
-    public void disableAutoDeploy();
+    public void setAutoDeploy(boolean flag);
 
     /**
      * Deploys a file or directory to the servers passing the deployment command parameters
@@ -87,6 +95,9 @@ public interface EmbeddedDeployer {
      */
     public String deploy(ReadableArchive archive, DeployCommandParameters params);
 
+
+    // todo : add redeploy ?
+
     /**
      * Undeploys a previously deployed application
      *
@@ -98,5 +109,5 @@ public interface EmbeddedDeployer {
     /**
      * Undeploys all deployed applications.
      */
-    public void undeployAll();   
+    public void undeployAll();
 }

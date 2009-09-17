@@ -117,20 +117,20 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         return env.getApplicationRepositoryPath();
     }
 
-    public void enableAutoDeploy() {
-        changeAutoDeployState(true);
+    public File getAutoDeployDir() {
+        return new File(env.getDomainRoot(), config.getAutodeployDir());
     }
 
-    private void changeAutoDeployState(final boolean newState) {
+    public void setAutoDeploy(final boolean flag) {
 
         String value = config.getAutodeployEnabled();
         boolean active = value!=null && Boolean.parseBoolean(
                 config.getAutodeployEnabled());
-        if (active!=newState) {
+        if (active!=flag) {
             try {
                 ConfigSupport.apply(new SingleConfigCode<DasConfig>() {
                     public Object run(DasConfig dasConfig) throws PropertyVetoException, TransactionFailure {
-                        dasConfig.setAutodeployEnabled(Boolean.valueOf(newState).toString());
+                        dasConfig.setAutodeployEnabled(Boolean.valueOf(flag).toString());
                         return null;
                     }
                 }, config);
@@ -138,11 +138,6 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
                 logger.log(Level.SEVERE, "Exception while enabling or disabling the autodeployment of applications", e);
             }
         }
-    }
-
-    public void disableAutoDeploy() {
-        changeAutoDeployState(false);
-
     }
 
     public String deploy(File archive, DeployCommandParameters params) {

@@ -26,13 +26,13 @@ public class ExistingConfigurationTest {
         File f = EmbeddedServerUtils.getServerLocation();
         try {
             EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-            efsb.setInstallRoot(f);
+            efsb.installRoot(f);
             // find the domain root.
             f = EmbeddedServerUtils.getDomainLocation(f);
             f = new File(f, "config");
             f = new File(f, "domain.xml");
             Assert.assertTrue(f.exists());
-            efsb.setConfigurationFile(f);
+            efsb.configurationFile(f);
             server = EmbeddedServerUtils.createServer(efsb.build());
 
             Habitat habitat = server.getHabitat();

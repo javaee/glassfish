@@ -38,7 +38,7 @@ package org.glassfish.api.embedded;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
- * Defines the configuration for an embdded interface. This is mostly a
+ * Defines the builder for an embdded container. This is mostly a
  * tag interface that will be implemented by the embedded container
  * main configuration element (like http-service for web, network-listener
  * for grizzly)
@@ -49,8 +49,8 @@ import org.jvnet.hk2.annotations.Contract;
 public interface ContainerBuilder<T extends EmbeddedContainer> {
 
     /**
-     * Types of container that can be built.
-     * Other containers can be added not using one of the predefined types.
+     * Default sets of container that can be built.
+     * Other containers can be added not using one of this predefined types.
      */
     public enum Type {
         /**
@@ -77,20 +77,7 @@ public interface ContainerBuilder<T extends EmbeddedContainer> {
          * all installed containers
          */
         all }
-
-    /**
-     * Types of port supported by the embedded server
-     */
-    public enum PortType { http, https, iiop };
-
-    /**
-     * Attach a port instance to a container
-     *
-     * @param type port type
-     * @param port port instance
-     */
-    void attach(PortType type, Port port);
-
+    
     /**
      * Creates a embedded container
      *

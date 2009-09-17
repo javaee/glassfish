@@ -62,11 +62,11 @@ public class PortsImpl implements Ports {
 
     final Map<Integer, Port> ports = new HashMap<Integer, Port>();
 
-    public Port open(int number) throws IOException {
-        return open(Integer.valueOf(number));
+    public Port createPort(int number) throws IOException {
+        return createPort(Integer.valueOf(number));
     }
 
-    private Port open(Integer portNumber) throws IOException {
+    private Port createPort(Integer portNumber) throws IOException {
 
         for (NetworkListener nl : network.getNetworkListeners().getNetworkListener()) {
             if (nl.getPort().equals(portNumber.toString())) {
@@ -78,17 +78,13 @@ public class PortsImpl implements Ports {
                 throw new IOException("Port " + portNumber + " is alredy open");
             }
         }
-        Port port = habitat.getComponent(Port.class);
+        PortImpl port = habitat.getComponent(PortImpl.class);
         port.bind(portNumber);
         ports.put(portNumber, port);
         return port;    }
 
     public Collection<Port> getPorts() {
         return ports.values();
-    }
-
-    public void close(Port port) {
-        port.unbind();
     }
 
     public void remove(Port port) {

@@ -37,15 +37,15 @@ public class ExistingDomainTest {
         }
         try {
             EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-            efsb.setInstallRoot(f, true);
+            efsb.installRoot(f, true);
             // find the domain root.
             f = new File(f,"domains");
             f = new File(f, "domain1");
             Assert.assertTrue(f.exists());
-            efsb.setInstanceRoot(f);
+            efsb.instanceRoot(f);
 
             Server.Builder builder = new Server.Builder("inplanted");
-            builder.setEmbeddedFileSystem(efsb.build());
+            builder.embeddedFileSystem(efsb.build());
             server = builder.build();
         } catch(Exception e) {
             e.printStackTrace();
@@ -61,9 +61,9 @@ public class ExistingDomainTest {
         f = new File(f, "test-classes");
         ScatteredArchive.Builder builder = new ScatteredArchive.Builder("hello", f);
         builder.addClassPath(f.toURI().toURL());
-        builder.setResources(f);
+        builder.resources(f);
         server.createPort(8080);
-        server.addContainer(server.getConfig(ContainerBuilder.Type.web));
+        server.addContainer(server.createConfig(ContainerBuilder.Type.web));
         DeployCommandParameters dp = new DeployCommandParameters(f);
         ScatteredArchive war = builder.buildWar();
         System.out.println("War content");
@@ -72,7 +72,7 @@ public class ExistingDomainTest {
             System.out.println(contents.nextElement());
         }
         String appName = server.getDeployer().deploy(builder.buildWar(), dp);
-        server.getDeployer().undeploy(appName);
+        server.getDeployer().undeploy(appName, null);
     }
 
     @Test

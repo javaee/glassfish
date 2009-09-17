@@ -36,17 +36,17 @@ public class ExistingConfigurationTest {
         }
         try {
             EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-            efsb.setInstallRoot(f, true);
+            efsb.installRoot(f, true);
             // find the domain root.
             f = new File(f,"domains");
             f = new File(f, "domain1");
             f = new File(f, "config");
             f = new File(f, "domain.xml");
             Assert.assertTrue(f.exists());
-            efsb.setConfigurationFile(f);
+            efsb.configurationFile(f);
 
             Server.Builder builder = new Server.Builder("inplanted");
-            builder.setEmbeddedFileSystem(efsb.build());
+            builder.embeddedFileSystem(efsb.build());
             server = builder.build();
 
             Habitat habitat = server.getHabitat();

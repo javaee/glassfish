@@ -10,7 +10,7 @@ import org.glassfish.api.admin.*;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.deployment.DeployCommandParameters;
 
-import java.io.File;
+import java.io.*;
 import java.util.Enumeration;
 
 /**
@@ -36,9 +36,9 @@ public class InplantedTest {
         }
         try {
             EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-            efsb.setInstallRoot(f, true);
+            efsb.installRoot(f, true);
             Server.Builder builder = new Server.Builder("inplanted");
-            builder.setEmbeddedFileSystem(efsb.build());
+            builder.embeddedFileSystem(efsb.build());
             server = builder.build();
         } catch(Exception e) {
             e.printStackTrace();
@@ -54,19 +54,31 @@ public class InplantedTest {
         f = new File(f, "test-classes");
         ScatteredArchive.Builder builder = new ScatteredArchive.Builder("hello", f);
         builder.addClassPath(f.toURI().toURL());
-        builder.setResources(f);
+        builder.resources(f);
         ScatteredArchive war = builder.buildWar();
         System.out.println("War content");
         Enumeration<String> contents = war.entries();
         while(contents.hasMoreElements()) {
             System.out.println(contents.nextElement());
         }
-        server.createPort(8080);
-        server.addContainer(server.getConfig(ContainerBuilder.Type.web));
-        DeployCommandParameters dp = new DeployCommandParameters(f);
-        String appName = server.getDeployer().deploy(war, dp);
-        Thread.sleep(30000);
-        server.getDeployer().undeploy(appName);
+        try {
+            System.out.println("Port created " + server.createPort(8080));
+            server.addContainer(ContainerBuilder.Type.web);
+            server.start();
+            DeployCommandParameters dp = new DeployCommandParameters(f);
+            String appName = server.getDeployer().deploy(war, dp);
+            System.out.println("Application deployed under name = " + appName);
+            Thread.sleep(30000);
+            if (appName!=null) {
+                server.getDeployer().undeploy(appName, null);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (LifecycleException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (InterruptedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
     @Test

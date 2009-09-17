@@ -46,12 +46,10 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface Port {
 
-    /**
-     * Binds a port instance to a particular port number, opening underlying network resources.
-     *
-     * @param portNumber the port number to operate
-     */
-    public void bind(int portNumber);
+    // default set of protocol we support
+    public final static String HTTP_PROTOCOL = "http";
+    public final static String HTTPS_PROTOCOL = "https";
+    public final static String IIOP_PROTOCOL = "iiop";
 
     /**
      * Returns the port number occupied by this instance.
@@ -63,6 +61,7 @@ public interface Port {
     /**
      * Unbinds (close) this port instance, releasing network resources at portNumber
      */
-    public void unbind();
+    public void close();
 
+    // todo : return a list of protocols bound to this port.
 }

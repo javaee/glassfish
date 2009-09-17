@@ -132,7 +132,7 @@ public class EmbeddedTest {
     @Test
     public void testEjb() throws LifecycleException {
 
-        server.addContainer(server.getConfig(ContainerBuilder.Type.ejb));
+        server.addContainer(server.createConfig(ContainerBuilder.Type.ejb));
         EmbeddedDeployer deployer = server.getDeployer();
 
         URL source = SampleEjb.class.getClassLoader().getResource("org/glassfish/distributions/test/ejb/SampleEjb.class");
@@ -165,7 +165,7 @@ public class EmbeddedTest {
     @Test
     public void testWeb() throws Exception {
         System.out.println("Starting Web " + server);
-        ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
+        ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
         System.out.println("builder is " + b);
         server.addContainer(b);
         EmbeddedDeployer deployer = server.getDeployer();
@@ -176,7 +176,7 @@ public class EmbeddedTest {
 
         System.out.println("Root is " + p);
         ScatteredArchive.Builder builder = new ScatteredArchive.Builder("sampleweb", new File(p));
-        builder.setResources(new File(p));
+        builder.resources(new File(p));
         builder.addClassPath((new File(p)).toURL());
         DeployCommandParameters dp = new DeployCommandParameters(new File(p));
 
@@ -254,7 +254,7 @@ public class EmbeddedTest {
     @AfterClass
     public static void  close() throws LifecycleException {
         if (http!=null) {
-            http.unbind();
+            http.close();
             http=null;
         }
         System.out.println("Stopping server " + server);

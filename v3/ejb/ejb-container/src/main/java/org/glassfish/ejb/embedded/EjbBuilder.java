@@ -32,11 +32,6 @@ public class EjbBuilder implements ContainerBuilder<EmbeddedEjbContainer> {
     volatile EmbeddedEjbContainer instance=null;
     
 
-    public void attach(PortType type, Port port) {
-
-    }
-
-
     public synchronized EmbeddedEjbContainer create(org.glassfish.api.embedded.Server server) {
         if (instance==null) {
             instance =  new EmbeddedEjbContainer(this);

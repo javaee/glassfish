@@ -111,7 +111,7 @@ public class Util {
     }
     
     public static boolean isEmbeddedServer() {
-        List<String> servers = Server.Builder.getServerNames();
+        List<String> servers = Server.getServerNames();
         if (!servers.isEmpty()) {
             return true;
         }
@@ -157,7 +157,7 @@ public class Util {
     }
 
     public static String getCurrentEmbeddedServerName() {
-        List<String> embeddedServerNames = Server.Builder.getServerNames();
+        List<String> embeddedServerNames = Server.getServerNames();
         String embeddedServerName = (embeddedServerNames.get(0) == null) ? "embedded" : embeddedServerNames.get(0);
         return embeddedServerName;
 

@@ -51,6 +51,15 @@ import java.util.List;
 public interface EmbeddedContainer {
 
     /**
+     * Binds a port using a specific protocol to this container.
+     * @param port the port instance to bind
+     * @param protocol the protocol the port should be used for, can
+     * be null and the container can use the port for any protocol(s)
+     * it needs to.
+     */
+    public void bind(Port port, String protocol);
+
+    /**
      * Returns the list of sniffers associated with this container.
      *
      * @return a list of sniffers that will be used when application are

@@ -40,7 +40,7 @@ public class EmbeddedServerUtils {
     public static Server createServer(EmbeddedFileSystem fileSystem) throws Exception {
         try {
             Server.Builder builder = new Server.Builder("inplanted");
-            builder.setEmbeddedFileSystem(fileSystem);
+            builder.embeddedFileSystem(fileSystem);
             return builder.build();
         } catch(Exception e) {
             e.printStackTrace();

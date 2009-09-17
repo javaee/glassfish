@@ -54,10 +54,6 @@ public class AdminInfo implements ContainerBuilder<EmbeddedAdminContainer> {
     @Inject
     EmbeddedAdminContainer ctr;
 
-    public void attach(PortType type, Port port) {
-
-    }
-
     public EmbeddedAdminContainer create(Server server) {
         return ctr;
     }

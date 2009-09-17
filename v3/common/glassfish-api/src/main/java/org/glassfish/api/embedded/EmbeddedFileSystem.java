@@ -58,6 +58,11 @@ public class EmbeddedFileSystem implements PreDestroy {
         File installRoot=null;
         File instanceRoot=null;
 
+        // TODO : add some obvious file errors during the build()
+
+
+        // todo : considering removing this call.
+
         /**
          * Sets the auto delete flag. If on, the embedded file system backing store will be
          * deleted once the embedded server is shutdown.
@@ -65,7 +70,7 @@ public class EmbeddedFileSystem implements PreDestroy {
          * @param b true to delete the instance root directory on server shutdown
          * @return itself
          */
-        public Builder setAutoDelete(boolean b) {
+        public Builder autoDelete(boolean b) {
             this.autoDelete = b;
             return this;
         }
@@ -77,7 +82,7 @@ public class EmbeddedFileSystem implements PreDestroy {
          * @param f location of the configuration file
          * @return itself
          */
-        public Builder setConfigurationFile(File f) {
+        public Builder configurationFile(File f) {
             this.configFile = f;
             return this;
 
@@ -92,9 +97,12 @@ public class EmbeddedFileSystem implements PreDestroy {
          * @param f location of the glassfish installation
          * @return itself
          */
-        public Builder setInstallRoot(File f) {
-            return setInstallRoot(f, false);
+        public Builder installRoot(File f) {
+            return installRoot(f, false);
         }
+
+        // todo : replace cookedMode to...
+        // todo :
 
         /**
          * Sets the installation directory and direct whether or not to use the installation's
@@ -106,7 +114,7 @@ public class EmbeddedFileSystem implements PreDestroy {
          * with the installation modules directory content.
          * @return itself
          */
-        public Builder setInstallRoot(File f, boolean cookedMode) {
+        public Builder installRoot(File f, boolean cookedMode) {
             this.installRoot = f;
             this.cookedMode = cookedMode;
             return this;
@@ -118,7 +126,7 @@ public class EmbeddedFileSystem implements PreDestroy {
          * @param f location of the domain directory
          * @return itself
          */
-        public Builder setInstanceRoot(File f) {
+        public Builder instanceRoot(File f) {
             this.instanceRoot=f;
             if (this.configFile==null) {
                 File tmp = new File(instanceRoot, "config");

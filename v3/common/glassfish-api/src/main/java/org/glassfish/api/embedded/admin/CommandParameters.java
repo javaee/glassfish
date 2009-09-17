@@ -44,6 +44,7 @@ import java.util.Properties;
  */
 public class CommandParameters {
 
+    // todo : change Properties to Map<String, String>
     private Properties params = new Properties();
     private String operand;
 

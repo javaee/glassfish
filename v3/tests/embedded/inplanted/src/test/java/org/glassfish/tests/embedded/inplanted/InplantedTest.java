@@ -28,7 +28,7 @@ public class InplantedTest {
     @BeforeClass
     public static void setupServer() throws Exception {
         EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-        efsb.setInstallRoot(EmbeddedServerUtils.getServerLocation());
+        efsb.installRoot(EmbeddedServerUtils.getServerLocation());
         server = EmbeddedServerUtils.createServer(efsb.build());
     }
 
@@ -40,7 +40,7 @@ public class InplantedTest {
         f = new File(f, "test-classes");
         ScatteredArchive.Builder builder = new ScatteredArchive.Builder("hello", f);
         builder.addClassPath(f.toURI().toURL());
-        builder.setResources(f);
+        builder.resources(f);
         ScatteredArchive war = builder.buildWar();
         System.out.println("War content");
         Enumeration<String> contents = war.entries();
@@ -48,7 +48,7 @@ public class InplantedTest {
             System.out.println(contents.nextElement());
         }
         server.createPort(8080);
-        server.addContainer(server.getConfig(ContainerBuilder.Type.web));
+        server.addContainer(server.createConfig(ContainerBuilder.Type.web));
         DeployCommandParameters dp = new DeployCommandParameters(f);
         String appName = server.getDeployer().deploy(war, dp);
         WebClient webClient = new WebClient();

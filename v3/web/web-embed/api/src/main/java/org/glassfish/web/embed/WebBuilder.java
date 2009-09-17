@@ -94,10 +94,6 @@ public class WebBuilder implements ContainerBuilder<EmbeddedWebContainer> {
         return this;        
     }
 
-    public void attach(PortType type, Port port) {
-
-    }
-
     public synchronized EmbeddedWebContainer create(Server server) {
         if (container==null) {
             container=habitat.getByContract(EmbeddedWebContainer.class);

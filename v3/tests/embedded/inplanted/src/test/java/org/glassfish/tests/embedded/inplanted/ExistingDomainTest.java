@@ -29,8 +29,7 @@ public class ExistingDomainTest {
     public static void setupServer() throws Exception {
         File serverLocation = EmbeddedServerUtils.getServerLocation();
         EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-        efsb.setInstallRoot(serverLocation);
-        efsb.setInstanceRoot(EmbeddedServerUtils.getDomainLocation(serverLocation));
+        efsb.installRoot(serverLocation).instanceRoot(EmbeddedServerUtils.getDomainLocation(serverLocation));
         server = EmbeddedServerUtils.createServer(efsb.build());
     }
 
