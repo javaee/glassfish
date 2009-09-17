@@ -51,7 +51,7 @@ public  class Util {
         EmbeddedFileSystem efs = getFileSystem(installRoot, instanceRoot, configFile);
         Server server;
         if (efs != null) {
-            server = builder.setEmbeddedFileSystem(efs).build();
+            server = builder.embeddedFileSystem(efs).build();
         }
         else {
             server = builder.build();
@@ -76,11 +76,11 @@ public  class Util {
 
         EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
         if (installRoot != null)
-            efsb.setInstallRoot(new File(installRoot), true);
+            efsb.installRoot(new File(installRoot), true);
         if (instanceRoot != null)
-            efsb.setInstanceRoot(new File(instanceRoot));
+            efsb.instanceRoot(new File(instanceRoot));
         if (configFile != null)
-            efsb.setConfigurationFile(new File(configFile));
+            efsb.configurationFile(new File(configFile));
 
         return efsb.build();
     }

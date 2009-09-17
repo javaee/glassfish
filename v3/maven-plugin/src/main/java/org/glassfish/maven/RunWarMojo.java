@@ -81,7 +81,7 @@ public class RunWarMojo extends AbstractDeployMojo {
                 String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
                 if (str.equalsIgnoreCase("X"))
                     break;
-                deployer.undeploy(name);
+                deployer.undeploy(name, null);
             }
         } catch(Exception e) {
            throw new MojoExecutionException(e.getMessage(),e);

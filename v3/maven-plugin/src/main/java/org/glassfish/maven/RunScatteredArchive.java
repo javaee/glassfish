@@ -90,7 +90,7 @@ public class RunScatteredArchive extends AbstractDeployMojo{
             System.out.println("rootdir = " + f);
             if (resources == null) 
                 resources = rootdirectory;
-            builder.setResources(new File(resources));
+            builder.resources(new File(resources));
             if (classpath.isEmpty())
                 classpath.add(rootdirectory);
             for (String cp : classpath) {
@@ -118,7 +118,7 @@ public class RunScatteredArchive extends AbstractDeployMojo{
                 String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
                 if (str.equalsIgnoreCase("X"))
                     break;
-                deployer.undeploy(name);
+                deployer.undeploy(name, null);
             }
         } catch (Exception e) {
            throw new MojoExecutionException(e.getMessage(), e);
