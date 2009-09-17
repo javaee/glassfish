@@ -108,33 +108,79 @@
                             </sun:property>   
 
                             <sun:property id="resAdapterProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njca.adminObjectResource.resourceAdapterHelp}">
-                                <sun:dropDown id="db" selected="#{wizardPoolExtra.ResourceAdapterName}" submitForm="#{true}" immediate="#{true}"
-                                    labels="$pageSession{modules}" styleClass="required" required="#{true}" onchange="submit();">
-                                <!--
-                                <h:selectOneMenu id="db" selected="#{wizardPoolExtra.ResourceAdapterName}" onchange="admingui.ajax.submitForm(this);" immediate="true" required="true" styleClass="required">
+                                <h:selectOneMenu id="db" value="#{wizardPoolExtra.ResourceAdapterName}"  immediate="#{true}"
+                                    labels="$pageSession{modules}" styleClass="required MnuStd_sun4" required="true"
+                                    onchange="jsf.ajax.request(this,event, {execute: '#{pageSession.resAdapter}', render:'#{pageSession.connectionDef}'}); return false;">
                                     <!beforeCreate
-                                        println("$pageSession{modules}");
                                         StringToSelectItemArray(string="$pageSession{modules}" item="#{pageSession.resourceAdapters}")
                                     />
+                                    <!afterCreate
+                                        setPageSessionAttribute(key="resAdapter" value="$this{clientId}");
+                                    />
                                     <f:selectItems value="#{pageSession.resourceAdapters}"/>
-                                </h:selectOneMenu>
-                                -->
+                                    <!--
+                                    <sun:dropDown id="db" selected="#{wizardPoolExtra.ResourceAdapterName}" submitForm="#{false}" immediate="#{true}"
+                                        labels="$pageSession{modules}" styleClass="required MnuStd_sun4" required="#{true}"
+                                        onchange="jsf.ajax.request(this,event,execute: this.id); return false;">
+                                    -->
+                                    <!--
+                                    <h:selectOneMenu id="db" selected="#{wizardPoolExtra.ResourceAdapterName}" onchange="admingui.ajax.submitForm(this);" immediate="true" required="true" styleClass="required">
+                                        <!beforeCreate
+                                            println("$pageSession{modules}");
+                                            StringToSelectItemArray(string="$pageSession{modules}" item="#{pageSession.resourceAdapters}")
+                                        />
+                                        <f:selectItems value="#{pageSession.resourceAdapters}"/>
+                                    </h:selectOneMenu>
+                                    -->
 
-                                <!command
-                                    getUIComponent(clientId="#{jndiNameId}", component=>$attribute{nameComponent});
-                                    getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{poolName});
-                                    setAttribute(key="click" value="$this{component}");
-                                    setAttribute(key="resAdapterChoosen" value="#{click.selected}")
-                                    setAttribute(key="fromStep1" value="#{true}")
-                                    navigate(page="#{request.contextPath}/jca/connectorConnectionPoolNew1.jsf");
-                                />
-                                </sun:dropDown>
+                                    <!command
+                                        getUIComponent(clientId="#{jndiNameId}", component=>$attribute{nameComponent});
+                                        getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{poolName});
+                                        setAttribute(key="click" value="$this{component}");
+                                        setAttribute(key="resAdapterChoosen" value="#{click.selected}")
+                                        setAttribute(key="fromStep1" value="#{true}")
+                                        //navigate(page="#{request.contextPath}/jca/connectorConnectionPoolNew1.jsf");
+                                    />
+                                </h:selectOneMenu>
                                 
                             </sun:property>
                             
                                
                             <sun:property id="connectionDefProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorConnectionPool.connectionDefinitionName}" helpText="$resource{i18njca.connectorConnectionPool.connectionDefinitionNameHelp}">
-                                <sun:dropDown id="db" required="#{true}" styleClass="required" selected="#{wizardPoolExtra.ConnectionDefinitionName}"  labels="$attribute{connectionDefinitions}" />
+                                <!afterCreate
+                                    println("After create! :)");
+                                    setPageSessionAttribute(key="connectionDef" value="$this{clientId}");
+                                />
+                                <event>
+                                        <!beforeEncode
+                                            println("Before encode! :)");
+                                            getUIComponent(clientId="#{jndiNameId}", component=>$attribute{nameComponent});
+                                            getUIComponentProperty(component="#{pageSession.resAdapter}", name="value", value=>$attribute{poolName});
+                                            println("poolName = $attribute{poolName}");
+
+                                            getUIComponent(clientId="#{resAdapter}", component=>$attribute{resAdapterComponent});
+                                            setAttribute(key="click" value="$attribute{resAdapterComponent}");
+                                            setAttribute(key="resAdapterChoosen" value="#{click.value}");
+                                            println("resAdapterChosen = $attribute{resAdapterChosen}");
+
+                                            setAttribute(key="fromStep1" value="#{true}")
+                                            getConnectorConnectionPoolWizard(
+                                                    fromStep1="$attribute{fromStep1}"
+                                                    fromStep2="$attribute{fromStep2}"
+                                                    poolName="$attribute{poolName}"
+                                                    attrMap="#{pageSession.valueMap}"
+                                                    resAdapter="$attribute{poolName}"
+                                                    connectionDefinitions=>$attribute{connectionDefinitions} )
+                                            println("connectionDefinitions = $attribute{connectionDefinitions}");
+                                            if ($attribute{connectionDefinitions}) {
+                                                StringToSelectItemArray(string="$attribute{connectionDefinitions}" item="#{connDefSelItems}")
+                                            }
+                                            println("connDefSelItems = #{connDefSelItems}");
+                                        />
+                                </event>
+                                <h:selectOneMenu id="db" required="#{true}" styleClass="required MnuStd_sun4" value="#{wizardPoolExtra.ConnectionDefinitionName}"  labels="$attribute{connectionDefinitions}">
+                                    <f:selectItems value="#{connDefSelItems}"/>
+                                </h:selectOneMenu>
                             </sun:property>
                         </sun:propertySheetSection>
                     </sun:propertySheet> 

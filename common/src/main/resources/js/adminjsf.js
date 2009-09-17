@@ -1956,7 +1956,7 @@ admingui.ajax = {
     loadPage : function (args) {
         //window.frames['buffer'].location = url;
         var url = admingui.ajax.modifyUrl(args.url);
-        if (url != admingui.ajax.lastPageLoaded) {
+//        if (url != admingui.ajax.lastPageLoaded) {
             admingui.util.log("Loading " + url + " via ajax.");
             var oldOnClick = args.oldOnClickHandler;
 
@@ -1973,7 +1973,7 @@ admingui.ajax = {
                 admingui.util.log(oldOnClick);
 //                oldOnClick();
             }
-        }
+//        }
         return false;
     },
 
@@ -2277,7 +2277,8 @@ var globalEval = function globalEval(src) {
         window.execScript(src);
         return;
     }
-    (function() {
+    var fn = function() {
         window.eval.call(window,src);
-    })();
+    };
+    fn();
 };
