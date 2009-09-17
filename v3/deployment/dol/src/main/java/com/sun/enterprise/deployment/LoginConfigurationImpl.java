@@ -156,4 +156,20 @@ public class LoginConfigurationImpl extends Descriptor implements LoginConfigura
         } 
         return result;
     }
+
+    public int hashCode() {
+        int hashCode = 1;
+        hashCode = 31 * hashCode + getAuthenticationMethod().hashCode();
+        
+        if (getRealmName().length() > 0) {
+            hashCode = 31 * hashCode + getRealmName().hashCode();
+        }
+        if (getFormLoginPage().length() > 0) {
+            hashCode = 31 * hashCode + getFormLoginPage().hashCode();
+        }
+        if (getFormErrorPage().length() > 0) {
+            hashCode = 31 * hashCode + getFormErrorPage().hashCode();
+        }
+        return hashCode;
+    }
 }
