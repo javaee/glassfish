@@ -145,16 +145,18 @@ public class SendMailFactory implements ObjectFactory
 			// set property
 			props.put(refaddr.getType(), (String)refaddr.getContent());
 		    }
-		    MimeMessage message = new MimeMessage(
-			Session.getInstance(props));
 		    try {
+                        MimeMessage message = new MimeMessage(
+                            Session.getInstance(props));
 			String from = (String)Ref.get("mail.from").getContent();
 		        message.setFrom(new InternetAddress(from));
 		        message.setSubject("");
-		    } catch (Exception e) {}
-		    MimePartDataSource mds = new MimePartDataSource(
-			(MimePart)message);
-		    return mds;
+                        MimePartDataSource mds = new MimePartDataSource(
+                            (MimePart)message);
+                        return mds;
+		    } catch (Exception e) {
+                        return null;
+                    }
 		}
 	    } );
 	}
