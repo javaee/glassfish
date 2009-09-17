@@ -47,7 +47,7 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
  * @author Jagadish Ramu.
  */
 
-@ProbeProvider(moduleProviderName = "glassfish", moduleName = "connector-service", probeProviderName = "work-management")
+@ProbeProvider(moduleProviderName = "glassfish", moduleName = "jca", probeProviderName = "work-management")
 public class WorkManagementProbeProvider {
 
 

@@ -107,6 +107,7 @@ public class ConnectorConnPoolStatsProvider {
     private CountStatisticImpl numPotentialConnLeak = new CountStatisticImpl(
             "numpotentialconnleak", StatisticImpl.UNIT_COUNT, 
             "Number of potential connection leaks");
+    private final String JCA_PROBE_LISTENER = "glassfish:jca:connection-pool:";
 
     public ConnectorConnPoolStatsProvider(String poolName, Logger logger) {    
         this.ccPoolName = poolName;
@@ -117,7 +118,7 @@ public class ConnectorConnPoolStatsProvider {
      * Whenever connection leak happens, increment numPotentialConnLeak
      * @param pool JdbcConnectionPool that got a connLeakEvent
      */
-    @ProbeListener("glassfish:connector:connector-connection-pool:potentialConnLeakEvent")
+    @ProbeListener(JCA_PROBE_LISTENER + "potentialConnLeakEvent")
     public void potentialConnLeakEvent(@ProbeParam("poolName") String poolName) {
 	// handle the conn leak probe event
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
@@ -133,7 +134,7 @@ public class ConnectorConnPoolStatsProvider {
      * Whenever connection timed-out event occurs, increment numConnTimedOut
      * @param pool JdbcConnectionPool that got a connTimedOutEvent
      */
-    @ProbeListener("glassfish:connector:connector-connection-pool:connectionTimedOutEvent")
+    @ProbeListener(JCA_PROBE_LISTENER + "connectionTimedOutEvent")
     public void connectionTimedOutEvent(@ProbeParam("poolName") String poolName) {
 	// handle the conn timed out probe event
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
@@ -149,7 +150,7 @@ public class ConnectorConnPoolStatsProvider {
      * @param poolName
      * @param steadyPoolSize
      */
-    @ProbeListener("glassfish:connector:connector-connection-pool:decrementFreeConnectionsSizeEvent")
+    @ProbeListener(JCA_PROBE_LISTENER + "decrementFreeConnectionsSizeEvent")
     public void decrementFreeConnectionsSizeEvent(
             @ProbeParam("poolName") String poolName, 
             @ProbeParam("steadyPoolSize") int steadyPoolSize) {
@@ -172,7 +173,7 @@ public class ConnectorConnPoolStatsProvider {
      * @param beingDestroyed if the connection is destroyed due to error
      * @param steadyPoolSize
      */
-    @ProbeListener("glassfish:connector:connector-connection-pool:decrementConnectionUsedEvent")
+    @ProbeListener(JCA_PROBE_LISTENER + "decrementConnectionUsedEvent")
     public void decrementConnectionUsedEvent(
             @ProbeParam("poolName") String poolName, 
             @ProbeParam("beingDestroyed") boolean beingDestroyed,
@@ -200,7 +201,7 @@ public class ConnectorConnPoolStatsProvider {
      * @param poolName 
      * @param count number of connections freed to the pool
      */
-    @ProbeListener("glassfish:connector:connector-connection-pool:connectionsFreedEvent")
+    @ProbeListener(JCA_PROBE_LISTENER + "connectionsFreedEvent")
     public void connectionsFreedEvent(
             @ProbeParam("poolName") String poolName, 
             @ProbeParam("count") int count) {
@@ -220,7 +221,7 @@ public class ConnectorConnPoolStatsProvider {
      * Connection used event
      * @param poolName
      */
-    @ProbeListener("glassfish:connector:connector-connection-pool:connectionUsedEvent")
+    @ProbeListener(JCA_PROBE_LISTENER + "connectionUsedEvent")
     public void connectionUsedEvent(
             @ProbeParam("poolName") String poolName) {
 	// handle the connection used event
@@ -239,7 +240,7 @@ public class ConnectorConnPoolStatsProvider {
      * Whenever connection leak happens, increment numConnFailedValidation
      * @param pool JdbcConnectionPool that got a failed validation event
      */
-    @ProbeListener("glassfish:connector:connector-connection-pool:connectionValidationFailedEvent")
+    @ProbeListener(JCA_PROBE_LISTENER + "connectionValidationFailedEvent")
     public void connectionValidationFailedEvent(
             @ProbeParam("poolName") String poolName, @ProbeParam("increment") int increment) {
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
@@ -257,7 +258,7 @@ public class ConnectorConnPoolStatsProvider {
      * @param poolName
      * @param timeTakenInMillis
      */
-    @ProbeListener("glassfish:connector:connector-connection-pool:connectionRequestServedEvent")
+    @ProbeListener(JCA_PROBE_LISTENER + "connectionRequestServedEvent")
     public void connectionRequestServedEvent(
             @ProbeParam("poolName") String poolName, 
             @ProbeParam("timeTakenInMillis") long timeTakenInMillis) {
@@ -271,7 +272,7 @@ public class ConnectorConnPoolStatsProvider {
     /**
      * When connection destroyed event is got increment numConnDestroyed.
      */
-    @ProbeListener("glassfish:connector:connector-connection-pool:connectionDestroyedEvent")
+    @ProbeListener(JCA_PROBE_LISTENER + "connectionDestroyedEvent")
     public void connectionDestroyedEvent(
             @ProbeParam("poolName") String poolName) {
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
@@ -284,7 +285,7 @@ public class ConnectorConnPoolStatsProvider {
     /**
      * When a connection is acquired increment counter
      */
-    @ProbeListener("glassfish:connector:connector-connection-pool:connectionAcquiredEvent")
+    @ProbeListener(JCA_PROBE_LISTENER + "connectionAcquiredEvent")
     public void connectionAcquiredEvent(
             @ProbeParam("poolName") String poolName) {
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
@@ -297,7 +298,7 @@ public class ConnectorConnPoolStatsProvider {
     /**
      * When a connection is released increment counter
      */
-    @ProbeListener("glassfish:connector:connector-connection-pool:connectionReleasedEvent")
+    @ProbeListener(JCA_PROBE_LISTENER + "connectionReleasedEvent")
     public void connectionReleasedEvent(
             @ProbeParam("poolName") String poolName) {
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
@@ -310,7 +311,7 @@ public class ConnectorConnPoolStatsProvider {
     /**
      * When a connection is created increment counter
      */
-    @ProbeListener("glassfish:connector:connector-connection-pool:connectionCreatedEvent")
+    @ProbeListener(JCA_PROBE_LISTENER + "connectionCreatedEvent")
     public void connectionCreatedEvent(
             @ProbeParam("poolName") String poolName) {
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {

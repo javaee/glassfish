@@ -45,7 +45,7 @@ import org.glassfish.external.probe.provider.annotations.ProbeProvider;
  * 
  * @author Shalini M
  */
-@ProbeProvider(moduleProviderName="glassfish", moduleName="connector", probeProviderName="connector-connection-pool")
+@ProbeProvider(moduleProviderName="glassfish", moduleName="jca", probeProviderName="connection-pool")
 public class ConnectorConnPoolProbeProvider {
 
     /**

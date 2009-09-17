@@ -58,7 +58,7 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
 public class WorkManagementStatsProvider {
 
     private String moduleName; //ra-name
-    private final String DOTTED_NAME = "glassfish:connector-service:work-management:";
+    private final String DOTTED_NAME = "glassfish:jca:work-management:";
 
     public WorkManagementStatsProvider(String moduleName) {
         this.moduleName = moduleName;
@@ -134,7 +134,7 @@ public class WorkManagementStatsProvider {
     }
 
 
-    @ProbeListener("glassfish:connector-service:work-management:workSubmitted")
+    @ProbeListener(DOTTED_NAME + "workSubmitted")
     public void workSubmitted(
             @ProbeParam("raName") String raName
     ) {
@@ -143,7 +143,7 @@ public class WorkManagementStatsProvider {
         }
     }
 
-    @ProbeListener("glassfish:connector-service:work-management:workQueued")
+    @ProbeListener(DOTTED_NAME + "workQueued")
     public void workQueued(
             @ProbeParam("raName") String raName
     ) {
@@ -155,7 +155,7 @@ public class WorkManagementStatsProvider {
     }
 
 
-    @ProbeListener("glassfish:connector-service:work-management:workWaitedFor")
+    @ProbeListener(DOTTED_NAME + "workWaitedFor")
     public void workWaitedFor(
             @ProbeParam("raName") String raName,
             @ProbeParam("elapsedTime") long elapsedTime
@@ -165,7 +165,7 @@ public class WorkManagementStatsProvider {
         }
     }
 
-    @ProbeListener("glassfish:connector-service:work-management:workDequeued")
+    @ProbeListener(DOTTED_NAME + "workDequeued")
     public void workDequeued(
             @ProbeParam("raName") String raName
     ) {
@@ -176,7 +176,7 @@ public class WorkManagementStatsProvider {
         }
     }
 
-    @ProbeListener("glassfish:connector-service:work-management:workProcessingStarted")
+    @ProbeListener(DOTTED_NAME + "workProcessingStarted")
     public void workProcessingStarted(
             @ProbeParam("raName") String raName
     ) {
@@ -187,7 +187,7 @@ public class WorkManagementStatsProvider {
         }
     }
 
-    @ProbeListener("glassfish:connector-service:work-management:workProcessingCompleted")
+    @ProbeListener(DOTTED_NAME + "workProcessingCompleted")
     public void workProcessingCompleted(
             @ProbeParam("raName") String raName
     ) {
@@ -198,7 +198,7 @@ public class WorkManagementStatsProvider {
         }
     }
 
-    @ProbeListener("glassfish:connector-service:work-management:workProcessed")
+    @ProbeListener(DOTTED_NAME + "workProcessed")
     public void workProcessed(
             @ProbeParam("raName") String raName
     ) {
@@ -208,7 +208,7 @@ public class WorkManagementStatsProvider {
     }
 
 
-    @ProbeListener("glassfish:connector-service:work-management:workTimedOut")
+    @ProbeListener(DOTTED_NAME + "workTimedOut")
     public void workTimedOut(
             @ProbeParam("raName") String raName
     ) {
