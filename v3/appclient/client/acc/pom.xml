@@ -455,5 +455,12 @@
          <version>${project.version}</version>
      </dependency>
 
+     <dependency>
+         <scope>runtime</scope>
+         <groupId>org.glassfish.persistence.cmp</groupId>
+         <artifactId>cmp-internal-api</artifactId>
+         <version>${project.version}</version>
+</dependency>
+
    </dependencies>
 </project>
