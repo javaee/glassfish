@@ -254,7 +254,8 @@ public final class LDAPRealm extends IASRealm
         while (penum.hasMoreElements()) {
             String propName = (String)penum.nextElement();
             if (propName.startsWith("java.naming.") ||
-                    propName.startsWith("javax.security.")) {
+                    propName.startsWith("javax.security.") ||
+                    propName.startsWith("com.sun.jndi.ldap.")) {
                 ldapBindProps.setProperty(propName, props.getProperty(propName));
             } else if (propName.startsWith(SUN_JNDI_POOL_) &&
                     !SUN_JNDI_POOL_MAXSIZE.equals(propName)) {
