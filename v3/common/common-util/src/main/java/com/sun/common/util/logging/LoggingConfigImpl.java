@@ -121,7 +121,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
             return true;
 		} catch (java.io.FileNotFoundException e ) {
 			Logger.getAnonymousLogger().log(Level.INFO, "Cannot read logging.properties file. ");
-            throw new IOException();
+            return false;
 		} catch (IOException e) {
 			Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot read logging.properties file : ", e);
 			throw new IOException();
