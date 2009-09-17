@@ -46,12 +46,14 @@ import org.glassfish.api.admin.ServerEnvironment;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,6 +65,14 @@ import java.util.logging.Logger;
  * lib/*.jar:domain_dir/lib/classes:domain_dir/lib/*.jar.
  * Please note that domain_dir/lib/classes comes before domain_dir/lib/*.jar,
  * just like WEB-INF/classes is searched first before WEB-INF/lib/*.jar.
+ *
+ * It applies a special rule while handling jars in install_root/lib.
+ * In order to maintain file layout compatibility (see  issue #9526),
+ * we add jars like javaee.jar and appserv-rt.jar which need to be excluded
+ * from runtime classloaders in the server side, as they are already available via
+ * PublicAPIClassLoader. So, before we add any jar from install_root/lib,
+ * we look at their manifest entry and skip the ones that have an entry
+ * GlassFish-ServerExcluded: true
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
@@ -82,6 +92,8 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
     final static Logger logger = LogDomains.getLogger(CommonClassLoaderServiceImpl.class, LogDomains.LOADER_LOGGER);
     private ClassLoader APIClassLoader;
     private String commonClassPath = "";
+
+    private static final String SERVER_EXCLUDED_ATTR_NAME = "GlassFish-ServerExcluded";
 
     public void postConstruct() {
         APIClassLoader = acls.getAPIClassLoader();
@@ -104,7 +116,7 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
             File installLibPath = new File(installDir, "lib");
             if (installLibPath.isDirectory()) {
                 Collections.addAll(cpElements,
-                        installLibPath.listFiles(new JarFileFilter()));
+                        installLibPath.listFiles(new CompiletimeJarFileFilter()));
             }
         } else {
             logger.logp(Level.WARNING, "CommonClassLoaderServiceImpl",
@@ -162,6 +174,47 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
 
         public boolean accept(File dir, String name) {
             return name.endsWith(JAR_EXT);
+        }
+    }
+
+    private static class CompiletimeJarFileFilter extends JarFileFilter {
+        /*
+         * See https://glassfish.dev.java.net/issues/show_bug.cgi?id=9526
+         */
+        @Override
+        public boolean accept(File dir, String name)
+        {
+            if (super.accept(dir, name)) {
+                File file = new File(dir, name);
+                JarFile jar = null;
+                try
+                {
+                    jar = new JarFile(file);
+                    String exclude = jar.getManifest().getMainAttributes().
+                            getValue(SERVER_EXCLUDED_ATTR_NAME);
+                    if (exclude != null && exclude.equalsIgnoreCase("true")) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+                catch (IOException e)
+                {
+                    logger.log(Level.WARNING, "CommonClassLoaderServiceImpl " +
+                            "is unable to process " + file.getAbsolutePath() +
+                            " because of exception.", e);
+                } finally {
+                    try
+                    {
+                        if (jar != null) jar.close();
+                    }
+                    catch (IOException e)
+                    {
+                        // ignore
+                    }
+                }
+            }
+            return false;
         }
     }
 }
