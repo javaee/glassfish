@@ -72,5 +72,5 @@ public class ImageHyperlink extends com.sun.webui.jsf.component.ImageHyperlink {
 	return (ImageComponent) image;
     }
     
-    public static String IMAGE_FACET_KEY    = "internalImage";
+    public static final String IMAGE_FACET_KEY    = "internalImage";
 }
