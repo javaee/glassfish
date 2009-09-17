@@ -85,7 +85,7 @@ public class MonitorCommand extends CLICommand {
         commandOpts = Collections.unmodifiableSet(opts);
         operandName = "target";
         operandType = "STRING";
-        operandMin = 1;
+        operandMin = 0;
         operandMax = 1;
 
         processProgramOptions();
