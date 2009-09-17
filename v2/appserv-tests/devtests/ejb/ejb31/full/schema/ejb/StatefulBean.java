@@ -1,8 +1,17 @@
 package com.acme;
 
+import javax.ejb.*;
+import javax.annotation.*;
+
 public class StatefulBean {
 
-    public void foo() {}
+    @EJB private StatelessBean slsb;    
+
+    public void foo() {
+
+	slsb.foo();
+	
+    }
 
     public void afterBegin() {
 	System.out.println("In StatefulBean::afterBegin");

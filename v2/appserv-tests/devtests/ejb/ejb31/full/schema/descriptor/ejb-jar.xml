@@ -133,6 +133,12 @@
 	</pre-destroy>
       </session>
       <session>
+        <ejb-name>StatelessBean</ejb-name>
+        <async-method>
+              <method-name>foo</method-name>
+        </async-method>
+      </session>
+      <session>
         <ejb-name>StatefulBean</ejb-name>
 	<local-bean/>
 	<ejb-class>com.acme.StatefulBean</ejb-class>
