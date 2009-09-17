@@ -677,7 +677,7 @@ public class ChannelNioSocket extends JkHandler
                 got = -1;
             }
             if (log.isTraceEnabled()) {
-                log.trace("read() " + b + " " + (b==null ? 0: b.length) + " " +
+                log.trace("read() " + " " + (b==null ? 0: b.length) + " " +
                           offset + " " + len + " = " + got );
             }
 

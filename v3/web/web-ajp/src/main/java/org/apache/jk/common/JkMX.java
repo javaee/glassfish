@@ -81,7 +81,6 @@ import java.io.IOException;
  */
 public class JkMX extends JkHandler
 {
-    MBeanServer mserver;
     private boolean enabled=false;
     private boolean log4jEnabled=true;
     private int httpport=-1;

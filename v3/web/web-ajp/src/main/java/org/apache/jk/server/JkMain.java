@@ -122,7 +122,6 @@ public class JkMain implements MBeanRegistration
 
     public JkMain()
     {
-        JkMain.jkMain=this;
         modules.put("channelSocket", "org.apache.jk.common.ChannelSocket");
         modules.put("channelNioSocket", "org.apache.jk.common.ChannelNioSocket");
         modules.put("channelUnix", "org.apache.jk.common.ChannelUn");
@@ -135,10 +134,6 @@ public class JkMain implements MBeanRegistration
         modules.put("container","org.apache.jk.common.HandlerRequest");
         modules.put("modjk","org.apache.jk.common.ModJkMX");
 
-    }
-
-    public static JkMain getJkMain() {
-        return jkMain;
     }
 
     private static final String DEFAULT_HTTPS="com.sun.net.ssl.internal.www.protocol";
@@ -437,7 +432,6 @@ public class JkMain implements MBeanRegistration
 
     long initTime;
     long startTime;
-    static JkMain jkMain=null;
 
     public static void main(String args[]) {
         try {
@@ -452,7 +446,7 @@ public class JkMain implements MBeanRegistration
                 return;
             }
 
-            jkMain=new JkMain();
+            JkMain jkMain=new JkMain();
 
             IntrospectionUtils.processArgs( jkMain, args, new String[] {},
                                             null, new Hashtable<String,String>());

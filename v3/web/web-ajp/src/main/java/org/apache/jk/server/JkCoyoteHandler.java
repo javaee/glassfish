@@ -78,7 +78,7 @@ import org.apache.jk.core.MsgContext;
  * jmx:notification-handler name="com.sun.grizzly.tcp.ACTION_COMMIT
  */
 public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
-    protected static org.apache.commons.logging.Log log 
+    protected static final org.apache.commons.logging.Log log 
         = org.apache.commons.logging.LogFactory.getLog(JkCoyoteHandler.class);
     // Set debug on this logger to see the container request time
 

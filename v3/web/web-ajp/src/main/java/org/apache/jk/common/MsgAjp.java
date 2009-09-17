@@ -349,7 +349,7 @@ public class MsgAjp extends Msg {
     
     public void dump(String msg) {
         if( log.isDebugEnabled() ) 
-            log.debug( msg + ": " + buf + " " + pos +"/" + (len + 4));
+            log.debug( msg + ": " + " " + pos +"/" + (len + 4));
         int max=pos;
         if( len + 4 > pos )
             max=len+4;
