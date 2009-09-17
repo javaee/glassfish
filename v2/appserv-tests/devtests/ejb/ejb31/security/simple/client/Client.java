@@ -5,6 +5,7 @@ import javax.ejb.*;
 import javax.annotation.*;
 
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import java.util.concurrent.*;
 
@@ -41,6 +42,9 @@ public class Client {
     @Resource(name="java:global/enventry2")
     static String envEntry2;
 
+    @Resource(name="envEntry3")
+    static Integer envEntry3;
+
  @PostConstruct
 	public static void init() {
 	try {
@@ -51,8 +55,12 @@ public class Client {
 
 	System.out.println("java:app/env/enventry1 = " + envEntry1);
 	System.out.println("java:global/enventry2 = " + envEntry2);
-	} catch(Exception e) {
-	    e.printStackTrace();
+	System.out.println("java:global/enventry3 = " + envEntry3);
+	if( (envEntry3 == null) || envEntry3.intValue() != 18338 ) {
+	    throw new RuntimeException("invalid enventry3 value");
+	}
+	} catch(NamingException e) {
+	    throw new RuntimeException(e);
 	}
     }
 
