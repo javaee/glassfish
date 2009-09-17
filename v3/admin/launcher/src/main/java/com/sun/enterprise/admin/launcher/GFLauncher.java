@@ -340,10 +340,8 @@ public abstract class GFLauncher {
     }
 
     void setCommandLine() throws GFLauncherException {
-        // todo handle stuff in javaConfig like debug...
         List<String> cmdLine = getCommandLine();
         cmdLine.clear();
-        System.out.println("");
         addIgnoreNull(cmdLine, javaExe);
         addIgnoreNull(cmdLine, "-cp");
         addIgnoreNull(cmdLine, getClasspath());
