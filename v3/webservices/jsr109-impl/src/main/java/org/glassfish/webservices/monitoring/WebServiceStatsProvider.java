@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Jitendra Kotamraju
  */
-@AMXMetadata(type="web-service-mon", group="monitoring", isSingleton=true)
+@AMXMetadata(type="web-service-mon", group="monitoring")
 @ManagedObject
 @Description("Stats for Web Services deployed")
 public class WebServiceStatsProvider {

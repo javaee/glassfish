@@ -4,7 +4,9 @@
  */
 package org.glassfish.admin.monitor;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.StringTokenizer;
@@ -23,6 +25,11 @@ import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManagerDelegate;
+import org.glassfish.external.statistics.Statistic;
+import org.glassfish.external.statistics.Stats;
+import org.glassfish.external.statistics.annotations.Reset;
+import org.glassfish.external.statistics.impl.StatisticImpl;
+import org.glassfish.external.statistics.impl.StatsImpl;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import com.sun.enterprise.config.serverbeans.*;
 import java.lang.management.ManagementFactory;
@@ -330,6 +337,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         //Enable/Disable the child TreeNodes
         String parentNodePath = spre.getParentTreeNodePath();
         List<String> childNodeNames = spre.getChildTreeNodeNames();
+        Method resetMethod = spre.getResetMethod();
         TreeNode rootNode = mrdr.get("server");
         if (rootNode != null) {
             // This has to return one node
@@ -344,6 +352,11 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
                     if (childNode.isEnabled() != enable) {
                         printd(((enable)?"En":"Dis") + "abling the child node - " + childNode.getCompletePathName());
                         childNode.setEnabled(enable);
+                        if (enable && resetMethod == null) {
+                            // call reset method on Statistic class only if there isn't an
+                            // @Reset method on the statsProvider.  Call on enable b/c to use current time stamp.
+                            resetStatistic(childNode.getValue());
+                        }
                         hasUpdatedNode = true;
                     }
                 }
@@ -351,10 +364,12 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             if (!hasUpdatedNode)
                 return;
             //Make sure the tree path is affected with the changes.
-            if (enable)
+            if (enable) {
                 enableTreeNode(parentNode);
-            else
+                invokeResetMethod(resetMethod, spre.getStatsProvider());
+            } else {
                 disableTreeNode(parentNode);
+            }
         }
 
     }
@@ -393,13 +408,50 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         }
     }
 
+    private void resetStatistic(Object value) {
+        if (value instanceof Statistic) {
+            if (Proxy.isProxyClass(value.getClass())) {
+                ((StatisticImpl) Proxy.getInvocationHandler(value)).reset();
+            } else {
+                ((StatisticImpl) value).reset();
+            }
+        } else if (value instanceof Stats) {
+            if (Proxy.isProxyClass(value.getClass())) {
+                ((StatsImpl) Proxy.getInvocationHandler(value)).reset();
+            } else {
+                ((StatsImpl) value).reset();
+            }
+        }
+    }
+
+    private void invokeResetMethod(Method m, Object statsProvider) {
+         if (m != null) {
+            try {
+                m.invoke(statsProvider);
+            } catch (IllegalAccessException ex) {
+                Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InvocationTargetException ex) {
+                Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+         }
+    }
+
     private List<String> createTreeForStatsProvider(TreeNode parentNode, Object statsProvider) {
         /* construct monitoring tree at PluginPoint using subTreePath */
         List<String> childNodeNames = new ArrayList();
 
         /* retrieve ManagedAttribute attribute id (v2 compatible) and method names */
+        /* Check for custom reset method and store for later to be called instead of
+         standard reset methods on Statistic classes*/
         for (Method m : statsProvider.getClass().getDeclaredMethods()) {
             ManagedAttribute ma = m.getAnnotation(ManagedAttribute.class);
+            Reset resetMeth = m.getAnnotation(Reset.class);
+            if (resetMeth != null) {
+                StatsProviderRegistryElement spre = this.statsProviderRegistry.getStatsProviderRegistryElement(statsProvider);
+                spre.setResetMethod(m);
+            }
             if (ma != null) {
                 String methodName = m.getName();
                 String id = ma.id();

@@ -68,6 +68,7 @@ public class WebRequestStatsProvider {
     //private Counter requestCount = CounterFactory.createCount();
     //Provides the cumulative value of the error count. The error count represents 
     //the number of cases where the response code was greater than or equal to 400.
+    private CountStatisticImpl requestCount = new CountStatisticImpl("RequestCount", "count", "Cumulative number of requests processed so far");
     private CountStatisticImpl errorCount = new CountStatisticImpl("ErrorCount", "count", "Number of responses with a status code greater than or equal to 400");
     private TimeStats requestProcessTime = TimeStatsFactory.createTimeStatsMilli();
     private Logger logger;
@@ -100,8 +101,6 @@ public class WebRequestStatsProvider {
     @ManagedAttribute(id="requestcount")
     @Description("Cumulative number of requests processed so far")
     public CountStatistic getRequestCount() {
-        CountStatisticImpl requestCount = new CountStatisticImpl("RequestCount", "count", "Cumulative number of requests processed so far");
-        requestCount.setCount(requestProcessTime.getCount());
         return requestCount;
     }
 
@@ -198,6 +197,7 @@ public class WebRequestStatsProvider {
                     hostName.equals(virtualServerName) &&
                     appName.equals(moduleName)){
                 //increment counts
+                requestCount.increment();
                 requestProcessTime.exit();
                 if (statusCode >= 400) {
                     errorCount.increment();
@@ -216,6 +216,7 @@ public class WebRequestStatsProvider {
             }
         }
         else {
+            requestCount.increment();
             requestProcessTime.exit();
             if (statusCode >= 400) {
                 errorCount.increment();

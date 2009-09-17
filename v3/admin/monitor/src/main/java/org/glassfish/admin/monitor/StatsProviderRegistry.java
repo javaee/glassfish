@@ -1,6 +1,7 @@
 package org.glassfish.admin.monitor;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.glassfish.gmbal.ManagedObjectManagerFactory;
+import org.glassfish.external.statistics.annotations.Reset;
 import org.glassfish.external.probe.provider.StatsProvider;
 import org.glassfish.external.probe.provider.PluginPoint;
 
@@ -119,6 +121,7 @@ public class StatsProviderRegistry {
         Object statsProvider;
         String mbeanName;
         ManagedObjectManager mom;
+        Method resetMethod;
         boolean isEnabled = false;
 
         public StatsProviderRegistryElement(String configStr, PluginPoint pp, String subTreePath,
@@ -200,6 +203,12 @@ public class StatsProviderRegistry {
 
         public void setHandles(Collection<ProbeClientMethodHandle> handles) {
             this.handles = handles;
+        }
+        void setResetMethod(Method method) {
+            this.resetMethod = method;
+        }
+        Method getResetMethod() {
+            return this.resetMethod;
         }
 
         public String toString() {

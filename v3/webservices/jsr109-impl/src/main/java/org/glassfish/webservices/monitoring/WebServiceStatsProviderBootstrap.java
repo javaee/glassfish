@@ -2,6 +2,7 @@ package org.glassfish.webservices.monitoring;
 
 import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.glassfish.external.probe.provider.PluginPoint;
+import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.glassfish.api.monitoring.TelemetryProvider;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -21,9 +22,9 @@ public class WebServiceStatsProviderBootstrap implements TelemetryProvider, Post
 
     public void postConstruct() {
         StatsProviderManager.register(
-            "WebServiceContainer",
+            ContainerMonitoring.WEB_SERVICES_CONTAINER,
             PluginPoint.SERVER,
-            "Web Services",
+            "webservices",
             new WebServiceStatsProvider());
     }
 }
