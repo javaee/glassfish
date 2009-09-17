@@ -372,7 +372,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         if (isRegistered && !force) {
             String msg = localStrings.getLocalString(
                 "application.alreadyreg.redeploy",
-                "Application {0} already registered, please use deploy --force=true to redeploy", name);
+                "Application {0} already registered; either specify that redeployment must be forced, or redeploy the application.", name);
             throw new Exception(msg);
         }
         else if (isRegistered && force) 
