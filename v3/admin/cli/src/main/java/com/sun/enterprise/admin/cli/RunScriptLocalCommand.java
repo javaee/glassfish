@@ -52,13 +52,13 @@ import java.util.UUID;
  * @author Prashanth Abbagani
  */
 
-@Service(name = "run-script-local")
+@Service(name = "run-script")
 @Scoped(PerLookup.class)
 public final class RunScriptLocalCommand extends RemoteCommand {
 
-    public static final String TERSE = "terse";
+    //public static final String TERSE = "terse";
     public static final String HTTP_PORT = "httpport";
-    public static final String UPLOAD = "upload";
+    //public static final String UPLOAD = "upload";
     public static final String SCRIPT_ID = "scriptid";
 
     //private String host = "localhost";
@@ -66,15 +66,8 @@ public final class RunScriptLocalCommand extends RemoteCommand {
     private int httpPort = 8080;
     private String scriptName;
 
-    /**
-     * Constructor used by subclasses to save the name, program options,
-     * and environment information into corresponding protected fields.
-     * Finally, this constructor calls the initializeLogger method.
-     */
-    public RunScriptLocalCommand(String name, ProgramOptions programOpts, Environment env)
-                throws CommandException {
-        super(name, programOpts, env);
-        //logger.printMessage("In the RunScriptLocalCommand.constructor()");
+    public RunScriptLocalCommand() throws CommandException {
+        super();
     }
 
     /**
@@ -83,19 +76,10 @@ public final class RunScriptLocalCommand extends RemoteCommand {
      */
     
     @Override
-    protected void prepare() throws CommandException {
-        if (!isValidCommand()) {
-            throw new CommandException("Command " + this.name + " is not supported");
-        }
-        try {
-            processProgramOptions();
-        } catch (Exception e) {
-            throw new CommandException(e.getMessage());
-        }
+    protected void prepare()
+            throws CommandException, CommandValidationException {
 
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, TERSE, '\0', "BOOLEAN", false, "true");
-        addOption(opts, UPLOAD, '\0', "BOOLEAN", false, "true");
         addOption(opts, HTTP_PORT, '\0', "STRING", false, "8080");
         //Need to add an option on the fly for the remote version of the command
         commandOpts = Collections.synchronizedSet(opts);
@@ -103,6 +87,8 @@ public final class RunScriptLocalCommand extends RemoteCommand {
         operandType = "FILE";
         operandMin = 1;
         operandMax = 1;
+
+        processProgramOptions();
     }
     
 
@@ -120,7 +106,7 @@ public final class RunScriptLocalCommand extends RemoteCommand {
         String shttpPort = getOption(HTTP_PORT);
         if (ok(shttpPort))
             httpPort = Integer.parseInt(shttpPort);
-        upload = Boolean.getBoolean(getOption(UPLOAD));
+        //upload = Boolean.getBoolean(getOption(UPLOAD));
         String scriptPath = operands.get(0);
         int i = scriptPath.lastIndexOf(File.separator);
         scriptName = scriptPath.substring(i+1, scriptPath.length());
@@ -161,69 +147,23 @@ public final class RunScriptLocalCommand extends RemoteCommand {
                 while ((c = rd.read()) >= 0)
                     System.out.print((char)c);
             } catch (ConnectException ce) {
-                //ce.printStackTrace();
+                ce.printStackTrace();
                 logger.printMessage("\nConnection terminated by server");
                 return 1;
             } catch (IOException ioe) {
-                //ioe.printStackTrace();
-                logger.printMessage("\nConnection terminated by server");
+                // need to handle 'FileNotFoundException: http://localhost:8080/comet/CometServlet' - when comet.war is not deployed
+                // also, java.io.IOException: Server returned HTTP response code: 500 for URL: http://localhost:8080/comet/cometServlet' - when comet is not enabled
+                ioe.printStackTrace();
+                logger.printMessage("\nConnection terminated by server, ioe");
                 return 1;
             }
             //rd.close();
             return 0;
         } catch(Exception e) {
             //suppress all output and infer that the server is not running
-            //e.printStackTrace();
+            e.printStackTrace();
             printRemoteException(e);
             return 1;
-        }
-    }
-
-    /**
-     * Get the list of commands from the remote server.
-     *
-     * @return the commands as a String array, sorted
-     */
-    private boolean isValidCommand() {
-        //System.out.println("Checking to see if its valid command");
-        RemoteCommand cmd;
-        try {
-            String cmds;
-            try {
-                cmd = new RemoteCommand("list-commands", programOpts, env);
-                cmds = cmd.executeAndReturnOutput("list-commands");
-            } catch (CommandException ce) {
-                //System.out.println ("The server might not be running at all");
-                //ce.printStackTrace();
-                return false;
-            }
-            BufferedReader r = new BufferedReader(new StringReader(cmds));
-            String line;
-
-        /*
-         * The output of the remote list-commands command is a bunch of
-         * lines of the form:
-         * Command : cmd-name
-         * We extract the command name from each such line.
-         * XXX - depending on this output format is gross;
-         * should be able to send --terse to remote command
-         * to cause it to produce exactly the output we want.
-         */
-            while ((line = r.readLine()) != null) {
-                if (line.contains("run-script")) {
-                    return true;
-                }
-            }
-            return false;
-
-        } catch (CommandValidationException ex) {
-            //ex.printStackTrace();
-            //System.out.println("Caught CommandValidationException");
-            return false;
-        } catch (IOException ioex) {
-            //ioex.printStackTrace();
-            //System.out.println(" Cannot find run-script command on the remote end");
-            return false;
         }
     }
 
