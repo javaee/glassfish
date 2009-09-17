@@ -130,7 +130,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 	
 	private void closePropFile() throws IOException{
 		try {
-			FileOutputStream ois = new FileOutputStream ( new File(loggingConfigDir, loggingPropertiesName));
+            FileOutputStream ois = new FileOutputStream ( file);
 			props.store(ois,"GlassFish logging.properties list");
 			ois.close();
 		} catch (FileNotFoundException e ) {
@@ -249,7 +249,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
         		m.put(key, props.getProperty(key));
 			}
 
-			//closePropFile();
+			closePropFile();
 			return m;
 		} catch (IOException ex) {
 			throw ex;
