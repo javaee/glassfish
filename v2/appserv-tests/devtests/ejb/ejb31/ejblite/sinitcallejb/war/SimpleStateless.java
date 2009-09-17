@@ -15,6 +15,14 @@ public class SimpleStateless {
 	 System.out.println("In SimpleStateless:hello()");
     }
 
+    protected void helloProtected() {
+	 System.out.println("In SimpleStateless:helloProtected()");
+    }
+
+    void helloPackage() {
+	 System.out.println("In SimpleStateless:helloPackage()");
+    }
+
      @PreDestroy
      private void destroy() {
 	 System.out.println("In SimpleStateless:destroy()");

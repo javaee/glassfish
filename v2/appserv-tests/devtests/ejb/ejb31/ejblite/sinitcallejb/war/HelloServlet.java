@@ -1,6 +1,7 @@
 package com.acme;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -42,6 +43,20 @@ public class HelloServlet extends HttpServlet {
 	System.out.println("In HelloServlet::doGet");
 
 	simpleSingleton.hello();
+
+	try {
+	    simpleStateless.helloPackage();
+	    throw new RuntimeException("Expected exception when calling package-private method");
+	} catch(EJBException e) {
+	    System.out.println("Successfully got exception when calling package private method on no-interface view");
+	}
+
+	try {
+	    simpleStateless.helloProtected();
+	    throw new RuntimeException("Expected exception when calling protected method");
+	} catch(EJBException e) {
+	    System.out.println("Successfully got exception when calling protected method on no-interface view");
+	}
 
 	try {
 	    InitialContext ic = new InitialContext();
