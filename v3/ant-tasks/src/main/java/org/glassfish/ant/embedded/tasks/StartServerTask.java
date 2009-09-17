@@ -86,7 +86,7 @@ public class StartServerTask extends Task {
             if (efs != null) {
                 // port ignored in this case...
                 log("Using the install root : " + efs.installRoot);
-                server = builder.setEmbeddedFileSystem(getFileSystem()).build();
+                server = builder.embeddedFileSystem(getFileSystem()).build();
             }
             else {
                 server = builder.build();
@@ -121,11 +121,11 @@ public class StartServerTask extends Task {
 
         EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
         if (installRoot != null)
-            efsb.setInstallRoot(new File(installRoot), true);
+            efsb.installRoot(new File(installRoot), true);
         if (instanceRoot != null)
-            efsb.setInstanceRoot(new File(instanceRoot));
+            efsb.instanceRoot(new File(instanceRoot));
         if (configFile != null)
-            efsb.setConfigurationFile(new File(configFile));
+            efsb.configurationFile(new File(configFile));
 
         return efsb.build();
     }

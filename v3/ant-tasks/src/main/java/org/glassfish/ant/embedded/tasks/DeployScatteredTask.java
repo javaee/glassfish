@@ -101,7 +101,7 @@ public class DeployScatteredTask extends Task {
             log("rootdir = " + f);
             if (resources == null)
                 resources = rootdirectory;
-            builder.setResources(new File(resources));
+            builder.resources(new File(resources));
 
             if (classpath.isEmpty())
                 classpath.add(rootdirectory);
