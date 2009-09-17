@@ -34,24 +34,21 @@
  * holder.
  */
 
-
-
 package com.sun.enterprise.config.serverbeans;
-
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.component.Injectable;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
-
-
+import javax.validation.constraints.Max;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
-import org.glassfish.quality.ToDo;
+
 /**
  *
  */
@@ -66,10 +63,14 @@ public interface SessionProperties extends ConfigBeanProxy, Injectable, Property
     /**
      * Gets the value of the timeoutInSeconds property.
      *
+     * <p>A value of zero or less indicates that the session should
+     * never timeout
+     *
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(defaultValue="600")
+    @Attribute(defaultValue="1800")
+    @Max(value=Integer.MAX_VALUE)
     String getTimeoutInSeconds();
 
     /**
