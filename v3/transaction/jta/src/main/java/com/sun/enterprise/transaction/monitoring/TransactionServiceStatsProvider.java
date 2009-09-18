@@ -131,28 +131,21 @@ try {
         List aList = txMgr.getActiveTransactions();
         if (!aList.isEmpty()) {
             //Set the headings for the tabular output
+            int componentNameLength = COLUMN_LENGTH;
+            for (int i=0; i < aList.size(); i++) {
+                TransactionAdminBean txnBean = (TransactionAdminBean)aList.get(i);
+                String componentName = txnBean.getComponentName();
+                if (componentName.length() > componentNameLength) {
+                    componentNameLength = componentName.length() + 1;
+                }
+            }
             if (aList.size() > 0) {
+                
                 // XXX strBuf.append("\n\n");
-                String colName = "Transaction Id";
-                strBuf.append(colName);
-                for (int i=colName.length(); i<COLUMN_LENGTH+15; i++){
-                    strBuf.append(" ");
-                }
-                colName = "Status";
-                strBuf.append(colName);
-                for (int i=colName.length(); i<COLUMN_LENGTH; i++){
-                    strBuf.append(" ");
-                }
-                colName = "ElapsedTime(ms)";
-                strBuf.append(colName);
-                for (int i=colName.length(); i<COLUMN_LENGTH; i++){
-                    strBuf.append(" ");
-                }
-                colName = "ComponentName";
-                strBuf.append(colName);
-                for (int i=colName.length(); i<COLUMN_LENGTH; i++){
-                    strBuf.append(" ");
-                }
+                appendColumn(strBuf, "Transaction Id", COLUMN_LENGTH+15);
+                appendColumn(strBuf, "Status", COLUMN_LENGTH);
+                appendColumn(strBuf, "ElapsedTime(ms)", COLUMN_LENGTH);
+                appendColumn(strBuf, "ComponentName", componentNameLength);
                 strBuf.append("ResourceNames "); // XXX \n");
             }
 
@@ -162,23 +155,11 @@ try {
 
                 // XXX strBuf.append("\n");
                 _logger.fine("=== Processing txnId: " + txnId);
-                strBuf.append(txnId);
-                for (int j=txnId.length(); j<COLUMN_LENGTH+15; j++){
-                    strBuf.append(" ");
-                }
-                strBuf.append(txnBean.getStatus());
-                for (int j=txnBean.getStatus().length(); j<COLUMN_LENGTH; j++){
-                    strBuf.append(" ");
-                }
-                strBuf.append(String.valueOf(txnBean.getElapsedTime()));
-                for (int j=(String.valueOf(txnBean.getElapsedTime()).length()); j<COLUMN_LENGTH; j++){
-                    strBuf.append(" ");
-                }
+                appendColumn(strBuf, txnId, COLUMN_LENGTH+15);
+                appendColumn(strBuf, txnBean.getStatus(), COLUMN_LENGTH);
+                appendColumn(strBuf, String.valueOf(txnBean.getElapsedTime()), COLUMN_LENGTH);
+                appendColumn(strBuf, txnBean.getComponentName(), componentNameLength);
 
-                strBuf.append(txnBean.getComponentName());
-                for (int j=txnBean.getComponentName().length(); j<COLUMN_LENGTH; j++){
-                    strBuf.append(" ");
-                }
                 List<String> resourceList = txnBean.getResourceNames();
                 if (resourceList != null) {
                     for (int k = 0; k < resourceList.size(); k++) {
@@ -227,5 +208,12 @@ t.printStackTrace();
     @ProbeListener("glassfish:transaction:transaction-service:freeze")
     public void freezeEvent(@ProbeParam("isFrozen") boolean b) {
         isFrozen = b;
+    }
+
+    private void appendColumn(StringBuffer buf, String text, int length) {
+        buf.append(text);
+        for (int i=text.length(); i<length; i++){
+            buf.append(" ");
+        }
     }
 }
