@@ -176,7 +176,7 @@ public class WebTest {
     private int parseCount(String resultStr) throws Exception {
         System.out.println("parseCount: " + resultStr);
         String prefix = "Count\" :";
-        int ind1 = resultStr.indexOf("Count\" :");
+        int ind1 = resultStr.indexOf(prefix);
         int ind2 = -1;
         if (ind1 > 0) {
             ind2 = resultStr.indexOf("}", ind1);
