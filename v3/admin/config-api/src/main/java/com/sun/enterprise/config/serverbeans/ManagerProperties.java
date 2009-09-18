@@ -34,24 +34,20 @@
  * holder.
  */
 
-
-
 package com.sun.enterprise.config.serverbeans;
 
+import java.beans.PropertyVetoException;
+import java.util.List;
+import javax.validation.constraints.Max;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
+import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.component.Injectable;
-
-import java.beans.PropertyVetoException;
-import java.util.List;
-
-import org.glassfish.api.admin.config.PropertiesDesc;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
-
-import org.glassfish.quality.ToDo;
 
 /**
  *
@@ -106,6 +102,7 @@ public interface ManagerProperties extends ConfigBeanProxy, Injectable, Property
      *         {@link String }
      */
     @Attribute(defaultValue="-1")
+    @Max(value=Integer.MAX_VALUE)
     public String getMaxSessions();
 
     /**
