@@ -70,40 +70,26 @@ public class HttpServiceStatsProvider implements PostConstruct {
     //private Counter requestCount = CounterFactory.createCount();
     //Provides the cumulative value of the error count. The error count represents 
     //the number of cases where the response code was greater than or equal to 400.
-    private CountStatisticImpl errorCount = new CountStatisticImpl("ErrorCount", "count", "Number of responses with a status code that is greater than or equal to 400");
-    private CountStatisticImpl error200Count = new CountStatisticImpl("Count200", "count", "Number of responses with a status code equal to 200");
-    private CountStatisticImpl error2xxCount = new CountStatisticImpl("Count2xx", "count", "Number of responses with a status code in the 2xx range");
-    private CountStatisticImpl error302Count = new CountStatisticImpl("Count302", "count", "Number of responses with a status code equal to 302");
-    private CountStatisticImpl error304Count = new CountStatisticImpl("Count304", "count", "Number of responses with a status code equal to 304");
-    private CountStatisticImpl error3xxCount = new CountStatisticImpl("Count3xx", "count", "Number of responses with a status code in the 3xx range");
-    private CountStatisticImpl error400Count = new CountStatisticImpl("Count400", "count", "Number of responses with a status code equal to 400");
-    private CountStatisticImpl error401Count = new CountStatisticImpl("Count401", "count", "Number of responses with a status code equal to 401");
-    private CountStatisticImpl error403Count = new CountStatisticImpl("Count403", "count", "Number of responses with a status code equal to 403");
-    private CountStatisticImpl error404Count = new CountStatisticImpl("Count404", "count", "Number of responses with a status code equal to 404");
-    private CountStatisticImpl error4xxCount = new CountStatisticImpl("Count4xx", "count", "Number of responses with a status code in the 4xx range");
-    private CountStatisticImpl error503Count = new CountStatisticImpl("Count503", "count", "Number of responses with a status code equal to 503");
-    private CountStatisticImpl error5xxCount = new CountStatisticImpl("Count5xx", "count", "Number of responses with a status code in the 5xx range");
-    private CountStatisticImpl errorOtherCount = new CountStatisticImpl("CountOther", "count", "Number of responses with other status codes");
+    private CountStatisticImpl errorCount = new CountStatisticImpl("ErrorCount", "count", "Cumulative value of the error count, with error count representing the number of cases where the response code was greater than or equal to 400");
+    private CountStatisticImpl count200 = new CountStatisticImpl("Count200", "count", "Number of responses with a status code equal to 200");
+    private CountStatisticImpl count2xx = new CountStatisticImpl("Count2xx", "count", "Number of responses with a status code in the 2xx range");
+    private CountStatisticImpl count302 = new CountStatisticImpl("Count302", "count", "Number of responses with a status code equal to 302");
+    private CountStatisticImpl count304 = new CountStatisticImpl("Count304", "count", "Number of responses with a status code equal to 304");
+    private CountStatisticImpl count3xx = new CountStatisticImpl("Count3xx", "count", "Number of responses with a status code in the 3xx range");
+    private CountStatisticImpl count400 = new CountStatisticImpl("Count400", "count", "Number of responses with a status code equal to 400");
+    private CountStatisticImpl count401 = new CountStatisticImpl("Count401", "count", "Number of responses with a status code equal to 401");
+    private CountStatisticImpl count403 = new CountStatisticImpl("Count403", "count", "Number of responses with a status code equal to 403");
+    private CountStatisticImpl count404 = new CountStatisticImpl("Count404", "count", "Number of responses with a status code equal to 404");
+    private CountStatisticImpl count4xx = new CountStatisticImpl("Count4xx", "count", "Number of responses with a status code in the 4xx range");
+    private CountStatisticImpl count503 = new CountStatisticImpl("Count503", "count", "Number of responses with a status code equal to 503");
+    private CountStatisticImpl count5xx = new CountStatisticImpl("Count5xx", "count", "Number of responses with a status code in the 5xx range");
+    private CountStatisticImpl countOther = new CountStatisticImpl("CountOther", "count", "Number of responses with a status code outside the 2xx, 3xx, 4xx, and 5xx range");
     private TimeStats requestProcessTime = TimeStatsFactory.createTimeStatsMilli();
     private Logger logger = Logger.getLogger(HttpServiceStatsProvider.class.getName());
     private String virtualServerName = null;
-    private HashMap<String, CountStatisticImpl> errorMap = new HashMap<String, CountStatisticImpl>();
 
     public HttpServiceStatsProvider(String vsName) {
         this.virtualServerName = vsName;
-        errorMap.put("200", error200Count);
-        errorMap.put("2", error2xxCount);
-        errorMap.put("302", error302Count);
-        errorMap.put("304", error304Count);
-        errorMap.put("3", error3xxCount);
-        errorMap.put("400", error400Count);
-        errorMap.put("401", error401Count);
-        errorMap.put("403", error403Count);
-        errorMap.put("404", error404Count);
-        errorMap.put("4", error4xxCount);
-        errorMap.put("503", error503Count);
-        errorMap.put("5", error5xxCount);
-        errorMap.put("9", errorOtherCount);
     }
 
 
@@ -161,80 +147,80 @@ public class HttpServiceStatsProvider implements PostConstruct {
     
     @ManagedAttribute(id="count200")
     @Description( "" )
-    public CountStatistic getError200Count() {
-        return error200Count.getStatistic();
+    public CountStatistic getCount200() {
+        return count200.getStatistic();
     }
     
     @ManagedAttribute(id="count2xx")
     @Description( "" )
-    public CountStatistic getError2xxCount() {
-        return error2xxCount.getStatistic();
+    public CountStatistic getCount2xx() {
+        return count2xx.getStatistic();
     }
     
     @ManagedAttribute(id="count302")
     @Description( "" )
-    public CountStatistic getError302Count() {
-        return error302Count.getStatistic();
+    public CountStatistic getCount302() {
+        return count302.getStatistic();
     }
     
     @ManagedAttribute(id="count304")
     @Description( "" )
-    public CountStatistic getError304Count() {
-        return error304Count.getStatistic();
+    public CountStatistic getCount304() {
+        return count304.getStatistic();
     }
 
     @ManagedAttribute(id="count3xx")
     @Description( "" )
-    public CountStatistic getError3xxCount() {
-        return error3xxCount.getStatistic();
+    public CountStatistic getCount3xxt() {
+        return count3xx.getStatistic();
     }
 
     @ManagedAttribute(id="count400")
     @Description( "" )
-    public CountStatistic getError400Count() {
-        return error400Count.getStatistic();
+    public CountStatistic getCount400() {
+        return count400.getStatistic();
     }
 
     @ManagedAttribute(id="count401")
     @Description( "" )
-    public CountStatistic getError401Count() {
-        return error401Count.getStatistic();
+    public CountStatistic getCount401() {
+        return count401.getStatistic();
     }
 
     @ManagedAttribute(id="count403")
     @Description( "" )
-    public CountStatistic getError403Count() {
-        return error403Count.getStatistic();
+    public CountStatistic getCount403() {
+        return count403.getStatistic();
     }
 
     @ManagedAttribute(id="count404")
     @Description( "" )
-    public CountStatistic getError404Count() {
-        return error404Count.getStatistic();
+    public CountStatistic getCount404() {
+        return count404.getStatistic();
     }
 
     @ManagedAttribute(id="count4xx")
     @Description( "" )
-    public CountStatistic getError4xxCount() {
-        return error4xxCount.getStatistic();
+    public CountStatistic getCount4xx() {
+        return count4xx.getStatistic();
     }
 
     @ManagedAttribute(id="count503")
     @Description( "" )
-    public CountStatistic getError503Count() {
-        return error503Count.getStatistic();
+    public CountStatistic getCount503() {
+        return count503.getStatistic();
     }
 
     @ManagedAttribute(id="count5xx")
     @Description( "" )
-    public CountStatistic getError5xxCount() {
-        return this.error5xxCount.getStatistic();
+    public CountStatistic getCount5xx() {
+        return this.count5xx.getStatistic();
     }
 
     @ManagedAttribute(id="countother")
     @Description( "" )
-    public CountStatistic getErrorOtherCount() {
-        return this.errorOtherCount.getStatistic();
+    public CountStatistic getCountOther() {
+        return this.countOther.getStatistic();
     }
 
     @ProbeListener("glassfish:web:http-service:requestStartEvent")
@@ -283,12 +269,47 @@ public class HttpServiceStatsProvider implements PostConstruct {
     }
 
     private void incrementStatsCounter(int statusCode) {
-        CountStatisticImpl errorCounter = errorMap.get(Integer.toString(statusCode));
-        if (errorCounter == null) 
-            errorCounter = errorMap.get(Integer.toString(Math.round(statusCode/100)));
-        if (errorCounter == null)
-            errorCounter = errorMap.get("9");
-        errorCounter.increment();
+        switch (statusCode) {
+            case 200:
+                count200.increment();
+                break;
+            case 302:
+                count302.increment();
+                break;
+            case 304:
+                count304.increment();
+                break;
+            case 400:
+                count400.increment();
+                break;
+            case 401:
+                count401.increment();
+                break;
+            case 403:
+                count403.increment();
+                break;
+            case 404:
+                count404.increment();
+                break;
+            case 503:
+                count503.increment();
+                break;
+            default:
+                break;
+        }
+
+        if (200 <= statusCode && statusCode <=299) {
+            count2xx.increment();
+        } else if (300 <= statusCode && statusCode <=399) {
+            count3xx.increment();
+        } else if (400 <= statusCode && statusCode <=499) {
+            count4xx.increment();
+        } else if (500 <= statusCode && statusCode <=599) {
+            count5xx.increment();
+        } else {
+            countOther.increment();
+        }
+
         if (statusCode >= 400)
             errorCount.increment();
     }

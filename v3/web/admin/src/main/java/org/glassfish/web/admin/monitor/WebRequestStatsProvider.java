@@ -69,7 +69,7 @@ public class WebRequestStatsProvider {
     //Provides the cumulative value of the error count. The error count represents 
     //the number of cases where the response code was greater than or equal to 400.
     private CountStatisticImpl requestCount = new CountStatisticImpl("RequestCount", "count", "Cumulative number of requests processed so far");
-    private CountStatisticImpl errorCount = new CountStatisticImpl("ErrorCount", "count", "Number of responses with a status code greater than or equal to 400");
+    private CountStatisticImpl errorCount = new CountStatisticImpl("ErrorCount", "count", "Cumulative value of the error count, with error count representing the number of cases where the response code was greater than or equal to 400");
     private TimeStats requestProcessTime = TimeStatsFactory.createTimeStatsMilli();
     private Logger logger;
     
