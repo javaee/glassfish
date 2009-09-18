@@ -64,16 +64,22 @@ import com.sun.ejb.containers.EjbContainerUtilImpl;
 public class EjbMethodStatsProvider {
 
     private CountStatisticImpl executionStat = new CountStatisticImpl(
-            "ExecutionTime", "Milliseconds", null);
+            "ExecutionTime", "Milliseconds", 
+            "Provides the time in milliseconds spent during the last " 
+                     + "successful/unsuccessful attempt to execute the operation.");
 
     private CountStatisticImpl invocationStat = new CountStatisticImpl(
-            "TotalNumInvocations", "count", null);
+            "TotalNumInvocations", "count", 
+            "Provides the total number of invocations of the method.");
 
     private CountStatisticImpl errorStat = new CountStatisticImpl(
-            "TotalNumErrors", "count", null);
+            "TotalNumErrors", "count", 
+            "Provides the total number of errors that occured during invocation "
+                    + "or execution of an operation.");
 
     private CountStatisticImpl successStat = new CountStatisticImpl(
-                "TotalNumSuccess", "count", null);
+                "TotalNumSuccess", "count", 
+                "Provides the total number of successful invocations of the method.");
 
     private MutableTimeStatisticImpl methodStat = null;
 
