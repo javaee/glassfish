@@ -82,4 +82,6 @@ public interface TreeNode extends TreeElement {
      * Pattern is considered to be a GFV2 Compatible Pattern
      */
     public List<TreeNode> getNodes (String pattern);
+
+    public TreeNode getChild(String childName);
 }
