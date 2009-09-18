@@ -361,6 +361,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="auto-commit")
+    @Pattern(regexp="(auto-commit|meta-data|custom-validation|table)")
     String getConnectionValidationMethod();
 
     /**
