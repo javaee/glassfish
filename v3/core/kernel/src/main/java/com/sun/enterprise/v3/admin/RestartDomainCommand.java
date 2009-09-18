@@ -80,7 +80,6 @@ public class RestartDomainCommand implements AdminCommand {
         try {
             init(context);
 
-
             if(!verbose) {
                 // do it now while we still have the Logging service running...
                 reincarnate();
@@ -142,7 +141,13 @@ public class RestartDomainCommand implements AdminCommand {
         try {
             // TODO JavaClassRunner is very simple and primitive.
             // Feel free to beef it up...
-            new JavaClassRunner(classpath, new String[]{magicProperty}, classname, args);
+
+            String[] props = normalProps;
+
+            if(Boolean.parseBoolean(System.getenv("AS_SUPER_DEBUG")))
+                props = debuggerProps;  // very very difficult to debug this stuff otherwise!
+
+            new JavaClassRunner(classpath, props, classname, args);
         }
         catch(Exception e) {
             logger.severe(strings.get("restart.domain.jvmError", e));
@@ -208,7 +213,12 @@ public class RestartDomainCommand implements AdminCommand {
     /////////////             static variables               ///////////////////
 
     private static final String             magicProperty = "-DAS_RESTART=true";
+    private static final String[]           normalProps = { magicProperty };
     private static final LocalStringsImpl   strings = new LocalStringsImpl(RestartDomainCommand.class);
     private static final boolean            debug   = Boolean.parseBoolean(System.getenv("AS_DEBUG"));
-
+    private static final String[]           debuggerProps =
+    {
+        magicProperty,
+        "-Xdebug",
+        "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1323" };
 }
