@@ -100,6 +100,7 @@ public class ServiceReferenceNode extends DisplayableComponentNode {
         table.put(WebServicesTagNames.WSDL_FILE, "setWsdlFileUri");
         table.put(WebServicesTagNames.JAXRPC_MAPPING_FILE, "setMappingFileUri");
         table.put(WebServicesTagNames.MAPPED_NAME, "setMappedName");
+        table.put(TagNames.LOOKUP_NAME, "setLookupName");
         table.put(WebServicesTagNames.SERVICE_REF_TYPE, "setInjectionTargetType");
         return table;
     }
@@ -221,6 +222,8 @@ public class ServiceReferenceNode extends DisplayableComponentNode {
             }
         }
 
+        appendTextChild(serviceRefNode, TagNames.LOOKUP_NAME,
+                descriptor.getMappedName());
         return serviceRefNode;
     }    
     

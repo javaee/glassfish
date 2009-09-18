@@ -143,6 +143,8 @@ public class WebServiceEjbEndpointRegistry implements WSEjbEndpointRegistry {
                     x.getEndpoint().dispose();
                 }
             }
+            //Fix for issue 9523
+            adapterListMap.remove(ctxtRoot);
             endpoint = (EjbRuntimeEndpointInfo) webServiceEjbEndpoints.remove(uri);
             regenerateEjbContextRoots();
         }

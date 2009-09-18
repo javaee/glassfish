@@ -86,8 +86,10 @@ public class SOAPMessageContextImpl implements SOAPMessageContext {
         try {
             //before converting to SOAPMessage, make a copy.  We don't want to consume
             //the original message
-            Message mutable = packet.getMessage().copy();
-            soapMsg = mutable.readAsSOAPMessage();
+            if (packet.getMessage() != null) {
+                Message mutable = packet.getMessage().copy();
+                soapMsg = mutable.readAsSOAPMessage();
+            }
 
         } catch (Exception e) {
             logger.log(Level.SEVERE,"Error occured", e);
