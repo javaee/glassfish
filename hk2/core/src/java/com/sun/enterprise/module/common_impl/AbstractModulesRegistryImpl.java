@@ -447,7 +447,9 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         } else {
             // create the service instance
             service = newModule(info);
-            add(service);
+            if (service != null){
+                add(service);
+            }
         }
         return service;
     }
