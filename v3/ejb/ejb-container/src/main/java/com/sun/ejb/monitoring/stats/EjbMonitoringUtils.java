@@ -82,7 +82,9 @@ public class EjbMonitoringUtils {
     static String registerSubComponent(String appName, String moduleName, 
             String beanName, String subNode, Object listener) {
         String subTreeNode = getBeanNode(appName, moduleName, beanName) + NODE + subNode;
-        _logger.info("SUB-NODE NAME: " + subTreeNode);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("SUB-NODE NAME: " + subTreeNode);
+        }
         try {
              StatsProviderManager.register(EJB_MONITORING_NODE, 
                     PluginPoint.APPLICATIONS, subTreeNode, listener);
@@ -99,7 +101,9 @@ public class EjbMonitoringUtils {
 
     static String registerMethod(String parentNode, String mname, Object listener) {
         String subTreeNode = parentNode + METHOD_NODE + mname;
-        _logger.info("METHOD NODE NAME: " + subTreeNode);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("METHOD NODE NAME: " + subTreeNode);
+        }
         try {
             StatsProviderManager.register(EJB_MONITORING_NODE,
                     PluginPoint.APPLICATIONS, subTreeNode, listener);
@@ -115,7 +119,9 @@ public class EjbMonitoringUtils {
 
 
     static String stringify(Method m) {
-        _logger.info("==> Converting method to String: " + m);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("==> Converting method to String: " + m);
+        }
         StringBuffer sb = new StringBuffer();
         sb.append(m.getName());
         Class[] args = m.getParameterTypes();
@@ -137,7 +143,9 @@ public class EjbMonitoringUtils {
         String beanSubTreeNode = sb.toString().replaceAll("\\.", "\\\\.").
                replaceAll("_jar", "\\\\.jar").replaceAll("_war", "\\\\.war");
 
-        _logger.info("BEAN NODE NAME: " + beanSubTreeNode);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("BEAN NODE NAME: " + beanSubTreeNode);
+        }
         return beanSubTreeNode;
     }
 
