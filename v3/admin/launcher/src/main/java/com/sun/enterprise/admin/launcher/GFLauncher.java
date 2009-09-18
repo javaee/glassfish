@@ -142,15 +142,9 @@ public abstract class GFLauncher {
         asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
         debugOptions = getDebug();
         parser.setupConfigDir(getInfo().getConfigDir(), getInfo().getInstallDir());
-        logFilename = getLogFilename(parser);
-        
-        // TODO temporary until we define a domain.xml attribute for setting this
-        // I'm pulling this out and putting the options into the default domain.xml
-        // There are problems when you use a non-Sun JVM -- like the JVM won't start!
-        // The user needs to be able to see & delete these args from domain.xml
-        //jvmOptions.addJvmLogging();
-        
+        setLogFilename(parser);
         resolveAllTokens();
+        fixLogFilename();
         GFLauncherLogger.addLogFileHandler(logFilename, info);
         setJavaExecutable();
         setClasspath();
@@ -199,6 +193,18 @@ public abstract class GFLauncher {
 
         return psd;
     }
+
+    /**
+     * Get the location of the server logfile
+     * @return The full path of the logfile
+     * @throws GFLauncherException if you call this method too early
+     */
+    public String getLogFilename() throws GFLauncherException {
+        if(!logFilenameWasFixed)
+            throw new GFLauncherException(strings.get("internalError") + " call to getLogFilename() before it has been initialized");
+
+        return logFilename;
+    }
     
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
@@ -207,13 +213,48 @@ public abstract class GFLauncher {
     ///////////////////////////////////////////////////////////////////////////
     abstract void internalLaunch() throws GFLauncherException;
 
-    private String getLogFilename(MiniXmlParser parser) throws GFLauncherException {
-        String filename = parser.getLogFilename();
+    private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
+        logFilename = parser.getLogFilename();
 
-        if(filename == null)
-            filename = "logs/server.log";
+        if(logFilename == null)
+            logFilename = DEFAULT_LOGFILE;
+    }
 
-        return filename;
+    private void fixLogFilename() throws GFLauncherException {
+        if(!GFLauncherUtils.ok(logFilename))
+            logFilename = DEFAULT_LOGFILE;
+
+        File f = new File(logFilename);
+
+        if(!f.isAbsolute()) {
+            // this is quite normal.  Logging Service will by default return
+            // a relative path!
+            f = new File(info.getInstanceRootDir(), logFilename);
+        }
+
+        // Get rid of garbage like "c:/gf/./././../gf"
+        f = SmartFile.sanitize(f);
+
+        // if the file doesn't exist -- make sure the parent dir exists
+        // this is common in unit tests AND the first time the instance is
+        // started....
+
+        if(!f.exists()) {
+            File parent = f.getParentFile();
+            if(!parent.isDirectory()) {
+                boolean wasCreated = parent.mkdirs();
+                if(!wasCreated) {
+                    f = null; // give up!!
+                }
+            }
+        }
+
+        if(f == null)
+            logFilename = null;
+        else
+            logFilename = f.getPath();
+                
+        logFilenameWasFixed = true;
     }
 
     // unit tests will want 'fake' so that the process is not really started.
@@ -660,6 +701,7 @@ public abstract class GFLauncher {
     private ProcessWhacker  processWhacker;
     private Process process;
     private ProcessStreamDrainer    psd;
+    private boolean logFilenameWasFixed = false;
 
     ///////////////////////////////////////////////////////////////////////////
     
@@ -684,5 +726,3 @@ public abstract class GFLauncher {
         private Process process;
     }
 }
-
-

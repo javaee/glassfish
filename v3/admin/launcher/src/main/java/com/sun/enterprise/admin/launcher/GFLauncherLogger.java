@@ -82,29 +82,7 @@ public class GFLauncherLogger {
             if (logFile == null || logfileHandler != null) {
                 return;
             }
-
-            File f = new File(logFile);
-
-            if(!f.isAbsolute()) {
-                // this is quite normal.  Logging Service will by default return
-                // a relative path!
-                f = new File(info.getInstanceRootDir(), logFile);
-            }
-
-            // if the file doesn't exist -- make sure the parent dir exists
-            // this is common in unit tests AND the first time the instance is
-            // started....
-            
-            if(!f.exists()) {
-                File parent = f.getParentFile();
-                if(!parent.isDirectory()) {
-                    boolean wasCreated = parent.mkdirs();
-                    if(!wasCreated) {
-                        return;
-                    }
-                }
-            }
-            logfileHandler = new FileHandler(SmartFile.sanitize(f).getPath(), true);
+            logfileHandler = new FileHandler(logFile, true);
             logfileHandler.setFormatter(new SimpleFormatter());
             logfileHandler.setLevel(Level.INFO);
             logger.addHandler(logfileHandler);

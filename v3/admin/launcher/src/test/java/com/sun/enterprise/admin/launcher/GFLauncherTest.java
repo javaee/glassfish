@@ -69,6 +69,10 @@ public class GFLauncherTest {
                 new File(domainsDir, "domain2/config/domain.xml").exists());
         assertTrue("domain3 -- domain.xml is missing!!",
                 new File(domainsDir, "domain3/config/domain.xml").exists());
+        assertTrue("baddomain -- domain.xml is missing!!",
+                new File(domainsDir, "baddomain/config/domain.xml").exists());
+        assertTrue("domainNoLog -- domain.xml is missing!!",
+                new File(domainsDir, "domainNoLog/config/domain.xml").exists());
     }
 
     @AfterClass
@@ -168,7 +172,29 @@ public class GFLauncherTest {
         }
     }
 
-    private static File domain1, domain2, domain3, domain4, domain5;
+    /**
+     * Test the logfilename handling -- log-service is in domain.xml like V2
+     */
+    @Test
+    public void test6() throws GFLauncherException {
+        info.setDomainName("domain1");
+        launcher.launch();
+        assertTrue(launcher.getLogFilename().endsWith("server.log"));
+    }
+
+    /**
+     * Test the logfilename handling -- no log-service is in domain.xml
+     */
+
+    @Test
+    public void test7() throws GFLauncherException {
+        info.setDomainName("domainNoLog");
+        launcher.launch();
+        assertTrue(launcher.getLogFilename().endsWith("server.log"));
+    }
+
+
+    //private static File domain1, domain2, domain3, domain4, domain5;
     private static File installDir;
     private static File domainsDir;
     private GFLauncher launcher;
