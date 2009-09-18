@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -169,6 +169,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private static final String STATUS_TOKEN = "%%%STATUS%%%";
     private static final String ADMIN_CONSOLE_IPS_PKGNAME = "glassfish-gui";
 
+    private static final String INSTALL_ROOT = "com.sun.aas.installRoot";
     static final String ADMIN_APP_NAME = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME;
 
     /**
@@ -421,9 +422,28 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      *
      */
     private void init() {
-	// Save the IPS root and admin console war locations
-	setIPSRoot(adminService.getProperty(ServerTags.IPS_ROOT).getValue());
-	setWarFileLocation(adminService.getProperty(ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION).getValue());
+
+        // Save the IPS root and admin console war locations
+        // For upgrade scenario, the property may not be set. refer to issue# 9529.   We hardcode some info here, this should match
+        // the out-of-box domain.xml
+
+        Property iprop = adminService.getProperty(ServerTags.IPS_ROOT);
+        if(iprop == null){
+            File f = new File (System.getProperty(INSTALL_ROOT));
+            ipsRoot = new File(f, "..");
+            writeAdminServiceProp(ServerTags.IPS_ROOT, "${" + INSTALL_ROOT + "}/..");
+        }else{
+            ipsRoot = new File(iprop.getValue());
+        }
+
+        Property locProp = adminService.getProperty(ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION);
+        if(locProp == null){
+            String iRoot = System.getProperty(INSTALL_ROOT) + "/lib/install/applications/admingui.war";
+            warFile = new File(iRoot.replace('/', File.separatorChar));
+            writeAdminServiceProp(ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION, "${" + INSTALL_ROOT + "}/lib/install/applications/admingui.war");
+        }else{
+            warFile = new File(locProp.getValue());
+        }
 
         Property prop = adminService.getProperty(ServerTags.ADMIN_CONSOLE_VERSION);
         if (prop != null) {
@@ -431,9 +451,16 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         } else {
             currentDeployedVersion = "";
         }
-	initState();
-	epd = new AdminEndpointDecider(serverConfig, log);
-	contextRoot = epd.getGuiContextRoot();
+
+        if (log.isLoggable(Level.FINE)){
+            log.log(Level.FINE, "GlassFish IPS Root: " + ipsRoot.getAbsolutePath());
+            log.log(Level.FINE, "Admin Console download location: " + warFile.getAbsolutePath());
+            log.log(Level.FINE, "Current Deployed version: " + currentDeployedVersion);
+        }
+
+        initState();
+        epd = new AdminEndpointDecider(serverConfig, log);
+        contextRoot = epd.getGuiContextRoot();
     }
 
     /**
@@ -488,41 +515,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         }
     }
 
-    /**
-     *
-     */
-    private void setWarFileLocation(String value) {
-        if ((value != null) && !("".equals(value))) {
-            warFile = new File(value);
-//System.out.println("Admin Console will be downloaded to: " + warFile);
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("Admin Console will be downloaded to: "
-                        + warFile.getAbsolutePath());
-            }
-        } else {
-            if (log.isLoggable(Level.INFO)) {
-                log.info("The value (" + value + ") for: "
-                        + ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION
-                        + " is invalid");
-            }
-        }
-    }
-
-    /**
-     *
-     */
-    private void setIPSRoot(String value) {
-        ipsRoot = new File(value);
-        if (log.isLoggable(Level.FINE)) {
-            log.log(Level.FINE, "GlassFish IPS Root: "
-                    + ipsRoot.getAbsolutePath());
-        }
-        if (!ipsRoot.canWrite()) {
-            log.warning(ipsRoot.getAbsolutePath() + " can't be written to, download will fail");
-        }
-    }
-
-
+    
     /**
      *
      */
@@ -778,19 +771,28 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	}
     }
 
+    private void writeAdminServiceProp(final String propName, final String propValue){
+        try{
+            ConfigSupport.apply(new SingleConfigCode<AdminService>() {
+                public Object run(AdminService adminService) throws PropertyVetoException, TransactionFailure {
+                    Property newProp = adminService.createChild(Property.class);
+                    adminService.getProperty().add(newProp);
+                    newProp.setName(propName);
+                    newProp.setValue(propValue);
+                    return newProp;
+                }
+            }, adminService);
+        }catch(Exception ex){
+            log.log(Level.WARNING, "Cannot write property for AdminService in domain.xml; " + propName + ":" + propValue);
+            //ex.printStackTrace();
+        }
+    }
+
     public void updateDeployedVersion() {
         try{
             final Property prop = adminService.getProperty(ServerTags.ADMIN_CONSOLE_VERSION);
             if (prop == null) {
-                ConfigSupport.apply(new SingleConfigCode<AdminService>() {
-                    public Object run(AdminService adminService) throws PropertyVetoException, TransactionFailure {
-                        Property newProp = adminService.createChild(Property.class);
-                        adminService.getProperty().add(newProp);
-                        newProp.setName(ServerTags.ADMIN_CONSOLE_VERSION);
-                        newProp.setValue(downloadedVersion);
-                        return newProp;
-                    }
-                }, adminService);
+                writeAdminServiceProp(ServerTags.ADMIN_CONSOLE_VERSION, downloadedVersion );
             } else {
                 if (! downloadedVersion.equals(prop.getValue())) {
                     ConfigSupport.apply(new SingleConfigCode<Property>() {
