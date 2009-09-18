@@ -7,10 +7,10 @@ import org.glassfish.api.ActionReport;
 import com.sun.common.util.logging.LoggingConfigImpl;
 
 import java.util.logging.Logger;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.Set;
 
 import java.io.IOException;
 import org.jvnet.hk2.annotations.Inject;
@@ -32,25 +32,23 @@ public class ListLoggerLevels implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         try {
-            Map<String,String>  props = loggingConfig.getLoggingProperties();
-            Map sortedMap = new TreeMap();
-            
-            Set<String> keys = props.keySet();
-            
-            for (String name : keys)   {
-                sortedMap.put(name, props.get(name));
-            }
-            Iterator it = sortedMap.keySet().iterator();
-            String name;
-            while (it.hasNext()) {
-                name = (String)it.next();
+            HashMap<String,String>  props = (HashMap)loggingConfig.getLoggingProperties();
+
+            ArrayList keys = new ArrayList();
+            keys.addAll(props.keySet());
+            Collections.sort(keys);
+            Iterator it2 = keys.iterator();
+            while (it2.hasNext())  {
+                String name = (String)it2.next();
                 if (name.endsWith(".level") && !name.equals(".level")) {
                 final ActionReport.MessagePart part = report.getTopMessagePart()
                     .addChild();
                 String n = name.substring(0,name.lastIndexOf(".level"));
-                part.setMessage(n + ": "+ (String)sortedMap.get(name));
+                part.setMessage(n + ": "+ (String)props.get(name));
                 }
             }
+
+
         } catch (IOException ex){
           report.setMessage("Unable to get the logger names");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
