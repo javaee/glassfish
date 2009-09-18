@@ -44,6 +44,9 @@ public class EmbeddedServerUtils {
             return builder.build();
         } catch(Exception e) {
             e.printStackTrace();
+            if (fileSystem.autoDelete) {
+                fileSystem.preDestroy();
+            }
             throw e;
         }
     }

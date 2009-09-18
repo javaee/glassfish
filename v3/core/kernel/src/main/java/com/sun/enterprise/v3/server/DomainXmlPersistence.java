@@ -63,7 +63,7 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
     ServerEnvironmentImpl env;
 
     @Inject
-    Logger logger;
+    protected Logger logger;
     
     final XMLOutputFactory xmlFactory = XMLOutputFactory.newInstance();
 
@@ -128,6 +128,11 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
                 }
             }
         }
+        saved(destination);
+    }
+
+    protected void saved(File destination) {
+        logger.fine("Configuration saved at " + destination);
     }
 
     protected File getDestination() throws IOException {

@@ -1,7 +1,6 @@
 package org.glassfish.tests.embedded.inplanted;
 
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.EmbeddedFileSystem;
+import org.glassfish.api.embedded.*;
 import org.glassfish.tests.embedded.utils.EmbeddedServerUtils;
 import org.junit.BeforeClass;
 import org.junit.Assert;
@@ -22,6 +21,7 @@ public class ExistingConfigurationTest {
     public void setupServer() throws Exception {
 
         Server server=null;
+        Port port = null;
 
         File f = EmbeddedServerUtils.getServerLocation();
         try {
@@ -32,7 +32,7 @@ public class ExistingConfigurationTest {
             f = new File(f, "config");
             f = new File(f, "domain.xml");
             Assert.assertTrue(f.exists());
-            efsb.configurationFile(f);
+            efsb.configurationFile(f, false);
             server = EmbeddedServerUtils.createServer(efsb.build());
 
             Habitat habitat = server.getHabitat();
@@ -52,14 +52,19 @@ public class ExistingConfigurationTest {
                 Object networkListener = nl.get();
                 Method m = networkListener.getClass().getMethod("getPort");
                 Assert.assertNotNull("Object returned does not implement getPort, is it a networkListener ?", m);
-                String port = (String) m.invoke(networkListener);
-                System.out.println("Network Listener " + port);
-                Assert.assertNotNull("Got a null networkListener port", port);
+                String p = (String) m.invoke(networkListener);
+                System.out.println("Network Listener " + p);
+                Assert.assertNotNull("Got a null networkListener port", p);
             }
+            server.start();
+            port = server.createPort(8758);
         } catch(Exception e) {
             e.printStackTrace();
             throw e;
         } finally {
+            if (port!=null) {
+                port.close();
+            }
             EmbeddedServerUtils.shutdownServer(server);
         }
     }

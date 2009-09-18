@@ -354,13 +354,15 @@ public class AppServerStartup implements ModuleStartup {
         }
 
         // notify the server thread that we are done, so that it can come out.
-        synchronized (serverThread) {
-            serverThread.notify();
-        }
-        try {
-            serverThread.join(0);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        if (serverThread!=null) {
+            synchronized (serverThread) {
+                serverThread.notify();
+            }
+            try {
+                serverThread.join(0);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

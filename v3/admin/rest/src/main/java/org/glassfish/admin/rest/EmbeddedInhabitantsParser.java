@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,44 +33,26 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.kernel.embedded;
 
-import com.sun.enterprise.v3.server.DomainXmlPersistence;
+package org.glassfish.admin.rest;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.logging.Logger;
-
-import org.jvnet.hk2.annotations.*;
-import org.glassfish.api.embedded.*;
+import com.sun.hk2.component.*;
+import org.kohsuke.*;
 
 /**
- * Configuration file persistence handler for embedded
- * 
+ * Inhabitant decorator to removed unwanted services in embedded mode
+ *
  * @author Jerome Dochez
  */
-public class EmbeddedDomainPersistence extends DomainXmlPersistence {
-
-    @Inject(optional=true)
-    EmbeddedFileSystem efs;
-
-    /**
-     * Returns the destination file for saving the embedded configuration file,
-     * when set.
-     * @return the embedded configuration file if set in read-write mode.
-     * @throws IOException
-     */
-    @Override
-    protected File getDestination() throws IOException {
-        if (efs!=null && !efs.readOnlyConfigFile) {
-            return efs.configFile;
-        }
-        return null;
+@MetaInfServices
+public class EmbeddedInhabitantsParser implements InhabitantsParserDecorator {
+    public String getName() {
+        return "Embedded";
     }
 
-    @Override
-    protected void saved(File destination) {
-        logger.info("Configuration saved at " + destination);
+    public void decorate(InhabitantsParser inhabitantsParser) {
+        inhabitantsParser.drop(RestService.class);
+        inhabitantsParser.drop(RestManagementAdapter.class);
+        inhabitantsParser.drop(RestMonitoringAdapter.class);
     }
 }

@@ -53,6 +53,7 @@ public class EmbeddedFileSystem implements PreDestroy {
      */
     public static class Builder {
         boolean autoDelete=false;
+        boolean readOnly = true;
         boolean cookedMode=false;
         File configFile=null;
         File installRoot=null;
@@ -76,14 +77,30 @@ public class EmbeddedFileSystem implements PreDestroy {
         }
 
         /**
-         * Sets the location of the domain.xml configuration file. The file can be named anything
-         * but must have a valid domain.xml content.
+         * Sets the location of the read-only domain.xml configuration file. The file can be named anything
+         * but must have a valid domain.xml content. Any management operation will not be written to the
+         * file.
          *
          * @param f location of the configuration file
          * @return itself
          */
         public Builder configurationFile(File f) {
+            return configurationFile(f, true);
+
+        }
+
+        /**
+         * Sets the location of the domain.xml configuration file. The file can be named anything
+         * but must have a valid domain.xml content.
+         *
+         * @param f location of the configuration file
+         * @param readOnly true if the file is readonly, false if management operations should be
+         * persisted.
+         * @return itself
+         */
+        public Builder configurationFile(File f, boolean readOnly) {
             this.configFile = f;
+            this.readOnly = readOnly;
             return this;
 
         }
@@ -151,6 +168,7 @@ public class EmbeddedFileSystem implements PreDestroy {
     }
 
     public final boolean autoDelete;
+    public final boolean readOnlyConfigFile;
     public final boolean cookedMode;
     public final File installRoot;
     public final File instanceRoot;
@@ -158,6 +176,7 @@ public class EmbeddedFileSystem implements PreDestroy {
 
     private EmbeddedFileSystem(Builder builder) {
         autoDelete = builder.autoDelete;
+        readOnlyConfigFile = builder.readOnly;
         installRoot = builder.installRoot;
         instanceRoot = builder.instanceRoot;
         configFile = builder.configFile;

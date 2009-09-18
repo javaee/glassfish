@@ -214,6 +214,7 @@ public class Server {
             if (builder.fileSystem!=null) {
                 fsBuilder.installRoot(builder.fileSystem.installRoot, builder.fileSystem.cookedMode);
                 fsBuilder.configurationFile(builder.fileSystem.configFile);
+                fsBuilder.readOnly=builder.fileSystem.readOnlyConfigFile;
             }
 
             fsBuilder.instanceRoot(instanceRoot);
@@ -535,7 +536,7 @@ public class Server {
                 c.container.start();
                 c.started=true;
             } catch (LifecycleException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot start embedded container", e);
                 c.started=false;
             }
         }
@@ -545,41 +546,48 @@ public class Server {
     /**
      * stops the embedded server instance, any deployed application will be stopped
      * ports will be closed and shutdown services will be ran.
+     * EmbeddedFileSystem will be released, meaning that any managed directory will
+     * be deleted rendering the EmbeddedFileSystem unusable.
      *
      * @throws LifecycleException if the server cannot shuts down properly
      */
     public synchronized void stop() throws LifecycleException {
 
-        if (status.isStopped()) {
-            return;
-        }
-        for (Container c : containers) {
-            try {
-                if (c.started) {
-                    c.container.stop();
+        try {
+            if (status.isStopped()) {
+                return;
+            }
+            for (Container c : containers) {
+                try {
+                    if (c.started) {
+                            c.container.stop();
+                    }
+                } catch(Exception e) {
+                    Logger.getAnonymousLogger().log(Level.WARNING,"Exception while closing a embedded container",e);
+                } finally {
+                    c.started=false;
                 }
-            } finally {
-                c.started=false;
             }
-        }
-        ModuleStartup ms = habitat.getComponent(ModuleStartup.class, habitat.DEFAULT_NAME);
-        if (ms!=null) {
-            ms.stop();
-        }
-        synchronized(servers) {
-            servers.remove(serverName);
-        }
-        //todo : change to DEAD
-        status.stopped();
+            ModuleStartup ms = habitat.getComponent(ModuleStartup.class, habitat.DEFAULT_NAME);
+            if (ms!=null) {
+                ms.stop();
+            }
+            synchronized(servers) {
+                servers.remove(serverName);
+            }
+            //todo : change to DEAD
+            status.stopped();
 
-        for (EmbeddedLifecycle lifecycle : habitat.getAllByContract(EmbeddedLifecycle.class)) {
-            try {
-                lifecycle.destruction(this);
-            } catch(Exception e) {
-                Logger.getAnonymousLogger().log(Level.WARNING,"Exception while notifying of embedded server destruction",e);
+            for (EmbeddedLifecycle lifecycle : habitat.getAllByContract(EmbeddedLifecycle.class)) {
+                try {
+                    lifecycle.destruction(this);
+                } catch(Exception e) {
+                    Logger.getAnonymousLogger().log(Level.WARNING,"Exception while notifying of embedded server destruction",e);
+                }
             }
+        } finally {
+            fileSystem.get().preDestroy();
         }
-        fileSystem.get().preDestroy();
         
     }
 
