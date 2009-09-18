@@ -70,7 +70,6 @@ import org.apache.catalina.Response;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.catalina.util.StringManager;
-import org.apache.commons.beanutils.PropertyUtils;
 
 /**
  * <p>Implementation of a Valve that outputs HTML error pages.</p>

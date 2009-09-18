@@ -1319,11 +1319,6 @@
                impact="ACTION"
                returnType="void" />
 
-    <operation name="storeConfig"
-               description="Save current state to server.xml file"
-               impact="ACTION"
-               returnType="void">
-
     </operation>
     
   </mbean>

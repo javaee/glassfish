@@ -88,7 +88,6 @@ import org.apache.catalina.util.InstanceSupport;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.catalina.security.SecurityUtil;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.RequestFacade;
 import org.apache.catalina.connector.ResponseFacade;

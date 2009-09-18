@@ -79,21 +79,6 @@
                  type="java.lang.String"/>
     </operation>
 
-    <operation   name="createAjpConnector"
-          description="Create a new AjpConnector"
-               impact="ACTION"
-           returnType="java.lang.String">
-      <parameter name="parent"
-          description="MBean Name of the associated parent component"
-                 type="java.lang.String"/>
-      <parameter name="address"
-          description="The IP address on which to bind"
-                 type="java.lang.String"/>
-      <parameter name="port"
-          description="TCP port number to listen on"
-                 type="int"/>
-    </operation>
-
     <operation   name="createDefaultContext"
           description="Create a new DefaultContext"
                impact="ACTION"
@@ -110,36 +95,6 @@
       <parameter name="parent"
           description="MBean Name of the associated parent component"
                  type="java.lang.String"/>
-    </operation>
-
-    <operation   name="createHttpConnector"
-          description="Create a new HttpConnector"
-               impact="ACTION"
-           returnType="java.lang.String">
-      <parameter name="parent"
-          description="MBean Name of the associated parent component"
-                 type="java.lang.String"/>
-     <parameter name="address"
-          description="The IP address on which to bind"
-                 type="java.lang.String"/>
-      <parameter name="port"
-          description="TCP port number to listen on"
-                 type="int"/>
-    </operation>
-
-    <operation   name="createHttpsConnector"
-          description="Create a new HttpsConnector"
-               impact="ACTION"
-           returnType="java.lang.String">
-      <parameter name="parent"
-          description="MBean Name of the associated parent component"
-                 type="java.lang.String"/>
-      <parameter name="address"
-          description="The IP address on which to bind"
-                 type="java.lang.String"/>
-      <parameter name="port"
-          description="TCP port number to listen on"
-                 type="int"/>
     </operation>
 
     <operation   name="createJDBCRealm"

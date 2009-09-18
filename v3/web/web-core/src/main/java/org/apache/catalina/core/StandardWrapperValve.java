@@ -62,7 +62,6 @@ import javax.management.ObjectName;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.beanutils.PropertyUtils;
 import com.sun.grizzly.util.buf.MessageBytes;
 import org.apache.catalina.*;
 import org.apache.catalina.connector.ClientAbortException;

@@ -637,11 +637,6 @@ public class StandardContext
      */
     protected boolean isJsfApplication = false;
 
-    /**
-     * Should we save the configuration.
-     */
-    private boolean saveConfig = true;
-
     // START S1AS8PE 4965017
     private boolean isReload = false;
     // END S1AS8PE 4965017
@@ -739,20 +734,6 @@ public class StandardContext
     public void setName( String name ) {
         super.setName( name );
         encodedPath = urlEncoder.encode(name);
-    }
-
-    /**
-     * Save config ?
-     */
-    public boolean isSaveConfig() {
-        return saveConfig;
-    }
-
-    /**
-     * Set save config flag.
-     */
-    public void setSaveConfig(boolean saveConfig) {
-        this.saveConfig = saveConfig;
     }
 
     /**
@@ -5125,49 +5106,6 @@ public class StandardContext
 
         setAvailable(false);
         setConfigured(false);
-
-        // Set config file name
-        File configBase = getConfigBase();
-        if (configBase != null && saveConfig) {
-            if (getConfigFile() == null) {
-                File file = new File(configBase, getDefaultConfigFile());
-                setConfigFile(file.getPath());
-                // If the docbase is outside the appBase, we should save our
-                // config
-                try {
-                    File appBaseFile = new File(getAppBase());
-                    if (!appBaseFile.isAbsolute()) {
-                        appBaseFile = new File(engineBase(), getAppBase());
-                    }
-                    String appBase = appBaseFile.getCanonicalPath();
-                    String basePath =
-                        (new File(getBasePath(getDocBase()))).getCanonicalPath();
-                    if (!basePath.startsWith(appBase)) {
-                        Server server = ServerFactory.getServer();
-                        ((StandardServer) server).storeContext(this);
-                    }
-                } catch (Exception e) {
-                    throw new LifecycleException(
-                        "Error storing config file", e);
-                }
-            } else {
-                try {
-                    String canConfigFile =
-                        (new File(getConfigFile())).getCanonicalPath();
-                    if (!canConfigFile.startsWith
-                        (configBase.getCanonicalPath())) {
-                        File file =
-                            new File(configBase, getDefaultConfigFile());
-                        if (copy(new File(canConfigFile), file)) {
-                            setConfigFile(file.getPath());
-                        }
-                    }
-                } catch (Exception e) {
-                    throw new LifecycleException(
-                        "Error setting config file", e);
-                }
-            }
-        }
 
         // Install DefaultContext configuration
         if (!getOverride()) {

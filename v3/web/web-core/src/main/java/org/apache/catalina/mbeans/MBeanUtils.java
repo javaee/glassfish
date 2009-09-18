@@ -88,7 +88,6 @@ import org.apache.catalina.deploy.ContextResource;
 import org.apache.catalina.deploy.ContextResourceLink;
 import org.apache.catalina.deploy.NamingResources;
 import org.apache.catalina.valves.ValveBase;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.tomcat.util.modeler.ManagedBean;
 import org.apache.tomcat.util.modeler.Registry;
 
@@ -187,37 +186,6 @@ public class MBeanUtils {
         if (period >= 0)
             className = className.substring(period + 1);
         return (className);
-
-    }
-
-
-    /**
-     * Create, register, and return an MBean for this
-     * <code>Connector</code> object.
-     *
-     * @param connector The Connector to be managed
-     *
-     * @exception Exception if an MBean cannot be created or registered
-     */
-    static ModelMBean createMBean(Connector connector)
-        throws Exception {
-
-        String mname = createManagedName(connector);
-        ManagedBean managed = registry.findManagedBean(mname);
-        if (managed == null) {
-            Exception e = new Exception("ManagedBean is not found with "+mname);
-            throw new MBeanException(e);
-        }
-        String domain = managed.getDomain();
-        if (domain == null)
-            domain = mserver.getDefaultDomain();
-        ModelMBean mbean = managed.createMBean(connector);
-        ObjectName oname = createObjectName(domain, connector);
-        if( mserver.isRegistered( oname ))  {
-            mserver.unregisterMBean(oname);
-        }
-        mserver.registerMBean(mbean, oname);
-        return (mbean);
 
     }
 
@@ -718,49 +686,6 @@ public class MBeanUtils {
         }
         mserver.registerMBean(mbean, oname);
         return (mbean);
-
-    }
-
-    /**
-     * Create an <code>ObjectName</code> for this
-     * <code>Connector</code> object.
-     *
-     * @param domain Domain in which this name is to be created
-     * @param connector The Connector to be named
-     *
-     * @exception MalformedObjectNameException if a name cannot be created
-     */
-    static ObjectName createObjectName(String domain,
-                                        Connector connector)
-        throws MalformedObjectNameException {
-
-        ObjectName name = null;
-        if (connector.getClass().getName().indexOf("CoyoteConnector") >= 0 ) {
-            try {
-                String address = (String)
-                    PropertyUtils.getSimpleProperty(connector, "address");
-                Integer port = (Integer)
-                    PropertyUtils.getSimpleProperty(connector, "port");
-                Service service = connector.getService();
-                String serviceName = null;
-                if (service != null)
-                    serviceName = service.getName();
-                StringBuffer sb = new StringBuffer(domain);
-                sb.append(":type=Connector");
-                sb.append(",port=" + port);
-                if ((address != null) && (address.length()>0)) {
-                    sb.append(",address=" + address);
-                }
-                name = new ObjectName(sb.toString());
-                return (name);
-            } catch (Exception e) {
-                throw new MalformedObjectNameException
-                    ("Cannot create object name for " + connector+e);
-            }
-        } else {
-            throw new MalformedObjectNameException
-                ("Cannot create object name for " + connector);
-        }
 
     }
 
@@ -1593,34 +1518,6 @@ public class MBeanUtils {
         method = beanClass.getMethod("start", (Class[])null);
         method.invoke(bean, (Object[])null);
 
-    }
-
-
-    /**
-     * Deregister the MBean for this
-     * <code>Connector</code> object.
-     *
-     * @param connector The Connector to be managed
-     *
-     * @exception Exception if an MBean cannot be deregistered
-     */
-    static void destroyMBean(Connector connector, Service service)
-        throws Exception {
-
-        connector.setService(service);
-        String mname = createManagedName(connector);
-        ManagedBean managed = registry.findManagedBean(mname);
-        if (managed == null) {
-            return;
-        }
-        String domain = managed.getDomain();
-        if (domain == null)
-            domain = mserver.getDefaultDomain();
-        ObjectName oname = createObjectName(domain, connector);
-        connector.setService(null);
-        if( mserver.isRegistered( oname ))  {
-            mserver.unregisterMBean(oname);
-        }
     }
 
 
