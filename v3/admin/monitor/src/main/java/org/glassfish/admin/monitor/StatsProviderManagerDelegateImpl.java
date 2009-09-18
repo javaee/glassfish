@@ -498,7 +498,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     }
 
     private TreeNode createSubTreeNode(TreeNode parent, String child) {
-        TreeNode childNode = parent.getNode(child);
+        TreeNode childNode = parent.getChild(child);
         if (childNode == null) {
             childNode = TreeNodeFactory.createTreeNode(child, null, child);
             parent.addChild(childNode);
