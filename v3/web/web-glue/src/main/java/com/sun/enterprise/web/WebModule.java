@@ -1913,19 +1913,11 @@ public class WebModule extends PwcWebModule {
      * Servlet related probe events
      */
 
-    public void servletInitializedEvent(Servlet servlet) {
-        String servletName = null;
-        if (servlet.getServletConfig() != null) {
-            servletName = servlet.getServletConfig().getServletName();
-        }
+    public void servletInitializedEvent(String servletName) {
         servletProbeProvider.servletInitializedEvent(servletName, _id, vsId);
     }
 
-    public void servletDestroyedEvent(Servlet servlet) {
-        String servletName = null;
-        if (servlet.getServletConfig() != null) {
-            servletName = servlet.getServletConfig().getServletName();
-        }
+    public void servletDestroyedEvent(String servletName) {
         servletProbeProvider.servletDestroyedEvent(servletName, _id, vsId);
     }
 

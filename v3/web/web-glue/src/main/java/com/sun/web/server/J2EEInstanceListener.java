@@ -52,6 +52,7 @@ import org.apache.catalina.Context;
 import org.apache.catalina.InstanceEvent;
 import org.apache.catalina.InstanceListener;
 import org.apache.catalina.Realm;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.RequestFacade;
 import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.jasper.servlet.JspServlet;
@@ -332,9 +333,11 @@ public final class J2EEInstanceListener implements InstanceListener {
 	}
     }
 
-    private void handleAfterEvent(InstanceEvent event, InstanceEvent.EventType eventType) {
+    private void handleAfterEvent(InstanceEvent event,
+                InstanceEvent.EventType eventType) {
 
-        Context context = (Context) event.getWrapper().getParent();
+        Wrapper wrapper = event.getWrapper();
+        Context context = (Context) wrapper.getParent();
         if (!(context instanceof WebModule)) {
             return;
         }
@@ -351,9 +354,9 @@ public final class J2EEInstanceListener implements InstanceListener {
         // Emit monitoring probe event
         if (instance instanceof Servlet) {
             if (eventType == InstanceEvent.EventType.AFTER_INIT_EVENT) {
-                wm.servletInitializedEvent((Servlet) instance);
+                wm.servletInitializedEvent(wrapper.getName());
             } else if (eventType == InstanceEvent.EventType.AFTER_DESTROY_EVENT) {
-                wm.servletDestroyedEvent((Servlet) instance);
+                wm.servletDestroyedEvent(wrapper.getName());
             }
         }
 
