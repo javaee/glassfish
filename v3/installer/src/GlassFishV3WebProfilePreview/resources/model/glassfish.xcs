@@ -137,17 +137,4 @@ if ((inputStatus != null) && (inputStatus.equals("ERROR")))  {
         </prop>
      </group>
  </component>
- <if:desktop>
-    <if:shortcut name="Start Application Server" type="APPLICATION" runInTerminal="true">
-	    <if:target path="glassfish/lib/asadmin-start-domain" relative="INSTALL_HOME"/>
-         <if:location path="GlassFish v3 Preview" relative="USER_START_MENU"/>
-	 <if:icon path="glassfish/icons/startAppserv.ico" relative="INSTALL_HOME"/>
-    </if:shortcut>
-    <if:shortcut name="Stop Application Server" type="APPLICATION" runInTerminal="true">
-	    <if:target path="glassfish/lib/asadmin-stop-domain" relative="INSTALL_HOME"/>
-         <if:location path="GlassFish v3 Preview" relative="USER_START_MENU"/>
-	 <if:icon path="glassfish/icons/stopAppserv.ico" relative="INSTALL_HOME"/>
-   </if:shortcut> 
-   
-  </if:desktop>
 </oor:component-schema>
