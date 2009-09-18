@@ -59,6 +59,7 @@ import org.glassfish.api.admin.RestRedirect;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * Defines configuration used to create and manage a pool physical database
@@ -143,6 +144,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute
+    @Pattern(regexp="(javax.sql.DataSource|javax.sql.XADataSource|javax.sql.ConnectionPoolDataSource)")
     String getResType();
 
     /**
