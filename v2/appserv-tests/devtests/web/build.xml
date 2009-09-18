@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="456"/>
+    <property name="TOTAL_EXPECTED" value="457"/>
 
     &commonSetup;
     &commonBuild;
@@ -403,6 +403,7 @@
         <ant dir="welcomePageExtensionMatch" target="all"/>
         <ant dir="overrideImplicitMapping" target="all"/>
         <ant dir="monitorWebRequest" target="all"/>
+        <ant dir="monitorHttpService" target="all"/>
     </target>
 
     <target name="security">
