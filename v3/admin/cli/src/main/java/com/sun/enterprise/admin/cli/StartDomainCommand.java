@@ -73,6 +73,7 @@ public class StartDomainCommand extends LocalDomainCommand {
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartDomainCommand.class);
+    private static final int DEATH_TIMEOUT_MS = 5 * 60 * 1000; // 5 minute timeout should be plenty!
 
     /**
      * The prepare method must ensure that the commandOpts,
@@ -133,7 +134,7 @@ public class StartDomainCommand extends LocalDomainCommand {
             launcher.setup();
 
             if(Boolean.getBoolean(RESTART_FLAG)) {
-                waitForParentToDie();
+                new DeathWaiter();
             }
             else { // plain start-domain
                 String err = adminPortInUse();
@@ -358,30 +359,6 @@ public class StartDomainCommand extends LocalDomainCommand {
         logger.printMessage(msg);
     }
 
-    private void waitForParentToDie() {
-            // TODO timeout -- possible infinite loop
-            // TODO timeout
-            // TODO timeout
-            // TODO timeout
-            // TODO timeout
-
-        try {
-            // When parent process is almost dead, in.read returns -1 (EOF)
-            // as the pipe breaks.
-
-            while (System.in.read() >= 0)
-                ;
-        }
-        catch (IOException ex) {
-            // ignore
-        }
-        // The port may take some time to become free after the pipe breaks
-        Set<Integer> adminPorts = info.getAdminPorts();
-
-        while(adminPortInUse(adminPorts) != null)
-            ;
-    }
-
     private String adminPortInUse() {
         Set<Integer> adminPorts = info.getAdminPorts();
         return adminPortInUse(adminPorts);
@@ -409,5 +386,44 @@ public class StartDomainCommand extends LocalDomainCommand {
         catch (FileNotFoundException ex) {
             //
         }
+    }
+
+    private class DeathWaiter implements Runnable{
+        @Override
+        public void run() {
+            try {
+                // When parent process is almost dead, in.read returns -1 (EOF)
+                // as the pipe breaks.
+
+                while (System.in.read() >= 0)
+                    ;
+            }
+            catch (IOException ex) {
+                // ignore
+            }
+
+            // The port may take some time to become free after the pipe breaks
+            Set<Integer> adminPorts = info.getAdminPorts();
+
+            while(adminPortInUse(adminPorts) != null)
+                ;
+
+            success = true;
+        }
+
+        public DeathWaiter() throws CommandException{
+            try {
+                Thread t = new Thread(this);
+                t.start();
+                t.join(DEATH_TIMEOUT_MS);
+            }
+            catch(Exception e) {
+                // ignore!
+            }
+
+            if(!success)
+                throw new CommandException(strings.get("deathwait_timeout", DEATH_TIMEOUT_MS));
+        }
+        boolean success = false;
     }
 }
