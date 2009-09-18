@@ -74,24 +74,25 @@ public class WebTest {
 
     public void run() throws Exception {
         String contextPath = contextRoot + "/myurl";
-        doWebMethod("POST", host, port, contextPath, true, "simple_@RolesAllowed", 200, "p:Hello, javaee");
-        doWebMethod("TRACE", host, port, contextPath, false, "simple_override_@PermitAll", 200, "t:Hello");
+        boolean ok = doWebMethod("POST", host, port, contextPath, true, 200, "p:Hello, javaee");
+        ok = ok && doWebMethod("TRACE", host, port, contextPath, false, 200, "t:Hello");
 
         contextPath = contextRoot + "/myurl2";
-        doWebMethod("TRACE", host, port, contextPath, false, "c_@PermitAll", 200, "t:Hello");
-        doWebMethod("PUT", host, port, contextPath, true, "c_dervied_@RolesAllowed", 200, "put:Hello, javaee");
-        doWebMethod("POST", host, port, contextPath, true, "c_nonoverride_@RolesAllowed", 200, "p:Hello, javaee");
-        doWebMethod("GET", host, port, contextPath, true, "c_nonoverride_@RolesAllowed_2", 403, null);
+        ok = ok && doWebMethod("TRACE", host, port, contextPath, false, 200, "t:Hello");
+        ok = ok && doWebMethod("PUT", host, port, contextPath, true, 200, "put:Hello, javaee");
+        ok = ok && doWebMethod("POST", host, port, contextPath, true, 200, "p:Hello, javaee");
+        ok = ok && doWebMethod("GET", host, port, contextPath, true, 403, null);
 
         contextPath = contextRoot + "/myurl2b";
-        doWebMethod("GET", host, port, contextPath, true, "base_method_@RolesAllowed", 403, null);
-        doWebMethod("POST", host, port, contextPath, true, "base_class_@RolesAllowed", 200, "p:Hello, javaee");
-        doWebMethod("TRACE", host, port, contextPath, true, "base_method_@DenyAll", 403, null);
+        ok = ok && doWebMethod("GET", host, port, contextPath, true, 403, null);
+        ok = ok && doWebMethod("POST", host, port, contextPath, true, 200, "p:Hello, javaee");
+        ok = ok && doWebMethod("TRACE", host, port, contextPath, true, 403, null);
 
+        stat.addStatus(TEST_NAME, ((ok)? stat.PASS : stat.FAIL));
     }
 
-    private static void doWebMethod(String webMethod, String host, int port,
-            String contextPath, boolean requireAuthenticate, String testSuffix,
+    private static boolean doWebMethod(String webMethod, String host, int port,
+            String contextPath, boolean requireAuthenticate,
             int responseCode, String expected) throws Exception {
 
         String urlStr = "http://" + host + ":" + port + contextPath;
@@ -144,6 +145,6 @@ public class WebTest {
             }
         }
 
-        stat.addStatus(TEST_NAME + ":" + testSuffix, ((ok)? stat.PASS : stat.FAIL));
+        return ok;
     }
 }
