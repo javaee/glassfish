@@ -71,6 +71,7 @@ class JvmOptions {
                 throw new GFLauncherException("UnknownJvmOptionFormat", s);
             }
         }
+        filter(); // get rid of forbidden stuff
     }
 
     @Override
@@ -196,6 +197,34 @@ class JvmOptions {
             ss.add(0, arg);
         }
     }
+
+    /** 
+     * bnevins September 2009
+     * There may be System Properties from V2 that cause havoc.  
+     * E.g. the MBean Server sys prop from V2 will be removed by upgrade code in
+     * the server but the server will blow up before it starts with a CNFE!
+     * We need to remove it carefully.  I.e. the user may want to set up their own
+     * MBean Server Factory so we just check to see if the value is identical to
+     * the V2 class...
+     */
+    private void filter() {
+        // there is only one forbidden sys prop now so no need yet for fancy
+        // data structures to contain the one key/value
+
+        // I have seen these 2 values:
+        // com.sun.enterprise.admin.server.core.jmx.AppServerMBeanServerBuilder
+        // com.sun.enterprise.ee.admin.AppServerMBeanServerBuilder
+
+        final String key            = "javax.management.builder.initial";
+        final String forbiddenStart = "com.sun.enterprise";
+        final String forbiddenEnd   = "AppServerMBeanServerBuilder";
+
+        String val = sysProps.get(key);
+
+        if(val != null && val.startsWith(forbiddenStart) && val.endsWith(forbiddenEnd))
+            sysProps.remove(key);
+    }
+
     Map<String, String> sysProps = new HashMap<String, String>();
     Map<String, String> xxProps = new HashMap<String, String>();
     Map<String, String> xProps = new HashMap<String, String>();
