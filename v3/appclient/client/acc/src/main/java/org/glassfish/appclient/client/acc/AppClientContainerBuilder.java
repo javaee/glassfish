@@ -125,7 +125,7 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
         Launchable client = Launchable.LaunchableUtil.newLaunchable(
                 ACCModulesManager.getHabitat(), mainClass);
         AppClientContainer container = createContainer(client, 
-                callerSpecifiedCallbackHandler);
+                callerSpecifiedCallbackHandler, false /* istextAuth */);
         return container;
     }
     
@@ -138,6 +138,17 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
             final CallbackHandler callerSpecifiedCallbackHandler,
             final String callerSpecifiedMainClassName,
             final String callerSpecifiedAppClientName) throws Exception, UserError {
+        return newContainer(clientURI, callerSpecifiedCallbackHandler,
+                callerSpecifiedMainClassName,
+                callerSpecifiedAppClientName,
+                false /* isTextAuth */);
+    }
+
+    public AppClientContainer newContainer(final URI clientURI,
+            final CallbackHandler callerSpecifiedCallbackHandler,
+            final String callerSpecifiedMainClassName,
+            final String callerSpecifiedAppClientName,
+            final boolean isTextAuth) throws Exception, UserError {
         prepareHabitatAndNaming();
         Launchable client = Launchable.LaunchableUtil.newLaunchable(
                 clientURI,
@@ -146,7 +157,7 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
                 ACCModulesManager.getHabitat());
 
         AppClientContainer container = createContainer(client, 
-                callerSpecifiedCallbackHandler);
+                callerSpecifiedCallbackHandler, isTextAuth);
         return container;
     }
 
@@ -155,7 +166,8 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
     }
 
     private AppClientContainer createContainer(final Launchable client,
-            final CallbackHandler callerSuppliedCallbackHandler) throws BootException, BootException, URISyntaxException, ClassNotFoundException, InstantiationException, IllegalAccessException, InjectionException, IOException, SAXParseException {
+            final CallbackHandler callerSuppliedCallbackHandler,
+            final boolean isTextAuth) throws BootException, BootException, URISyntaxException, ClassNotFoundException, InstantiationException, IllegalAccessException, InjectionException, IOException, SAXParseException {
         AppClientContainer container = ACCModulesManager.getComponent(AppClientContainer.class);
         container.setClient(client);
         container.setBuilder(this);
@@ -163,7 +175,7 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
                 (callerSuppliedCallbackHandler != null ? 
                     callerSuppliedCallbackHandler : getCallbackHandlerFromDescriptor(client.getDescriptor(classLoader).getCallbackHandler()));
         container.prepareSecurity(targetServers, messageSecurityConfigs, containerProperties,
-                clientCredential, callbackHandler, classLoader);
+                clientCredential, callbackHandler, classLoader, isTextAuth);
         return container;
     }
 

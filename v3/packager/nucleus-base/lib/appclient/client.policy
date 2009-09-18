@@ -19,7 +19,7 @@
 // [name of copyright owner]
 //
 
-/*  Copyright 2004 Sun Microsystems, Inc.  All rights reserved.    */
+/*  Copyright 2004-2009 Sun Microsystems, Inc.  All rights reserved.    */
 /*  SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms. */
 
 //core server classes get all permissions by default
@@ -41,10 +41,15 @@ grant codeBase "file:${java.home}/lib/ext/-" {
 	permission java.security.AllPermission;
 };
 
+// For Sun implementations of Java
 grant codeBase "file:${java.home}/../lib/tools.jar" {
         permission java.security.AllPermission;
 };
 
+// For Apple implementations of Java
+grant codeBase "file:${java.home}/../Classes/classes.jar" {
+        permission java.security.AllPermission;
+};
 
 
 // default permissions granted to all domains

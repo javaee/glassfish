@@ -283,12 +283,14 @@ public class AppClientContainer {
             final Properties containerProperties,
             final ClientCredential clientCredential,
             final CallbackHandler callerSuppliedCallbackHandler,
-            final ClassLoader classLoader) throws InstantiationException,
+            final ClassLoader classLoader,
+            final boolean isTextAuth) throws InstantiationException,
                 IllegalAccessException, InjectionException, ClassNotFoundException,
                 IOException,
                 SAXParseException {
         secHelper.init(targetServers, msgSecConfigs, containerProperties, clientCredential,
-                callerSuppliedCallbackHandler, classLoader, client.getDescriptor(classLoader));
+                callerSuppliedCallbackHandler, classLoader, client.getDescriptor(classLoader),
+                isTextAuth);
     }
 
     void setCallbackHandler(final CallbackHandler callerSuppliedCallbackHandler) {
@@ -410,7 +412,15 @@ public class AppClientContainer {
     }
 
     private boolean isEDTRunning() {
-        Map<Thread,StackTraceElement[]> threads = Thread.getAllStackTraces();
+        Map<Thread,StackTraceElement[]> threads = java.security.AccessController.doPrivileged(
+                new java.security.PrivilegedAction<Map<Thread,StackTraceElement[]>>() {
+
+            @Override
+            public Map<Thread, StackTraceElement[]> run() {
+                return Thread.getAllStackTraces();
+            }
+        });
+        
         logger.fine("Checking for EDT thread...");
         for (Map.Entry<Thread,StackTraceElement[]> entry : threads.entrySet()) {
             logger.fine("  " + entry.getKey().toString());
@@ -564,9 +574,25 @@ public class AppClientContainer {
                     container);
             invocationManager.preInvoke(ci);
             if ( ! isInjected) {
-
-                injectionManager.injectClass(clientMainClass, acDesc);
-                isInjected = true;
+                int retriesLeft = 3;
+                while (retriesLeft > 0 && ! isInjected) {
+                    try {
+                        injectionManager.injectClass(clientMainClass, acDesc);
+                        isInjected = true;
+                    } catch (InjectionException ie) {
+                        Throwable t = ie;
+                        boolean isAuthError = false;
+                        while (t != null && ! isAuthError) {
+                            isAuthError = t instanceof org.omg.CORBA.NO_PERMISSION;
+                            t = t.getCause();
+                        }
+                        if (isAuthError) {
+                            retriesLeft--;
+                        } else {
+                            throw ie;
+                        }
+                    }
+                }
             }
             return clientMainClass;
         }
@@ -632,6 +658,7 @@ public class AppClientContainer {
         // Set the HTTPS URL stream handler.
         java.security.AccessController.doPrivileged(new
                                        java.security.PrivilegedAction() {
+                @Override
                 public Object run() {
                     URL.setURLStreamHandlerFactory(new
                                        DirContextURLStreamHandlerFactory());
@@ -837,7 +864,16 @@ public class AppClientContainer {
         }
 
         void disable() {
-            Runtime.getRuntime().removeShutdownHook(cleanupThread);
+            java.security.AccessController.doPrivileged(
+                new java.security.PrivilegedAction() {
+
+                    @Override
+                    public Object run() {
+                        Runtime.getRuntime().removeShutdownHook(cleanupThread);
+                        return null;
+                    }
+                }
+                    );
         }
 
         /**
@@ -856,6 +892,7 @@ public class AppClientContainer {
          * without relying on the VM's shutdown handling invoke Cleanup.newContainer()
          * not Cleanup.run().
          */
+        @Override
         public void run() {
             logger.fine("Clean-up starting");
             /*

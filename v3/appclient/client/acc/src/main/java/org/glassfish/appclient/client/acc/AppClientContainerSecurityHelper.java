@@ -38,6 +38,7 @@ package org.glassfish.appclient.client.acc;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.security.GUILoginDialog;
 import com.sun.enterprise.security.appclient.integration.AppClientSecurityInfo;
 import java.io.File;
 import java.io.IOException;
@@ -52,6 +53,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import javax.security.auth.callback.CallbackHandler;
 import org.glassfish.appclient.client.acc.callbackhandler.DefaultGUICallbackHandler;
+import org.glassfish.appclient.client.acc.callbackhandler.DefaultTextCallbackHandler;
 import org.glassfish.appclient.client.acc.config.ClientCredential;
 import org.glassfish.appclient.client.acc.config.MessageSecurityConfig;
 import org.glassfish.appclient.client.acc.config.TargetServer;
@@ -83,6 +85,7 @@ public class AppClientContainerSecurityHelper {
 
     private ClassLoader classLoader;
 
+    private boolean isTextAuth;
 
     void init(
             final TargetServer[] targetServers,
@@ -91,8 +94,10 @@ public class AppClientContainerSecurityHelper {
             final ClientCredential clientCredential,
             final CallbackHandler callerSuppliedCallbackHandler,
             final ClassLoader classLoader,
-            final ApplicationClientDescriptor acDesc) throws InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, IOException {
+            final ApplicationClientDescriptor acDesc,
+            final boolean isTextAuth) throws InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, IOException {
 
+        this.isTextAuth = isTextAuth;
         this.classLoader = (classLoader == null) ? Thread.currentThread().getContextClassLoader() : classLoader;
         iiopProperties = prepareIIOP(targetServers);
 
@@ -157,7 +162,8 @@ public class AppClientContainerSecurityHelper {
         if (callerSuppliedCallbackHandler == null) {
             final String descriptorCallbackHandlerClassName;
             if (acDesc != null && ((descriptorCallbackHandlerClassName = acDesc.getCallbackHandler()) != null)) {
-                callbackHandler = newCallbackHandlerInstance(descriptorCallbackHandlerClassName, acDesc, classLoader);
+                callbackHandler = newCallbackHandlerInstance(
+                        descriptorCallbackHandlerClassName, acDesc, classLoader);
             } else {
                 callbackHandler = chooseDefaultCallbackHandler();
             }
@@ -167,8 +173,11 @@ public class AppClientContainerSecurityHelper {
     }
 
     private CallbackHandler chooseDefaultCallbackHandler() {
-        // XXX generalize this in case of textauth with missing user and/or password on cmd line
-        return new DefaultGUICallbackHandler();
+        if (isTextAuth) {
+            return new DefaultTextCallbackHandler();
+        } else {
+            return new DefaultGUICallbackHandler();
+        }
     }
 
     private CallbackHandler newCallbackHandlerInstance(final String callbackHandlerClassName,

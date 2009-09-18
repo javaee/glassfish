@@ -35,15 +35,11 @@
  */
 package org.glassfish.appclient.client.acc.callbackhandler;
 
+import com.sun.enterprise.security.GUILoginDialog;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import org.glassfish.appclient.client.acc.callbackhandler.CallbackGUIBindings.MessageType;
 
 /**
@@ -94,6 +90,8 @@ public class DefaultGUICallbackHandler implements javax.security.auth.callback.C
      * such as ConfirmationCallback and TextOutputCallback 
      */
     private MessageType messageType;
+
+    private LocalStringsImpl localStrings = new LocalStringsImpl(DefaultGUICallbackHandler.class);
     
     /**
      * Handles the caller-requested callbacks.
@@ -104,136 +102,138 @@ public class DefaultGUICallbackHandler implements javax.security.auth.callback.C
      */
     public void handle(Callback[] callbacks) 
             throws IOException, UnsupportedCallbackException {
-        messageType = MessageType.PLAIN;
-        
-        /*
-         * Record all the callback-to-U/I bindings created, as well as all the
-         * components in a separate data structure so an array of JComponents
-         * can be passed to the JOptionPane.
-         */
-        ArrayList<CallbackGUIBindings.Binding> bindings = new ArrayList<CallbackGUIBindings.Binding>();
-        ArrayList<JComponent> components = new ArrayList<JComponent>();
-        try {
-            prepareComponentBindings(callbacks, bindings, components);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        
-        /*
-         * Decide what the message type should be for the dialog box, based on 
-         * the message types from the callbacks that have one.
-         */
-        for (CallbackGUIBindings.Binding binding : bindings) {
-            MessageType bindingType = binding.getMessageType();
-            if ( ! messageType.exceeds(bindingType)) {
-                messageType = bindingType;
-            }
-        }
-        
-        /*
-         * Create the JOptionPane using the assembled U/I components for
-         * the callbacks requested.  By this time the binding for either a 
-         * caller-specified ConfirmationCallback or the handler-supplied 
-         * default one has been assigned to confirmationCallbackUIBinding.  Let
-         * it map from the Callback-defined option types to the JOptionPane
-         * option types.  (The option types indicate whether to display
-         * OK/Cancel, Yes/No, etc.)  Also use the most severe message type
-         * specified by any of the callbacks capable of doing so.
-         */
-        JOptionPane optionPane = new JOptionPane(
-                components.toArray(new JComponent[components.size()]), 
-                confirmationCallbackGUIBinding.getOptionPaneOptionType(),
-                messageType.getOptionPaneMessageType(), 
-                null,
-                confirmationCallbackGUIBinding.getOptions(),
-                confirmationCallbackGUIBinding.getDefaultOption()
-                );
-
-        JDialog dialog = optionPane.createDialog(
-                null, 
-                StringManager.getString("dialog.title"));
-        dialog.setResizable(true);
-        /*
-         * The setVisible invocation blocks until the user clicks on one of
-         * the buttons or closes the window
-         */
-        dialog.setVisible(true);
-        
-        int response = computeResponseValue(optionPane);
-        dialog.dispose();
-        
-        /*
-         * Give each binding a chance to update the callback with information
-         * now available from its corresponding U/I component.
-         */
-        for (CallbackGUIBindings.Binding binding : bindings) {
-            binding.finish();
-        }
-        
-        /*
-         * Convert the JOptionPane's result value to one appropriate to the
-         * ConfirmationCallback's set of possible values.
-         */
-        confirmationCallbackGUIBinding.setResult(response);
-    }
-
-    private int computeResponseValue(JOptionPane pane) {
-        Object selectedValue = pane.getValue();
-        if(selectedValue == null)
-            return JOptionPane.CLOSED_OPTION;
-        if(pane.getOptions() == null) {
-            if(selectedValue instanceof Integer)
-                return ((Integer)selectedValue).intValue();
-            return JOptionPane.CLOSED_OPTION;
-        }
-        
-        for(int counter = 0, maxCounter = pane.getOptions().length;
-            counter < maxCounter; counter++) {
-            if(pane.getOptions()[counter].equals(selectedValue))
-                return counter;
-        }
-        return JOptionPane.CLOSED_OPTION;        
-    }
-    
-    /**
-     * Populates the collection of bindings and components for each callback.
-     * @param callbacks the Callbacks provided by the caller
-     * @param bindings - Collection of bindings of callbacks to U/I components
-     * @param components - Collection of U/I components for display in the JOptionPane
-     * @throws javax.security.auth.callback.UnsupportedCallbackException
-     */
-    private void prepareComponentBindings(
-            Callback[] callbacks,
-            Collection<CallbackGUIBindings.Binding> bindings,
-            Collection<JComponent> components) throws UnsupportedCallbackException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
-        
-        CallbackGUIBindings factory = new CallbackGUIBindings();
-        for (Callback callback : callbacks) {
-            CallbackGUIBindings.Binding binding = factory.createCallbackGUIBinding(callback);
-            bindings.add(binding);
-            if (binding instanceof CallbackGUIBindings.Confirmation) {
-                /*
-                 * Do not add the confirmation callback's component to the
-                 * list of components to be part of the option dialog that
-                 * will be displayed.  Instead the option dialog itself will 
-                 * be set up to use the options specified by the (last)
-                 * ConfirmationCallback.
-                 */
-                confirmationCallbackGUIBinding = 
-                        (CallbackGUIBindings.Confirmation) binding;
-            } else {
-                components.add(binding.getComponent());
-            }
-
-            /*
-             * Make sure there is at least one confirmation callback binding
-             * so we know what choices to offer the user if the caller did not
-             * specify them.
-             */
-            if (confirmationCallbackGUIBinding == null) {
-                confirmationCallbackGUIBinding = 
-                        factory.getDefaultConfirmationCallbackUIBinding();
-            }
-        }
+        new GUILoginDialog(localStrings.get("dialog.user"), callbacks);
+//        messageType = MessageType.PLAIN;
+//
+//        /*
+//         * Record all the callback-to-U/I bindings created, as well as all the
+//         * components in a separate data structure so an array of JComponents
+//         * can be passed to the JOptionPane.
+//         */
+//        ArrayList<CallbackGUIBindings.Binding> bindings = new ArrayList<CallbackGUIBindings.Binding>();
+//        ArrayList<JComponent> components = new ArrayList<JComponent>();
+//        try {
+//            prepareComponentBindings(callbacks, bindings, components);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        /*
+//         * Decide what the message type should be for the dialog box, based on
+//         * the message types from the callbacks that have one.
+//         */
+//        for (CallbackGUIBindings.Binding binding : bindings) {
+//            MessageType bindingType = binding.getMessageType();
+//            if ( ! messageType.exceeds(bindingType)) {
+//                messageType = bindingType;
+//            }
+//        }
+//
+//        /*
+//         * Create the JOptionPane using the assembled U/I components for
+//         * the callbacks requested.  By this time the binding for either a
+//         * caller-specified ConfirmationCallback or the handler-supplied
+//         * default one has been assigned to confirmationCallbackUIBinding.  Let
+//         * it map from the Callback-defined option types to the JOptionPane
+//         * option types.  (The option types indicate whether to display
+//         * OK/Cancel, Yes/No, etc.)  Also use the most severe message type
+//         * specified by any of the callbacks capable of doing so.
+//         */
+//        JOptionPane optionPane = new JOptionPane(
+//                components.toArray(new JComponent[components.size()]),
+//                confirmationCallbackGUIBinding.getOptionPaneOptionType(),
+//                messageType.getOptionPaneMessageType(),
+//                null,
+//                confirmationCallbackGUIBinding.getOptions(),
+//                confirmationCallbackGUIBinding.getDefaultOption()
+//                );
+//
+//        JDialog dialog = optionPane.createDialog(
+//                null,
+//                StringManager.getString("dialog.title"));
+//        dialog.setResizable(true);
+//        /*
+//         * The setVisible invocation blocks until the user clicks on one of
+//         * the buttons or closes the window
+//         */
+//        dialog.setVisible(true);
+//
+//        int response = computeResponseValue(optionPane);
+//        dialog.setVisible(false);
+//        dialog.dispose();
+//
+//        /*
+//         * Give each binding a chance to update the callback with information
+//         * now available from its corresponding U/I component.
+//         */
+//        for (CallbackGUIBindings.Binding binding : bindings) {
+//            binding.finish();
+//        }
+//
+//        /*
+//         * Convert the JOptionPane's result value to one appropriate to the
+//         * ConfirmationCallback's set of possible values.
+//         */
+//        confirmationCallbackGUIBinding.setResult(response);
+//    }
+//
+//    private int computeResponseValue(JOptionPane pane) {
+//        Object selectedValue = pane.getValue();
+//        if(selectedValue == null)
+//            return JOptionPane.CLOSED_OPTION;
+//        if(pane.getOptions() == null) {
+//            if(selectedValue instanceof Integer)
+//                return ((Integer)selectedValue).intValue();
+//            return JOptionPane.CLOSED_OPTION;
+//        }
+//
+//        for(int counter = 0, maxCounter = pane.getOptions().length;
+//            counter < maxCounter; counter++) {
+//            if(pane.getOptions()[counter].equals(selectedValue))
+//                return counter;
+//        }
+//        return JOptionPane.CLOSED_OPTION;
+//    }
+//
+//    /**
+//     * Populates the collection of bindings and components for each callback.
+//     * @param callbacks the Callbacks provided by the caller
+//     * @param bindings - Collection of bindings of callbacks to U/I components
+//     * @param components - Collection of U/I components for display in the JOptionPane
+//     * @throws javax.security.auth.callback.UnsupportedCallbackException
+//     */
+//    private void prepareComponentBindings(
+//            Callback[] callbacks,
+//            Collection<CallbackGUIBindings.Binding> bindings,
+//            Collection<JComponent> components) throws UnsupportedCallbackException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
+//
+//        CallbackGUIBindings factory = new CallbackGUIBindings();
+//        for (Callback callback : callbacks) {
+//            CallbackGUIBindings.Binding binding = factory.createCallbackGUIBinding(callback);
+//            bindings.add(binding);
+//            if (binding instanceof CallbackGUIBindings.Confirmation) {
+//                /*
+//                 * Do not add the confirmation callback's component to the
+//                 * list of components to be part of the option dialog that
+//                 * will be displayed.  Instead the option dialog itself will
+//                 * be set up to use the options specified by the (last)
+//                 * ConfirmationCallback.
+//                 */
+//                confirmationCallbackGUIBinding =
+//                        (CallbackGUIBindings.Confirmation) binding;
+//            } else {
+//                components.add(binding.getComponent());
+//            }
+//
+//            /*
+//             * Make sure there is at least one confirmation callback binding
+//             * so we know what choices to offer the user if the caller did not
+//             * specify them.
+//             */
+//            if (confirmationCallbackGUIBinding == null) {
+//                confirmationCallbackGUIBinding =
+//                        factory.getDefaultConfirmationCallbackUIBinding();
+//            }
+//        }
     }
 }

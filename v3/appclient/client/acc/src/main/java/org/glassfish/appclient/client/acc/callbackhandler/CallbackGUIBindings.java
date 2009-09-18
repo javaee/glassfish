@@ -64,6 +64,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EtchedBorder;
+import org.glassfish.appclient.client.acc.callbackhandler.CallbackBinding.GUI;
 
 /**
  *
@@ -134,7 +135,7 @@ public class CallbackGUIBindings {
     /** number of columns for text areas */
     protected static final int TEXT_COLUMNS = 20;
 
-    public abstract class Binding<C extends Callback> implements CallbackBinding<C> {
+    public abstract class Binding<C extends Callback> implements GUI<C> {
         private JComponent component = null;
 
         protected C callback;
@@ -186,6 +187,7 @@ public class CallbackGUIBindings {
             return component;
         }
 
+        @Override
         public void setCallback(C callback) {
             this.callback = callback;
         }
@@ -197,6 +199,7 @@ public class CallbackGUIBindings {
          */
         private JList jList;
 
+        @Override
         protected JComponent createComponent() {
             jList = prepareList(
                         callback.getChoices(), 
@@ -218,6 +221,7 @@ public class CallbackGUIBindings {
             return result;
         }
 
+        @Override
         public void finish() {
             if (callback.allowMultipleSelections()) {
                 callback.setSelectedIndexes(jList.getSelectedIndices());
@@ -229,6 +233,7 @@ public class CallbackGUIBindings {
 
     public class Confirmation extends Binding<ConfirmationCallback> {
 
+        @Override
         protected JComponent createComponent() {
             return null;
         }
@@ -238,6 +243,7 @@ public class CallbackGUIBindings {
             return MessageType.severityForConfirmation(callback.getMessageType());
         }
 
+        @Override
         public void finish() {
         }
 
@@ -297,13 +303,16 @@ public class CallbackGUIBindings {
 
         private JTextField nameField;
 
+        @Override
         protected JComponent createComponent() {
             JComponent result = createPromptedInputBox(
                         callback.getPrompt(),
                         nameField = new JTextField(callback.getDefaultName()));
+            nameField.setColumns(20);
             return result;
         }
 
+        @Override
         public void finish() {
              callback.setName(nameField.getText());
         }
@@ -313,12 +322,16 @@ public class CallbackGUIBindings {
     public class Password extends Binding<PasswordCallback> {
         private JPasswordField passwordField;
 
+        @Override
         public JComponent createComponent() {
-            return createPromptedInputBox(
+            JComponent result = createPromptedInputBox(
                     callback.getPrompt(),
                     passwordField = new JPasswordField());
+            passwordField.setColumns(20);
+            return result;
         }
 
+        @Override
         public void finish() {
             callback.setPassword(passwordField.getPassword());
             passwordField.setText("");
@@ -329,6 +342,7 @@ public class CallbackGUIBindings {
 
         private JTextArea textArea;
 
+        @Override
         public JComponent createComponent() {
             textArea = new JTextArea(
                     callback.getDefaultText(), 
@@ -339,6 +353,7 @@ public class CallbackGUIBindings {
             return prepareScrollPane(callback.getPrompt(), textArea);
         }
 
+        @Override
         public void finish() {
             callback.setText(textArea.getText());
         }
@@ -348,6 +363,7 @@ public class CallbackGUIBindings {
     public class TextOutput extends Binding<TextOutputCallback> {
         private JTextArea textArea;
 
+        @Override
         public JComponent createComponent() {
             String s = callback.getMessage();
             textArea = new JTextArea(this.callback.getMessage());
@@ -358,6 +374,7 @@ public class CallbackGUIBindings {
             return textArea;
         }
 
+        @Override
         public void finish() {
         }
 
@@ -370,6 +387,7 @@ public class CallbackGUIBindings {
     public class Language extends Binding<LanguageCallback> {
         private JList languageList;
 
+        @Override
         public JComponent createComponent() {
 
             Vector<LocaleEntry> entries = new Vector<LocaleEntry>();
@@ -378,6 +396,7 @@ public class CallbackGUIBindings {
             Locale [] sortedLocales = Locale.getAvailableLocales();
             Arrays.sort(sortedLocales, 
                     new Comparator<Locale>() {
+                        @Override
                         public int compare(Locale l1, Locale l2) {
                             return l1.getDisplayName().compareTo(l2.getDisplayName());
                         }
@@ -396,6 +415,7 @@ public class CallbackGUIBindings {
             return prepareScrollPane(languageList);
         }
 
+        @Override
         public void finish() {
             callback.setLocale(((LocaleEntry) languageList.getSelectedValue()).locale);
         }
