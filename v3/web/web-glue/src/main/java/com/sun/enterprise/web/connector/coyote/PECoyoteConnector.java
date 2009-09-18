@@ -1225,11 +1225,7 @@ public class PECoyoteConnector extends Connector {
         if (requestProbeProvider != null) {
             String appName = null;
             if (context != null) {
-                com.sun.enterprise.config.serverbeans.Application bean =
-                    ((WebModule) context).getBean();
-                if (bean != null) {
-                    appName = bean.getName();
-                }
+                appName = ((WebModule) context).getModuleName();
             }
             requestProbeProvider.requestStartEvent(
                 appName, hostName,
