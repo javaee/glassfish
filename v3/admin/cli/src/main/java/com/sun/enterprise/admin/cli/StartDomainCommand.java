@@ -36,6 +36,9 @@
 
 package com.sun.enterprise.admin.cli;
 
+import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import com.sun.enterprise.admin.cli.CLIConstants;
@@ -112,7 +115,7 @@ public class StartDomainCommand extends LocalDomainCommand {
             if (!operands.isEmpty()) {
                 info.setDomainName(operands.get(0));
             }
-
+            
             String parent = options.get("domaindir");
             if (parent != null)
                 info.setDomainParentDir(parent);
@@ -129,12 +132,14 @@ public class StartDomainCommand extends LocalDomainCommand {
 
             launcher.setup();
 
-            // only continue if all (normally 1) admin port(s) are free
-            Set<Integer> adminPorts = info.getAdminPorts();
-            for (Integer port : adminPorts) {
-                if (!NetUtils.isPortFree(port)) {
-                    String msg = strings.get("ServerRunning", port.toString());
-                    logger.printWarning(msg);
+            if(Boolean.getBoolean(RESTART_FLAG)) {
+                waitForParentToDie();
+            }
+            else { // plain start-domain
+                String err = adminPortInUse();
+
+                if(err != null) {
+                    logger.printWarning(err);
                     return ERROR;
                 }
             }
@@ -351,5 +356,58 @@ public class StartDomainCommand extends LocalDomainCommand {
         }
         msg = strings.get("DomainAdminPort", ""+ap);
         logger.printMessage(msg);
+    }
+
+    private void waitForParentToDie() {
+            // TODO timeout -- possible infinite loop
+            // TODO timeout
+            // TODO timeout
+            // TODO timeout
+            // TODO timeout
+
+        try {
+            // When parent process is almost dead, in.read returns -1 (EOF)
+            // as the pipe breaks.
+
+            while (System.in.read() >= 0)
+                ;
+        }
+        catch (IOException ex) {
+            // ignore
+        }
+        // The port may take some time to become free after the pipe breaks
+        Set<Integer> adminPorts = info.getAdminPorts();
+
+        while(adminPortInUse(adminPorts) != null)
+            ;
+    }
+
+    private String adminPortInUse() {
+        Set<Integer> adminPorts = info.getAdminPorts();
+        return adminPortInUse(adminPorts);
+    }
+
+    private String adminPortInUse(Set<Integer> adminPorts) {
+        // it returns a String for logging --- if desired
+        for (Integer port : adminPorts)
+            if (!NetUtils.isPortFree(port))
+                return strings.get("ServerRunning", port.toString());
+
+        return null;
+    }
+
+    /* this is useful for debugging restart-domain problems.
+     * In that case the Server process will run this class and it is fairly
+     * involved to attach a debugger (though not bad -- see RestartDomain on the server to see how).
+     * Standard output disappears.  This is a generally useful method.  Feel free to copy & paste!
+     */
+    private void debug(String s) {
+        try {
+            PrintStream ps = new PrintStream(new FileOutputStream("startdomain.txt", true));
+            ps.println(new Date().toString() + ":  " + s);
+        }
+        catch (FileNotFoundException ex) {
+            //
+        }
     }
 }
