@@ -249,7 +249,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
         		m.put(key, props.getProperty(key));
 			}
 
-			closePropFile();
+//			closePropFile();
 			return m;
 		} catch (IOException ex) {
 			throw ex;
