@@ -109,7 +109,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
         
         // logging.properties nassaging.
         final LogManager logMgr = LogManager.getLogManager();
-        File logging = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
+        File logging = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileName);
         System.setProperty("java.util.logging.config.file", logging.getAbsolutePath());
         // reset settings
 
@@ -119,10 +119,10 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                 Logger.getAnonymousLogger().log(Level.WARNING, logging.getAbsolutePath() + " not found, creating new file from template.");
                 String rootFolder = env.getProps().get(com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
                 String templateDir = rootFolder + File.separator + "lib" + File.separator + "templates";
-                File src = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
-                File dest = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
+                File src = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+                File dest = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileName);
                 FileUtils.copy(src, dest);
-                logging = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
+                logging = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileName);
             }
             logMgr.readConfiguration();
         } catch(IOException e) {
@@ -215,7 +215,6 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                                 }
 
                             }
-
                             logger.log(Level.INFO,"Updated log levels for loggers.");
                         } catch (IOException e) {
                             logger.log(Level.SEVERE, "Cannot read logging.properties file : ", e);

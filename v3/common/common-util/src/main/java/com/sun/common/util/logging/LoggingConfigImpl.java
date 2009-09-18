@@ -98,7 +98,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
     // this is so the launcher can pass in where the dir is since 
     public void setupConfigDir(File file, File installDir){
         loggingConfigDir=file;
-        loggingPropertiesName = ServerEnvironmentImpl.kLoggingPropertiesFileNAme;
+        loggingPropertiesName = ServerEnvironmentImpl.kLoggingPropertiesFileName;
         logMgr = LogManager.getLogManager();
         libFolder = new File (installDir ,"lib");
     }
@@ -109,10 +109,10 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
             if (!file.exists()) {
                 Logger.getAnonymousLogger().log(Level.WARNING, file.getAbsolutePath() + " not found, creating new file from template.");
                 File templateDir = new File(libFolder , "templates");
-                File src = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
-                File dest = new File(loggingConfigDir, ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
+                File src = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+                File dest = new File(loggingConfigDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
                 FileUtils.copy(src, dest);
-                file = new File(loggingConfigDir, ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
+                file = new File(loggingConfigDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
             }
             */
 			fis = new java.io.FileInputStream (file);

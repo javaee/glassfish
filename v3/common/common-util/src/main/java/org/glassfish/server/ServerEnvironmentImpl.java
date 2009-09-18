@@ -58,7 +58,7 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     /** folder where deployed modules are stored */
     public static final String kModuleDirName = "j2ee-modules";
     public static final String kConfigXMLFileName = "domain.xml";
-    public static final String kLoggingPropertiesFileNAme = "logging.properties";
+    public static final String kLoggingPropertiesFileName = "logging.properties";
     /** folder where the configuration of this instance is stored */
     public static final String kConfigDirName = "config";
     /** init file name */
