@@ -78,6 +78,7 @@ import java.util.zip.ZipException;
  * <ul>
  * <li><code>-output path-to-output-file</code> (default: ${installDir}/lib/appclient/appclient.jar)
  * <li><code>-xml path-to-sun-acc.xml-config-file</code> (default: ${installDir}/domains/domain1/config/sun-acc.xml)
+ * <li><code>-verbose</code> reports progress and errors that are non-fatal
  *
  *
  * @author tjquinn
@@ -90,9 +91,13 @@ public class PackageAppClient {
 
     private final static String GLASSFISH_BIN = "glassfish/bin";
 
+    private final static String MODULES_ENDORSED_DIR = "glassfish/modules/endorsed";
+
     private final static String MQ_LIB = "mq/lib";
 
     private final static String DOMAIN_1_CONFIG = "glassfish/domains/domain1/config";
+
+    private final static String INDENT = "  ";
 
 
     /* DIRS_TO_COPY entries are all relative to the installation directory */
@@ -107,7 +112,12 @@ public class PackageAppClient {
      * separately from other directorys because we do not include all files from
      * the endorsed directory.
      */
-    private final static String ENDORSED_DIR = GLASSFISH_LIB + "/endorsed";
+    private final static String LIB_ENDORSED_DIR = GLASSFISH_LIB + "/endorsed";
+
+    private final static String[] ENDORSED_DIRS_TO_COPY = new String[] {
+        LIB_ENDORSED_DIR,
+        MODULES_ENDORSED_DIR
+    };
 
     /* default sun-acc.xml is relative to the installation directory */
     private final static String DEFAULT_SUN_ACC_XML =
@@ -137,11 +147,12 @@ public class PackageAppClient {
         NONWIN_SCRIPT};
 
     /* default output file */
-    private final static String DEFAULT_OUTPUT_PATH = System.getProperty("user.dir") +
-            File.separator + "appclient.jar";
+    private final static String DEFAULT_OUTPUT_PATH = GLASSFISH_LIB +  "/appclient.jar";
 
     private final static LocalStringsImpl strings = new LocalStringsImpl(PackageAppClient.class);
 
+    private boolean isVerbose;
+    
     /**
      * @param args the command line arguments
      */
@@ -155,6 +166,7 @@ public class PackageAppClient {
     }
 
     private void run(final String[] args) throws URISyntaxException, IOException {
+        isVerbose = isVerboseOutputLevel(args);
         final File thisJarFile = findCurrentJarFile();
         File installDir = findInstallDir(thisJarFile);
         File modulesDir = new File(installDir.toURI().resolve("glassfish/modules/"));
@@ -182,7 +194,7 @@ public class PackageAppClient {
         /*
          * Add this JAR file to the output.
          */
-        addFile(os, installDir.toURI(), thisJarFile.toURI(), outputFile);
+        addFile(os, installDir.toURI(), thisJarFile.toURI(), outputFile, "");
 
         /*
          * JARs listed in the Class-Path are all relative to the modules
@@ -192,7 +204,8 @@ public class PackageAppClient {
         for (String classPathElement : classPathElements) {
             final File classPathJAR = new File(modulesDir, classPathElement);
             addFile(os, installDir.toURI(), 
-                    modulesDir.toURI().resolve(classPathJAR.toURI()), outputFile);
+                    modulesDir.toURI().resolve(classPathJAR.toURI()), outputFile,
+                    "");
         }
 
         /*
@@ -201,21 +214,25 @@ public class PackageAppClient {
          */
         for (String dirToCopy : DIRS_TO_COPY) {
             addDir(os, installDir.toURI(), 
-                    installDir.toURI().resolve(dirToCopy), outputFile);
+                    installDir.toURI().resolve(dirToCopy), outputFile,
+                    "");
         }
 
-        addEndorsedFiles(os, installDir.toURI(),
-                installDir.toURI().resolve(ENDORSED_DIR), outputFile);
+        for (String endorsedDirToCopy : ENDORSED_DIRS_TO_COPY) {
+            addEndorsedFiles(os, installDir.toURI(),
+                    installDir.toURI().resolve(endorsedDirToCopy), outputFile);
+        }
 
         for (String singleFileToCopy : SINGLE_FILES_TO_COPY) {
             addFile(os, installDir.toURI(),
-                    installDir.toURI().resolve(singleFileToCopy), outputFile);
+                    installDir.toURI().resolve(singleFileToCopy), outputFile,
+                    "");
         }
 
         /*
          * The sun-acc.xml file.
          */
-        addFile(os, installDir.toURI(), configFile.toURI(), outputFile);
+        addFile(os, installDir.toURI(), configFile.toURI(), outputFile, "");
         
         os.close();
     }
@@ -243,7 +260,7 @@ public class PackageAppClient {
             }
 
                 },
-                outputFile);
+                outputFile, "");
     }
 
     /**
@@ -260,7 +277,8 @@ public class PackageAppClient {
             final JarOutputStream os,
             final URI installDirURI,
             final URI absoluteURIToAdd,
-            final File outputFile
+            final File outputFile,
+            final String indent
             ) throws IOException {
         final File fileToCopy = new File(absoluteURIToAdd);
         if (fileToCopy.equals(outputFile)) {
@@ -269,15 +287,9 @@ public class PackageAppClient {
 
         JarEntry entry = new JarEntry(OUTPUT_PREFIX + installDirURI.relativize(absoluteURIToAdd).toString());
         try {
-            os.putNextEntry(entry);
-            copyFileToStream(os, absoluteURIToAdd);
-            os.closeEntry();
-        } catch (ZipException e) {
-            /*
-             * Probably duplicate entry.  Keep going after logging the error.
-             */
-            System.err.println(strings.get("zipExc", e.getLocalizedMessage()));
-        } catch (FileNotFoundException ignore) {
+            if (isVerbose) {
+                System.err.println(indent + strings.get("addingFile", new File(absoluteURIToAdd).getAbsolutePath()));
+            }
             /*
              * Some modules in the GlassFish build are marked as optional
              * dependencies, and the resulting JARs are not included in the
@@ -287,6 +299,26 @@ public class PackageAppClient {
              * in the generated appclient.jar file.  So, if the Class-Path
              * specifies a file we cannot find we keep going -- silently.
              */
+            if ( ! new File(absoluteURIToAdd).exists()) {
+                if (isVerbose) {
+                    System.err.println(indent + strings.get("noFile", new File(absoluteURIToAdd).getAbsolutePath()));
+                }
+                return;
+            }
+            os.putNextEntry(entry);
+            if (new File(absoluteURIToAdd).isFile()) {
+                copyFileToStream(os, absoluteURIToAdd);
+            }
+            os.closeEntry();
+            
+        } catch (ZipException e) {
+            /*
+             * Probably duplicate entry.  Keep going after logging the error.
+             */
+            if (isVerbose) {
+                System.err.println(indent + strings.get("zipExc", e.getLocalizedMessage()));
+            }
+        } catch (FileNotFoundException ignore) {
         }
     }
 
@@ -303,10 +335,12 @@ public class PackageAppClient {
             final JarOutputStream os,
             final URI installDirURI,
             final URI absoluteDirURIToAdd,
-            final File outputFile) throws IOException {
+            final File outputFile,
+            final String indent) throws IOException {
         addDir(os, installDirURI, absoluteDirURIToAdd,
                 null /* with null filter File.listFiles accepts all files and directories */,
-                outputFile);
+                outputFile,
+                indent);
     }
 
     /**
@@ -325,9 +359,11 @@ public class PackageAppClient {
             final URI installDirURI,
             final URI absoluteDirURIToAdd,
             final FileFilter fileFilter,
-            final File outputFile) throws IOException {
+            final File outputFile,
+            final String indent) throws IOException {
 
-        final File[] matchingFiles = new File(absoluteDirURIToAdd).listFiles(fileFilter);
+        final File dirFile = new File(absoluteDirURIToAdd);
+        final File[] matchingFiles = dirFile.listFiles(fileFilter);
         if (matchingFiles == null) {
             /*
              * The file does not exist or is not a directory.  This could happen
@@ -335,13 +371,24 @@ public class PackageAppClient {
              */
             return;
         }
+        if (isVerbose) {
+            System.err.println(indent + strings.get("addingDir", dirFile.getAbsolutePath()));
+        }
         for (File fileToAdd : matchingFiles) {
             if (fileToAdd.isFile()) {
-                addFile(os, installDirURI, fileToAdd.toURI(), outputFile);
+                addFile(os, installDirURI, fileToAdd.toURI(), outputFile, indent + INDENT);
             } else if (fileToAdd.isDirectory()) {
-                addDir(os, installDirURI, fileToAdd.toURI(), outputFile);
+                addDir(os, installDirURI, fileToAdd.toURI(), outputFile, indent + INDENT);
             }
         }
+    }
+
+    private void addDirEntry(
+            final JarOutputStream os,
+            final URI installDirURI,
+            final URI absoluteDirURIToAdd,
+            final File outputFile) {
+
     }
 
     /**
@@ -422,6 +469,15 @@ public class PackageAppClient {
 
     private File findInstallDir(final File currentJarFile) throws URISyntaxException {
         return currentJarFile.getParentFile().getParentFile().getParentFile();
+    }
+    
+    private boolean isVerboseOutputLevel(final String[] args) {
+        for (String arg : args) {
+            if (arg.equals("-verbose")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
