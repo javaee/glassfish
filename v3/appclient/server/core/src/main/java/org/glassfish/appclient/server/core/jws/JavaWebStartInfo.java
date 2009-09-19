@@ -243,6 +243,7 @@ public class JavaWebStartInfo implements ConfigListener {
          */
         if (isJWSRunnable()) {
             jwsState.transition(JavaWebStartState.Action.START, new Runnable() {
+                @Override
                 public void run() {
                     try {
                         startJWSServices();
@@ -259,6 +260,7 @@ public class JavaWebStartInfo implements ConfigListener {
      */
     public void stop() {
         jwsState.transition(JavaWebStartState.Action.STOP, new Runnable() {
+            @Override
             public void run() {
                 try {
                     stopJWSServices();
@@ -274,6 +276,7 @@ public class JavaWebStartInfo implements ConfigListener {
      */
     public void suspend() {
         jwsState.transition(JavaWebStartState.Action.SUSPEND, new Runnable() {
+            @Override
             public void run() {
                 suspendJWSServices();
             }
@@ -287,6 +290,7 @@ public class JavaWebStartInfo implements ConfigListener {
     public void resume() {
         if (isJWSRunnable()) {
             jwsState.transition(JavaWebStartState.Action.RESUME, new Runnable() {
+                @Override
                 public void run() {
                     resumeJWSServices();
                 }
@@ -424,11 +428,15 @@ public class JavaWebStartInfo implements ConfigListener {
          * The client-level adapter's static content is the app client JAR and
          * the app client facade.
          */
-        createAndAddStaticContent(staticContent, helper.appClientServerURI(dc),
+        createAndAddSignedContentFromAppFile(
+                staticContent,
+                helper.appClientServerURI(dc),
                 helper.appClientUserURI(dc),
                 CLIENT_JAR_PATH_PROPERTY_NAME);
-
-        createAndAddSignedStaticContentFromGeneratedFile(staticContent, helper.facadeServerURI(dc),
+        
+        createAndAddSignedStaticContentFromGeneratedFile(
+                staticContent, 
+                helper.facadeServerURI(dc),
                 helper.facadeUserURI(dc),
                 CLIENT_FACADE_JAR_PATH_PROPERTY_NAME);
 
@@ -463,7 +471,14 @@ public class JavaWebStartInfo implements ConfigListener {
          */
         for (FullAndPartURIs artifact : helper.earLevelDownloads()) {
             final String uriString = artifact.getPart().toASCIIString();
-            staticContent.put(uriString, new FixedContent(new File(artifact.getFull())));
+            /*
+             * The EAR-level downloads include the unsigned client JAR(s).  If
+             * we've generated a signed copy and added it to the static content
+             * do not overwrite that entry.
+             */
+            if ( ! staticContent.containsKey(uriString)) {
+                staticContent.put(uriString, new FixedContent(new File(artifact.getFull())));
+            }
         }
     }
 
@@ -480,14 +495,15 @@ public class JavaWebStartInfo implements ConfigListener {
         }
     }
 
-    private void createAndAddStaticContent(final Map<String,StaticContent> content,
+    private void createAndAddSignedContentFromAppFile(final Map<String,StaticContent> content,
             final URI uriToFile,
             final URI uriForLookup,
             final String tokenName) {
 
-        final StaticContent jarContent = new FixedContent(
-                new File(uriToFile));
-        recordStaticContent(content, jarContent, uriForLookup, tokenName);
+        final File unsignedFile = new File(uriToFile);
+        final File signedFile = signedFileForProvidedAppFile(unsignedFile);
+        createAndAddSignedStaticContent(content, unsignedFile, signedFile,
+                uriForLookup, tokenName);
     }
 
     private void createAndAddSignedStaticContentFromGeneratedFile(final Map<String,StaticContent> content,
@@ -497,6 +513,17 @@ public class JavaWebStartInfo implements ConfigListener {
 
         final File unsignedFile = new File(uriToFile);
         final File signedFile = signedFileForGeneratedAppFile(unsignedFile);
+        createAndAddSignedStaticContent(content, unsignedFile, signedFile,
+                uriForLookup, tokenName);
+    }
+
+    private void createAndAddSignedStaticContent(
+            final Map<String,StaticContent> content,
+            final File unsignedFile,
+            final File signedFile,
+            final URI uriForLookup,
+            final String tokenName
+            ) {
         signedFile.getParentFile().mkdirs();
         final StaticContent signedJarContent = new AutoSignedContent(
                 unsignedFile,
@@ -505,7 +532,7 @@ public class JavaWebStartInfo implements ConfigListener {
                 jarSigner);
         recordStaticContent(content, signedJarContent, uriForLookup, tokenName);
     }
-
+    
     private void recordStaticContent(final Map<String,StaticContent> content,
             final StaticContent newContent,
             final URI uriForLookup,
@@ -535,10 +562,25 @@ public class JavaWebStartInfo implements ConfigListener {
          * to generated/xml/(appName)/signed where the signed file should reside.
          */
         final File rootForSignedFilesInApp = new File(dc.getScratchDir("xml"), "signed/");
-        rootForSignedFilesInApp.mkdir();
+        rootForSignedFilesInApp.mkdirs();
         final URI unsignedFileURIRelativeToXMLDir = dc.getScratchDir("xml").toURI().
                 relativize(unsignedFile.toURI());
         final URI signedFileURI = rootForSignedFilesInApp.toURI().resolve(unsignedFileURIRelativeToXMLDir);
+        return new File(signedFileURI);
+    }
+    
+    private File signedFileForProvidedAppFile(final File unsignedFile) {
+        /*
+         * Place a signed file for a developer-provided file at
+         * 
+         * generated/xml/(appName)/signed/(path-within-app-of-unsigned-file)
+         * 
+         * 
+         */
+        final File rootForSignedFilesInApp = new File(dc.getScratchDir("xml"), "signed/");
+        rootForSignedFilesInApp.mkdirs();
+        final URI signedFileURI = rootForSignedFilesInApp.toURI().
+                resolve(helper.appClientURIWithinApp(dc));
         return new File(signedFileURI);
     }
 
@@ -666,6 +708,7 @@ public class JavaWebStartInfo implements ConfigListener {
         }
     }
 
+    @Override
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         /* Record any events we tried to process but could not. */
         List<UnprocessedChangeEvent> unprocessedEvents = new ArrayList<UnprocessedChangeEvent>();

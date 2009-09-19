@@ -40,6 +40,7 @@ import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,6 +55,8 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.internal.api.ServerContext;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -91,7 +94,10 @@ public class ExtensionFileManager implements PostConstruct {
 
     /** Records directories specified in java.ext.dirs */
     private Vector<File> extensionFileDirs = null;
-            
+
+    @Inject
+    private ServerContext serverContext;
+
     public void postConstruct() {
         try {
             prepareExtensionInfo();
@@ -120,6 +126,7 @@ public class ExtensionFileManager implements PostConstruct {
      *@return Vector<File> containing a File for each extension directory
      */
     private Vector<File> buildExtensionFileDirs() {
+        final URI installRootURI = serverContext.getInstallRoot().toURI();
         Vector<File> result = new Vector<File>();
         
         String extDirs = System.getProperty(EXT_DIRS_PROPERTY_NAME);
@@ -127,7 +134,17 @@ public class ExtensionFileManager implements PostConstruct {
 
         while (stkn.hasMoreTokens()) {
             String extensionDirPath = stkn.nextToken();
-            result.add(new File(extensionDirPath));
+            final File extDir = new File(extensionDirPath);
+            /*
+             * Add the extensions directory only if it falls within the app
+             * server directory.  Otherwise we might add
+             * Java-provided extensions and serve them to Java Web Start-launched
+             * clients, which we do not want.
+             */
+            final URI extDirURI = extDir.toURI();
+            if (installRootURI.relativize(extDirURI) != extDirURI) {
+                result.add(extDir);
+            }
         }
         return result;
     }

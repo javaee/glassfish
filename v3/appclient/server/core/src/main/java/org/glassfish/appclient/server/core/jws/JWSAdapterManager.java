@@ -90,7 +90,7 @@ import org.jvnet.hk2.component.Singleton;
 @Scoped(Singleton.class)
 public class JWSAdapterManager implements PostConstruct {
     
-    private final static String SIGNING_ALIAS_PROPERTY_NAME = "jarSigningAlias";
+    private final static String SIGNING_ALIAS_PROPERTY_NAME = "jar-signing-alias";
     
     private final static String DEFAULT_SIGNING_ALIAS = "s1as";
 

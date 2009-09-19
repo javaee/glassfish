@@ -148,6 +148,8 @@ public abstract class TokenHelper {
 
         t.setProperty("client.facade.jar.path", clientFacadeJARPath());
 
+        t.setProperty("client.security", "<all-permissions/>");
+
         return t;
 
     }
