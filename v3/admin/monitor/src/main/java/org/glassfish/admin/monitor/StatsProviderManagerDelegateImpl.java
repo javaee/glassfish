@@ -300,7 +300,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
 
         /* Step 2. Disable flashlight handles (Ideally unregister them) */
         for (ProbeClientMethodHandle handle : spre.getHandles()) {
-            if (!handle.isEnabled())
+            if (handle.isEnabled())
                 handle.disable();
         }
 
