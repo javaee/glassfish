@@ -36,46 +36,40 @@
 
 package org.glassfish.admin.rest;
 
-import java.io.File;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.List;
-import java.util.logging.Logger;
-import java.util.StringTokenizer;
-
+import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
+import com.sun.grizzly.tcp.Request;
+import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
+import com.sun.grizzly.tcp.http11.GrizzlyRequest;
+import com.sun.grizzly.tcp.http11.GrizzlyResponse;
+import com.sun.grizzly.util.http.Cookie;
+import com.sun.jersey.api.container.ContainerFactory;
+import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.logging.LogDomains;
-
-import org.glassfish.admin.rest.RestService;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.event.EventListener;
-import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
-import org.glassfish.internal.api.*;
+import org.glassfish.internal.api.AdminAccessController;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.server.ServerEnvironmentImpl;
-
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 
-import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
-import com.sun.grizzly.tcp.http11.GrizzlyRequest;
-import com.sun.grizzly.tcp.http11.GrizzlyResponse;
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.util.http.Cookie;
-
-import com.sun.jersey.api.container.ContainerFactory;
-import com.sun.jersey.api.core.ResourceConfig;
+import java.net.HttpURLConnection;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 
 /**
@@ -91,7 +85,10 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     ServerEnvironmentImpl env;
 
     @Inject(optional=true)
-    AdminAuthenticator authenticator = null;
+    volatile AdminAccessController authenticator = null;
+
+    @Inject
+    volatile AdminService as = null;
 
     @Inject
     Events events;
@@ -191,14 +188,15 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     }
 
 
-    public boolean authenticate(Request req, ServerEnvironmentImpl serverEnviron)
+    public boolean authenticate(Request req)
             throws Exception {
-        File realmFile = new File(serverEnviron.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
-        if (authenticator != null && realmFile.exists()) {
-           return authenticator.authenticate(req, realmFile);
+        String[] up = AdminAdapter.getUserPassword(req);
+        String user = up[0];
+        String password = up.length > 1 ? up[1] : "";
+        if (authenticator != null) {
+            return authenticator.loginAsAdmin(user, password, as.getAuthRealmName());
         }
-        // no authenticator, this is fine.
-        return true;
+        return true;   //if the authenticator is not available, allow all access - per Jerome
     }
 
 
@@ -265,7 +263,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
     private boolean authenticate(GrizzlyRequest req, ActionReport report, GrizzlyResponse res)
             throws Exception {
-        boolean authenticated = authenticate(req.getRequest(), env);
+        boolean authenticated = authenticate(req.getRequest());
         if (!authenticated) {
             String msg = localStrings.getLocalString("rest.adapter.auth.userpassword",
                     "Invalid user name or password");

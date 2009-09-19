@@ -43,7 +43,6 @@ import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.tcp.Request;
 import com.sun.logging.LogDomains;
-import java.io.ByteArrayOutputStream;
 import org.glassfish.admin.payload.PayloadImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.Payload;
@@ -55,8 +54,6 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -74,7 +71,8 @@ import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.hk2.component.ConstructorWomb;
-import java.io.ByteArrayInputStream;
+
+import java.io.*;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.lang.annotation.Annotation;
@@ -241,7 +239,16 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         return true;   //if the authenticator is not available, allow all access - per Jerome
     }
 
-    private String[] getUserPassword(Request req) throws Exception {
+    /** A convenience method to extract user name from a request. It assumes the HTTP Basic Auth.
+     *
+     * @param req instance of Request
+     * @return a two-element string array. If Auth header exists and can be correctly decoded, returns the user name
+     *   and password as the two elements. If any error occurs or if the header does not exist, returns an array with
+     *   two blank strings. Never returns a null.
+     * @throws IOException in case of error with decoding the buffer (HTTP basic auth)
+     */
+    public static String[] getUserPassword(Request req) throws IOException {
+        //implementation note: other adapters make use of this method
         String authHeader = req.getHeader("Authorization");
         if (authHeader == null) {
             return new String[]{"", ""};

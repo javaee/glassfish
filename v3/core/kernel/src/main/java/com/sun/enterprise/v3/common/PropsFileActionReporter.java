@@ -55,8 +55,8 @@ public class PropsFileActionReporter extends ActionReporter {
     @Override
     public void setMessage(String message) {
         if (message != null) {
-            message = message.replace("\n", "%%%EOL%%%");
-            message = message.replace(System.getProperty("line.separator"), "%%%EOL%%%");
+            message = message.replace("\n", EOL_MARKER);
+            message = message.replace(System.getProperty("line.separator"), EOL_MARKER);
         }
         super.setMessage(message);
     }

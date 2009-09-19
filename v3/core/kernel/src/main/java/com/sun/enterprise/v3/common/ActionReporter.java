@@ -45,6 +45,8 @@ public abstract class ActionReporter extends ActionReport {
     protected MessagePart topMessage = new MessagePart();
     protected String contentType = "text/html";
 
+    protected static final String EOL_MARKER = "%%%EOL%%%";
+
     /** Creates a new instance of HTMLActionReporter */
     public ActionReporter() {
     }
@@ -178,6 +180,7 @@ public abstract class ActionReporter extends ActionReport {
         if (aReport.getMessage() != null && aReport.getMessage().length() != 0) {
             mainMsg = aReport.getMessage();
             sb.append(mainMsg);
+            sb.append(EOL_MARKER);
         }
         if (aReport.getFailureCause() != null && aReport.getFailureCause().getMessage() != null && aReport.getFailureCause().getMessage().length() != 0) {
             failMsg = aReport.getFailureCause().getMessage();

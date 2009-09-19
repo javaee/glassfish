@@ -34,8 +34,9 @@ package com.sun.enterprise.v3.admin.adapter;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
+import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyOutputBuffer;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
@@ -43,18 +44,6 @@ import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.logging.LogDomains;
 import com.sun.pkg.client.Image;
 import com.sun.pkg.client.Version;
-import org.jvnet.hk2.config.types.Property;
-
-import java.beans.PropertyVetoException;
-import java.io.File;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.deployment.UndeployCommandParameters;
@@ -63,7 +52,7 @@ import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
-import org.glassfish.internal.api.AdminAuthenticator;
+import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.deployment.Deployment;
@@ -76,6 +65,17 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.types.Property;
+
+import java.beans.PropertyVetoException;
+import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An HK-2 Service that provides the functionality so that admin console access is handled properly.
@@ -141,8 +141,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     @Inject
     Habitat habitat;
 
-    @Inject(optional = true)
-    AdminAuthenticator authenticator = null;
+    @Inject(optional=true)
+    volatile AdminAccessController authenticator = null;
+
+    @Inject
+    volatile AdminService as = null;
 
     @Inject
     Events events;
@@ -404,9 +407,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      */
     private void handleAuth(GrizzlyRequest greq, GrizzlyResponse gres) {
         try {
-            File realmFile = new File(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
-            if (authenticator != null && realmFile.exists()) {
-                if (!authenticator.authenticate(greq.getRequest(), realmFile)) {
+            if (authenticator != null) {
+                Request req = greq.getRequest();
+                String[] userPass = AdminAdapter.getUserPassword(req);
+                if (!authenticator.loginAsAdmin(userPass[0], userPass[1], as.getAuthRealmName())) {
                     setStateMsg(AdapterState.AUTHENTICATING);
                     gres.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
                     gres.addHeader("WWW-Authenticate", "BASIC");
