@@ -144,14 +144,16 @@ public class Util {
             localFile.createNewFile();
         }
         FileOutputStream oStream = new FileOutputStream(localFile);
-        InputStream iStream = Util.class.getClassLoader().getResourceAsStream("config"+File.separator + fileName);
+        InputStream iStream = Util.class.getResourceAsStream("/config/" + fileName);
 
-        while (iStream.available() > 0) {
+        while (iStream != null && iStream.available() > 0) {
             oStream.write(iStream.read());
         }
 
         oStream.close();
-        iStream.close();
+        if  (iStream != null) {
+            iStream.close();
+        }
         return localFile;
 
     }
