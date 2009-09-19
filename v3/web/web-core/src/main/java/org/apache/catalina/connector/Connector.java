@@ -69,7 +69,6 @@ import javax.management.MBeanServer;
 import javax.management.MBeanRegistration;
 import javax.management.MalformedObjectNameException;
 
-
 import org.apache.tomcat.util.modeler.Registry;
 
 import com.sun.grizzly.util.IntrospectionUtils;
@@ -80,6 +79,7 @@ import com.sun.grizzly.tcp.ProtocolHandler;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
+import org.apache.catalina.Host;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
@@ -1434,12 +1434,11 @@ public class Connector
      * been entered the web container.
      *
      * @param request the request object
+     * @param host the virtual server to which the request was mapped
      * @param context the Context to which the request was mapped
-     * @param hostName the name of the virtual server to which the request
-     * was mapped
      */
-    public void requestStartEvent(HttpServletRequest request, Context context,
-                                  String hostName) {
+    public void requestStartEvent(HttpServletRequest request, Host host,
+            Context context) {
         // Deliberate noop
     };
 
@@ -1448,13 +1447,12 @@ public class Connector
      * to exit from the web container.
      *
      * @param request the request object
+     * @param host the virtual server to which the request was mapped
      * @param context the Context to which the request was mapped
-     * @param hostName the name of the virtual server to which the request
-     * was mapped
      * @param statusCode the response status code
      */
-    public void requestEndEvent(HttpServletRequest request, Context context,
-                                String hostName, int statusCode) {
+    public void requestEndEvent(HttpServletRequest request, Host host,
+            Context context, int statusCode) {
         // Deliberate noop
     };
 

@@ -52,6 +52,7 @@ import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.util.IntrospectionUtils;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Context;
+import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
@@ -62,11 +63,7 @@ import org.glassfish.web.admin.monitor.RequestProbeProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -1216,16 +1213,19 @@ public class PECoyoteConnector extends Connector {
      * been entered the web container.
      *
      * @param request the request object
+     * @param host the virtual server to which the request was mapped
      * @param context the Context to which the request was mapped
-     * @param hostName the name of the virtual server to which the request
-     * was mapped
      */
-    public void requestStartEvent(HttpServletRequest request,
-            Context context, String hostName) {
+    public void requestStartEvent(HttpServletRequest request, Host host,
+            Context context) {
         if (requestProbeProvider != null) {
             String appName = null;
             if (context != null) {
                 appName = ((WebModule) context).getModuleName();
+            }
+            String hostName = null;
+            if (host != null) {
+                hostName = host.getName();
             }
             requestProbeProvider.requestStartEvent(
                 appName, hostName,
@@ -1239,21 +1239,20 @@ public class PECoyoteConnector extends Connector {
      * to exit from the web container.
      *
      * @param request the request object
+     * @param host the virtual server to which the request was mapped
      * @param context the Context to which the request was mapped
-     * @param hostName the name of the virtual server to which the request
-     * was mapped
      * @param statusCode the response status code
      */
-    public void requestEndEvent(HttpServletRequest request,
-            Context context, String hostName, int statusCode) {
+    public void requestEndEvent(HttpServletRequest request, Host host,
+            Context context, int statusCode) {
         if (requestProbeProvider != null) {
             String appName = null;
             if (context != null) {
-                com.sun.enterprise.config.serverbeans.Application bean =
-                    ((WebModule) context).getBean();
-                if (bean != null) {
-                    appName = bean.getName();
-                }
+                appName = ((WebModule) context).getModuleName();
+            }
+            String hostName = null;
+            if (host != null) {
+                hostName = host.getName();
             }
             requestProbeProvider.requestEndEvent(
                 appName, hostName,

@@ -222,31 +222,21 @@ public class CoyoteAdapter
                 (connector.getURIEncoding());
         }
 
-        String hostName = null;
         if (v3Enabled && !compatWithTomcat) {
             if (md != null) {
                 request.setMappingData(md);
                 request.updatePaths(md);
-                hostName = ((Host) md.host).getName();
             }
         }
 
-        connector.requestStartEvent(request.getRequest(),
-            (Context) request.getMappingData().context, hostName);
         try {
             doService(req, request, res, response);
         } catch (IOException e) {
-            connector.requestEndEvent(request.getRequest(),
-                (Context) request.getMappingData().context, hostName,
-                response.getStatus());
             // Recycle the wrapper request and response
             request.recycle();
             response.recycle();
         } catch (Throwable t) {
             log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
-            connector.requestEndEvent(request.getRequest(),
-                (Context) request.getMappingData().context, hostName,
-                response.getStatus());
             // Recycle the wrapper request and response
             request.recycle();
             response.recycle();
@@ -316,30 +306,38 @@ public class CoyoteAdapter
                 response.addHeader("Server", serverName);
             }
                 
-            // Invoke the web container.
+            // Invoke the web container
+            connector.requestStartEvent(request.getRequest(),
+                request.getHost(), request.getContext());
             Container container = connector.getContainer();
-            if (container.getPipeline().hasNonBasicValves() ||
-                    container.hasCustomPipeline()) {
-                container.getPipeline().invoke(request, response);
-            } else {
-                // Invoke host directly
-                Host host = request.getHost();
-                if (host == null) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-                    response.setDetailMessage(sm.getString(
-                            "standardEngine.noHost",
-                            request.getRequest().getServerName()));
-                    return;
-                }
-                if (host.getPipeline().hasNonBasicValves() ||
-                        host.hasCustomPipeline()) {
-                    host.getPipeline().invoke(request, response);
+            try {
+                if (container.getPipeline().hasNonBasicValves() ||
+                        container.hasCustomPipeline()) {
+                    container.getPipeline().invoke(request, response);
                 } else {
-                    GlassFishValve hostValve = host.getPipeline().getBasic();
-                    hostValve.invoke(request, response);
-                    // Error handling
-                    hostValve.postInvoke(request, response); 
+                    // Invoke host directly
+                    Host host = request.getHost();
+                    if (host == null) {
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                        response.setDetailMessage(sm.getString(
+                                "standardEngine.noHost",
+                                request.getRequest().getServerName()));
+                        return;
+                    }
+                    if (host.getPipeline().hasNonBasicValves() ||
+                            host.hasCustomPipeline()) {
+                        host.getPipeline().invoke(request, response);
+                    } else {
+                        GlassFishValve hostValve = host.getPipeline().getBasic();
+                        hostValve.invoke(request, response);
+                        // Error handling
+                        hostValve.postInvoke(request, response); 
+                    }
                 }
+            } finally {
+                connector.requestEndEvent(request.getRequest(),
+                    request.getHost(), request.getContext(),
+                    response.getStatus());
             }
         }
 
@@ -376,14 +374,6 @@ public class CoyoteAdapter
         } catch (Throwable t) {
             log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
         } finally {
-            String hostName = null;
-            MappingData md = request.getMappingData();
-            if (md != null && md.host != null) {
-                hostName = ((Host) md.host).getName();
-            }
-            connector.requestEndEvent(request.getRequest(),
-                (Context) request.getMappingData().context, hostName,
-                response.getStatus());
             if (!res.isSuspended()){
                 // Recycle the wrapper request and response
                 request.recycle();
