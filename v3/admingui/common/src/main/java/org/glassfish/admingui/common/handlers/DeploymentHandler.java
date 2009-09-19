@@ -90,6 +90,8 @@ public class DeploymentHandler {
     })
     public static void deploy(HandlerContext handlerCtx) {
 
+        String xx = System.getProperty("com.sun.aas.installRoot");
+        System.out.println("=========== xx" + xx);
         String appType = (String) handlerCtx.getInputValue("appType");
         String origPath = (String) handlerCtx.getInputValue("origPath");
         String filePath = (String) handlerCtx.getInputValue("filePath");
@@ -188,15 +190,22 @@ public class DeploymentHandler {
     input = {
         @HandlerInput(name = "filePath", type = String.class, required = true),
         @HandlerInput(name = "origPath", type = String.class, required = true),
-        @HandlerInput(name = "appName", type = String.class, required = true),
-        @HandlerInput(name = "keepSessions", type = Boolean.class)
+        @HandlerInput(name = "deployMap", type = Map.class, required = true),
+        @HandlerInput(name = "convertToFalse", type = List.class, required = true)
     })
     public static void redeploy(HandlerContext handlerCtx) {
         try {
             String filePath = (String) handlerCtx.getInputValue("filePath");
             String origPath = (String) handlerCtx.getInputValue("origPath");
-            String appName = (String) handlerCtx.getInputValue("appName");
-            Boolean keepSessions = (Boolean) handlerCtx.getInputValue("keepSessions");
+            Map<String,String> deployMap = (Map) handlerCtx.getInputValue("deployMap");
+            List<String> convertToFalsList = (List<String>) handlerCtx.getInputValue("convertToFalse");
+            if (convertToFalsList != null)
+            for (String one : convertToFalsList) {
+                if (deployMap.get(one) == null) {
+                    deployMap.put(one, "false");
+                }
+            }
+            String appName = deployMap.get("appName");
             DFDeploymentProperties deploymentProps = new DFDeploymentProperties();
 
              //If we are redeploying a web app, we want to preserve context root.
@@ -208,10 +217,10 @@ public class DeploymentHandler {
              deploymentProps.setForce(true);
              deploymentProps.setUpload(false);
              deploymentProps.setName(appName);
-             
+             deploymentProps.setVerify(Boolean.parseBoolean(deployMap.get("verify")));
+             deploymentProps.setPrecompileJSP(Boolean.parseBoolean(deployMap.get("precompilejsp")));
              Properties prop = new Properties();
-             String ks = (keepSessions==null) ? "false" : keepSessions.toString();
-             prop.setProperty(KEEP_SESSIONS, ks);
+             prop.setProperty(KEEP_SESSIONS, ""+deployMap.get("keepSessions"));
              deploymentProps.setProperties(prop);
              
              DeployUtil.invokeDeploymentFacility(null, deploymentProps, filePath, handlerCtx);

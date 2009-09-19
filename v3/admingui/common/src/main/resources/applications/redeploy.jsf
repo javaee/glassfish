@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -42,12 +42,11 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="appType" value=>$page{appType});
         getRequestValue(key="appName" value=>$page{appName});
         getRequestValue(key="nextPage" value=>$page{nextPage});
-        setAttribute(key="chooseType" value="$boolean{false}");
-        setAttribute(key="keepSessions" value="$boolean{false}");
-        setPageSessionAttribute(key="forDeploy" value="false");
+        createMap(result="#{pageSession.deployMap}")
+        mapPut(map="#{pageSession.deployMap}", key="appName", value="#{pageSession.appName}");
+        setPageSessionAttribute(key="convertToFalse" value={"keepSessions", "precompilejsp", "verify"})
     />
     </event>
 #include "/common/shared/restart.inc"    
@@ -79,7 +78,7 @@
                     setAttribute(key="origPath", value="#{dirPath}");
                     setAttribute(key="filePath", value="#{dirPath}");
                 }
-                redeploy(filePath="$attribute{filePath}"  , origPath="$attribute{origPath}" appName="#{appName}" keepSessions="#{keepSessions}");
+                redeploy(filePath="$attribute{filePath}"  , origPath="$attribute{origPath}" deployMap="#{pageSession.deployMap}" convertToFalse="#{pageSession.convertToFalse}");
                 redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
         </sun:button>
@@ -92,19 +91,28 @@
     </facet>
     </sun:title>
     <sun:propertySheet id="redeploy" >
-        <sun:propertySheetSection id="nameSec" >
-            <sun:property id="nameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-                <sun:staticText id="name" text="#{appName}"/>
-            </sun:property>
-            <sun:property id="keepSessionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" 
-                            label="$resource{i18n.redeploy.keepSessions}" helpText="$resource{i18n.redeploy.keepSessionsHelp}">
-                <sun:checkbox selected="#{keepSessions}" />  
-           </sun:property>
-            "<br /><br />
-        </sun:propertySheetSection>
-
+            
 #include "/common/applications/fileComponent.jsf"
+    "<br/><br/>
+    <sun:propertySheetSection >
+            <sun:property id="nameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.application.appName}">
+                <sun:staticText id="name" text="#{appName}"/>
+                "<br/>
+            </sun:property>
+            
+            <sun:property id="keepSessionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"  label="$resource{i18n.redeploy.keepSessionsHelp} :" >
+                <sun:checkbox selected="#{pageSession.deployMap['keepSessions']}" selectedValue="true" />
+            </sun:property>
 
+            <sun:property id="precmplProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.precompile}" helpText="$resource{i18n.server.PrecompileHelp}">
+                <sun:checkbox id="precompileJSP" label="$resource{i18n.common.Enabled}" selected="#{pageSession.deployMap['precompilejsp']}" selectedValue="true" />
+            </sun:property>
+
+            <sun:property id="v2" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.run}" helpText="$resource{i18n.deploy.runHelp}">
+                    <sun:checkbox id="ver2" label="$resource{i18n.common.Enabled}" selected="#{pageSession.deployMap['verify']}" selectedValue="true" />
+            </sun:property>
+
+            </sun:propertySheetSection>
 </sun:propertySheet>
 
 	<sun:hidden id="helpKey" value="$resource{help.redeploy}" />
