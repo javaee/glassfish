@@ -70,6 +70,9 @@ public class StartDomainCommand extends LocalDomainCommand {
 
     private GFLauncherInfo info;
     private GFLauncher launcher;
+    private boolean verbose;
+    private boolean upgrade;
+    private boolean debug;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartDomainCommand.class);
@@ -99,8 +102,11 @@ public class StartDomainCommand extends LocalDomainCommand {
 
     @Override
     protected int executeCommand() throws CommandException {
-        String gfejar = System.getenv("GFE_JAR");
+        verbose = getBooleanOption("verbose");
+        upgrade = getBooleanOption("upgrade");
+        debug = getBooleanOption("debug");
 
+        String gfejar = System.getenv("GFE_JAR");
         if (gfejar != null && gfejar.length() > 0)
             return runCommandEmbedded();
         else
@@ -121,10 +127,8 @@ public class StartDomainCommand extends LocalDomainCommand {
             if (parent != null)
                 info.setDomainParentDir(parent);
 
-            boolean verbose = getBooleanOption("verbose");
-            boolean upgrade = getBooleanOption("upgrade");
             info.setVerbose(verbose || upgrade);
-            info.setDebug(getBooleanOption("debug"));
+            info.setDebug(debug);
             info.setUpgrade(upgrade);
 
             info.setRespawnInfo(programOpts.getClassName(),
@@ -166,7 +170,7 @@ public class StartDomainCommand extends LocalDomainCommand {
                 return launcher.getExitValue();
             } else {
                 waitForDAS(info.getAdminPorts());
-                report(info);
+                report();
                 return SUCCESS;
             }
         } catch (GFLauncherException gfle) {
@@ -242,9 +246,8 @@ public class StartDomainCommand extends LocalDomainCommand {
                 info.setDomainParentDir(
                             System.getenv("S1AS_HOME") + "/domains"); // TODO
 
-            boolean verbose = getBooleanOption("verbose");
             info.setVerbose(verbose);
-            info.setDebug(getBooleanOption("debug"));
+            info.setDebug(debug);
             launcher.setup();
 
             // now admin ports are set.
@@ -261,7 +264,7 @@ public class StartDomainCommand extends LocalDomainCommand {
             // DAS, since it already ran and is now dead!!
             //if(!verbose) {
                 waitForDAS(ports);
-                report(info);
+                report();
             //}
             return SUCCESS;
         } catch (GFLauncherException gfle) {
@@ -345,18 +348,34 @@ public class StartDomainCommand extends LocalDomainCommand {
         return (System.currentTimeMillis() - startTime) > WAIT_FOR_DAS_TIME_MS;
     }
  
-    private void report(GFLauncherInfo info) {
-        String msg = strings.get("DomainLocation", info.getDomainName(),
-                            info.getDomainRootDir().getAbsolutePath());
-        logger.printMessage(msg);
+    private void report() {
+        String logfile;
+        try {
+            logfile = launcher.getLogFilename();
+        } catch (GFLauncherException ex) {
+            logfile = "UNKNOWN";        // should never happen
+        }
+        logger.printMessage(strings.get("DomainLocation", info.getDomainName(),
+                            info.getDomainRootDir().getAbsolutePath(),
+                            logfile));
         Integer ap = -1;
         try {
             ap = info.getAdminPorts().iterator().next();
         } catch (Exception e) {
             //ignore
         }
-        msg = strings.get("DomainAdminPort", ""+ap);
-        logger.printMessage(msg);
+        logger.printMessage(strings.get("DomainAdminPort",
+                                        Integer.toString(ap)));
+
+        if (debug) {
+            int debugPort = launcher.getDebugPort();
+            if (debugPort > 0)
+                logger.printMessage(strings.get("DomainDebugPort",
+                                                Integer.toString(debugPort)));
+            else
+                logger.printMessage(strings.get("DomainDebugPort",
+                                                "UNKNOWN"));
+        }
     }
 
     private String adminPortInUse() {

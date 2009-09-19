@@ -205,6 +205,33 @@ public abstract class GFLauncher {
 
         return logFilename;
     }
+
+    /**
+     * Return the port number of the debug port, or -1
+     * if debugging is not enabled.
+     *
+     * @return the debug port, or -1 if not debugging
+     */
+    public final int getDebugPort() {
+        // look for an option of this form:
+        // -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9009
+        // and extract the address value
+        for (String opt : debugOptions) {
+            if (!opt.startsWith("-Xrunjdwp:"))
+                continue;
+            String[] attrs = opt.substring(10).split(",");
+            for (String attr : attrs) {
+                if (attr.startsWith("address=")) {
+                    try {
+                        return Integer.parseInt(attr.substring(8));
+                    } catch (NumberFormatException ex) {
+                        return -1;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
     
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
