@@ -1318,9 +1318,6 @@
                description="Wait for the shutdown message"
                impact="ACTION"
                returnType="void" />
-
-    </operation>
-    
   </mbean>
 
   
