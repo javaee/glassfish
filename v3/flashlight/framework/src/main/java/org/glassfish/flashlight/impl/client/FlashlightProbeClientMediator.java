@@ -108,6 +108,10 @@ public class FlashlightProbeClientMediator
         return clients.get(id);
     }
 
+    public static void setAgentInitialized(boolean b) {
+            agentInitialized.set(b);
+    }
+
     //TODO this method is screwy!!
     public static boolean isAgentAttached() {
         if (agentInitialized.get()) {

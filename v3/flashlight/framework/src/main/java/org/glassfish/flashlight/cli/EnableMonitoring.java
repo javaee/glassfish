@@ -52,6 +52,8 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import java.io.File;
 import static com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
 import com.sun.enterprise.config.serverbeans.MonitoringService;
+import com.sun.enterprise.universal.process.ProcessUtils;
+import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 
 /**
  * @author Sreenivas Munnangi
@@ -86,8 +88,23 @@ public class EnableMonitoring implements AdminCommand {
         ActionReport report = context.getActionReport();
 
         // attach agent using given options
-        if ((pid != null) && (pid.length() > 0)) {
-            attachAgent(report);
+        // TODO: allow for user defined port
+        if (!FlashlightProbeClientMediator.isAgentAttached()) {
+            if (! isValidString(pid)) {
+                int i = ProcessUtils.getPid();
+                if (i == -1) {
+                    ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                    part.setMessage(localStrings.getLocalString("attach.agent.exception",
+                        "invalid pid, pl. provide the application server's pid using --pid option, you may get pid using jps command"));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                } else {
+                    pid = String.valueOf(i);
+                }
+            }
+            if (isValidString(pid)) {
+                FlashlightProbeClientMediator.setAgentInitialized(false);
+                attachAgent(report);
+            }
         }
 
         // following ordering is deliberate to facilitate config change
