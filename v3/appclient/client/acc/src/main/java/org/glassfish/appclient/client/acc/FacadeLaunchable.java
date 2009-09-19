@@ -36,6 +36,7 @@
 package org.glassfish.appclient.client.acc;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.ACCAppClientArchivist;
@@ -193,6 +194,12 @@ public class FacadeLaunchable implements Launchable {
                 throws IOException, BootException, URISyntaxException,
                 XMLStreamException, SAXParseException, UserError {
         Manifest mf = facadeRA.getManifest();
+        if (mf == null) {
+            throw new UserError(MessageFormat.format(
+                    logger.getResourceBundle().getString("appclient.noMFInFacade"),
+                    facadeRA instanceof FileArchive ? 1 : 0,
+                    new File(facadeRA.getURI()).getAbsolutePath()));
+        }
         final Attributes mainAttrs = mf.getMainAttributes();
         FacadeLaunchable result = null;
         if (mainAttrs.containsKey(GLASSFISH_APPCLIENT)) {
@@ -302,8 +309,27 @@ public class FacadeLaunchable implements Launchable {
             URI clientFacadeURI = groupFacadeURI.resolve(uriText);
             ReadableArchive clientFacadeRA = af.openArchive(clientFacadeURI);
             Manifest facadeMF = clientFacadeRA.getManifest();
+            if (facadeMF == null) {
+                throw new UserError(MessageFormat.format(
+                        logger.getResourceBundle().getString("appclient.noMFInFacade"),
+                        clientFacadeRA instanceof FileArchive ? 1 : 0,
+                        new File(clientFacadeRA.getURI()).getAbsolutePath()));
+            }
             Attributes facadeMainAttrs = facadeMF.getMainAttributes();
-            URI clientURI = clientFacadeURI.resolve(facadeMF.getMainAttributes().getValue(GLASSFISH_APPCLIENT));
+            if (facadeMainAttrs == null) {
+                throw new UserError(MessageFormat.format(
+                        logger.getResourceBundle().getString("appclient.MFMissingEntry"),
+                        new File(clientFacadeRA.getURI()).getAbsolutePath(),
+                        GLASSFISH_APPCLIENT));
+            }
+            final String gfAppClient = facadeMainAttrs.getValue(GLASSFISH_APPCLIENT);
+            if (gfAppClient == null || gfAppClient.length() == 0) {
+                throw new UserError(MessageFormat.format(
+                        logger.getResourceBundle().getString("appclient.MFMissingEntry"),
+                        new File(clientFacadeRA.getURI()).getAbsolutePath(),
+                        GLASSFISH_APPCLIENT));
+            }
+            URI clientURI = clientFacadeURI.resolve(gfAppClient);
             ReadableArchive clientRA = af.openArchive(clientURI);
             
             AppClientArchivist facadeClientArchivist = getFacadeArchivist(habitat);
@@ -312,8 +338,26 @@ public class FacadeLaunchable implements Launchable {
                     groupFacadeURI, clientURI, facadeClientDescriptor);
 
             final Manifest clientMF = clientRA.getManifest();
+            if (clientMF == null) {
+                throw new UserError(MessageFormat.format(
+                        logger.getResourceBundle().getString("appclient.noMFInFacade"),
+                        clientRA instanceof FileArchive ? 1 : 0,
+                        new File(clientRA.getURI()).getAbsolutePath()));
+            }
             Attributes mainAttrs = clientMF.getMainAttributes();
+            if (mainAttrs == null) {
+                throw new UserError(MessageFormat.format(
+                        logger.getResourceBundle().getString("appclient.MFMissingEntry"),
+                        new File(clientFacadeRA.getURI()).getAbsolutePath(),
+                        Attributes.Name.MAIN_CLASS.toString()));
+            }
             final String clientMainClassName = mainAttrs.getValue(Attributes.Name.MAIN_CLASS);
+            if (clientMainClassName == null || clientMainClassName.length()== 0) {
+                throw new UserError(MessageFormat.format(
+                        logger.getResourceBundle().getString("appclient.MFMissingEntry"),
+                        new File(clientFacadeRA.getURI()).getAbsolutePath(),
+                        Attributes.Name.MAIN_CLASS.toString()));
+            }
             knownMainClasses.add(clientMainClassName);
 
             knownClientNames.add(moduleID);
