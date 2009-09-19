@@ -117,7 +117,7 @@ public class ReportHandler {
         this.resultMgr = verifierFrameworkContext.getResultManager();
 
         String onlyJarFile = new File(verifierFrameworkContext.getJarFileName()).getName();
-        String outputDirName = verifierFrameworkContext.getOutputDirName();
+        String outputDirName = formatOutputDirName(verifierFrameworkContext.getOutputDirName());
         outputDirName = (outputDirName == null) ?
                 "" : outputDirName + File.separator;
         if (verifierFrameworkContext.isUseTimeStamp()) {
@@ -579,4 +579,25 @@ public class ReportHandler {
         return is;
     }
 
+    /**
+     * Replaces '/' or '\' with File separator char
+     * @param outputDirName
+     * @return
+     */
+    private String formatOutputDirName(String outputDirName) {
+
+    	if (outputDirName != null && outputDirName.trim().length() > 0 ) {
+    		char[] outputDirNameArr = outputDirName.toCharArray();
+    		StringBuffer formName = new StringBuffer();
+    		for(int i = 0; i < outputDirNameArr.length; i++) {
+    			if(outputDirNameArr[i] == '/' || outputDirNameArr[i] == '\\') {
+    				formName.append(File.separatorChar);
+    			} else {
+    				formName.append(outputDirNameArr[i]);
+    			}
+    		}
+    		return formName.toString();
+    	}
+    	return outputDirName;
+    }
 }
