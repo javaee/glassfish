@@ -274,7 +274,7 @@ public class AppClientContainer {
      *
      */
 
-    public void startClient(String[] args) throws Exception {
+    public void startClient(String[] args) throws Exception, UserError {
         launch(args);
     }
 
@@ -301,7 +301,10 @@ public class AppClientContainer {
         this.builder = builder;
     }
 
-    public void prepare(final Instrumentation inst) throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, SAXParseException, NoSuchMethodException {
+    public void prepare(final Instrumentation inst) throws NamingException, 
+            IOException, InstantiationException, IllegalAccessException,
+            InjectionException, ClassNotFoundException, SAXParseException,
+            NoSuchMethodException, UserError {
         completePreparation(inst);
     }
 
@@ -328,7 +331,10 @@ public class AppClientContainer {
      *
      * @throws java.lang.Exception
      */
-    private void completePreparation(final Instrumentation inst) throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, SAXParseException, NoSuchMethodException {
+    private void completePreparation(final Instrumentation inst) throws 
+            NamingException, IOException, InstantiationException,
+            IllegalAccessException, InjectionException, ClassNotFoundException,
+            SAXParseException, NoSuchMethodException, UserError {
         if (state != State.INSTANTIATED) {
             throw new IllegalStateException();
         }
@@ -392,7 +398,8 @@ public class AppClientContainer {
             InvocationTargetException,
             IOException,
             SAXParseException,
-            InjectionException {
+            InjectionException,
+            UserError {
 
         if (state != State.PREPARED) {
             throw new IllegalStateException();
@@ -473,7 +480,7 @@ public class AppClientContainer {
     
     private Method getMainMethod() throws NoSuchMethodException,
            ClassNotFoundException, IOException, SAXParseException,
-           InjectionException {
+           InjectionException, UserError {
 	    // determine the main method using reflection
 	    // verify that it is public static void and takes
 	    // String[] as the only argument
@@ -558,7 +565,8 @@ public class AppClientContainer {
                 InvocationManager invocationManager,
                 String componentId,
                 AppClientContainer container,
-                ApplicationClientDescriptor acDesc) throws ClassNotFoundException, InjectionException {
+                ApplicationClientDescriptor acDesc) throws ClassNotFoundException,
+                    InjectionException, UserError {
             if (clientMainClass == null) {
                 if (clientMainClassName == null) {
                     throw new IllegalStateException("neither client main class nor its class name has been set");
@@ -573,9 +581,11 @@ public class AppClientContainer {
                     ComponentInvocation.ComponentInvocationType.APP_CLIENT_INVOCATION,
                     container);
             invocationManager.preInvoke(ci);
+            InjectionException injExc = null;;
             if ( ! isInjected) {
                 int retriesLeft = 3;
                 while (retriesLeft > 0 && ! isInjected) {
+                    injExc = null;
                     try {
                         injectionManager.injectClass(clientMainClass, acDesc);
                         isInjected = true;
@@ -587,10 +597,25 @@ public class AppClientContainer {
                             t = t.getCause();
                         }
                         if (isAuthError) {
+                            injExc = ie;
                             retriesLeft--;
                         } else {
                             throw ie;
                         }
+                    }
+                }
+                if (injExc != null) {
+                    /*
+                     * Despite retries, the credentials were not accepted.
+                     * Throw a user error which the ACC will display nicely.
+                     */
+                    if (injExc.getCause() != null &&
+                        injExc.getCause() instanceof NamingException) {
+                        final NamingException ne = (NamingException) injExc.getCause();
+                        final String expl = ne.getExplanation();
+                        final String msg = MessageFormat.format(
+                                logger.getResourceBundle().getString("appclient.RemoteAuthError"), expl);
+                        throw new UserError(msg);
                     }
                 }
             }
@@ -683,6 +708,14 @@ public class AppClientContainer {
                 CallbackHandler callbackHandler,
                 String mainClassName,
                 String appName) throws Exception, UserError;
+
+        public AppClientContainer newContainer(URI archiveURI,
+                CallbackHandler callbackHandler,
+                String mainClassName,
+                String appName,
+                boolean isTextAuth) throws Exception, UserError;
+
+
 
         public AppClientContainer newContainer(Class mainClass) throws Exception, UserError;
 

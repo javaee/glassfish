@@ -144,7 +144,7 @@ public class AppClientFacade {
     public static void launch(String[] args) throws NoSuchMethodException,
             ClassNotFoundException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException,
-            IOException, SAXParseException, InjectionException {
+            IOException, SAXParseException, InjectionException, UserError {
         acc.launch(args);
     }
 
@@ -440,7 +440,8 @@ public class AppClientFacade {
             final String clientName) throws Exception, UserError {
 
         URI uri = Util.getURI(new File(appClientPath));
-        return builder.newContainer(uri, null /* callbackHandler */, mainClassName, clientName);
+        return builder.newContainer(uri, null /* callbackHandler */, mainClassName, clientName,
+                launchInfo.getAppclientCommandArguments().isTextauth());
     }
 
     private static AppClientContainer createContainerForJWSLaunch(
