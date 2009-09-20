@@ -139,6 +139,37 @@
         </async-method>
       </session>
       <session>
+	 <ejb-name>MultiBean</ejb-name>
+           <env-entry>
+           <env-entry-name>multi</env-entry-name>
+           <env-entry-type>java.lang.String</env-entry-type>
+           <env-entry-value>1</env-entry-value>
+         </env-entry>
+      </session>
+      <session>
+        <ejb-name>MultiBean2</ejb-name>
+	<local-bean/>
+	<ejb-class>com.acme.MultiBean</ejb-class>
+	<session-type>Singleton</session-type>
+           <env-entry>
+           <env-entry-name>multi</env-entry-name>
+           <env-entry-type>java.lang.String</env-entry-type>
+           <env-entry-value>2</env-entry-value>
+         </env-entry>
+      </session>
+      <session>
+        <ejb-name>MultiBean3</ejb-name>
+	<local-bean/>
+	<ejb-class>com.acme.MultiBean</ejb-class>
+	<session-type>Singleton</session-type>
+           <env-entry>
+           <env-entry-name>multi</env-entry-name>
+           <env-entry-type>java.lang.String</env-entry-type>
+           <env-entry-value>3</env-entry-value>
+         </env-entry>
+      </session>
+
+      <session>
         <ejb-name>StatefulBean</ejb-name>
 	<local-bean/>
 	<ejb-class>com.acme.StatefulBean</ejb-class>

@@ -15,6 +15,7 @@ import javax.annotation.*;
 @LocalBean
 public class SingletonBean implements RemoteSingleton {
 
+
     @EJB 
     private StatefulBean sf;
 
@@ -29,7 +30,7 @@ public class SingletonBean implements RemoteSingleton {
     @PostConstruct
     private void init() {
 	System.out.println("In SingletonBean::init()");
-	
+
 	// Call a method marked as async in .xml.  This would block
 	// if it's not correctly identified as an async method since
 	// we're not out of PostConstruct yet.
