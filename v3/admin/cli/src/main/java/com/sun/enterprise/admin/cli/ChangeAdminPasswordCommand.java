@@ -121,32 +121,20 @@ public class ChangeAdminPasswordCommand extends RemoteCommand {
      * Return the old password.
      */
     private String getPasswords() throws CommandValidationException {
-        final String prompt = strings.get("AdminPasswordPrompt");
-        final String newprompt = strings.get("AdminNewPasswordPrompt");
-        final String confirmationPrompt = 
-            strings.get("AdminNewPasswordConfirmationPrompt");
-
-        String oldpassword = readPassword(prompt);
-        if (!isPasswordValid(oldpassword)) {
-            throw new CommandValidationException(
-                    strings.get("PasswordLimit", "Admin"));
-        }
-        passwords.put(Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD",
-                                oldpassword);
- 
-        String newpassword = readPassword(newprompt);
-        if (!isPasswordValid(newpassword)) {
-            throw new CommandValidationException(
-                    strings.get("PasswordLimit", "Admin"));
-        }
-        passwords.put(Environment.AS_ADMIN_ENV_PREFIX + "NEWPASSWORD",
-                                newpassword);
- 
-        String newpasswordAgain = readPassword(confirmationPrompt);
+        String oldpassword = readPassword(strings.get("AdminPasswordPrompt"));
+        String newpassword =
+                readPassword(strings.get("AdminNewPasswordPrompt"));
+        String newpasswordAgain =
+                readPassword(strings.get("AdminNewPasswordConfirmationPrompt"));
         if (!newpassword.equals(newpasswordAgain)) {
             throw new CommandValidationException(
                 strings.get("OptionsDoNotMatch", "Admin Password"));
         }
+
+        passwords.put(Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD",
+                                oldpassword);
+        passwords.put(Environment.AS_ADMIN_ENV_PREFIX + "NEWPASSWORD",
+                                newpassword);
         return oldpassword;
     }
 }

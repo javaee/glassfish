@@ -773,11 +773,6 @@ public abstract class CLICommand implements PostConstruct {
             return newpassword;
         }
 
-        if (!isPasswordValid(newpassword)) {
-            throw new CommandValidationException(strings.get("PasswordLimit",
-                            ok(description) ? description : passwordName));
-        }
-
         String confirmationPrompt;
         if (ok(description)) {
             confirmationPrompt =
@@ -810,14 +805,6 @@ public abstract class CLICommand implements PostConstruct {
             password = new String(pc);
         }
         return password;
-    }
-
-    /**
-     * Check the password for validity.
-     * Currently only verifies that the password is at least 8 characters.
-     */
-    protected boolean isPasswordValid(String passwd) {
-        return (passwd == null || passwd.length() < 8) ? false : true;
     }
 
     /**

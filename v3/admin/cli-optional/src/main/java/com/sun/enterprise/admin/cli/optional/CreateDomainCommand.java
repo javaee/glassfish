@@ -814,10 +814,6 @@ public final class CreateDomainCommand extends CLICommand {
         if (password == null)
             throw new CommandValidationException(
                                 strings.get("PasswordMissing", description));
-        // allow zero length password
-        if (password.length() > 0 && !isPasswordValid(password))
-            throw new CommandValidationException(
-                                strings.get("PasswordLimit", description));
     }
 
     /**
