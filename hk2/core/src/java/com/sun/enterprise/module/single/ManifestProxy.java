@@ -1,5 +1,6 @@
 package com.sun.enterprise.module.single;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -8,6 +9,9 @@ import java.net.URL;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Implements a manifest proxying
@@ -18,37 +22,53 @@ public class ManifestProxy extends Manifest {
 
     public final Map<String, Attributes> attributes = new HashMap<String, Attributes>();
     public final Attributes mainAttributes = new Attributes();
-    public final Map<String, String> mappings;
+    public final Map<String, String> mappings = new HashMap<String, String>();
 
     public ManifestProxy(ClassLoader cl, List<SeparatorMappings> mappings) throws IOException {
-
-        this.mappings=new HashMap<String, String>();
-        if (mappings!=null) {
-            for (SeparatorMappings mapping : mappings) {
-                this.mappings.put(mapping.key, mapping.separator);
+        try {
+            if (mappings != null) {
+                for (SeparatorMappings mapping : mappings) {
+                    this.mappings.put(mapping.key, mapping.separator);
+                }
             }
-        }
-
-        Enumeration<URL> urls = cl.getResources(JarFile.MANIFEST_NAME);
-        while (urls.hasMoreElements()) {
-            URL url = urls.nextElement();
-            InputStream is = null;
+            Method met = cl.getClass().getMethod("findResources", String.class);
+            Enumeration<URL> urls=null;
             try {
-                is = url.openStream();
-                Manifest m = new Manifest(is);
-                for (Map.Entry<String, Attributes> attr : m.getEntries().entrySet()) {
-                    if (attributes.containsKey(attr.getKey())) {
-                        merge(attributes.get(attr.getKey()), attr.getValue());                        
-                    } else {
-                        attributes.put(attr.getKey(), new Attributes(attr.getValue()));
+                urls = (Enumeration<URL>) met.invoke(cl, JarFile.MANIFEST_NAME);
+            } catch (IllegalAccessException ex) {
+                Logger.getLogger(ManifestProxy.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(ManifestProxy.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InvocationTargetException ex) {
+                Logger.getLogger(ManifestProxy.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (urls==null) {
+                return;
+            }
+            while (urls.hasMoreElements()) {
+                URL url = urls.nextElement();
+                InputStream is = null;
+                try {
+                    is = url.openStream();
+                    Manifest m = new Manifest(is);
+                    for (Map.Entry<String, Attributes> attr : m.getEntries().entrySet()) {
+                        if (attributes.containsKey(attr.getKey())) {
+                            merge(attributes.get(attr.getKey()), attr.getValue());
+                        } else {
+                            attributes.put(attr.getKey(), new Attributes(attr.getValue()));
+                        }
+                    }
+                    merge(mainAttributes, m.getMainAttributes());
+                } finally {
+                    if (is != null) {
+                        is.close();
                     }
                 }
-                merge(mainAttributes, m.getMainAttributes());
-            } finally {
-                if (is!=null) {
-                    is.close();
-                }
             }
+        } catch (NoSuchMethodException ex) {
+            Logger.getLogger(ManifestProxy.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            Logger.getLogger(ManifestProxy.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
