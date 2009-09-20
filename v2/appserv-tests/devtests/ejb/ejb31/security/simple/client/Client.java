@@ -45,20 +45,28 @@ public class Client {
     @Resource(name="envEntry3")
     static Integer envEntry3;
 
+    @Resource(name="envEntry4", lookup="java:app/env/value1")
+    static Integer envEntry4;
+
  @PostConstruct
-	public static void init() {
+    public static void init() {
 	try {
 	    System.out.println("In init()");
-	Integer envEntry = (Integer)
-	    new InitialContext().lookup("java:app/env/value1");
-	System.out.println("java:app/env/value1 = " + envEntry);
-
-	System.out.println("java:app/env/enventry1 = " + envEntry1);
-	System.out.println("java:global/enventry2 = " + envEntry2);
-	System.out.println("java:global/enventry3 = " + envEntry3);
-	if( (envEntry3 == null) || envEntry3.intValue() != 18338 ) {
-	    throw new RuntimeException("invalid enventry3 value");
-	}
+	    Integer envEntry = (Integer)
+		new InitialContext().lookup("java:app/env/value1");
+	    System.out.println("java:app/env/value1 = " + envEntry);
+	
+	    System.out.println("java:app/env/enventry1 = " + envEntry1);
+	    System.out.println("java:global/enventry2 = " + envEntry2);
+	    System.out.println("java:global/enventry3 = " + envEntry3);
+	    if( (envEntry3 == null) || envEntry3.intValue() != 18338 ) {
+		throw new RuntimeException("invalid enventry3 value");
+	    }
+	    
+	    System.out.println("java:global/enventry4 = " + envEntry4);
+	    if( (envEntry4 == null) || envEntry4.intValue() != 18338 ) {
+		throw new RuntimeException("invalid enventry4 value");
+	    }
 	} catch(NamingException e) {
 	    throw new RuntimeException(e);
 	}
@@ -93,7 +101,7 @@ public class Client {
 	    //	    ProgrammaticLogin login = new com.sun.appserv.security.api.ProgrammaticLogin();
 	    
 	    if( hello == null ) {
-		hello = (Hello) new InitialContext().lookup("com.acme.Hello");
+		hello = (Hello) new InitialContext().lookup("java:global/ejb-ejb31-security-simpleApp/ejb-ejb31-security-simple-ejb/SingletonBean!com.acme.Hello");
 	    } else {
 		// In an appclient.  
 		Hello hello2 = (Hello) new InitialContext().lookup("java:app/env/forappclient");

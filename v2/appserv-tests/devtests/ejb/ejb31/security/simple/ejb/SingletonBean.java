@@ -7,8 +7,8 @@ import org.omg.CORBA.ORB;
 import java.util.concurrent.*;
 
 @Singleton
-//    @Remote({ Hello.class, Hello2.class})
-    @Remote(Hello.class)
+    @Remote({ Hello.class, Hello2.class})
+//    @Remote(Hello.class)
 @LocalBean
     @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
     @EJB(name="java:app/env/forappclient", beanInterface=Hello.class)

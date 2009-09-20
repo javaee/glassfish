@@ -11,4 +11,9 @@
      <env-entry-type>java.lang.Integer</env-entry-type>
      <env-entry-value>18338</env-entry-value>
   </env-entry>
+  <ejb-local-ref>
+    <ejb-ref-name>java:app/env/appLevelEjbRef</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <local>com.acme.Hello</local>
+  </ejb-local-ref>
 </application>
