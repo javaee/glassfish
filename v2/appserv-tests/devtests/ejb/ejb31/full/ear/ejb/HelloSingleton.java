@@ -31,13 +31,24 @@ public class HelloSingleton implements Hello {
     private FooManagedBean foo7;
     private Foo foo8;
 
+    @Resource(name = "java:app/env/myString")
+    protected String myString;
 
+    @EJB(name="java:app/env/appLevelEjbRef")
+    private Hello hello;
+    
     String appName;
     String moduleName;
 
     @PostConstruct    
     private void init() {
 	System.out.println("HelloSingleton::init()");
+
+	System.out.println("myString = '" + myString + "'");
+	if( (myString == null) || !(myString.equals("myString") ) ) {
+	    throw new RuntimeException("Invalid value " + myString + " for myString");
+	}
+
 	appName = (String) sessionCtx.lookup("java:comp/AppName");
 	moduleName = (String) sessionCtx.lookup("java:comp/ModuleName");
 

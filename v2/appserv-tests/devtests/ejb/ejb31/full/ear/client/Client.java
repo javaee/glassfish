@@ -5,6 +5,7 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.naming.InitialContext;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
@@ -18,12 +19,17 @@ public class Client {
     private String host;
     private String port;
 
+    @Resource(lookup="java:app/env/value1")
+    private static Integer appLevelViaLookup;
+
     public static void main(String args[]) {
 	appName = args[0];
 	stat.addDescription(appName);
 	Client client = new Client(args);       
         client.doTest();	
         stat.printSummary(appName + "ID");
+	System.out.println("appLevelViaLookup = '" +
+			   appLevelViaLookup + "'");
     }
 
     public Client(String[] args) {

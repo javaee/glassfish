@@ -28,9 +28,16 @@
         <antcall target="compile-common">
             <param name="src" value="ejb"/>
         </antcall>
+
+	<javac classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar" srcdir="client" destdir="${build.classes.dir}" debug="on" failonerror="true">
+          <compilerarg line="-endorseddirs ${env.S1AS_HOME}/modules/endorsed"/>
+	 
+        </javac>
+<!--
         <antcall target="compile-common">
             <param name="src" value="client"/>
         </antcall>
+-->
     </target>
 
     <target name="build" depends="compile">

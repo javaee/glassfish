@@ -15,4 +15,9 @@
      <env-entry-type>java.lang.Integer</env-entry-type>
      <env-entry-value>18338</env-entry-value>
   </env-entry>
+  <env-entry>
+    <env-entry-name>java:app/env/myString</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>myString</env-entry-value>
+  </env-entry>
 </application>

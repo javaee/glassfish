@@ -30,6 +30,9 @@ public class HelloServlet extends HttpServlet {
     @EJB(name="java:app/env/a2")
     private HelloRemote a2;
 
+    @Resource(name = "java:app/env/myString")
+    protected String myString;
+
     private Hello singleton1;
     private Hello singleton2;
     private Hello singleton3;
@@ -58,6 +61,11 @@ public class HelloServlet extends HttpServlet {
         super.init(config);
 
 	System.out.println("In HelloServlet::init");
+	System.out.println("myString = '" + myString + "'");
+	if( (myString == null) || !(myString.equals("myString") ) ) {
+	    throw new RuntimeException("Invalid value " + myString + " for myString");
+	}
+
     }
 
     @Override
