@@ -67,6 +67,8 @@ public final class MethodDescriptor extends Descriptor {
     /** The method descriptor name representing all methods.*/
     public static final String ALL_EJB_METHODS = "*";
     public static final String ALL_METHODS = "*";
+    private static final String TIMER_METHODS = "Timer";
+    private static final String MESSAGE_ENDPOINT_METHODS = "MessageEndpoint";
     
     private String[] parameterClassNames = null;
     private String[] javaParameterClassNames = null;
@@ -183,7 +185,8 @@ public final class MethodDescriptor extends Descriptor {
         if (isExact) {
             return true;
         }
-	boolean isExactName = !this.getName().equals(ALL_EJB_METHODS);
+	boolean isExactName = !this.getName().equals(ALL_EJB_METHODS) && !this.getName().equals(TIMER_METHODS) &&
+            !this.getName().equals(MESSAGE_ENDPOINT_METHODS);
 	boolean hasMethodIntf = getEjbClassSymbol()!=null;
 	boolean hasParamsListed = (this.getParameterClassNames() != null);
 	return isExactName && hasMethodIntf && hasParamsListed;
@@ -196,8 +199,10 @@ public final class MethodDescriptor extends Descriptor {
      * </p>
      */
     public int getStyle() {
-        if (getName().equals(ALL_EJB_METHODS))
+        if ( (getName().equals(ALL_EJB_METHODS)) || getName().equals(TIMER_METHODS) ||
+                getName().equals(MESSAGE_ENDPOINT_METHODS) ) {
             return 1;
+        }
         if (getParameterClassNames()==null)
             return 2;
         return 3;
@@ -417,7 +422,7 @@ public final class MethodDescriptor extends Descriptor {
 	*/
     public Vector doStyleConversion(EjbDescriptor ejbDescriptor, Collection allMethods) { // must be exact methods
 	Vector v = new Vector();
-	if (this.getName().equals(ALL_EJB_METHODS)) { // STYLE 1
+	if (getStyle() == 1) { // STYLE 1
 	    for (Iterator itr = allMethods.iterator(); itr.hasNext();) {
 		MethodDescriptor next = (MethodDescriptor) itr.next();
                 // when ejb-name is present

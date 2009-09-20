@@ -478,10 +478,18 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                         // first so there won't be any ambiguity.  
                         String ejbLinkName = target.getName();
                         if (!sourceModule.isPackagedAsSingleModule(targetModule)) {
-                            // Since there are at least two modules, we
-                            // must be within an application.
-                            String relativeUri = getApplication().
-                                getRelativeUri(sourceModule, targetModule);
+                            String relativeUri = null;
+                            if( sourceModule == app ) {
+                                // Now that dependencies can be defined within application.xml
+                                // it's possible for source module to be the Application object.
+                                // In this case, just use the target module uri as the relative
+                                // uri.
+                                relativeUri = targetModule.getModuleDescriptor().getArchiveUri();
+                            } else {
+                                // Since there are at least two modules, we
+                                // must be within an application.
+                                relativeUri = getApplication().getRelativeUri(sourceModule, targetModule);
+                            }
                             ejbLinkName = relativeUri + "#" + ejbLinkName;
                         }
 
@@ -552,9 +560,14 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                 referringJar = getBundleDescriptor();
             }           
             
-            if (getApplication()!=null) {               
-                BundleDescriptor refereeJar = 
+            if (getApplication()!=null) {
+                BundleDescriptor refereeJar = null;
+                if( referringJar instanceof Application ) {
+                    refereeJar = ((Application)referringJar).getModuleByUri(jarPath);
+                } else {
+                 refereeJar = 
                     getApplication().getRelativeBundle(referringJar, jarPath);
+                }
                 if( (refereeJar != null) &&
                     refereeJar instanceof EjbBundleDescriptor ) {
                     // this will throw an exception if ejb is not found
@@ -613,7 +626,13 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                 DOLUtils.getDefaultLogger().severe("Unresolved <ejb-link>: "+linkName);
                 throw new RuntimeException("Error: Unresolved <ejb-link>: "+linkName);
             } else {
-                DOLUtils.getDefaultLogger().warning("Unresolved <ejb-link>: "+linkName);
+                if( ejbRef.getReferringBundleDescriptor() instanceof ApplicationClientDescriptor ) {
+                    // Because no annotation processing is done within ACC runtime, this case typically
+                    // arises for remote @EJB annotations, so don't log it as warning.
+                    DOLUtils.getDefaultLogger().fine("Unresolved <ejb-link>: "+linkName);
+                } else {
+                    DOLUtils.getDefaultLogger().warning("Unresolved <ejb-link>: "+linkName);
+                }
                 return;
             }
         } else {

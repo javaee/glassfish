@@ -588,7 +588,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
             }
 
             for (Object envPropObj : interceptor.getEnvironmentProperties()) {
-                addEnvironmentProperty((EnvironmentProperty) envPropObj);
+                addOrMergeEnvironmentProperty((EnvironmentProperty) envPropObj);
             }
 
             for (Object servRefObj :
@@ -1438,8 +1438,15 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
      */
 
     public void addEjbReferenceDescriptor(EjbReference ejbReference) {
-        ejbReferences.add(ejbReference);
-        ejbReference.setReferringBundleDescriptor(getEjbBundleDescriptor());
+        try {
+            EjbReference existing = this.getEjbReferenceByName(ejbReference.getName());
+            for(InjectionTarget next : ejbReference.getInjectionTargets() ) {
+                existing.addInjectionTarget(next);
+            }
+        } catch(IllegalArgumentException e) {
+            ejbReferences.add(ejbReference);
+            ejbReference.setReferringBundleDescriptor(getEjbBundleDescriptor());
+        }
     }
 
     public void removeEjbReferenceDescriptor(EjbReference ejbReference) {
@@ -1475,8 +1482,17 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     public void addServiceReferenceDescriptor(ServiceReferenceDescriptor
             serviceRef) {
-        serviceRef.setBundleDescriptor(getEjbBundleDescriptor());
-        serviceReferences.add(serviceRef);
+        try {
+            ServiceReferenceDescriptor existing =
+                    this.getServiceReferenceByName(serviceRef.getName());
+            for(InjectionTarget next : serviceRef.getInjectionTargets()) {
+                existing.addInjectionTarget(next);
+            }
+
+        } catch(IllegalArgumentException e) {
+            serviceRef.setBundleDescriptor(getEjbBundleDescriptor());
+            serviceReferences.add(serviceRef);
+        }
     }
 
     public void removeServiceReferenceDescriptor(ServiceReferenceDescriptor
@@ -1509,11 +1525,20 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     public void addMessageDestinationReferenceDescriptor
             (MessageDestinationReferenceDescriptor messageDestRef) {
-        if (getEjbBundleDescriptor() != null) {
-            messageDestRef.setReferringBundleDescriptor
-                    (getEjbBundleDescriptor());
+
+        try {
+            MessageDestinationReferenceDescriptor existing =
+                    this.getMessageDestinationReferenceByName(messageDestRef.getName());
+            for(InjectionTarget next : messageDestRef.getInjectionTargets()) {
+                existing.addInjectionTarget(next);
+            }
+        } catch(IllegalArgumentException e) {
+            if (getEjbBundleDescriptor() != null) {
+                messageDestRef.setReferringBundleDescriptor
+                        (getEjbBundleDescriptor());
+            }
+            messageDestReferences.add(messageDestRef);
         }
-        messageDestReferences.add(messageDestRef);
     }
 
     public void removeMessageDestinationReferenceDescriptor
@@ -1547,7 +1572,16 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     }
 
     public void addJmsDestinationReferenceDescriptor(JmsDestinationReferenceDescriptor jmsDestReference) {
-        jmsDestReferences.add(jmsDestReference);
+
+        try {
+            JmsDestinationReferenceDescriptor existing = this.getJmsDestinationReferenceByName(jmsDestReference.getName());
+            for(InjectionTarget next : jmsDestReference.getInjectionTargets() ) {
+                existing.addInjectionTarget(next);
+            }
+        } catch(IllegalArgumentException e) {
+            jmsDestReferences.add(jmsDestReference);
+        }
+
     }
 
     public void removeJmsDestinationReferenceDescriptor(JmsDestinationReferenceDescriptor jmsDestReference) {
@@ -1565,7 +1599,16 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
      * Adds a resource reference to me.
      */
     public void addResourceReferenceDescriptor(ResourceReferenceDescriptor resourceReference) {
-        resourceReferences.add(resourceReference);
+
+        try {
+            ResourceReferenceDescriptor existing = this.getResourceReferenceByName(resourceReference.getName());
+            for(InjectionTarget next : resourceReference.getInjectionTargets() ) {
+                existing.addInjectionTarget(next);
+            }
+
+        } catch(IllegalArgumentException e) {
+            resourceReferences.add(resourceReference);
+        }
     }
 
     /**
@@ -1740,11 +1783,20 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     public void addEntityManagerFactoryReferenceDescriptor
             (EntityManagerFactoryReferenceDescriptor reference) {
 
-        if (getEjbBundleDescriptor() != null) {
-            reference.setReferringBundleDescriptor
-                    (getEjbBundleDescriptor());
+        try {
+            EntityManagerFactoryReferenceDescriptor existing =
+                    this.getEntityManagerFactoryReferenceByName(reference.getName());
+            for( InjectionTarget next : reference.getInjectionTargets() ) {
+                existing.addInjectionTarget(next);
+            }
+        } catch(IllegalArgumentException e) {
+
+            if (getEjbBundleDescriptor() != null) {
+                reference.setReferringBundleDescriptor
+                        (getEjbBundleDescriptor());
+            }
+            entityManagerFactoryReferences.add(reference);
         }
-        entityManagerFactoryReferences.add(reference);
     }
 
     public Set<EntityManagerReferenceDescriptor>
@@ -1774,11 +1826,21 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     public void addEntityManagerReferenceDescriptor
             (EntityManagerReferenceDescriptor reference) {
-        if (getEjbBundleDescriptor() != null) {
-            reference.setReferringBundleDescriptor
+
+        try {
+            EntityManagerReferenceDescriptor existing =
+                    this.getEntityManagerReferenceByName(reference.getName());
+            for( InjectionTarget next : reference.getInjectionTargets() ) {
+                existing.addInjectionTarget(next);
+            }
+        } catch(IllegalArgumentException e) {
+            if (getEjbBundleDescriptor() != null) {
+                reference.setReferringBundleDescriptor
                     (getEjbBundleDescriptor());
+            }
+            this.getEntityManagerReferenceDescriptors().add(reference);
         }
-        this.getEntityManagerReferenceDescriptors().add(reference);
+
     }
 
 
@@ -1797,6 +1859,18 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         if (environmentProperties.contains(environmentProperty)) {
             replaceEnvironmentProperty(environmentProperty, environmentProperty);
         } else {
+            environmentProperties.add(environmentProperty);
+        }
+    }
+
+    public void addOrMergeEnvironmentProperty(EnvironmentProperty environmentProperty) {
+        try {
+            EnvironmentProperty existing = this.getEnvironmentPropertyByName(environmentProperty.getName());
+            for(InjectionTarget next : environmentProperty.getInjectionTargets()) {
+                existing.addInjectionTarget(next);
+            }
+
+        } catch(IllegalArgumentException e) {
             environmentProperties.add(environmentProperty);
         }
     }

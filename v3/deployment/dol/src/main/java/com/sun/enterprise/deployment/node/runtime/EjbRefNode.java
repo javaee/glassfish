@@ -41,6 +41,8 @@ import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.types.EjbReferenceContainer;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
 import org.w3c.dom.Node;
 
 import java.util.Iterator;
@@ -112,7 +114,23 @@ public class EjbRefNode extends DeploymentDescriptorNode {
     public Node writeDescriptor(Node parent, String nodeName, EjbReference ejbRef) {        
         Node ejbRefNode = appendChild(parent, nodeName);
         appendTextChild(ejbRefNode, RuntimeTagNames.EJB_REFERENCE_NAME, ejbRef.getName());
-        appendTextChild(ejbRefNode, RuntimeTagNames.JNDI_NAME, ejbRef.getJndiName());
+
+        String jndiName = ejbRef.getJndiName();
+
+        EjbDescriptor ejbReferee = ejbRef.getEjbDescriptor();
+
+        // If this is an intra-app remote ejb dependency, write out the portable jndi name
+        // of the target ejb.
+        if( ejbReferee != null ) {
+            if( !ejbRef.isLocal() && ejbRef.getType().equals(EjbSessionDescriptor.TYPE) ) {
+               EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbReferee;
+               String intf = ejbRef.isEJB30ClientView() ?
+                        ejbRef.getEjbInterface() : ejbRef.getEjbHomeInterface();
+               jndiName = sessionDesc.getPortableJndiName(intf);
+            }
+        }
+        appendTextChild(ejbRefNode, RuntimeTagNames.JNDI_NAME, jndiName);
+
         return ejbRefNode;
     }
     

@@ -89,6 +89,17 @@ public class ResourceContainerContextImpl extends AnnotationContext
         } catch(IllegalArgumentException e) {
             // DOL API is (unfortunately) defined to return 
             // IllegalStateException if name doesn't exist.
+
+            Application app = getAppFromDescriptor();
+
+            if( app != null ) {
+                try {
+                    // Check for java:app/java:global dependencies at app-level
+                    ejbRef = app.getEjbReferenceByName(name);
+                     // Make sure it's added to the container context.
+                    addEjbReferenceDescriptor(ejbRef);
+                } catch(IllegalArgumentException ee) {}
+            }
         }
         return ejbRef;
     }
@@ -123,6 +134,17 @@ public class ResourceContainerContextImpl extends AnnotationContext
         } catch(IllegalArgumentException e) {
             // DOL API is (unfortunately) defined to return 
             // IllegalStateException if name doesn't exist.
+
+            Application app = getAppFromDescriptor();
+
+            if( app != null ) {
+                try {
+                    // Check for java:app/java:global dependencies at app-level
+                    resourceRef = app.getResourceReferenceByName(name);
+                    // Make sure it's added to the container context.
+                    addResourceReferenceDescriptor(resourceRef);
+                } catch(IllegalArgumentException ee) {}
+            }
         }
         return resourceRef;
     }
@@ -185,6 +207,17 @@ public class ResourceContainerContextImpl extends AnnotationContext
         } catch(IllegalArgumentException e) {
             // DOL API is (unfortunately) defined to return
             // IllegalStateException if name doesn't exist.
+
+            Application app = getAppFromDescriptor();
+
+            if( app != null ) {
+                try {
+                    // Check for java:app/java:global dependencies at app-level
+                    jmsDestRef = app.getJmsDestinationReferenceByName(name);
+                      // Make sure it's added to the container context.
+                    addJmsDestinationReferenceDescriptor(jmsDestRef);
+                } catch(IllegalArgumentException ee) {}
+            }
         }
         return jmsDestRef;
     }
@@ -214,7 +247,19 @@ public class ResourceContainerContextImpl extends AnnotationContext
             // first.  
         } catch(IllegalArgumentException e) {
             // DOL API is (unfortunately) defined to return 
-            // IllegalStateException if name doesn't exist.
+            // IllegalStateException if name doesn't exist.           
+
+            Application app = getAppFromDescriptor();
+
+            if( app != null ) {
+                try {
+                    // Check for java:app/java:global dependencies at app-level
+                    envEntry = app.getEnvironmentPropertyByName(name);
+                      // Make sure it's added to the container context.
+                    addEnvEntryDescriptor(envEntry);
+                } catch(IllegalArgumentException ee) {}
+            }
+
         }
         return envEntry;
 
@@ -250,6 +295,17 @@ public class ResourceContainerContextImpl extends AnnotationContext
         } catch(IllegalArgumentException e) {
             // DOL API is (unfortunately) defined to return 
             // IllegalStateException if name doesn't exist.
+
+            Application app = getAppFromDescriptor();
+
+            if( app != null ) {
+                try {
+                    // Check for java:app/java:global dependencies at app-level
+                    emfRefDesc = app.getEntityManagerFactoryReferenceByName(name);
+                    // Make sure it's added to the container context.
+                    addEntityManagerFactoryReferenceDescriptor(emfRefDesc);
+                } catch(IllegalArgumentException ee) {}
+            }
         }
 
         return emfRefDesc;
@@ -287,6 +343,17 @@ public class ResourceContainerContextImpl extends AnnotationContext
         } catch(IllegalArgumentException e) {
             // DOL API is (unfortunately) defined to return 
             // IllegalStateException if name doesn't exist.
+
+            Application app = getAppFromDescriptor();
+
+            if( app != null ) {
+                try {
+                    // Check for java:app/java:global dependencies at app-level
+                    emRefDesc = app.getEntityManagerReferenceByName(name);
+                    // Make sure it's added to the container context.
+                    addEntityManagerReferenceDescriptor(emRefDesc);
+                } catch(IllegalArgumentException ee) {}
+            }
         }
 
         return emRefDesc;
@@ -386,5 +453,17 @@ public class ResourceContainerContextImpl extends AnnotationContext
         BundleDescriptor bundleDesc = (BundleDescriptor)
                 ((BundleDescriptor) descriptor).getModuleDescriptor().getDescriptor();
         bundleDesc.addManagedBean(managedBeanDesc);             
+    }
+
+    private Application getAppFromDescriptor() {
+        Application app = null;
+        if( descriptor instanceof BundleDescriptor ) {
+            BundleDescriptor bundle = (BundleDescriptor) descriptor;
+            app = bundle.getApplication();
+        } else if( descriptor instanceof EjbDescriptor ) {
+            app = ((EjbDescriptor)descriptor).getApplication();
+        }
+
+        return app;
     }
 }

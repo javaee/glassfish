@@ -147,4 +147,8 @@ public class SerialInitContextFactory implements InitialContextFactory {
         defaultHabitat = h;
 
     }
+
+    static Habitat getDefaultHabitat() {
+        return defaultHabitat;
+    }
 }

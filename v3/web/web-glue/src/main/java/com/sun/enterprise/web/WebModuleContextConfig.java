@@ -73,6 +73,7 @@ import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.ResourcePrincipal;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.runtime.common.DefaultResourcePrincipal;
 import com.sun.enterprise.deployment.runtime.common.ResourceRef;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
@@ -119,7 +120,20 @@ public class WebModuleContextConfig extends ContextConfig {
     /**
      * The DOL object representing the web.xml content.
     */
-    private WebBundleDescriptor webBundleDescriptor;   
+    private WebBundleDescriptor webBundleDescriptor;
+
+
+    /**
+     * Resource references from outside the .war
+     */
+    private Collection<ResourceReferenceDescriptor> resRefs =
+                new HashSet<ResourceReferenceDescriptor>();
+
+    /**
+     * Environment properties from outside the .war
+     */
+    private Collection<EnvironmentProperty> envProps =
+            new HashSet<EnvironmentProperty>();
 
     
     /**
@@ -187,6 +201,7 @@ public class WebModuleContextConfig extends ContextConfig {
 
         ContextEnvironment[] envs = context.findEnvironments();
         EnvironmentProperty envEntry;
+
         for (int i=0; i<envs.length; i++) {
             envEntry = new EnvironmentProperty(
                     envs[i].getName(), envs[i].getValue(),
@@ -195,6 +210,7 @@ public class WebModuleContextConfig extends ContextConfig {
                 envEntry.setValue(envs[i].getValue());
             }
             webBundleDescriptor.addEnvironmentProperty(envEntry);
+            envProps.add(envEntry);
         }
 
         ContextResource[] resources = context.findResources();
@@ -203,7 +219,8 @@ public class WebModuleContextConfig extends ContextConfig {
         ResourceRef[] rr = iasBean.getResourceRef();
         DefaultResourcePrincipal drp;
         ResourcePrincipal rp;
-            
+
+
         for (int i=0; i<resources.length; i++) {
             resourceReference = new ResourceReferenceDescriptor(
                     resources[i].getName(), resources[i].getDescription(),
@@ -224,6 +241,7 @@ public class WebModuleContextConfig extends ContextConfig {
             resourceReference.setAuthorization(resources[i].getAuth());
             webBundleDescriptor
                     .addResourceReferenceDescriptor(resourceReference);
+            resRefs.add(resourceReference);
         }    
     }
 
@@ -238,8 +256,19 @@ public class WebModuleContextConfig extends ContextConfig {
             com.sun.enterprise.container.common.spi.util.ComponentEnvManager.class);
         if (namingMgr != null) {
             try {
-                ((WebModule) context).setComponentId(
-                    namingMgr.bindToComponentNamespace(webBundleDescriptor));
+                boolean webBundleContainsEjbs =
+                    (webBundleDescriptor.getExtensionsDescriptors(EjbBundleDescriptor.class).size() > 0);
+
+                // If .war contains EJBs, .war-defined dependencies have already been bound by
+                // EjbDeployer, so just add the dependencies from outside the .war
+                if( webBundleContainsEjbs ) {
+                    namingMgr.addToComponentNamespace(webBundleDescriptor, envProps, resRefs);
+                } else {
+                    namingMgr.bindToComponentNamespace(webBundleDescriptor);
+                }
+
+                String componentId = namingMgr.getComponentEnvId(webBundleDescriptor);
+                ((WebModule) context).setComponentId(componentId);
             } catch (NamingException ne) {
                 throw new LifecycleException(ne);
             }

@@ -67,7 +67,10 @@ import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.internal.api.Globals;
 import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
+import com.sun.enterprise.deployment.annotation.context.EjbsContext;
 import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
+
+import org.glassfish.apf.context.AnnotationContext;
 
 
 
@@ -258,12 +261,29 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
             }
         }
 
-        HandlerProcessingResult procResult = setEjbDescriptorInfo(ejbDesc, ainfo);
-        doTimedObjectProcessing(ejbClass, ejbDesc);
+        // We need to include all ejbs of the same name in the annotation processing context
+        // in order to handle the case that a bean class has both a component-defining
+        // annotation and there are other ejb-jar.xml-defined beans with the same bean class.
 
-        EjbContext ejbContext = new EjbContext(ejbDesc, ejbClass);
+        
+        EjbDescriptor[] ejbDescs = currentBundle.getEjbByClassName(ejbClass.getName());
+        HandlerProcessingResult procResult = null;
+        for(EjbDescriptor next : ejbDescs) {
+            procResult = setEjbDescriptorInfo(next, ainfo);
+            doTimedObjectProcessing(ejbClass, next);               
+        }
+
+        AnnotationContext annContext = null;
+        if( ejbDescs.length == 1 ) {
+            annContext = new EjbContext(ejbDesc, ejbClass);
+        } else {
+
+            annContext = new EjbsContext(ejbDescs, ejbClass);
+        }
+
+
         // we push the new context on the stack...
-        ctx.getProcessingContext().pushHandler(ejbContext);
+        ctx.getProcessingContext().pushHandler(annContext);
         
         return procResult;
     }   

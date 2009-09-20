@@ -37,6 +37,8 @@
 package com.sun.enterprise.container.common.spi.util;
 
 import com.sun.enterprise.deployment.JndiNameEnvironment;
+import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 import org.glassfish.api.naming.JNDIBinding;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -55,6 +57,11 @@ public interface ComponentEnvManager {
     public String getComponentEnvId(JndiNameEnvironment env);
 
     public String bindToComponentNamespace(JndiNameEnvironment env)
+        throws NamingException;
+
+    public void addToComponentNamespace(JndiNameEnvironment origEnv,
+                                        Collection<EnvironmentProperty> envProps,
+                                        Collection<ResourceReferenceDescriptor> resRefs)
         throws NamingException;
 
     public void unbindFromComponentNamespace(JndiNameEnvironment env)

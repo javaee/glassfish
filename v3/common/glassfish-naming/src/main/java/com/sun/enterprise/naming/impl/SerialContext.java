@@ -172,15 +172,24 @@ public class SerialContext implements Context {
 
         if( (habitat == null) && !testMode ) {
 
-            // Bootstrap a hk2 environment.
-            // TODO This will need to be moved somewhere else.  Potentially any
-            // piece of glassfish code that can be an initial entry point from a
-            // Java SE client will need to make this happen.
+            synchronized(SerialContext.class) {
 
-            ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
-            habitat = registry.createHabitat("default");
-           
-	        SerialInitContextFactory.setDefaultHabitat(habitat);
+                if( SerialInitContextFactory.getDefaultHabitat() == null ) {
+
+                    // Bootstrap a hk2 environment.
+                    // TODO This will need to be moved somewhere else.  Potentially any
+                    // piece of glassfish code that can be an initial entry point from a
+                    // Java SE client will need to make this happen.
+
+                    ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
+                    habitat = registry.createHabitat("default");
+
+                    SerialInitContextFactory.setDefaultHabitat(habitat);
+                } else {
+                    habitat = SerialInitContextFactory.getDefaultHabitat();
+                }
+
+            }
         }
         
 

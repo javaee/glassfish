@@ -40,6 +40,10 @@ import javax.ejb.*;
 import javax.transaction.UserTransaction;
 import java.util.logging.*;
 import com.sun.logging.*;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.RoleReference;
+import com.sun.ejb.EjbInvocation;
+import org.glassfish.api.invocation.ComponentInvocation;
 
 /**
  * Implementation of EJBContext for message-driven beans
@@ -119,6 +123,36 @@ public final class MessageBeanContextImpl
             throw new java.lang.IllegalStateException("Operation not allowed");
         }
 
+    }
+
+    public boolean isCallerInRole(String roleRef) {
+        if ( roleRef == null )
+            throw new IllegalArgumentException("Argument is null");
+
+        checkAccessToCallerSecurity();
+
+        ComponentInvocation inv =
+                    EjbContainerUtilImpl.getInstance().getCurrentInvocation();
+        if ( inv instanceof EjbInvocation) {
+            EjbInvocation ejbInv = (EjbInvocation) inv;
+            if( ejbInv.isTimerCallback ) {
+                throw new IllegalStateException("isCallerInRole not allowed from timer callback");
+            }
+
+        } else {
+            throw new IllegalStateException("not invoked from within a message-bean context");
+        }
+
+        EjbDescriptor ejbd = container.getEjbDescriptor();
+        RoleReference rr = ejbd.getRoleReferenceByName(roleRef);
+
+        if ( rr == null ) {
+            throw new IllegalArgumentException(
+                "No mapping available for role reference " + roleRef);
+        }
+
+        com.sun.enterprise.security.SecurityManager sm = container.getSecurityManager();
+	    return sm.isCallerInRole(roleRef);
     }
     
     public TimerService getTimerService() 

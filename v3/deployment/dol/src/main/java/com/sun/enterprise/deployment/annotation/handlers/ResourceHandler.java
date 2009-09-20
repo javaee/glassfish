@@ -52,6 +52,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collection;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 /**
@@ -153,7 +155,7 @@ public class ResourceHandler extends AbstractResourceHandler {
                     f.getType() : resourceAn.type();
 
             DescriptorInfo descriptorInfo = getDescriptors
-                (resourceType, logicalName, rcContexts);
+                (resourceType, logicalName, rcContexts, resourceAn);
                  
             InjectionTarget target = new InjectionTarget();
             target.setFieldName(f.getName());
@@ -198,7 +200,7 @@ public class ResourceHandler extends AbstractResourceHandler {
 
 
             DescriptorInfo descriptorInfo = getDescriptors
-                (resourceType, logicalName, rcContexts);
+                (resourceType, logicalName, rcContexts, resourceAn);
 
             InjectionTarget target = new InjectionTarget();
             target.setMethodName(m.getName());
@@ -231,7 +233,7 @@ public class ResourceHandler extends AbstractResourceHandler {
             }
 
             DescriptorInfo descriptorInfo = getDescriptors
-                (resourceType, logicalName, rcContexts);
+                (resourceType, logicalName, rcContexts, resourceAn);
 
             for (EnvironmentProperty desc : descriptorInfo.descriptors) {
                     
@@ -265,7 +267,7 @@ public class ResourceHandler extends AbstractResourceHandler {
 
 
     private DescriptorInfo getDescriptors(Class resourceType,
-        String logicalName, ResourceContainerContext[] rcContexts) {
+        String logicalName, ResourceContainerContext[] rcContexts, Resource resourceAn) {
             
         DescriptorInfo descriptorInfo = new DescriptorInfo();
         descriptorInfo.dependencyType = DependencyType.RESOURCE_REF;
@@ -306,7 +308,7 @@ public class ResourceHandler extends AbstractResourceHandler {
             descriptorInfo.dependencyType = DependencyType.RESOURCE_REF;
         } else if( envEntryTypes.containsKey(resourceType) || resourceType.isEnum()) {
             descriptorInfo.descriptors = getEnvironmentPropertyDescriptors
-                (logicalName, rcContexts);
+                (logicalName, rcContexts, resourceAn);
             descriptorInfo.dependencyType = DependencyType.ENV_ENTRY;
             // Get corresponding class type.  This does the appropriate
             // mapping for primitives.  For everything else, the type is
@@ -411,25 +413,29 @@ public class ResourceHandler extends AbstractResourceHandler {
      * @return an array of EnvironmentProperty descriptors
      */
     private EnvironmentProperty[] getEnvironmentPropertyDescriptors
-        (String logicalName, ResourceContainerContext[] rcContexts) {
+        (String logicalName, ResourceContainerContext[] rcContexts, Resource annotation) {
             
-        Set<EnvironmentProperty> envEntriesSet = 
-            new HashSet<EnvironmentProperty>();
+        Collection<EnvironmentProperty> envEntries =
+            new ArrayList<EnvironmentProperty>();
 
         for (int i = 0; i < rcContexts.length; i++) {
             EnvironmentProperty envEntry =
                 rcContexts[i].getEnvEntry(logicalName);
             // For @Resource declarations that map to env-entries, if there
             // is no corresponding deployment descriptor entry that has a
-            // value, it's treated as if the declaration doesn't exist.  
+            // value and no lookup(), it's treated as if the declaration doesn't exist.
             // A common case is that the @Resource is applied to a field
             // with a default value which was not overridden by the deployer.
             if ((envEntry != null) && (envEntry.hasAValue()) ) {
-                envEntriesSet.add(envEntry);
+                envEntries.add(envEntry);
+            } else if( (envEntry == null) && (annotation.lookup().length() > 0) ) {
+                envEntry = new EnvironmentProperty();
+                envEntries.add(envEntry);
+                rcContexts[i].addEnvEntryDescriptor(envEntry);
             }
         }
 
-        return envEntriesSet.toArray(new EnvironmentProperty[] {});
+        return envEntries.toArray(new EnvironmentProperty[] {});
     }
 
     private void processNewAnnotation(EnvironmentProperty desc,

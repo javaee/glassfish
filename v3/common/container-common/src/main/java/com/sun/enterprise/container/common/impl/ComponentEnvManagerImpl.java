@@ -212,6 +212,28 @@ public class ComponentEnvManagerImpl
         return compEnvId;
     }
 
+
+    public void addToComponentNamespace(JndiNameEnvironment origEnv,
+                                        Collection<EnvironmentProperty> envProps,
+                                        Collection<ResourceReferenceDescriptor> resRefs)
+        throws NamingException {
+
+        String compEnvId = getComponentEnvId(origEnv);
+
+        Collection<JNDIBinding> bindings = new ArrayList<JNDIBinding>();
+
+        addEnvironmentProperties(ScopeType.COMPONENT, envProps.iterator(), bindings);
+        addResourceReferences(ScopeType.COMPONENT, resRefs.iterator(), bindings);
+
+        boolean treatComponentAsModule = getTreatComponentAsModule(origEnv);
+
+        // Bind dependencies to the namespace for this component
+        namingManager.bindToComponentNamespace(getApplicationName(origEnv), getModuleName(origEnv),
+                compEnvId, treatComponentAsModule, bindings);
+
+        return;
+    }
+
     private void setResourceId(JndiNameEnvironment env, DataSourceDefinitionDescriptor desc){
 
         String resourceId = "";
@@ -318,15 +340,12 @@ public class ComponentEnvManagerImpl
         }
     }
 
-    private void addJNDIBindings(JndiNameEnvironment env, ScopeType scope, Collection<JNDIBinding> jndiBindings) {
 
-        // Create objects to be bound for each env dependency.  Only add bindings that
-        // match the given scope.
+    private void addEnvironmentProperties(ScopeType scope, Iterator envItr, Collection<JNDIBinding> jndiBindings) {
 
-        for (Iterator itr = env.getEnvironmentProperties().iterator();
-             itr.hasNext();) {
+        while( envItr.hasNext() ) {
 
-            EnvironmentProperty next = (EnvironmentProperty) itr.next();
+            EnvironmentProperty next = (EnvironmentProperty) envItr.next();
 
             if( !dependencyAppliesToScope(next, scope)) {
                 continue;
@@ -339,13 +358,72 @@ public class ComponentEnvManagerImpl
 
                 Object value = next.hasLookupName() ?
                     namingUtils.createLazyNamingObjectFactory(name, next.getLookupName(), true) :
-                    namingUtils.createSimpleNamingObjectFactory(name, next.getValueObject());                                                           
+                    namingUtils.createSimpleNamingObjectFactory(name, next.getValueObject());
 
                 jndiBindings.add(new CompEnvBinding(name, value));
-
-
             }
         }
+
+    }
+
+    private void addResourceReferences(ScopeType scope, Iterator resRefItr, Collection<JNDIBinding> jndiBindings) {
+
+        while( resRefItr.hasNext() ) {
+
+
+            ResourceReferenceDescriptor resourceRef =
+                (ResourceReferenceDescriptor) resRefItr.next();
+
+            if( !dependencyAppliesToScope(resourceRef, scope)) {
+                continue;
+            }
+
+            String name = descriptorToLogicalJndiName(resourceRef);
+            Object value = null;
+            String physicalJndiName = resourceRef.getJndiName();
+            if (resourceRef.isMailResource()) {
+                value = new MailNamingObjectFactory(name,
+                    physicalJndiName, namingUtils);
+            } else if (resourceRef.isURLResource()) {
+                Object obj = null;
+                try {
+                   obj  = new java.net.URL(physicalJndiName);
+                }
+                catch(MalformedURLException e) {
+                    e.printStackTrace();
+                }
+                NamingObjectFactory factory = namingUtils.createSimpleNamingObjectFactory(name, obj);
+                value = namingUtils.createCloningNamingObjectFactory(name, factory);
+            } else if (resourceRef.isORB()) {
+                // TODO handle non-default ORBs
+                value = namingUtils.createLazyNamingObjectFactory(name, physicalJndiName, false);
+            } else if (resourceRef.isWebServiceContext()) {
+                WebServiceReferenceManager wsRefMgr = habitat.getByContract(WebServiceReferenceManager.class);
+                if (wsRefMgr != null )  {
+                    value = wsRefMgr.getWSContextObject();
+                } else {
+                    _logger.log (Level.SEVERE,
+                            "Cannot find the following class to proceed with @Resource WebServiceContext" +
+                                    wsRefMgr +
+                                    "Please confirm if webservices module is installed ");
+                }
+
+            } else {
+              value = namingUtils.createLazyNamingObjectFactory(name, physicalJndiName, true);
+            }
+
+            jndiBindings.add(new CompEnvBinding(name, value));
+
+        }
+    }
+
+
+    private void addJNDIBindings(JndiNameEnvironment env, ScopeType scope, Collection<JNDIBinding> jndiBindings) {
+
+        // Create objects to be bound for each env dependency.  Only add bindings that
+        // match the given scope.
+
+        addEnvironmentProperties(scope, env.getEnvironmentProperties().iterator(), jndiBindings);
 
         for (Iterator itr =
              env.getJmsDestinationReferenceDescriptors().iterator();
@@ -388,50 +466,7 @@ public class ComponentEnvManagerImpl
             jndiBindings.add(getCompEnvBinding(next));
         }
 
-        for (Iterator itr = env.getResourceReferenceDescriptors().iterator();
-            itr.hasNext();) {
-            ResourceReferenceDescriptor resourceRef =
-                (ResourceReferenceDescriptor) itr.next();
-
-            if( !dependencyAppliesToScope(resourceRef, scope)) {
-                continue;
-            }
-
-            String name = descriptorToLogicalJndiName(resourceRef);
-            Object value = null;
-            String physicalJndiName = resourceRef.getJndiName();
-            if (resourceRef.isMailResource()) {
-                value = new MailNamingObjectFactory(name,
-                    physicalJndiName, namingUtils);
-            } else if (resourceRef.isURLResource()) {
-                Object obj = null;
-                try {
-                   obj  = new java.net.URL(physicalJndiName);
-                }
-                catch(MalformedURLException e) {
-                    e.printStackTrace();
-                }
-                NamingObjectFactory factory = namingUtils.createSimpleNamingObjectFactory(name, obj);
-                value = namingUtils.createCloningNamingObjectFactory(name, factory);
-            } else if (resourceRef.isORB()) {
-                // TODO handle non-default ORBs
-                value = namingUtils.createLazyNamingObjectFactory(name, physicalJndiName, false);
-            } else if (resourceRef.isWebServiceContext()) {
-                WebServiceReferenceManager wsRefMgr = habitat.getByContract(WebServiceReferenceManager.class);
-                if (wsRefMgr != null )  {
-                    value = wsRefMgr.getWSContextObject();
-                } else {
-                    _logger.log (Level.SEVERE,
-                            "Cannot find the following class to proceed with @Resource WebServiceContext" +
-                                    wsRefMgr +
-                                    "Please confirm if webservices module is installed ");
-                }
-                
-            } else {
-              value = namingUtils.createLazyNamingObjectFactory(name, physicalJndiName, true);
-            }
-            jndiBindings.add(new CompEnvBinding(name, value));
-        }
+        addResourceReferences(scope, env.getResourceReferenceDescriptors().iterator(), jndiBindings);
 
         for (EntityManagerFactoryReferenceDescriptor next :
                  env.getEntityManagerFactoryReferenceDescriptors()) {

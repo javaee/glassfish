@@ -154,7 +154,9 @@ public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, Sta
         try {
             return Class.forName(className, true, tccl);
         } catch (ClassNotFoundException e) {
-            _logger.logp(Level.WARNING, "GlassFishNamingBuilder", "loadClass", "Failed to load {0} using thread context class loader {1}", new Object[]{className, tccl});
+            // Not a significant error.  Try with common class loader instead.
+            _logger.logp(Level.FINE, "GlassFishNamingBuilder", "loadClass",
+                    "Failed to load {0} using thread context class loader {1}", new Object[]{className, tccl});
             // Try using CommonClassLoader.
             ClassLoader ccl = clh.getCommonClassLoader();
             if (tccl != ccl) {

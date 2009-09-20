@@ -48,6 +48,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import com.sun.ejb.codegen.StaticRmiStubGenerator;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -170,6 +171,17 @@ public class EjbDeployer
 
         try {
             compEnvManager.bindToComponentNamespace(ejbBundle);
+
+            // If within .war, also bind dependencies declared by web application.  There is
+            // a single naming environment for the entire .war module.  Yhis is necessary
+            // in order for eagerly initialized ejb components to have visibility to all the
+            // dependencies b/c the web container does not bind to the component namespace until
+            // its start phase, which comes after the ejb start phase.
+            Object rootDesc = ejbBundle.getModuleDescriptor().getDescriptor();
+            if( (rootDesc != ejbBundle) && (rootDesc instanceof WebBundleDescriptor ) ) {
+                WebBundleDescriptor webBundle = (WebBundleDescriptor) rootDesc;
+                compEnvManager.bindToComponentNamespace(webBundle);
+            }
 
         } catch(Exception e) {
             throw new RuntimeException("Exception registering ejb bundle level resources", e);
