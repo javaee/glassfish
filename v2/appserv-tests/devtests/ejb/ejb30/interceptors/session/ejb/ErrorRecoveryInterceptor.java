@@ -9,12 +9,23 @@ import java.lang.reflect.Method;
 import javax.interceptor.InvocationContext;
 import javax.interceptor.AroundInvoke;
 
+import javax.ejb.*;
+import javax.annotation.*;
+
 public class ErrorRecoveryInterceptor {
+
+    @Resource(name="sc") SessionContext sc;
+
+    @EJB(name="foobar") Sless foobar;
 
     @AroundInvoke
     public Object interceptCall(InvocationContext ctx)
    	throws MyBadException, AssertionFailedException, Exception 
     {
+	System.out.println("In ErrorREcoveryInterceptor");
+	System.out.println("sless = " + foobar);
+	System.out.println("sc = " + sc);
+
         Method method = ctx.getMethod();
         String methodName = method.getName();
         Object[] params = ctx.getParameters();

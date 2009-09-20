@@ -11,9 +11,10 @@ import javax.ejb.Stateful;
 import javax.interceptor.InvocationContext;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptors;
-import javax.ejb.EJB;
-import javax.ejb.EJBException;
-import javax.ejb.Remote;
+
+
+import javax.ejb.*;
+import javax.annotation.*;
 
 
 @Stateful
@@ -22,6 +23,10 @@ import javax.ejb.Remote;
         })
 public class SfulEJB implements Sful
 {
+
+    @Resource(name="sc") SessionContext sc;
+
+    @EJB(name="foobar") Sless foobar;
 
     private int count = 0;
     
@@ -35,6 +40,8 @@ public class SfulEJB implements Sful
 
     public String hello() {
         System.out.println("In SfulEJB:hello()");
+	sless.sayHello();
+	System.out.println("caller principal = " + sc.getCallerPrincipal());
         return "hello";
     }
 

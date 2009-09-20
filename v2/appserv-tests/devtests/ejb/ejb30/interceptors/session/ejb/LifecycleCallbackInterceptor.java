@@ -37,6 +37,11 @@ public class LifecycleCallbackInterceptor {
     @AroundInvoke
     Object aroundInvoke(InvocationContext ctx)
 	        throws Exception {
+
+	System.out.println("In LifecycleCallbackInterceptor:aroundInvoke()");
+	sless.sayHello();
+	System.out.println("caller principal = " + sessionCtx.getCallerPrincipal());
+
         if (ctx.getMethod().getName().equals("setID")) {
             ctx.getContextData().put("LifecycleCallbackInterceptor", this);
             System.out.println("calling sless from interceptor. sless says " +
