@@ -407,7 +407,7 @@ public class ASMainStatic extends ASMainNonOSGi {
             }
         }
         if (!derbyLib.exists()) {
-            logger.info("Cannot find javadb client jar file, jdbc driver not available");
+            logger.fine("Cannot find javadb client jar file, jdbc driver not available");
             return;
         }
         // Add all derby jars, as embedded driver is one jar and network driver

@@ -38,6 +38,7 @@ package org.glassfish.api.embedded;
 import org.jvnet.hk2.component.PreDestroy;
 
 import java.io.File;
+import java.util.logging.*;
 
 /**
  * Abstraction for a virtual filesystem that be used by the server to store important files.
@@ -184,10 +185,10 @@ public class EmbeddedFileSystem implements PreDestroy {
     }
 
     public void preDestroy() {
-        System.out.println("delete " + instanceRoot + " = " + autoDelete);
+        Logger.getAnonymousLogger().fine("delete " + instanceRoot + " = " + autoDelete);
         if (autoDelete) {
             // recursively delete instanceRoot directory
-            System.out.println("Deleting recursively" + instanceRoot);
+            Logger.getAnonymousLogger().fine("Deleting recursively" + instanceRoot);
             deleteAll(instanceRoot);
         }
 

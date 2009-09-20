@@ -41,6 +41,9 @@ import java.io.Console;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
+import org.glassfish.api.embedded.*;
+import org.glassfish.api.embedded.Server;
+import org.glassfish.api.admin.config.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.DomainsManager;
@@ -51,10 +54,13 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.net.NetUtils;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.module.bootstrap.*;
 
 import com.sun.appserv.management.client.prefs.LoginInfo;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
+import com.sun.logging.*;
 
 /*
  * XXX - not currently used
@@ -620,7 +626,11 @@ public final class CreateDomainCommand extends CLICommand {
         DomainsManager manager = new PEDomainsManager();
 
         manager.createDomain(domainConfig);
-        //modifyInitialDomainXml();
+        try {
+            modifyInitialDomainXml(domainConfig);
+        } catch (Exception e) {
+            logger.printWarning(strings.get("CustomizationFailed",e.getMessage()));
+        }
         logger.printMessage(strings.get("DomainCreated", domainName));
         logger.printMessage(
             strings.get("DomainPort", domainName, Integer.toString(adminPort)));
@@ -840,11 +850,23 @@ public final class CreateDomainCommand extends CLICommand {
 
     /*
      * XXX - not curently used
-     *
-    private void modifyInitialDomainXml() throws LifecycleException {
+     */
+    private void modifyInitialDomainXml(DomainConfig domainConfig) throws LifecycleException {
         // for each module implementing the @Contract DomainInitializer, extract
         // the initial domain.xml and insert it into the existing domain.xml
-        Server server = new Server.Builder("dummylaunch").build();
+
+        Server.Builder builder = new Server.Builder("dummylaunch");
+        EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
+        efsb.installRoot(new File(domainConfig.getInstallRoot()));
+        File domainDir = new File(domainConfig.getDomainRoot(), domainConfig.getDomainName());
+        File configDir = new File(domainDir, "config");
+        efsb.configurationFile(new File(configDir, "domain.xml"), false);
+        builder.embeddedFileSystem(efsb.build());
+
+        Properties properties = new Properties();
+        properties.setProperty(StartupContext.STARTUP_MODULESTARTUP_NAME, "DomainCreation");
+        Server server = builder.build(properties);
+
         server.start();
         Habitat habitat = server.getHabitat();
         // Will always need DAS's name & config. No harm using the name 'server'
@@ -866,14 +888,18 @@ public final class CreateDomainCommand extends CLICommand {
 
         // now for every such Inhabitant, fetch the actual initial config and
         // insert it into the module that initial config was targeted for.
+        Collection<DomainInitializer> inits = habitat.getAllByContract(DomainInitializer.class);
+        if (inits.isEmpty()) {
+            logger.printMessage("No domain initializers found, bypassing customization step");
+        }
         for (DomainInitializer inhabitant : habitat.getAllByContract(
             DomainInitializer.class)) {
+            logger.printMessage("Invoke DomainInitializer " + inhabitant.getClass());
             Container newContainerConfig = inhabitant.getInitialConfig(ctx);
             config.getContainers().add(newContainerConfig);
         }
         server.stop();
     }
-    */
 
     /**
      * Should we save the master password or not?

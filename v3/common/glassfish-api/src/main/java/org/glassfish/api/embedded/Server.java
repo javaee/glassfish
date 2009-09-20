@@ -126,7 +126,6 @@ public class Server {
             this.fileSystem = fileSystem;
             return this;
         }
-
         /**
          * Uses this builder's name to create or return an existing embedded
          * server instance.
@@ -137,20 +136,32 @@ public class Server {
          *
          * @return the configured server instance
          */
-        // todo : make creating an existing server a failure.
         public Server build() {
+            return build(null);
+        }
+
+        /**
+         * Uses this builder's name to create or return an existing embedded
+         * server instance.
+         * The embedded server will be using the configured parameters
+         * of this builder. If no embedded file system is used, the embedded instance will use
+         * a temporary instance root with a default basic configuration. That temporary instance
+         * root will be deleted once the server is shutdown.
+         *
+         * @param properties extra creation properties
+         *
+         * @return the configured server instance
+         */
+        public Server build(Properties properties) {
             synchronized(servers) {
                 if (!servers.containsKey(serverName)) {
-                    Server s = new Server(this);
+                    Server s = new Server(this, properties);
                     servers.put(serverName, s);
                     return s;
                 }
                 throw new IllegalStateException("An embedded server of this name already exists");
             }
         }
-
-
-        // TOdO : move getServer() on the server
     }
 
     private final static class ContainerStatus {
@@ -190,7 +201,7 @@ public class Server {
 
 
 
-    private Server(Builder builder) {
+    private Server(Builder builder, Properties properties) {
         serverName = builder.serverName;
         loggerEnabled = builder.loggerEnabled;
         verbose = builder.verbose;
@@ -250,15 +261,22 @@ public class Server {
             throw new RuntimeException("Embedded startup not found, classpath is probably incomplete");
         }
 
+        String[] args = new String[0];
+        if (properties!=null) {
+            if (properties.containsKey(StartupContext.STARTUP_MODULESTARTUP_NAME)) {
+                args = new String[2];
+                args[0] = "-" + StartupContext.STARTUP_MODULESTARTUP_NAME; 
+                args[1] = properties.getProperty(StartupContext.STARTUP_MODULESTARTUP_NAME);
+            }
+        }
         if (fs.installRoot==null) {
-            embedded.setContext(new StartupContext(fs.instanceRoot, fs.instanceRoot, new String[0]));
+            embedded.setContext(new StartupContext(fs.instanceRoot, fs.instanceRoot, args));
             System.setProperty("com.sun.aas.installRoot", fs.instanceRoot.getAbsolutePath());
         } else {
-            embedded.setContext(new StartupContext(fs.installRoot, fs.instanceRoot, new String[0]));
+            embedded.setContext(new StartupContext(fs.installRoot, fs.instanceRoot, args));
             System.setProperty("com.sun.aas.installRoot", fs.installRoot.getAbsolutePath());            
         }
         System.setProperty("com.sun.aas.instanceRoot", fs.instanceRoot.getAbsolutePath());
-
 
         embedded.setContext(this);
         embedded.setLogger(Logger.getAnonymousLogger());
