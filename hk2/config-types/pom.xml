@@ -67,8 +67,8 @@
     <dependencies>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
-            <artifactId>hk2</artifactId>
-            <version>RELEASE</version>
+            <artifactId>config</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

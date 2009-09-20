@@ -59,9 +59,7 @@ import static com.sun.hk2.component.InhabitantsFile.CLASS_KEY;
 import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
 import com.sun.hk2.component.KeyValuePairParser;
 import com.sun.hk2.component.InhabitantsParser;
-import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitants;
+import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.annotations.Service;
 
 import java.io.File;
@@ -359,32 +357,31 @@ public class Main {
                 Thread.currentThread().setContextClassLoader(currentCL);
             }
         } else {
-            Collection<ModuleStartup> startups = habitat.getAllByContract(ModuleStartup.class);
+            Collection<Inhabitant<? extends ModuleStartup>> startups = habitat.getInhabitants(ModuleStartup.class);
+
             if(startups.isEmpty())
                 throw new BootException("No module has a ModuleStartup implementation");
             if(startups.size()>1) {
                 // maybe the user specified a main
                 String mainServiceName = context.getPlatformMainServiceName();
-                for (ModuleStartup startup :startups) {
-                    String serviceName = startup.getClass().getAnnotation(Service.class).name();
-                    if (serviceName.isEmpty()) {
-                        serviceName = null;
-                    }
-                    // if requested main is null, use default service (no name), otherwise find
-                    // a matching service name
-                    if ((serviceName==null && mainServiceName==null)) {
-                        startupCode = startup;
+                for (Inhabitant<? extends ModuleStartup> startup : startups) {
+                    Collection<String> regNames = Inhabitants.getNamesFor(startup, ModuleStartup.class.getName());
+                    if (regNames.isEmpty() && mainServiceName==null) {
+                        startupCode = startup.get();
                     } else {
-                        if (serviceName!=null && serviceName.equals(mainServiceName)) {
-                            startupCode = startup;
+                        for (String regName : regNames) {
+                            if (regName.equals(mainServiceName)) {
+                                startupCode = startup.get();
+                            }
                         }
                     }
+
                 }
                 if (startupCode==null) {
                     if (mainServiceName==null) {
-                        Iterator<ModuleStartup> itr = startups.iterator();
-                        ModuleStartup a = itr.next();
-                        ModuleStartup b = itr.next();
+                        Iterator<Inhabitant<? extends ModuleStartup>> itr = startups.iterator();
+                        ModuleStartup a = itr.next().get();
+                        ModuleStartup b = itr.next().get();
                         Module am = registry.find(a.getClass());
                         Module bm = registry.find(b.getClass());
                         throw new BootException(String.format("Multiple ModuleStartup found: %s from %s and %s from %s",a,am,b,bm));
@@ -393,7 +390,7 @@ public class Main {
                     }
                 }
             } else {
-                startupCode = startups.iterator().next();
+                startupCode = startups.iterator().next().get();
             }
             mainModule = registry.find(startupCode.getClass());
         }

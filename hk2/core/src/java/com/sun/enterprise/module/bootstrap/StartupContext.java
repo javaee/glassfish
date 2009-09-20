@@ -167,7 +167,12 @@ public class StartupContext {
     }
 
     public String getPlatformMainServiceName() {
-        return String.class.cast(args.get(STARTUP_MODULESTARTUP_NAME));
+        String v = String.class.cast(args.get(STARTUP_MODULESTARTUP_NAME));
+        // todo : dochez, horrible hack to work around ArgumentManager clumsyness
+        if (v==null) {
+            return String.class.cast(args.get("-"+STARTUP_MODULESTARTUP_NAME));
+        }
+        return v;
     }
     
     /**

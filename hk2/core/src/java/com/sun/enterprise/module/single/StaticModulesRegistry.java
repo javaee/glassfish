@@ -53,7 +53,7 @@ import org.jvnet.hk2.component.Inhabitants;
  * @author Jerome Dochez
  */
 public class StaticModulesRegistry extends SingleModulesRegistry {
-
+              
     final private StartupContext startupContext; 
 
     public StaticModulesRegistry(ClassLoader singleCL) {
