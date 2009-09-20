@@ -80,35 +80,17 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <!--
-                  create source jar by repackaging individual sources jars. We really need to better automate this,
-                  along with maven-bundle-plugin invocation.
-                 -->
-                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
-                <artifactId>maven-antrun-extended-plugin</artifactId>
-                <version>1.27</version>
-                <configuration>
-                    <tasks>
-                        <resolveAll todir="target/source-jars" classifier="sources">
-                            <scope level="compile,runtime" />
-                            <groupId not="${project.groupId}" />
-                        </resolveAll>
-                        <zip destfile="target/${pon.artifactId}-${pom.version}-sources.jar">
-                            <zipgroupfileset dir="target/source-jars" includes="*.jar" />
-                        </zip>
-                    </tasks>
-                </configuration>
-              <executions>
-                  <execution>
-                      <!-- executes after source:jar executes in the package phase -->
-                      <phase>verify</phase>
-                      <goals>
-                          <goal>run</goal>
-                      </goals>
-                  </execution>
-              </executions>
-            </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>2.1</version>
+            <configuration>
+                <includePom>true</includePom>
+                <includes>
+                    <include>pom.xml</include>
+                </includes>
+            </configuration>
+          </plugin>            
         </plugins>
     </build>
     <dependencies>
