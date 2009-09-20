@@ -16,9 +16,6 @@ public class SimpleSingleton {
     private void init() {
 	 System.out.println("In SimpleSingleton:init()");
 
-	 
-
-	 /** NOTE : Uncomment to test issue 9035
 	 try {
 	     SimpleStateless ss = (SimpleStateless)
 		 sessionCtx.lookup("java:app/env/slref");
@@ -27,7 +24,7 @@ public class SimpleSingleton {
 	 } catch(Exception e) {
 	     throw new EJBException(e);
 	 }
-	 **/
+
     }
 
     public void hello() {
