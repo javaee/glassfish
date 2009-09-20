@@ -54,8 +54,7 @@
                 labels="$pageSession{availableVS}"
                 selected="#{pageSession.selectedVS}" >
                 <!beforeCreate
-                    getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service"
-                        type="virtual-server" result="#{pageSession.vsList}");
+                    getVsForDeployment(result="#{pageSession.vsList}");
                     getListBoxOptions(
                         availableList="#{pageSession.vsList}",
                         selectedCommaString="#{pageSession.valueMap2['VirtualServers']}",

@@ -508,6 +508,15 @@ public class WebAppHandlers {
         }
    }
 
+   //getVsForDeployment(result="#{pageSession.vsList}");
+   @Handler(id = "getVsForDeployment",
+        output = {
+        @HandlerOutput(name = "result", type = List.class)})
+    public static void getVsForDeployment(HandlerContext handlerCtx) {
+        Set vsSet = V3AMX.getInstance().getConfig("server-config").getHttpService().getVirtualServer().keySet();
+        vsSet.remove("__asadmin");
+        handlerCtx.setOutputValue("result", new ArrayList(vsSet));
+   }
 
    //This handler is called after user deleted one more more VS from the VS table.
    //We need to go through all the application-ref to see if the VS specified still exist.  If it doesn't, we need to
