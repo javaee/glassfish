@@ -60,7 +60,7 @@ public class DeployMojo extends AbstractDeployMojo  {
 
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        Server server = new Server.Builder(serverID).build();
+        Server server = Server.getServer(serverID);
 
         try {
             EmbeddedDeployer deployer = server.getDeployer();

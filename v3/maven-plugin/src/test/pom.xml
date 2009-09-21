@@ -55,9 +55,22 @@
           <goalPrefix>glassfish</goalPrefix>
 	<installRoot>/ws/v3/publish/glassfishv3/glassfish</installRoot>      
     <port>8989</port>
-          <webapp>/wsp/apps/test/test.war</webapp>
+          <app>/wsp/apps/test/test.war</app>
        </configuration>
-      </plugin>
+  
+       <executions>
+                <execution>
+                        <phase>install</phase>
+                        <goals>
+                                <goal>start</goal>
+                                <goal>stop</goal>
+                        </goals>
+                </execution>
+        </executions>
+
+
+
+    </plugin>
 
     </plugins>
     <extensions>

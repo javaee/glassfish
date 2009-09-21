@@ -46,10 +46,14 @@ import org.glassfish.api.embedded.EmbeddedFileSystem;
 public  class Util {
 
     public static Server getServer(String serverID, String installRoot, String instanceRoot, String configFile) throws IOException {
+
+        Server server = Server.getServer(serverID);
+        if (server != null)
+            return server;
+        
         Server.Builder builder = new Server.Builder(serverID);
 
         EmbeddedFileSystem efs = getFileSystem(installRoot, instanceRoot, configFile);
-        Server server;
         if (efs != null) {
             server = builder.embeddedFileSystem(efs).build();
         }
