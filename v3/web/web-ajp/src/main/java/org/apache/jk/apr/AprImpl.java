@@ -52,7 +52,6 @@
  * limitations under the License.
  */
 
- 
 package org.apache.jk.apr;
 
 import java.io.FileOutputStream;
@@ -69,8 +68,6 @@ import org.apache.jk.core.JkChannel;
  * 
  */
 public class AprImpl extends JkHandler { // This will be o.a.t.util.handler.TcHandler - lifecycle and config
-    static AprImpl aprSingleton=null;
-
     String baseDir;
     String aprHome;
     String soExt="so";
@@ -85,10 +82,6 @@ public class AprImpl extends JkHandler { // This will be o.a.t.util.handler.TcHa
     // name of the so used by java. If not set we'll loadLibrary("jkjni" ),
     // if set we load( nativeSo )
     String nativeSo;
-    
-    public AprImpl() {
-        aprSingleton=this;
-    }
     
     // -------------------- Properties --------------------
     
@@ -206,7 +199,7 @@ public class AprImpl extends JkHandler { // This will be o.a.t.util.handler.TcHa
     
     public static Object createJavaContext(String type, long cContext) {
         // XXX will be an instance method, fields accessible directly
-        AprImpl apr=aprSingleton;
+        AprImpl apr=new AprImpl();
         JkChannel jkH=(JkChannel)apr.jkHandlers.get( type );
         if( jkH==null ) return null;
 

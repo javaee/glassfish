@@ -1046,10 +1046,14 @@ public class ResourceAttributes implements Attributes {
     
     
     /**
-     * Clone the attributes object (WARNING: fake cloning).
+     * Clone the attributes object
      */
     public Object clone() {
-        return this;
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
     
     
