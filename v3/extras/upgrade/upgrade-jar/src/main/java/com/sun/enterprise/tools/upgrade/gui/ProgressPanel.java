@@ -36,9 +36,9 @@
 
 package com.sun.enterprise.tools.upgrade.gui;
 
-import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.util.logging.Level;
+import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
 /**
@@ -151,6 +151,11 @@ public class ProgressPanel extends javax.swing.JPanel {
     // used by main frame and/or worker thread to set the state
     JProgressBar getProgressBar() {
         return progressBar;
+    }
+
+    // used by main frame and/or worker thread to set the state
+    JLabel getProgressLabel() {
+        return progressLabel;
     }
 
     /*

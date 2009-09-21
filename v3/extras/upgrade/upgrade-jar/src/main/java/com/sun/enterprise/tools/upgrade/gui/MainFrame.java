@@ -55,6 +55,7 @@ import java.net.URL;
 import java.util.logging.Logger;
 import javax.help.CSH;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 
@@ -355,6 +356,9 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
      * thread) when the upgrade has finished.
      */
     void done() {
+        JLabel progressLabel = progressPanel.getProgressLabel();
+        progressLabel.setText(stringManager.getString(
+            "upgrade.gui.progresspanel.progressLabel.DONE"));
         JProgressBar jpBar = progressPanel.getProgressBar();
         jpBar.setIndeterminate(false);
         jpBar.setValue(jpBar.getMaximum()); // use default
