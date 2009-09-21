@@ -67,18 +67,16 @@ public class Version implements PostConstruct {
         if (br != null) {
             return br.getVersion();
         }
-        StringBuffer sb = new StringBuffer("");
-        if (product_name == null) {
+        if (product_name == null)
             return null;
-        } else {
-            sb.append(product_name);
-        }
-        if (version_prefix != null) 
-            sb.append(" " + version_prefix);
+
+        StringBuffer sb = new StringBuffer(product_name);
+        if (ok(version_prefix))
+            sb.append(" ").append(version_prefix);
         if (full_version != null) 
             sb.append(full_version);
-        if (version_suffix != null) 
-            sb.append(" " + version_suffix);
+        if (ok(version_suffix))
+            sb.append(" ").append(version_suffix);
         return sb.toString();
     }
 
@@ -170,6 +168,10 @@ public class Version implements PostConstruct {
             return br.getAbbrevProductName();
         }
     	return abbrev_product_name;
+    }
+
+    private static boolean ok(String s) {
+        return s != null && s.length() > 0;
     }
 
 }
