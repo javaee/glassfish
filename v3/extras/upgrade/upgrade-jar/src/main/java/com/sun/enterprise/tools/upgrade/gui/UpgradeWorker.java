@@ -53,7 +53,7 @@ import javax.swing.SwingWorker;
  *
  * @author Bobby Bissett
  */
-public class UpgradeWorker extends SwingWorker<Integer, Void> {
+public class UpgradeWorker extends SwingWorker<Void, Void> {
 
     // GUI components
     private final MainFrame mainFrame;
@@ -71,24 +71,17 @@ public class UpgradeWorker extends SwingWorker<Integer, Void> {
         this.progressPanel = mainFrame.getProgressPanel();
     }
 
-    /*
-     * Returns the exit code of the asadmin process.
-     */
     @Override
-    protected Integer doInBackground() throws Exception {
+    protected Void doInBackground() throws Exception {
         GUILogHandler handler = new GUILogHandler(progressPanel);
         Throwable unexpected = null;
         try {
             systemLogger.addHandler(handler);
-
-            // retrieve with get() in this.done() if needed
-            int retVal = upgradeToolMain.performUpgrade();
-            return retVal;
+            upgradeToolMain.performUpgrade();
         } catch (Throwable t) {
             // just to be safe. shouldn't happen
             System.err.println(t.getLocalizedMessage());
             unexpected = t;
-            return 1;
         } finally {
             systemLogger.removeHandler(handler);
             if (unexpected != null) {
@@ -96,6 +89,7 @@ public class UpgradeWorker extends SwingWorker<Integer, Void> {
                     "Problem in swing worker thread", unexpected);
             }
         }
+        return null;
     }
 
     /*

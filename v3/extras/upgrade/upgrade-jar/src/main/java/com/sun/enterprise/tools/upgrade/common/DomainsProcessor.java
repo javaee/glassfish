@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,11 +38,10 @@ package com.sun.enterprise.tools.upgrade.common;
 
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
-
 import java.io.File;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.StringTokenizer;
 
 /**
  *
@@ -50,28 +49,18 @@ import java.util.logging.Logger;
  * @author  hans
  */
 public class DomainsProcessor {
+    
     private CommonInfoModel commonInfo;
     private static final StringManager stringManager =
         StringManager.getManager(DomainsProcessor.class);
     private static final Logger logger = LogService.getLogger();
 
-    private boolean domainStarted = false;
-		
     public DomainsProcessor(CommonInfoModel ci) {
         this.commonInfo = ci;
     }
 
     public int startDomain(String domainName) throws HarnessException {
-        int exitValue = 0;
-        if (!domainStarted) {
-            exitValue = Commands.startDomain(domainName, commonInfo);
-            if (exitValue == 0) {
-                domainStarted = true;
-            } else {
-                throw new HarnessException(stringManager.getString("upgrade.common.domain_start_failed", domainName));
-            }
-        }
-        return exitValue;
+        return Commands.startDomain(domainName, commonInfo);
     }
 
     /**

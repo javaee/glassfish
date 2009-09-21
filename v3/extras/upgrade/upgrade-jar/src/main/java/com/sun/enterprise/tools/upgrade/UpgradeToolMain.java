@@ -166,66 +166,22 @@ public class UpgradeToolMain {
             commonInfo.setupTasks();
 
             try {
-                // preform upgrade
                 DomainsProcessor dProcessor = new DomainsProcessor(commonInfo);
                 TargetAppSrvObj _target = commonInfo.getTarget();
-
-                // Find the endpoint of an existing server log so
-                // when we look for error msgs we will not get
-                // pre-existing ones.
-                File serverLog = null;
-                LogParser logParser = null;
-                try {
-                    serverLog = LogFinder.getServerLogFile();
-                    if (serverLog != null) {
-                        logParser = new LogParser(serverLog);
-                    }
-                } catch (FileNotFoundException fe) {
-                    logger.log(Level.WARNING, sm.getString(
-                        "enterprise.tools.upgrade.domain_log_file_not_found", fe.getMessage()));
-                } catch (IOException e) {
-                    logger.log(Level.WARNING, sm.getString(
-                        "enterprise.tools.upgrade.domain_log_read_failure", e.getMessage()));
-                }
 
                 dProcessor.copyUserLibFiles();
                 int exitValue = dProcessor.startDomain(_target.getDomainName());
 
-                //- There should be a new server log file.
-                if (serverLog == null) {
-                    try {
-                        serverLog = LogFinder.getServerLogFile();
-                        logParser = new LogParser(serverLog);
-                        logParser.setStartPoint(0);
-                    } catch (FileNotFoundException fe) {
-                        logger.log(Level.WARNING, sm.getString(
-                            "enterprise.tools.upgrade.domain_log_file_not_found", fe.getMessage()));
-                    } catch (IOException e) {
-                        logger.log(Level.WARNING, sm.getString(
-                            "enterprise.tools.upgrade.domain_log_read_failure", e.getMessage()));
-                    }
-                }
-                //- broadcast all upgrade error found
-                if (logParser != null) {
-                    StringBuilder sbuf = logParser.parseLog();
-                    if (sbuf.length() > 0) {
-                        logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.not_successful_mgs"));
-                        logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.logs_mgs_title"));
-                        logger.log(Level.INFO, sbuf.toString());
-
-                    } else {
-                        logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.done"));
-
-                    }
-
+                if (exitValue != 0) {
+                    logger.warning(sm.getString(
+                        "enterprise.tools.upgrade.processExitValue", exitValue));
                 } else {
-                    logger.log(Level.WARNING, sm.getString("enterprise.tools.upgrade.could_not_process_server_log"));
-
+                    logger.info(sm.getString("enterprise.tools.upgrade.done"));
                 }
 
             } catch (HarnessException he) {
-                logger.log(Level.INFO, sm.getString(
-                    "enterprise.tools.upgrade.generalException", he.getMessage()));
+                logger.log(Level.SEVERE, sm.getString(
+                    "enterprise.tools.upgrade.generalException", he));
             }
 
             //Delete temporary files (if any) created during the process
@@ -271,8 +227,7 @@ public class UpgradeToolMain {
      * Otherwise we can remove the return value. Will know once
      * the asadmin upgrade process is final.
      */
-    public int performUpgrade() {
+    public void performUpgrade() {
         upgrade();
-        return 0;
     }
 }

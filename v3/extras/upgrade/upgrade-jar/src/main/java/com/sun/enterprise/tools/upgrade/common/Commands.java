@@ -46,14 +46,26 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+/*
+ * The Commands class is used statically (should probably be
+ * a singleton instead) and is not thread safe. It is expected
+ * that startDomain will not be called by the GUI while an
+ * upgrade is already in progress. In the command line case,
+ * this isn't an issue.
+ */
 public class Commands {
 
     private static final Logger logger = LogService.getLogger();
     private static final StringManager stringManager =
         StringManager.getManager(Commands.class);
     
+    private static boolean problemFound = false;
+
     public static int startDomain(String domainName, CommonInfoModel cInfo) {
+        problemFound = false; // in case this is being rerun
         Credentials c = cInfo.getSource().getDomainCredentials();
 
         String installRoot = System.getProperty(UpgradeToolMain.AS_DOMAIN_ROOT);
@@ -126,6 +138,15 @@ public class Commands {
         return exitValue;
     }
 
+    // can come from more than one stream, only want to output once
+    private static synchronized void foundProblem() {
+        if (problemFound) {
+            return;
+        }
+        logger.warning(stringManager.getString("commands.problemFound"));
+        problemFound = true;
+    }
+
     /*
      * TODO:
      * This method is not connected to anything yet, but am including
@@ -173,7 +194,25 @@ public class Commands {
      */
     private static class StreamWatcher extends Thread {
 
+        /*
+         * This is the pattern to match lines that start with
+         * SEVERE: or WARNING:
+         */
+        private static final Pattern pattern;
+        static {
+            StringBuilder sb = new StringBuilder();
+            sb.append("(");
+            sb.append(Level.SEVERE.getLocalizedName());
+            sb.append("|");
+            sb.append(Level.WARNING.getLocalizedName());
+            sb.append("):.*");
+            pattern = Pattern.compile(sb.toString());
+        }
+
         private final BufferedReader reader;
+
+        // don't send the message more than once (or keep parsing the lines)
+        private boolean sentProblem = false;
 
         public StreamWatcher(InputStream stream, String name) {
             super(name);
@@ -182,16 +221,28 @@ public class Commands {
 
         @Override
         public void run() {
+            Matcher matcher;
             try {
                 String line = reader.readLine();
-                while (line != null) {
-                    logger.finer(getName() + ": " + line);
-                    line = reader.readLine();
-                    Thread.sleep(2);
+                if (line != null) {
+                    matcher = pattern.matcher(line);
+                    while (line != null) {
+                        logger.finer(getName() + ": " + line);
+                        if (!sentProblem) {
+                            matcher.reset(line);
+                            if (matcher.matches()) {
+                                Commands.foundProblem();
+                                sentProblem = true;
+                            }
+                        }
+                        line = reader.readLine();
+                        Thread.sleep(2);
+                    }
                 }
             } catch (Throwable t) {
-                logger.log(Level.WARNING,
-                    "todo: Exception reading stream from process", t);
+                logger.log(Level.SEVERE,
+                    stringManager.getString("commands.exceptionReadingStream"),
+                    t);
             } finally {
                 try {
                     reader.close();
