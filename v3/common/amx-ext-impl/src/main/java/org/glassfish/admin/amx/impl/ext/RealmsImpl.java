@@ -366,10 +366,7 @@ public final class RealmsImpl extends AMXImplBase
     private static final String ANONYMOUS_USER = "anonymous";
     private static final String FILE_REALM_CLASSNAME = "com.sun.enterprise.security.auth.realm.file.FileRealm";
             
-    public boolean getAnonymousLogin() {
-        return getAnonymousUser() != null;
-    }
-    
+
      public String getAnonymousUser() {
         final DomainRoot domainRoot = getDomainRootProxy();
         final Domain domainConfig = domainRoot.child(Domain.class);

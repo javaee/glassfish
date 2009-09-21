@@ -86,10 +86,6 @@ public interface Realms extends AMXProxy, Utility, Singleton
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public boolean supportsUserManagement(final String realmName);
     
-    /** @return true if anonymous login is in use */
-    @ManagedAttribute
-    public boolean getAnonymousLogin();
-    
     /** @return the username of any user that uses an empty password */
     @ManagedAttribute
     public String getAnonymousUser();
