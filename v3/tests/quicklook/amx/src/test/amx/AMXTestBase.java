@@ -39,6 +39,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 import java.net.MalformedURLException;
@@ -144,6 +146,9 @@ public class AMXTestBase
         private final MBeanServerConnection mServer;
         private final String                mDomain;
         
+        private final List<ObjectName> mRegistered = Collections.synchronizedList(new ArrayList<ObjectName>());
+        private final List<ObjectName> mUnregistered = Collections.synchronizedList(new ArrayList<ObjectName>());
+        
         public MBeansListener(final MBeanServerConnection server, final String domain)
         {
             mServer  = server;
@@ -176,13 +181,15 @@ public class AMXTestBase
             {
                 if ( mbs.getType().equals(MBeanServerNotification.REGISTRATION_NOTIFICATION ) )
                 {
-                    debug( "Registered: " + objectName );
+                    //debug( "Registered: " + objectName );
+                    mRegistered.add( objectName );
                 }
                 else if ( mbs.getType().equals(MBeanServerNotification.UNREGISTRATION_NOTIFICATION ) )
                 {
-                    debug( "Unregistered: " + objectName );
+                    //debug( "Unregistered: " + objectName );
+                    mUnregistered.add( objectName );
                 }
-                }
+            }
         }
     }
     
@@ -265,7 +272,7 @@ public class AMXTestBase
             
             mDomainConfig = mDomainRoot.child(Domain.class);
             
-            //getMBeansListener();
+            getMBeansListener();
             enableMonitoring();
         }
         catch (Exception e)
