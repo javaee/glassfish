@@ -53,7 +53,7 @@ public class StopServerTask extends Task{
 
     public void execute() throws BuildException {
         log ("Stopping server");
-        Server server = new Server.Builder(serverID).build();
+        Server server = Server.getServer(serverID);
         try {
             server.stop();
         } catch (Exception ex) {

@@ -113,7 +113,7 @@ public class DeployScatteredTask extends Task {
                 File value = entry.getValue();
                 builder.addMetadata(key, value);
             }
-            Server server = new Server.Builder(serverID).build();
+            Server server = Server.getServer(serverID);
             EmbeddedDeployer deployer = server.getDeployer();
             DeployCommandParameters dp = new DeployCommandParameters(f);
             dp.name = name;

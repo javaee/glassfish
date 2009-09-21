@@ -140,7 +140,7 @@ public class DeployTask extends Task {
     public void execute() throws BuildException {
         log("deploying " + file);
 
-        Server server = new Server.Builder(serverID).build();
+        Server server = Server.getServer(serverID);
         EmbeddedDeployer deployer = server.getDeployer();
         deployer.deploy(new File(file), cmdParams);
     }

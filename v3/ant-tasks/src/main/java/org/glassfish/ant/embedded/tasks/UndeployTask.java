@@ -63,7 +63,7 @@ public class UndeployTask extends Task {
             log("Name of application to be undeployed must be specified", Project.MSG_WARN);
             return;
         }
-        Server server = new Server.Builder(serverID).build();
+        Server server = Server.getServer(serverID);
         EmbeddedDeployer deployer = server.getDeployer();
         deployer.undeploy(name, null);
 
