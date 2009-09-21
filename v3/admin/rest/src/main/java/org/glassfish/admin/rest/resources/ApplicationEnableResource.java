@@ -26,9 +26,9 @@ import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.api.ActionReport;
 
-public class DomainRestartResource {
+public class ApplicationEnableResource {
 
-public DomainRestartResource() {
+public ApplicationEnableResource() {
 __resourceUtil = new ResourceUtil();
 }
 @POST
@@ -94,9 +94,9 @@ return optionsResult;
 @Context
 protected UriInfo uriInfo;
 
-private static final String resourceName = "DomainRestart";
-private static final String commandName = "restart-domain";
-private static final String commandDisplayName = "restart";
+private static final String resourceName = "ApplicationEnable";
+private static final String commandName = "enable";
+private static final String commandDisplayName = "enable";
 private static final String commandMethod = "POST";
 private ResourceUtil __resourceUtil;
 }

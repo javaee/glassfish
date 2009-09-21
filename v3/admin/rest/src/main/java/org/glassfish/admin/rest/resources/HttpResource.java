@@ -22,4 +22,10 @@ public class HttpResource extends TemplateResource<Http> {
 		resource.setEntity(getEntity().getFileCache() );
 		return resource;
 	}
+	@Path("property/")
+	public ListPropertyResource getPropertyResource() {
+		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+		resource.setEntity(getEntity().getProperty() );
+		return resource;
+	}
 }

@@ -33,7 +33,7 @@ public ConnectionPoolPingResource() {
 __resourceUtil = new ResourceUtil();
 }
 @GET
-@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED})
+@Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 public StringResult executeCommand(
 	 @QueryParam("pool_name")  @DefaultValue("")  String Pool_name 
  	) {

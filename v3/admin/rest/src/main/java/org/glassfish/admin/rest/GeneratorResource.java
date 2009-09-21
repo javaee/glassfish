@@ -600,6 +600,9 @@ public class GeneratorResource {
         {"ListAuditModule", "create-audit-module"},
         {"ListHttpListener", "create-http-listener"},
         {"ListIiopListener", "create-iiop-listener"},
+        {"ListNetworkListener", "create-network-listener"},
+        {"ListTransport", "create-transport"},
+        {"ListProtocol", "create-protocol"},
         {"ListJmsHost", "create-jms-host"},
         {"ListMessageSecurityConfig", "create-message-security-provider"},
         {"JavaConfig", "create-profiler"},
@@ -619,6 +622,8 @@ public class GeneratorResource {
         {"Domain", "get-host-and-port", "GET", "host-port"},
         ///{"ListApplication", "deploy"},
         ///{"Application", "redeploy"},
+        {"Application", "enable", "POST", "enable"},
+        {"Application", "disable", "POST", "disable"},
         {"ConnectionPool", "ping-connection-pool", "GET", "ping"},
     };
 
@@ -764,7 +769,14 @@ public class GeneratorResource {
         out.write("return Response.status(400).entity(\n");
         out.write("\"Unable to parse the input entity. Please check the syntax.\").build();");
         out.write("}/*parsing error*/\n\n");
+
+        out.write("/*formulate id attribute for this command resource*/\n");
+        out.write("String parent = __resourceUtil.getParentName(uriInfo);\n");
+        out.write("if (parent != null) {\n");
+        out.write("data.put(\"id\", parent);\n");
+        out.write("}\n\n");
         out.write("__resourceUtil.adjustParameters(data);\n\n");
+        out.write("__resourceUtil.purgeEmptyEntries(data);\n\n");
 
         out.write("ActionReport actionReport = __resourceUtil.runCommand(commandName, data, RestService.getHabitat());\n\n");
         out.write("ActionReport.ExitCode exitCode = actionReport.getActionExitCode();\n\n");
@@ -813,7 +825,7 @@ public class GeneratorResource {
         java.util.Collection<CommandModel.ParamModel> params = cm.getParameters();
 
         out.write("@" + commandMethod + "\n");//commandMethod - GET
-        out.write("@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED})\n");
+        out.write("@Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})\n");
         out.write("public StringResult executeCommand(\n");
         boolean first = true;
         for (CommandModel.ParamModel pm : params) {

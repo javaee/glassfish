@@ -28,4 +28,10 @@ public class TransportsResource extends TemplateResource<Transports> {
 		resource.setEntity(getEntity().getSelectionKeyHandler() );
 		return resource;
 	}
+	@Path("property/")
+	public ListPropertyResource getPropertyResource() {
+		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+		resource.setEntity(getEntity().getProperty() );
+		return resource;
+	}
 }

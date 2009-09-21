@@ -16,6 +16,12 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.grizzly.config.dom.NetworkListeners;
 public class NetworkListenersResource extends TemplateResource<NetworkListeners> {
 
+	@Path("property/")
+	public ListPropertyResource getPropertyResource() {
+		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+		resource.setEntity(getEntity().getProperty() );
+		return resource;
+	}
 	@Path("thread-pool/")
 	public ListThreadPoolResource getThreadPoolResource() {
 		ListThreadPoolResource resource = resourceContext.getResource(ListThreadPoolResource.class);

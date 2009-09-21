@@ -28,6 +28,12 @@ public class NetworkConfigResource extends TemplateResource<NetworkConfig> {
 		resource.setEntity(getEntity().getProtocols() );
 		return resource;
 	}
+	@Path("property/")
+	public ListPropertyResource getPropertyResource() {
+		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+		resource.setEntity(getEntity().getProperty() );
+		return resource;
+	}
 	@Path("network-listeners/")
 	public NetworkListenersResource getNetworkListenersResource() {
 		NetworkListenersResource resource = resourceContext.getResource(NetworkListenersResource.class);

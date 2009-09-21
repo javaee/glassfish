@@ -84,8 +84,7 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
 
 
     @GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML,
-        MediaType.APPLICATION_XML})
+    @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public GetResultList get(@QueryParam("expandLevel")
             @DefaultValue("1") int expandLevel) {
 

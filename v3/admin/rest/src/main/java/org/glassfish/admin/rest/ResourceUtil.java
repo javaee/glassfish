@@ -262,7 +262,7 @@ public class ResourceUtil extends Util {
 
 
     //removes entries with empty value from the given Map
-    void purgeEmptyEntries(HashMap<String, String> data) {
+    public void purgeEmptyEntries(HashMap<String, String> data) {
         Set<String> keys = data.keySet();
         Iterator<String> iterator = keys.iterator();
         String key;

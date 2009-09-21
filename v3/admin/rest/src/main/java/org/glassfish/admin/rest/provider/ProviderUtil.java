@@ -217,6 +217,14 @@ public class ProviderUtil extends Util {
 
     static protected String getHtmlRespresentationsForCommand(String command,
             String commandMethod, String commandDisplayName, UriInfo uriInfo) {
+        return getHtmlRespresentationsForCommand(command, commandMethod,
+            commandDisplayName, uriInfo, true);
+    }
+
+
+    static protected String getHtmlRespresentationsForCommand(String command,
+            String commandMethod, String commandDisplayName, UriInfo uriInfo,
+                boolean displayId) {
         String result ="";
         if ((command != null) && (command != "")) {
             ResourceUtil resourceUtil = new ResourceUtil();
@@ -228,11 +236,13 @@ public class ProviderUtil extends Util {
             ParameterMetaData parameterMetaData;
             while (iterator.hasNext()) {
                 parameter = iterator.next();
-                if ((!commandMethod.equals("delete")) ||                                //in case of delete operation(command),
-                    ((commandMethod.equals("delete")) && (!parameter.equals("id")))) {  //do not  display/provide id attribute.
-                    parameterMetaData = methodMetaData.getParameterMetaData(parameter);
-                    result = result +
-                        getHtmlRespresentationForParameter(parameter, parameterMetaData);
+                if (!(parameter.equals("id") && (!displayId))) { //do not display id in case of command resources. displayId = false for command resources.
+                     if ((!commandMethod.equals("delete")) ||                                //in case of delete operation(command),
+                        ((commandMethod.equals("delete")) && (!parameter.equals("id")))) {  //do not  display/provide id attribute.
+                        parameterMetaData = methodMetaData.getParameterMetaData(parameter);
+                        result = result +
+                            getHtmlRespresentationForParameter(parameter, parameterMetaData);
+                    }
                 }
             }
 

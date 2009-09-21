@@ -31,6 +31,6 @@ public class ListProtocolResource extends TemplateListOfResource<Protocol> {
 
 
 public String getPostCommand() {
-	return null;
+	return "create-protocol";
 }
 }

@@ -16,4 +16,10 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.grizzly.config.dom.SelectionKeyHandler;
 public class SelectionKeyHandlerResource extends TemplateResource<SelectionKeyHandler> {
 
+	@Path("property/")
+	public ListPropertyResource getPropertyResource() {
+		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+		resource.setEntity(getEntity().getProperty() );
+		return resource;
+	}
 }

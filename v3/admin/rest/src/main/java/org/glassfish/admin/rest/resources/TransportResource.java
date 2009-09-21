@@ -16,4 +16,10 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.grizzly.config.dom.Transport;
 public class TransportResource extends TemplateResource<Transport> {
 
+	@Path("property/")
+	public ListPropertyResource getPropertyResource() {
+		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+		resource.setEntity(getEntity().getProperty() );
+		return resource;
+	}
 }

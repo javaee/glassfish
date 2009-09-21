@@ -16,6 +16,22 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.Application;
 public class ApplicationResource extends TemplateResource<Application> {
 
+@Path("enable/")
+public ApplicationEnableResource getApplicationEnableResource() {
+ApplicationEnableResource resource = resourceContext.getResource(ApplicationEnableResource.class);
+return resource;
+}
+
+@Path("disable/")
+public ApplicationDisableResource getApplicationDisableResource() {
+ApplicationDisableResource resource = resourceContext.getResource(ApplicationDisableResource.class);
+return resource;
+}
+
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"enable", "POST"}, {"disable", "POST"}};
+}
+
 	@Path("module/")
 	public ListModuleResource getModuleResource() {
 		ListModuleResource resource = resourceContext.getResource(ListModuleResource.class);

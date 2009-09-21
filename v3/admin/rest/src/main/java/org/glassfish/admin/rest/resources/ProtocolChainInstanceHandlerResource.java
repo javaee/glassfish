@@ -22,4 +22,10 @@ public class ProtocolChainInstanceHandlerResource extends TemplateResource<Proto
 		resource.setEntity(getEntity().getProtocolChain() );
 		return resource;
 	}
+	@Path("property/")
+	public ListPropertyResource getPropertyResource() {
+		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+		resource.setEntity(getEntity().getProperty() );
+		return resource;
+	}
 }

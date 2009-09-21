@@ -101,10 +101,9 @@ public class TemplateResource<E extends ConfigBeanProxy> {
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_FORM_URLENCODED,
-        MediaType.TEXT_HTML,
+    @Produces({MediaType.TEXT_HTML,
         MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML})
+        MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     public GetResult get(@QueryParam("expandLevel")
             @DefaultValue("1") int expandLevel) {
         if (getEntity() == null) {

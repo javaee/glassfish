@@ -22,4 +22,10 @@ public class PortUnificationResource extends TemplateResource<PortUnification> {
 		resource.setEntity(getEntity().getProtocolFinder() );
 		return resource;
 	}
+	@Path("property/")
+	public ListPropertyResource getPropertyResource() {
+		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+		resource.setEntity(getEntity().getProperty() );
+		return resource;
+	}
 }

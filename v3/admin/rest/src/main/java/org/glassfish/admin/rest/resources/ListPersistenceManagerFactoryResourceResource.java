@@ -14,15 +14,15 @@ import javax.ws.rs.*;
 import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
 import org.glassfish.admin.rest.provider.GetResultList;
-import com.sun.grizzly.config.dom.NetworkListener;
-public class ListNetworkListenerResource extends TemplateListOfResource<NetworkListener> {
+import com.sun.enterprise.config.serverbeans.PersistenceManagerFactoryResource;
+public class ListPersistenceManagerFactoryResourceResource extends TemplateListOfResource<PersistenceManagerFactoryResource> {
 
 
-	@Path("{Name}/")
-	public NetworkListenerResource getNetworkListenerResource(@PathParam("Name") String id) {
-		NetworkListenerResource resource = resourceContext.getResource(NetworkListenerResource.class);
-		for (NetworkListener c: entity){
-			if(c.getName().equals(id)){
+	@Path("{JndiName}/")
+	public PersistenceManagerFactoryResourceResource getPersistenceManagerFactoryResourceResource(@PathParam("JndiName") String id) {
+		PersistenceManagerFactoryResourceResource resource = resourceContext.getResource(PersistenceManagerFactoryResourceResource.class);
+		for (PersistenceManagerFactoryResource c: entity){
+			if(c.getJndiName().equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -31,6 +31,6 @@ public class ListNetworkListenerResource extends TemplateListOfResource<NetworkL
 
 
 public String getPostCommand() {
-	return "create-network-listener";
+	return null;
 }
 }

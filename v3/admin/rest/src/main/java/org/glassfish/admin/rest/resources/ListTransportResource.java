@@ -31,6 +31,6 @@ public class ListTransportResource extends TemplateListOfResource<Transport> {
 
 
 public String getPostCommand() {
-	return null;
+	return "create-transport";
 }
 }

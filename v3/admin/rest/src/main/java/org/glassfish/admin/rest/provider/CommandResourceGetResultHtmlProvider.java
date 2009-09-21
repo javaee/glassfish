@@ -108,7 +108,7 @@ public class CommandResourceGetResultHtmlProvider extends ProviderUtil
 
         String command = proxy.getCommand();
         String commandRespresentation = getHtmlRespresentationsForCommand(command,
-            proxy.getCommandMethod(), commandDisplayName, uriInfo);
+            proxy.getCommandMethod(), commandDisplayName, uriInfo, false);
         result = getHtmlForComponent(commandRespresentation, parentName +
             " - " + commandDisplayName, result);
 

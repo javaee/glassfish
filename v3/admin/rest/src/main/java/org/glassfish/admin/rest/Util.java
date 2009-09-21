@@ -76,6 +76,15 @@ public class Util {
 
 
     /**
+     * Returns name of the resource parent from UriInfo.
+     */
+    public String getParentName(UriInfo uriInfo) {
+        if (uriInfo == null) return null;
+        return getParentName(uriInfo.getPath());
+    }
+
+
+    /**
      * Returns just the name of the given fully qualified name.
      */
     public String getName(String typeName) {

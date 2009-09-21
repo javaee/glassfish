@@ -16,4 +16,10 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.grizzly.config.dom.ProtocolFilter;
 public class ProtocolFilterResource extends TemplateResource<ProtocolFilter> {
 
+	@Path("property/")
+	public ListPropertyResource getPropertyResource() {
+		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+		resource.setEntity(getEntity().getProperty() );
+		return resource;
+	}
 }

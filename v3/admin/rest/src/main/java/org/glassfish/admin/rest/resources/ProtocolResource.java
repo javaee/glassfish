@@ -28,6 +28,12 @@ public class ProtocolResource extends TemplateResource<Protocol> {
 		resource.setEntity(getEntity().getHttp() );
 		return resource;
 	}
+	@Path("property/")
+	public ListPropertyResource getPropertyResource() {
+		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+		resource.setEntity(getEntity().getProperty() );
+		return resource;
+	}
 	@Path("ssl/")
 	public SslResource getSslResource() {
 		SslResource resource = resourceContext.getResource(SslResource.class);

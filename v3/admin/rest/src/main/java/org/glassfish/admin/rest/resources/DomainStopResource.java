@@ -39,7 +39,15 @@ if (data.containsKey("error")) {
 return Response.status(400).entity(
 "Unable to parse the input entity. Please check the syntax.").build();}/*parsing error*/
 
+/*formulate id attribute for this command resource*/
+String parent = __resourceUtil.getParentName(uriInfo);
+if (parent != null) {
+data.put("id", parent);
+}
+
 __resourceUtil.adjustParameters(data);
+
+__resourceUtil.purgeEmptyEntries(data);
 
 ActionReport actionReport = __resourceUtil.runCommand(commandName, data, RestService.getHabitat());
 
