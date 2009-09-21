@@ -254,9 +254,8 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                                 for (URL moduleURL : moduleURLs) {
                                     cl.addURL(moduleURL);
                                 }
-                            } else {
-                                cl.addModuleClassLoader(moduleUri, subCl);
                             }
+                            cl.addModuleClassLoader(moduleUri, subCl);
                         }
                     }
                 } catch (IOException e) {

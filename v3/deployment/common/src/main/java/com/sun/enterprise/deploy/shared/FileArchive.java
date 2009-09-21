@@ -228,9 +228,8 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
         if (!subEntry.exists()) {
             // time to create a new sub directory
             subEntry.mkdirs();
-            return archiveFactory.createArchive(subEntry);
         }
-        return null;
+        return archiveFactory.createArchive(subEntry);
     }
 
     /**

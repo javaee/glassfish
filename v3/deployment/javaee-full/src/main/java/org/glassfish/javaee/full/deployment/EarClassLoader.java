@@ -39,6 +39,7 @@ import java.net.URL;
 import java.util.*;
 import java.io.IOException;
 import com.sun.enterprise.loader.EJBClassLoader;
+import org.jvnet.hk2.component.PreDestroy;
 
 /**
  * Simplistic class loader which will delegate to each module class loader in the order
@@ -49,6 +50,7 @@ import com.sun.enterprise.loader.EJBClassLoader;
 public class EarClassLoader extends EJBClassLoader {
 
     private final List<ClassLoaderHolder> delegates = new LinkedList<ClassLoaderHolder>();
+    boolean isPreDestroyCalled = false;
 
     public EarClassLoader(URL[] urls, ClassLoader classLoader) {
         super(classLoader); 
@@ -69,6 +71,29 @@ public class EarClassLoader extends EJBClassLoader {
             }
         }
         return null;
+    }
+
+    @Override
+    public void preDestroy() {
+        if (isPreDestroyCalled) {
+            return;
+        }
+
+        // destroy all the module classloaders
+        try {
+            for (ClassLoaderHolder clh : delegates) {
+                if (!clh.loader.equals(this)) {
+                    PreDestroy.class.cast(clh.loader).preDestroy();
+                }
+            }
+        } catch (Exception e) {
+            // ignore, the class loader does not need to be explicitely stopped.
+        }
+
+        // destroy itself
+        super.preDestroy();
+
+        isPreDestroyCalled = true;
     }
 
     private class ClassLoaderHolder {

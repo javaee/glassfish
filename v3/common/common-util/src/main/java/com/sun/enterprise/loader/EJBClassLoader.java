@@ -78,6 +78,7 @@ import com.sun.enterprise.util.i18n.StringManager;
 import java.util.zip.ZipEntry;
 
 import org.glassfish.api.deployment.InstrumentableClassLoader;
+import org.jvnet.hk2.component.PreDestroy;
 
 /**
  * Class loader used by the ejbs of an application or stand alone module.
@@ -92,7 +93,7 @@ import org.glassfish.api.deployment.InstrumentableClassLoader;
  */
 public class EJBClassLoader
         extends URLClassLoader
-        implements JasperAdapter, InstrumentableClassLoader {
+        implements JasperAdapter, InstrumentableClassLoader, PreDestroy {
 
     /** logger for this class */
     static Logger _logger=LogDomains.getLogger(EJBClassLoader.class, LogDomains.LOADER_LOGGER);
@@ -144,6 +145,13 @@ public class EJBClassLoader
     public boolean isDone() {
         return doneCalled;
     }
+
+
+    @Override
+    public void preDestroy() {
+        done();
+    }
+
 
     /**
      * This method should be called to free up the resources.
