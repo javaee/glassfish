@@ -62,21 +62,6 @@ import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
 import com.sun.logging.*;
 
-/*
- * XXX - not currently used
- *
-// imports for config pluggability feature
-import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.Habitat;
-import org.glassfish.api.embedded.LifecycleException;
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.admin.config.Container;
-import org.glassfish.api.admin.config.DomainInitializer;
-import org.glassfish.api.admin.config.DomainContext;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.logging.LogDomains;
- */
-
 /**
  *  This is a local command that creates a domain.
  */
@@ -210,9 +195,10 @@ public final class CreateDomainCommand extends CLICommand {
         /*
          * If --user wasn't specified as a program option,
          * we treat it as a required option and prompt for it
-         * if possible.
+         * if possible, unless --nopassword was specified in
+         * which case we default the user name.
          */
-        if (programOpts.getUser() == null) {
+        if (programOpts.getUser() == null && !getBooleanOption(NOPASSWORD)) {
             // prompt for it (if interactive)
             Console cons = System.console();
             if (cons != null && programOpts.isInteractive()) {
@@ -629,12 +615,14 @@ public final class CreateDomainCommand extends CLICommand {
         try {
             modifyInitialDomainXml(domainConfig);
         } catch (Exception e) {
-            logger.printWarning(strings.get("CustomizationFailed",e.getMessage()));
+            logger.printWarning(
+                            strings.get("CustomizationFailed",e.getMessage()));
         }
         logger.printMessage(strings.get("DomainCreated", domainName));
         logger.printMessage(
             strings.get("DomainPort", domainName, Integer.toString(adminPort)));
-        if (adminPassword.equals(SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD))
+        if (adminPassword.equals(
+                SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD))
             logger.printMessage(strings.get("DomainAllowsUnauth", domainName,
                                                                     adminUser));
         else
@@ -849,22 +837,24 @@ public final class CreateDomainCommand extends CLICommand {
     }
 
     /*
-     * XXX - not curently used
      */
-    private void modifyInitialDomainXml(DomainConfig domainConfig) throws LifecycleException {
+    private void modifyInitialDomainXml(DomainConfig domainConfig)
+                                throws LifecycleException {
         // for each module implementing the @Contract DomainInitializer, extract
         // the initial domain.xml and insert it into the existing domain.xml
 
         Server.Builder builder = new Server.Builder("dummylaunch");
         EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
         efsb.installRoot(new File(domainConfig.getInstallRoot()));
-        File domainDir = new File(domainConfig.getDomainRoot(), domainConfig.getDomainName());
+        File domainDir = new File(domainConfig.getDomainRoot(),
+                                        domainConfig.getDomainName());
         File configDir = new File(domainDir, "config");
         efsb.configurationFile(new File(configDir, "domain.xml"), false);
         builder.embeddedFileSystem(efsb.build());
 
         Properties properties = new Properties();
-        properties.setProperty(StartupContext.STARTUP_MODULESTARTUP_NAME, "DomainCreation");
+        properties.setProperty(StartupContext.STARTUP_MODULESTARTUP_NAME,
+                                        "DomainCreation");
         Server server = builder.build(properties);
 
         server.start();
@@ -888,13 +878,16 @@ public final class CreateDomainCommand extends CLICommand {
 
         // now for every such Inhabitant, fetch the actual initial config and
         // insert it into the module that initial config was targeted for.
-        Collection<DomainInitializer> inits = habitat.getAllByContract(DomainInitializer.class);
+        Collection<DomainInitializer> inits =
+                habitat.getAllByContract(DomainInitializer.class);
         if (inits.isEmpty()) {
-            logger.printMessage("No domain initializers found, bypassing customization step");
+            logger.printMessage(
+                "No domain initializers found, bypassing customization step");
         }
         for (DomainInitializer inhabitant : habitat.getAllByContract(
             DomainInitializer.class)) {
-            logger.printMessage("Invoke DomainInitializer " + inhabitant.getClass());
+            logger.printMessage(
+                "Invoke DomainInitializer " + inhabitant.getClass());
             Container newContainerConfig = inhabitant.getInitialConfig(ctx);
             config.getContainers().add(newContainerConfig);
         }
