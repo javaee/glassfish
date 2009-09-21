@@ -22,6 +22,7 @@ import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModuleState;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ModuleLifecycleListener;
@@ -110,8 +111,10 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     private void discoverProbeProviders() {
         // Iterate thru existing modules
         for (Module m : registry.getModules()) {
-            //printd(" In startup, calling moduleStarted");
-            moduleStarted(m);
+            if (m.getState() == ModuleState.READY) {
+                printd( " In (discoverProbeProviders) ModuleState - Ready : " + m.getName());
+                moduleStarted(m);
+            }
         }
 
     }
