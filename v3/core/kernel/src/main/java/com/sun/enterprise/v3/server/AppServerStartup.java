@@ -287,13 +287,18 @@ public class AppServerStartup implements ModuleStartup {
         }   else {
             for (Future<Result<Thread>> future : futures) {
                 try {
-                    if (future.get().isFailure()) {
-                        final Throwable t = future.get().exception();
-                        logger.log(Level.SEVERE, "Shutting down v3 due to startup exception : " + t.getMessage());
-                        logger.log(Level.FINE, future.get().exception().getMessage(), t);
-                        events.send(new Event(EventTypes.SERVER_SHUTDOWN));
-                        shutdown();
-                        return;
+                    try {
+                        // wait for 3 seconds for an eventual status, otherwise ignore
+                        if (future.get(3, TimeUnit.SECONDS).isFailure()) {
+                            final Throwable t = future.get().exception();
+                            logger.log(Level.SEVERE, "Shutting down v3 due to startup exception : " + t.getMessage());
+                            logger.log(Level.FINE, future.get().exception().getMessage(), t);
+                            events.send(new Event(EventTypes.SERVER_SHUTDOWN));
+                            shutdown();
+                            return;
+                        }
+                    } catch(TimeoutException e) {
+                        logger.warning("Timed out, ignoring some startup service status");
                     }
                 } catch(Throwable t) {
                     logger.log(Level.SEVERE, t.getMessage(), t);    
@@ -336,6 +341,14 @@ public class AppServerStartup implements ModuleStartup {
                 }
             }
 
+            // first send the shutdown event synchronously
+            env.setStatus(ServerEnvironment.Status.stopped);
+            events.send(new Event(EventTypes.SERVER_SHUTDOWN), false);
+
+            logger.info("Shutdown procedure finished");            
+
+            // we send the shutdown events before the Init services are released since
+            // evens handler can still rely on services like logging during their processing
             for (Inhabitant<? extends Init> svc : habitat.getInhabitants(Init.class)) {
                 if (svc.isInstantiated()) {
                     try {
@@ -346,9 +359,7 @@ public class AppServerStartup implements ModuleStartup {
                 }
             }
 
-            // first send the shutdown event synchronously
-            env.setStatus(ServerEnvironment.Status.stopped);
-            events.send(new Event(EventTypes.SERVER_SHUTDOWN), false);
+
         } catch(ComponentException e) {
             // do nothing.
         }

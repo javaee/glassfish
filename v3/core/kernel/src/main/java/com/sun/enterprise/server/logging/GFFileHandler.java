@@ -263,6 +263,16 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER).fine("Logger handler killed");
         done.tryReleaseShared(1);
         pump.interrupt();
+
+        // drain and return
+        final int size = pendingRecords.size();
+        if (size>0) {
+            Collection<LogRecord> records = new ArrayList<LogRecord>(size);
+            pendingRecords.drainTo(records, size);
+            for (LogRecord record : records) {
+                super.publish(record);
+            }
+        }
         
     }
     /**
@@ -530,6 +540,11 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
      */ 
     public void publish( LogRecord record ) {
 
+        // the queue has shutdown, we are not processing any more records
+        if (done.isSignalled()) {
+            return;
+        }
+
         try {
             pendingRecords.add(record);
         } catch(IllegalStateException e) {
@@ -537,7 +552,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
             try {
                 pendingRecords.put(record);
             } catch (InterruptedException e1) {
-                // to bad, record is lost...
+                // too bad, record is lost...
             }
         }
     }
