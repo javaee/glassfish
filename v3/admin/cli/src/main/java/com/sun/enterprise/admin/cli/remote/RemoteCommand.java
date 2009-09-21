@@ -933,7 +933,13 @@ public class RemoteCommand extends CLICommand {
                 if (user == null)
                     return false;
             }
-            String password = readPassword(strings.get("AdminPasswordPrompt"));
+            String password;
+            String puser = ok(user) ? user : programOpts.getUser();
+            if (ok(puser))
+                password = readPassword(
+                                strings.get("AdminUserPasswordPrompt", puser));
+            else
+                password = readPassword(strings.get("AdminPasswordPrompt"));
             if (password == null)
                 return false;
             if (ok(user))      // if none entered, don't change
