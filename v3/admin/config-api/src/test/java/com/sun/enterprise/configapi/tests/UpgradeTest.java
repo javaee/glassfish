@@ -1,16 +1,20 @@
 package com.sun.enterprise.configapi.tests;
 
-import org.junit.Test;
-import org.junit.Before;
-import static org.junit.Assert.assertTrue;
-import org.glassfish.api.admin.config.ConfigurationUpgrade;
+import java.util.logging.Logger;
+import java.util.List;
+import java.util.ArrayList;
+
+import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.J2eeApplication;
-
-import java.util.logging.Logger;
+import com.sun.enterprise.config.serverbeans.Module;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.grizzly.config.dom.ThreadPool;
+import org.glassfish.api.admin.config.ConfigurationUpgrade;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Simple test for the domain.xml upgrade scenario
@@ -31,15 +35,27 @@ public class UpgradeTest extends ConfigApiTest {
     }
 
     @Test
+    public void threadPools() {
+        List<String> names = new ArrayList<String>();
+        for (ThreadPool pool : getHabitat().getComponent(Config.class).getThreadPools().getThreadPool()) {
+            names.add(pool.getName());
+        }
+        assertTrue(names.contains("http-thread-pool") && names.contains("thread-pool-1"));
+    }
+
+    private void verify(String name) {
+        assertTrue("Should find thread pool named " + name, getHabitat().getComponent(ThreadPool.class, name) != null);
+    }
+    @Test
     public void applicationUpgrade() {
         Applications apps = getHabitat().getComponent(Applications.class);
         assertTrue(apps!=null);
         for (Application app : apps.getApplications()) {
-            assertTrue(app.getEngine().size()==0);
+            assertTrue(app.getEngine().isEmpty());
             assertTrue(app.getModule().size()==1);
             for (Module module : app.getModule()) {
                 assertTrue(module.getName().equals(app.getName()));
-                assertTrue(module.getEngines().size()>0);
+                assertTrue(!module.getEngines().isEmpty());
             }
         }
     }
