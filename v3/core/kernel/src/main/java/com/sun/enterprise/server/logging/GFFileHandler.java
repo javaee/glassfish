@@ -94,7 +94,8 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
     private MeteredStream meter;
  
     private static final String LOGS_DIR = "logs";
-    private String logFileName = "server.log"; 
+    private String logFileName = "server.log";
+    private String absoluteServerLogName = null;
 
     private File absoluteFile = null;
 
@@ -163,10 +164,12 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         LogManager manager = LogManager.getLogManager();
         String cname = getClass().getName();
         
-        String fileName = TranslatedConfigView.getTranslatedValue(manager.getProperty(cname + ".file")).toString();
-        File serverLog = new File(fileName);
+        String filename = TranslatedConfigView.getTranslatedValue(manager.getProperty(cname + ".file")).toString();
+        File serverLog = new File(filename);
+        absoluteServerLogName = filename;
         if (!serverLog.isAbsolute()) {
-            serverLog = new File(env.getDomainRoot(), fileName);
+            serverLog = new File(env.getDomainRoot(), filename);
+            absoluteServerLogName= env.getDomainRoot() + LOGS_DIR + filename;
         }
         changeFileName(serverLog);
 
@@ -540,9 +543,8 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
     }
 
     protected File getLogFileName() {
-        // do we really want to create the log dir at the top level?
-       // return new File(new File(serverContext.getInstallRoot(),LOGS_DIR),logFileName);
-        return new File(new File(env.getDomainRoot(),LOGS_DIR), logFileName);
+//        return new File(new File(env.getDomainRoot(),LOGS_DIR), logFileName);
+        return new File(absoluteServerLogName);
         
     }
 }
