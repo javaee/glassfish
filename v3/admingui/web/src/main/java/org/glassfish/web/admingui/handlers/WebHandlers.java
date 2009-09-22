@@ -109,8 +109,8 @@ public class WebHandlers {
         putA(nMap,  attrMap, "Port" );
         putA(nMap,  attrMap, "Transport");
         putA(nMap,  attrMap, "ThreadPool");
-        putA(nMap,  attrMap, "Enabled");
-        putA(nMap,  attrMap, "JkEnabled");
+        putA(nMap,  attrMap, "Enabled" , "false");
+        putA(nMap,  attrMap, "JkEnabled", "false");
         nMap.put("Protocol", protocolName);
 
         AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getConfig("server-config").getNetworkConfig().child("network-listeners");
@@ -139,6 +139,15 @@ public class WebHandlers {
         String val = (String) attrMap.get(key);
         if (! GuiUtil.isEmpty(val)){
             nMap.put(key, val);
+        }
+    }
+
+    private static void putA(Map nMap, Map attrMap, String key, String defaultValue){
+        String val = (String) attrMap.get(key);
+        if (! GuiUtil.isEmpty(val)){
+            nMap.put(key, val);
+        }else{
+            nMap.put(key, defaultValue);
         }
     }
 
