@@ -87,19 +87,6 @@ import org.openinstaller.provider.conf.ConfigHelper;
             <desc xml:lang="en-US">User Password</desc>
           </info>
         <actions>
-          <onSet><![CDATA[
-import java.lang.String;
-import java.util.List;
-import org.openinstaller.provider.conf.ConfigHelper;
-
-       String enteredValue = (String)thisProperty.getUnconfirmedValue();
-        if (enteredValue.trim().length() > 0) {
-		if (enteredValue.trim().length() < 8) {
-            		ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
-            		throw new EnhancedException("SHORT_ADMIN_PASSWORD",new String[]{});
-        }
-	}
-          ]]></onSet>
         </actions>
         </prop>
 
