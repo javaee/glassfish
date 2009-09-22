@@ -127,6 +127,8 @@ public class EjbServicesImpl implements EjbServices
 
     }
 
+    public void cleanup() {
 
+    }
 
 }

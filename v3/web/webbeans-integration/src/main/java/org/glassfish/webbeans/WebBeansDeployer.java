@@ -81,7 +81,7 @@ import java.util.HashMap;
 public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeansApplicationContainer> 
     implements PostConstruct, EventListener {
 
-    /* package */ static final String WEB_BEAN_EXTENSION = "org.glassfish.webbeans";
+    public static final String WEB_BEAN_EXTENSION = "org.glassfish.webbeans";
 
     /* package */ static final String WEB_BEAN_BOOTSTRAP = "org.glassfish.webbeans.WebBeansBootstrap";
 

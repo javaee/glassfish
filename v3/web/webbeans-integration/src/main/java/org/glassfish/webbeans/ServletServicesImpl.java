@@ -57,4 +57,7 @@ public class ServletServicesImpl implements ServletServices {
         return deploymentImpl.getBeanDeploymentArchives().get(0);
     }
 
+    public void cleanup() {
+
+    }
 }
