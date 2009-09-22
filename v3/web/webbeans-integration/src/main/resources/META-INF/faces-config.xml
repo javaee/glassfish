@@ -9,7 +9,7 @@
     </lifecycle>
 
     <factory>
-        <application-factory>org.jboss.webbeans.jsf.WebBeansApplicationFactory</application-factory>
+        <application-factory>org.glassfish.webbeans.jsf.WebBeansApplicationFactory</application-factory>
     </factory>
 
     

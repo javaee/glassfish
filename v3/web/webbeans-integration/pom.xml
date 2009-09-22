@@ -78,6 +78,10 @@
             <artifactId>jsf-impl</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.sun.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>web-glue</artifactId>
             <version>${project.version}</version>
