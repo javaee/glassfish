@@ -1123,11 +1123,13 @@ public class EntityContainer
             }
             
             // Remove any timers for this entity bean identity.
-            EJBTimerService ejbTimerService =
-                ejbContainerUtilImpl.getEJBTimerService();
-            if( (ejbTimerService != null) && isTimedObject() ) {
-                ejbTimerService.cancelEntityBeanTimers(getContainerId(),
+            if( isTimedObject() ) {
+                EJBTimerService ejbTimerService =
+                        ejbContainerUtilImpl.getEJBTimerService();
+                if( ejbTimerService != null ) {
+                    ejbTimerService.cancelEntityBeanTimers(getContainerId(),
                                                        primaryKey);
+                } 
             } 
 
         } catch ( RemoveException ex ) {

@@ -47,19 +47,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
-// For auto-deploying EJBTimerService
-import com.sun.ejb.containers.EjbContainerUtil;
-import com.sun.ejb.containers.EjbContainerUtilImpl;
-import com.sun.ejb.containers.EJBTimerService;
 import com.sun.enterprise.security.PolicyLoader;
-import org.glassfish.api.ActionReport;
-import org.glassfish.internal.api.ServerContext;
-import org.glassfish.internal.deployment.Deployment;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-
-import java.io.File;
-import java.io.IOException;
-// For auto-deploying EJBTimerService
 
 /**
  * This class represents a logical collection of EJB components contained in one ejb-jar
@@ -90,11 +78,6 @@ public class EjbApplication
     
     private PolicyLoader policyLoader;
 
-    // TODO: move restoreEJBTimers to correct location
-    private static boolean restored = false;
-    private static Object lock = new Object();
-    // TODO: move restoreEJBTimers to correct location
-
     public EjbApplication(
             EjbBundleDescriptor bundle, DeploymentContext dc,
             ClassLoader cl, Habitat habitat, 
@@ -122,12 +105,6 @@ public class EjbApplication
         try {
             DeployCommandParameters params = ((DeploymentContext)startupContext).
                     getCommandParameters(DeployCommandParameters.class);
-
-            // TODO: move restoreEJBTimers to correct location           
-            if (usesEJBTimerService) {
-                initEJBTimerService(params);
-            }
-            // TODO: move restoreEJBTimers to correct location
 
             for (Container container : containers) {
                 container.startApplication(params.origin == OpsParams.Origin.deploy);
@@ -191,9 +168,6 @@ public class EjbApplication
                 Container container = ejbContainerFactory.createContainer(desc, ejbAppClassLoader,
                         ejbSM, dc);
                 containers.add(container);
-
-                // Used during later start phase to determine whether to start timer service
-                usesEJBTimerService = (usesEJBTimerService || container.isTimedObject());
 
                 if (container instanceof AbstractSingletonContainer) {
                     singletonLCM.addSingletonContainer((AbstractSingletonContainer) container);
@@ -288,57 +262,5 @@ public class EjbApplication
             container.undeploy();
         }
 
-    }
-
-    private void initEJBTimerService(DeployCommandParameters callerParams) {
-
-        synchronized (lock) {
-            EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
-
-            EJBTimerService ejbTimerService = ejbContainerUtil.getEJBTimerService();
-
-            if (ejbTimerService == null) {
-
-                Logger logger = ejbContainerUtil.getLogger();
-
-                Deployment deployment = habitat.getByContract(Deployment.class);
-                boolean isRegistered = deployment.isRegistered("ejb-timer-service-app");
-
-                if (isRegistered) {
-                    logger.log (Level.WARNING, "EJBTimerService had been explicitly deployed.");
-                    return;
-                }
-
-                logger.log (Level.INFO, "Loading EJBTimerService. Please wait.");
-
-                ServerContext sc = habitat.getByContract(ServerContext.class);
-                File root = sc.getInstallRoot();
-                File app = new File(root,
-                        "lib/install/applications/ejb-timer-service-app.war");
-
-                ActionReport report = habitat.getComponent(ActionReport.class, "plain");
-                DeployCommandParameters params = new DeployCommandParameters(app);
-                params.name = "ejb-timer-service-app";
-
-                params.origin = callerParams.origin;
-
-                if (!app.exists()) {
-                    throw new RuntimeException("Failed to deploy EJBTimerService: " + 
-                            "required WAR file (ejb-timer-service-app.war) is not installed");
-                }
-
-                try {
-                    ExtendedDeploymentContext dc = deployment.getContext(logger, app, params, report);
-                    deployment.deploy(dc);
-
-                    if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
-                        throw new RuntimeException("Failed to deploy EJBTimerService: " +
-                                report.getFailureCause());
-                    }
-                } catch (IOException ioe) {
-                    throw new RuntimeException("Failed to deploy EJBTimerService: " + ioe);
-                }
-            }
-        }
     }
 }

@@ -59,6 +59,11 @@ import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.glassfish.ejb.spi.CMPDeployer;
+import org.glassfish.api.ActionReport;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.deployment.OpsParams;
 
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
@@ -77,6 +82,7 @@ import java.util.logging.Logger;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.io.File;
 
 /**
  * @author Mahesh Kannan
@@ -101,8 +107,12 @@ public class EjbContainerUtilImpl
     @Inject
     private ServerContext serverContext;
 
-    //@Inject
-    private  EJBTimerService _ejbTimerService;
+    // Flag that allows to load EJBTimerService on the 1st access and
+    // distinguish between not available and not loaded
+    private  volatile boolean _ejbTimerServiceVerified = false;
+    private static Object lock = new Object();
+
+    private  volatile EJBTimerService _ejbTimerService;
 
     private  Map<Long, BaseContainer> id2Container
             = new ConcurrentHashMap<Long, BaseContainer>();
@@ -210,6 +220,9 @@ public class EjbContainerUtilImpl
     }
 
     public  EJBTimerService getEJBTimerService() {
+        if (!_ejbTimerServiceVerified) {
+            deployEJBTimerService();
+        }
         return _ejbTimerService;
     }
 
@@ -392,4 +405,53 @@ public class EjbContainerUtilImpl
         Object activeTxCache;
     }
     
+    private void deployEJBTimerService() {
+        synchronized (lock) {
+            Deployment deployment = habitat.getByContract(Deployment.class);
+            boolean isRegistered = deployment.isRegistered("ejb-timer-service-app");
+
+            if (isRegistered) {
+                _logger.log (Level.WARNING, "EJBTimerService had been explicitly deployed.");
+            } else {
+                _logger.log (Level.INFO, "Loading EJBTimerService. Please wait.");
+
+                ServerContext sc = habitat.getByContract(ServerContext.class);
+                File root = sc.getInstallRoot();
+                File app = new File(root,
+                        "lib/install/applications/ejb-timer-service-app.war");
+
+                if (!app.exists()) {
+                    _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: " +
+                            "required WAR file (ejb-timer-service-app.war) is not installed");
+                } else {
+                    ActionReport report = habitat.getComponent(ActionReport.class, "plain");
+                    DeployCommandParameters params = new DeployCommandParameters(app);
+                    String appName = "ejb-timer-service-app";
+                    params.name = appName;
+
+                    try {
+                        File rootScratchDir = env.getApplicationStubPath();
+                        File appScratchDir = new File(rootScratchDir, appName);
+                        if (appScratchDir.createNewFile()) {
+                            params.origin = OpsParams.Origin.deploy;
+                        } else {
+                            params.origin = OpsParams.Origin.load;
+                        }
+
+                        ExtendedDeploymentContext dc = deployment.getContext(_logger, app, params, report);
+                        deployment.deploy(dc);
+
+                        if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+                            _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: " +
+                                    report.getFailureCause());
+                        }
+                    } catch (Exception ioe) {
+                        _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: " + ioe);
+                    }
+                }
+            }
+        }
+
+        _ejbTimerServiceVerified = true;
+    }
 }

@@ -2240,9 +2240,11 @@ public abstract class BaseContainer
     }
     
     private void destroyTimers() {
-        EJBTimerService ejbTimerService = ejbContainerUtilImpl.getEJBTimerService();
-        if( isTimedObject() && (ejbTimerService != null) ) {
-            ejbTimerService.destroyTimers(getContainerId());
+        if( isTimedObject() ) {
+            EJBTimerService ejbTimerService = ejbContainerUtilImpl.getEJBTimerService();
+            if( ejbTimerService != null ) {
+                ejbTimerService.destroyTimers(getContainerId());
+            }
         }
     }
     
