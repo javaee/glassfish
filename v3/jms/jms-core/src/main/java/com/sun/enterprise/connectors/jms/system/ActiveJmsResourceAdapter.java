@@ -829,6 +829,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     private String getAdminPassFilePath(String adminPassword) {
         try {
             mqPassFile = File.createTempFile(MQ_PASS_FILE_PREFIX,null);
+            mqPassFile.deleteOnExit();
             BufferedWriter out = new BufferedWriter(new FileWriter(mqPassFile));
             out.write(MQ_PASS_FILE_KEY + adminPassword);
             out.newLine();
