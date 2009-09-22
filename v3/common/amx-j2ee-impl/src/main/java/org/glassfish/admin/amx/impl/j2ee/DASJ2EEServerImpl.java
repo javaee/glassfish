@@ -132,7 +132,7 @@ public class DASJ2EEServerImpl extends J2EEServerImpl
     }
 
     public boolean isstateManageable() {
-        return true;
+        return false;
     }
 
     /*
