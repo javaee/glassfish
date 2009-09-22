@@ -146,9 +146,6 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     private ComponentEnvManager componentEnvManager;
 
     @Inject
-    private Habitat transactionManager;
-
-    @Inject
     private Habitat wmf;
 
     @Inject
@@ -183,6 +180,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
     @Inject
     private ConnectorClassLoaderService connectorClassLoaderService;
+
+    // performance improvement, cache the lookup of transaction manager.
+    private JavaEETransactionManager transactionManager;
+
 
     /**
      * Returns the ConnectorRuntime instance.
@@ -876,7 +877,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @throws SystemException when unable to get the transaction
      */
     public Transaction getTransaction() throws SystemException {
-        return habitat.getComponent(JavaEETransactionManager.class).getTransaction();
+        return getTransactionManager().getTransaction();
     }
 
     /**
@@ -884,7 +885,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @return TransactionManager
      */
     public JavaEETransactionManager getTransactionManager() {
-        return habitat.getComponent(JavaEETransactionManager.class);
+        if (transactionManager == null) {
+            transactionManager = habitat.getComponent(JavaEETransactionManager.class);
+        }
+        return transactionManager;
     }
 
     /**
