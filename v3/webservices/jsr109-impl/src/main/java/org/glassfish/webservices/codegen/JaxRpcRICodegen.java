@@ -247,6 +247,7 @@ public class JaxRpcRICodegen extends ModuleContentLinker
                 serviceRef.setWsdlOverride(wsdlOverride);
             }
         } catch(IllegalStateException e) {
+            //do nothing
            logger.info("Attempting to add artifacts for appClient after artifacts were generated" +
                    " "+e.getMessage());
 
@@ -266,7 +267,9 @@ public class JaxRpcRICodegen extends ModuleContentLinker
         //For jaxrpc based clients the generated sources need to be placed
         // in the downloaded appclient jar
         ClientArtifactsManager cArtifactsManager = ClientArtifactsManager.get(context);
-        cArtifactsManager.addAll(context.getScratchDir("ejb"),filesList);
+        if (!cArtifactsManager.artifacts().containsAll(filesList)){
+            cArtifactsManager.addAll(context.getScratchDir("ejb"),filesList);
+        }
     }
 
     /**
