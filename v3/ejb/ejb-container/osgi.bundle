@@ -1,7 +1,6 @@
 -exportcontents: \
                         com.sun.ejb; \
                         com.sun.ejb.containers; \
-                        com.sun.ejb.mejb; \
                         com.sun.ejb.spi.io; \
                         com.sun.ejb.spi.container; \
                         com.sun.appserv.ejb; version=${project.osgi.version}
