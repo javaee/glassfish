@@ -97,11 +97,13 @@
     <sun:propertySheetSection >
             <sun:property id="nameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.application.appName}">
                 <sun:staticText id="name" text="#{appName}"/>
-                "<br/>
             </sun:property>
-            
-            <sun:property id="keepSessionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"  label="$resource{i18n.redeploy.keepSessionsHelp} :" >
-                <sun:checkbox selected="#{pageSession.deployMap['keepSessions']}" selectedValue="true" />
+
+            <sun:property>
+                <sun:staticText text="" />
+            </sun:property>
+            <sun:property id="keepSessionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"  label="$resource{i18n.redeploy.keepSessions}" helpText="$resource{i18n.redeploy.keepSessionsHelp}" >
+                <sun:checkbox selected="#{pageSession.deployMap['keepSessions']}" selectedValue="true" label=" " />
             </sun:property>
 
             <sun:property id="precmplProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.precompile}" helpText="$resource{i18n.server.PrecompileHelp}">
