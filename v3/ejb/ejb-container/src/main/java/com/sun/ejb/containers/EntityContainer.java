@@ -1124,6 +1124,8 @@ public class EntityContainer
             
             // Remove any timers for this entity bean identity.
             if( isTimedObject() ) {
+                // EJBTimerService should be accessed only if needed
+                // not to cause it to be loaded if it's not used.
                 EJBTimerService ejbTimerService =
                         ejbContainerUtilImpl.getEJBTimerService();
                 if( ejbTimerService != null ) {

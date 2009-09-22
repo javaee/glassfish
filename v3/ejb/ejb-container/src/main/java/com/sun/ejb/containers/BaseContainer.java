@@ -741,6 +741,8 @@ public abstract class BaseContainer
             }
             if( isTimedObject_ ) {
                 if( !isStatefulSession ) {
+                    // EJBTimerService should be accessed only if needed 
+                    // not to cause it to be loaded if it's not used.
                     EJBTimerService timerService = 
                         ejbContainerUtilImpl.getEJBTimerService();
                     if( timerService != null ) {
@@ -2241,6 +2243,8 @@ public abstract class BaseContainer
     
     private void destroyTimers() {
         if( isTimedObject() ) {
+            // EJBTimerService should be accessed only if needed 
+            // not to cause it to be loaded if it's not used.
             EJBTimerService ejbTimerService = ejbContainerUtilImpl.getEJBTimerService();
             if( ejbTimerService != null ) {
                 ejbTimerService.destroyTimers(getContainerId());
@@ -3757,6 +3761,8 @@ public abstract class BaseContainer
 
         // By now all existing timers should have been restored.
         if( isTimedObject_ ) {
+            // EJBTimerService should be accessed only if needed 
+            // not to cause it to be loaded if it's not used.
             EJBTimerService timerService = 
                 ejbContainerUtilImpl.getEJBTimerService();
             if( timerService != null ) {
