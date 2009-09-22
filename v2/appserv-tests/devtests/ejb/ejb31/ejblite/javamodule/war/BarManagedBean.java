@@ -3,13 +3,13 @@ package com.acme;
 import javax.annotation.*;
 import javax.ejb.EJB;
 import javax.annotation.Resource;
-import javax.transaction.UserTransaction;
+import javax.sql.DataSource;
 
 @ManagedBean
 public class BarManagedBean {
 
     @EJB StatelessBean s;
-    @Resource UserTransaction ut;
+    @Resource(name="jdbc/__default") DataSource ds;
 
     @PostConstruct
     private void init() {
@@ -28,7 +28,7 @@ public class BarManagedBean {
 
     public String toString() {
 	return "BarManagedBean this = " + super.toString() + 
-	    " s = " + s + " , ut = " + ut;
+	    " s = " + s + " , ds = " + ds;
 
     }
 

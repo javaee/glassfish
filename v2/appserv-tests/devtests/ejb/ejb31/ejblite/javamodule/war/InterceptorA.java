@@ -4,7 +4,6 @@ import javax.annotation.*;
 
 import javax.ejb.EJB;
 import javax.annotation.Resource;
-import javax.transaction.UserTransaction;
 import org.omg.CORBA.ORB;
 import javax.persistence.PersistenceContext;
 import javax.persistence.EntityManager;
@@ -16,7 +15,7 @@ import javax.interceptor.AroundInvoke;
 public class InterceptorA {
 
     @EJB StatelessBean s;
-    @Resource UserTransaction ut;
+    @Resource ORB orb;
 
     @PostConstruct
     private void init(InvocationContext c) throws Exception {
