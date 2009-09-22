@@ -13,11 +13,18 @@
 
     <target name="all">
 	<!--- currently use SE client . switch back to appclient -->
+        <antcall target="allowed"/>
         <antcall target="clientview"/>
         <antcall target="hello"/>
         <antcall target="interceptors"/>
         <antcall target="persistence"/> 
 
+    </target>
+
+    <target name="allowed">
+        <record name="allowed.output" action="start" />
+            <ant dir="allowed" target="all"/>
+        <record name="allowed.output" action="stop" />
     </target>
 
     <target name="clientview">
