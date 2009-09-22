@@ -102,9 +102,6 @@ public class CreateHttpListener implements AdminCommand {
     @Param(name = "redirectport", optional = true)
     String redirectPort;
 
-    @Param(name = "externalport", optional = true)
-    String externalPort;
-
     @Param(name = "securityenabled", optional = true, defaultValue = "false")
     Boolean securityEnabled;
 
@@ -113,15 +110,6 @@ public class CreateHttpListener implements AdminCommand {
 
     @Param(optional = true, defaultValue = "false")
     Boolean secure; //FIXME
-
-    @Param(name = "family", optional = true)
-    String family;
-
-    @Param(name = "blockingenabled", optional = true, defaultValue = "false")
-    Boolean blockingEnabled;
-
-    @Param(name = "property", optional = true, separator=':')
-    Properties properties;
 
     @Param(name = "listener_id", primary = true)
     String listenerId;
