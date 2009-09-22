@@ -33,6 +33,11 @@ own identifying information: Portions Copyright [yyyy]
 
         <unzip src="${mqrepo.zip}" dest="target/source">   
 	</unzip>
+        <!-- adjusting catalog permissions since UC 2.3 copypkgs fails
+            otherwise -->
+
+        <chmod file="target/source/catalog/attrs" perm="644"/>
+        <chmod file="target/source/catalog/catalog" perm="644"/>
 
 	<echo message="Target repo dir is ${target.repo.dir}" />
 
