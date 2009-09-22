@@ -95,6 +95,8 @@ public class Main implements BundleActivator
     private List<URI> autoStartBundleLocations = new ArrayList<URI>();
     private Map<URI, Jar> currentManagedBundles = new HashMap<URI, Jar>();
     private static final String THIS_JAR_NAME = "osgi-main.jar";
+    private static final String FELIX_FILEINSTALL_DIR = "felix.fileinstall.dir";
+
     public void start(BundleContext context) throws Exception
     {
         this.context = context;
@@ -143,11 +145,15 @@ public class Main implements BundleActivator
 
     private Set<Jar> discoverJars() {
         final Set<Jar> jars = new HashSet<Jar>();
+        String felixWatchedDirName = context.getProperty(FELIX_FILEINSTALL_DIR);
+        final File felixWatchedDir = felixWatchedDirName != null ?
+         new File(felixWatchedDirName) : null;
         bundlesDir.listFiles(new FileFilter(){
             final String JAR_EXT = ".jar";
             public boolean accept(File pathname)
             {
-                if (pathname.isDirectory()) {
+                // We exclude files belonging to felix fileinstall watched dir
+                if (pathname.isDirectory() && !pathname.equals(felixWatchedDir)) {
                     pathname.listFiles(this);
                 } else if (pathname.isFile()
                         && pathname.getName().endsWith(JAR_EXT)
