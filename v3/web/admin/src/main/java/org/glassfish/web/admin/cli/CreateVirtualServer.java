@@ -115,6 +115,9 @@ public class CreateVirtualServer implements AdminCommand {
             return;
         }
 
+        //use the listener parameter provided by the user.
+        networkListeners = (networkListeners != null) ? networkListeners : httpListeners;
+
         List <Config> configList = configs.getConfig();
         Config config = configList.get(0);
         HttpService httpService = config.getHttpService();
@@ -139,7 +142,7 @@ public class CreateVirtualServer implements AdminCommand {
                     VirtualServer newVirtualServer = param.createChild(VirtualServer.class);
                     newVirtualServer.setId(virtualServerId);
                     newVirtualServer.setHosts(hosts);
-                    newVirtualServer.setNetworkListeners(httpListeners);
+                    newVirtualServer.setNetworkListeners(networkListeners);
                     newVirtualServer.setDefaultWebModule(defaultWebModule);
                     newVirtualServer.setState(state);
                     newVirtualServer.setLogFile(logFile);
