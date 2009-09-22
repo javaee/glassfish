@@ -85,6 +85,7 @@ public class VersionCommand extends CLICommand {
                 version = cmd.executeAndReturnOutput("version", "--verbose");
             else
                 version = cmd.executeAndReturnOutput("version");
+            version = version.trim();   // get rid of gratuitous newlines
             logger.printMessage(strings.get("version.remote", version));
         } catch (Exception e) {
             // suppress all output and infer that the server is not running
