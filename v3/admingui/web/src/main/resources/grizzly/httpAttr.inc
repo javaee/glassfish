@@ -44,9 +44,8 @@
         </sun:property>
 
         <sun:property id="ServerNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.serverNameLabel}" helpText="$resource{i18n_web.http.serverNameHelp}" >
-            <sun:textField id="ServerName" styleClass="required" required="#{true}"  columns="$int{50}" text="#{pageSession.httpMap['ServerName']}" />
+            <sun:textField id="ServerName" columns="$int{50}" text="#{pageSession.httpMap['ServerName']}" />
         </sun:property>
-
 
         <sun:property id="DefaultVirtServersProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.defVirtualServerLabel}" helpText="$resource{i18n_web.http.defVirtualServerLabelHelp}">
             <sun:dropDown id="vs" selected="#{pageSession.httpMap['DefaultVirtualServer']}" labels="$pageSession{vsList}"  values="$pageSession{vsList}" >
