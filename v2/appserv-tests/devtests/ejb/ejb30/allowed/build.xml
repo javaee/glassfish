@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "file:./../../../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "file:./../../../../../config/common.xml">
+<!ENTITY commonSetup SYSTEM "file:./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "file:./../../report.xml">
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
-<project name="devtest-allowed-session-App" default="usage" basedir=".">
+<project name="ejb30-allowed-App" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;
