@@ -34,7 +34,7 @@ import org.glassfish.external.probe.provider.StatsProviderManager;
 public class HttpServiceStatsProviderBootstrap implements PostConstruct {
 
     @Inject
-    Logger logger;
+    private Logger logger;
     @Inject
     private static Domain domain;
     
@@ -55,7 +55,9 @@ public class HttpServiceStatsProviderBootstrap implements PostConstruct {
         if ((defaultLevel == null) || (dbgLevel.intValue() < defaultLevel.intValue())) {
             //logger.setLevel(dbgLevel);
         }
-        logger.finest("****** [Monitor]In the HttpServiceStatsProvider bootstrap ************");
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("****** [Monitor]In the HttpServiceStatsProvider bootstrap ************");
+        }
 
         List<Config> lc = domain.getConfigs().getConfig();
         Config config = null;
@@ -69,7 +71,9 @@ public class HttpServiceStatsProviderBootstrap implements PostConstruct {
         networkConfig = config.getNetworkConfig();
 
         for (VirtualServer vs : httpService.getVirtualServer()) {
-            logger.finest("**** Registering a new StatsProvider");
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest("**** Registering a new StatsProvider");
+            }
             StatsProviderManager.register(
                     "http-service",
                     PluginPoint.SERVER,

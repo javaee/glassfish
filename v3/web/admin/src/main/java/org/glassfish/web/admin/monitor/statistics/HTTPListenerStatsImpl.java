@@ -70,7 +70,7 @@ public class HTTPListenerStatsImpl implements HTTPListenerStats, MonitorContract
     private MonitoringRuntimeDataRegistry mrdr;
 
     @Inject
-    Logger logger;
+    private Logger logger;
 
     private final LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(HTTPListenerStatsImpl.class);
@@ -84,7 +84,9 @@ public class HTTPListenerStatsImpl implements HTTPListenerStats, MonitorContract
 
     public ActionReport process(final ActionReport report, final String filter) {
 
-        logger.finest("HTTPListenerStatsImpl: process ...");
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("HTTPListenerStatsImpl: process ...");
+        }
 
         if (mrdr == null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -112,9 +114,11 @@ public class HTTPListenerStatsImpl implements HTTPListenerStats, MonitorContract
                 continue;
             }
 
-            logger.finest("HTTPListenerStatsImpl: tn name = " + tn.getName());
-            logger.finest("HTTPListenerStatsImpl: tn value = " + tn.getValue());
-            logger.finest("HTTPListenerStatsImpl: tn class name = " + ((tn.getValue()).getClass()).getName());
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest("HTTPListenerStatsImpl: tn name = " + tn.getName());
+                logger.finest("HTTPListenerStatsImpl: tn value = " + tn.getValue());
+                logger.finest("HTTPListenerStatsImpl: tn class name = " + ((tn.getValue()).getClass()).getName());
+            }
             if ("errorCount".equals(tn.getName())) {
                 if (tn.getValue() != null)
                 errorCount = (Long) tn.getValue(); 

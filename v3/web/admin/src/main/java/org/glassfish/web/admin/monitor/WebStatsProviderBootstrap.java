@@ -47,7 +47,7 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
 public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener {
 
     @Inject
-    Logger logger;
+    private Logger logger;
     @Inject
     private static Domain domain;
 
@@ -71,7 +71,9 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
         if ((defaultLevel == null) || (dbgLevel.intValue() < defaultLevel.intValue())) {
             //logger.setLevel(dbgLevel);
         }
-        logger.finest("[Monitor]In the WebStatsProviderBootstrap.postConstruct ************");
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("[Monitor]In the WebStatsProviderBootstrap.postConstruct ************");
+        }
 
         List<Config> lc = domain.getConfigs().getConfig();
         Config config = null;
@@ -279,7 +281,9 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
                         }
                     }
                 }
-                logger.finest("[Monitor] (Un)Deploy event received - name = " + propName + " : Value = " + appName);
+                if (logger.isLoggable(Level.FINEST)) {
+                    logger.finest("[Monitor] (Un)Deploy event received - name = " + propName + " : Value = " + appName);
+                }
            }
        }
 
