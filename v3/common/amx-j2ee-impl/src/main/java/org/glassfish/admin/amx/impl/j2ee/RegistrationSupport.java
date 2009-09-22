@@ -317,7 +317,7 @@ final class RegistrationSupport
             }
             else
             {
-                throw new IllegalArgumentException( "Unknown EJB type: " + ejbType + ", expected Stateless or Stateful");
+                throw new IllegalArgumentException( "Unknown ejbSessionType: " + ejbSessionType + ", expected Stateless or Stateful");
             }
         }
 
