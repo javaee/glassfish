@@ -87,14 +87,9 @@ public class JspStatsProvider{
     
     @ProbeListener("glassfish:web:jsp:jspLoadedEvent")
     public void jspLoadedEvent(
-        @ProbeParam("jsp") Servlet jsp,
-        @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName) {
-	// handle the servlet loaded probe events
-        //FIX jsp is null
-        //logger.finest("JSP Loaded event received - jspName = " +
-        //                     jsp.getServletConfig().getServletName() +
-        //                     ": appName = " + appName + ": hostName = " + hostName);
+            @ProbeParam("jsp") Servlet jsp,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("hostName") String hostName) {
         if (!isValidEvent(appName, hostName)) {
             return;
         }
@@ -105,20 +100,17 @@ public class JspStatsProvider{
         }
             
     }
-/*
-    @ProbeListener("web:jsp::jspDestroyedEvent")
+
+    @ProbeListener("glassfish:web:jsp:jspDestroyedEvent")
     public void jspDestroyedEvent(
-                    @ProbeParam("servlet") Servlet jsp,
-                    @ProbeParam("appName") String appName,
-                    @ProbeParam("hostName") String hostName) {
-	// handle the jsp destroyed probe events
-        logger.finest("JSP Destroyed event received - jspName = " + 
-                             jsp.getServletConfig().getServletName() + 
-                             ": appName = " + appName + ": hostName = " + hostName);
+            @ProbeParam("jsp") Servlet jsp,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("hostName") String hostName) {
+        if (!isValidEvent(appName, hostName)) {
+            return;
+        }
         activeJspsLoadedCount.decrement();
     }
-*/
-    
 
     public String getModuleName() {
         return moduleName;

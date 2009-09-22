@@ -52,4 +52,10 @@ public class JspProbeProvider {
         @ProbeParam("jsp") Servlet jsp,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName) {}
+
+    @Probe(name="jspDestroyedEvent")
+    public void jspDestroyedEvent(
+        @ProbeParam("jsp") Servlet jsp,
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName) {}
 }
