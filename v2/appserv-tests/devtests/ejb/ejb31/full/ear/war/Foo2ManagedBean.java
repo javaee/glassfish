@@ -4,7 +4,6 @@ import javax.annotation.*;
 
 import javax.ejb.EJB;
 import javax.annotation.Resource;
-import javax.transaction.UserTransaction;
 import org.omg.CORBA.ORB;
 import javax.persistence.PersistenceContext;
 import javax.persistence.EntityManager;
@@ -13,7 +12,7 @@ import javax.persistence.EntityManager;
 public class Foo2ManagedBean {
 
     @EJB HelloRemote s;
-    @Resource UserTransaction ut;
+    @Resource ORB orb;
     @PersistenceContext EntityManager em;
 
     @PostConstruct
@@ -37,7 +36,7 @@ public class Foo2ManagedBean {
 
     public String toString() {
 	return "Foo2ManagedBean this = " + 
-			   " s = " + s + " , ut = " + ut + 
+			   " s = " + s + " , orb = " + orb + 
 	    " , em = " + em;
     }
 
