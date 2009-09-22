@@ -3,7 +3,6 @@ package com.acme;
 import javax.ejb.*;
 import javax.annotation.*;
 import java.util.concurrent.TimeUnit;
-import javax.transaction.UserTransaction;
 
 @Stateful
 @LocalBean
@@ -14,9 +13,6 @@ public class HelloStateful {
     @Resource
     private SessionContext sesCtx;
 
-    @Resource
-    private UserTransaction ut;
-
     private HelloStateful me;
 
     @EJB HelloStateful2 sf2;
@@ -26,7 +22,7 @@ public class HelloStateful {
 
     @PostConstruct 
     private void init() {
-	System.out.println("HelloStateful::init() ut = " + ut);
+	System.out.println("HelloStateful::init()");
        	me = sesCtx.getBusinessObject(HelloStateful.class);
     }
 
