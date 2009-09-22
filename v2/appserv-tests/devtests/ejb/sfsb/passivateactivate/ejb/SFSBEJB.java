@@ -185,7 +185,6 @@ public class SFSBEJB
     }
 
     public boolean checkUserTransaction() {
-	/* @@@
         boolean status =
             ((userTransaction1 != null) && (userTransaction2 != null));
         
@@ -201,9 +200,8 @@ public class SFSBEJB
             ex.printStackTrace();
             status = false;
         }
-	*/
 
-        return true; // @@@ status;
+        return status;
     }
 
     public boolean isOK(String name) {
