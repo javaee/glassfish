@@ -56,6 +56,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.ActionReport;
 import org.glassfish.deployment.common.DeploymentProperties;
+import org.glassfish.internal.api.*;
 
 import java.util.*;
 import java.util.jar.*;
@@ -94,6 +95,9 @@ public class UpgradeStartup implements ModuleStartup {
     @Inject
     CommandRunner commandRunner;
 
+    @Inject(optional=true)
+    DomainUpgrade[] upgrades=null;
+
     // we need to refine, a better logger should be used.
     @Inject
     Logger logger;
@@ -107,6 +111,7 @@ public class UpgradeStartup implements ModuleStartup {
     // do nothing, just return, at the time the upgrade service has
     // run correctly.
     public void start() {
+
         // we need to disable all the applications before starting server 
         // so the applications will not get loaded before redeployment
         // store the list of previous enabled applications
@@ -153,7 +158,7 @@ public class UpgradeStartup implements ModuleStartup {
             logger.log(Level.INFO, "Redeploy application " + app.getName() + " located at " + app.getLocation());    
             if (!redeployApp(app)) {
                 return;
-            };     
+            }     
         }
 
         // re-enables all applications. 
@@ -186,7 +191,6 @@ public class UpgradeStartup implements ModuleStartup {
             Thread.sleep(3000);
             if (runner!=null) {
                 runner.doCommand("stop-domain", new Properties(), new PlainTextActionReporter());
-                return;
             }
 
         } catch (InterruptedException e) {
