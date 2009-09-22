@@ -98,8 +98,7 @@ public class LoginContextDriver  {
 
     public static final String CERT_REALMNAME = "certificate";
   
-    //NOTE: This AuditManager is initialized in SecurityLifecycle
-    private  static volatile AuditManager AUDIT_MANAGER;
+    private  static volatile AuditManager AUDIT_MANAGER=null;
     
     /** This class cannot be instantiated
      *
