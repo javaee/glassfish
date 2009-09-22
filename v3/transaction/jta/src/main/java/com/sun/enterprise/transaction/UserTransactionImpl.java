@@ -37,6 +37,7 @@ package com.sun.enterprise.transaction;
 
 import java.rmi.RemoteException;
 import java.io.Serializable;
+import java.io.ObjectStreamException;
 import java.util.Properties;
 import java.util.logging.*;
 
@@ -50,11 +51,13 @@ import com.sun.enterprise.transaction.spi.TransactionOperationsManager;
 
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.internal.api.Globals;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.Habitat;
 
 /** 
  * This class implements javax.transaction.UserTransaction .
@@ -284,5 +287,17 @@ public class UserTransactionImpl implements UserTransaction, Serializable
         transactionManager = (JavaEETransactionManager)tm;
         invocationManager = im;
         ((JavaEETransactionManagerSimplified)transactionManager).invMgr = im;
+    }
+
+    /** 
+     * Return instance with all injected values from deserialization if possible
+     */
+    Object readResolve() throws ObjectStreamException {
+        Habitat h = Globals.getDefaultHabitat();
+        if (h != null) {
+            return h.getComponent(UserTransactionImpl.class);
+        }
+
+        return this;
     }
 }
