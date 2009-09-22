@@ -310,7 +310,7 @@ final class RegistrationSupport
                 intf = StatefulSessionBean.class;
                 impl = StatefulSessionBeanImpl.class;
             }
-            else if (ejbSessionType.equals("Session")) // EJB 3.1
+            else if (ejbSessionType.equals("Singleton")) // EJB 3.1
             {
                 intf = SingletonSessionBean.class;
                 impl = SingletonSessionBeanImpl.class;
