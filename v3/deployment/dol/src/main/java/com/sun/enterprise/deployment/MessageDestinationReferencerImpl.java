@@ -40,6 +40,7 @@ import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Collection;
 
 /**
  * Shared implementation for deployment descriptor entities that can refer
@@ -184,7 +185,7 @@ public class MessageDestinationReferencerImpl implements
 
             BundleDescriptor bundleDescriptor = getBundleDescriptor();
             Application app = bundleDescriptor.getApplication();
-            BundleDescriptor targetBundle = bundleDescriptor;
+            BundleDescriptor targetBundle = null;
             String msgDestName = linkName;
             
             if( app != null ) {
@@ -215,6 +216,23 @@ public class MessageDestinationReferencerImpl implements
                                 break;
                             }
                         }
+
+                        // also look in extension bundle descriptors
+                        // for ejb in war case
+                        if (targetBundle == null) {
+                            Collection<RootDeploymentDescriptor> extensionBundles = bundleDescriptor.getExtensionsDescriptors();
+                            for(Iterator<RootDeploymentDescriptor> itr = extensionBundles.iterator(); itr.hasNext();) {
+                                RootDeploymentDescriptor next = itr.next();
+                                if (next instanceof BundleDescriptor) {
+                                    if (((BundleDescriptor)next).hasMessageDestinationByName(msgDestName) ) {
+                                        targetBundle = (BundleDescriptor)next;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        targetBundle = bundleDescriptor;
                     }
                 }
             }

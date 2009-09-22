@@ -101,6 +101,10 @@ public class MessageDestinationRuntimeNode extends DeploymentDescriptorNode {
                     DOLUtils.getDefaultLogger().warning(iae.getMessage());
                 }
             } 
+        } else if (RuntimeTagNames.JNDI_NAME.equals(element.getQName())) {
+            if (descriptor != null) {
+                descriptor.setJndiName(value);
+            } 
         } else super.setElementValue(element, value);
     }
     
