@@ -57,7 +57,7 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
     private static final String APPLICATIONS = "applications";
     // Map of apps and its StatsProvider list
     Map<String, List> statsProviderToAppMap = new HashMap();
-
+    ArrayList webContainerStatsProviderList = new ArrayList();
 
     public WebStatsProviderBootstrap() {
     }
@@ -100,14 +100,18 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
     }
 
     private void registerWebStatsProviders() {
-        StatsProviderManager.register("web-container", PluginPoint.SERVER,
-                            "web/jsp", new JspStatsProvider(null, null, logger));
-        StatsProviderManager.register("web-container", PluginPoint.SERVER,
-                            "web/request", new WebRequestStatsProvider(null, null, logger));
-        StatsProviderManager.register("web-container", PluginPoint.SERVER,
-                            "web/servlet", new ServletStatsProvider(null, null, logger));
-        StatsProviderManager.register("web-container", PluginPoint.SERVER,
-                            "web/session", new SessionStatsProvider(null, null, logger));
+        JspStatsProvider jsp = new JspStatsProvider(null, null, logger);
+        WebRequestStatsProvider wsp = new WebRequestStatsProvider(null, null, logger);
+        ServletStatsProvider svsp = new ServletStatsProvider(null, null, logger);
+        SessionStatsProvider sssp = new SessionStatsProvider(null, null, logger);
+        StatsProviderManager.register("web-container", PluginPoint.SERVER, "web/jsp", jsp);
+        StatsProviderManager.register("web-container", PluginPoint.SERVER, "web/request", wsp);
+        StatsProviderManager.register("web-container", PluginPoint.SERVER, "web/servlet", svsp);
+        StatsProviderManager.register("web-container", PluginPoint.SERVER,  "web/session", sssp);
+        this.webContainerStatsProviderList.add(jsp);
+        this.webContainerStatsProviderList.add(wsp);
+        this.webContainerStatsProviderList.add(svsp);
+        this.webContainerStatsProviderList.add(sssp);
     }
 
     public void registerApplicationStatsProviders() {
@@ -269,6 +273,11 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
                         StatsProviderManager.unregister(statsProvider);
                     }
                     statsProviderToAppMap.remove(appName);
+                    if (statsProviderToAppMap.isEmpty()) {
+                        for (Object statsProvider : this.webContainerStatsProviderList) {
+                            StatsProviderManager.unregister(statsProvider);
+                        }
+                    }
                 }
                 logger.finest("[Monitor] (Un)Deploy event received - name = " + propName + " : Value = " + appName);
            }
