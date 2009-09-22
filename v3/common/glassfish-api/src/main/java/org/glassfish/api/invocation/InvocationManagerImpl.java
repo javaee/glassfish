@@ -72,6 +72,9 @@ public class InvocationManagerImpl
     @Inject
     Habitat habitat;
 
+    @Inject(optional=true)
+    ComponentInvocationHandler[] invHandlers=null;
+
     public InvocationManagerImpl() {
 
         frames = new InheritableThreadLocal<InvocationArray<ComponentInvocation>>() {
@@ -136,14 +139,8 @@ public class InvocationManagerImpl
         // if ejb call EJBSecurityManager, for servlet call RealmAdapter
         ComponentInvocationType invType = inv.getInvocationType();
 
-        // dochez : we use habitat lookup at each call, if this proves to be a bottleneck (don't think so,
-        // since it's just one hashMap lookup, we could consider caching this.
-        Collection<ComponentInvocationHandler> handlers = null;
-        if (habitat!=null) {
-            handlers = habitat.getAllByContract(ComponentInvocationHandler.class);
-        }
-        if (handlers!=null) {
-            for (ComponentInvocationHandler handler : handlers) {
+        if (invHandlers!=null) {
+            for (ComponentInvocationHandler handler : invHandlers) {
                 handler.beforePreInvoke(invType, prevInv, inv);
             }
         }
@@ -160,8 +157,8 @@ public class InvocationManagerImpl
         //push this invocation on the stack
         v.add(inv);
 
-        if (handlers!=null) {
-            for (ComponentInvocationHandler handler : handlers) {
+        if (invHandlers!=null) {
+            for (ComponentInvocationHandler handler : invHandlers) {
                 handler.afterPreInvoke(invType, prevInv, inv);
             }
         }
@@ -192,22 +189,14 @@ public class InvocationManagerImpl
         ComponentInvocation prevInv = beforeSize > 1 ? v.get(beforeSize - 2) : null;
         ComponentInvocation curInv = v.get(beforeSize - 1);
 
-        // same lazy look up, room for optimization
-        Collection<ComponentInvocationHandler> handlers = null;
-        if (habitat!=null) {
-            handlers = habitat.getAllByContract(ComponentInvocationHandler.class);
-        }
-
         try {
             ComponentInvocationType invType = inv.getInvocationType();
 
-            if (handlers!=null) {
-                for (ComponentInvocationHandler handler : handlers) {
+            if (invHandlers!=null) {
+                for (ComponentInvocationHandler handler : invHandlers) {
                     handler.beforePostInvoke(invType, prevInv, curInv);
                 }
-            }
-            
-            
+            }                       
 
             Set<RegisteredComponentInvocationHandler> setCIH = regCompInvHandlerMap.get(invType);
             if (setCIH != null) {
@@ -222,8 +211,8 @@ public class InvocationManagerImpl
             // pop the stack
             v.remove(beforeSize - 1);
 
-            if (handlers!=null) {
-                for (ComponentInvocationHandler handler : habitat.getAllByContract(ComponentInvocationHandler.class)) {
+            if (invHandlers!=null) {
+                for (ComponentInvocationHandler handler : invHandlers) {
                     handler.afterPostInvoke(inv.getInvocationType(), prevInv, inv);
                 }
             }
