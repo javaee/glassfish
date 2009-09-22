@@ -150,6 +150,14 @@ public class JDBCConnectionPoolManager implements ResourceManager{
                 }
             }
         }
+
+        /* --validationtable is optional unless is-connection-validation-required is set to true. */
+        if (this.isconnectvalidatereq.equals(Boolean.TRUE.toString()) && this.validationtable == null) {
+            String msg = localStrings.getLocalString("create.jdbc.connection.pool.validationtable_required",
+                            "--validationtable is required if --isconnectvalidatereq is set to true.");
+                    return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
+        }
+
             
         try {
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
