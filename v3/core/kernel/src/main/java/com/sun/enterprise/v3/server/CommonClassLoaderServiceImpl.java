@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -190,12 +191,13 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
                 try
                 {
                     jar = new JarFile(file);
-                    String exclude = jar.getManifest().getMainAttributes().
-                            getValue(SERVER_EXCLUDED_ATTR_NAME);
-                    if (exclude != null && exclude.equalsIgnoreCase("true")) {
-                        return false;
-                    } else {
-                        return true;
+                    Manifest manifest = jar.getManifest();
+                    if (manifest != null) {
+                        String exclude = manifest.getMainAttributes().
+                                getValue(SERVER_EXCLUDED_ATTR_NAME);
+                        if (exclude != null && exclude.equalsIgnoreCase("true")) {
+                            return false;
+                        }
                     }
                 }
                 catch (IOException e)
@@ -213,6 +215,7 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
                         // ignore
                     }
                 }
+                return true;
             }
             return false;
         }
