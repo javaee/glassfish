@@ -258,12 +258,6 @@ public class WebappLoader
     private String classpath = null;
 
 
-    /**
-     * Repositories that are set in the loader, for JMX.
-     */
-    private ArrayList<String> loaderRepositories = null;
-
-    
     // START PE 4985680`
     /**
      * List of packages that may always be overridden, regardless of whether
@@ -504,7 +498,6 @@ public class WebappLoader
 
         if (started && (classLoader != null)) {
             classLoader.addRepository(repository);
-            if( loaderRepositories != null ) loaderRepositories.add(repository);
             setClassPath();
         }
 
@@ -1013,8 +1006,6 @@ public class WebappLoader
         if (servletContext == null)
             return;
 
-        loaderRepositories=new ArrayList<String>();
-
         // Loading the work directory
         File workDir =
             (File) servletContext.getAttribute(ServletContext.TEMPDIR);
@@ -1066,9 +1057,6 @@ public class WebappLoader
                 log.finest(sm.getString("webappLoader.classDeploy",
                                         classesPath,
                                         classRepository.getAbsolutePath()));
-
-            // Adding the repository to the class loader
-            loaderRepositories.add(classesPath + "/" );
         }
 
         // Setting up the JAR repository (/WEB-INF/lib), if it exists
@@ -1103,6 +1091,10 @@ public class WebappLoader
                 destDir.mkdirs();
             }
 
+            if (!copyJars) {
+                return;
+            }
+
             // Looking up directory /WEB-INF/lib in the context
             try {
                 NamingEnumeration<Binding> enumeration =
@@ -1125,9 +1117,6 @@ public class WebappLoader
                     }
                     // END PWC 1.1 6314481
 
-                    // Copy JAR in the work directory, always (the JAR file
-                    // would get locked otherwise, which would make it
-                    // impossible to update it or remove it at runtime)
                     File destFile = new File(destDir, binding.getName());
 
                     if (log.isLoggable(Level.FINEST)) {
@@ -1143,14 +1132,10 @@ public class WebappLoader
 
                     Resource jarResource = (Resource) obj;
 
-                    if (copyJars) {
-                        if (!copy(jarResource.streamContent(),
-                                  new FileOutputStream(destFile)))
-                            continue;
+                    if (!copy(jarResource.streamContent(),
+                              new FileOutputStream(destFile))) {
+                        continue;
                     }
-
-                    loaderRepositories.add( filename );
-
                 }
             } catch (NamingException e) {
                 // Silent catch: it's valid that no /WEB-INF/lib directory
@@ -1316,10 +1301,19 @@ public class WebappLoader
                     break;
                 os.write(buf, 0, len);
             }
-            is.close();
-            os.close();
         } catch (IOException e) {
             return false;
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+                // do nothing
+            }
+            try {
+                os.close();
+            } catch (Exception e) {
+                // do nothing
+            }
         }
 
         return true;
