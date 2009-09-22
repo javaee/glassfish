@@ -315,7 +315,7 @@ public class WebServiceRefHandler extends AbstractHandler  {
                 aRef.addInjectionTarget(target);
             }
             
-            if (!Object.class.equals(annotation.value())) {
+            if (!Object.class.equals(annotation.value()) && (!javax.xml.ws.Service.class.equals(annotation.value()))) {
                 // a value was provided, which should be the Service
                 // interface, the requested injection is therefore on the
                 // port.
@@ -346,7 +346,7 @@ public class WebServiceRefHandler extends AbstractHandler  {
             
             // Read the WebServiceClient annotation for the service name space uri and wsdl (if required)
             WebServiceClient wsclientAnn;
-            if (Object.class.equals(annotation.value())) {
+            if (Object.class.equals(annotation.value()) || javax.xml.ws.Service.class.equals(annotation.value())) {
                 wsclientAnn =  (WebServiceClient) annotatedType.getAnnotation(WebServiceClient.class);
             } else {
                 wsclientAnn = (WebServiceClient) annotation.value().getAnnotation(WebServiceClient.class);

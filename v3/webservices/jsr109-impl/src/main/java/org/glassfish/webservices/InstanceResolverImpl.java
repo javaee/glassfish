@@ -50,13 +50,15 @@ import com.sun.xml.ws.api.server.InstanceResolver;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.server.WSWebServiceContext;
 import com.sun.xml.ws.api.server.Invoker;
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.enterprise.container.common.spi.util.InjectionException;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import javax.xml.ws.Provider;
-
-
+import javax.xml.ws.WebServiceException;
 
 
 public final class InstanceResolverImpl<T> extends InstanceResolver<T> {
@@ -65,9 +67,16 @@ public final class InstanceResolverImpl<T> extends InstanceResolver<T> {
     private final InstanceResolver<T> resolver;
     private final T instance;
 
-    public  InstanceResolverImpl(@NotNull Class<T> clasz) {    
-        instance = InstanceResolver.createNewInstance(clasz);
+    public  InstanceResolverImpl(@NotNull Class<T> clasz) {
+        InjectionManager injManager = WebServiceContractImpl.getInstance()
+                .getHabitat().getByContract(InjectionManager.class);
+        try {
+            instance = (T)injManager.createManagedObject(clasz);
+        } catch (InjectionException e) {
+            throw new WebServiceException(e);
+        }
         resolver = InstanceResolver.createSingleton(instance);
+
     }
 
     public @NotNull T resolve(Packet request) {
