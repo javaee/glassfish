@@ -79,10 +79,10 @@ public final class AMXCoreTests extends AMXTestBase
     }
 
     @Test(dependsOnMethods = "bootAMX")
-    public void iterateAllSanityCheck()
+    public void iterateAllSanityCheck() throws Exception
     {
-        try
-        {
+        //try
+        //{
             final Set<AMXProxy> all = getAllAMX();
             assert all.size() > 20 : "Expected at least 20 AMX MBeans, got: " + all.size();
             for (final AMXProxy amx : all)
@@ -101,29 +101,29 @@ public final class AMXCoreTests extends AMXTestBase
                     throw e;
                 }
             }
-        }
-        catch( final Throwable t )
-        {
-            System.out.println( "Test iterateAllSanityCheck() IGNORED, see issue #9355" );
-            t.printStackTrace();
-        }
+        //}
+        //catch( final Throwable t )
+        //{
+        //    System.out.println( "Test iterateAllSanityCheck() IGNORED, see issue #9355" );
+        //    t.printStackTrace();
+        //}
     }
     
     @Test
     public void testAMXComplianceMonitorFailureCount()
     {
-        try
-        {
+        //try
+        //{
         final int failureCount = getDomainRootProxy().getNumComplianceFailures();
         
         assert failureCount == 0 :
             "Server indicates that there are non-compliant AMX MBean validator failures, failure count = " + failureCount + ", examine the server log for failures";
-        }
-        catch( final Throwable t )
-        {
-            System.out.println( "Test testAMXComplianceMonitorFailureCount() IGNORED, see issue #9355" );
-            t.printStackTrace();
-        }
+        //}
+        //catch( final Throwable t )
+        //{
+        //    System.out.println( "Test testAMXComplianceMonitorFailureCount() IGNORED, see issue #9355" );
+        //    t.printStackTrace();
+        //}
      }
 
 }
