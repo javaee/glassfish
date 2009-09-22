@@ -267,9 +267,9 @@ public class JaxRpcRICodegen extends ModuleContentLinker
         //For jaxrpc based clients the generated sources need to be placed
         // in the downloaded appclient jar
         ClientArtifactsManager cArtifactsManager = ClientArtifactsManager.get(context);
-        if (!cArtifactsManager.artifacts().containsAll(filesList)){
+       // if (!cArtifactsManager.artifacts().containsAll(filesList)){
             cArtifactsManager.addAll(context.getScratchDir("ejb"),filesList);
-        }
+        //}
     }
 
     /**
