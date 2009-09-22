@@ -41,6 +41,10 @@ import org.glassfish.api.naming.NamingObjectsProvider;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.api.invocation.ComponentInvocation;
+
+import com.sun.enterprise.transaction.spi.TransactionOperationsManager;
 import com.sun.logging.LogDomains;
 
 import org.jvnet.hk2.annotations.Inject;
@@ -73,6 +77,9 @@ public class TransactionNamingProxy
     @Inject
     private ProcessEnvironment processEnv;
 
+    @Inject(optional=true)
+    private transient InvocationManager invocationManager;
+
     private static Logger logger = LogDomains.getLogger(TransactionNamingProxy.class, LogDomains.JTA_LOGGER);
 
     private static final String USER_TX = "java:comp/UserTransaction";
@@ -102,7 +109,7 @@ public class TransactionNamingProxy
     public Object handle(String name) throws NamingException {
 
         if (USER_TX.equals(name)) {
-// XXX TODO: Check permissions to lookup UserTransaction
+            checkUserTransactionLookupAllowed();
             return habitat.getComponent(UserTransactionImpl.class);
         } else if (TRANSACTION_SYNC_REGISTRY.equals(name)) {
             return habitat.getComponent(TransactionSynchronizationRegistryImpl.class);
@@ -116,8 +123,21 @@ public class TransactionNamingProxy
     private class UserTransactionProxy implements NamingObjectProxy {
 
         public Object create(Context ic) throws NamingException {
-// XXX TODO: Check permissions to lookup UserTransaction
+            checkUserTransactionLookupAllowed();
             return habitat.getComponent(UserTransactionImpl.class);
+        }
+    }
+
+    private void checkUserTransactionLookupAllowed() throws NamingException {
+        if (invocationManager != null) {
+            ComponentInvocation inv = invocationManager.getCurrentInvocation();
+            if (inv != null) {
+                TransactionOperationsManager toMgr =
+                        (TransactionOperationsManager)inv.getTransactionOperationsManager();
+                if ( toMgr != null ) {
+                    toMgr.userTransactionLookupAllowed();
+                }
+            }
         }
     }
 }

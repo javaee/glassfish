@@ -52,6 +52,7 @@ import javax.ejb.EJBContext;
 import javax.ejb.Timer;
 import javax.interceptor.InvocationContext;
 import com.sun.ejb.containers.interceptors.InterceptorUtil;
+import javax.naming.NameNotFoundException;
 import javax.transaction.Transaction;
 import javax.xml.rpc.handler.MessageContext;
 import javax.xml.soap.SOAPMessage;
@@ -412,6 +413,14 @@ public class EjbInvocation
      */
     public boolean userTransactionMethodsAllowed() {
         return ((Container) container).userTransactionMethodsAllowed(this);
+    }
+
+    /**
+     * Called by the UserTransaction lookup to verify 
+     * access to the UserTransaction itself.
+     */
+    public void userTransactionLookupAllowed() throws NameNotFoundException {
+        ((BaseContainer) container).checkUserTransactionLookup(this);
     }
 
     /**
