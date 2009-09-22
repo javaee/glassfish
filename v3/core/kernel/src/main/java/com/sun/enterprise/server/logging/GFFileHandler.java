@@ -165,6 +165,12 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         String cname = getClass().getName();
         
         String filename = TranslatedConfigView.getTranslatedValue(manager.getProperty(cname + ".file")).toString();
+        String instRoot = "{com.sun.aas.instanceRoot}";
+        if (filename.contains(instRoot)){
+            String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
+            String f = filename.replace(instRoot,instanceRoot );
+            filename = f;
+            }
         File serverLog = new File(filename);
         absoluteServerLogName = filename;
         if (!serverLog.isAbsolute()) {

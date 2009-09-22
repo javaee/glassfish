@@ -108,7 +108,13 @@ public class UpgradeLogging implements ConfigurationUpgrade, PostConstruct {
             ModuleLogLevels mll = logService.getModuleLogLevels();
 
             Map logLevels = mll.getAllLogLevels();
-            logLevels.put("file", logService.getFile());
+            String file=logService.getFile();
+            String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
+            if (file.contains(instanceRoot)){
+                String f = file.replace(instanceRoot ,"{com.sun.aas.instanceRoot}");
+                file = f;
+            }
+            logLevels.put("file", file);
             logLevels.put("use-system-logging", logService.getUseSystemLogging());
             //this can have multiple values so need to add
             logLevels.put("log-handler", logService.getLogHandler());
