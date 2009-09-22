@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.lassfish.jms.admin.cli;
+package org.glassfish.jms.admin.cli;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
