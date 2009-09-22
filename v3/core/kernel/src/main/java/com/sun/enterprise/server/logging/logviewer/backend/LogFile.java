@@ -40,6 +40,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.text.SimpleDateFormat;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 
 /**
@@ -119,7 +121,7 @@ public class LogFile implements java.io.Serializable {
 		    results.add(new LogEntry(line, 
                         startingRecord+results.size()));
 		} catch (IllegalArgumentException ex) {
-		    ex.printStackTrace();
+            Logger.getAnonymousLogger().log(Level.INFO,"Could not read the log entry",ex);
 		}
 	    }
 	} catch (Exception ex) {
@@ -186,12 +188,14 @@ public class LogFile implements java.io.Serializable {
 		} catch (EOFException ex) {
 		    break;
 		} catch (Exception ex) {
-		    ex.printStackTrace();
+            Logger.getAnonymousLogger().log(Level.INFO,"Error trying to position where we left off",ex);
+
                     break;
 		}
 	    }
 	} catch (Exception ex) {
-	    ex.printStackTrace();
+        Logger.getAnonymousLogger().log(Level.INFO,"Error trying to position where we left off",ex);
+
 	} finally {
 	    if (reader != null) {
 		try {
@@ -283,9 +287,8 @@ public class LogFile implements java.io.Serializable {
 		new BufferedReader(new InputStreamReader(file));
 	    return reader;
 	} catch (Exception ex) {
-	    System.err.println("Exception in openFile..." + ex);
-	    ex.printStackTrace();
-	}
+        Logger.getAnonymousLogger().log(Level.INFO,"Exception in openFile...",ex);
+        	}
 	return null;
     }
 
