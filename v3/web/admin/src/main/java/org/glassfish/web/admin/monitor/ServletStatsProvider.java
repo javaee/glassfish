@@ -38,7 +38,10 @@ package org.glassfish.web.admin.monitor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.RangeStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
+import org.glassfish.external.statistics.impl.RangeStatisticImpl;
+import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
@@ -54,35 +57,41 @@ import org.glassfish.gmbal.ManagedObject;
 @ManagedObject
 @Description("Web Container Servlet Statistics")
 public class ServletStatsProvider {
+
+    private static final String ACTIVE_SERVLETS_LOADED_DESCRIPTION =
+        "Number of Servlets loaded";
+    private static final String TOTAL_SERVLETS_LOADED_DESCRIPTION =
+        "Total number of Servlets ever loaded";
+
     private String moduleName;
     private String vsName;
     private Logger logger;
+    private RangeStatisticImpl activeServletsLoadedCount;
+    private CountStatisticImpl totalServletsLoadedCount;
     
     public ServletStatsProvider(String moduleName, String vsName,
             Logger logger) {
         this.logger = logger;
         this.moduleName = moduleName;
         this.vsName = vsName;
+        long curTime = System.currentTimeMillis();
+        activeServletsLoadedCount = new RangeStatisticImpl(
+            0L, 0L, 0L, "ActiveServletsLoaded", StatisticImpl.UNIT_COUNT,
+            ACTIVE_SERVLETS_LOADED_DESCRIPTION, curTime, curTime);
+        totalServletsLoadedCount = new CountStatisticImpl(
+            "TotalServletsLoaded", StatisticImpl.UNIT_COUNT,
+            TOTAL_SERVLETS_LOADED_DESCRIPTION);
     }
 
-    private CountStatisticImpl activeServletsLoadedCount = new CountStatisticImpl("ActiveServletsLoaded", "count", "Number of currently loaded servlets");
-    private CountStatisticImpl maxServletsLoadedCount = new CountStatisticImpl("MaxServletsLoaded", "count", "Maximum number of servlets loaded which were active");
-    private CountStatisticImpl totalServletsLoadedCount = new CountStatisticImpl("TotalServletsLoaded", "count", "Cumulative number of servlets that have been loaded");
 
     @ManagedAttribute(id="activeservletsloadedcount")
-    @Description( "Number of currently loaded servlets" )
-    public CountStatistic getActiveServletsLoaded() {
+    @Description(ACTIVE_SERVLETS_LOADED_DESCRIPTION)
+    public RangeStatistic getActiveServletsLoaded() {
         return activeServletsLoadedCount;
     }
 
-    @ManagedAttribute(id="maxservletsloadedcount")
-    @Description( "Maximum number of servlets loaded which were active" )
-    public CountStatistic getMaxServletsLoaded() {
-        return maxServletsLoadedCount;
-    }
-
     @ManagedAttribute(id="totalservletsloadedcount")
-    @Description( "Cumulative number of servlets that have been loaded into the web module" )
+    @Description(TOTAL_SERVLETS_LOADED_DESCRIPTION)
     public CountStatistic getTotalServletsLoaded() {
         return totalServletsLoadedCount;
     }
@@ -98,15 +107,18 @@ public class ServletStatsProvider {
                           ": appName = " + appName + ": hostName = " +
                           hostName);
         }
-        if (!isValidEvent(appName, hostName)) {
-            return;
-        }
-        activeServletsLoadedCount.increment();
-        totalServletsLoadedCount.increment();
-        if (activeServletsLoadedCount.getCount() > maxServletsLoadedCount.getCount()) {
-            maxServletsLoadedCount.setCount(activeServletsLoadedCount.getCount());
-        }
-            
+        if (isValidEvent(appName, hostName)) {
+            synchronized (activeServletsLoadedCount) {
+                activeServletsLoadedCount.setCurrent(
+                    activeServletsLoadedCount.getCurrent() + 1);
+                if (activeServletsLoadedCount.getCurrent() > 
+                        activeServletsLoadedCount.getHighWaterMark()) {
+                    activeServletsLoadedCount.setHighWaterMark(
+                        activeServletsLoadedCount.getCurrent());
+                }
+            }
+            totalServletsLoadedCount.increment();
+        }   
     }
 
     @ProbeListener("glassfish:web:servlet:servletDestroyedEvent")
@@ -120,10 +132,12 @@ public class ServletStatsProvider {
                           ": appName = " + appName + ": hostName = " +
                           hostName);
         }
-        if (!isValidEvent(appName, hostName)) {
-            return;
+        if (isValidEvent(appName, hostName)) {
+            synchronized (activeServletsLoadedCount) {
+                activeServletsLoadedCount.setCurrent(
+                    activeServletsLoadedCount.getCurrent() - 1);
+            }
         }
-        activeServletsLoadedCount.decrement();
     }
     
     private boolean isValidEvent(String mName, String hostName) {
@@ -147,8 +161,7 @@ public class ServletStatsProvider {
     }
     
     private void resetStats() {
-        activeServletsLoadedCount.setCount(0);
-        maxServletsLoadedCount.setCount(0);
+        activeServletsLoadedCount.reset();
         totalServletsLoadedCount.setCount(0);
     }
 }
