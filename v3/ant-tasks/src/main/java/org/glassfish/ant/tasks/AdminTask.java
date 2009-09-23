@@ -79,12 +79,16 @@ public class AdminTask extends Task {
         addCommandParameter("user", user);
     }
 
-	public void setPasswordFile(String passwordfile) {
+    public void setPasswordFile(String passwordfile) {
         addCommandParameter("passwordfile", passwordfile);
     }
 
-	public void setHost(String host) {
+    public void setHost(String host) {
         addCommandParameter("host", host);
+    }
+
+    public void setPort(String port) {
+        addCommandParameter("port", port);
     }
 
     public String getInstallDir() {

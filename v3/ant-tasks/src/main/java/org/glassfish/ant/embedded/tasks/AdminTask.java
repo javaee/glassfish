@@ -85,7 +85,7 @@ public class AdminTask extends Task {
 
     public void execute() throws BuildException {
         log("executing admin task : " + command);
-        Server server = new Server.Builder(serverID).build();
+        Server server = Server.getServer(serverID);
         CommandRunner runner = server.getHabitat().getComponent(CommandRunner.class);
         ActionReport report = server.getHabitat().getComponent(ActionReport.class);
         runner.doCommand(command, getCommandProperties(), report);

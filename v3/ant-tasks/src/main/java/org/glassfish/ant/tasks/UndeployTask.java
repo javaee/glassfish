@@ -33,13 +33,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.ant.tasks;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.BuildException;
 import java.util.*;
-
 
 public class UndeployTask extends AdminTask {
 
@@ -48,12 +46,11 @@ public class UndeployTask extends AdminTask {
     private Component component;
     private List<Component> components = new ArrayList<Component>();
 
-
     public UndeployTask() {
         setCommand(action);
     }
 
-	public void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -61,15 +58,15 @@ public class UndeployTask extends AdminTask {
         addCommandParameter("force", Boolean.toString(force));
     }
 
-	public void setDroptables(boolean droptables) {
+    public void setDroptables(boolean droptables) {
         addCommandParameter("droptables", Boolean.toString(droptables));
     }
 
-	public void setCascade(boolean cascade) {
+    public void setCascade(boolean cascade) {
         addCommandParameter("cascade", Boolean.toString(cascade));
     }
 
-	public void setKeepreposdir(boolean keepreposdir) {
+    public void setKeepreposdir(boolean keepreposdir) {
         addCommandParameter("keepreposdir", Boolean.toString(keepreposdir));
     }
 
@@ -79,9 +76,8 @@ public class UndeployTask extends AdminTask {
         return component;
     }
 
-
     public void execute() throws BuildException {
-        if (components.size() == 0 && name == null ) {
+        if (components.size() == 0 && name == null) {
             log("name attribute or component must be specified", Project.MSG_WARN);
             return;
         }
