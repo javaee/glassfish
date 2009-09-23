@@ -86,9 +86,11 @@ public class MonitorableThreadPool extends StatsThreadPool {
 
     public class ProbeWorkerThreadFactory implements ThreadFactory {
 
+        @Override
         public Thread newThread(Runnable r) {
             Thread thread = new MonitorableWorkerThread(
-                    MonitorableThreadPool.this, r, name,
+                    MonitorableThreadPool.this, r, name +
+                    "-(" + workerThreadCounter.getAndIncrement() + ")",
                     initialByteBufferSize, monitoring);
             monitoring.getThreadPoolProbeProvider().newThreadsAllocatedEvent(
                     threadPoolMonitoringName, 1, true);
