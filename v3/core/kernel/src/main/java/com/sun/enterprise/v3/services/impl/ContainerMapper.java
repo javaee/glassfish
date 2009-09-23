@@ -68,8 +68,10 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
     private final GrizzlyService grizzlyService;
     protected final static int MAPPING_DATA = 12;
     protected final static int MAPPED_ADAPTER = 13;
+    private static final String serverName =
+            System.getProperty("product.name") == null? "": System.getProperty("product.name");
     private final static byte[] errorBody =
-            HttpUtils.getErrorPage("Glassfish/v3","HTTP Status 404");
+            HttpUtils.getErrorPage(serverName,"HTTP Status 404");
 
     private HK2Dispatcher hk2Dispatcher = new HK2Dispatcher();
 
