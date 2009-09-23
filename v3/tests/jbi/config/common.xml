@@ -123,9 +123,9 @@
 <target name="create-user-common">
 <property name="user.password.file" value="asadminuserpassword.txt"/>
 <echo file="${user.password.file}" append="false">
-AS_ADMIN_USERPASSWORD=${password}
-AS_ADMIN_PASSWORD=${admin.password}
-AS_ADMIN_ADMINPASSWORD=${admin.password}
+AS_ADMIN_USERPASSWORD=
+AS_ADMIN_PASSWORD=
+AS_ADMIN_ADMINPASSWORD=
 AS_ADMIN_MASTERPASSWORD=${master.password}
 </echo>
   <exec executable="${ASADMIN}">
@@ -146,8 +146,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 <echo message="Deleting user ${user} in file realm" level="verbose"/>
 <exec executable="${ASADMIN}">
   <arg line="delete-file-user"/>
-  <arg line="${as.props}"/>
-  <arg line="--authrealmname ${authrealmname}"/>
   <arg line="${user}"/>
 </exec>
 </target>
