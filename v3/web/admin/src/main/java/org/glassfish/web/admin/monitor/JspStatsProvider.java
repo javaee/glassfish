@@ -59,9 +59,9 @@ import org.glassfish.gmbal.ManagedObject;
 public class JspStatsProvider{
 
     private static final String ACTIVE_JSPS_LOADED_DESCRIPTION =
-        "Number of currently active JSP pages";
+        "Number of active JSP pages";
     private static final String TOTAL_JSPS_LOADED_DESCRIPTION =
-        "Total number of JSP pages that were loaded";
+        "Total number of JSP pages ever loaded";
 
     private String moduleName;
     private String vsName; 
