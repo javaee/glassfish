@@ -57,6 +57,12 @@ import org.glassfish.gmbal.ManagedObject;
 @ManagedObject
 @Description("Web Container JSP Statistics")
 public class JspStatsProvider{
+
+    private static final String ACTIVE_JSPS_LOADED_DESCRIPTION =
+        "Number of currently active JSP pages";
+    private static final String TOTAL_JSPS_LOADED_DESCRIPTION =
+        "Total number of JSP pages that were loaded";
+
     private String moduleName;
     private String vsName; 
     private Logger logger;
@@ -69,21 +75,20 @@ public class JspStatsProvider{
         long curTime = System.currentTimeMillis();
         activeJspsLoadedCount = new RangeStatisticImpl(
             0L, 0L, 0L, "ActiveJspsLoaded", StatisticImpl.UNIT_COUNT,
-            "Number of currently active JSP pages", curTime, curTime);
+            ACTIVE_JSPS_LOADED_DESCRIPTION, curTime, curTime);
         totalJspsLoadedCount = new CountStatisticImpl(
-            "TotalJspsLoaded",
-            StatisticImpl.UNIT_COUNT,
-            "Total number of JSP pages that were loaded");
+            "TotalJspsLoaded", StatisticImpl.UNIT_COUNT,
+            TOTAL_JSPS_LOADED_DESCRIPTION);
     }
 
     @ManagedAttribute(id="activejspsloadedcount")
-    @Description("Number of currently active JSP pages")
+    @Description(ACTIVE_JSPS_LOADED_DESCRIPTION)
     public RangeStatistic getActiveJspsLoaded() {
         return activeJspsLoadedCount;
     }
 
     @ManagedAttribute(id="totaljspsloadedcount")
-    @Description("Total number of JSP pages that were loaded")
+    @Description(TOTAL_JSPS_LOADED_DESCRIPTION)
     public CountStatistic getTotalJspsLoaded() {
         return totalJspsLoadedCount;
     }
