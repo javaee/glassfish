@@ -145,6 +145,8 @@ public class DeleteJMSResource implements AdminCommand {
                         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                         return;
                     }
+                    //clear the message set by the delete-connector-connection-pool command this is to prevent the 'connection pool deleted' message from displaying
+                    subReport.setMessage("");
 
                 }
                 else
