@@ -199,7 +199,11 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                     StringTokenizer st = new StringTokenizer(cnames, DELIMITER);
                     while (st.hasMoreTokens()) {
                         try {
-                            processProbeProviderClass(mcl.loadClass(st.nextToken()));
+                            String clStr = st.nextToken();
+                            if (clStr != null)
+                                clStr = clStr.trim();
+                            if (mcl != null)
+                                processProbeProviderClass(mcl.loadClass(clStr));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
