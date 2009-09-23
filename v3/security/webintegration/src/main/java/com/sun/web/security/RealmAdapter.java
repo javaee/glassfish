@@ -1275,10 +1275,11 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         try {
             WebSecurityManager webSecMgr = getWebSecurityManager(true);
             isMandatory = !webSecMgr.permitAll(req);
-            if (isMandatory) {
+            //Issue  - 9578 - commenting as required
+         //   if (isMandatory) {
                 messageInfo.getMap().put(HttpServletConstants.IS_MANDATORY,
                         Boolean.TRUE.toString());
-            }
+           // }
             ServerAuthContext sAC =
                     helper.getServerAuthContext(messageInfo,
                     null); // null serviceSubject
