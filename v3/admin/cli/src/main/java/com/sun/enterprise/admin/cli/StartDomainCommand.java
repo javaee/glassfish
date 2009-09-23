@@ -280,8 +280,12 @@ public class StartDomainCommand extends LocalDomainCommand {
             throw new CommandException(
                     strings.get("CommandUnSuccessfulWithArg", name, msg));
         }
+
         long startWait = System.currentTimeMillis();
-        logger.printDetailMessage(strings.get("WaitDAS"));
+        if (!programOpts.isTerse()) {
+            // use stderr because logger always appends a newline
+            System.err.print(strings.get("WaitDAS") + " ");
+        }
 
         boolean alive = false;
 
@@ -319,10 +323,15 @@ public class StartDomainCommand extends LocalDomainCommand {
             // wait before checking again
             try {
                 Thread.sleep(100);
+                if (!programOpts.isTerse())
+                    System.err.print(".");
             } catch (InterruptedException ex) {
                 // don't care
             }
         }
+
+        if (!programOpts.isTerse())
+            System.err.println();
 
         if (!alive) {
             String msg = strings.get("dasNoStart", 
