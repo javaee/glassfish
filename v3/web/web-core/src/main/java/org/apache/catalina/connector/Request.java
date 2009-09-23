@@ -1898,10 +1898,11 @@ public class Request
     public boolean authenticate(HttpServletResponse response)
             throws IOException, ServletException {
         
-        if (getUserPrincipal() != null) {
+      //Issue 9650 - COmmenting this as required
+      /*  if (getUserPrincipal() != null) {
             throw new ServletException("Attempt to re-login while the " +
                     "user identity already exists");
-        }
+        }*/
         
         if (context == null) {//TODO: throw an exception
             throw new ServletException("Internal error: Context null");
@@ -1929,7 +1930,7 @@ public class Request
             alreadyCalled[0] = 1;
             try {                
                 Realm realm = context.getRealm();
-                if (realm == null) {//TODO: throw an exception
+                if (realm == null) {
                     throw new ServletException("Internal error: realm null");
                 }
                 try {
@@ -1951,8 +1952,6 @@ public class Request
     public void login(String username, String password)
             throws ServletException {
        
-        //Do we have to check for getRemoteUser() and getAuthType() as well?
-        //TODO :Would be confirmed by Ron
         if (getUserPrincipal() != null) {
             log.severe("Attempt to re-login while the " +
                     "user identity already exists");
