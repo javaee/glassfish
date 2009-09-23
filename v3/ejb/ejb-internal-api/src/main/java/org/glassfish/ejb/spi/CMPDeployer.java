@@ -46,4 +46,5 @@ public interface CMPDeployer {
 
     void clean(DeploymentContext ctx);
 
+    String MODULE_CLASSPATH = "org.glassfish.ejb.spi.module.classpath";
 }

@@ -294,7 +294,7 @@ public class CMPDeployerImpl implements CMPDeployer {
         }
 
         // class path for javac
-        String classPath = ASClassLoaderUtil.getModuleClassPath(habitat, ctx);
+        String classPath = ctx.getTransientAppMetaData(CMPDeployer.MODULE_CLASSPATH, String.class); 
         List<String> options    = javaConfig.getJavacOptionsAsList();
 
         StringBuffer msgBuffer = new StringBuffer();
