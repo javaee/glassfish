@@ -88,14 +88,12 @@ public class AsyncContextImpl implements AsyncContext {
         this.servletRequest = servletRequest;
         this.servletResponse = servletResponse;
         this.isOriginalRequestAndResponse = isOriginalRequestAndResponse;
-        if (isOriginalRequestAndResponse) {
-            zeroArgDispatchTarget = getZeroArgDispatchTarget(origRequest);
-        } else if (servletRequest instanceof HttpServletRequest) {
+        if (!isOriginalRequestAndResponse &&
+                (servletRequest instanceof HttpServletRequest)) {
             zeroArgDispatchTarget = getZeroArgDispatchTarget(
                 (HttpServletRequest)servletRequest);
         } else {
-            log.warning("Unable to determine target of " +
-                        "zero-argument dispatch");
+            zeroArgDispatchTarget = getZeroArgDispatchTarget(origRequest);
         }
     }
 
