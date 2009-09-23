@@ -150,8 +150,8 @@ public class JMSPing implements AdminCommand {
         Properties properties = new Properties();
         properties.put("imqDefaultUsername",userName);
         properties.put("imqDefaultPassword",password);
-       //need to escape the :'s twice since they have to be passed on correctly to the create-connector-connection-pool command
-        properties.put("AddressList", "mq\\\\://"+host + "\\\\:"+ port);
+       //need to escape the addresslist property so that they get passed on correctly to the create-connector-connection-pool command
+        properties.put("AddressList", "\"mq://"+host + ":"+ port +"\"");
 
         String propString = "";
         for (java.util.Map.Entry<Object, Object>prop : properties.entrySet()) {
