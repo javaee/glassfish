@@ -21,6 +21,13 @@ public class Client {
 
     @EJB static Hello hello;
 
+    @Resource(lookup="java:module/ModuleName")
+    static String moduleName;
+
+    @Resource(lookup="java:app/AppName")
+    static String appNameL;
+
+
     @EJB(lookup="java:app/env/forappclient") 
     static Hello hello3;
 
@@ -52,6 +59,10 @@ public class Client {
     public static void init() {
 	try {
 	    System.out.println("In init()");
+
+	    System.out.println("AppName = " + appNameL);
+	    System.out.println("ModuleName = " + moduleName);
+
 	    Integer envEntry = (Integer)
 		new InitialContext().lookup("java:app/env/value1");
 	    System.out.println("java:app/env/value1 = " + envEntry);
@@ -67,6 +78,7 @@ public class Client {
 	    if( (envEntry4 == null) || envEntry4.intValue() != 18338 ) {
 		throw new RuntimeException("invalid enventry4 value");
 	    }
+
 	} catch(NamingException e) {
 	    throw new RuntimeException(e);
 	}
