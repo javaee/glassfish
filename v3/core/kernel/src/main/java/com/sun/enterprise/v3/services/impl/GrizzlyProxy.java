@@ -31,6 +31,7 @@ import com.sun.grizzly.Controller;
 import com.sun.grizzly.ControllerStateListener;
 import com.sun.grizzly.config.GrizzlyEmbeddedHttp;
 import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
@@ -93,14 +94,7 @@ public class GrizzlyProxy implements NetworkProxy {
     }
 
     public GrizzlyProxy(GrizzlyService service, NetworkListener listener) {
-        grizzlyService = service;
-        final Collection<VirtualServer> list = service.getHabitat().getAllByContract(VirtualServer.class);
-        final String vsName = listener.findHttpProtocol().getHttp().getDefaultVirtualServer();
-        for (VirtualServer virtualServer : list) {
-            if(virtualServer.getId().equals(vsName)) {
-                vs = virtualServer;
-            }
-        }
+        grizzlyService = service;       
         logger = service.getLogger();
         networkListener = listener;
         String port = networkListener.getPort();
@@ -136,7 +130,19 @@ public class GrizzlyProxy implements NetworkProxy {
             mapper.setId(networkListener.getName());
 
             final GrizzlyEmbeddedHttp embeddedHttp = grizzlyListener.getEmbeddedHttp();
-            embeddedHttp.setWebAppRootPath(vs.getDocroot());
+
+            final Protocol httpProtocol = networkListener.findHttpProtocol();
+            if (httpProtocol != null) {
+                final Collection<VirtualServer> list = grizzlyService.getHabitat().getAllByContract(VirtualServer.class);
+                final String vsName = httpProtocol.getHttp().getDefaultVirtualServer();
+                for (VirtualServer virtualServer : list) {
+                    if (virtualServer.getId().equals(vsName)) {
+                        vs = virtualServer;
+                        embeddedHttp.setWebAppRootPath(vs.getDocroot());
+                        break;
+                    }
+                }
+            }
 
             final ContainerMapper adapter = new ContainerMapper(grizzlyService, embeddedHttp);
             adapter.setMapper(mapper);
