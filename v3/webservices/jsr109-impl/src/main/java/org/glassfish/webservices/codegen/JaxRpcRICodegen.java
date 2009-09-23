@@ -42,6 +42,7 @@ import java.util.*;
 import java.io.*;
 import java.net.URL;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -266,10 +267,9 @@ public class JaxRpcRICodegen extends ModuleContentLinker
         }
         //For jaxrpc based clients the generated sources need to be placed
         // in the downloaded appclient jar
-        ClientArtifactsManager cArtifactsManager = ClientArtifactsManager.get(context);
-       // if (!cArtifactsManager.artifacts().containsAll(filesList)){
-            cArtifactsManager.addAll(context.getScratchDir("ejb"),filesList);
-        //}
+        ClientArtifactsManager cArtifactsManager = ClientArtifactsManager.get(context);    
+        cArtifactsManager.addAll(context.getScratchDir("ejb"),filesList);
+
     }
 
     /**
@@ -543,9 +543,9 @@ public class JaxRpcRICodegen extends ModuleContentLinker
         ClassLoader cl = context.getModuleMetaData(Application.class).getClassLoader();
         if (cl instanceof EJBClassLoader) {
             String modClassPath = ASClassLoaderUtil.getModuleClassPath(habitat, context);
-            List moduleList = ASClassLoaderUtil.getURLsFromClasspath(modClassPath, File.pathSeparator, null);
-            for (Iterator itr=moduleList.iterator();itr.hasNext();) {
-                ((EJBClassLoader) cl).appendURL((new File((String) itr.next())));
+            List<URL> moduleList = ASClassLoaderUtil.getURLsFromClasspath(modClassPath, File.pathSeparator, null);
+            for (Iterator<URL> itr=moduleList.iterator();itr.hasNext();) {
+                ((EJBClassLoader) cl).appendURL(itr.next());
             }
         }
 
