@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,6 +45,7 @@ import org.glassfish.api.deployment.archive.CompositeHandler;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.internal.api.DelegatingClassLoader;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.deployment.common.DeploymentContextImpl;
@@ -55,6 +56,7 @@ import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PreDestroy;
 import org.xml.sax.SAXParseException;
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -95,6 +97,9 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
 
     @Inject
     DasConfig dasConfig;
+
+    private static final String EAR_LIB = "ear_lib";
+    private static final String EMBEDDED_RAR = "embedded_rar";
 
     private static LocalStringsImpl strings = new LocalStringsImpl(EarHandler.class);;
 
@@ -171,12 +176,22 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         ApplicationHolder holder = 
             getApplicationHolder(archive, context, true);
 
+        // the ear classloader hierachy will be 
+        // ear lib classloader -> embedded rar classloader -> 
+        // ear classloader -> various module classloaders
+        DelegatingClassLoader embeddedConnCl;
         EarClassLoader cl;
         // add the libraries packaged in the application library directory
         try {
             String compatProp = context.getAppProps().getProperty(
                 DeploymentProperties.COMPATIBILITY);
-            cl = new EarClassLoader(ASClassLoaderUtil.getAppLibDirLibraries(context.getSourceDir(), holder.app.getLibraryDirectory(), compatProp), parent);
+            EarLibClassLoader earLibCl = new EarLibClassLoader(ASClassLoaderUtil.getAppLibDirLibraries(context.getSourceDir(), holder.app.getLibraryDirectory(), compatProp), parent);
+            embeddedConnCl = new DelegatingClassLoader(earLibCl);
+            cl = new EarClassLoader(embeddedConnCl);
+
+            // add ear lib to module classloader list so we can 
+            // clean it up later
+            cl.addModuleClassLoader(EAR_LIB, earLibCl);
         } catch (IOException e) {
             _logger.log(Level.SEVERE, strings.get("errAddLibs") ,e);
             throw new RuntimeException(e);
@@ -244,6 +259,11 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                                 cl.addURL(moduleURL);
                             }
                             cl.addModuleClassLoader(moduleUri, cl);
+                            PreDestroy.class.cast(subCl).preDestroy();
+                        } else if (md.getModuleType().equals(XModuleType.RAR)) {
+                            embeddedConnCl.addDelegate(
+                                (DelegatingClassLoader.ClassFinder)subCl);
+                            cl.addModuleClassLoader(moduleUri, subCl);
                         } else {
                             if (subCl instanceof URLClassLoader && 
                                 context.getTransientAppMetaData(ExtendedDeploymentContext.IS_TEMP_CLASSLOADER, Boolean.class)) {
@@ -261,9 +281,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                 } catch (IOException e) {
                     _logger.log(Level.SEVERE, strings.get("noClassLoader", moduleUri), e);
                 }
-
             }
-
         }
         return cl;
     }

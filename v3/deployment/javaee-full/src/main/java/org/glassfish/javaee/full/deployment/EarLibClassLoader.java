@@ -36,69 +36,19 @@
 package org.glassfish.javaee.full.deployment;
 
 import java.net.URL;
-import java.util.*;
-import java.io.IOException;
 import com.sun.enterprise.loader.EJBClassLoader;
-import org.jvnet.hk2.component.PreDestroy;
 
 /**
- * Simplistic class loader which will delegate to each module class loader in the order
- * they were added to the instance
+ * Classloader that is responsible to load the ear libraries (lib/*.jar etc)
  *
- * @author Jerome Dochez
  */
-public class EarClassLoader extends EJBClassLoader {
+public class EarLibClassLoader extends EJBClassLoader {
 
-    private final List<ClassLoaderHolder> delegates = new LinkedList<ClassLoaderHolder>();
-    boolean isPreDestroyCalled = false;
-
-    public EarClassLoader(ClassLoader classLoader) {
+    public EarLibClassLoader(URL[] urls, ClassLoader classLoader) {
         super(classLoader); 
-    }
 
-    public void addModuleClassLoader(String moduleName, ClassLoader cl) {
-        delegates.add(new ClassLoaderHolder(moduleName, cl));
-    }
-
-    public ClassLoader getModuleClassLoader(String moduleName) {
-        for (ClassLoaderHolder clh : delegates) {
-            if (moduleName.equals(clh.moduleName)) {
-                return clh.loader;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public void preDestroy() {
-        if (isPreDestroyCalled) {
-            return;
-        }
-
-        // destroy all the module classloaders
-        try {
-            for (ClassLoaderHolder clh : delegates) {
-                if (!clh.loader.equals(this)) {
-                    PreDestroy.class.cast(clh.loader).preDestroy();
-                }
-            }
-        } catch (Exception e) {
-            // ignore, the class loader does not need to be explicitely stopped.
-        }
-
-        // destroy itself
-        super.preDestroy();
-
-        isPreDestroyCalled = true;
-    }
-
-    private class ClassLoaderHolder {
-        final ClassLoader loader;
-        final String moduleName;
-
-        private ClassLoaderHolder(String moduleName, ClassLoader loader) {
-            this.loader = loader;
-            this.moduleName = moduleName;
+        for (URL url : urls) {
+            addURL(url);
         }
     }
 }

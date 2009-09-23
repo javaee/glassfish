@@ -96,7 +96,11 @@ public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveH
             if (isEmbedded(context)) {
                 String applicationName = ConnectorsUtil.getApplicationName(context);
                 String embeddedRarName = ConnectorsUtil.getEmbeddedRarModuleName(applicationName, moduleName);
-                return loader.createRARClassLoader(moduleDir, parent, embeddedRarName);
+                // ear's classloader hierarchy is : module-CL -> ear-CL
+                // -> embedded-RAR-CL -> ear-lib-CL.
+                // parent provided here is ear-CL, we need to use
+                // ear-lib-CL as parent for embedded-RAR module-CL 
+                return loader.createRARClassLoader(moduleDir, parent.getParent().getParent(), embeddedRarName);
             } else {
                 return loader.createRARClassLoader(moduleDir, null, moduleName);
             }
