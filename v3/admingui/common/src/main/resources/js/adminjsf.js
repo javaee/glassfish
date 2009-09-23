@@ -194,6 +194,24 @@ function setCookie(c_name,value,expiredays)
     document.cookie=c_name+ "=" +escape(value)+((expiredays==null) ? "" : ";expires="+exdate.toGMTString())
 }
 
+function getCookie(name) {
+    var cookies = document.cookie.split(";");
+    var cookieValue = null;
+
+    for (var i = 0; i < cookies.length; i++) {
+        var current = cookies[i].split("=");
+        currentName = current[0].trim();
+        if (name == currentName) {
+            if (current.length > 1) {
+                cookieValue = unescape(current[1]);
+                break;
+            }
+        }
+    }
+
+    return cookieValue;
+}
+
 
 //===========================================================
 
@@ -588,6 +606,7 @@ admingui.util = {
  */
 admingui.nav = {
     TREE_ID: "treeForm:tree",
+    lastTreeNodeSelected: null,
     
     refreshCluster: function(hasCluster){
         var node1 = admingui.nav.getTreeFrameElementById(admingui.nav.TREE_ID + ':clusters');
@@ -764,6 +783,8 @@ admingui.nav = {
             // to the currently selected node.  Anyway, for now I will
             // ignore this until we need to fix it...
             admingui.nav.selectTreeNode(admingui.nav.getContainingTreeNode(matches[0]));
+        } else {
+            admingui.nav.selectTreeNode(document.getElementById(getCookie('admingui.nav.lastTreeNodeSelected')));
         }
     },
 
@@ -776,7 +797,8 @@ admingui.nav = {
             try {
                 tree.clearAllHighlight(tree.id);
                 tree.highlight(treeNode);
-                this.expandNode(treeNode)
+                this.expandNode(treeNode);
+                setCookie('admingui.nav.lastTreeNodeSelected', treeNode.id);
             } catch (err) {
                 console.log(err);
             }
