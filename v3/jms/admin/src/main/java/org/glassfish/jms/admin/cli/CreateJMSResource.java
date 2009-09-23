@@ -280,8 +280,14 @@ public class CreateJMSResource implements AdminCommand {
 		            transactionSupport = props.getProperty(propKey);
 		        else if("fail-all-connections".equals(propKey))
 		            failAllConnections = props.getProperty(propKey);
-                else
+                else{
+                    if ("AddressList".equals(propKey)){
+                        String addressListProp = props.getProperty(propKey);
+                        props.setProperty(propKey, "\""+ addressListProp + "\"");
+                    }
+
                     tmpProps.setProperty(propKey, props.getProperty(propKey));
+                }
             }
                if (tmpProps.size() >0)
                {
