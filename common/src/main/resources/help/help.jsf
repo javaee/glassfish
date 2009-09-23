@@ -35,11 +35,18 @@
 -->
 <!-- /common/help/help.jsf -->
 
+<ui:event type="initPage">
+    if ("!#{pageSession.newVR}") {
+	createDefaultViewRoot(viewRoot="#{requestScope.newVR}");
+	navigate("#{requestScope.newVR}");
+    }
+</ui:event>
 <sun:page>
 <sun:html>
     <sun:head title="Help!" debug="false" parseOnLoad="false"> <!-- FIXME: I18N -->
 	<sun:link url="/resource/common/help/help.css" />
 	<sun:script url="/resource/common/help/help.js" />
+	<h:outputScript name="jsf.js" library="javax.faces" target="head" />
 	<f:verbatim>
 	    <style type="text/css">
 	    </style>
@@ -47,10 +54,26 @@
     </sun:head>
     <sun:body>
 	"<div id="menuContent" class="helpMenuBox">
+	    <sun:form id="tabForm">
+
+	    <sun:tabSet id="helpTabs">
+		<sun:tab text="Table of Contents" onClick="jsf.ajax.request(this); return false;"> // FIXME: I18N
+		    <ui:event type="command">
+			println("toc");
+		    </ui:event>
+		</sun:tab>
+		<sun:tab id="idx" text="Index" onClick="var props = {}; var tabset = document.getElementById('tabForm:helpTabs').id; props.render = tabset; props.execute = this.id + ', ' + tabset; props[this.id + '_submittedField'] = this.id; jsf.ajax.request(this, null, props); return false;" url="#{null}"> // FIXME: I18N
+		    <ui:event type="command">
+			println("Index");
+		    </ui:event>
+		</sun:tab>
+	    </sun:tabSet>
+	    </sun:form>
 	    <dynamicTreeNode
 		treeAdaptorClass="org.glassfish.admingui.common.help.HelpTreeAdaptor"
 		toc="$attribute{toc}">
 		    <!beforeCreate
+    setPageSessionAttribute(key="newVR" value="set");
 			getHelpTOC("en" toc="#{requestScope.toc}");
 		    />
 	    </dynamicTreeNode>
