@@ -116,10 +116,14 @@ public class ServletContainerInitializerUtil {
                 }
             }
 
-            //Create a new classloader and use for ServiceLoader
-            URL[] urlsForNewClassLoader = new URL[newClassLoaderUrlList.size()];
-            cl = new URLClassLoader(newClassLoaderUrlList.toArray(urlsForNewClassLoader),
-                    webAppCl.getParent());
+            // Create temporary classloader for ServiceLoader#load
+            // TODO: Have temporary classloader honor delegate flag from
+            // sun-web.xml
+            URL[] urlsForNewClassLoader =
+                new URL[newClassLoaderUrlList.size()];
+            cl = new URLClassLoader(newClassLoaderUrlList.toArray(
+                                        urlsForNewClassLoader),
+                                    webAppCl.getParent());
         }
 
         return ServiceLoader.load(ServletContainerInitializer.class, cl);
