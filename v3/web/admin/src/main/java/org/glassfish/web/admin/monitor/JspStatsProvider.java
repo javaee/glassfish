@@ -110,7 +110,6 @@ public class JspStatsProvider{
             return;
         }
         activeJspsLoadedCount.decrement();
-        totalJspsLoadedCount.decrement();
     }
 
     public String getModuleName() {
