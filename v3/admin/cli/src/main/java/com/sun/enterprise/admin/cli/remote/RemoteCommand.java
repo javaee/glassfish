@@ -40,6 +40,11 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.logging.Level;
+
+import org.jvnet.hk2.component.*;
+import com.sun.enterprise.module.*;
+import com.sun.enterprise.module.single.StaticModulesRegistry;
+
 import com.sun.appserv.management.client.prefs.LoginInfo;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
@@ -88,6 +93,16 @@ public class RemoteCommand extends CLICommand {
     private boolean                         doHelp = false;
     private Payload.Outbound                outboundPayload;
     private String                          usage;
+
+    /**
+     * A class loader for the "modules" directory.
+     */
+    private static ClassLoader moduleClassLoader;
+
+    /**
+     * A habitat just for finding man pages.
+     */
+    private static Habitat manHabitat;
 
     /*
      * Set a default read timeout for URL connections.
@@ -533,7 +548,9 @@ public class RemoteCommand extends CLICommand {
     }
 
     /**
-     * Get the man page from the server.
+     * Get the man page from the server.  If the man page isn't
+     * available, e.g., because the server is down, try to find
+     * it locally by looking in the modules directory.
      */
     public Reader getManPage() {
         try {
@@ -550,7 +567,20 @@ public class RemoteCommand extends CLICommand {
         } catch (CommandValidationException cvex) {
             // ignore
         }
-        return super.getManPage();
+
+        /*
+         * Can't find the man page remotely, try to find it locally.
+         * XXX - maybe should only do this on connection failure
+         */
+        logger.printDetailMessage(strings.get("NoRemoteManPage"));
+        String cmdClass = getCommandClass(getName());
+        ClassLoader mcl = getModuleClassLoader();
+        Reader r = null;
+        if (cmdClass != null && mcl != null) {
+            r = CLIManFileFinder.getCommandManFile(getName(), cmdClass,
+                                                Locale.getDefault(), mcl);
+        }
+        return r != null ? r : super.getManPage();
     }
 
     private void processDataPart(final PayloadFilesManager downloadedFilesMgr,
@@ -993,6 +1023,54 @@ public class RemoteCommand extends CLICommand {
                 programOpts.setPassword(li.getPassword(),
                     ProgramOptions.PasswordLocation.LOGIN_FILE);
             }                
+        }
+    }
+
+    /**
+     * Given a command name, return the name of the class that implements
+     * that command in the server.
+     */
+    private static String getCommandClass(String cmdName) {
+        Habitat h = getManHabitat();
+        String cname = "org.glassfish.api.admin.AdminCommand";
+        for (Inhabitant<?> command : h.getInhabitantsByContract(cname)) {
+            for (String name : Inhabitants.getNamesFor(command, cname)) {
+                if (name.equals(cmdName))
+                    return command.typeName();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Return a Habitat used just for reading man pages from the
+     * modules in the modules directory.
+     */
+    private static Habitat getManHabitat() {
+        if (manHabitat != null)
+            return manHabitat;
+        ModulesRegistry registry =
+                new StaticModulesRegistry(getModuleClassLoader());
+        manHabitat = registry.createHabitat("default");
+        return manHabitat;
+    }
+
+    /**
+     * Return a ClassLoader that loads classes from all the modules
+     * (jar files) in the <INSTALL_ROOT>/modules directory.
+     */
+    private static ClassLoader getModuleClassLoader() {
+        if (moduleClassLoader != null)
+            return moduleClassLoader;
+        try {
+            File installDir = new File(System.getProperty(
+                                SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
+            File modulesDir = new File(installDir, "modules");
+            moduleClassLoader = new DirectoryClassLoader(modulesDir,
+                                            CLICommand.class.getClassLoader());
+            return moduleClassLoader;
+        } catch (IOException ioex) {
+            return null;
         }
     }
 }

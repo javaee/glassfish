@@ -861,8 +861,7 @@ public abstract class CLICommand implements PostConstruct {
         for (String c : unsupported) {
             if (c.equals(cmd)) {
                 throw new CommandException(
-                    "Previously supported command: " + cmd +
-                    " is not supported for this release.");
+                            strings.get("UnsupportedLegacyCommand", cmd));
             }
         }
         // it is a supported command; do nothing

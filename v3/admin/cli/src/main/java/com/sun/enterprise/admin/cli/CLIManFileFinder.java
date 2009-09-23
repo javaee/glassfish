@@ -48,17 +48,16 @@ import java.util.Collections;
 import java.util.ArrayList;
 
 /**
- *  A utility class which gets the I18N xml help file name for the
- *  given command. It searches (using Class.getSystemResource()) for
+ *  A utility class that gets the plain text man page for the
+ *  given command.  It searches (using Class.getResource()) for
  *  the pages, and returns the first one found.
  *
- *  For any given man page multiple instances of that page can
- *  exist. Man pages are come in sections (1 through 9, 1m through
- *  9m), locales (language, country, variant), and by command
- *  version. These instances are ordered by section number (1 - 9, 1m
- *  - 9m), local
- *  specificity (most specific to least specific) and then by version
- *  (later versions before earlier versions).
+ *  For any given man page multiple instances of that page can exist.
+ *  Man pages are come in sections (1 through 9, 1m through 9m),
+ *  locales (language, country, variant), and by command version.
+ *  These instances are ordered by section number (1 - 9, 1m *  - 9m),
+ *  local specificity (most specific to least specific) and then by
+ *  version (later versions before earlier versions).
  *
  *  This is probably <em>not</em> what is wanted (I think what is
  *  wanted is versions before sections before language specificity),
@@ -72,7 +71,7 @@ import java.util.ArrayList;
  *  arguments are non-null but are otherwise meaningless.
  */
 
-class CLIManFileFinder {
+public class CLIManFileFinder {
     private static final String[] sections = {
         "1", "1m", "2", "2m", "3", "3m", "4", "4m", "5", "5m",
         "6", "6m", "7", "7m", "8", "8m", "9", "9m", "5asc" };
@@ -99,7 +98,7 @@ class CLIManFileFinder {
 
     /**
      * Get the man page for the given command for the given locale
-     * using the give classloader.
+     * using the given classloader.
      *
      * @param cmd the command
      * @param locale the locale to be used to find the man page
@@ -107,10 +106,25 @@ class CLIManFileFinder {
      */
     public static Reader getCommandManFile(CLICommand cmd, Locale locale,
             ClassLoader classLoader) {
+        return getCommandManFile(getCommandName(cmd), cmd.getClass().getName(),
+                            locale, classLoader);
+    }
+
+    /**
+     * Get the man page for the given command for the given locale
+     * using the given classloader.
+     *
+     * @param cmdName the command name
+     * @param cmdClass the command class
+     * @param locale the locale to be used to find the man page
+     * @param classLoader the class loader to be used to find the man page
+     */
+    public static Reader getCommandManFile(String cmdName, String cmdClass,
+            Locale locale, ClassLoader classLoader) {
 
         InputStream s = null;
  
-        Iterator it = getPossibleLocations(cmd, locale);
+        Iterator it = getPossibleLocations(cmdName, cmdClass, locale);
         while (s == null && it.hasNext()) {
             s = classLoader.getResourceAsStream((String)it.next());
         }
@@ -118,38 +132,14 @@ class CLIManFileFinder {
         return (s == null ? (InputStreamReader)null : new InputStreamReader(s));
     }
 
-    private static Iterator getPossibleLocations(final CLICommand cmd,
-            final Locale locale) {
+    private static Iterator getPossibleLocations(final String cmdName,
+            final String cmdClass, final Locale locale) {
         return new Iterator() {
             final String[] locales = getLocaleLocations(locale);
             private int i = 0;
             private int j = 0;
-            private String helpdir = getHelpDir(cmd);
-            private String commandName = getCommandName(cmd);
-
-            private String getHelpDir(CLICommand cmd) {
-                // The man page is assumed to be packaged with the
-                // command class.
-                Class commandClass = cmd.getClass();
-                Package pkg = commandClass.getPackage();
-                String pkgname = pkg.getName();
-                if (pkgname.endsWith(".commands"))
-                    pkgname = pkgname.substring(0, pkgname.length() - 9);
-                return pkgname.replace('.', '/');
-            }
- 
-            private String getCommandName(CLICommand cmd) {
-                String commandName = cmd.getName();
-                if (commandName.length() == 0)
-                    throw new IllegalArgumentException(
-                                        "Command name cannot be empty");
-
-                // special case "help" --> "asadmin"
-                if (commandName.equals("help"))
-                    commandName = "asadmin";
-
-                return commandName;
-            }
+            private String helpdir = getHelpDir(cmdClass);
+            private String commandName = cmdName;
 
             public boolean hasNext() {
                 return i < locales.length && j < sections.length;
@@ -164,7 +154,7 @@ class CLIManFileFinder {
 
                 if (j == sections.length) {
                     i++;
-                    if (i < locales.length )
+                    if (i < locales.length)
                         j = 0;
                 }
                 CLILogger.getInstance().printDebugMessage(
@@ -176,6 +166,27 @@ class CLIManFileFinder {
                 throw new UnsupportedOperationException();
             }
         };
+    }
+
+    private static String getCommandName(CLICommand cmd) {
+        String commandName = cmd.getName();
+        if (commandName.length() == 0)
+            throw new IllegalArgumentException(
+                                "Command name cannot be empty");
+
+        // special case "help" --> "asadmin"
+        if (commandName.equals("help"))
+            commandName = "asadmin";
+
+        return commandName;
+    }
+
+    private static String getHelpDir(String cmdClass) {
+        // The man page is assumed to be packaged with the
+        // command class.
+        String pkgname =
+            cmdClass.substring(0, cmdClass.lastIndexOf('.'));
+        return pkgname.replace('.', '/');
     }
 
     private static String[] getLocaleLocations(Locale locale) {
