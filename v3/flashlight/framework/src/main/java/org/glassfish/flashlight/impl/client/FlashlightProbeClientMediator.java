@@ -229,8 +229,8 @@ public class FlashlightProbeClientMediator
     private List<MethodProbe> handleListenerAnnotations(Class listenerClass) {
         List<MethodProbe> mp = new LinkedList<MethodProbe> ();
 
-        for (Method method : listenerClass.getDeclaredMethods()) {
-            Annotation[] anns = method.getDeclaredAnnotations();
+        for (Method method : listenerClass.getMethods()) {
+            Annotation[] anns = method.getAnnotations();
             ProbeListener probeAnn = method.getAnnotation(ProbeListener.class);
 
             if (probeAnn == null)

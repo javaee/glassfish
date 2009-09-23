@@ -445,7 +445,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         /* retrieve ManagedAttribute attribute id (v2 compatible) and method names */
         /* Check for custom reset method and store for later to be called instead of
          standard reset methods on Statistic classes*/
-        for (Method m : statsProvider.getClass().getDeclaredMethods()) {
+        for (Method m : statsProvider.getClass().getMethods()) {
             ManagedAttribute ma = m.getAnnotation(ManagedAttribute.class);
             Reset resetMeth = m.getAnnotation(Reset.class);
             if (resetMeth != null) {
