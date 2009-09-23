@@ -189,7 +189,7 @@
             getStatsbyTypeName(type="JRubyRuntimePoolStatsProvider" name="containers/jruby/runtime-pool/#{appVal}", result=>$attribute{jRubyRuntimeStatsList}  hasStats=>$attribute{hasStatsJRT});
          />
 
-#include "/web/monitor/jRubyTableRows.inc"
+#include "/web/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
     <sun:tableRowGroup id="jRubyHttpStats" rendered="#{hasStatsJHTTP}" data={"$attribute{jRubyHttpStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jRubyStatisticsHttp} : #{appVal} "
@@ -202,10 +202,10 @@
 #include "/web/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="jRubyStats" rendered="#{hasStatsJPS}" data={"$attribute{jRubyStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jRubyStatistics}"
+    <sun:tableRowGroup id="jRubyStats" rendered="#{hasStatsJPS}" data={"$attribute{jRubyStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jRubyProbeStatistics}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="JRubyProbeStatsProvider" name="containers/jruby", result=>$attribute{jRubyStatsList}  hasStats=>$attribute{hasStatsJPS});
+            getStatsbyTypeName(type="JRubyProbeStatsProvider" name="containers/jruby/applications", result=>$attribute{jRubyStatsList}  hasStats=>$attribute{hasStatsJPS});
 
          />
 

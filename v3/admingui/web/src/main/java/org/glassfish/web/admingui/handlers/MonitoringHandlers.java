@@ -127,6 +127,7 @@ public class MonitoringHandlers {
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, locale);
         NumberFormat nf = NumberFormat.getNumberInstance(locale);
         List result = new ArrayList();
+        
         try {
             Query query = V3AMX.getInstance().getDomainRoot().getQueryMgr();
             Set amxproxy = (Set) query.queryTypeName(type, name);
@@ -146,53 +147,81 @@ public class MonitoringHandlers {
                         Object runtimes = null;
                         Object queuesize = null;
                         String thresholds = "--";
+                        boolean nostatskey = true;
                         if (val instanceof CompositeDataSupport) {
                             CompositeDataSupport cds = ((CompositeDataSupport) val);
                             CompositeType ctype = cds.getCompositeType();
-                            if(cds.containsKey("name")){
-                                statMap.put("Name", cds.get("name"));
+                            if (cds.containsKey("statistics")) {
+                                nostatskey = false;
+                                for (CompositeData cd : (CompositeData[]) cds.get("statistics")) {
+                                    Map statsMap = new HashMap();
+                                    if (cd.containsKey("name")) {
+                                        val = cd.get("name");
+                                    }
+                                    if (cd.containsKey("description")) {
+                                        desc = (String) cd.get("description");
+                                    }
+                                    if (cd.containsKey("lastSampleTime")) {
+                                        last = df.format(new Date((Long) cd.get("lastSampleTime")));
+                                    }
+                                    if (cd.containsKey("startTime")) {
+                                        start = df.format(new Date((Long) cd.get("startTime")));
+                                    }
+                                    statsMap.put("Name", monName);
+                                    statsMap.put("StartTime", start);
+                                    statsMap.put("LastTime", last);
+                                    statsMap.put("Description", desc);
+                                    statsMap.put("Value", (val == null) ? "" : val);
+                                    statsMap.put("Details", "--");
+                                    result.add(statsMap);
+                                }
+
                             } else {
-                                statMap.put("Name", monName);
-                            }
-                           if(cds.containsKey("unit")){
-                                unit = (String)cds.get("unit");
-                            }
-                            if(cds.containsKey("description")){
-                                desc = (String)cds.get("description");
-                            }
-                            if(cds.containsKey("startTime")){
-                                start = df.format(new Date((Long)cds.get("startTime")));
-                            }
-                            if(cds.containsKey("lastSampleTime")){
-                                last = df.format(new Date((Long)cds.get("lastSampleTime")));
-                            }
-                            if(cds.containsKey("maxTime")){
-                                details = (GuiUtil.getMessage("monitoring.MaxTime")+": " + cds.get("maxTime") + " " + unit + "<br/>");
-                            }
-                            if(cds.containsKey("minTime")){
-                                details = details + (GuiUtil.getMessage("monitoring.MinTime")+": " + cds.get("minTime") + " " + unit + "<br/>");
-                            }
-                            if(cds.containsKey("totalTime")){
-                                details = details + (GuiUtil.getMessage("monitoring.TotalTime")+": " + cds.get("totalTime") + " " + unit + "<br/>");
-                            }
-                            if(cds.containsKey("activeRuntimes")) {
-                                runtimes = (Integer)cds.get("activeRuntimes");
-                            }
-                            if(cds.containsKey("queueSize")) {
-                                queuesize = cds.get("queueSize");
-                            }
-                            if(cds.containsKey("hardMaximum") && cds.get("hardMaximum") != null) {
-                                val = cds.get("hardMaximum") + " " + "hard max "+ "<br/>"+cds.get("hardMinimum") + " " + "hard min";
-                            }
-                            if(cds.containsKey("newThreshold") && cds.get("newThreshold") != null) {
-                                thresholds = cds.get("newThreshold") + " " + "new "+ "<br/>"+cds.get("queueDownThreshold") + " " + "queue down";
-                            }
-                            if(cds.containsKey("count")){
-                                val = cds.get("count") + " " + unit;
-                            } else if(cds.containsKey("current")){
-                                val = cds.get("current");
-                            }else {
-                                val = "--";
+                                if (cds.containsKey("name")) {
+                                    statMap.put("Name", cds.get("name"));
+                                } else {
+                                    statMap.put("Name", monName);
+                                }
+                                if (cds.containsKey("unit")) {
+                                    unit = (String) cds.get("unit");
+                                }
+                                if (cds.containsKey("description")) {
+                                    desc = (String) cds.get("description");
+                                }
+                                if (cds.containsKey("startTime")) {
+                                    start = df.format(new Date((Long) cds.get("startTime")));
+                                }
+                                if (cds.containsKey("lastSampleTime")) {
+                                    last = df.format(new Date((Long) cds.get("lastSampleTime")));
+                                }
+                                if (cds.containsKey("maxTime")) {
+                                    details = (GuiUtil.getMessage("monitoring.MaxTime") + ": " + cds.get("maxTime") + " " + unit + "<br/>");
+                                }
+                                if (cds.containsKey("minTime")) {
+                                    details = details + (GuiUtil.getMessage("monitoring.MinTime") + ": " + cds.get("minTime") + " " + unit + "<br/>");
+                                }
+                                if (cds.containsKey("totalTime")) {
+                                    details = details + (GuiUtil.getMessage("monitoring.TotalTime") + ": " + cds.get("totalTime") + " " + unit + "<br/>");
+                                }
+                                if (cds.containsKey("activeRuntimes")) {
+                                    runtimes = (Integer) cds.get("activeRuntimes");
+                                }
+                                if (cds.containsKey("queueSize")) {
+                                    queuesize = cds.get("queueSize");
+                                }
+                                if (cds.containsKey("hardMaximum") && cds.get("hardMaximum") != null) {
+                                    val = cds.get("hardMaximum") + " " + "hard max " + "<br/>" + cds.get("hardMinimum") + " " + "hard min";
+                                }
+                                if (cds.containsKey("newThreshold") && cds.get("newThreshold") != null) {
+                                    thresholds = cds.get("newThreshold") + " " + "new " + "<br/>" + cds.get("queueDownThreshold") + " " + "queue down";
+                                }
+                                if (cds.containsKey("count")) {
+                                    val = cds.get("count") + " " + unit;
+                                } else if (cds.containsKey("current")) {
+                                    val = cds.get("current");
+                                } else {
+                                    val = "--";
+                                }
                             }
                         } else if (val instanceof String[]) {
                             statMap.put("Name", monName);
@@ -219,17 +248,20 @@ public class MonitoringHandlers {
                         } else {
                             statMap.put("Name", monName);
                         }
-                        statMap.put("Thresholds", (thresholds == null) ? "--" : thresholds);
-                        statMap.put("QueueSize", (queuesize == null) ? "--" : queuesize);
-                        statMap.put("Runtimes", (runtimes == null) ? "--" : runtimes);
-                        statMap.put("Current", current);
-                        statMap.put("StartTime", start);
-                        statMap.put("LastTime", last);
-                        statMap.put("Description", desc);
-                        statMap.put("Value", (val == null) ? "" : val);
-                        statMap.put("Details", (details == null) ? "--" : details);
-                        result.add(statMap);
-           
+                        if (nostatskey) {
+                            statMap.put("Thresholds", (thresholds == null) ? "--" : thresholds);
+                            statMap.put("QueueSize", (queuesize == null) ? "--" : queuesize);
+                            statMap.put("Runtimes", (runtimes == null) ? "--" : runtimes);
+                            statMap.put("Current", current);
+                            statMap.put("StartTime", start);
+                            statMap.put("LastTime", last);
+                            statMap.put("Description", desc);
+                            statMap.put("Value", (val == null) ? "" : val);
+                            statMap.put("Details", (details == null) ? "--" : details);
+
+                            result.add(statMap);
+                        }
+
                     }
                 }
             }
