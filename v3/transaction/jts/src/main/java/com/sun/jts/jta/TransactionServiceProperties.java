@@ -42,17 +42,19 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import com.sun.jts.CosTransactions.Configuration;
+import com.sun.jts.CosTransactions.RecoveryManager;
 
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.admin.ProcessEnvironment;
-import org.jvnet.hk2.config.types.Property;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+import com.sun.enterprise.transaction.api.ResourceRecoveryManager;
 import com.sun.enterprise.config.serverbeans.TransactionService;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.types.Property;
 
 /**
  *
@@ -119,6 +121,15 @@ public class TransactionServiceProperties {
                         } else if (name.equals("xa-servername")) {
                             if (isValueSet(value)) {
                                 jtsProperties.put(JTS_XA_SERVER_NAME, value);
+                            }
+        
+                        } else if (name.equals("pending-txn-cleanup-interval")) {
+                            if (isValueSet(value)) {
+                                int interval = Integer.parseInt(value);
+                                new RecoveryHelperThread(habitat, interval).start();
+                                if (_logger.isLoggable(Level.FINE))
+                                   _logger.log(Level.FINE,"Asynchronous thread for incomplete "
+                                           + "tx is enabled with interval " + interval);
                             }
                         }
                     }
@@ -218,5 +229,43 @@ public class TransactionServiceProperties {
 
     private static boolean isValueSet(String value) {
         return (value != null && !value.equals("") && !value.equals(" "));
+    }
+
+    private static class RecoveryHelperThread extends Thread {
+        private int interval;
+        private ResourceRecoveryManager recoveryManager;
+
+        RecoveryHelperThread(Habitat habitat, int interval) {
+            setName("Recovery Helper Thread");
+            setDaemon(true);
+            this.interval = interval;
+            recoveryManager = habitat.getByContract(ResourceRecoveryManager.class);
+        }
+
+        public void run() {
+            int prevSize = 0;
+            try {
+                while(true) {
+                    Thread.sleep(interval*1000);
+                    if (!RecoveryManager.isIncompleteTxRecoveryRequired()) {
+                        if (_logger.isLoggable(Level.FINE))
+                            _logger.log(Level.FINE, "Incomplete transaction recovery is "
+                                    + "not requeired,  waiting for the next interval");
+                        continue;
+                    }
+                    if (RecoveryManager.sizeOfInCompleTx() <= prevSize) {
+                        if (_logger.isLoggable(Level.FINE))
+                            _logger.log(Level.FINE, "Incomplete transaction recovery is "
+                                    + "not required,  waiting for the next interval SIZE");
+                       continue;
+                    }
+                    prevSize = RecoveryManager.sizeOfInCompleTx();
+                    recoveryManager.recoverIncompleteTx(false, null);
+                }
+            } catch (Exception ex) {
+                if (_logger.isLoggable(Level.FINE))
+                    _logger.log(Level.FINE, " Exception occurred in recoverInCompleteTx ");
+            }
+        }
     }
 }
