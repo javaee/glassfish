@@ -96,6 +96,7 @@ public class Main implements BundleActivator
     private Map<URI, Jar> currentManagedBundles = new HashMap<URI, Jar>();
     private static final String THIS_JAR_NAME = "osgi-main.jar";
     private static final String FELIX_FILEINSTALL_DIR = "felix.fileinstall.dir";
+    private File felixWatchedDir;
 
     public void start(BundleContext context) throws Exception
     {
@@ -146,7 +147,7 @@ public class Main implements BundleActivator
     private Set<Jar> discoverJars() {
         final Set<Jar> jars = new HashSet<Jar>();
         String felixWatchedDirName = context.getProperty(FELIX_FILEINSTALL_DIR);
-        final File felixWatchedDir = felixWatchedDirName != null ?
+        felixWatchedDir = felixWatchedDirName != null ?
          new File(felixWatchedDirName) : null;
         bundlesDir.listFiles(new FileFilter(){
             final String JAR_EXT = ".jar";
@@ -253,6 +254,13 @@ public class Main implements BundleActivator
             Bundle bundle = context.getBundle(jar.getBundleId());
             if (bundle == null) {
                 // this is highly unlikely, but can't be ruled out.
+                continue;
+            }
+            if (felixWatchedDir.equals(new File(jar.getPath()).getParentFile())) {
+                // This is a bundle which is managed by Felix FileInstall.
+                // The reason we have not discovered this jar is because
+                // we have exclueded them in discoverJars(). So, don't uninstall
+                // them.
                 continue;
             }
             try {
