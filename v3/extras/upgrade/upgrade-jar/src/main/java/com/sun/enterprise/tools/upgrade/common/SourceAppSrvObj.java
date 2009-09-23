@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,15 +34,6 @@
  * holder.
  */
 
-/*
- * SourceAppSrvObj.java
- *
- * This class contain data specific to the source domain.
- *
- * Created on December 3, 2007, 3:55 PM
- *
- */
-
 package com.sun.enterprise.tools.upgrade.common;
 
 import java.io.File;
@@ -51,23 +42,26 @@ import java.io.File;
  *
  * @author rebeccas
  */
-public class SourceAppSrvObj  extends BaseDomainInfoObj {
+public class SourceAppSrvObj extends BaseDomainInfoObj {
 
 	//- appsever login credential of the source domain.
-	Credentials credentials = new DomainCredentials();
-	
+	private final Credentials credentials = new DomainCredentials();
+
+    @Override
     public boolean isValidPath(String s) {
         boolean retVal = false;
         if (s != null) {
             // server config file must be available
-            File domainXML = new File(s + "/" + CONFIG_DOMAIN_XML_FILE);
+            File domainXML = new File(
+                s + File.separator + CONFIG_DOMAIN_XML_FILE);
             if (domainXML.exists() && domainXML.isFile()) {
                 retVal = true;
             }
         }
         return retVal;
     }
-	
+
+    @Override
     public String getVersionEdition() {
         if (versionEdition == null) {
             VersionExtracter vExtracter = new VersionExtracter(

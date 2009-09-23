@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,6 @@ import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.awt.EventQueue;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -136,7 +135,11 @@ public class UpgradeToolMain {
             tmpI = new NopromptInput();
         }
         tmpI.processArguments(aList);
-        printArgs(aList);
+        
+        if (logger.isLoggable(Level.FINE)) {
+            printArgs(aList);
+        }
+
     }
 
     private void printArgs(ArrayList<ArgumentHandler> aList) {
@@ -156,9 +159,7 @@ public class UpgradeToolMain {
             }
             sb.append(" ");
         }
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine(UpgradeConstants.ASUPGRADE + " " + sb.toString());
-        }
+        logger.fine(UpgradeConstants.ASUPGRADE + " " + sb.toString());
     }
 	    
     private void upgrade() {

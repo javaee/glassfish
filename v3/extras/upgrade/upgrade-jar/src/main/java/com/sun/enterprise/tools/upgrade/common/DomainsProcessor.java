@@ -39,9 +39,9 @@ package com.sun.enterprise.tools.upgrade.common;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.StringTokenizer;
 
 /**
  *
@@ -63,54 +63,91 @@ public class DomainsProcessor {
         return Commands.startDomain(domainName, commonInfo);
     }
 
-    /**
+    /*
      * Copy any user files in the src server's lib dir to the target server's
-     * lib dir.
+     * lib dir. This is brittle and only works for the case where the source
+     * domain is in glassfish/domains. It would be good to prompt the user
+     * for the lib directory when not found, but that will have to wait
+     * for the next release. If jar files can't be copied, alert the user
+     * to do it manually (if there are jars file dependencies).
      */
     public void copyUserLibFiles() {
-        logger.log(Level.INFO,
-            stringManager.getString("upgrade.common.start_copy_user_libs"));
-        String s = commonInfo.getSource().getInstallDir();
-        File sLibDir = null;
-        StringTokenizer t = new StringTokenizer(s, File.separator);
-        if (t.countTokens() > 1) {
-            File tmpF = new File(s);
-            sLibDir = new File(tmpF.getParentFile().getParentFile(), "lib");
-            if (!sLibDir.exists() || !sLibDir.isDirectory()) {
-                logger.log(Level.WARNING,
-                    stringManager.getString("upgrade.common.dir_not_found", sLibDir.getAbsolutePath()));
-                sLibDir = null;
-            }
-        }
+        logger.info(stringManager.getString(
+            "upgrade.common.start_copy_user_libs"));
+
+        // source install dir is the actual domainX directory
+        String dirName = commonInfo.getSource().getInstallDir();
+        File sLibDir = findLibDir(dirName, true);
         if (sLibDir == null) {
-            logger.log(Level.FINE,
-                stringManager.getString("upgrade.common.src_lib_dir_not_found", s + "/lib"));
-            logger.log(Level.WARNING,
-                stringManager.getString("upgrade.common.warning_user_must_copy_file"));
-        } else {
-            File tLibDir = null;
-            s = commonInfo.getTarget().getInstallDir();
-            t = new StringTokenizer(s, File.separator);
-            if (t.countTokens() > 1) {
-                File tmpF = new File(s);
-                tLibDir = new File(tmpF.getParentFile(), "lib");
-                if (!tLibDir.exists() || !tLibDir.isDirectory()) {
-                    logger.log(Level.FINE,
-                        stringManager.getString("upgrade.common.dir_not_found", tLibDir.getAbsolutePath()));
-                    tLibDir = null;
-                }
-            }
-            if (tLibDir == null) {
-                logger.log(Level.WARNING,
-                    stringManager.getString("upgrade.common.trg_lib_dir_not_found", s + "/lib"));
-                logger.log(Level.WARNING,
-                    stringManager.getString("upgrade.common.warning_user_must_copy_file"));
-            } else {
-                UpgradeUtils u = UpgradeUtils.getUpgradeUtils(commonInfo);
-                u.copyUserLibFiles(sLibDir, tLibDir);
+            logger.warning(stringManager.getString(
+                "upgrade.common.src_lib_dir_not_found", dirName));
+            logUserMustCopyFiles();
+            return;
+        }
+
+        // target install dir is the domains directory
+        dirName = commonInfo.getTarget().getInstallDir();
+        File tLibDir = findLibDir(dirName, false);
+        if (tLibDir == null) {
+            logger.warning(stringManager.getString(
+                "upgrade.common.trg_lib_dir_not_found", tLibDir + "/../lib"));
+            logUserMustCopyFiles();
+            return;
+        }
+
+        // these should be canonical files
+        if (sLibDir.equals(tLibDir)) {
+            logger.info(stringManager.getString(
+                "upgrade.common.sourceIsTarget"));
+            return;
+        }
+        UpgradeUtils u = UpgradeUtils.getUpgradeUtils(commonInfo);
+        u.copyUserLibFiles(sLibDir, tLibDir);
+        logger.info(stringManager.getString(
+            "upgrade.common.finished_copy_user_libs"));
+    }
+
+    private void logUserMustCopyFiles() {
+        logger.warning(stringManager.getString(
+            "upgrade.common.warning_user_must_copy_file"));
+    }
+
+    /*
+     * Not an exhaustive search. In the case of a domain, look
+     * for ../../lib. Otherwise, ../lib. Will return null if
+     * the directory is not found.
+     */
+    private File findLibDir(String source, boolean isDomain) {
+        StringBuilder path = new StringBuilder();
+        path.append(source);
+        if (isDomain) {
+            path.append(File.separatorChar);
+            path.append("..");
+        }
+        path.append(File.separatorChar);
+        path.append("..");
+        path.append(File.separatorChar);
+        path.append("lib");
+        String fullPath = path.toString();
+
+        // let the File constructor do the works
+        File retFile = new File(fullPath);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine(String.format("Source path is %s", source));
+            logger.fine(String.format("isDomain=%s", isDomain));
+            logger.fine(String.format("built lib path is %s", fullPath));
+        }
+        if (retFile.exists() && retFile.isDirectory()) {
+            try {
+                // need canonical path or else equals() fails
+                return retFile.getCanonicalFile();
+            } catch (IOException ioe) {
+                logger.log(Level.FINE, "Can't create canonical file from " +
+                    retFile.getPath(), ioe);
+                return null;
             }
         }
-        logger.log(Level.INFO,
-            stringManager.getString("upgrade.common.finished_copy_user_libs"));
+        return null;
     }
+
 }

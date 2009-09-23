@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,21 +36,22 @@
 
 package com.sun.enterprise.tools.upgrade.common;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.io.File;
-import java.io.IOException;
 
-import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.cli.framework.*;
+import com.sun.enterprise.cli.framework.CliUtil;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_masterpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_source;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_target;
 import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
+import com.sun.enterprise.util.i18n.StringManager;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.Map;
 
 /**
  * Utility to evaluate the CLI input arguments and prompt
@@ -76,6 +77,11 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
             inputMap.put(tmpAh.getCmd(), tmpAh);
         }
 
+        // in command line case, we want info to go to console as well
+        ConsoleHandler handler = new ConsoleHandler();
+        handler.setFormatter(LogService.createFormatter());
+        logger.addHandler(handler);
+        
         try {
             sourcePrompt();
             targetPrompt();
@@ -84,9 +90,10 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
             }
             masterPasswordPrompt();
         } catch (IOException e) {
-            logger.log(Level.SEVERE,
-                sm.getString(
-                "enterprise.tools.upgrade.cli.unexpectedException"), e);
+            String message = sm.getString(
+                "enterprise.tools.upgrade.cli.unexpectedException");
+            System.err.println(message);
+            logger.log(Level.SEVERE, message, e);
         }
     }
 	
@@ -121,8 +128,8 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
         if (tmpA.isValidParameter()) {
             tmpA.exec();
         } else {
-            logger.severe(
-                sm.getString("enterprise.tools.upgrade.cli.not_valid_source_install"));
+            System.err.println(sm.getString(
+                "enterprise.tools.upgrade.cli.not_valid_source_install"));
             inputMap.remove(CLIConstants.SOURCE_SHORT);
             inputMap.remove(CLIConstants.SOURCE);
             sourcePrompt();
@@ -148,7 +155,7 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
         if (tmpA.isValidParameter()) {
             tmpA.exec();
         } else {
-            logger.severe(sm.getString("" +
+            System.err.println(sm.getString(
                 "enterprise.tools.upgrade.cli.not_valid_target_install"));
             inputMap.remove(CLIConstants.TARGET_SHORT);
             inputMap.remove(CLIConstants.TARGET);

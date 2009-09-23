@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -62,10 +62,10 @@ public class Commands {
     private static final StringManager stringManager =
         StringManager.getManager(Commands.class);
     
-    private static boolean problemFound = false;
+    private static boolean errorFound = false;
 
     public static int startDomain(String domainName, CommonInfoModel cInfo) {
-        problemFound = false; // in case this is being rerun
+        errorFound = false; // in case this is being rerun
         Credentials c = cInfo.getSource().getDomainCredentials();
 
         String installRoot = System.getProperty(UpgradeToolMain.AS_DOMAIN_ROOT);
@@ -139,12 +139,12 @@ public class Commands {
     }
 
     // can come from more than one stream, only want to output once
-    private static synchronized void foundProblem() {
-        if (problemFound) {
+    private static synchronized void foundError() {
+        if (errorFound) {
             return;
         }
         logger.warning(stringManager.getString("commands.problemFound"));
-        problemFound = true;
+        errorFound = true;
     }
 
     /*
@@ -196,23 +196,20 @@ public class Commands {
 
         /*
          * This is the pattern to match lines that start with
-         * SEVERE: or WARNING:
+         * SEVERE:
          */
         private static final Pattern pattern;
         static {
             StringBuilder sb = new StringBuilder();
-            sb.append("(");
             sb.append(Level.SEVERE.getLocalizedName());
-            sb.append("|");
-            sb.append(Level.WARNING.getLocalizedName());
-            sb.append("):.*");
+            sb.append(":.*");
             pattern = Pattern.compile(sb.toString());
         }
 
         private final BufferedReader reader;
 
         // don't send the message more than once (or keep parsing the lines)
-        private boolean sentProblem = false;
+        private boolean sentError = false;
 
         public StreamWatcher(InputStream stream, String name) {
             super(name);
@@ -228,11 +225,11 @@ public class Commands {
                     matcher = pattern.matcher(line);
                     while (line != null) {
                         logger.finer(getName() + ": " + line);
-                        if (!sentProblem) {
+                        if (!sentError) {
                             matcher.reset(line);
                             if (matcher.matches()) {
-                                Commands.foundProblem();
-                                sentProblem = true;
+                                Commands.foundError();
+                                sentError = true;
                             }
                         }
                         line = reader.readLine();

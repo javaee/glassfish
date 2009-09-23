@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -76,13 +76,11 @@ public class LogService {
         return logger;
     }
 
-    /**
-     * Used to turn off sending output to the default output stream.
-     */
-    public static void removeDefaultLogHandler() {
-        logger.removeHandler(defaultHandler);
+    // CLI could use this for sending some messages to console
+    public static Formatter createFormatter() {
+        return new UpgradeFormatter();
     }
-
+    
     // Called when class is initialized
     private static Handler createLogHandler() {
         Handler handler = null;

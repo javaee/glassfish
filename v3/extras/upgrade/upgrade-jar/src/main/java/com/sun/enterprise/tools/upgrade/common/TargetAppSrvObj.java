@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,7 +55,8 @@ public class TargetAppSrvObj extends BaseDomainInfoObj {
 
     // used only in interactive cases where the user can resolve a name conflict
     private DirectoryMover directoryMover = null;
-    
+
+    @Override
     public boolean isValidPath(String s) {
         File targetPathDir = new File(s);
         
@@ -99,7 +100,8 @@ public class TargetAppSrvObj extends BaseDomainInfoObj {
     public String getConfigXMLFile() {
         return getDomainDir() + "/" + super.CONFIG_DOMAIN_XML_FILE;
     }
-	
+
+    @Override
     public String getVersionEdition() {
         if (versionEdition == null) {
             VersionExtracter vExtracter = new VersionExtracter(
