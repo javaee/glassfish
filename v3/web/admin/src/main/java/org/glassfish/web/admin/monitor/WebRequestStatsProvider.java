@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import org.glassfish.external.statistics.CountStatistic;
 import org.glassfish.external.statistics.TimeStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
+import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.external.statistics.impl.TimeStatisticImpl;
 import org.glassfish.flashlight.statistics.*;
 import org.glassfish.flashlight.statistics.factory.TimeStatsFactory;
@@ -68,6 +69,8 @@ public class WebRequestStatsProvider {
     //private Counter requestCount = CounterFactory.createCount();
     //Provides the cumulative value of the error count. The error count represents 
     //the number of cases where the response code was greater than or equal to 400.
+    private static final String PROCESSING_TIME_DESCRIPTION = 
+        "The request processing time (average, maximum, minimum, and total)";
     private CountStatisticImpl requestCount = new CountStatisticImpl("RequestCount", "count", "Cumulative number of requests processed so far");
     private CountStatisticImpl errorCount = new CountStatisticImpl("ErrorCount", "count", "Cumulative value of the error count, with error count representing the number of cases where the response code was greater than or equal to 400");
     private TimeStats requestProcessTime = TimeStatsFactory.createTimeStatsMilli();
@@ -80,22 +83,6 @@ public class WebRequestStatsProvider {
         this.logger = logger;
         this.virtualServerName = vsName;
         this.moduleName = appName;
-    }
-
-    @ManagedAttribute(id="maxtime")
-    @Description( "Longest response time for a request; not a cumulative value, but the largest response time from among the response times" )
-    public TimeStatistic getMaxTime() {
-        TimeStatisticImpl maxTime = new TimeStatisticImpl(
-                requestProcessTime.getMaximumTime(),
-                requestProcessTime.getMaximumTime(),
-                requestProcessTime.getMinimumTime(),
-                requestProcessTime.getTotalTime(),
-                "MaxTime",
-                "milliseconds",
-                "Longest response time for a request; not a cumulative value, but the largest response time from among the response times",
-                requestProcessTime.getStartTime(),
-                requestProcessTime.getLastSampleTime());
-        return maxTime;
     }
 
     @ManagedAttribute(id="requestcount")
@@ -111,19 +98,18 @@ public class WebRequestStatsProvider {
     }
 
     @ManagedAttribute(id="processingtime")
-    @Description("Cumulative value of the times taken to process each request, with processing time being the average of request processing times over the request count")
+    @Description(PROCESSING_TIME_DESCRIPTION)
     public TimeStatistic getProcessingTime() {
-        TimeStatisticImpl processingTime = new TimeStatisticImpl(
+        return new TimeStatisticImpl(
                 (long) requestProcessTime.getTime(),
                 requestProcessTime.getMaximumTime(),
                 requestProcessTime.getMinimumTime(),
                 requestProcessTime.getTotalTime(),
                 "ProcessingTime",
-                "milliseconds",
-                "Cumulative value of the times taken to process each request, with processing time being the average of request processing times over the request count ",
+                StatisticImpl.UNIT_MILLISECOND,
+                PROCESSING_TIME_DESCRIPTION,
                 requestProcessTime.getStartTime(),
                 requestProcessTime.getLastSampleTime());
-        return processingTime;
     }
 
     @ProbeListener("glassfish:web:http-service:requestStartEvent")
