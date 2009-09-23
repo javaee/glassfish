@@ -45,6 +45,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.Arrays;
 import javax.swing.JFileChooser;
 
 /**
@@ -281,9 +282,7 @@ public class DataCollectionPanel extends javax.swing.JPanel {
         char [] pwd = masterPWField.getPassword();
         if (pwd != null) {
             retVal = new String(pwd);
-            for (int i=0; i<pwd.length; i++) {
-                pwd[i] = 0;
-            }
+            Arrays.fill(pwd, ' ');
         }
         return retVal;
     }

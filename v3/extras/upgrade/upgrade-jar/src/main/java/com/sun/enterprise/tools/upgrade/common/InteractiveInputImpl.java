@@ -36,40 +36,43 @@
 
 package com.sun.enterprise.tools.upgrade.common;
 
-
-import com.sun.enterprise.cli.framework.CliUtil;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_masterpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_source;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_target;
 import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.i18n.StringManager;
+import java.io.Console;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Map;
 
 /**
  * Utility to evaluate the CLI input arguments and prompt
  * the user for missing data or data determined to be invalid.
- *
- * @author rebeccas
  */
 public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
 
     private static final Logger logger = LogService.getLogger();
-    private Map<String, ArgumentHandler> inputMap;
     private static final StringManager sm =
         StringManager.getManager(InteractiveInputImpl.class);
     private static final CommonInfoModel commonInfoModel =
         CommonInfoModel.getInstance();
 
+    private static final Console console = System.console();
+    
+    private Map<String, ArgumentHandler> inputMap;
+
 	@Override
     public void processArguments(ArrayList<ArgumentHandler> aList) {
+        // this should only be called in the interactive case, but to be safe
+        if (console == null) {
+            throw new RuntimeException("CLI cannot be used with null console");
+        }
         int cnt = aList.size();
         this.inputMap = new HashMap<String, ArgumentHandler>();
         for (int i = 0; i < cnt; i++) {
@@ -82,44 +85,22 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
         handler.setFormatter(LogService.createFormatter());
         logger.addHandler(handler);
         
-        try {
-            sourcePrompt();
-            targetPrompt();
-            if (!CommonInfoModel.getInstance().isUpgradeSupported()) {
-                System.exit(1);
-            }
-            masterPasswordPrompt();
-        } catch (IOException e) {
-            String message = sm.getString(
-                "enterprise.tools.upgrade.cli.unexpectedException");
-            System.err.println(message);
-            logger.log(Level.SEVERE, message, e);
-        }
-    }
-	
-    /**
-     *  Collect the users response from stnd input.
-     */
-    private String getResponse() throws IOException {
-        String response = null;
-        byte b[] = new byte[1024];
-        int c = System.in.read(b);
-        if (c == -1) { // input stream closed, maybe by ^C
+        sourcePrompt();
+        targetPrompt();
+        if (!CommonInfoModel.getInstance().isUpgradeSupported()) {
             System.exit(1);
         }
-        response = new String(b, 0, c);
-        return response.trim();
+        masterPasswordPrompt();
     }
-	
-    private void sourcePrompt() throws IOException {
+
+    private void sourcePrompt() {
         ArgumentHandler tmpA = inputMap.get(CLIConstants.SOURCE_SHORT);
         if (tmpA == null) {
             tmpA = inputMap.get(CLIConstants.SOURCE);
         }
         if (tmpA == null) {
-            System.out.print(
+            String source = console.readLine(
                 sm.getString("enterprise.tools.upgrade.cli.Source_input"));
-            String source = getResponse();
             tmpA = new ARG_source();
             tmpA.setRawParameters(source);
             inputMap.put(CLIConstants.SOURCE, tmpA);
@@ -136,15 +117,14 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
         }
     }
 	
-    private void targetPrompt() throws IOException {
+    private void targetPrompt() {
         ArgumentHandler tmpA = inputMap.get(CLIConstants.TARGET_SHORT);
         if (tmpA == null) {
             tmpA = inputMap.get(CLIConstants.TARGET);
         }
         if (tmpA == null) {
-            System.out.print(
+            String target = console.readLine(
                 sm.getString("enterprise.tools.upgrade.cli.Target_input"));
-            String target = getResponse();
             tmpA = new ARG_target();
             tmpA.setRawParameters(target);
             inputMap.put(CLIConstants.TARGET, tmpA);
@@ -163,56 +143,20 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
         }
     }
 	
-    private void masterPasswordPrompt() throws IOException {
+    private void masterPasswordPrompt() {
         ArgumentHandler tmpA = inputMap.get(CLIConstants.MASTERPASSWORD_SHORT);
         if (tmpA == null) {
             tmpA = inputMap.get(CLIConstants.MASTERPASSWORD);
         }
         if (tmpA == null) {
-            String password = getPasswordResponse(sm.getString("enterprise.tools.upgrade.cli.MasterPW_input"));
+            char [] passwordChars = console.readPassword(
+                sm.getString("enterprise.tools.upgrade.cli.MasterPW_input"));
             tmpA = new ARG_masterpassword();
-            tmpA.setRawParameters(password);
+            tmpA.setRawParameters(new String(passwordChars));
+            Arrays.fill(passwordChars, ' ');
             inputMap.put(CLIConstants.MASTERPASSWORD, tmpA);
         }
         tmpA.exec();
-    }
-
-    // todo: fix for issue 9257 here
-    private String getPasswordResponse(String prompt) {
-        String optionValue;
-        try {
-            InputsAndOutputs.getInstance().getUserOutput().print(prompt);
-            InputsAndOutputs.getInstance().getUserOutput().flush();
-            optionValue = new CliUtil().getPassword();
-        } catch (java.lang.NoClassDefFoundError e) {
-            optionValue = readInput();
-        } catch (java.lang.UnsatisfiedLinkError e) {
-            optionValue = readInput();
-        } catch (Exception e) {
-            optionValue = null;
-        }
-        return optionValue;
-    }
-
-    private String readInput() {
-        try {
-            return InputsAndOutputs.getInstance().getUserInput().readLine();
-        } catch (IOException ioe) {
-            return null;
-        }
-    }
-
-    public void helpUsage(String str) {
-        System.out.println("\n" + str + "\n");
-        helpUsage();
-    }
-
-    public void helpUsage() {
-        helpUsage(0);
-    }
-
-    public void helpUsage(int exitCode) {
-        System.out.println("(FIX THIS) InteractiveInputImpl:helpUsage:exitcode: " + exitCode);
     }
 
     /**
@@ -221,22 +165,16 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
      */
     @Override
     public boolean moveDirectory(File dir) {
-        try {
-            System.out.print(sm.getString(
-                "enterprise.tools.upgrade.cli.move_dir",
-                dir.getName()));
-            String response = getResponse();
-            String yesOption =
-                sm.getString("enterprise.tools.upgrade.cli.yes_option");
-            boolean move = yesOption.equalsIgnoreCase(response);
-            if (move) {
-                UpgradeUtils.getUpgradeUtils(commonInfoModel).rename(dir);
-            }
-            return move;
-        } catch (IOException ioe) {
-            // if this was going to happen, it would have before now
-            logger.warning(ioe.getLocalizedMessage());
-            return false;
+        System.out.print(sm.getString(
+            "enterprise.tools.upgrade.cli.move_dir",
+            dir.getName()));
+        String response = console.readLine();
+        String yesOption =
+            sm.getString("enterprise.tools.upgrade.cli.yes_option");
+        boolean move = yesOption.equalsIgnoreCase(response);
+        if (move) {
+            UpgradeUtils.getUpgradeUtils(commonInfoModel).rename(dir);
         }
+        return move;
     }
 }

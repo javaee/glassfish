@@ -247,19 +247,12 @@ public class UpgradeUtils {
                 common.getTarget().getInstallDir())) {
             
             // backup source domain and upgrade original in place
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine(String.format(
-                    "Copying '%s' to '%s'", dir, tempFile));
-            }
+            logger.info(stringManager.getString("enterprise.tools.upgrade.util.copyDir", dir, tempFile));
             cloneDomain(dir.getAbsolutePath(), tempFile.getAbsolutePath());
             common.setAlreadyCloned(true);
         } else {
-
-            // move target domain out of the way
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine(String.format(
-                    "Moving '%s' to '%s'", dir, tempFile));
-            }
+            logger.info(stringManager.getString(
+                "enterprise.tools.upgrade.util.moveDir", dir, tempFile));
             dir.renameTo(tempFile);
         }
     }
