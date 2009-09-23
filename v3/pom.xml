@@ -42,7 +42,7 @@
     <parent>
         <groupId>org.glassfish</groupId>
         <artifactId>pom</artifactId>
-        <version>6</version>
+        <version>7</version>
     </parent>
     
     <groupId>org.glassfish</groupId>
@@ -169,7 +169,7 @@
     <profiles>
         <profile>
             <!-- this profile is used during the development -->
-            <id>debug</id>
+            <id>default</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -373,6 +373,29 @@
                 <module>extras/embedded/nucleus</module>
             </modules>
         </profile>
+        <profile>
+            <!--
+		Internal repo
+            -->
+            <id>internal-repo</id>
+            <repositories>
+                <repository>
+                    <!-- override remote GlassFish Nexus repo -->
+                    <id>glassfish-repo-archive</id>
+                    <name>Internal Nexus repository collection for Glassfish</name>
+                    <url>http://gf-maven.sfbay.sun.com:8081/nexus/content/groups/glassfish</url>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <!-- override remote GlassFish Nexus repo -->
+                    <id>glassfish-repo-archive</id>
+                    <name>Nexus repository collection for Glassfish</name>
+                    <url>http://gf-maven.sfbay.sun.com:8081/nexus/content/groups/glassfish</url>
+                </pluginRepository>
+            </pluginRepositories>
+
+        </profile>
     </profiles>
 
     <repositories>
@@ -386,6 +409,18 @@
             </snapshots>
         </repository>
     </repositories>
+
+    <pluginRepositories>
+        <!-- first hits nexus repo for any artifact request, then falls to the next repo in the list / order -->
+        <pluginRepository>
+            <id>glassfish-repo-archive</id>
+            <name>Nexus repository collection for Glassfish</name>
+            <url>http://maven.glassfish.org/content/groups/glassfish</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
     <build>
         <defaultGoal>install</defaultGoal>
