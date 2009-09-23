@@ -38,7 +38,10 @@ package org.glassfish.web.admin.monitor;
 import java.util.logging.Logger;
 import javax.servlet.Servlet;
 import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.RangeStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
+import org.glassfish.external.statistics.impl.RangeStatisticImpl;
+import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
@@ -57,30 +60,30 @@ public class JspStatsProvider{
     private String moduleName;
     private String vsName; 
     private Logger logger;
+    private RangeStatisticImpl activeJspsLoadedCount;
+    private CountStatisticImpl totalJspsLoadedCount;
     
-    public JspStatsProvider(String moduleName, String vsName, Logger logger) {        
+    public JspStatsProvider(String moduleName, String vsName, Logger logger) {
         this.moduleName = moduleName;
         this.vsName = vsName;
+        long curTime = System.currentTimeMillis();
+        activeJspsLoadedCount = new RangeStatisticImpl(
+            0L, 0L, 0L, "ActiveJspsLoaded", StatisticImpl.UNIT_COUNT,
+            "Number of currently active JSP pages", curTime, curTime);
+        totalJspsLoadedCount = new CountStatisticImpl(
+            "TotalJspsLoaded",
+            StatisticImpl.UNIT_COUNT,
+            "Total number of JSP pages that were loaded");
     }
 
-    private CountStatisticImpl activeJspsLoadedCount = new CountStatisticImpl("ActiveJspsLoaded", "count", "Number of currently loaded JSPs");
-    private CountStatisticImpl maxJspsLoadedCount = new CountStatisticImpl("MaxJspsLoaded", "count", "Maximum number of JSPs loaded which were active");
-    private CountStatisticImpl totalJspsLoadedCount = new CountStatisticImpl("TotalJspsLoaded", "count", "Cumulative number of JSP pages that have been loaded");
-
     @ManagedAttribute(id="activejspsloadedcount")
-    @Description("Number of currently loaded JSPs")
-    public CountStatistic getActiveJspsLoaded() {
+    @Description("Number of currently active JSP pages")
+    public RangeStatistic getActiveJspsLoaded() {
         return activeJspsLoadedCount;
     }
 
-    @ManagedAttribute(id="maxjspsloadedcount")
-    @Description("Maximum number of JSPs loaded which were active")
-    public CountStatistic getMaxJspsLoaded() {
-        return maxJspsLoadedCount;
-    }
-
     @ManagedAttribute(id="totaljspsloadedcount")
-    @Description("Cumulative number of JSP pages that have been loaded into the web module")
+    @Description("Total number of JSP pages that were loaded")
     public CountStatistic getTotalJspsLoaded() {
         return totalJspsLoadedCount;
     }
@@ -90,15 +93,18 @@ public class JspStatsProvider{
             @ProbeParam("jsp") Servlet jsp,
             @ProbeParam("appName") String appName,
             @ProbeParam("hostName") String hostName) {
-        if (!isValidEvent(appName, hostName)) {
-            return;
+        if (isValidEvent(appName, hostName)) {
+            synchronized (activeJspsLoadedCount) {
+                activeJspsLoadedCount.setCurrent(
+                    activeJspsLoadedCount.getCurrent() + 1);
+                if (activeJspsLoadedCount.getCurrent() > 
+                        activeJspsLoadedCount.getHighWaterMark()) {
+                    activeJspsLoadedCount.setHighWaterMark(
+                        activeJspsLoadedCount.getCurrent());
+                }
+            }
+            totalJspsLoadedCount.increment();
         }
-        activeJspsLoadedCount.increment();
-        totalJspsLoadedCount.increment();
-        if (activeJspsLoadedCount.getCount() > maxJspsLoadedCount.getCount()) {
-            maxJspsLoadedCount.setCount(activeJspsLoadedCount.getCount());
-        }
-            
     }
 
     @ProbeListener("glassfish:web:jsp:jspDestroyedEvent")
@@ -106,10 +112,12 @@ public class JspStatsProvider{
             @ProbeParam("jsp") Servlet jsp,
             @ProbeParam("appName") String appName,
             @ProbeParam("hostName") String hostName) {
-        if (!isValidEvent(appName, hostName)) {
-            return;
+        if (isValidEvent(appName, hostName)) {
+            synchronized (activeJspsLoadedCount) {
+                activeJspsLoadedCount.setCurrent(
+                    activeJspsLoadedCount.getCurrent() - 1);
+            }
         }
-        activeJspsLoadedCount.decrement();
     }
 
     public String getModuleName() {
@@ -133,8 +141,7 @@ public class JspStatsProvider{
     }
 
     private void resetStats() {
-        activeJspsLoadedCount.setCount(0);
-        maxJspsLoadedCount.setCount(0);
+        activeJspsLoadedCount.reset();
         totalJspsLoadedCount.setCount(0);
     }
 }
