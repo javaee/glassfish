@@ -66,6 +66,8 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Service(name = "restart-domain")
 @Scoped(PerLookup.class)
 public class RestartDomainCommand extends StopDomainCommand {
+    @Inject
+    private Habitat habitat;
 
     private long uptimeOldServer;
 
@@ -90,12 +92,15 @@ public class RestartDomainCommand extends StopDomainCommand {
     }
 
     /**
-     * If the server isn't running, that's an error.
+     * If the server isn't running, try to start it.
      */
     @Override
-    protected int dasNotRunning() {
+    protected int dasNotRunning()
+            throws CommandException, CommandValidationException {
         logger.printWarning(strings.get("restart.dasNotRunning"));
-        return 1;
+        CLICommand cmd = habitat.getComponent(CLICommand.class, "start-domain");
+        // XXX - assume start-domain accepts all the same options
+        return cmd.execute(argv);
     }
 
     /**

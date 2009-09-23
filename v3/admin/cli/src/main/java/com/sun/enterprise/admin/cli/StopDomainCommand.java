@@ -140,10 +140,11 @@ public class StopDomainCommand extends LocalDomainCommand {
     }
 
     /**
-     * Printe message and return exit code when
+     * Print message and return exit code when
      * we detect that the DAS is not running.
      */
-    protected int dasNotRunning() {
+    protected int dasNotRunning()
+            throws CommandException, CommandValidationException {
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
         logger.printWarning(strings.get("StopDomain.dasNotRunning"));
