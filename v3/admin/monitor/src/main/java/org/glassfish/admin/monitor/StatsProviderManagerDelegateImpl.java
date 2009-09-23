@@ -490,6 +490,9 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         StringTokenizer st = new StringTokenizer(subTreePath, "/");
         TreeNode parentNode = parent;
 
+        //enable the parent if not enabled
+        enableTreeNode(parentNode);
+
         while (st.hasMoreTokens()) {
             TreeNode subTreeNode = createSubTreeNode(parentNode, st.nextToken());
             parentNode = subTreeNode;
@@ -502,6 +505,9 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         if (childNode == null) {
             childNode = TreeNodeFactory.createTreeNode(child, null, child);
             parent.addChild(childNode);
+        } else {
+            // the childNode is found, but ensure that its enabled
+            enableTreeNode(childNode);
         }
         return childNode;
     }
