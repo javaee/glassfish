@@ -319,6 +319,32 @@ public class RemoteCommand extends CLICommand {
                 else
                     throw ex;
             }
+        } catch (CommandException ex) {
+            // if a --help request failed, try to emulate it locally
+            if (programOpts.isHelp() || getBooleanOption("help")) {
+                Reader r = getLocalManPage();
+                if (r != null) {
+                    try {
+                        BufferedReader br = new BufferedReader(r);
+                        PrintWriter pw = new PrintWriter(System.out);
+                        char[] buf = new char[8192];
+                        int cnt;
+                        while ((cnt = br.read(buf)) > 0)
+                            pw.write(buf, 0, cnt);
+                        pw.flush();
+                        return SUCCESS;
+                    } catch (IOException ioex2) {
+                        // ignore it and throw original exception
+                    } finally {
+                        try {
+                            r.close();
+                        } catch (IOException ioex3) {
+                            // ignore it
+                        }
+                    }
+                }
+            }
+            throw ex;
         } catch (IOException ioex) {
             // possibly an error caused while reading or writing a file?
             throw new CommandException("I/O Error", ioex);
@@ -572,15 +598,22 @@ public class RemoteCommand extends CLICommand {
          * Can't find the man page remotely, try to find it locally.
          * XXX - maybe should only do this on connection failure
          */
+        Reader r = getLocalManPage();
+        return r != null ? r : super.getManPage();
+    }
+
+    /**
+     * Try to find a local version of the man page for this command.
+     */
+    private Reader getLocalManPage() {
         logger.printDetailMessage(strings.get("NoRemoteManPage"));
         String cmdClass = getCommandClass(getName());
         ClassLoader mcl = getModuleClassLoader();
-        Reader r = null;
         if (cmdClass != null && mcl != null) {
-            r = CLIManFileFinder.getCommandManFile(getName(), cmdClass,
+            return CLIManFileFinder.getCommandManFile(getName(), cmdClass,
                                                 Locale.getDefault(), mcl);
         }
-        return r != null ? r : super.getManPage();
+        return null;
     }
 
     private void processDataPart(final PayloadFilesManager downloadedFilesMgr,
