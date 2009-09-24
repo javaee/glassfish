@@ -341,10 +341,6 @@ public class LoginContextDriver  {
             lg.login();
             
         } catch (Exception e) {
-            if (_logger.isLoggable(Level.INFO)) {
-                _logger.log(Level.INFO, "java_security.audit_auth_refused",
-                            user);
-            } 
             if (_logger.isLoggable(Level.FINEST)) {
                 _logger.log(Level.FINEST, "doPasswordLogin fails", e);
             }
