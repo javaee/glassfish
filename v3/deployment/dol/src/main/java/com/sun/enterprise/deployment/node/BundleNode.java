@@ -229,7 +229,13 @@ public abstract class BundleNode<T extends RootDeploymentDescriptor>
         if (descriptor instanceof BundleDescriptor && 
             !(descriptor instanceof Application) ) {
             BundleDescriptor bundleDesc = (BundleDescriptor)descriptor;
-            if (! bundleDesc.isDDWithNoAnnotationAllowed()) {
+            // In the common case that metadata-complete isn't already set to 
+            // true, set it to true.
+            // The exception is if the module contains managed beans, which 
+            // can only be processed as annotations in the appclient client 
+            // container runtime.
+            if (! bundleDesc.isDDWithNoAnnotationAllowed() && 
+                ! (bundleDesc.getManagedBeans().size() > 0) ) {
                 bundleNode.setAttribute(TagNames.METADATA_COMPLETE, "true"); 
             }
         }

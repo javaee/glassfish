@@ -41,10 +41,14 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.deployment.common.GenericAnnotationDetector;
+import com.sun.enterprise.deploy.shared.FileArchive;
+import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
+import java.util.jar.JarFile;
 
 /**
  * Implementation of the Scanner interface for AppClient
@@ -60,6 +64,8 @@ import java.util.logging.Level;
 @Scoped(PerLookup.class)
 public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor> {
     private ApplicationClientDescriptor descriptor;
+
+    private static final Class[] managedBeanAnnotations = new Class[] {javax.annotation.ManagedBean.class}; 
 
     @Override
     public void process(ReadableArchive archive, ApplicationClientDescriptor bundleDesc, ClassLoader classLoader) throws IOException {
@@ -106,6 +112,17 @@ public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor>
         String callbackHandler = desc.getCallbackHandler();
         if (callbackHandler != null && !callbackHandler.trim().equals("")) {
             addScanClassName(desc.getCallbackHandler());
+        }
+
+        GenericAnnotationDetector detector =
+            new GenericAnnotationDetector(managedBeanAnnotations);
+
+        if (detector.hasAnnotationInArchive(archive)) {
+            if (archive instanceof FileArchive) {
+                addScanDirectory(new File(archive.getURI()));
+            } else if (archive instanceof InputJarArchive) {
+                addScanJar(new File(archive.getURI()));
+            }
         }
 
         this.classLoader = classLoader;
