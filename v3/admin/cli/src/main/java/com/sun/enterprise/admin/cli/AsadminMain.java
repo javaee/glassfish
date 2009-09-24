@@ -103,17 +103,58 @@ public class AsadminMain {
                     "\nCommands: " + Arrays.toString(args));
         }
 
-        ModulesRegistry registry =
-                new StaticModulesRegistry(CLICommand.class.getClassLoader());
+        /*
+         * Create a ClassLoader to load from all the jar files in the
+         * lib/asadmin directory.  This directory can contain extension
+         * jar files with new local asadmin commands.
+         */
+        ClassLoader ecl = AsadminMain.class.getClassLoader();
+        try {
+            File inst = new File(System.getProperty(
+                                SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
+            File ext = new File(new File(inst, "lib"), "asadmin");
+            CLILogger.getInstance().printDebugMessage(
+                                    "asadmin extension directory: " + ext);
+            if (ext.isDirectory())
+                ecl = new DirectoryClassLoader(ext, ecl);
+            else
+                CLILogger.getInstance().printMessage(
+                                            strings.get("ExtDirMissing", ext));
+        } catch (IOException ex) {
+            // any failure here is fatal
+            CLILogger.getInstance().printMessage(
+                                    strings.get("ExtDirFailed", ex));
+            System.exit(1);
+        }
+
+        /*
+         * Set the thread's context class laoder so that everyone can
+         * load from our extension directory.
+         */
+        Thread.currentThread().setContextClassLoader(ecl);
+
+        /*
+         * Create a habitat that can load from the extension directory.
+         */
+        ModulesRegistry registry = new StaticModulesRegistry(ecl);
         habitat = registry.createHabitat("default");
 
+        /*
+         * Keep a copy of our original arguments, before we change them below.
+         * This is used by start-domain and is passsed in to the newly
+         * started domain, along with the class path and class name, so that
+         * the domain has everything it needs to be able to restart itself.
+         */
         copyOfArgs = new String[args.length];
         System.arraycopy(args, 0, copyOfArgs, 0, args.length);
+        classPath =
+            SmartFile.sanitizePaths(System.getProperty("java.class.path"));
+        className = AsadminMain.class.getName();
 
         /*
          * Special case: no arguments is the same as "multimode".
          */
-        if (args.length <= 0)
+        if (args.length == 0)
              args = new String[] { "multimode" };
 
         /*
@@ -121,10 +162,6 @@ public class AsadminMain {
          */
         if (args[0].equals("-V"))
              args = new String[] { "version" };
-
-        classPath =
-            SmartFile.sanitizePaths(System.getProperty("java.class.path"));
-        className = AsadminMain.class.getName();
 
         command = args[0];
         int exitCode = executeCommand(args);

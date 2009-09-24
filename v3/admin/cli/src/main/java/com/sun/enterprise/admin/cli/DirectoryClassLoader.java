@@ -40,11 +40,16 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+
 /**
  * A class loader that loads classes from all jar files
  * in a specified directory.
  */
 public class DirectoryClassLoader extends URLClassLoader {
+    private static final LocalStringsImpl strings =
+            new LocalStringsImpl(DirectoryClassLoader.class);
+
     /**
      * Create a DirectoryClassLoader to load from jar files in
      * the specified directory, with the specified parent class loader.
@@ -72,14 +77,16 @@ public class DirectoryClassLoader extends URLClassLoader {
     }
 
     private static URL[] getJars(File dir) throws IOException {
-        List<URL> jars = new ArrayList<URL>();
-        for (File jar : dir.listFiles(new FilenameFilter() {
+        File[] fjars = dir.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.endsWith(".jar");
             }
-        })) {
-            jars.add(jar.toURI().toURL());
-        }
-        return jars.toArray(new URL[jars.size()]);
+        });
+        if (fjars == null)
+            throw new IOException(strings.get("DirError", dir));
+        URL[] jars = new URL[fjars.length];
+        for (int i = 0; i < fjars.length; i++)
+            jars[i] = fjars[i].toURI().toURL();
+        return jars;
     }
 }
