@@ -87,6 +87,7 @@ public class SingletonBean implements RemoteSingleton {
 	System.out.println("In SingletonBean::destroy()");
     }
 
+    @Schedule(second="1", minute="*", hour="*", persistent=false)
     private void mytimeout(Timer t) {
 	System.out.println("In SingletonBean::mytimeout, info = " + t.getInfo() + "t = " + 
 			   t.getSchedule());	
