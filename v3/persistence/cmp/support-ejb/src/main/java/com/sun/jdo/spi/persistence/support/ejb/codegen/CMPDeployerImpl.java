@@ -211,7 +211,7 @@ public class CMPDeployerImpl implements CMPDeployer {
             if (generatorExceptionMsg == null) {
 
                 long start = System.currentTimeMillis();
-                compileClasses(ctx, cmpFiles, archiveUri, stubsDir);
+                compileClasses(ctx, cmpFiles, stubsDir);
                 long end = System.currentTimeMillis();
 
                 _logger.fine("Java Compilation: " + (end - start) + " msec");
@@ -281,13 +281,12 @@ public class CMPDeployerImpl implements CMPDeployer {
      *
      * @param    ctx          DeploymentContext associated with the call
      * @param    files        actual source files
-     * @param    explodedDir  exploded directory for .class files
      * @param    destDir      destination directory for .class files
      *
      * @exception  GeneratorException  if an error while code compilation
      */
-    private void compileClasses(DeploymentContext ctx, List<File> files, 
-            String explodedDir, File destDir) throws GeneratorException {
+    private void compileClasses(DeploymentContext ctx, List<File> files,
+            File destDir) throws GeneratorException {
 
         if (files.isEmpty() ) {
             return;
@@ -305,9 +304,7 @@ public class CMPDeployerImpl implements CMPDeployer {
             options.add(destDir.toString());
             options.add("-classpath");
             options.add(System.getProperty("java.class.path") //TODO do we need to add java.class.path for compilation?
-                         + File.pathSeparator + classPath
-                         + File.pathSeparator + destDir       //TODO do we need desDir for compilation?
-                         + File.pathSeparator  + explodedDir);
+                         + File.pathSeparator + classPath);
 
             if (_logger.isLoggable(Logger.FINE)) {
                 for(File file : files) {
