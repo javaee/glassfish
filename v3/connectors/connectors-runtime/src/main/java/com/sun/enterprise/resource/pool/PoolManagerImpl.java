@@ -645,5 +645,14 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
             pool.flushConnectionPool();
         }
     }
-    
+
+    /**
+     * Get connection pool status.
+     * @param poolName
+     * @return
+     */
+    public PoolStatus getPoolStatus(String poolName) {
+        ResourcePool pool = (ResourcePool) poolTable.get(poolName);
+        return pool.getPoolStatus();
+    }
 }

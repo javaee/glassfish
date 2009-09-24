@@ -35,7 +35,9 @@
 */
 package com.sun.enterprise.resource.pool.monitor;
 
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.pool.PoolLifeCycleListenerRegistry;
+import com.sun.enterprise.resource.pool.PoolStatus;
 import java.util.logging.Logger;
 import org.glassfish.external.statistics.CountStatistic;
 import org.glassfish.external.statistics.RangeStatistic;
@@ -43,6 +45,7 @@ import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.external.statistics.impl.RangeStatisticImpl;
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
+import org.glassfish.external.statistics.annotations.Reset;
 import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
@@ -321,6 +324,20 @@ public class JdbcConnPoolStatsProvider {
         }                                        
     }
 
+    /**
+     * Reset pool statistics.
+     * When annotated with @Reset, this method is invoked whenever monitoring
+     * is turned to HIGH from OFF, thereby setting the statistics to 
+     * appropriate values.
+     */
+    @Reset
+    public void reset() {
+        logger.finest("Reset event received - poolName = " + jdbcPoolName);
+        PoolStatus status = ConnectorRuntime.getRuntime().getPoolManager().getPoolStatus(jdbcPoolName);
+        numConnUsed.setCount(status.getNumConnUsed());
+        numConnFree.setCount(status.getNumConnFree());
+    }
+    
     protected String getJdbcPoolName() {
         return jdbcPoolName;
     }

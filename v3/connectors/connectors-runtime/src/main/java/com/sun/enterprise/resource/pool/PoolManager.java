@@ -79,6 +79,10 @@ public interface PoolManager extends TransactedPoolManager {
      */
     public void flushConnectionPool(String poolName) throws PoolingException;
 
+    //Get status of pool
+    public PoolStatus getPoolStatus(String poolName);
+    
+
     ResourceHandle getResourceFromPool(ResourceSpec spec,
                                        ResourceAllocator alloc,
                                        ClientSecurityInfo info,

@@ -223,6 +223,15 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         if (idletime > 0) {
             scheduleResizerTask();
         }
+
+        //Need to set the numConnFree of monitoring statistics to the steadyPoolSize
+        //as monitoring might be ON during the initialization of pool.
+        //Need not worry about the numConnUsed here as it would be initialized to
+        //0 automatically.
+        if(poolLifeCycleListener != null) {
+            poolLifeCycleListener.connectionsFreed(steadyPoolSize);
+        }
+        
         poolInitialized = true;
     }
 
@@ -1453,5 +1462,21 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
     public void reclaimConnection(ResourceHandle handle) {
         freeResource(handle);
+    }
+
+    /**
+     * Get Connection Pool status by computing the free/used values of the 
+     * connections in the pool. Computations are based on whether the pool 
+     * is initialized or not when this method is invoked. 
+
+     * @return PoolStatus object
+     */
+    public PoolStatus getPoolStatus() {
+        PoolStatus poolStatus = new PoolStatus(this.name);
+        int numFree = (this.poolInitialized) ? ds.getFreeListSize() : 0;
+        int numUsed = (this.poolInitialized) ? ds.getResourcesSize()-ds.getFreeListSize() : 0;
+        poolStatus.setNumConnFree(numFree);
+        poolStatus.setNumConnUsed(numUsed);
+        return poolStatus;
     }
 }

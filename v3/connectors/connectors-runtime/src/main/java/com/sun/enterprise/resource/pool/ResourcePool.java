@@ -63,6 +63,9 @@ public interface ResourcePool {
 
     public void resourceEnlisted(Transaction tran, ResourceHandle resource);
 
+    //Get status of pool
+    public PoolStatus getPoolStatus();
+
     public void transactionCompleted(Transaction tran, int status);
 
     public void resizePool(boolean forced);
