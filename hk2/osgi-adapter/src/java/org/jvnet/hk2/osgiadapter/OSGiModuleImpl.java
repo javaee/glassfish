@@ -509,7 +509,9 @@ public final class OSGiModuleImpl implements Module {
     }
 
     public String toString() {
-        return md.toString();
+        return "Bundle Id [" + bundle.getBundleId()
+                + "], Module Definition [" + md.toString()
+                + "], State [" + toString(bundle.getState()) + "]";
     }
 
     @Override
