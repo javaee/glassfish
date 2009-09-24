@@ -47,17 +47,21 @@ import java.beans.PropertyVetoException;
 public interface PrincipalMap extends ConfigBeanProxy, Injectable {
 
     /**
-     * Gets the value of the EISPrincipal
+     * Gets the value of the EISPrincipal - a Principal in the EIS
+     * security domain that is being mapped to a Principal in the
+     * application server's security domain.
      *
      * @return possible object is
      *         {@link String }
      */
-    @Attribute()
+    @Attribute
     @NotNull
     public String getEisPrincipal();
 
     /**
-     * Sets the value of the EISPrincipal
+     * Sets the value of the EISPrincipal - a Principal in the EIS
+     * security domain that is being mapped to a Principal in the
+     * application server's security domain.
      *
      * @param value allowed object is
      *              {@link String }
@@ -65,17 +69,19 @@ public interface PrincipalMap extends ConfigBeanProxy, Injectable {
     public void setEisPrincipal(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the Mapped Principal
+     * Gets the value of the Mapped Principal - A Principal that is
+     * valid in the application server's security domain
      *
      * @return possible object is
      *         {@link String }
      */
-    @Attribute()
+    @Attribute
     @NotNull
     public String getMappedPrincipal();
 
     /**
-     * Sets the value of the Mapped Principal
+     * Sets the value of the Mapped Principal - A Principal that is
+     * valid in the application server's security domain
      *
      * @param value allowed object is
      *              {@link String }

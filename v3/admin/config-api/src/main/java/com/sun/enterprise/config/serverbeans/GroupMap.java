@@ -47,17 +47,21 @@ import java.beans.PropertyVetoException;
 public interface GroupMap extends ConfigBeanProxy, Injectable {
 
     /**
-     * Gets the value of the EISGroupName property.
+     * Gets the value of the EISGroup - a Group in the EIS security
+     * domain that is being mapped to a Group in the application server's
+     * security domain
      *
      * @return possible object is
      *         {@link String }
      */
-    @Attribute()
+    @Attribute
     @NotNull
     public String getEisGroup();
 
     /**
-     * Sets the value of the EISGroupName property.
+     * Sets the value of the EISGroup - a Group in the EIS security
+     * domain that is being mapped to a Group in the application server's
+     * security domain
      *
      * @param value allowed object is
      *              {@link String }
@@ -65,17 +69,19 @@ public interface GroupMap extends ConfigBeanProxy, Injectable {
     public void setEisGroup(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the MappedGroupName property.
-     *
+     * Gets the value of the MappedGroup - a Group that is valid in
+     * the application server's security domain
+     * 
      * @return possible object is
      *         {@link String }
      */
-    @Attribute()
+    @Attribute
     @NotNull
     public String getMappedGroup();
 
     /**
-     * Sets the value of the EISGroupName property.
+     * Sets the value of the MappedGroup - a Group that is valid in
+     * the application server's security domain
      *
      * @param value allowed object is
      *              {@link String }
