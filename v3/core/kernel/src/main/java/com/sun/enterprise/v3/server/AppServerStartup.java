@@ -46,6 +46,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.util.Result;
@@ -266,6 +267,10 @@ public class AppServerStartup implements ModuleStartup {
                 " startup services(" + (System.currentTimeMillis() - platformInitTime)  + "ms)" +
                 " total(" + (System.currentTimeMillis() - context.getCreationTime()) + "ms)");
 
+        if (logger.isLoggable(Level.FINE)) {
+            printModuleStatus();
+        }
+
         try {
 			// it will only be set when called from AsadminMain and the env. variable AS_DEBUG is set to true
             long realstart = Long.parseLong(System.getProperty("WALL_CLOCK_START"));
@@ -309,6 +314,16 @@ public class AppServerStartup implements ModuleStartup {
         env.setStatus(ServerEnvironment.Status.started);
         events.send(new Event(EventTypes.SERVER_READY), false);
 
+    }
+
+    private void printModuleStatus()
+    {
+        StringBuilder sb = new StringBuilder("Module Status Report Begins\n");
+        for (Module m : systemRegistry.getModules()) {
+            sb.append(m).append("\n");
+        }
+        sb.append("Module Status Report Ends");
+        logger.fine(sb.toString());
     }
 
     // TODO(Sahoo): Revisit this method after discussing with Jerome.
