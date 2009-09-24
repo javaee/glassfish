@@ -132,7 +132,7 @@ public class SmartFileTest {
             assertEquals(convert, expect);
         }
         else {
-            String badPaths="/xyz;\"/a b\";/foo";
+            String badPaths="/xyz:\"/a b\":/foo";
             String convert = SmartFile.sanitizePaths(badPaths);
             String expect = "/xyz:/a b:/foo";
             assertEquals(convert, expect);
