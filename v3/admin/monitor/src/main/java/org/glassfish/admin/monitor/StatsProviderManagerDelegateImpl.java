@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.management.ObjectName;
-import javax.management.MBeanServer;
 
 
 import org.glassfish.api.monitoring.ContainerMonitoring;
@@ -68,7 +67,6 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     private static final String TYPE = MONITORING_SERVER.getKeyProperty( TYPE_KEY);
     private static final String NAME = MONITORING_SERVER.getKeyProperty( NAME_KEY);
     private static final String PARENT_PATH = PP + "/" + TYPE + "[" + NAME + "]" ;
-    private static final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
     private boolean AMXReady = false;
     private StatsProviderRegistry statsProviderRegistry;
 
@@ -550,7 +548,6 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             // 1 mom per statsProvider
             mom = ManagedObjectManagerFactory.createFederated(MONITORING_SERVER);
             if (mom != null) {
-                //if (!isMBeanRegistered(statsProvider, mbeanName)) {
                     mom.stripPackagePrefix();
                     if (mbeanName != null && !mbeanName.isEmpty()) {
                         mom.createRoot(statsProvider, mbeanName);
@@ -640,14 +637,6 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             }
         }
         return isStatsProviderRegistered;
-    }
-
-    public boolean isMBeanRegistered(Object statsProvider, String subTreePath) {
-        return isMBeanRegistered(getObjectName(statsProvider, subTreePath));
-    }
-
-    public boolean isMBeanRegistered(ObjectName objectName) {
-        return mbeanServer.isRegistered(objectName);
     }
 
     public ObjectName getObjectName(Object statsProvider, String subTreePath) {
