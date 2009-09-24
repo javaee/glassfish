@@ -38,7 +38,10 @@ package org.glassfish.web.admin.monitor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.RangeStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
+import org.glassfish.external.statistics.impl.RangeStatisticImpl;
+import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
@@ -55,70 +58,99 @@ import org.glassfish.gmbal.ManagedObject;
 @Description( "Web Container Session Statistics" )
 public class SessionStatsProvider{
 
+    private static final String ACTIVE_SESSIONS_DESCRIPTION =
+        "Number of active sessions";
+    private static final String TOTAL_SESSIONS_DESCRIPTION =
+        "Total number of sessions ever created";
+    private static final String EXPIRED_SESSIONS_DESCRIPTION =
+        "Total number of sessions ever expired";
+    private static final String REJECTED_SESSIONS_DESCRIPTION =
+        "Total number of sessions ever rejected";
+    private static final String PERSISTED_SESSIONS_DESCRIPTION =
+        "Total number of sessions ever persisted";
+    private static final String PASSIVATED_SESSIONS_DESCRIPTION =
+        "Total number of sessions ever passivated";
+    private static final String ACTIVATED_SESSIONS_DESCRIPTION =
+        "Total number of sessions ever activated";
+
     private String moduleName;
     private String vsName;
     private Logger logger;    
     
+    private RangeStatisticImpl activeSessionsCount;
+    private CountStatisticImpl sessionsTotal;
+    private CountStatisticImpl expiredSessionsTotal;
+    private CountStatisticImpl rejectedSessionsTotal;
+    private CountStatisticImpl persistedSessionsTotal;
+    private CountStatisticImpl passivatedSessionsTotal;
+    private CountStatisticImpl activatedSessionsTotal;
+
     public SessionStatsProvider(String moduleName, String vsName,
                                 Logger logger) {
         this.logger = logger;
         this.moduleName = moduleName;
         this.vsName = vsName;
-     }
-
-    private CountStatisticImpl activeSessionsCurrent = new CountStatisticImpl("ActiveSessionsCurrent", "count", "Number of currently active sessions");
-    private CountStatisticImpl activeSessionsHigh = new CountStatisticImpl("ActiveSessionsHigh", "count", "Maximum number of concurrently active sessions");
-    private CountStatisticImpl sessionsTotal = new CountStatisticImpl("SessionsTotal", "count", "Total number of sessions created");
-    private CountStatisticImpl expiredSessionsTotal = new CountStatisticImpl("ExpiredSessionsTotal", "count", "Total number of expired sessions");
-    private CountStatisticImpl rejectedSessionsTotal = new CountStatisticImpl("RejectedSessionsTotal", "count", "Total number of rejected sessions");
-    private CountStatisticImpl persistedSessionsTotal = new CountStatisticImpl("PersistedSessionsTotal", "count", "Total number of persisted sessions");
-    private CountStatisticImpl passivatedSessionsTotal = new CountStatisticImpl("PassivatedSessionsTotal", "count", "Total number of passivated sessions");
-    private CountStatisticImpl activatedSessionsTotal = new CountStatisticImpl("ActivatedSessionsTotal", "count", "Total number of activated sessions");
+        long curTime = System.currentTimeMillis();
+        activeSessionsCount = new RangeStatisticImpl(
+            0L, 0L, 0L, "ActiveSessions", StatisticImpl.UNIT_COUNT,
+            ACTIVE_SESSIONS_DESCRIPTION, curTime, curTime);
+        sessionsTotal = new CountStatisticImpl("SessionsTotal",
+            StatisticImpl.UNIT_COUNT, TOTAL_SESSIONS_DESCRIPTION);
+        expiredSessionsTotal = new CountStatisticImpl(
+            "ExpiredSessionsTotal", StatisticImpl.UNIT_COUNT,
+            EXPIRED_SESSIONS_DESCRIPTION);
+        rejectedSessionsTotal = new CountStatisticImpl(
+            "RejectedSessionsTotal", StatisticImpl.UNIT_COUNT,
+            REJECTED_SESSIONS_DESCRIPTION);
+        persistedSessionsTotal = new CountStatisticImpl(
+            "PersistedSessionsTotal", StatisticImpl.UNIT_COUNT,
+            PERSISTED_SESSIONS_DESCRIPTION);
+        passivatedSessionsTotal = new CountStatisticImpl(
+            "PassivatedSessionsTotal", StatisticImpl.UNIT_COUNT,
+            PASSIVATED_SESSIONS_DESCRIPTION);
+        activatedSessionsTotal = new CountStatisticImpl(
+            "ActivatedSessionsTotal", StatisticImpl.UNIT_COUNT,
+            ACTIVATED_SESSIONS_DESCRIPTION);
+    }
     
-    @ManagedAttribute(id="activesessionscurrent")
-    @Description("Number of currently active sessions")
-    public CountStatistic getActiveSessionsCurrent() {
-        return activeSessionsCurrent;
+    @ManagedAttribute(id="activesessionscount")
+    @Description(ACTIVE_SESSIONS_DESCRIPTION)
+    public RangeStatistic getActiveSessions() {
+        return activeSessionsCount;
     }
 
     @ManagedAttribute(id="sessionstotal")
-    @Description("Total number of sessions created")
+    @Description(TOTAL_SESSIONS_DESCRIPTION)
     public CountStatistic getSessionsTotal() {
         return sessionsTotal;
     }
 
-    @ManagedAttribute(id="activesessionshigh")
-    @Description("Maximum number of concurrently active sessions")
-    public CountStatistic getActiveSessionsHigh() {
-        return activeSessionsHigh;
-    }
-
     @ManagedAttribute(id="rejectedsessionstotal")
-    @Description("Total number of rejected sessions")
+    @Description(REJECTED_SESSIONS_DESCRIPTION)
     public CountStatistic getRejectedSessionsTotal() {
         return rejectedSessionsTotal;
     }
 
     @ManagedAttribute(id="expiredsessionstotal")
-    @Description("Total number of expired sessions")
+    @Description(EXPIRED_SESSIONS_DESCRIPTION)
     public CountStatistic getExpiredSessionsTotal() {
         return expiredSessionsTotal;
     }
 
     @ManagedAttribute(id="persistedsessionstotal")
-    @Description("Total number of persisted sessions")
+    @Description(PERSISTED_SESSIONS_DESCRIPTION)
     public CountStatistic getPersistedSessionsTotal() {
         return persistedSessionsTotal;
     }
 
     @ManagedAttribute(id="passivatedsessionstotal")
-    @Description("Total number of passivated sessions")
+    @Description(PASSIVATED_SESSIONS_DESCRIPTION)
     public CountStatistic getPassivatedSessionsTotal() {
         return passivatedSessionsTotal;
     }
 
     @ManagedAttribute(id="activatedsessionstotal")
-    @Description("Total number of activated sessions")
+    @Description(ACTIVATED_SESSIONS_DESCRIPTION)
     public CountStatistic getActivatedSessionsTotal() {
         return activatedSessionsTotal;
     }
@@ -134,11 +166,10 @@ public class SessionStatsProvider{
                           sessionId + ": appname = " + appName + 
                           ": hostName = " + hostName);
         }
-        if (!isValidEvent(appName, hostName)) {
-            return;
+        if (isValidEvent(appName, hostName)) {
+            incrementActiveSessions();
+            sessionsTotal.increment();
         }
-        incrementActiveSessionsCurrent();
-        //logger.log(Level.FINE, "[Logger] session created event");
     }
 
     @ProbeListener("glassfish:web:session:sessionDestroyedEvent")
@@ -152,10 +183,9 @@ public class SessionStatsProvider{
                           sessionId + ": appname = " + appName + 
                           ": hostName = " + hostName);
         }
-        if (!isValidEvent(appName, hostName)) {
-            return;
+        if (isValidEvent(appName, hostName)) {
+            decrementActiveSessions();
         }
-        activeSessionsCurrent.decrement();        
     }
 
     @ProbeListener("glassfish:web:session:sessionRejectedEvent")
@@ -169,12 +199,9 @@ public class SessionStatsProvider{
                           maxSessions + ": appname = " + appName + 
                           ": hostName = " + hostName);
         }
-        if (!isValidEvent(appName, hostName)) {
-            return;
+        if (isValidEvent(appName, hostName)) {
+            rejectedSessionsTotal.increment();
         }
-        //activeSessionsCurrent.decrement();
-        sessionsTotal.increment(); //????
-        rejectedSessionsTotal.increment();
     }
 
     @ProbeListener("glassfish:web:session:sessionExpiredEvent")
@@ -188,10 +215,9 @@ public class SessionStatsProvider{
                           sessionId + ": appname = " + appName + 
                           ": hostName = " + hostName);
         }
-        if (!isValidEvent(appName, hostName)) {
-            return;
+        if (isValidEvent(appName, hostName)) {
+            expiredSessionsTotal.increment();
         }
-        expiredSessionsTotal.increment();
     }
 
     @ProbeListener("glassfish:web:session:sessionPersistedStartEvent")
@@ -204,9 +230,6 @@ public class SessionStatsProvider{
             logger.finest("[TM]sessionPersistedStartEvent received - session = " + 
                           sessionId + ": appname = " + appName + 
                           ": hostName = " + hostName);
-        }
-        if (!isValidEvent(appName, hostName)) {
-            return;
         }
     }
 
@@ -221,10 +244,9 @@ public class SessionStatsProvider{
                           sessionId + ": appname = " + appName + 
                           ": hostName = " + hostName);
         }
-        if (!isValidEvent(appName, hostName)) {
-            return;
+        if (isValidEvent(appName, hostName)) {
+            persistedSessionsTotal.increment();
         }
-        persistedSessionsTotal.increment();
     }
 
     @ProbeListener("glassfish:web:session:sessionActivatedStartEvent")
@@ -237,9 +259,6 @@ public class SessionStatsProvider{
             logger.finest("[TM]sessionActivatedStartEvent received - session = " + 
                           sessionId + ": appname = " + appName + 
                           ": hostName = " + hostName);
-        }
-        if (!isValidEvent(appName, hostName)) {
-            return;
         }
     }
 
@@ -254,11 +273,10 @@ public class SessionStatsProvider{
                           sessionId + ": appname = " + appName + 
                           ": hostName = " + hostName);
         }
-        if (!isValidEvent(appName, hostName)) {
-            return;
+        if (isValidEvent(appName, hostName)) {
+            incrementActiveSessions();
+            activatedSessionsTotal.increment();
         }
-        incrementActiveSessionsCurrent();
-        activatedSessionsTotal.increment();
     }
 
     @ProbeListener("glassfish:web:session:sessionPassivatedStartEvent")
@@ -271,9 +289,6 @@ public class SessionStatsProvider{
             logger.finest("[TM]sessionPassivatedStartEvent  received - session = " + 
                           sessionId + ": appname = " + appName + 
                           ": hostName = " + hostName);
-        }
-        if (!isValidEvent(appName, hostName)) {
-            return;
         }
     }
 
@@ -288,10 +303,10 @@ public class SessionStatsProvider{
                           sessionId + ": appname = " + appName + 
                           ": hostName = " + hostName);
         }
-        if (!isValidEvent(appName, hostName)) {
-            return;
+        if (isValidEvent(appName, hostName)) {
+            decrementActiveSessions();
+            passivatedSessionsTotal.increment();
         }
-        passivatedSessionsTotal.increment();
     }
     
     public String getModuleName() {
@@ -302,12 +317,23 @@ public class SessionStatsProvider{
         return vsName;
     }
     
-    private void incrementActiveSessionsCurrent() {
-        activeSessionsCurrent.increment();
-        if (activeSessionsCurrent.getCount() > activeSessionsHigh.getCount()){
-            activeSessionsHigh.setCount(activeSessionsCurrent.getCount());
+    private void incrementActiveSessions() {
+        synchronized (activeSessionsCount) {
+            activeSessionsCount.setCurrent(
+                activeSessionsCount.getCurrent() + 1);
+            if (activeSessionsCount.getCurrent() > 
+                    activeSessionsCount.getHighWaterMark()) {
+                activeSessionsCount.setHighWaterMark(
+                    activeSessionsCount.getCurrent());
+            }
         }
-        sessionsTotal.increment();
+    }
+
+    private void decrementActiveSessions() {
+        synchronized (activeSessionsCount) {
+            activeSessionsCount.setCurrent(
+                activeSessionsCount.getCurrent() - 1);
+        }
     }
     
     private boolean isValidEvent(String mName, String hostName) {
@@ -321,8 +347,7 @@ public class SessionStatsProvider{
     }
 
     private void resetStats() {
-        activeSessionsCurrent.setCount(0);
-        activeSessionsHigh.setCount(0);
+        activeSessionsCount.reset();
         sessionsTotal.setCount(0);
         expiredSessionsTotal.setCount(0);
         rejectedSessionsTotal.setCount(0);
