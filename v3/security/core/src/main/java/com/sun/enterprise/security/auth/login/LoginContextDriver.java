@@ -549,9 +549,7 @@ public class LoginContextDriver  {
         throws LoginException
     {
         // instance of anononymous credential login with guest
-        AppServSecurityContext context = Util.getDefaultHabitat().getByContract(AppServSecurityContext.class);
-        context.setUnauthenticatedSecurityContext();
-        //SecurityContext.setUnauthenticatedContext();
+        SecurityContext.setUnauthenticatedContext();
        if(_logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE,"Set anonymous security context.");
         }  
