@@ -8,7 +8,7 @@
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
         setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
         getProxyAttribute( objectNameStr="amx:pp=/ext,type=realms" attrName="AnonymousLogin" value="#{pageSession.anonLogin}" )
-        if(! $session{supportCluster}){
+        if(!$session{supportCluster}) {
             setPageSessionAttribute(key="configName" value="server-config");
         }
     </ui:event>
@@ -18,7 +18,7 @@
             <sun:html>
                 <sun:head title="#{guiTitle}" debug="false" parseOnLoad="true">
                     <script src="#{request.contextPath}/resources/yui/yahoo-dom-event.js"></script>
-                    <sun:script url="/resource/common/js/adminjsf.js1" />
+                    <sun:script url="/resource/common/js/adminjsf.js" />
                     <jsfExt:scripts/>
                     <ui:insert name="guiTemplateExtraHead" />
                     <ui:insert name="guiExtraHead" />
@@ -32,11 +32,9 @@
         </sun:page>
     </ui:remove>
     <ui:composition>
-                        <h:messages />
-                        <ui:insert name="guiTemplateContent">
-                            <ui:insert name="content">
-                                Content Missing!
-                            </ui:insert>
-                        </ui:insert>
+	<sun:messageGroup />
+	<ui:insert name="content">
+	    Content Missing!
+	</ui:insert>
     </ui:composition>
 </html>
