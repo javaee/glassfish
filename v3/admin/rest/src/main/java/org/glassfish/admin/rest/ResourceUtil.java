@@ -42,6 +42,11 @@ import java.util.logging.Logger;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -275,6 +280,21 @@ public class ResourceUtil extends Util {
         }
      }
 
+    /**
+     * Constructs and returns the appropriate response object based on the client.
+     * @param status the http status code for the response
+     * @param message message for the response
+     * @param requestHeaders request headers of the request
+     * @return Response the response object to be returned to the client
+     */
+    public Response getResponse(int status, String message,
+            HttpHeaders requestHeaders, UriInfo uriInfo){
+        if(isBrowser(requestHeaders)) {
+            message = getHtml(message, uriInfo);
+        }
+        return Response.status(status).entity(message).build();
+    }
+
 
     //Construct parameter meta-data from the model
     private ParameterMetaData getParameterMetaData(CommandModel.ParamModel paramModel) {
@@ -314,5 +334,28 @@ public class ResourceUtil extends Util {
             System.out.println("Command Param Name: " + pm.getParam().name());
             System.out.println("Command Param Shortname: " + pm.getParam().shortName());
         }
+    }
+
+
+    //returns true only if the request is from browser
+    private boolean isBrowser(HttpHeaders requestHeaders) {
+        boolean isClientAcceptsHtml = false;
+        MediaType media = requestHeaders.getMediaType();
+        java.util.List<String> acceptHeaders = 
+            requestHeaders.getRequestHeader(HttpHeaders.ACCEPT);
+
+        for (String header: acceptHeaders) {
+            if (header.contains(MediaType.TEXT_HTML)) {
+                isClientAcceptsHtml = true;
+                break;
+            }
+        }
+
+        if ((media.equals(MediaType.APPLICATION_FORM_URLENCODED_TYPE)) &&
+                (isClientAcceptsHtml)) {
+            return true;
+        }
+
+        return false;
     }
 }

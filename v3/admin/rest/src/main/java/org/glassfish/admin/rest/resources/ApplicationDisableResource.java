@@ -14,9 +14,12 @@ import java.util.HashMap;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import org.glassfish.admin.rest.provider.CommandResourceGetResult;
 import org.glassfish.admin.rest.provider.OptionsResult;
@@ -36,8 +39,10 @@ __resourceUtil = new ResourceUtil();
 public Response executeCommand(HashMap<String, String> data) {
 try {
 if (data.containsKey("error")) {
-return Response.status(400).entity(
-"Unable to parse the input entity. Please check the syntax.").build();}/*parsing error*/
+String errorMessage = localStrings.getLocalString("rest.request.parsing.error", "Unable to parse the input entity. Please check the syntax.");
+return __resourceUtil.getResponse(400, /*parsing error*/
+ errorMessage, requestHeaders, uriInfo);
+}
 
 /*formulate id attribute for this command resource*/
 String parent = __resourceUtil.getParentName(uriInfo);
@@ -54,12 +59,15 @@ ActionReport actionReport = __resourceUtil.runCommand(commandName, data, RestSer
 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
 
 if (exitCode == ActionReport.ExitCode.SUCCESS) {
-return Response.status(200).entity("\"" + commandMethod + " of "
-+ uriInfo.getAbsolutePath() + " executed successfully.").build();  /*200 - ok*/
+String successMessage = localStrings.getLocalString("rest.request.success.message",
+"{0} of {1} executed successfully.", new Object[] {commandMethod, uriInfo.getAbsolutePath()});
+return __resourceUtil.getResponse(200, /*200 - ok*/
+ successMessage, requestHeaders, uriInfo);
 }
 
 String errorMessage = actionReport.getMessage();
-return Response.status(400).entity(errorMessage).build(); /*400 - bad request*/
+return __resourceUtil.getResponse(400, /*400 - bad request*/
+ errorMessage, requestHeaders, uriInfo);
 } catch (Exception e) {
 throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 }
@@ -91,6 +99,9 @@ throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 return optionsResult;
 }
 
+public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ResourceUtil.class);
+@Context
+protected HttpHeaders requestHeaders;
 @Context
 protected UriInfo uriInfo;
 

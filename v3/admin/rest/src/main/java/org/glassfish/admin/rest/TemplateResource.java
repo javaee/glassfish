@@ -46,6 +46,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.POST;
 import javax.ws.rs.WebApplicationException;
@@ -64,6 +65,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.RestRedirect;
 
@@ -80,12 +84,17 @@ import org.glassfish.admin.rest.provider.MethodMetaData;
  * @author Rajeshwar Patil
  */
 public class TemplateResource<E extends ConfigBeanProxy> {
+    @Context
+    protected HttpHeaders requestHeaders;
 
     @Context
     protected UriInfo uriInfo;
+
     @Context
     protected ResourceContext resourceContext;
     protected E entity;
+
+    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateResource.class);
 
     /** Creates a new instance of xxxResource */
     public TemplateResource() {
@@ -124,8 +133,10 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         try {
             data.remove("submit");
             if (data.containsKey("error")) {
-                return Response.status(400).entity(
-                        "Unable to parse the input entity. Please check the syntax.").build();//parsing error
+                String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
+                        "Unable to parse the input entity. Please check the syntax.");
+                return __resourceUtil.getResponse(400, /*parsing error*/
+                        errorMessage, requestHeaders, uriInfo);
             }
 
             __resourceUtil.purgeEmptyEntries(data);
@@ -143,7 +154,10 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
             mapOfChanges.put(getConfigBean(), data);
             RestService.getConfigSupport().apply(mapOfChanges); //throws TransactionFailure
-            return Response.ok().entity("\"" + uriInfo.getAbsolutePath() + "\" updated successfully").build();
+
+            String successMessage = localStrings.getLocalString("rest.resource.update.message",
+                    "\"{0}\" updated successfully.", new Object[] {uriInfo.getAbsolutePath()});
+           return __resourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo);
         } catch (Exception ex) {
             System.out.println("exception" + ex);
             throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
@@ -157,8 +171,10 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         //do so implicitly through asadmin command
         try {
             if (data.containsKey("error")) {
-                return Response.status(400).entity(
-                        "Unable to parse the input entity. Please check the syntax.").build();//parsing error
+                String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
+                        "Unable to parse the input entity. Please check the syntax.");
+                return __resourceUtil.getResponse(400, /*parsing error*/
+                        errorMessage, requestHeaders, uriInfo);
             }
 
             __resourceUtil.purgeEmptyEntries(data);
@@ -170,7 +186,10 @@ public class TemplateResource<E extends ConfigBeanProxy> {
 
             String resourceName = getResourceName(uriInfo.getAbsolutePath().getPath(), "/");
             if (!data.get("DEFAULT").equals(resourceName)) {
-                return Response.status(403).entity("Resource not deleted. Value of \"name\" should be the name of this resource.").build(); //forbidden
+                String errorMessage = localStrings.getLocalString("rest.resource.not.deleted",
+                        "Resource not deleted. Value of \"name\" should be the name of this resource.");
+                return __resourceUtil.getResponse(403, /*forbidden*/
+                        errorMessage, requestHeaders, uriInfo);
             }
 
             ActionReport actionReport =
@@ -179,8 +198,9 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             if (actionReport != null) {
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
                 if (exitCode == ActionReport.ExitCode.SUCCESS) {
-                    return Response.status(200).entity("\"" + uriInfo.getAbsolutePath() + //200 - ok
-                            "\"" + " deleted successfully.").build();
+                    String successMessage = localStrings.getLocalString("rest.resource.delete.message",
+                        "\"{0}\" deleted successfully.", new Object[] {uriInfo.getAbsolutePath()});
+                    return __resourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo); //200 - ok
                 }
 
                 String errorMessage = actionReport.getMessage();
@@ -191,10 +211,12 @@ public class TemplateResource<E extends ConfigBeanProxy> {
                 } catch (Exception e) {
                 //ignore
                 }*/
-                return Response.status(400).entity(errorMessage).build(); // 400 - bad request
+                return __resourceUtil.getResponse(400, errorMessage, requestHeaders, uriInfo); //400 - bad request
             }
-            return Response.status(403).entity("DELETE on \"" + // 403 - forbidden
-                    uriInfo.getAbsolutePath() + "\" is forbidden.").build();
+
+            String message = localStrings.getLocalString("rest.resource.delete.forbidden",
+                "DELETE on \"{0}\" is forbidden.", new Object[] {uriInfo.getAbsolutePath()});
+            return __resourceUtil.getResponse(403, message, requestHeaders, uriInfo); //403 - forbidden
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }

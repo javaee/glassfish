@@ -14,9 +14,12 @@ import java.util.HashMap;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import org.glassfish.admin.rest.provider.CommandResourceGetResult;
 import org.glassfish.admin.rest.provider.OptionsResult;
@@ -76,6 +79,9 @@ throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 return optionsResult;
 }
 
+public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ResourceUtil.class);
+@Context
+protected HttpHeaders requestHeaders;
 @Context
 protected UriInfo uriInfo;
 

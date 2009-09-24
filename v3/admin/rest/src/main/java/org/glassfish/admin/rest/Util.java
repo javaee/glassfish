@@ -48,6 +48,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.ParameterMetaData;
+import org.glassfish.admin.rest.provider.ProviderUtil;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.CommandRunner;
@@ -165,4 +166,26 @@ public class Util {
         return string.substring(0, 1).toUpperCase() + string.substring(1);
     }
 
+
+    /**
+    * Returns the html for the given message.
+    *
+    * @param uriInfo the uriInfo context of the request
+    * @return String the html representation of the given message
+    */
+    public String getHtml(String message, UriInfo uriInfo) {
+        String result = ProviderUtil.getHtmlHeader();
+        String uri = uriInfo.getAbsolutePath().toString();
+        String name = upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
+        String parentName =
+            upperCaseFirstLetter(eleminateHypen(getParentName(uri)));
+
+        result = result + "<h1>" + name + "</h1>";
+        result = result + message + "<br><br>";
+        result = result + "<a href=\"" + uri + "\">Back</a><br>";
+
+        result = "<div>" + result + "</div>" + "<br>";
+        result = result + "</body></html>";
+        return result;
+    }
 }

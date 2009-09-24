@@ -704,9 +704,11 @@ public class GeneratorResource {
         out.write("import java.util.HashMap;\n\n");
         out.write("import javax.ws.rs.*;\n");
         out.write("import javax.ws.rs.core.Context;\n");
+        out.write("import javax.ws.rs.core.HttpHeaders;\n");
         out.write("import javax.ws.rs.core.MediaType;\n");
         out.write("import javax.ws.rs.core.Response;\n");
         out.write("import javax.ws.rs.core.UriInfo;\n\n");
+        out.write("import com.sun.enterprise.util.LocalStringManagerImpl;\n\n");
         out.write("import org.glassfish.admin.rest.provider.CommandResourceGetResult;\n");
         out.write("import org.glassfish.admin.rest.provider.OptionsResult;\n");
         out.write("import org.glassfish.admin.rest.provider.MethodMetaData;\n");
@@ -746,6 +748,9 @@ public class GeneratorResource {
 
 
         //variable declarations
+        out.write("public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ResourceUtil.class);\n");
+        out.write("@Context\n");
+        out.write("protected HttpHeaders requestHeaders;\n");
         out.write("@Context\n");
         out.write("protected UriInfo uriInfo;\n\n");
         out.write("private static final String resourceName = \"" + resourceName + "\";\n");
@@ -766,9 +771,9 @@ public class GeneratorResource {
         out.write("public Response executeCommand(HashMap<String, String> data) {\n");
         out.write("try {\n");
         out.write("if (data.containsKey(\"error\")) {\n");
-        out.write("return Response.status(400).entity(\n");
-        out.write("\"Unable to parse the input entity. Please check the syntax.\").build();");
-        out.write("}/*parsing error*/\n\n");
+        out.write("String errorMessage = localStrings.getLocalString(\"rest.request.parsing.error\", \"Unable to parse the input entity. Please check the syntax.\");\n");
+        out.write("return __resourceUtil.getResponse(400, /*parsing error*/\n errorMessage, requestHeaders, uriInfo);\n");
+        out.write("}\n\n");
 
         out.write("/*formulate id attribute for this command resource*/\n");
         out.write("String parent = __resourceUtil.getParentName(uriInfo);\n");
@@ -782,11 +787,13 @@ public class GeneratorResource {
         out.write("ActionReport.ExitCode exitCode = actionReport.getActionExitCode();\n\n");
 
         out.write("if (exitCode == ActionReport.ExitCode.SUCCESS) {\n");
-        out.write("return Response.status(200).entity(\"\\\"\" + commandMethod + \" of \"\n");
-        out.write("+ uriInfo.getAbsolutePath() + \" executed successfully.\").build();  /*200 - ok*/\n");
+        out.write("String successMessage = localStrings.getLocalString(\"rest.request.success.message\",\n");
+        out.write("\"{0} of {1} executed successfully.\", new Object[] {commandMethod, uriInfo.getAbsolutePath()});\n");
+        out.write("return __resourceUtil.getResponse(200, /*200 - ok*/\n successMessage, requestHeaders, uriInfo);\n");
         out.write("}\n\n");
+
         out.write("String errorMessage = actionReport.getMessage();\n");
-        out.write("return Response.status(400).entity(errorMessage).build(); /*400 - bad request*/\n");
+        out.write("return __resourceUtil.getResponse(400, /*400 - bad request*/\n errorMessage, requestHeaders, uriInfo);\n");
         out.write("} catch (Exception e) {\n");
         out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
         out.write("}\n");

@@ -49,6 +49,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -58,6 +59,8 @@ import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.multipart.FormDataMultiPart;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Dom;
+
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import org.glassfish.api.ActionReport;
 
@@ -72,10 +75,15 @@ import org.glassfish.admin.rest.provider.MethodMetaData;
 public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
 
     @Context
+    protected HttpHeaders requestHeaders;
+
+    @Context
     protected UriInfo uriInfo;
     @Context
     protected ResourceContext resourceContext;
     protected List<E> entity;
+
+    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateListOfResource.class);
 
     /** Creates a new instance of xxxResource */
     public TemplateListOfResource() {
@@ -122,7 +130,10 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
     public Response CreateResource(HashMap<String, String> data) {
         try {
             if (data.containsKey("error")) {
-                return Response.status(400).entity("Unable to parse the input entity. Please check the syntax.").build();//parsing error
+                String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
+                        "Unable to parse the input entity. Please check the syntax.");
+                return __resourceUtil.getResponse(400, /*parsing error*/
+                        errorMessage, requestHeaders, uriInfo);
             }
 
             __resourceUtil.purgeEmptyEntries(data);
@@ -139,15 +150,23 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
                 if (exitCode == ActionReport.ExitCode.SUCCESS) {
-                    return Response.status(201).entity("\"" + resourceToCreate +  //201 - created
-                    "\"" + " created successfully.").build();
+                    String successMessage =
+                        localStrings.getLocalString("rest.resource.create.message",
+                            "\"{0}\" created successfully.", new Object[] {resourceToCreate});
+                    return __resourceUtil.getResponse(201, //201 - created
+                         successMessage, requestHeaders, uriInfo);
                 }
 
                 String errorMessage = getErrorMessage(data, actionReport);
-                return Response.status(400).entity(errorMessage).build(); // 400 - bad request
+                return __resourceUtil.getResponse(400, /*400 - bad request*/
+                    errorMessage, requestHeaders, uriInfo);
             }
-            return Response.status(403).entity("POST on \"" +   // 403 - forbidden
-                resourceToCreate + "\" is forbidden.").build();
+            String message =
+                localStrings.getLocalString("rest.resource.post.forbidden",
+                    "POST on \"{0}\" is forbidden.", new Object[] {resourceToCreate});
+            return __resourceUtil.getResponse(403, //403 - forbidden
+                 message, requestHeaders, uriInfo);
+
         } catch (Exception e) {
             throw new WebApplicationException(e,
                 Response.Status.INTERNAL_SERVER_ERROR);

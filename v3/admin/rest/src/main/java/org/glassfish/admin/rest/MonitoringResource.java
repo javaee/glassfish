@@ -100,6 +100,9 @@ public class MonitoringResource {
             path = path.substring(1);
         }
 
+        //replace all . with \.
+        path = path.replaceAll("\\.", "\\\\.");
+
         String dottedName = path.replace('/', '.');
 
         String root;

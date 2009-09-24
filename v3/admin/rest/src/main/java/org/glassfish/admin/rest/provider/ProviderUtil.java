@@ -285,7 +285,7 @@ public class ProviderUtil extends Util {
     }
 
 
-    static protected String getHtmlHeader() {
+    static public String getHtmlHeader() {
         String result = "<html><head>";
         result = result + "<title>GlassFish REST Interface</title>";
         result = result + getInternalStyleSheet();
