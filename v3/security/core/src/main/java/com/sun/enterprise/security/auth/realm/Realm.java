@@ -39,6 +39,7 @@ import com.sun.enterprise.security.util.IASSecurityException;
 import java.io.*;
 import java.util.*;
 import com.sun.enterprise.util.*;
+import java.lang.ref.WeakReference;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
@@ -86,6 +87,8 @@ public abstract class Realm implements Comparable {
     public static final String PARAM_GROUP_MAPPING="group-mapping";
     protected GroupMapper groupMapper = null;
     private static RealmStatsProvider realmStatsProvier = null;
+
+    private static WeakReference<RealmsManager> realmsManager = new WeakReference<RealmsManager>(null);
     
     /**
      * Returns the name of this realm.
@@ -246,7 +249,7 @@ public abstract class Realm implements Comparable {
         Habitat habitat = Globals.getDefaultHabitat();
         RealmsManager mgr = null;
         try {
-            mgr = habitat.getComponent(RealmsManager.class);
+            mgr = getRealmsManager();
             Class realmClass = null;
             //try a HK2 route first
             Realm r = habitat.getComponent(Realm.class, name);
@@ -305,8 +308,7 @@ public abstract class Realm implements Comparable {
      */
     protected static void updateInstance(Realm realm, String name)
     {
-        Habitat habitat = Globals.getDefaultHabitat();
-        RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+        RealmsManager mgr = getRealmsManager();
         if (mgr == null) {
              throw new RuntimeException("Unable to locate RealmsManager Service");
         }
@@ -343,8 +345,7 @@ public abstract class Realm implements Comparable {
      *
      */
     public static String getDefaultRealm() {
-        Habitat habitat = Globals.getDefaultHabitat();
-        RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+        RealmsManager mgr = getRealmsManager();
         if (mgr != null) {
             return mgr.getDefaultRealmName();
         } else {
@@ -361,8 +362,7 @@ public abstract class Realm implements Comparable {
      */
     public static void setDefaultRealm(String realmName) {
         //defaultRealmName = realmName;
-        Habitat habitat = Globals.getDefaultHabitat();
-        RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+        RealmsManager mgr = getRealmsManager();
         if (mgr != null) {
              mgr.setDefaultRealmName(realmName);
         } else  {
@@ -378,8 +378,7 @@ public abstract class Realm implements Comparable {
     public static void unloadInstance(String realmName) throws NoSuchRealmException {
         //make sure instance exist
         getInstance(realmName);
-        Habitat habitat = Globals.getDefaultHabitat();
-        RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+        RealmsManager mgr = getRealmsManager();
         if (mgr != null) {
              mgr.removeFromLoadedRealms(realmName);
         } else {
@@ -470,8 +469,7 @@ public abstract class Realm implements Comparable {
      * @return the requested realm
      */
     private static Realm _getInstance(String name) {
-	Habitat habitat = Globals.getDefaultHabitat();
-        RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+        RealmsManager mgr = getRealmsManager();
         if (mgr != null) {
             return mgr._getInstance(name);
         } else  {
@@ -487,8 +485,7 @@ public abstract class Realm implements Comparable {
      * @return set of realm names
      */
     public static Enumeration	getRealmNames() {
-        Habitat habitat = Globals.getDefaultHabitat();
-        RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+        RealmsManager mgr = getRealmsManager();
         if (mgr != null) {
             return mgr.getRealmNames();
         }
@@ -537,14 +534,26 @@ public abstract class Realm implements Comparable {
         }
     }
 
+    private static synchronized  RealmsManager _getRealmsManager() {
+        if (realmsManager.get() == null) {
+            realmsManager = new WeakReference<RealmsManager>(Globals.get(RealmsManager.class));
+        }
+        return realmsManager.get();
+    }
+
+    private static RealmsManager getRealmsManager() {
+        if (realmsManager.get() != null) {
+            return realmsManager.get();
+        }
+        return _getRealmsManager();
+     }
     /**
      * Checks if the given realm name is loaded/valid.
      * @param String name of the realm to check.
      * @return true if realm present, false otherwise.
      */
     public static boolean isValidRealm(String name) {
-        Habitat habitat = Globals.getDefaultHabitat();
-        RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+        RealmsManager mgr = getRealmsManager();
         if (mgr != null) {
             return mgr.isValidRealm(name);
         }

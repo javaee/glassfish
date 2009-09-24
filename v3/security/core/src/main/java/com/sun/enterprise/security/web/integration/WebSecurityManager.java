@@ -68,10 +68,10 @@ import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 //import org.apache.catalina.Globals;
+import com.sun.enterprise.security.SecurityRoleMapperFactoryGen;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.WebSecurityDeployerProbeProvider;
-import org.glassfish.internal.api.Globals;
 import org.glassfish.api.web.Constants; 
 
 /**
@@ -144,7 +144,7 @@ public class WebSecurityManager  {
     private static Set defaultPrincipalSet = 
 	SecurityContext.getDefaultSecurityContext().getPrincipalSet();
 
-    private SecurityRoleMapperFactory factory = null;
+    //private SecurityRoleMapperFactory factory = null;
     private WebSecurityManagerFactory wsmf = null;
     private ServerContext serverContext = null;
     // WebBundledescriptor
@@ -160,7 +160,7 @@ public class WebSecurityManager  {
         this.serverContext = svc;
         this.wsmf = fact;
         String appname = getAppId();
-        factory = Globals.get(SecurityRoleMapperFactory.class);
+        //factory = SecurityRoleMapperFactoryGen.getSecurityRoleMapperFactory();
         postConstruct();
         initialise(appname);
     }
@@ -176,13 +176,13 @@ public class WebSecurityManager  {
         this.serverContext = svc;
         this.wsmf = fact;
         String appname = getAppId();
-        factory = Globals.get(SecurityRoleMapperFactory.class);
+//        factory = SecurityRoleMapperFactoryGen.getSecurityRoleMapperFactory();
         postConstruct();
         initialise(appname);
     }
 
     private void postConstruct() {
-        factory.setAppNameForContext(getAppId(), CONTEXT_ID);
+        SecurityRoleMapperFactoryGen.getSecurityRoleMapperFactory().setAppNameForContext(getAppId(), CONTEXT_ID);
     }
 
     private String removeSpaces(String withSpaces){
@@ -552,7 +552,7 @@ public class WebSecurityManager  {
 		(uncheckedPermissionCache);
             uncheckedPermissionCache = null;
         }
-        factory.removeAppNameForContext(CONTEXT_ID);
+        SecurityRoleMapperFactoryGen.getSecurityRoleMapperFactory().removeAppNameForContext(CONTEXT_ID);
         probeProvider.policyConfigurationDestructionEvent(CONTEXT_ID);
         wsmf.getManager(CONTEXT_ID,null,true);
     }

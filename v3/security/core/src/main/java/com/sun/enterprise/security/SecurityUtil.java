@@ -48,7 +48,6 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.OpsParams;
-import org.glassfish.internal.api.Globals;
 /** 
   * This utility class encloses all the calls to a ejb method
   * in a specified subject
@@ -361,7 +360,7 @@ public class SecurityUtil{
             return;
         }
         String appName = params.name();
-        SecurityRoleMapperFactory factory = Globals.get(SecurityRoleMapperFactory.class);
+        SecurityRoleMapperFactory factory = SecurityRoleMapperFactoryGen.getSecurityRoleMapperFactory();
         if (factory == null) {
             throw new IllegalArgumentException("This application has no role mapper factory defined");
         }

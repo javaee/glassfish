@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -35,53 +35,36 @@
  */
 
 /*
- * PrincipalGroupFactory.java
+ * SecurityRoleMapperFactoryGen.java
  *
- * Created on October 28, 2004, 12:34 PM
+ * Created on September 23, 2009, 12:34 PM
  */
 
-package com.sun.enterprise.security.web.integration;
+package com.sun.enterprise.security;
 
+import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import java.lang.ref.WeakReference;
 import org.glassfish.internal.api.Globals;
-import org.glassfish.security.common.PrincipalImpl;
-import org.glassfish.security.common.Group;
+
 /**
  *
- * @author  Harpreet Singh
+ * @author nasradu8
  */
-public class PrincipalGroupFactory {
-    
-    /** Creates a new instance of PrincipalGroupFactory */
+public class SecurityRoleMapperFactoryGen {
 
-    private static WeakReference<WebSecurityManagerFactory> webSecurityManagerFactory = new WeakReference<WebSecurityManagerFactory>(null);
-    private static synchronized WebSecurityManagerFactory _getWebSecurityManagerFactory() {
-        if(webSecurityManagerFactory.get() == null){
-            webSecurityManagerFactory = new WeakReference<WebSecurityManagerFactory>(Globals.get(WebSecurityManagerFactory.class));
+    private static WeakReference<SecurityRoleMapperFactory> securityRoleMapperFactory = new WeakReference<SecurityRoleMapperFactory>(null);
+
+    private static synchronized SecurityRoleMapperFactory _getSecurityRoleMapperFactory() {
+        if (securityRoleMapperFactory.get() == null) {
+            securityRoleMapperFactory = new WeakReference<SecurityRoleMapperFactory>(Globals.get(SecurityRoleMapperFactory.class));
         }
-        return webSecurityManagerFactory.get();
+        return securityRoleMapperFactory.get();
     }
-    private static WebSecurityManagerFactory getWebSecurityManagerFactory(){
-        if(webSecurityManagerFactory.get() != null){
-            return webSecurityManagerFactory.get();
+
+    public static SecurityRoleMapperFactory getSecurityRoleMapperFactory() {
+        if (securityRoleMapperFactory.get() != null) {
+            return securityRoleMapperFactory.get();
         }
-        return _getWebSecurityManagerFactory();
-    }
-    public static PrincipalImpl getPrincipalInstance(String name, String realm){
-        WebSecurityManagerFactory fact = getWebSecurityManagerFactory();
-        PrincipalImpl p = (PrincipalImpl)fact.getAdminPrincipal(name, realm) ;
-        if(p == null){
-            p = new PrincipalImpl(name);
-        }
-        return p;
-    }
-    
-    public static Group getGroupInstance(String name, String realm){
-        WebSecurityManagerFactory fact = getWebSecurityManagerFactory();
-        Group g = (Group)fact.getAdminGroup(name, realm);
-        if(g == null){
-            g = new Group(name);
-        }
-        return g;
+        return _getSecurityRoleMapperFactory();
     }
 }

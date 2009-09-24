@@ -48,6 +48,7 @@ import sun.security.x509.X500Name;
 import com.sun.logging.*;
 import com.sun.enterprise.common.iiop.security.GSSUPName;
 import com.sun.enterprise.common.iiop.security.AnonCredential;
+import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.common.AppservAccessController;
@@ -758,27 +759,20 @@ public class LoginContextDriver  {
      * @param Subject is the subject representation of the user
      * @param Credentials the credentials that the server associated with it
      */
-    private  static void setSecurityContext(String userName,
-                                            Subject subject, String realm){ 
+private static void setSecurityContext(String userName,
+            Subject subject, String realm) {
 
-        AppServSecurityContext secContext = Util.getDefaultHabitat().getByContract(AppServSecurityContext.class);
-        AppServSecurityContext securityContext = secContext.newInstance(userName, subject, realm);
-            //new SecurityContext(userName, subject, realm);
-        //SecurityContext.setCurrent(securityContext);
-        securityContext.setCurrentSecurityContext(securityContext);
+        SecurityContext securityContext = new SecurityContext(userName, subject, realm);
+        SecurityContext.setCurrent(securityContext);
     }
 
-    
     /**
      * Set the current security context on the Thread Local Storage to null.
      *
      */
-    private  static void unsetSecurityContext() {
-        //SecurityContext.setCurrent((SecurityContext)null);
-        AppServSecurityContext secContext = Util.getDefaultHabitat().getByContract(AppServSecurityContext.class);
-        secContext.setCurrentSecurityContext(null);
+    private static void unsetSecurityContext() {
+        SecurityContext.setCurrent((SecurityContext)null);
     }
-
     /**
      * Perform login on the client side.
      * It just simulates the login on the client side.
