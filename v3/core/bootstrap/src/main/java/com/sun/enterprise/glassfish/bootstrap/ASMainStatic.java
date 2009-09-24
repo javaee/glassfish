@@ -2,7 +2,7 @@
  *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -159,7 +159,6 @@ public class ASMainStatic extends ASMainNonOSGi {
         if (singleClassLoader==null) {
             throw new BootException("Could not create single class loader from the cache");
         }
-        final Module[] proxyMod = new Module[1];
 
         // ANONYMOUS CLASS HERE!!
         final ModulesRegistryImpl modulesRegistry = new SingleModulesRegistry(singleClassLoader);
