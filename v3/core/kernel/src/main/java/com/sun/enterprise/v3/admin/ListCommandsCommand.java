@@ -74,16 +74,9 @@ public class ListCommandsCommand implements AdminCommand {
         List<String> names = new ArrayList<String>();
         for (Inhabitant<?> command : habitat.getInhabitantsByContract(AdminCommand.class.getName())) {
             for (String name : Inhabitants.getNamesFor(command, AdminCommand.class.getName())) {
-                Object o;
-                try {
-                    o = habitat.getComponent(AdminCommand.class.getName(), name);
-                    if (o == null) //don't report such a command as a valid command!
-                        continue;
-                } catch(Exception e) {
-                    e.printStackTrace();
-                    //don't report such a command as a valid command!
-                    continue;
-                }
+                //see 6161 -- I thought we should ensure that a command found in habitat should
+                //return a valid Command Object, but it was decided that we don't need to instantiate
+                //each object satisfying AdminCommand contract to get a list of all commands
                 if (debugCommand(command)) { //it's a debug command, add only if debug is set
                     if (debugSet())
                         names.add(name);

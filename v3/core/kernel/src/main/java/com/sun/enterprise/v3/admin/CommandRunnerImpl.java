@@ -734,8 +734,6 @@ public class CommandRunnerImpl implements CommandRunner {
                 else
                     msg = adminStrings.getLocalString("adapter.command.notcreated",
                             "Implementation for the command {0} exists in the system, but it has some errors, check server.log for details", commandName);
-                    //set cause to CommandNotFoundException so that asadmin
-                    //displays the closest matching commands
             }
             report.setMessage(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

@@ -184,6 +184,7 @@ public class StartDomainCommand extends LocalDomainCommand {
                                 throws CommandException {
         // Sets the password into the launcher info.
         // Yes, setting master password into a string is not right ...
+        long t0 = System.currentTimeMillis();
         String mpn  = "AS_ADMIN_MASTERPASSWORD";
         String mpv  = passwords.get(mpn);
         if (mpv == null)
@@ -191,6 +192,8 @@ public class StartDomainCommand extends LocalDomainCommand {
         if (mpv == null)
             mpv = "changeit"; //the default
         boolean ok = verifyMasterPassword(mpv);
+        long t1 = System.currentTimeMillis();
+        logger.printDebugMessage("Master Password processing took: " + (t1-t0) + " msec");
         if (!ok) {
             mpv = retry(3);
         }
@@ -199,24 +202,22 @@ public class StartDomainCommand extends LocalDomainCommand {
 
     private String retry(int times) throws CommandException {
         String mpv;
-        logger.printMessage("No valid master password found");
         // prompt times times
         for (int i = 0 ; i < times; i++) {
             // XXX - I18N
-            String prompt =
-                "Enter master password (" + (times-i) + " attempt(s) remain)> ";
+            String prompt = strings.get("mp.prompt", (times-i));
             mpv = super.readPassword(prompt);
             if (mpv == null)
-                throw new CommandException("No console, no prompting possible");
+                throw new CommandException(strings.get("no.console"));
                 // ignore retries :)
             if (verifyMasterPassword(mpv))
                 return mpv;
-            logger.printMessage("Sorry, incorrect master password, retry");
+            if (i < (times-1))
+                logger.printMessage(strings.get("retry.mp"));
             // make them pay for typos?
             //Thread.currentThread().sleep((i+1)*10000);
         }
-        throw new CommandException(
-                    "Number of attempts (" + times + ") exhausted, giving up");
+        throw new CommandException(strings.get("mp.giveup", times));
     }
 
 

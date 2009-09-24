@@ -219,9 +219,11 @@ public class RemoteCommand extends CLICommand {
                     throw ex;
                 logger.printDebugMessage("Updated authentication worked");
             }
-            if (commandOpts == null)
+            if (commandOpts == null) {
+                String msg = metadataErrors != null ? metadataErrors.toString() : ""; 
                 throw new CommandException(strings.get("InvalidCommand", name),
-                        new InvalidCommandException(metadataErrors.toString()));
+                        new InvalidCommandException(msg));
+            }
 
             // everyone gets a --help option until we have a help command
             // on the server
