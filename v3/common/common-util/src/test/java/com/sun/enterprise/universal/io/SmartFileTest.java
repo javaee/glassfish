@@ -41,6 +41,7 @@
 
 package com.sun.enterprise.universal.io;
 
+import com.sun.enterprise.util.OS;
 import java.io.File;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -83,7 +84,6 @@ public class SmartFileTest {
             System.out.println(path + " --> " + SmartFile.sanitize(path));
         }
     }
-
     /**
      * Test of sanitizePaths method, of class SmartFile.
      */
@@ -102,7 +102,7 @@ public class SmartFileTest {
             String drive = here.substring(0, 2);
             cp1expected = drive + "/a/b/c;" + here + "/qqq;" + here + "/z/e";
         }
-        
+
         System.out.println("******** Sanitized ClassPath Test ******************");
 
         String cp = System.getProperty("java.class.path");
@@ -118,6 +118,25 @@ public class SmartFileTest {
 	// All the QL and devtests are very unstable right now.
 	// I'll uncomment this later whn things are rock solid.
         //assertEquals(cp1expected, SmartFile.sanitizePaths(cp1before));
+    }
+    /**
+     * Test of sanitizePaths method, of class SmartFile.
+     */
+    @Test
+    public void sanitizePaths2() {
+        String sep = File.pathSeparator;
+        if(OS.isWindows()) {
+            String badPaths="c:/xyz;\"c:\\a b\";c:\\foo";
+            String convert = SmartFile.sanitizePaths(badPaths);
+            String expect = "C:/xyz;C:/a b;C:/foo";
+            assertEquals(convert, expect);
+        }
+        else {
+            String badPaths="/xyz;\"/a b\";/foo";
+            String convert = SmartFile.sanitizePaths(badPaths);
+            String expect = "/xyz:/a b:/foo";
+            assertEquals(convert, expect);
+        }
     }
 
     private static final String[] FILENAMES = new String[]

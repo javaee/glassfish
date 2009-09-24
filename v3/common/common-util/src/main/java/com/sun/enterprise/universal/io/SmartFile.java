@@ -41,6 +41,7 @@
 
 package com.sun.enterprise.universal.io;
 
+import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import java.io.*;
 import java.util.*;
@@ -153,6 +154,8 @@ public class SmartFile {
             throw new NullPointerException();
 
         // note that "" is a valid filename
+        // IT 7500 get rid of quotes!!!
+        s = StringUtils.removeEnclosingQuotes(s);
         convert(new File(s).getAbsolutePath());
     }
 
