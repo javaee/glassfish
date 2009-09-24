@@ -232,7 +232,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     }
 
     private boolean realmsAlreadyLoaded() {
-       RealmsManager mgr = sc.getDefaultHabitat().getComponent(RealmsManager.class);
+       RealmsManager mgr = habitat.getComponent(RealmsManager.class);
        if (mgr != null) {
            Enumeration en = mgr.getRealmNames();
            if (en.hasMoreElements()) {
