@@ -44,8 +44,6 @@ import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.external.statistics.*;
 import org.glassfish.external.statistics.impl.*;
 import org.glassfish.gmbal.*;
-import com.sun.enterprise.admin.monitor.stats.MutableTimeStatistic;
-import com.sun.enterprise.admin.monitor.stats.MutableTimeStatisticImpl;
 
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 
@@ -81,7 +79,7 @@ public class EjbMethodStatsProvider {
                 "TotalNumSuccess", "count", 
                 "Provides the total number of successful invocations of the method.");
 
-    private MutableTimeStatisticImpl methodStat = null;
+    private TimeStatisticImpl methodStat = null;
 
     private static ThreadLocal  execThreadLocal = new ThreadLocal();
     private String mname = null;
@@ -91,16 +89,17 @@ public class EjbMethodStatsProvider {
         this.mname = mname;
 
         long now = System.currentTimeMillis();
-        methodStat = new MutableTimeStatisticImpl(
-                new com.sun.enterprise.admin.monitor.stats.TimeStatisticImpl(
-                0, 0, 0, 0,
-                "MethodStatistic", "", "", now, now));
+        methodStat = new TimeStatisticImpl(
+                0, 0, 0, 0, "MethodStatistic", "", 
+                "Provides the number of times an operation was called, the total time "
+                       + "that was spent during the invocation and so on", 
+                now, now);
     }
 
     @ManagedAttribute(id="methodstatistic")
     @Description("Number of times the operation is called; total time spent during invocation, and so on.")
     public TimeStatistic getMethodStatistic() {
-        return null; //methodStat.modifiableView();
+        return methodStat.getStatistic();
     }
 
     @ManagedAttribute(id="totalnumerrors")
