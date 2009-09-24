@@ -69,6 +69,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
+import org.glassfish.deployment.common.DeploymentContextImpl;
 
 /**
  * This service is responsible for loading all deployed applications...
@@ -113,6 +114,12 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
     // See https://glassfish.dev.java.net/issues/show_bug.cgi?id=7179
     @Inject(name="ResourceManager", optional = true)
     Startup resourceManager;
+
+    // ApplicationLoaderService needs to be initialized after 
+    // ManagedBeanManagerImpl. By injecting ManagedBeanManagerImpl, 
+    // we guarantee the initialization order.
+    @Inject(name="ManagedBeanManagerImpl", optional=true)
+    Startup managedBeanManagerImpl;
 
     /**
      * Retuns the lifecyle of the service.
@@ -183,7 +190,6 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     parameters.origin = DeployCommandParameters.Origin.deploy;
 
                     ActionReport report = new HTMLActionReporter();
-                    ExtendedDeploymentContext depContext = deployment.getContext(logger, sourceArchive, parameters, report);
 
                     if (!sourceFile.isDirectory()) {
 
@@ -207,15 +213,15 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                         if (tmpDir.mkdirs()) {
                             ArchiveHandler handler = deployment.getArchiveHandler(sourceArchive);
                             final String appName = handler.getDefaultApplicationName(sourceArchive);
-                            handler.expand(sourceArchive, archiveFactory.get().createArchive(tmpDir), depContext);
+                            DeploymentContextImpl dummyContext = new DeploymentContextImpl(report, logger, sourceArchive, parameters, env);
+                            handler.expand(sourceArchive, archiveFactory.get().createArchive(tmpDir), dummyContext);
                             sourceArchive = 
                                 archiveFactory.get().openArchive(tmpDir);
-                            depContext.setSource(sourceArchive);
-                            depContext.setArchiveHandler(handler);
                             logger.info("Source is not a directory, using temporary location " + tmpDir.getAbsolutePath());
-                            logger.warning("Using " + appName + " as context root for application");
+                            parameters.name = appName;
                         }
                     }
+                    ExtendedDeploymentContext depContext = deployment.getContext(logger, sourceArchive, parameters, report);
                     ApplicationInfo appInfo = deployment.deploy(depContext);
                     if (appInfo==null) {
 

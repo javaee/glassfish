@@ -80,7 +80,7 @@ import com.sun.enterprise.container.common.spi.*;
 
 /**
  */
-@Service
+@Service(name="ManagedBeanManagerImpl")
 public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, PostConstruct, EventListener {
 
      private static Logger _logger = LogDomains.getLogger(ManagedBeanManagerImpl.class,
