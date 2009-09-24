@@ -292,7 +292,12 @@ abstract class BaseContainerCallbackHandler
             return;
         }
         String username = pwdCallback.getUsername();
-        String password = new String(pwdCallback.getPassword());
+        String password = null;
+        char[] passwd = pwdCallback.getPassword();
+        if(passwd != null){
+            password = new String(passwd);
+        }
+        
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "JMAC: In PasswordValidationCallback Processor");
         }
