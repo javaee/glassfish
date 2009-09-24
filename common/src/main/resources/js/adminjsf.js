@@ -1989,6 +1989,7 @@ admingui.ajax = {
         if (typeof(oldFunc) == 'function') {
         //    oldFunc();
         }
+	// FIXME: These 2 functions only need to be replaced after a FPR...
         webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
         webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
         admingui.ajax.processElement(contentNode);
@@ -2030,9 +2031,9 @@ admingui.ajax = {
         return uploading;
     },
 
-    processElement : function (node, alterTarget) {
+    processElement : function (node) {
         if (node instanceof HTMLAnchorElement) {
-            if (!admingui.ajax._isTreeNodeControl(node) && (node.target == '')) { //  && (typeof node.onclick != 'function')) {
+            if (!admingui.ajax._isTreeNodeControl(node) && (node.target == '')) { //  && (typeof node.onclick != 'function'))
                 var shouldReplace = true;
                 if ((typeof node.onclick == 'function') && (node.id.indexOf("treeForm:tree") == -1)) {
                     shouldReplace = false;
@@ -2065,7 +2066,7 @@ admingui.ajax = {
         }
 
         for (var i = 0; i < node.childNodes.length; i++) {
-            admingui.ajax.processElement(node.childNodes[i], alterTarget);
+            admingui.ajax.processElement(node.childNodes[i]);
         }
     },
 
@@ -2197,7 +2198,7 @@ admingui.ajax = {
         YAHOO.util.Dom.setStyle(iframe, 'width', layoutUnitWidth);
         YAHOO.util.Dom.setStyle(layoutUnit.parentNode, 'height', iframeHeight + 'px');
         
-        admingui.ajax.processElement(iframeBody, false);
+        admingui.ajax.processElement(iframeBody);
     }
 }
 
