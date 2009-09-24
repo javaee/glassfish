@@ -12,6 +12,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
+import javax.enterprise.context.ApplicationScoped;
 
 @Named
 @SessionScoped
@@ -23,7 +24,10 @@ public class Game implements Serializable
    
    private int guess;
    private int smallest;
-   
+
+   @Inject 
+   private StatefulBean sb;
+
    @MaxNumber @Inject
    private int maxNumber;
    
@@ -68,6 +72,9 @@ public class Game implements Serializable
    
    public String check() throws InterruptedException
    {
+       System.out.println("In Game::check");
+       sb.hello();
+
       if (guess>number)
       {
          biggest = guess - 1;
@@ -87,6 +94,10 @@ public class Game implements Serializable
    @PostConstruct
    public void reset()
    {
+       System.out.println("In Game::reset()");
+       // @@@ Uncomment to force classloading problem
+       // sb.hello();
+
       this.smallest = 0;
       this.guess = 0;
       this.remainingGuesses = 10;
