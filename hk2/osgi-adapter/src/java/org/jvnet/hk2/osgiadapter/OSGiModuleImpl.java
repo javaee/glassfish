@@ -101,8 +101,14 @@ public final class OSGiModuleImpl implements Module {
         // the underlying bundle's state to HK2 state. This avoids us
         // from having to register a listener with OSGi to be updated with
         // bundle state transitions.
+        return mapBundleStateToModuleState(bundle);
+    }
+
+    /* package */ static ModuleState mapBundleStateToModuleState(Bundle bundle)
+    {
         ModuleState state;
-        switch (bundle.getState()) {
+        switch (bundle.getState())
+        {
             case Bundle.INSTALLED:
             case Bundle.UNINSTALLED:
                 state = ModuleState.NEW;
