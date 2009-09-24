@@ -36,8 +36,8 @@ public class HelloStateless implements HelloRemote {
     public String hello() {
 	System.out.println("In HelloStateless::hello()");
 
-	String appName = (String) sessionCtx.lookup("java:comp/AppName");
-	String moduleName = (String) sessionCtx.lookup("java:comp/ModuleName");
+	String appName = (String) sessionCtx.lookup("java:app/AppName");
+	String moduleName = (String) sessionCtx.lookup("java:module/ModuleName");
 	System.out.println("AppName = " + appName);
 	System.out.println("ModuleName = " + moduleName);
 

@@ -84,10 +84,10 @@ public class HelloServlet extends HttpServlet {
 		ic.lookup("java:comp/env/foo2ref");
 
 	    System.out.println("My AppName = " + 
-			       ic.lookup("java:comp/AppName"));
+			       ic.lookup("java:app/AppName"));
 
 	    System.out.println("My ModuleName = " + 
-			       ic.lookup("java:comp/ModuleName"));
+			       ic.lookup("java:module/ModuleName"));
 
 	} catch(Exception e) {
 	    e.printStackTrace();

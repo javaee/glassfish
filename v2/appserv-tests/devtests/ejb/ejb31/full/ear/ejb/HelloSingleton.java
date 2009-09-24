@@ -49,8 +49,8 @@ public class HelloSingleton implements Hello {
 	    throw new RuntimeException("Invalid value " + myString + " for myString");
 	}
 
-	appName = (String) sessionCtx.lookup("java:comp/AppName");
-	moduleName = (String) sessionCtx.lookup("java:comp/ModuleName");
+	appName = (String) sessionCtx.lookup("java:app/AppName");
+	moduleName = (String) sessionCtx.lookup("java:module/ModuleName");
 
 	ORB orb1 = (ORB) sessionCtx.lookup("java:module/MORB1");
 	ORB orb2 = (ORB) sessionCtx.lookup("java:module/env/MORB2");

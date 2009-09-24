@@ -56,10 +56,10 @@ public class SingletonBean {
 	    }
 
 	    System.out.println("My AppName = " + 
-			       ctx.lookup("java:comp/AppName"));
+			       ctx.lookup("java:app/AppName"));
 
 	    System.out.println("My ModuleName = " + 
-			       ctx.lookup("java:comp/ModuleName"));
+			       ctx.lookup("java:module/ModuleName"));
 
 			       
 

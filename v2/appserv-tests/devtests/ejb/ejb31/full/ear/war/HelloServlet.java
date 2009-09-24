@@ -81,8 +81,8 @@ public class HelloServlet extends HttpServlet {
 	    
 	    InitialContext ic = new InitialContext();
 
-	    String appName = (String) ic.lookup("java:comp/AppName");
-	    String moduleName = (String) ic.lookup("java:comp/ModuleName");
+	    String appName = (String) ic.lookup("java:app/AppName");
+	    String moduleName = (String) ic.lookup("java:module/ModuleName");
 
 	    // lookup via intermediate context 
 	    Context appCtx = (Context) ic.lookup("java:app");
@@ -120,10 +120,10 @@ public class HelloServlet extends HttpServlet {
 	    stateless1 = (HelloRemote) ic.lookup("java:app/env/AS2");
 
 	    System.out.println("My AppName = " + 
-			       ic.lookup("java:comp/AppName"));
+			       ic.lookup("java:app/AppName"));
 
 	    System.out.println("My ModuleName = " + 
-			       ic.lookup("java:comp/ModuleName"));
+			       ic.lookup("java:module/ModuleName"));
 
 
 

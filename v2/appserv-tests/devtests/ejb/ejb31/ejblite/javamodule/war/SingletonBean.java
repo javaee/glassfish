@@ -77,10 +77,10 @@ public class SingletonBean implements java.util.Observer {
 	    slsb5 = (StatelessBean) ic.lookup("java:app/env/EL2");
 
 	    System.out.println("My AppName = " + 
-			       ic.lookup("java:comp/AppName"));
+			       ic.lookup("java:app/AppName"));
 
 	    System.out.println("My ModuleName = " + 
-			       ic.lookup("java:comp/ModuleName"));
+			       ic.lookup("java:module/ModuleName"));
 
 	} catch(NamingException ne) {
 	    throw new EJBException(ne);
