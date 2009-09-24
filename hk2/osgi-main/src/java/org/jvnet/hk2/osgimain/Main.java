@@ -41,6 +41,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.BundleException;
 import org.osgi.service.packageadmin.PackageAdmin;
 
 import java.io.File;
@@ -117,7 +118,16 @@ public class Main implements BundleActivator
             }
             final Bundle bundle = context.getBundle(id);
             // check is necessary as bundle could have been uninstalled
-            if (bundle != null) bundle.start(Bundle.START_TRANSIENT);
+            if (bundle != null) {
+                try
+                {
+                    bundle.start(Bundle.START_TRANSIENT);
+                }
+                catch (BundleException e)
+                {
+                    logger.logp(Level.WARNING, "Main", "start", "Exception while starting bundle " + bundle, e);
+                }
+            }
         }
     }
 
