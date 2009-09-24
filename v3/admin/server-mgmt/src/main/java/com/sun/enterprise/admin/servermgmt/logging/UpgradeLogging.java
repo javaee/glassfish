@@ -111,7 +111,7 @@ public class UpgradeLogging implements ConfigurationUpgrade, PostConstruct {
             String file=logService.getFile();
             String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
             if (file.contains(instanceRoot)){
-                String f = file.replace(instanceRoot ,"{com.sun.aas.instanceRoot}");
+                String f = file.replace(instanceRoot ,"${com.sun.aas.instanceRoot}");
                 file = f;
             }
             logLevels.put("file", file);

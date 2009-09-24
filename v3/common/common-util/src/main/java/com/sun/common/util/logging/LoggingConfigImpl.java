@@ -175,7 +175,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 		        key = propertyName;
             }
 			String property = (String) props.setProperty(key, propertyValue);
-            if (propertyName.equals(LoggingXMLNames.webcontainer)) {
+            if (propertyName.contains("javax.enterprise.system.container.web")) {
                 setWebLoggers(propertyValue);
             }
 	
@@ -245,7 +245,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 				if(LoggingXMLNames.xmltoPropsMap.get(key) != null) {
 					key = LoggingXMLNames.xmltoPropsMap.get(key);
 				}
-                // convert the server log filename if needed.
+/*
                 if (key.equals("com.sun.enterprise.server.logging.GFFileHandler.file")) {
                     String s = props.getProperty(key);
                     if (s.contains("{com.sun.aas.instanceRoot}")){
@@ -256,6 +256,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
                         break;
                     }
                 }
+ */
                 //System.out.println("Debug "+key+ " " + props.getProperty(key));
         	    m.put(key, props.getProperty(key));
                 
