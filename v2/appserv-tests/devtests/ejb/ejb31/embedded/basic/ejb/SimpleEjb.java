@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.Date;
 
 import javax.ejb.Stateless;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.DenyAll;
 
 import javax.persistence.PersistenceContext;
 import javax.persistence.EntityManager;
@@ -19,12 +17,10 @@ public class SimpleEjb {
 
     @PersistenceContext(unitName="test") EntityManager em;
 
-    @PermitAll
     public String saySomething() {
         return "boo";
     }
 
-    @PermitAll
     public String testJPA() {
         String result = null;
         Query q = em.createNamedQuery("SimpleEntity.findAll");
