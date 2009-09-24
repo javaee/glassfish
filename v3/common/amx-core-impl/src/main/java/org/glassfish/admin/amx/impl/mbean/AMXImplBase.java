@@ -1091,13 +1091,6 @@ public class AMXImplBase extends MBeanImplBase
         return name == null ? AMX.NO_NAME : name;
 	}
 	
-		public String
-	getType()
-	{
-		return( Util.getTypeProp( getObjectName() ) );
-	}
-	
-	
 	/**
 		O the ObjectName by adding to it:
 		<ul>
