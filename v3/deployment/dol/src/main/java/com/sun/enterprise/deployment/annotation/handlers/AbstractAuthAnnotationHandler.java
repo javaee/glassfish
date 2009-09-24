@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -546,7 +546,6 @@ abstract class AbstractAuthAnnotationHandler extends AbstractCommonAttributeHand
     private Set<String> getNonOverridedUrlPatterns(WebComponentDescriptor webCompDesc) {
 
         Set<String> nonOverridedUrlPatterns = new HashSet<String>(webCompDesc.getUrlPatternsSet());
-        Map<String, Boolean> url2MatchMap = new HashMap<String, Boolean>();
 
         WebBundleDescriptor webBundleDesc = webCompDesc.getWebBundleDescriptor();
         Set<String> urlPatterns = webCompDesc.getUrlPatternsSet();
