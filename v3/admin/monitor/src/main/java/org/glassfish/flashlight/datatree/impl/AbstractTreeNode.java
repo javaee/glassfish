@@ -36,8 +36,7 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
 
     protected boolean enabled = false;
     private static String NAME_SEPARATOR = ".";
-    private static String REGEX =
-            NAME_SEPARATOR.equals(".") ? "\\." : NAME_SEPARATOR;
+    private static String REGEX = "(?<!\\\\)\\.";
     private TreeNode parent = null;
     // Special character Regex to be converted to .* for v2 compatibility
     private String STAR = "*";
