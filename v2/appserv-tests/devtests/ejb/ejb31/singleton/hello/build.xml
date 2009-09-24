@@ -46,7 +46,7 @@
     <target name="run_se" depends="init-common">
        <java  fork="on" 
               failonerror="true"
-              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/appserv-rt.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
            <arg line="${jndiroot}"/>
         </java>
