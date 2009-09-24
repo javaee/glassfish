@@ -105,7 +105,10 @@ public class ScheduleHandler extends AbstractAttributeHandler {
                 sd.setInfo(sch.info());
                 sd.setTimeoutMethod(new MethodDescriptor(annMethod));
 
-                ejbDesc.addScheduledTimerDescriptor(sd);
+                // .xml-defined timer method overrides @Schedule
+                if( !ejbDesc.hasScheduledTimerMethod(annMethod)) {
+                    ejbDesc.addScheduledTimerDescriptor(sd);
+                }
 
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("@@@ Found Schedule on " + annMethod);

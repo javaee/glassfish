@@ -219,7 +219,8 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
         if( ejbBundle != null ) {
 
-            deploymentImpl.getBeanDeploymentArchives().iterator().next().getServices().add(EjbServices.class, ejbServices);
+            // EJB Services is registered as a top-level service
+            deploymentImpl.getServices().add(EjbServices.class, ejbServices);
 
         }
 
@@ -227,13 +228,15 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
         ServletServices servletServices = new ServletServicesImpl(context);
         deploymentImpl.getServices().add(ServletServices.class, servletServices);
 
-        /**        TODO enable injection manager      when enabled, numberguess app stops working
+
+        // Register EE injection manager at the bean deployment archive level.
+        // We use the generic InjectionService service to handle all EE-style
+        // injection instead of the per-dependency-type InjectionPoint approach.
+        // TODO change this to register for each bean deployment archive
         InjectionManager injectionMgr = habitat.getByContract(InjectionManager.class);
         InjectionServices injectionServices = new InjectionServicesImpl(injectionMgr);
-        deploymentImpl.getServices().add(InjectionServices.class, injectionServices);
-         **/
-
-
+        deploymentImpl.getBeanDeploymentArchives().iterator().next().getServices().
+                add(InjectionServices.class, injectionServices);
 
 
         WebBundleDescriptor wDesc = context.getModuleMetaData(WebBundleDescriptor.class);

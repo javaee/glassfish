@@ -1824,6 +1824,11 @@ public abstract class BaseContainer
     }
 
     protected void postInvoke(EjbInvocation inv, boolean doTxProcessing) {
+        if (containerState != CONTAINER_STARTED) {
+                throw new EJBException("Attempt to invoke when container is in "
+                                       + containerStateToString(containerState));
+        }
+
         inv.setDoTxProcessingInPostInvoke(doTxProcessing);
         if (inv.mustInvokeAsynchronously()) {
             EjbAsyncInvocationManager asyncManager =

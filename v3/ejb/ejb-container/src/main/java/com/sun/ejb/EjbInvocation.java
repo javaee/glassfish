@@ -300,7 +300,7 @@ public class EjbInvocation
     }
 
     public boolean mustInvokeAsynchronously() {
-        return invocationInfo.isAsynchronous() && yetToSubmitStatus;
+        return (invocationInfo != null) && invocationInfo.isAsynchronous() && yetToSubmitStatus;
     }
 
     public void clearYetToSubmitStatus() {

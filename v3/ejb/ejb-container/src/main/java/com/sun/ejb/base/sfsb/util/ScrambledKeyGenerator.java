@@ -36,7 +36,8 @@
 
 package com.sun.ejb.base.sfsb.util;
 
-import java.security.SecureRandom;
+
+import org.glassfish.internal.api.SharedSecureRandom;
 
 import com.sun.ejb.spi.sfsb.util.SFSBUUIDUtil;
 import com.sun.enterprise.util.Utility;
@@ -54,8 +55,7 @@ import com.sun.enterprise.util.Utility;
 public class ScrambledKeyGenerator
     extends SimpleKeyGenerator
 {
-   
-    private SecureRandom random = new SecureRandom();
+
     private int cachedTime = (int) System.currentTimeMillis();
 
     public ScrambledKeyGenerator() {
@@ -127,7 +127,7 @@ public class ScrambledKeyGenerator
 	return new SimpleSessionKey(
 	    prefix + cachedTime,
 	    //suffix + System.identityHashCode(new Object()), id
-	    suffix + random.nextInt(), id
+	    suffix + SharedSecureRandom.get().nextInt(), id
 	);
     }
     

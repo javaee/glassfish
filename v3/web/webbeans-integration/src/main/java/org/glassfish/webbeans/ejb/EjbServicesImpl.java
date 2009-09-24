@@ -46,6 +46,7 @@ import com.sun.enterprise.deployment.*;
 
 
 import java.util.Set;
+import java.util.HashSet;
 
 
 import org.jvnet.hk2.component.Habitat;
@@ -79,9 +80,10 @@ public class EjbServicesImpl implements EjbServices
 
         SessionObjectReference sessionObj = null;
 
-        // TODO API needs to provide client type information
-        // For now, just grab the first known client view and use that to get the
-        // portable global jndi name
+        // All we need to do is create a reference based on one of the beans'
+        // client views, so just choose one and get its corresponding portable
+        // JNDI name.
+
         String globalJndiName = getDefaultGlobalJndiName(ejbDescriptor);
         if( globalJndiName != null ) {
             try {

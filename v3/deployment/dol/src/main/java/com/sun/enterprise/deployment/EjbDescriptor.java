@@ -368,6 +368,21 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         timerSchedules.add(scheduleDescriptor);
     }
 
+    public boolean hasScheduledTimerMethod(Method timerMethod) {
+        boolean match = false;
+
+        for(ScheduledTimerDescriptor next : timerSchedules) {
+            if( next.getTimeoutMethod().getName().equals(timerMethod.getName()) &&
+		( next.getTimeoutMethod().getParameterClassNames().length ==
+		  timerMethod.getParameterTypes().length) ) {
+                match = true;
+                break;
+            }
+        }
+
+        return match;
+    }
+
     public List<ScheduledTimerDescriptor> getScheduledTimerDescriptors() {
         return timerSchedules;
     }

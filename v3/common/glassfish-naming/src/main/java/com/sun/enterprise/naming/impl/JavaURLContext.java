@@ -175,7 +175,7 @@ public final class JavaURLContext implements Context, Cloneable {
                 // that order.
 
                 Context ic = namingManager.getInitialContext();
-                String appName = (String) namingManager.getInitialContext().lookup("java:comp/AppName");
+                String appName = (String) namingManager.getInitialContext().lookup("java:app/AppName");
 
                 Object obj = null;
 

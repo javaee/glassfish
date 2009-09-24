@@ -46,18 +46,23 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import javax.ejb.NoSuchEJBException;
 import javax.ejb.EJBException;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.logging.LogDomains;
 
 /**
  *
  */
 @Service
 public class EjbContainerServicesImpl implements EjbContainerServices {
+
+     private Logger _logger = LogDomains.getLogger(EjbContainerUtilImpl.class, LogDomains.EJB_LOGGER);
 
 
     public <S> S  getBusinessObject(Object ejbRef, java.lang.Class<S> businessInterface) {
@@ -124,8 +129,10 @@ public class EjbContainerServicesImpl implements EjbContainerServices {
 
         try {
             localObjectImpl.remove();
-        } catch(Exception e) {
-            throw new NoSuchEJBException(e.getMessage(), e);
+        } catch(EJBException e) {
+            _logger.log(Level.FINE, "EJBException during remove. ", e);    
+        } catch(javax.ejb.RemoveException re) {
+            throw new NoSuchEJBException(re.getMessage(), re);
         }
 
     }

@@ -72,10 +72,10 @@ public class JavaModuleNamingProxy
             = "java:app/";
 
     private  static final String JAVA_APP_NAME
-            = "java:comp/AppName";
+            = "java:app/AppName";
 
     private  static final String JAVA_MODULE_NAME
-            = "java:comp/ModuleName";
+            = "java:module/ModuleName";
 
     public Object handle(String name) throws NamingException {
 
@@ -132,7 +132,7 @@ public class JavaModuleNamingProxy
         }
 
         if( appName == null ) {
-            throw new NamingException("Could not resolve java:comp/AppName");
+            throw new NamingException("Could not resolve " + JAVA_APP_NAME);
         }
 
         return appName;
@@ -163,7 +163,7 @@ public class JavaModuleNamingProxy
         }
 
         if( moduleName == null ) {
-            throw new NamingException("Could not resolve java:comp/ModuleName");
+            throw new NamingException("Could not resolve " + JAVA_MODULE_NAME);
         }
 
         return moduleName;

@@ -107,7 +107,7 @@ public class EjbNamingReferenceManagerImpl
             // out.
             String remoteJndiName = ejbRefDesc.getJndiName();
 
-            String appName = (String) context.lookup("java:comp/AppName");
+            String appName = (String) context.lookup("java:app/AppName");
             String newPrefix = "java:global/" + appName + "/";
 
             int javaAppLength = "java:app/".length();
