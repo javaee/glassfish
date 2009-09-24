@@ -66,9 +66,9 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
+import com.sun.enterprise.security.SecurityRoleMapperFactoryGen;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
-import org.glassfish.internal.api.Globals;
 
 /** 
  * Implementation of Jacc PolicyConfiguration Interface
@@ -93,7 +93,7 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
     // permissions mapped to roles.
     private HashMap rolePermissionsTable = null;
 
-    private /*TODO: static */ SecurityRoleMapperFactory factory = Globals.get(SecurityRoleMapperFactory.class);
+    //private /*TODO: static */ SecurityRoleMapperFactory factory = SecurityRoleMapperFactoryGen.getSecurityRoleMapperFactory();
 
     private static String policySuffix = ".policy";
  
@@ -1136,6 +1136,7 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 	// otherwise proceed to write policy file
 
 	Map roleToSubjectMap = null;
+        SecurityRoleMapperFactory factory=SecurityRoleMapperFactoryGen.getSecurityRoleMapperFactory();
 	if (rolePermissionsTable != null) {
 	    // Make sure a role to subject map has been defined for the Policy Context
 	    if (factory != null) {
