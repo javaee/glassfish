@@ -4,6 +4,7 @@
  */
 package org.glassfish.flashlight.datatree.impl;
 
+import java.util.*;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.TreeElement;
 import org.glassfish.flashlight.annotations.Monitorable;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.lang.reflect.*;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -257,5 +259,33 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
     
     public int compareTo(Object o) {
         return this.getName().compareTo(((TreeNode)o).getName());
+    }
+
+    public TreeNode getPossibleParentNode(String pattern) {
+        // simplify by bailing out early if preconditions are not met...
+        if(pattern == null || pattern.length() <= 0 || pattern.indexOf('*') >= 0)
+            return null;
+        
+        TreeNode node = null;
+        int     longest = 0;
+        
+        for(TreeNode n : traverse(true)) {
+            String name = n.getCompletePathName();
+
+            if(name == null)
+                continue;   // defensive pgming
+
+            if(pattern.startsWith(name)) {
+                int thisLength = name.length();
+
+                // keep the longest match ONLY!
+                if(node == null || thisLength > longest) {
+                    node = n;
+                    longest = thisLength;
+                }
+            }
+        }
+
+        return node;
     }
 }

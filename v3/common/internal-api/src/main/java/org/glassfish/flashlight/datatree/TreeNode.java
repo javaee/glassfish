@@ -84,4 +84,16 @@ public interface TreeNode extends TreeElement {
     public List<TreeNode> getNodes (String pattern);
 
     public TreeNode getChild(String childName);
+
+    /**
+     * Get the "parent" matching the given pattern.
+     * E.g "server.jvm.memory.maxheapsize-count" is the parent of
+     * "server.jvm.memory.maxheapsize-count-count"
+     * Note that in V3 the latter will NOT be found with getNodes()
+     *
+     * @param pattern Find a node that matches the pattern. By default pattern should follow the conventions
+     * outlined by the java.util.regex.Pattern class.
+     * @return The parent node if found otherwise null.
+     */
+    TreeNode getPossibleParentNode(String pattern);
 }

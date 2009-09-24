@@ -37,6 +37,7 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
+import java.util.*;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
@@ -174,12 +175,28 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
             //No monitoring data, so nothing to list
             report.setActionExitCode(ExitCode.SUCCESS);
             return;
-        }        
+        }
+
         TreeMap map = new TreeMap();
         List<org.glassfish.flashlight.datatree.TreeNode> ltn = tn.getNodes(pattern);
+        boolean singleStat = false;
+
+        if(ltn == null || ltn.isEmpty()) {
+            org.glassfish.flashlight.datatree.TreeNode parent = tn.getPossibleParentNode(pattern);
+
+            if(parent != null) {
+                ltn = new ArrayList<org.glassfish.flashlight.datatree.TreeNode>(1);
+                ltn.add(parent);
+                singleStat = true;
+            }
+        }
+
+        if(!singleStat)
+            pattern = null; // signal to method call below
+
         for (org.glassfish.flashlight.datatree.TreeNode tn1 : sortTreeNodesByCompletePathName(ltn)) {
             if (!tn1.hasChildNodes()) {
-                insertNameValuePairs(map, tn1);
+                insertNameValuePairs(map, tn1, pattern);
             }
         }
         Iterator it = map.keySet().iterator();
@@ -192,7 +209,8 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         report.setActionExitCode(ExitCode.SUCCESS);
     }
 
-    private void insertNameValuePairs(TreeMap map, org.glassfish.flashlight.datatree.TreeNode tn1){
+    private void insertNameValuePairs(
+            TreeMap map, org.glassfish.flashlight.datatree.TreeNode tn1, String exactMatch){
         String name = tn1.getCompletePathName();
         Object value = tn1.getValue();
         if (value instanceof Stats) {
@@ -203,6 +221,19 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
             addStatisticInfo(value, name, map);
         } else {
             map.put(name, value);
+        }
+
+        // IT 8985 bnevins
+        // Hack to get single stats.  The code above above would take a lot of
+        // time to unwind.  For development speed we just remove unwanted items
+        // after the fact...
+
+        if(exactMatch != null) {
+            Object val = map.get(exactMatch);
+            map.clear();
+
+            if(val != null)
+                map.put(exactMatch, val);
         }
     }
 
