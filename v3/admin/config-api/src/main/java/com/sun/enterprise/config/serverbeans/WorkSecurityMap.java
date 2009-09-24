@@ -40,31 +40,15 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.component.Injectable;
+import org.glassfish.api.admin.config.Named;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
 @Configured
-public interface WorkSecurityMap  extends ConfigBeanProxy, Injectable, Resource {
-
-    /**
-     * Gets the value of the name property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(key=true)
-    @NotNull
-    public String getName();
-
-    /**
-     * Sets the value of the name property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setName(String value) throws PropertyVetoException;
+public interface WorkSecurityMap  extends Named, ConfigBeanProxy, Injectable, Resource {
 
     /**
      * Gets the value of the objectType property.
@@ -73,6 +57,7 @@ public interface WorkSecurityMap  extends ConfigBeanProxy, Injectable, Resource 
      *         {@link String }
      */
     @Attribute (defaultValue="user")
+    @Pattern(regexp="(system-all|system-admin|system-instance|user)")
     String getObjectType();
 
     /**
@@ -89,7 +74,7 @@ public interface WorkSecurityMap  extends ConfigBeanProxy, Injectable, Resource 
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getEnabled();
 
     /**
@@ -126,6 +111,7 @@ public interface WorkSecurityMap  extends ConfigBeanProxy, Injectable, Resource 
      */
     @Attribute
     @NotNull
+    @Pattern(regexp="[^':,][^':,]*")
     public String getResourceAdapterName();
 
     /**
