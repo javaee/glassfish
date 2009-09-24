@@ -85,7 +85,8 @@
             </goals>
             <configuration>
               <tasks>
-                <ant dir="." antfile="build.xml" target="create.distribution"/>
+                <property name="finaljar" value="${project.build.directory}/glassfish-embedded-all.jar"/>
+                <ant dir="." antfile="../build.xml" target="create.distribution"/>
               </tasks>
             </configuration>
           </execution>
