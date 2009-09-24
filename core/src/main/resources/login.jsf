@@ -50,7 +50,7 @@
 </f:verbatim>
     <sun:themeLinks/>
     <sun:link url="/resource/css/css_ns6up.css" />
-    <sun:script url="/resource/common/js/adminjsf.js1" />
+    <sun:script url="/resource/common/js/adminjsf.js" />
 <f:verbatim>
 </head>
 
