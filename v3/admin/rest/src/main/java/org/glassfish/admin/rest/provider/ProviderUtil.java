@@ -276,7 +276,7 @@ public class ProviderUtil extends Util {
 
     static protected String getHtmlForComponent(String component, String heading,
             String result) {
-        if ((component != null) && (component != "")) {
+        if ((component != null) && (component.length() > 0)) {
             result = result + "<h2>" + heading + "</h2>";
             result = result + component;
             result = result + "<hr class=\"separator\"/>";
