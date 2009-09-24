@@ -60,7 +60,7 @@ own identifying information: Portions Copyright [yyyy]
 
         <echo message="rejarring and processing metadata..."/>
         <taskdef name="rejar" classname="org.jvnet.maven.plugin.antrun.RejarTask" />
-         <rejar destfile="${finaljar}">
+         <rejar destfile="${finaljar}" duplicate="preserve">
             <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
         </rejar>
         
