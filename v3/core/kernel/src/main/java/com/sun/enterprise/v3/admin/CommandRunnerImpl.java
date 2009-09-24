@@ -719,7 +719,8 @@ public class CommandRunnerImpl implements CommandRunner {
         try {
             command = habitat.getComponent(AdminCommand.class, commandName);
         } catch(ComponentException e) {
-           e.printStackTrace();
+            e.printStackTrace();
+            report.setFailureCause(e);
         }
         if (command==null) {
             String msg;
@@ -727,10 +728,14 @@ public class CommandRunnerImpl implements CommandRunner {
             if(!ok(commandName))
                 msg = adminStrings.getLocalString("adapter.command.nocommand", "No command was specified.");
             else {
-                msg = adminStrings.getLocalString("adapter.command.notfound", "Command {0} not found", commandName);
+                //this means either a non-existent command or an ill-formed command
+                if (habitat.getInhabitant(AdminCommand.class, commandName) != null)  //somehow it's in habitat
+                    msg = adminStrings.getLocalString("adapter.command.notfound", "Command {0} not found", commandName);
+                else
+                    msg = adminStrings.getLocalString("adapter.command.notcreated",
+                            "Implementation for the command {0} exists in the system, but it has some errors, check server.log for details", commandName);
                     //set cause to CommandNotFoundException so that asadmin
                     //displays the closest matching commands
-                report.setFailureCause(new CommandNotFoundException(msg));
             }
             report.setMessage(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -956,7 +961,7 @@ public class CommandRunnerImpl implements CommandRunner {
      * Currently supported types are BOOLEAN, FILE, PROPERTIES, PASSWORD, and
      * STRING.  (All of which should be defined constants on some class.)
      *
-     * @param t the Java type
+     * @param p the ParamModel instance
      * @return	the string representation of the asadmin type
      */
     private static String typeOf(CommandModel.ParamModel p) {

@@ -231,6 +231,9 @@ public class AsadminMain {
             if (ce.getCause() instanceof InvalidCommandException) {
                 // find closest match with local or remote commands
                 CLILogger.getInstance().printError(ce.getMessage());
+                String cause = ce.getCause().getMessage();
+                if (ok(cause))
+                    CLILogger.getInstance().printError(cause);
                 try {
                     CLIUtil.displayClosestMatch(command,
                         CLIUtil.getAllCommands(habitat, po, env),

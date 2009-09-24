@@ -74,14 +74,22 @@ public class ListCommandsCommand implements AdminCommand {
         List<String> names = new ArrayList<String>();
         for (Inhabitant<?> command : habitat.getInhabitantsByContract(AdminCommand.class.getName())) {
             for (String name : Inhabitants.getNamesFor(command, AdminCommand.class.getName())) {
-
+                Object o;
+                try {
+                    o = habitat.getComponent(AdminCommand.class.getName(), name);
+                    if (o == null) //don't report such a command as a valid command!
+                        continue;
+                } catch(Exception e) {
+                    e.printStackTrace();
+                    //don't report such a command as a valid command!
+                    continue;
+                }
                 if (debugCommand(command)) { //it's a debug command, add only if debug is set
                     if (debugSet())
                         names.add(name);
                 } else { //always add non-debug commands     \
                     names.add(name);
                 }
-
             }
         }
         Collections.sort(names);

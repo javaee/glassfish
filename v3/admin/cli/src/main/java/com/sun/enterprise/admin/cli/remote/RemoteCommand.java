@@ -221,7 +221,7 @@ public class RemoteCommand extends CLICommand {
             }
             if (commandOpts == null)
                 throw new CommandException(strings.get("InvalidCommand", name),
-                        new InvalidCommandException());
+                        new InvalidCommandException(metadataErrors.toString()));
 
             // everyone gets a --help option until we have a help command
             // on the server
@@ -782,8 +782,9 @@ public class RemoteCommand extends CLICommand {
                      * metadata, but skip any other parts just in case.
                      */
                     if (!isReportProcessed) {
+                        metadataErrors = new StringBuilder();
                         commandOpts =
-                                parseMetadata(partIt.next().getInputStream());
+                                parseMetadata(partIt.next().getInputStream(), metadataErrors);
                         logger.printDebugMessage(
                             "fetchCommandMetadata: got command opts: " +
                             commandOpts);
@@ -802,7 +803,7 @@ public class RemoteCommand extends CLICommand {
      * @param in the input stream
      * @return the set of ValidOptions
      */
-    private Set<ValidOption> parseMetadata(InputStream in) {
+    private Set<ValidOption> parseMetadata(InputStream in, StringBuilder errors) {
         if (logger.isLoggable(Level.FINER)) { // XXX - assume "debug" == "FINER"
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             try {
@@ -823,8 +824,13 @@ public class RemoteCommand extends CLICommand {
             Document doc = d.parse(in);
             NodeList cmd = doc.getElementsByTagName("command");
             Node cmdnode = cmd.item(0);
-            if (cmdnode == null)
-                return null;    // no command info, must be invalid command
+            if (cmdnode == null) {
+                Node report = doc.getElementsByTagName("action-report").item(0);
+                String cause = getAttr(report.getAttributes(), "failure-cause");
+                if (cause != null)
+                    errors.append(cause);
+                return null;    // no command info, must be invalid command or something wrong with command implementation
+            }
             NamedNodeMap cmdattrs = cmdnode.getAttributes();
             usage = getAttr(cmdattrs, "usage");
             String dashOk = getAttr(cmdattrs, "unknown-options-are-operands");

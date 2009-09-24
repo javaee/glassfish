@@ -118,6 +118,7 @@ public abstract class CLICommand implements PostConstruct {
      * XXX - should be collected together into a CommandModel object
      */
     protected Set<ValidOption> commandOpts;
+    protected StringBuilder metadataErrors;
     protected String operandName = "";
     protected String operandType;
     protected int operandMin;
