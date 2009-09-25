@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -317,26 +317,8 @@ public class ASenvPropertyReader {
     private void setEnvToPropMap() {
         //The envToPropMap keeps the mapping between environment variable
         //name and system property name.
-        envToPropMap.put("AS_ANT",
-                SystemPropertyConstants.ANT_ROOT_PROPERTY);
-        envToPropMap.put("AS_ANT_LIB",
-                SystemPropertyConstants.ANT_LIB_PROPERTY);
         envToPropMap.put("AS_DERBY_INSTALL",
                 SystemPropertyConstants.DERBY_ROOT_PROPERTY);
-        envToPropMap.put("AS_WEBCONSOLE_LIB",
-                SystemPropertyConstants.WEBCONSOLE_LIB_PROPERTY);
-        envToPropMap.put("AS_WEBCONSOLE_APP",
-                SystemPropertyConstants.WEBCONSOLE_APP_PROPERTY);
-        envToPropMap.put("AS_JATO_LIB",
-                SystemPropertyConstants.JATO_ROOT_PROPERTY);
-        envToPropMap.put("AS_WEBSERVICES_LIB",
-                SystemPropertyConstants.WEB_SERVICES_LIB_PROPERTY);
-        envToPropMap.put("AS_PERL",
-                SystemPropertyConstants.PERL_ROOT_PROPERTY);
-        envToPropMap.put("AS_NSS",
-                SystemPropertyConstants.NSS_ROOT_PROPERTY);
-        envToPropMap.put("AS_NSS_BIN",
-                SystemPropertyConstants.NSS_BIN_PROPERTY);
         envToPropMap.put("AS_IMQ_LIB",
                 SystemPropertyConstants.IMQ_LIB_PROPERTY);
         envToPropMap.put("AS_IMQ_BIN",
@@ -347,25 +329,8 @@ public class ASenvPropertyReader {
                 SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
         envToPropMap.put("AS_JAVA",
                 SystemPropertyConstants.JAVA_ROOT_PROPERTY);
-        envToPropMap.put("AS_ACC_CONFIG", null);
-        envToPropMap.put("AS_JHELP",
-                SystemPropertyConstants.JHELP_ROOT_PROPERTY);
-        envToPropMap.put("AS_ICU_LIB",
-                SystemPropertyConstants.ICU_LIB_PROPERTY);
-        envToPropMap.put("AS_LOCALE",
-                SystemPropertyConstants.DEFAULT_LOCALE_PROPERTY);
         envToPropMap.put("AS_DEF_DOMAINS_PATH",
                 SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
-        envToPropMap.put("AS_HADB",
-                SystemPropertyConstants.HADB_ROOT_PROPERTY);
-        envToPropMap.put("AS_NATIVE_LAUNCHER",
-                SystemPropertyConstants.NATIVE_LAUNCHER);
-        envToPropMap.put("AS_NATIVE_LAUNCHER_LIB_PREFIX",
-                SystemPropertyConstants.NATIVE_LAUNCHER_LIB_PREFIX);
-        envToPropMap.put("AS_JDMK_HOME",
-                SystemPropertyConstants.JDMK_HOME_PROPERTY);
-        envToPropMap.put("AS_MFWK_HOME",
-                SystemPropertyConstants.MFWK_HOME_PROPERTY);
     }
     private Map<String, String> envToPropMap = new HashMap<String, String>();
     private Map<String, String> props = new HashMap<String, String>();
