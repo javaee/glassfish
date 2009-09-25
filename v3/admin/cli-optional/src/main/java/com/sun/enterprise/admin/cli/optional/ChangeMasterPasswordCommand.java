@@ -35,14 +35,13 @@
  */
 package com.sun.enterprise.admin.cli.optional;
 
-import com.sun.enterprise.admin.cli.Environment;
 import com.sun.enterprise.admin.cli.LocalDomainCommand;
-import com.sun.enterprise.admin.cli.ProgramOptions;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
 import com.sun.enterprise.admin.cli.CommandException;
 import com.sun.enterprise.admin.cli.CommandValidationException;
 import com.sun.enterprise.admin.cli.ValidOption;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -58,7 +57,8 @@ import org.jvnet.hk2.component.*;
 @Scoped(PerLookup.class)
 public class ChangeMasterPasswordCommand extends LocalDomainCommand {
     private String savemp = "savemasterpassword";
-
+    private static final LocalStringsImpl strings =
+            new LocalStringsImpl(ChangeMasterPasswordCommand.class);
     @Override
     protected void prepare() throws CommandException, CommandValidationException {
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
@@ -80,26 +80,26 @@ public class ChangeMasterPasswordCommand extends LocalDomainCommand {
     @Override
     protected int executeCommand() throws CommandException, CommandValidationException {
         try {
-            //Todo --
-            // if (super.isRunning()) throw new CommandException("Stop the domain first");
+            if (super.isRunning(super.getAdminPort(super.getDomainXml())))
+                throw new CommandException(strings.get("domain.is.running", super.domainName, super.domainRootDir));
             DomainConfig domainConfig = new DomainConfig(super.domainName,
                 super.domainsDir.getAbsolutePath());
             PEDomainsManager manager = new PEDomainsManager();
-            String mp = super.checkMasterPasswordFile();
+            String mp = super.readFromMasterPasswordFile();
             if (mp == null) {
                 mp = passwords.get("AS_ADMIN_MASTERPASSWORD");
                 if (mp == null) {
-                    mp = super.readPassword("Enter Current Master Password> ");
+                    mp = super.readPassword(strings.get("current.mp"));
                 }
             }
             if (mp == null)
-                throw new CommandException("Not connected to console, giving up");
+                throw new CommandException(strings.get("no.console"));
             if (!super.verifyMasterPassword(mp))
-                throw new CommandException("Incorrect master password, giving up");
+                throw new CommandException(strings.get("incorrect.mp"));
             ValidOption nmpo = new ValidOption("New_Master_Password", "PASSWORD", ValidOption.REQUIRED, null);
             String nmp = super.getPassword(nmpo, null, true);
             if (nmp == null)
-                throw new CommandException("Not connected to console, giving up");
+                throw new CommandException(strings.get("no.console"));
             domainConfig.put(DomainConfig.K_MASTER_PASSWORD, mp);
             domainConfig.put(DomainConfig.K_NEW_MASTER_PASSWORD, nmp);
             domainConfig.put(DomainConfig.K_SAVE_MASTER_PASSWORD, saveIt());

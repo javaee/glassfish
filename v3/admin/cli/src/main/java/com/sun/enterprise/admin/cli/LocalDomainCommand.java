@@ -222,7 +222,7 @@ public abstract class LocalDomainCommand extends CLICommand {
      * @return String representing the password from the JCEKS store named
      *          master-password in domain folder
      */
-    protected String checkMasterPasswordFile() {
+    protected String readFromMasterPasswordFile() {
         File mpf = getMasterPasswordFile();
         if (mpf == null)
             return null;   // no master password  saved

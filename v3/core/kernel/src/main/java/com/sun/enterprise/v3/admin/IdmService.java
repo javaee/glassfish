@@ -94,11 +94,9 @@ public class IdmService implements Init, PostConstruct, IdentityManagement {
         if (!success) {
             masterPassword = "changeit"; //the default;
         }
-        success = verify();
-        if (!success)
-            logger.warning("THIS SHOULD BE FIXED, IN EMBEDDED CASE, THERE IS NO MASTER PASSWORD SET OR KEYSTORE DOES NOT EXIST ...");
-            //throw new RuntimeException("The master password is invalid and keystore/truststore could not be opened");
-        //logger.info("OK, finally using a master passsword: " + masterPassword + " REMOVE -- debug statement ....");
+        //success = verify();            //See 9592 for details. This saves some time
+        //if (!success)
+            //logger.warning("THIS SHOULD BE FIXED, IN EMBEDDED CASE, THERE IS NO MASTER PASSWORD SET OR KEYSTORE DOES NOT EXIST ...");
         setJSSEProperties();
     }
 
@@ -118,6 +116,7 @@ public class IdmService implements Init, PostConstruct, IdentityManagement {
     ///// All Private
     
     private boolean setFromMasterPasswordFile() {
+//        long t0 = System.currentTimeMillis();
         try {
             File mp = env.getMasterPasswordFile();
             if (!mp.isFile()) {
@@ -126,6 +125,8 @@ public class IdmService implements Init, PostConstruct, IdentityManagement {
             }
             PasswordAdapter p   = new PasswordAdapter(mp.getAbsolutePath(), FIXED_KEY.toCharArray());
             this.masterPassword = p.getPasswordForAlias(FIXED_KEY);
+//            long t1 = System.currentTimeMillis();
+//            System.out.println("time spent in setFromMasterPasswordFile(): " + (t1-t0) + " ms");
             return true;
         } catch (Exception ex) {
             logger.fine("Error in master-password processing: " + ex.getMessage());
@@ -185,10 +186,7 @@ public class IdmService implements Init, PostConstruct, IdentityManagement {
     }
 
     private boolean setFromStdin() {
-        // Control should come to this method rarely. It should happen only in the case of
-        // "java -jar glassfish.jar -read-stdin true" with a domain created with a non-default master password
-        // and no --savemasterpassword. Possibility of this is very low.
-        logger.info("Reading the master password from stdin> ");
+        logger.fine("Reading the master password from stdin> ");
         String s;
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -208,12 +206,15 @@ public class IdmService implements Init, PostConstruct, IdentityManagement {
     }
 
     private boolean verify() {
+//        long t0 = System.currentTimeMillis();
         //only tries to open the keystore
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(env.getJKS());
             KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
             ks.load(fis, masterPassword.toCharArray());
+//            long t1 = System.currentTimeMillis();
+//            System.out.println("time spent in verify(): " + (t1-t0) + " ms");
             return true;
         } catch (Exception e) {
             logger.warning(e.getMessage());

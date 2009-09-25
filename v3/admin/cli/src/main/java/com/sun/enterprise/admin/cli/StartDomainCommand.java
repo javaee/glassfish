@@ -37,16 +37,13 @@
 package com.sun.enterprise.admin.cli;
 
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import com.sun.enterprise.admin.cli.CLIConstants;
 import com.sun.enterprise.util.net.NetUtils;
 import static com.sun.enterprise.admin.cli.CLIConstants.*;
-import com.sun.enterprise.admin.cli.Environment;
 import com.sun.enterprise.admin.cli.LocalDomainCommand;
-import com.sun.enterprise.admin.cli.ProgramOptions;
 import com.sun.enterprise.admin.cli.remote.DASUtils;
 import com.sun.enterprise.admin.launcher.GFLauncher;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
@@ -180,7 +177,7 @@ public class StartDomainCommand extends LocalDomainCommand {
         }
     }
 
-    private void setMasterPassword(GFLauncherInfo info)
+    private void setMasterPassword1(GFLauncherInfo info)
                                 throws CommandException {
         // Sets the password into the launcher info.
         // Yes, setting master password into a string is not right ...
@@ -188,7 +185,7 @@ public class StartDomainCommand extends LocalDomainCommand {
         String mpn  = "AS_ADMIN_MASTERPASSWORD";
         String mpv  = passwords.get(mpn);
         if (mpv == null)
-            mpv = checkMasterPasswordFile();
+            mpv = readFromMasterPasswordFile();
         if (mpv == null)
             mpv = "changeit"; //the default
         boolean ok = verifyMasterPassword(mpv);
@@ -198,6 +195,29 @@ public class StartDomainCommand extends LocalDomainCommand {
             mpv = retry(3);
         }
         info.addSecurityToken(mpn, mpv);
+    }
+    private void setMasterPassword(GFLauncherInfo info) throws CommandException {
+        // Sets the password into the launcher info.
+        // Yes, setting master password into a string is not right ...
+        final int RETRIES = 3;
+        long t0 = System.currentTimeMillis();
+        String mpn  = "AS_ADMIN_MASTERPASSWORD";
+        String mpv  = passwords.get(mpn);
+        if (mpv == null) { //not specified in the password file
+            mpv = "changeit";  //optimization for the default case -- see 9592
+            if (!verifyMasterPassword(mpv)) {
+                mpv = readFromMasterPasswordFile();
+                if (!verifyMasterPassword(mpv)) {
+                    mpv = retry(RETRIES);
+                }
+            }
+        } else { //the passwordfile contains AS_ADMIN_MASTERPASSWORD, use it at once
+            if(!verifyMasterPassword(mpv))
+                mpv = retry(RETRIES);
+        }
+        info.addSecurityToken(mpn, mpv);
+        long t1 = System.currentTimeMillis();
+        logger.printMessage("Time spent in master password extraction: " + (t1-t0) + " msec");       //TODO
     }
 
     private String retry(int times) throws CommandException {
