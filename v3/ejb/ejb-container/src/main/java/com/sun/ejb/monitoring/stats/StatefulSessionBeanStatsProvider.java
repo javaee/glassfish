@@ -38,8 +38,6 @@ package com.sun.ejb.monitoring.stats;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.ejb.containers.EntityContainer;
-
 import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.external.statistics.*;
@@ -47,46 +45,35 @@ import org.glassfish.external.statistics.impl.*;
 import org.glassfish.gmbal.*;
 
 /**
- * Probe listener for the Entity Beans part of the EJB monitoring events. 
+ * Probe listener for the Stateful Session Beans part of the EJB monitoring events. 
  *
  * @author Marina Vatkina
  */
-public class EntityBeanStatsProvider extends EjbMonitoringStatsProvider {
+public class StatefulSessionBeanStatsProvider extends EjbMonitoringStatsProvider {
 
-    private BoundedRangeStatisticImpl pooledCount = null;
-    private BoundedRangeStatisticImpl readyCount = null;
+    private CountStatisticImpl messageCount = new CountStatisticImpl("MessageCount",
+            "count", "Number of messages received for a message-driven bean");
 
-    private EntityContainer delegate;
-
-    public EntityBeanStatsProvider(EntityContainer delegate, String appName, 
-            String moduleName, String beanName) {
-
+    public StatefulSessionBeanStatsProvider(String appName, String moduleName, 
+            String beanName) {
         super(appName, moduleName, beanName);
-        this.delegate = delegate;
-
-        long now = System.currentTimeMillis();
-
-        pooledCount = new BoundedRangeStatisticImpl(
-            0, 0, 0, delegate.getMaxPoolSize(), delegate.getSteadyPoolSize(),
-            "PooledCount", "count", "Number of entity beans in pooled state",
-            now, now);
-        readyCount = new BoundedRangeStatisticImpl(
-            0, 0, 0, delegate.getMaxCacheSize(), 0,
-            "ReadyCount", "count", "Number of entity beans in ready state",
-            now, now);
     }
 
-    @ManagedAttribute(id="pooledcount")
-    @Description( "Number of entity beans in pooled state")
-    public RangeStatistic getPooledCount() {
-        pooledCount.setCount(delegate.getPooledCount());
-        return pooledCount.getStatistic();
+    @ManagedAttribute(id="messagecount")
+    @Description( "Number of messages received for a message-driven bean")
+    public CountStatistic getCreateCount() {
+        return messageCount.getStatistic();
     }
 
-    @ManagedAttribute(id="readycount")
-    @Description( "Number of entity beans in ready state")
-    public RangeStatistic getReadyCount() {
-        readyCount.setCount(delegate.getReadyCount());
-        return readyCount.getStatistic();
+    @ProbeListener("glassfish:ejb:bean:messageDeliveredEvent")
+    public void messageDeliveredEvent(
+            @ProbeParam("appName") String appName,
+            @ProbeParam("modName") String modName,
+            @ProbeParam("ejbName") String ejbName) {
+        if (isValidRequest(appName, modName, ejbName)) {
+            log ("messageDeliveredEvent", "MessageDrivenBeanStatsProvider");
+            messageCount.increment();
+        }
     }
+
 }

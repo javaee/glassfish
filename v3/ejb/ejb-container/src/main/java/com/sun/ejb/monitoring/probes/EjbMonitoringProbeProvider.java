@@ -99,4 +99,22 @@ public class EjbMonitoringProbeProvider {
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {}
 
+    @Probe(name="messageDeliveredEvent")
+    public void messageDeliveredEvent(
+            @ProbeParam("appName") String appName,
+            @ProbeParam("modName") String modName,
+            @ProbeParam("ejbName") String ejbName) {}
+
+    @Probe(name="methodReadyAddEvent")
+    public void methodReadyAddEvent(
+            @ProbeParam("appName") String appName,
+            @ProbeParam("modName") String modName,
+            @ProbeParam("ejbName") String ejbName) {}
+
+    @Probe(name="methodReadyRemoveEvent")
+    public void methodReadyRemoveEvent(
+            @ProbeParam("appName") String appName,
+            @ProbeParam("modName") String modName,
+            @ProbeParam("ejbName") String ejbName) {}
+
 }

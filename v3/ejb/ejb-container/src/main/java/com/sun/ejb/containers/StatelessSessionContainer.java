@@ -54,6 +54,9 @@ import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.invocation.ComponentInvocation;
 
+import com.sun.ejb.monitoring.stats.StatelessSessionBeanStatsProvider;
+import com.sun.ejb.monitoring.stats.EjbMonitoringStatsProvider;
+
 import javax.ejb.*;
 import javax.transaction.Status;
 import javax.transaction.Transaction;
@@ -182,6 +185,11 @@ public class StatelessSessionContainer
         return sbuf.toString();
     }
 
+    protected EjbMonitoringStatsProvider getMonitoringStatsProvider(
+            String appName, String modName, String ejbName) {
+        return new StatelessSessionBeanStatsProvider(this, appName, modName, ejbName);
+    }
+
     protected void initializeHome()
         throws Exception
     {
@@ -266,13 +274,13 @@ public class StatelessSessionContainer
     protected void registerMonitorableComponents() {
         //registryMediator.registerProvider(this);
         //registryMediator.registerProvider(pool);
+        super.registerMonitorableComponents();
+        super.populateMethodMonitorMap();
+
         poolProbeListener = new EjbPoolStatsProvider(pool,
                 containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
         poolProbeListener.register();
-
-        super.registerMonitorableComponents();
-        super.populateMethodMonitorMap();
 
         _logger.log(Level.FINE, "[SLSB Container] registered monitorable");
     }

@@ -460,7 +460,6 @@ public abstract class BaseContainer
             this.loader = loader;
             this.ejbDescriptor = ejbDesc;
             //this.callFlowAgent = ejbContainerUtilImpl.getCallFlowAgent();
-            createMonitoringRegistryMediator();
 
             logParams = new Object[1];
             logParams[0] =  ejbDesc.getName();
@@ -5126,6 +5125,11 @@ public abstract class BaseContainer
         }
     }
     
+    protected EjbMonitoringStatsProvider getMonitoringStatsProvider(
+            String appName, String modName, String ejbName) {
+        return new EjbMonitoringStatsProvider(appName, modName, ejbName);
+    }
+
     private MonitoredObjectType getEJBMonitoredObjectType()
     {
         MonitoredObjectType type    = MonitoredObjectType.NONE;
@@ -5181,8 +5185,8 @@ public abstract class BaseContainer
 
 	    this.ejbMethodStatsManager = registryMediator.getEJBMethodStatsManager();
 
-            ejbProbeListener = new EjbMonitoringStatsProvider(appName, modName, ejbName, 
-                    getMonitoringMethodsArray());
+            ejbProbeListener = getMonitoringStatsProvider(appName, modName, ejbName);
+            ejbProbeListener.addMethods(appName, modName, ejbName, getMonitoringMethodsArray());
             ejbProbeListener.register();
 
 	    _logger.log(Level.FINE, "Created MonitoringRegistryMediator: appName: "
@@ -5257,6 +5261,7 @@ public abstract class BaseContainer
     }
 
     protected void registerMonitorableComponents() {
+        createMonitoringRegistryMediator();
         registerTimerMonitorableComponent();
     }
 

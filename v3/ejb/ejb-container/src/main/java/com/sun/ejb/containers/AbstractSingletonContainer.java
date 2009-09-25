@@ -53,6 +53,8 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.ResourceHandler;
 import org.glassfish.ejb.startup.SingletonLifeCycleManager;
 
+import com.sun.ejb.monitoring.stats.EjbMonitoringStatsProvider;
+
 import javax.ejb.*;
 import javax.transaction.Transaction;
 import java.lang.reflect.Method;
@@ -286,6 +288,12 @@ public abstract class AbstractSingletonContainer
         super.registerMonitorableComponents();
         super.populateMethodMonitorMap();
         _logger.log(Level.FINE, "[Singleton Container] registered monitorable");
+    }
+
+    protected EjbMonitoringStatsProvider getMonitoringStatsProvider(
+            String appName, String modName, String ejbName) {
+        // TODO - which stats provider to use?
+        return new EjbMonitoringStatsProvider(appName, modName, ejbName);
     }
 
     public void onReady() {

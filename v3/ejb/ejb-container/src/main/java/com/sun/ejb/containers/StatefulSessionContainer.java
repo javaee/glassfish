@@ -100,6 +100,10 @@ import com.sun.ejb.monitoring.stats.EjbCacheStatsProvider;
 
 import static com.sun.ejb.containers.EJBContextImpl.BeanState;
 
+
+import com.sun.ejb.monitoring.stats.StatefulSessionBeanStatsProvider;
+import com.sun.ejb.monitoring.stats.EjbMonitoringStatsProvider;
+
 /**
  * This class provides container functionality specific to stateful
  * SessionBeans.
@@ -317,12 +321,12 @@ public final class StatefulSessionContainer
     protected void registerMonitorableComponents() {
         //registryMediator.registerProvider(this);
         //registryMediator.registerProvider(sessionBeanCache);
+        super.registerMonitorableComponents();
+        super.populateMethodMonitorMap();
         cacheProbeListener = new EjbCacheStatsProvider(sessionBeanCache,
                 containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
         cacheProbeListener.register();
-        super.registerMonitorableComponents();
-        super.populateMethodMonitorMap();
 /** 
         sfsbStoreMonitor = registryMediator.registerProvider(
                 sfsbStoreManager.getMonitorableSFSBStoreManager(),
@@ -348,6 +352,12 @@ public final class StatefulSessionContainer
                 .append(" }");
         return sbuf.toString();
     }
+
+    protected EjbMonitoringStatsProvider getMonitoringStatsProvider(
+            String appName, String modName, String ejbName) {
+        return new StatefulSessionBeanStatsProvider(/**this,**/ appName, modName, ejbName);
+    }
+
 
 /** TODO
     public void appendStats(StringBuffer sbuf) {

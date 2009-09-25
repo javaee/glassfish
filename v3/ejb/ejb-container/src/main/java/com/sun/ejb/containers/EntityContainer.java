@@ -80,6 +80,7 @@ import com.sun.enterprise.transaction.api.JavaEETransaction;
 
 import com.sun.ejb.spi.container.BeanStateSynchronization;
 import com.sun.ejb.monitoring.stats.EntityBeanStatsProvider;
+import com.sun.ejb.monitoring.stats.EjbMonitoringStatsProvider;
 import com.sun.ejb.monitoring.stats.EjbPoolStatsProvider;
 import com.sun.ejb.monitoring.stats.EjbCacheStatsProvider;
 
@@ -221,7 +222,6 @@ public class EntityContainer
     protected int	totalPassivationErrors;
 
     private EntityCacheStatsProvider	cacheStatsProvider;
-    private EntityBeanStatsProvider    entityBeanProbeListener;
 
     static {
         _logger.log(Level.FINE," Loading Entitycontainer...");
@@ -391,6 +391,8 @@ public class EntityContainer
 	registryMediator.registerProvider(this);
 	registryMediator.registerProvider(entityCtxPool);
 **/
+        super.registerMonitorableComponents();
+	super.populateMethodMonitorMap();
 	if (readyStore != null) {
 	    int confMaxCacheSize = cacheProp.maxCacheSize;
 	    if (confMaxCacheSize <= 0) {
@@ -404,17 +406,16 @@ public class EntityContainer
                     containerInfo.ejbName);
             cacheProbeListener.register();
 	}
-        super.registerMonitorableComponents();
-	super.populateMethodMonitorMap();
-        entityBeanProbeListener = new EntityBeanStatsProvider(this, 
-                containerInfo.appName, containerInfo.modName,
-                containerInfo.ejbName);
         poolProbeListener = new EjbPoolStatsProvider(entityCtxPool, 
                 containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
-        entityBeanProbeListener.register();
         poolProbeListener.register();
         _logger.log(Level.FINE, "[Entity Container] registered monitorable");
+    }
+
+    protected EjbMonitoringStatsProvider getMonitoringStatsProvider(
+            String appName, String modName, String ejbName) {
+        return new EntityBeanStatsProvider(this, appName, modName, ejbName);
     }
     
     public void onReady() {
@@ -2450,7 +2451,6 @@ public class EntityContainer
                 this.idleBeansPassivator.cache  = null;
             }
 	    cancelTimerTasks();
-            entityBeanProbeListener.unregister();
         }
         finally {
             

@@ -38,7 +38,8 @@ package com.sun.ejb.monitoring.stats;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.ejb.containers.EntityContainer;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
+import com.sun.ejb.containers.StatelessSessionContainer;
 
 import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.glassfish.external.probe.provider.annotations.*;
@@ -47,46 +48,35 @@ import org.glassfish.external.statistics.impl.*;
 import org.glassfish.gmbal.*;
 
 /**
- * Probe listener for the Entity Beans part of the EJB monitoring events. 
+ * Probe listener for the Stateless Session Beans part of the EJB monitoring events. 
  *
  * @author Marina Vatkina
  */
-public class EntityBeanStatsProvider extends EjbMonitoringStatsProvider {
+public class StatelessSessionBeanStatsProvider extends EjbMonitoringStatsProvider {
 
-    private BoundedRangeStatisticImpl pooledCount = null;
-    private BoundedRangeStatisticImpl readyCount = null;
+    private BoundedRangeStatisticImpl methodReadyCount = null;
 
-    private EntityContainer delegate;
+    private StatelessSessionContainer delegate;
 
-    public EntityBeanStatsProvider(EntityContainer delegate, String appName, 
-            String moduleName, String beanName) {
+    public StatelessSessionBeanStatsProvider(StatelessSessionContainer delegate, 
+            String appName, String moduleName, String beanName) {
 
         super(appName, moduleName, beanName);
         this.delegate = delegate;
 
         long now = System.currentTimeMillis();
 
-        pooledCount = new BoundedRangeStatisticImpl(
+        methodReadyCount = new BoundedRangeStatisticImpl(
             0, 0, 0, delegate.getMaxPoolSize(), delegate.getSteadyPoolSize(),
-            "PooledCount", "count", "Number of entity beans in pooled state",
-            now, now);
-        readyCount = new BoundedRangeStatisticImpl(
-            0, 0, 0, delegate.getMaxCacheSize(), 0,
-            "ReadyCount", "count", "Number of entity beans in ready state",
+            "MethodReadyCount", "count", "Number of stateless session beans in MethodReady state",
             now, now);
     }
 
-    @ManagedAttribute(id="pooledcount")
-    @Description( "Number of entity beans in pooled state")
-    public RangeStatistic getPooledCount() {
-        pooledCount.setCount(delegate.getPooledCount());
-        return pooledCount.getStatistic();
+    @ManagedAttribute(id="methodreadycount")
+    @Description( "Number of stateless session beans in MethodReady state")
+    public RangeStatistic getMethodReadyCount() {
+        methodReadyCount.setCount(delegate.getMethodReadyCount());
+        return methodReadyCount.getStatistic();
     }
 
-    @ManagedAttribute(id="readycount")
-    @Description( "Number of entity beans in ready state")
-    public RangeStatistic getReadyCount() {
-        readyCount.setCount(delegate.getReadyCount());
-        return readyCount.getStatistic();
-    }
 }

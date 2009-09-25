@@ -66,6 +66,8 @@ import org.glassfish.ejb.api.ResourcesExceededException;
 import org.glassfish.ejb.api.MessageBeanListener;
 import org.glassfish.ejb.spi.MessageBeanClient;
 import org.glassfish.ejb.spi.MessageBeanClientFactory;
+import com.sun.ejb.monitoring.stats.EjbMonitoringStatsProvider;
+import com.sun.ejb.monitoring.stats.MessageDrivenBeanStatsProvider;
 
 import java.util.logging.*;
 
@@ -124,6 +126,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 	private static final int DEFAULT_IDLE_TIMEOUT = 600;
 	private static final int MIN_IDLE_TIMEOUT = 1;
 
+        // TODO : remove
 	private int statMessageCount = 0;
 
 	private TransactedPoolManager poolMgr;
@@ -216,8 +219,19 @@ public final class MessageBeanContainer extends BaseContainer implements
 		//registryMediator.registerProvider(this);
 		super.registerMonitorableComponents();
 		super.populateMethodMonitorMap(msgListenerMethods);
+                poolProbeListener = new EjbPoolStatsProvider(messageBeanPool_,
+                        containerInfo.appName, containerInfo.modName,
+                        containerInfo.ejbName);
+                poolProbeListener.register();
+		// TODO registryMediator.registerProvider(messageBeanPool_);
+		// super.setMonitorOn(mdbc.isMonitoringEnabled());
 		_logger.log(Level.FINE, "[MessageBeanContainer] registered monitorable");
 	}
+
+    protected EjbMonitoringStatsProvider getMonitoringStatsProvider(
+            String appName, String modName, String ejbName) {
+        return new MessageDrivenBeanStatsProvider(appName, modName, ejbName);
+    }
 
     protected void initializeHome()
     	throws Exception {
@@ -292,12 +306,6 @@ public final class MessageBeanContainer extends BaseContainer implements
 						.getMaxPoolSize(), beanPoolDesc_
 						.getPoolIdleTimeoutInSeconds(), loader);
 
-                poolProbeListener = new EjbPoolStatsProvider(messageBeanPool_,
-                        containerInfo.appName, containerInfo.modName,
-                        containerInfo.ejbName);
-                poolProbeListener.register();
-		// TODO registryMediator.registerProvider(messageBeanPool_);
-		// super.setMonitorOn(mdbc.isMonitoringEnabled());
 	}
 
 	protected static int stringToInt(String val, String appName, Logger logger) {
@@ -1197,7 +1205,9 @@ public final class MessageBeanContainer extends BaseContainer implements
 				success = true;
 
 				// TODO: Check if Tx existed / committed
-				statMessageCount++;
+                                ejbProbeNotifier.messageDeliveredEvent(
+                                        containerInfo.appName, containerInfo.modName,
+                                        containerInfo.ejbName);
 
 			} catch (Throwable ce) {
 				_logger.log(Level.SEVERE,
@@ -1237,6 +1247,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 		return schedules.containsKey(m) || m.equals(ejbTimeoutMethod);
 	}
 
+        // TODO : remove
 	public long getMessageCount() {
 		return statMessageCount;
 	}

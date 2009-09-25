@@ -67,10 +67,11 @@ public class EjbMonitoringStatsProvider {
     private Map<Method, String> methodMappingMap = new HashMap<Method, String>();
     private Map<String, EjbMethodStatsProvider> methodMonitorMap = 
             new HashMap<String, EjbMethodStatsProvider>();
-    private String appName = null;
-    private String moduleName = null;
-    private String beanName = null;
-    private boolean registered = false;
+
+    String appName = null;
+    String moduleName = null;
+    String beanName = null;
+    boolean registered = false;
 
     private CountStatisticImpl createStat = new CountStatisticImpl("CreateCount", 
             "count", "Number of times EJB create method is called");
@@ -78,21 +79,26 @@ public class EjbMonitoringStatsProvider {
     private CountStatisticImpl removeStat = new CountStatisticImpl("RemoveCount", 
             "count", "Number of times EJB remove method is called");
 
-    private static final Logger _logger =
-            EjbContainerUtilImpl.getInstance().getLogger();
+    static final Logger _logger = EjbContainerUtilImpl.getInstance().getLogger();
 
     public EjbMonitoringStatsProvider(String appName, String moduleName, 
-            String beanName, Method[] methods) {
+            String beanName) {
         this.appName = appName;
         this.moduleName = moduleName;
         this.beanName = beanName;
-        for (Method m : methods) {
-            String mname = EjbMonitoringUtils.stringify(m);
-            methodMappingMap.put(m, mname);
-            if (methodMonitorMap.get(mname) == null) {
-                // Use 1 monitor for all methods that represent the same method in the bean
-                EjbMethodStatsProvider monitor = new EjbMethodStatsProvider(mname);
-                methodMonitorMap.put(mname, monitor);
+    }
+
+    public void addMethods(String appName, String moduleName, 
+            String beanName, Method[] methods) {
+        if (isValidRequest(appName, moduleName, beanName)) {
+            for (Method m : methods) {
+                String mname = EjbMonitoringUtils.stringify(m);
+                methodMappingMap.put(m, mname);
+                if (methodMonitorMap.get(mname) == null) {
+                    // Use 1 monitor for all methods that represent the same method in the bean
+                    EjbMethodStatsProvider monitor = new EjbMethodStatsProvider(mname);
+                    methodMonitorMap.put(mname, monitor);
+                }
             }
         }
     }
@@ -131,7 +137,7 @@ public class EjbMonitoringStatsProvider {
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName,
             @ProbeParam("method") Method method) {
-        if (isValidEvent(appName, modName, ejbName)) {
+        if (isValidRequest(appName, modName, ejbName)) {
             log ("ejbMethodStartEvent", method);
             EjbMethodStatsProvider monitor = methodMonitorMap.get(
                     methodMappingMap.get(EjbMonitoringUtils.stringify(method)));
@@ -148,7 +154,7 @@ public class EjbMonitoringStatsProvider {
             @ProbeParam("ejbName") String ejbName,
             @ProbeParam("exception") Throwable exception,
             @ProbeParam("method") Method method) {
-        if (isValidEvent(appName, modName, ejbName)) {
+        if (isValidRequest(appName, modName, ejbName)) {
             log ("ejbMethodEndEvent", method);
             EjbMethodStatsProvider monitor = methodMonitorMap.get(
                     methodMappingMap.get(EjbMonitoringUtils.stringify(method)));
@@ -163,7 +169,7 @@ public class EjbMonitoringStatsProvider {
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {
-        if (isValidEvent(appName, modName, ejbName)) {
+        if (isValidRequest(appName, modName, ejbName)) {
             log ("ejbBeanCreatedEvent");
             createStat.increment();
         }
@@ -174,7 +180,7 @@ public class EjbMonitoringStatsProvider {
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {
-        if (isValidEvent(appName, modName, ejbName)) {
+        if (isValidRequest(appName, modName, ejbName)) {
             log ("ejbBeanDestroyedEvent");
             removeStat.increment();
         }
@@ -185,7 +191,7 @@ public class EjbMonitoringStatsProvider {
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {
-        if (isValidEvent(appName, modName, ejbName)) {
+        if (isValidRequest(appName, modName, ejbName)) {
             log ("ejbBeanActivatedEvent");
         }
     }
@@ -195,7 +201,7 @@ public class EjbMonitoringStatsProvider {
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {
-        if (isValidEvent(appName, modName, ejbName)) {
+        if (isValidRequest(appName, modName, ejbName)) {
             log ("ejbBeanPassivatedEvent");
         }
     }
@@ -212,7 +218,7 @@ public class EjbMonitoringStatsProvider {
         return removeStat.getStatistic();
     }
 
-    private boolean isValidEvent(String appName, String moduleName,
+    boolean isValidRequest(String appName, String moduleName,
             String beanName) {
         if ((this.appName == null && appName != null)
                 || (this.appName != null && !this.appName.equals(appName))) {
@@ -230,9 +236,13 @@ public class EjbMonitoringStatsProvider {
         return true;
     }
 
-    private void log(String mname) {
-        _logger.fine("===> In EjbMonitoringStatsProvider for: [" 
+    void log(String mname, String provider) {
+        _logger.fine("===> In " + provider + " for: [" 
                 + mname + "] " + appName + "::" + moduleName + "::" + beanName);
+    }
+
+    private void log(String mname) {
+        log(mname, "EjbMonitoringStatsProvider");
     }
 
     private void log(String mname, Method m) {
