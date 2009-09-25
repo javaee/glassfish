@@ -168,6 +168,8 @@ public class WebModule extends PwcWebModule {
     // web module was deployed
     private String vsId;
 
+    private String monitoringNodeName;
+
     private WebModuleConfig wmInfo;
 
 
@@ -228,6 +230,14 @@ public class WebModule extends PwcWebModule {
 
     public WebModuleConfig getWebModuleConfig() {
         return wmInfo;
+    }
+
+    void setMonitoringNodeName(String monitoringNodeName) {
+        this.monitoringNodeName = monitoringNodeName;
+    }
+
+    public String getMonitoringNodeName() {
+        return monitoringNodeName;
     }
 
     /**
@@ -1914,11 +1924,13 @@ public class WebModule extends PwcWebModule {
      */
 
     public void servletInitializedEvent(String servletName) {
-        servletProbeProvider.servletInitializedEvent(servletName, _id, vsId);
+        servletProbeProvider.servletInitializedEvent(servletName,
+            monitoringNodeName, vsId);
     }
 
     public void servletDestroyedEvent(String servletName) {
-        servletProbeProvider.servletDestroyedEvent(servletName, _id, vsId);
+        servletProbeProvider.servletDestroyedEvent(servletName,
+            monitoringNodeName, vsId);
     }
 
 
@@ -1928,59 +1940,62 @@ public class WebModule extends PwcWebModule {
 
     @Override
     public void sessionCreatedEvent(HttpSession session) {
-        sessionProbeProvider.sessionCreatedEvent(session.getId(), _id, vsId);
+        sessionProbeProvider.sessionCreatedEvent(session.getId(),
+            monitoringNodeName, vsId);
     }
 
     @Override
     public void sessionDestroyedEvent(HttpSession session) {
-        sessionProbeProvider.sessionDestroyedEvent(session.getId(), _id,
-            vsId);
+        sessionProbeProvider.sessionDestroyedEvent(session.getId(),
+            monitoringNodeName, vsId);
     }
 
     @Override
     public void sessionRejectedEvent(int maxSessions) {
-        sessionProbeProvider.sessionRejectedEvent(maxSessions, _id, vsId);
+        sessionProbeProvider.sessionRejectedEvent(maxSessions,
+            monitoringNodeName, vsId);
     }
 
     @Override
     public void sessionExpiredEvent(HttpSession session) {
-        sessionProbeProvider.sessionExpiredEvent(session.getId(), _id, vsId);
+        sessionProbeProvider.sessionExpiredEvent(session.getId(),
+            monitoringNodeName, vsId);
     }
 
     @Override
     public void sessionPersistedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionPersistedStartEvent(session.getId(), _id,
-            vsId);
+        sessionProbeProvider.sessionPersistedStartEvent(session.getId(),
+            monitoringNodeName, vsId);
     }
 
     @Override
     public void sessionPersistedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionPersistedEndEvent(session.getId(), _id,
-            vsId);
+        sessionProbeProvider.sessionPersistedEndEvent(session.getId(),
+            monitoringNodeName, vsId);
     }
 
     @Override
     public void sessionActivatedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionActivatedStartEvent(session.getId(), _id,
-            vsId);
+        sessionProbeProvider.sessionActivatedStartEvent(session.getId(),
+            monitoringNodeName, vsId);
     }
 
     @Override
     public void sessionActivatedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionActivatedEndEvent(session.getId(), _id,
-            vsId);
+        sessionProbeProvider.sessionActivatedEndEvent(session.getId(),
+            monitoringNodeName, vsId);
     }
 
     @Override
     public void sessionPassivatedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionPassivatedStartEvent(session.getId(), _id,
-            vsId);
+        sessionProbeProvider.sessionPassivatedStartEvent(session.getId(),
+            monitoringNodeName, vsId);
     }
 
     @Override
     public void sessionPassivatedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionPassivatedEndEvent(session.getId(), _id,
-            vsId);
+        sessionProbeProvider.sessionPassivatedEndEvent(session.getId(),
+            monitoringNodeName, vsId);
     }
 
 
@@ -1989,11 +2004,13 @@ public class WebModule extends PwcWebModule {
      */
 
     public void webModuleStartedEvent() {
-        webModuleProbeProvider.webModuleStartedEvent(_id, vsId);
+        webModuleProbeProvider.webModuleStartedEvent(monitoringNodeName,
+            vsId);
     }
 
     public void webModuleStoppedEvent() {
-        webModuleProbeProvider.webModuleStoppedEvent(_id, vsId);
+        webModuleProbeProvider.webModuleStoppedEvent(monitoringNodeName,
+            vsId);
     }
 
 }

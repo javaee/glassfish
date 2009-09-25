@@ -1796,22 +1796,28 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // Add virtual server mime mappings, if present
         addMimeMappings(ctx, vs.getMimeMap());
 
+        String moduleName = Constants.DEFAULT_WEB_MODULE_NAME;
+        String monitoringNodeName = moduleName;
         if (wbd != null && wbd.getApplication() != null) {
-            // no dummy web module
-
-            String moduleName;
+            // Not a dummy web module
+            com.sun.enterprise.deployment.Application app =
+                wbd.getApplication();
             // S1AS BEGIN WORKAROUND FOR 6174360
-            if (wbd.getApplication().isVirtual()) {
-                // this is a standalone module
-                moduleName = wbd.getApplication().getRegistrationName();
+            if (app.isVirtual()) {
+                // Standalone web module
+                moduleName = app.getRegistrationName();
+                monitoringNodeName = moduleName;
             } else {
+                // Nested (inside EAR) web module
                 moduleName = wbd.getModuleDescriptor().getArchiveUri();
+                // Strip off ".war" suffix
+                monitoringNodeName = app.getRegistrationName() + "#" +
+                    moduleName.substring(0, moduleName.length() - 4);
             }
             // S1AS END WORKAROUND FOR 6174360
-            ctx.setModuleName(moduleName);
-        } else {
-            ctx.setModuleName(Constants.DEFAULT_WEB_MODULE_NAME);
         }
+        ctx.setModuleName(moduleName);
+        ctx.setMonitoringNodeName(monitoringNodeName);
 
         vs.addChild(ctx);
 
