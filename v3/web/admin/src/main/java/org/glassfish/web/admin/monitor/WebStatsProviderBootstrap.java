@@ -10,22 +10,16 @@ import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.J2eeApplication;
+import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import java.beans.PropertyChangeEvent;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
+import java.util.logging.*;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.external.probe.provider.PluginPoint;
@@ -117,113 +111,73 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
     }
 
     public void registerApplicationStatsProviders() {
-
-        List<Application> la = domain.getApplications().getModules(Application.class);
-        for (Application sapp : la) {
-            addStatsForVirtualServers(sapp.getName());
+        List<Application> webApps =
+            domain.getApplications().getApplicationsWithSnifferType("web");
+        for (Application webApp : webApps) {
+            String appName = webApp.getName();
+            HashSet<String> moduleNames = getModulesNames(appName);
+            for (String moduleName : moduleNames) {
+                addStatsForVirtualServers(appName, moduleName);
+            }
         }
-        // j2ee application
-        List<J2eeApplication> lja = domain.getApplications().getModules(J2eeApplication.class);
-        for (J2eeApplication japp : lja) {
-            addStatsForVirtualServers(japp.getName());
-        }
-        // web modules
-        List<WebModule> lm = domain.getApplications().getModules(WebModule.class);
-        for (WebModule wm : lm) {
-            addStatsForVirtualServers(wm.getName());
-        }
-
     }
 
-    private void addStatsForVirtualServers(String appName) {
+    private void addStatsForVirtualServers(String appName,
+                                           String moduleName) {
         // get the applications refs for the server
         for (ApplicationRef ar : server.getApplicationRef()) {
-            if (appName.equals(ar.getRef())) {
-                String vsL = ar.getVirtualServers();
-                if (vsL != null) {
-                    for (String str : vsL.split(",")) {
-                        //create stats providers for each virtual server 'str'
-                        List statspList = statsProviderToAppMap.get(appName);
-                        if (statspList == null) {
-                            statspList = new ArrayList();
-                        }
-                        JspStatsProvider jspStatsProvider = new JspStatsProvider(appName, str, logger);
-                        StatsProviderManager.register(
-                                "web-container",
-                                PluginPoint.SERVER, APPLICATIONS + "/" + appName + "/" + str,
-                                jspStatsProvider);
-                        statspList.add(jspStatsProvider);
-                        ServletStatsProvider servletStatsProvider = new ServletStatsProvider(appName, str, logger);
-                        StatsProviderManager.register(
-                                "web-container",
-                                PluginPoint.SERVER, APPLICATIONS + "/" + appName + "/" + str,
-                                servletStatsProvider);
-                        statspList.add(servletStatsProvider);
-                        SessionStatsProvider sessionStatsProvider = new SessionStatsProvider(appName, str, logger);
-                        StatsProviderManager.register(
-                                "web-container",
-                                PluginPoint.SERVER, APPLICATIONS + "/" + appName + "/" + str,
-                                sessionStatsProvider);
-                        statspList.add(sessionStatsProvider);
-                        RequestStatsProvider websp = new RequestStatsProvider(appName, str, logger);
-                        StatsProviderManager.register(
-                                "web-container",
-                                PluginPoint.SERVER, APPLICATIONS + "/" + appName + "/" + str,
-                                websp);
-                        statspList.add(websp);
-
-                        statsProviderToAppMap.put(appName, statspList);
+            if (!appName.equals(ar.getRef())) {
+                continue;
+            }
+            String vsL = ar.getVirtualServers();
+            if (vsL != null) {
+                for (String str : vsL.split(",")) {
+                    //create stats providers for each virtual server 'str'
+                    List statspList = statsProviderToAppMap.get(moduleName);
+                    if (statspList == null) {
+                        statspList = new ArrayList();
                     }
-                } else {
-                    //When the app is deployed without virtual-servers mentioned,
-                    // then it is implicitly associated to all the user vitual-servers
-                    addStatsForUserVirtualServers(appName);
+                    JspStatsProvider jspStatsProvider =
+                        new JspStatsProvider(moduleName, str, logger);
+                    StatsProviderManager.register(
+                            "web-container",
+                            PluginPoint.SERVER, APPLICATIONS + "/" +
+                                moduleName + "/" + str,
+                            jspStatsProvider);
+                    statspList.add(jspStatsProvider);
+                    ServletStatsProvider servletStatsProvider =
+                        new ServletStatsProvider(moduleName, str, logger);
+                    StatsProviderManager.register(
+                            "web-container",
+                            PluginPoint.SERVER, APPLICATIONS + "/" +
+                                moduleName + "/" + str,
+                            servletStatsProvider);
+                    statspList.add(servletStatsProvider);
+                    SessionStatsProvider sessionStatsProvider =
+                        new SessionStatsProvider(moduleName, str, logger);
+                    StatsProviderManager.register(
+                            "web-container",
+                            PluginPoint.SERVER, APPLICATIONS + "/" +
+                                moduleName + "/" + str,
+                            sessionStatsProvider);
+                    statspList.add(sessionStatsProvider);
+                    RequestStatsProvider websp =
+                        new RequestStatsProvider(moduleName, str, logger);
+                    StatsProviderManager.register(
+                            "web-container",
+                            PluginPoint.SERVER, APPLICATIONS + "/" +
+                                moduleName + "/" + str,
+                            websp);
+                    statspList.add(websp);
+                    statsProviderToAppMap.put(moduleName, statspList);
                 }
-                return;
             }
+            return;
         }
     }
 
-    private void addStatsForUserVirtualServers(String appName) {
-
-        for (VirtualServer vs : httpService.getVirtualServer()) {
-            if (!vs.getId().equals("__asadmin")) {
-                // create stats providers under vs.getId()
-                        List statspList = statsProviderToAppMap.get(appName);
-                        if (statspList == null) {
-                            statspList = new ArrayList();
-                        }
-                        JspStatsProvider jspStatsProvider = new JspStatsProvider(appName, vs.getId(), logger);
-                        StatsProviderManager.register(
-                                "web-container",
-                                PluginPoint.SERVER, APPLICATIONS + "/" + appName + "/" + vs.getId(),
-                                jspStatsProvider);
-                        statspList.add(jspStatsProvider);
-                        ServletStatsProvider servletStatsProvider = new ServletStatsProvider(appName, vs.getId(), logger);
-                        StatsProviderManager.register(
-                                "web-container",
-                                PluginPoint.SERVER, APPLICATIONS + "/" + appName + "/" + vs.getId(),
-                                servletStatsProvider);
-                        statspList.add(servletStatsProvider);
-                        SessionStatsProvider sessionStatsProvider = new SessionStatsProvider(appName, vs.getId(), logger);
-                        StatsProviderManager.register(
-                                "web-container",
-                                PluginPoint.SERVER, APPLICATIONS + "/" + appName + "/" + vs.getId(),
-                                sessionStatsProvider);
-                        statspList.add(sessionStatsProvider);
-                        RequestStatsProvider websp = new RequestStatsProvider(appName, vs.getId(), logger);
-                        StatsProviderManager.register(
-                                "web-container",
-                                PluginPoint.SERVER, APPLICATIONS + "/" + appName + "/" + vs.getId(),
-                                websp);
-                        statspList.add(websp);
-
-                        statsProviderToAppMap.put(appName, statspList);
-            }
-        }
-    }
-
-    public static String getVirtualServerName(String hostName, String listenerPort) {
+    public static String getVirtualServerName(String hostName,
+                                              String listenerPort) {
         try {
             //
             if (hostName == null) {
@@ -257,26 +211,33 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
 
     // Handle the deploy/undeploy events
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-       for (PropertyChangeEvent event : events) {
-           //if (event.getSource() instanceof ApplicationRef) {
+        for (PropertyChangeEvent event : events) {
             if (event.getPropertyName().equals("application-ref")) {
                 String propName = event.getPropertyName();
+                HashSet<String> moduleNames = null;
                 String appName = null;
                 if (event.getNewValue() != null) {
-                    //This means its a deployed event
+                    // This means its a deployed event
                     appName = ((ApplicationRef)(event.getNewValue())).getRef();
-                    addStatsForVirtualServers(appName);
-                } else if (event.getOldValue() != null) {
-                    //This means its an undeployed event
-                    appName = ((ApplicationRef)(event.getOldValue())).getRef();
-                    //unregister the StatsProviders for the App
-                    List statsProviders = statsProviderToAppMap.get(appName);
-                    for (Object statsProvider : statsProviders) {
-                        StatsProviderManager.unregister(statsProvider);
+                    moduleNames = getModulesNames(appName);
+                    for (String moduleName : moduleNames) {
+                        addStatsForVirtualServers(appName, moduleName);
                     }
-                    statsProviderToAppMap.remove(appName);
+                } else if (event.getOldValue() != null) {
+                    // This means its an undeployed event
+                    appName = ((ApplicationRef)(event.getOldValue())).getRef();
+                    moduleNames = getModulesNames(appName);
+                    //unregister the StatsProviders for the modules
+                    for (String moduleName : moduleNames) {
+                        List statsProviders = statsProviderToAppMap.get(
+                            moduleName);
+                        for (Object statsProvider : statsProviders) {
+                            StatsProviderManager.unregister(statsProvider);
+                        }
+                        statsProviderToAppMap.remove(moduleName);
+                    }
                     if (statsProviderToAppMap.isEmpty()) {
-                        for (Object statsProvider : this.webContainerStatsProviderList) {
+                        for (Object statsProvider : webContainerStatsProviderList) {
                             StatsProviderManager.unregister(statsProvider);
                         }
                     }
@@ -284,10 +245,50 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
                 if (logger.isLoggable(Level.FINEST)) {
                     logger.finest("[Monitor] (Un)Deploy event received - name = " + propName + " : Value = " + appName);
                 }
-           }
-       }
+            }
+        }
 
         return null;
     }
 
+
+    /**
+     * Looks up the Application with the given appName, and returns a set
+     * of the names of its enclosed web modules (if any).
+     *
+     * If the Application with the given appName represents a standalone
+     * WAR file, the returned set will contain a single name. 
+     * 
+     * If the Application with the given appName represents an EAR file,
+     * the returned set will contain the names of all enclosed web modules,
+     * using a format of appName#moduleName. 
+     */    
+    private HashSet<String> getModulesNames(String appName) {
+        HashSet<String> moduleNames = new HashSet<String>();
+        List<Application> webApps =
+            domain.getApplications().getApplicationsWithSnifferType("web");
+        for (Application webApp : webApps) {
+            if (!appName.equals(webApp.getName())) {
+                continue;
+            }
+            List<Module> modules = webApp.getModule();
+            for (Module module : modules) {
+                if (module.getEngine("web") != null) {
+                    // This is a web module
+                    if (webApp.isStandaloneModule()) {
+                        moduleNames.add(module.getName());
+                        break;
+                    } else {
+                        // WAR nested inside EAR. Strip off ".war" suffix
+                        String nameWithSuffix = module.getName();
+                        String moduleName = nameWithSuffix.substring(0,
+                            nameWithSuffix.length() - 4);
+                        moduleNames.add(appName + "#" + moduleName);
+                    }
+                }
+            }
+        }
+
+        return moduleNames;
+    }
 }
