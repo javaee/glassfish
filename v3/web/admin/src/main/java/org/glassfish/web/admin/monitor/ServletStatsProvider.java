@@ -161,7 +161,9 @@ public class ServletStatsProvider {
     }
     
     private void resetStats() {
-        activeServletsLoadedCount.reset();
+        activeServletsLoadedCount.setCurrent(0L);
+        activeServletsLoadedCount.setLowWaterMark(0L);
+        activeServletsLoadedCount.setHighWaterMark(0L);
         totalServletsLoadedCount.setCount(0);
     }
 }

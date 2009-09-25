@@ -146,7 +146,9 @@ public class JspStatsProvider{
     }
 
     private void resetStats() {
-        activeJspsLoadedCount.reset();
+        activeJspsLoadedCount.setCurrent(0L);
+        activeJspsLoadedCount.setLowWaterMark(0L);
+        activeJspsLoadedCount.setHighWaterMark(0L);
         totalJspsLoadedCount.setCount(0);
     }
 }

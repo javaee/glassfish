@@ -347,7 +347,9 @@ public class SessionStatsProvider{
     }
 
     private void resetStats() {
-        activeSessionsCount.reset();
+        activeSessionsCount.setCurrent(0L);
+        activeSessionsCount.setLowWaterMark(0L);
+        activeSessionsCount.setHighWaterMark(0L);
         sessionsTotal.setCount(0);
         expiredSessionsTotal.setCount(0);
         rejectedSessionsTotal.setCount(0);
