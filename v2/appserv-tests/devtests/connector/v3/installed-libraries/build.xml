@@ -102,33 +102,33 @@
         <antcall target="create-connector-connpool-common">
             <param name="ra.name" value="${undeployrar}"/>
             <param name="connection.defname" value="com.sun.connector.blackbox.DataSource"/>
-            <param name="connector.conpool.name" value="serializable-test-ccp"/>
+            <param name="connector.conpool.name" value="installed-libraries-test-ccp"/>
         </antcall>
         <antcall target="create-connector-resource-common">
-            <param name="connector.conpool.name" value="serializable-test-ccp"/>
+            <param name="connector.conpool.name" value="installed-libraries-test-ccp"/>
             <param name="connector.jndi.name" value="eis/connector-resource"/>
         </antcall>
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="${resources.dottedname.prefix}.connector-connection-pool.serializable-test-ccp.property.User=pbpublic"/>
+                   value="${resources.dottedname.prefix}.connector-connection-pool.installed-libraries-test-ccp.property.User=pbpublic"/>
         </antcall>
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="${resources.dottedname.prefix}.connector-connection-pool.serializable-test-ccp.property.Password=pbpublic"/>
-        </antcall>
-
-        <antcall target="asadmin-common">
-            <param name="admin.command" value="set"/>
-            <param name="operand.props"
-                   value="${resources.dottedname.prefix}.connector-connection-pool.serializable-test-ccp.property.booleanWithIsBooleanAccessor=true"/>
+                   value="${resources.dottedname.prefix}.connector-connection-pool.installed-libraries-test-ccp.property.Password=pbpublic"/>
         </antcall>
 
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="${resources.dottedname.prefix}.connector-connection-pool.serializable-test-ccp.property.booleanWithGetBooleanAccessor=true"/>
+                   value="${resources.dottedname.prefix}.connector-connection-pool.installed-libraries-test-ccp.property.booleanWithIsBooleanAccessor=true"/>
+        </antcall>
+
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.connector-connection-pool.installed-libraries-test-ccp.property.booleanWithGetBooleanAccessor=true"/>
         </antcall>
 
         <antcall target="deploy-common"/>
@@ -150,7 +150,7 @@
             <param name="connector.jndi.name" value="eis/connector-resource"/>
         </antcall>
         <antcall target="delete-connector-connpool-common">
-            <param name="connector.conpool.name" value="serializable-test-ccp"/>
+            <param name="connector.conpool.name" value="installed-libraries-test-ccp"/>
         </antcall>
         <antcall target="undeploy-common"/>
         <antcall target="undeploy-rar-common"/>
