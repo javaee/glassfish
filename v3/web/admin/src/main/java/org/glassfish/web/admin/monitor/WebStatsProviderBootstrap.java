@@ -103,7 +103,7 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
 
     private void registerWebStatsProviders() {
         JspStatsProvider jsp = new JspStatsProvider(null, null, logger);
-        WebRequestStatsProvider wsp = new WebRequestStatsProvider(null, null, logger);
+        RequestStatsProvider wsp = new RequestStatsProvider(null, null, logger);
         ServletStatsProvider svsp = new ServletStatsProvider(null, null, logger);
         SessionStatsProvider sssp = new SessionStatsProvider(null, null, logger);
         StatsProviderManager.register("web-container", PluginPoint.SERVER, "web/jsp", jsp);
@@ -165,7 +165,7 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
                                 PluginPoint.SERVER, APPLICATIONS + "/" + appName + "/" + str,
                                 sessionStatsProvider);
                         statspList.add(sessionStatsProvider);
-                        WebRequestStatsProvider websp = new WebRequestStatsProvider(appName, str, logger);
+                        RequestStatsProvider websp = new RequestStatsProvider(appName, str, logger);
                         StatsProviderManager.register(
                                 "web-container",
                                 PluginPoint.SERVER, APPLICATIONS + "/" + appName + "/" + str,
@@ -211,7 +211,7 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
                                 PluginPoint.SERVER, APPLICATIONS + "/" + appName + "/" + vs.getId(),
                                 sessionStatsProvider);
                         statspList.add(sessionStatsProvider);
-                        WebRequestStatsProvider websp = new WebRequestStatsProvider(appName, vs.getId(), logger);
+                        RequestStatsProvider websp = new RequestStatsProvider(appName, vs.getId(), logger);
                         StatsProviderManager.register(
                                 "web-container",
                                 PluginPoint.SERVER, APPLICATIONS + "/" + appName + "/" + vs.getId(),

@@ -58,7 +58,7 @@ import org.glassfish.gmbal.ManagedAttribute;
 @AMXMetadata(type="web-request-mon", group="monitoring")
 @ManagedObject
 @Description("Web Request Statistics")
-public class WebRequestStatsProvider {
+public class RequestStatsProvider {
     //Provides the longest response time for a request - not a cumulative value, 
     //but the largest response time from among the response times.
     //private Counter maxTime = CounterFactory.createCount();
@@ -79,7 +79,7 @@ public class WebRequestStatsProvider {
     private String virtualServerName = null;
     private String moduleName = null;
 
-    public WebRequestStatsProvider(String appName, String vsName, Logger logger) {
+    public RequestStatsProvider(String appName, String vsName, Logger logger) {
         this.logger = logger;
         this.virtualServerName = vsName;
         this.moduleName = appName;
