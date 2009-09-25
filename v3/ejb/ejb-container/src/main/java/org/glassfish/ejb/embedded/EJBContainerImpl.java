@@ -98,7 +98,9 @@ public class EJBContainerImpl extends EJBContainer {
         try {
             app = getOrCreateApplication(modules);
             
-            _logger.info("==> Deploying app: " + app);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("[EJBContainerImpl] Deploying app: " + app);
+            }
             DeployCommandParameters dp = new DeployCommandParameters(app);
             if (properties != null) {
                 dp.name = (String)properties.get(EJBContainer.APP_NAME);
@@ -124,7 +126,9 @@ public class EJBContainerImpl extends EJBContainer {
      * @return naming context
      */
     public Context getContext() { 
-        _logger.info("IN getContext()");
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("IN getContext()");
+        }
         try {
             return new InitialContext();
         } catch (Exception e) {
@@ -137,7 +141,9 @@ public class EJBContainerImpl extends EJBContainer {
      * Shutdown an embeddable EJBContainer instance.
      */
     public void close() {
-        _logger.info("IN close()");
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("IN close()");
+        }
 
         if (deployedAppName != null) {
             try {
@@ -169,7 +175,7 @@ public class EJBContainerImpl extends EJBContainer {
             throws EJBException, IOException {
         File result = null;
         if (modules == null || modules.size() == 0) {
-            _logger.info("==> No modules found");
+            _logger.info("[EJBContainerImpl] No modules found");
         } else if (modules.size() == 1) {
             result = modules.iterator().next();
         } else {
@@ -177,7 +183,9 @@ public class EJBContainerImpl extends EJBContainer {
             // delete the file and create a directory in its place.
             result = File.createTempFile("ejb-app", "");
             if (result.delete() && result.mkdirs()) {
-                _logger.info("==> temp dir created at " + result.getAbsolutePath());
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("[EJBContainerImpl] temp dir created at " + result.getAbsolutePath());
+                }
             } else {
                 throw new EJBException("Not able to create temp dir " + result.getAbsolutePath ());
             }
@@ -196,14 +204,20 @@ public class EJBContainerImpl extends EJBContainer {
                     lastpart = filename.lastIndexOf('/');
                 }
                 String name = filename.substring(lastpart + 1);
-                _logger.info("==> Converted file name: " + filename + " to " + name);
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("[EJBContainerImpl] Converted file name: " + filename + " to " + name);
+                }
                 if (f.isDirectory()) {
                     File out = new File(result, name + "_jar");
-                    _logger.info("==> Copying directory to: " + out);
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("[EJBContainerImpl] Copying directory to: " + out);
+                    }
                     FileUtils.copy(f, out);
                 } else {
                     File out = new File(result, FileUtils.makeFriendlyFilename(name));
-                    _logger.info("==> Exploding jar to: " + out);
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("[EJBContainerImpl] Exploding jar to: " + out);
+                    }
                     ModuleExploder.explodeJar(f, out);
                 }
             }

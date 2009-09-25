@@ -124,10 +124,10 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 // Can't throw an exception - only return null.
                 if (container != null) {
                     try {
-                        _logger.info("==> Cleaning up on failure ...");
+                        _logger.info("[EJBContainerProviderImpl] Cleaning up on failure ...");
                         container.close();
                     } catch (Throwable t1) {
-                        _logger.info("==> Error cleaning up..." + t1);
+                        _logger.info("[EJBContainerProviderImpl] Error cleaning up..." + t1);
                     }
                 }
                 _logger.log(Level.SEVERE, "ejb.embedded.exception_instantiating", t);
@@ -210,7 +210,9 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         if (modules.isEmpty()) {
             // No file is specified - load from the classpath
             String path = System.getProperty("java.class.path");
-            _logger.info("==> Looking for EJB modules in classpath: " + path);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("[EJBContainerProviderImpl] Looking for EJB modules in classpath: " + path);
+            }
             String[] entries = path.split(File.pathSeparator);
             for (String s0 : entries) {
                 addEJBModule(modules, moduleNames, new File(s0));
@@ -226,7 +228,9 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     private boolean isRequestedEJBModule(File file, Set<String> moduleNames) 
             throws Exception {
         String fileName = file.getName();
-        _logger.info("... Testing ... " + fileName);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("... Testing ... " + fileName);
+        }
         ReadableArchive archive = null;
         InputStream is = null;
         try {
@@ -249,10 +253,10 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 handles = detector.hasAnnotationInArchive(archive);
             }
 
-            if (_logger.isLoggable(Level.INFO)) {
-                _logger.info("... is EJB module: " + handles);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("... is EJB module: " + handles);
                 if (handles) {
-                    _logger.info("... is Requested EJB module [" + moduleName + "]: " 
+                    _logger.fine("... is Requested EJB module [" + moduleName + "]: " 
                             + (moduleNames.isEmpty() || moduleNames.contains(moduleName)));
                 }
             }
@@ -273,10 +277,12 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         try {
             if (f.exists() && isRequestedEJBModule(f, moduleNames) && !skipJar(f)) {
                 modules.add(f);
-                _logger.info("... Added EJB Module .... " + f.getName());
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("... Added EJB Module .... " + f.getName());
+                }
             } // skip the rest
         } catch (Exception ioe) {
-            _logger.log(Level.INFO, "ejb.embedded.io_exception", ioe);
+            _logger.log(Level.FINE, "ejb.embedded.io_exception", ioe);
             // skip it
         }
     }
@@ -368,7 +374,9 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             }
         }
 
-        _logger.info("+++ installed_root_location : " + installed_root_location);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("[EJBContainerProviderImpl] installed_root_location : " + installed_root_location);
+        }
         if (installed_root_location != null) {
             File installed_root = getValidFile(installed_root_location);
             if (installed_root != null) {
@@ -379,7 +387,9 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                             + File.separatorChar + "domain1";
                 }
 
-                _logger.info("+++ instance_root_location: " + instance_root_location);
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("[EJBContainerProviderImpl] instance_root_location: " + instance_root_location);
+                }
                 File instance_root = getValidFile(instance_root_location);
                 if (instance_root != null) {
                     if (domain_file_location == null) {
@@ -389,7 +399,9 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                                 + File.separatorChar + "domain.xml";
                     }
 
-                    _logger.info("+++ domain_file_location : " + domain_file_location);
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("[EJBContainerProviderImpl] domain_file_location : " + domain_file_location);
+                    }
                     File domain_file = getValidFile(domain_file_location);
                     if (domain_file != null) {
                         DomainXmlTransformer dxf = new DomainXmlTransformer(domain_file, _logger);

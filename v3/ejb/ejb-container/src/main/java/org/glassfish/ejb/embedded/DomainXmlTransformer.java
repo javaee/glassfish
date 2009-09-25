@@ -93,7 +93,9 @@ public class DomainXmlTransformer {
         try {
             fis = new FileInputStream(in);
             out = File.createTempFile("domain", "xml");
-            _logger.info("==> Creating temp domain file: " + out);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("[DomainXmlTransformer] Creating temp domain file: " + out);
+            }
 
             out.deleteOnExit();
             fos = new FileOutputStream(out);
@@ -108,11 +110,15 @@ public class DomainXmlTransformer {
                             || name.equals("protocols")
                             || name.equals("applications")) {
                         writer.add(event);
-                        _logger.info("==> Skipping details of: " + name);
+                        if (_logger.isLoggable(Level.FINE)) {
+                            _logger.fine("[DomainXmlTransformer] Skipping details of: " + name);
+                        }
                         event = getEndEventFor(parser, name);
                     }
                 } 
-                _logger.fine("==> Processing: " + event); 
+                if (_logger.isLoggable(Level.FINEST)) {
+                    _logger.finest("[DomainXmlTransformer] Processing: " + event); 
+                } 
                 writer.add(event);
             }
             writer.flush();
@@ -145,7 +151,9 @@ public class DomainXmlTransformer {
             } catch (Exception e) {}
         }
 
-        _logger.info("<== Created temp domain file: " + out);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("[DomainXmlTransformer] Created temp domain file: " + out);
+        }
         return out;
     }
 
@@ -155,7 +163,9 @@ public class DomainXmlTransformer {
             XMLEvent event = parser.nextEvent();
             if (event.isEndElement()
                     && event.asEndElement().getName().getLocalPart().equals(name)) {
-               _logger.fine("END: " + name);
+               if (_logger.isLoggable(Level.FINEST)) {
+                   _logger.finest("[DomainXmlTransformer] END: " + name);
+               }
                return event;
            }
         }
