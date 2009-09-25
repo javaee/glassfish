@@ -90,7 +90,7 @@
     </target>
     
     <target name="run" depends="init-common">
-        <java classname="WebTest" classpath="${env.APS_HOME}/lib/reporter.jar:${s1as.classpath}:.">
+        <java classname="WebTest" classpath="${env.APS_HOME}/lib/reporter.jar:${s1as.classpath}:." fork="true">
           <arg value="${admin.host}"/>
           <arg value="${admin.port}"/>
           <arg value="${admin.user}"/>

@@ -36,8 +36,16 @@
 import java.io.*;
 import java.net.*;
 import java.net.HttpURLConnection;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import com.sun.ejte.ccl.reporter.*;
+
 import org.apache.catalina.util.Base64;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /*
  * Unit test for Issue 9309: [monitoring] request-count is incorrect
@@ -79,17 +87,17 @@ public class WebTest {
 
     public void doTest() {
         try {
-            int webReqCount1 = getCount("/web/request/requestcount");
+            int webReqCount1 = getCount("web/request/requestcount", "RequestCount");
             System.out.println("web request count: " + webReqCount1);
-            int appReqCount1 = getCount("/applications" + contextRoot + "-web/server/requestcount");
+            int appReqCount1 = getCount("applications" + contextRoot + "-web/server/requestcount", "RequestCount");
             System.out.println("app request count: " + appReqCount1);
 
             String testResult = invokeURL("http://" + host + ":" + port + contextRoot + "/test");
             System.out.println(testResult);
             
-            int webReqCount2 = getCount("/web/request/requestcount");
+            int webReqCount2 = getCount("web/request/requestcount", "RequestCount");
             System.out.println("web request count: " + webReqCount2);
-            int appReqCount2 = getCount("/applications" + contextRoot + "-web/server/requestcount");
+            int appReqCount2 = getCount("applications" + contextRoot + "-web/server/requestcount", "RequestCount");
             System.out.println("app request count: " + appReqCount2);
 
             boolean ok1 = (EXPECTED.equals(testResult) &&
@@ -97,16 +105,16 @@ public class WebTest {
                     (appReqCount1 >= 0 && appReqCount2 == (appReqCount1 + 1)));
 
 
-            int webErrorCount1 = getCount("/web/request/errorcount");
+            int webErrorCount1 = getCount("web/request/errorcount", "ErrorCount");
             System.out.println("web error count: " + webErrorCount1);
-            int appErrorCount1 = getCount("/applications" + contextRoot + "-web/server/errorcount");
+            int appErrorCount1 = getCount("applications" + contextRoot + "-web/server/errorcount", "ErrorCount");
             System.out.println("app error count: " + appErrorCount1);
 
             invokeURL("http://" + host + ":" + port + contextRoot + "/badrequest");
             
-            int webErrorCount2 = getCount("/web/request/errorcount");
+            int webErrorCount2 = getCount("web/request/errorcount", "ErrorCount");
             System.out.println("web error count: " + webErrorCount2);
-            int appErrorCount2 = getCount("/applications" + contextRoot + "-web/server/errorcount");
+            int appErrorCount2 = getCount("applications" + contextRoot + "-web/server/errorcount", "ErrorCount");
             System.out.println("app error count: " + appErrorCount2);
 
             boolean ok2 = (webErrorCount1 >= 0 && webErrorCount2 == (webErrorCount1 + 1)) &&
@@ -122,12 +130,12 @@ public class WebTest {
 
     private String invokeURL(String urlString) throws Exception {
      
-        String line = null;
+        StringBuilder sb = new StringBuilder();
 
         URL url = new URL(urlString);
         System.out.println("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.addRequestProperty("accept", "application/json");
+        conn.addRequestProperty("accept", "application/xml");
         if (adminPassword != null) {
             conn.setRequestProperty("Authorization", "Basic " +
                 new String(Base64.encode((adminUser + ":" + adminPassword).getBytes())));
@@ -141,7 +149,10 @@ public class WebTest {
             try {
                 is = conn.getInputStream();
                 reader = new BufferedReader(new InputStreamReader(is));
-                line = reader.readLine();
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
             } finally {
                 if (is != null) {
                     try {
@@ -160,28 +171,31 @@ public class WebTest {
             System.out.println("Get response code: " + responseCode);
         }
 
-        return line;
+        return sb.toString();
     }
 
-    private int getCount(String monitorPath) throws Exception {
-        int count = -1;
+    private int getCount(String monitorPath, String countName) throws Exception {
         String result = invokeURL("http://" + adminHost + ":" + adminPort +
-                "/monitoring/domain/server" + monitorPath);
-        if (result != null) {
-            count = parseCount(result);
+                "/monitoring/domain/server/" + monitorPath);
+        
+        return parseCount(result, countName);
+    }
+
+    private int parseCount(String resultStr, String countName) throws Exception {
+        int count = -1;
+        System.out.println("parseCount: " + resultStr);
+        if (resultStr != null) {
+            DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = db.parse(new InputSource(new ByteArrayInputStream(resultStr.getBytes())));
+            NodeList nlist = doc.getDocumentElement().getElementsByTagName(countName);
+            if (nlist != null && nlist.getLength() > 0) {
+                Element element = (Element) nlist.item(0);
+                String countStr = element.getAttribute("Count");
+                if (countStr != null) {
+                    count = Integer.parseInt(countStr);
+                }
+            }
         }
         return count;
-    }
-
-    private int parseCount(String resultStr) throws Exception {
-        System.out.println("parseCount: " + resultStr);
-        String prefix = "Count\" :";
-        int ind1 = resultStr.indexOf(prefix);
-        int ind2 = -1;
-        if (ind1 > 0) {
-            ind2 = resultStr.indexOf("}", ind1);
-        }
-        return ((ind1 != -1 && ind2 != -1) ?
-                Integer.parseInt(resultStr.substring(ind1 + prefix.length() + 1, ind2)) : -1);
     }
 }
