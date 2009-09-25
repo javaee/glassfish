@@ -16,7 +16,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 
 @Singleton
-// @@@ how to address init web jndi comp load dependency ? @Startup
 @LocalBean
 public class SingletonBean implements java.util.Observer {
   
@@ -70,8 +69,8 @@ public class SingletonBean implements java.util.Observer {
 	    sb5 = (SingletonBean) ic.lookup("java:module/env/ES2");
 
 	    slsb = (StatelessBean) ic.lookup("java:module/StatelessBean");
-	    slsb2 = (StatelessBean) ic.lookup("java:app/StatelessBean");
-	    slsb3 = (StatelessBean) ic.lookup("java:app/StatelessBean!com.acme.StatelessBean");
+	    slsb2 = (StatelessBean) ic.lookup("java:app/ejb-ejb31-ejblite-javamodule-web/StatelessBean");
+	    slsb3 = (StatelessBean) ic.lookup("java:app/ejb-ejb31-ejblite-javamodule-web/StatelessBean!com.acme.StatelessBean");
 
 	    slsb4 = (StatelessBean) ic.lookup("java:app/EL1");
 	    slsb5 = (StatelessBean) ic.lookup("java:app/env/EL2");

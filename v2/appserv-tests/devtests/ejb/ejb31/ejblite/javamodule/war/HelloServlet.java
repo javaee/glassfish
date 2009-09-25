@@ -46,7 +46,7 @@ public class HelloServlet extends HttpServlet {
     @Resource(name="foo2ref", mappedName="java:module/foomanagedbean")
     private FooManagedBean foo2;
 
-    @Resource(mappedName="java:app/foomanagedbean")
+    @Resource(mappedName="java:app/ejb-ejb31-ejblite-javamodule-web/foomanagedbean")
     private FooManagedBean foo3;
 
     private FooManagedBean foo4;
@@ -68,8 +68,8 @@ public class HelloServlet extends HttpServlet {
 	    sb5 = (SingletonBean) ic.lookup("java:module/env/ES2");
 
 	    slsb = (StatelessBean) ic.lookup("java:module/StatelessBean");
-	    slsb2 = (StatelessBean) ic.lookup("java:app/StatelessBean");
-	    slsb3 = (StatelessBean) ic.lookup("java:app/StatelessBean!com.acme.StatelessBean");
+	    slsb2 = (StatelessBean) ic.lookup("java:app/ejb-ejb31-ejblite-javamodule-web/StatelessBean");
+	    slsb3 = (StatelessBean) ic.lookup("java:app/ejb-ejb31-ejblite-javamodule-web/StatelessBean!com.acme.StatelessBean");
 
 	    slsb4 = (StatelessBean) ic.lookup("java:app/EL1");
 	    slsb5 = (StatelessBean) ic.lookup("java:app/env/EL2");
@@ -78,7 +78,7 @@ public class HelloServlet extends HttpServlet {
 		ic.lookup("java:module/foomanagedbean");
 
 	    foo5 = (FooManagedBean) 
-		ic.lookup("java:app/foomanagedbean");
+		ic.lookup("java:app/ejb-ejb31-ejblite-javamodule-web/foomanagedbean");
 
 	    foo6 = (FooManagedBean)
 		ic.lookup("java:comp/env/foo2ref");

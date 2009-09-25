@@ -20,7 +20,7 @@ public class StatelessBean {
     @Resource(mappedName="java:module/foomanagedbean")
     private FooManagedBean foo;
 
-    @Resource(mappedName="java:app/foomanagedbean")
+    @Resource(mappedName="java:app/ejb-ejb31-ejblite-javamodule-web/foomanagedbean")
     private FooManagedBean foo2;
 
     @EJB(name="stateless/singletonref")

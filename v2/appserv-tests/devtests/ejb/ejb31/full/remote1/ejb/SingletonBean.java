@@ -28,10 +28,10 @@ public class SingletonBean {
 		ic.lookup("java:module/env/sesCtx");
 
 	    SingletonBean me = (SingletonBean)
-		ic.lookup("java:app/SingletonBean");
+		ic.lookup("java:app/ejb-ejb31-full-remote1-ejb/SingletonBean");
 	    
 	    SingletonBean meToo = (SingletonBean)
-		ic.lookup("java:app/SingletonBean!com.acme.SingletonBean");
+		ic.lookup("java:app/ejb-ejb31-full-remote1-ejb/SingletonBean!com.acme.SingletonBean");
 
 	    Hello m1 = (Hello) ic.lookup("java:module/env/M1");
 
@@ -64,7 +64,7 @@ public class SingletonBean {
 			       
 
 	} catch(Exception e) {
-	    e.printStackTrace();
+	    throw new EJBException("singleton init error" , e);
 	}
 
     }
