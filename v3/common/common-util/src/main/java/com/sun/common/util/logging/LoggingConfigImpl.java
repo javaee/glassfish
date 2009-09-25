@@ -210,7 +210,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 					key = e.getKey();
                 }
     			String property = (String) props.setProperty(key, e.getValue());
-                if (e.getKey().equals(LoggingXMLNames.webcontainer)) {
+                if (e.getKey().contains("javax.enterprise.system.container.web")) {
                     setWebLoggers(e.getValue());
                 }
 
