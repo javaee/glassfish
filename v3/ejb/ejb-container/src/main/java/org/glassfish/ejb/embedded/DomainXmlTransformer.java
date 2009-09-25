@@ -47,14 +47,19 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.events.XMLEvent;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.Attribute;
+import javax.xml.namespace.QName;
 
 import com.sun.enterprise.util.i18n.StringManager;
 
@@ -67,6 +72,9 @@ public class DomainXmlTransformer {
     private final XMLOutputFactory xof = XMLOutputFactory.newInstance();
     private Logger _logger = Logger.getAnonymousLogger(
             "com.sun.logging.enterprise.system.container.ejb.LogStrings");
+
+    private static final String IIOP_LISTENER = "iiop-listener";
+    private static final String LAZY_INIT_ATTR = "lazy-init";
 
     private static final StringManager localStrings = 
         StringManager.getManager(DomainXmlTransformer.class);
@@ -90,6 +98,8 @@ public class DomainXmlTransformer {
                 XMLInputFactory.newInstance() :
                 XMLInputFactory.newInstance(XMLInputFactory.class.getName(),
                         XMLInputFactory.class.getClassLoader());
+        XMLEventFactory xmlEventFactory = XMLEventFactory.newInstance();
+        
         try {
             fis = new FileInputStream(in);
             out = File.createTempFile("domain", "xml");
@@ -108,8 +118,29 @@ public class DomainXmlTransformer {
                     String name = event.asStartElement().getName().getLocalPart();
                     if (name.equals("network-listeners") 
                             || name.equals("protocols")
+                            || name.equals(IIOP_LISTENER)
                             || name.equals("applications")) {
-                        writer.add(event);
+                        if( name.equals(IIOP_LISTENER)) {
+
+                            Set attributes = new HashSet();
+
+                            // Make sure lazy init is not enabled by creating a new start element
+                            // based on the original but that never includes the lazy init attribute
+                            for(java.util.Iterator i = event.asStartElement().getAttributes(); i.hasNext();) {
+                                Attribute a = (Attribute) i.next();
+                                if( !a.getName().getLocalPart().equals(LAZY_INIT_ATTR) ) {
+                                    attributes.add(a);
+                                }
+                            }
+
+                            StartElement oldStartEvent = event.asStartElement();
+                            StartElement newStartEvent =  xmlEventFactory.createStartElement(oldStartEvent.getName(), attributes.iterator(),
+                                    oldStartEvent.getNamespaces());
+                            writer.add(newStartEvent);
+
+                        } else {
+                            writer.add(event);
+                        }
                         if (_logger.isLoggable(Level.FINE)) {
                             _logger.fine("[DomainXmlTransformer] Skipping details of: " + name);
                         }
