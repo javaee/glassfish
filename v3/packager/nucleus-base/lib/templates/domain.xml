@@ -163,7 +163,7 @@
         </protocols>
         <network-listeners>
           <network-listener port="%%%HTTP_PORT%%%" protocol="http-listener-1" transport="tcp" name="http-listener-1" thread-pool="http-thread-pool"></network-listener>
-          <network-listener port="%%%HTTP_SSL_PORT%%%" enabled="false" protocol="http-listener-2" transport="tcp" name="http-listener-2" thread-pool="http-thread-pool"></network-listener>
+          <network-listener port="%%%HTTP_SSL_PORT%%%" protocol="http-listener-2" transport="tcp" name="http-listener-2" thread-pool="http-thread-pool"></network-listener>
           <network-listener port="%%%ADMIN_PORT%%%" protocol="admin-listener" transport="tcp" name="admin-listener" thread-pool="http-thread-pool"></network-listener>
         </network-listeners>
         <transports>
