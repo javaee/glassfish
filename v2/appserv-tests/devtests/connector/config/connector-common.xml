@@ -1,0 +1,73 @@
+<!--
+<!DOCTYPE project [
+  <!ENTITY common SYSTEM "file:../../../config/common.xml">
+  <!ENTITY testcommon SYSTEM "file:../../../config/properties.xml">
+]>
+<project name="connector-common" basedir=".">
+
+&common; 
+&testcommon;
+-->
+
+ <target name="restart-server">
+        <antcall target="stop-server"/>
+        <antcall target="start-server"/>
+
+    </target>
+
+    <target name="stop-server" depends="setOSConditions">
+        <antcall target="stop-server-unix"/>
+        <antcall target="stop-server-windows"/>
+    </target>
+
+    <target name="stop-server-unix" if="isUnix">
+        <echo message="stopping server on unix ..."/>
+        <exec executable="${env.S1AS_HOME}/bin/asadmin">
+            <arg value="stop-domain"/>
+        </exec>
+        <sleep seconds="5"/>
+    </target>
+
+    <target name="stop-server-windows" if="isWindows">
+        <echo message="Stopping server on windows ..."/>
+        <exec executable="cmd">
+            <arg value="/c"/>
+            <arg value="${env.S1AS_HOME}\bin\asadmin.bat"/>
+            <arg value="stop-domain"/>
+        </exec>
+        <sleep seconds="5"/>
+    </target>
+
+    <target name="start-server" depends="setOSConditions">
+
+        <echo>+-----------------------------+</echo>
+        <echo>| |</echo>
+        <echo>| S T A R T I N G GLASSFISH |</echo>
+        <echo>| in Felix mode |</echo>
+        <echo>| |</echo>
+        <echo>+-----------------------------+</echo>
+
+        <antcall target="start-server-unix"/>
+        <antcall target="start-server-windows"/>
+    </target>
+
+  <target name="start-server-unix" if="isUnix">
+        <exec executable="${env.S1AS_HOME}/bin/asadmin">
+            <env key="GlassFish_Platform" value="Felix"/>
+            <arg value="start-domain"/>
+        </exec>
+        <sleep seconds="5"/>
+    </target>
+
+    <target name="start-server-windows" if="isWindows">
+        <exec executable="cmd" spawn="true">
+            <env key="GlassFish_Platform" value="Felix"/>
+            <arg value="/c"/>
+            <arg value="${env.S1AS_HOME}\bin\asadmin.bat"/>
+            <arg value="start-domain"/>
+        </exec>
+        <sleep seconds="5"/>
+    </target>
+<!--
+</project>
+-->
