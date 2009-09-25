@@ -165,15 +165,39 @@ public enum EntityManagerQueryMethod {
         }
     },
 
+    GET_PARAMETER_NAME {
+        public String toString() {
+            return "getParameter(String name)";
+        }
+    },
+
+    GET_PARAMETER_NAME_TYPE {
+        public String toString() {
+            return "getParameter(String name, Class<T> type)";
+        }
+    },
+
     GET_PARAMETER_NAME_CLASS {
         public String toString() {
             return "getParameter(String name, Class<T> type)";
         }
     },
 
+    GET_PARAMETER_POSITION {
+        public String toString() {
+            return "getParameter(int position)";
+        }
+    },
+
     GET_PARAMETER_POSITION_CLASS {
         public String toString() {
             return "getParameter(int position, Class<T> type)";
+        }
+    },
+
+    IS_BOUND_PARAMETER {
+        public String toString() {
+            return "isBound(Parameter)";
         }
     },
 

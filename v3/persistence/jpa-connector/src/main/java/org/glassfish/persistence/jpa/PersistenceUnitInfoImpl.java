@@ -48,7 +48,7 @@ import javax.naming.NamingException;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
-import javax.persistence.CachingType;
+import javax.persistence.SharedCacheMode;
 import javax.persistence.ValidationMode;
 import javax.sql.DataSource;
 import java.io.File;
@@ -184,8 +184,8 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
         return persistenceUnitDescriptor.isExcludeUnlistedClasses();
     }
 
-    public CachingType getCaching() {
-        return persistenceUnitDescriptor.getCahchingType();
+    public SharedCacheMode getSharedCacheMode() {
+        return persistenceUnitDescriptor.getSharedCacheMode();
     }
 
     public ValidationMode getValidationMode() {
@@ -199,7 +199,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
         return persistenceUnitDescriptor.getProperties(); // its already a clone
     }
 
-    public String PersistenceXMLSchemaVersion() {
+    public String getPersistenceXMLSchemaVersion() {
         return persistenceUnitDescriptor.getParent().getSpecVersion();
     }
 

@@ -46,6 +46,7 @@ import org.glassfish.api.invocation.InvocationManager;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Cache;
+import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.metamodel.Metamodel;
 import java.io.Serializable;
@@ -133,6 +134,9 @@ public class EntityManagerFactoryWrapper
         return getDelegate().getCache();
     }
 
+    public PersistenceUnitUtil getPersistenceUnitUtil() {
+        return getDelegate().getPersistenceUnitUtil();
+    }
 
     /**
      * Lookup physical EntityManagerFactory based on current component

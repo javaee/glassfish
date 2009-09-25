@@ -127,7 +127,7 @@ public class PersistenceUnitNode extends DeploymentDescriptorNode {
         table.put(PersistenceTagNames.JAR_FILE, "addJarFile");
         table.put(PersistenceTagNames.EXCLUDE_UNLISTED_CLASSES, "setExcludeUnlistedClasses");
         table.put(PersistenceTagNames.CLASS, "addClass");
-        table.put(PersistenceTagNames.CACHING, "setCahchingType");
+        table.put(PersistenceTagNames.SHARED_CACHE_MODE, "setCahchingType");
         table.put(PersistenceTagNames.VALIDATION_MODE, "setValidationMode");
         this.dispatchTable = table;
     }

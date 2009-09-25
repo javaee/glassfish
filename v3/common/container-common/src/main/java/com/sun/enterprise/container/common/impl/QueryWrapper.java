@@ -566,7 +566,7 @@ public class QueryWrapper implements Query {
 
         try {
             if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_PARAMETER_NAME_CLASS);
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_PARAMETER_NAME);
             }
 
             Query delegate = getQueryDelegate();
@@ -579,7 +579,41 @@ public class QueryWrapper implements Query {
         }
     }
 
+    public <T> Parameter<T> getParameter(String name, Class<T> type) {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_PARAMETER_NAME_TYPE);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.getParameter(name, type);
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+    }
+
     public Parameter<?> getParameter(int position) {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_PARAMETER_POSITION);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.getParameter(position);
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+    }
+
+    public <T> Parameter<T> getParameter(int position, Class<T> type)  {
 
         try {
             if(callFlowAgent.isEnabled()) {
@@ -587,7 +621,24 @@ public class QueryWrapper implements Query {
             }
 
             Query delegate = getQueryDelegate();
-            return delegate.getParameter(position);
+            return delegate.getParameter(position, type);
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+    }
+
+    public boolean isBound(Parameter<?> param) {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.IS_BOUND_PARAMETER);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.isBound(param);
 
         } finally {
             if(callFlowAgent.isEnabled()) {

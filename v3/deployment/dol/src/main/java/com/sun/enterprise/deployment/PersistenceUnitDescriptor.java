@@ -37,7 +37,7 @@
 
 package com.sun.enterprise.deployment;
 
-import javax.persistence.CachingType;
+import javax.persistence.SharedCacheMode;
 import javax.persistence.ValidationMode;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,7 +75,7 @@ public class PersistenceUnitDescriptor extends Descriptor {
 
     private boolean excludeUnlistedClasses = false;
 
-    private CachingType cahchingType;
+    private SharedCacheMode sharedCacheMode;
 
     private ValidationMode validationMode;
 
@@ -191,13 +191,13 @@ public class PersistenceUnitDescriptor extends Descriptor {
         this.excludeUnlistedClasses = excludeUnlistedClasses;
     }
 
-    public CachingType getCahchingType() {
-        return cahchingType;
+    public SharedCacheMode getSharedCacheMode() {
+        return sharedCacheMode;
     }
 
-    public void setCahchingType(String cahchingType) {
+    public void setSharedCacheMode(String sharedCacheMode) {
         // Assume schema validation will only pass a valid value else user would correctly get an exception at deployment
-        this.cahchingType = CachingType.valueOf(cahchingType);
+        this.sharedCacheMode = SharedCacheMode.valueOf(sharedCacheMode);
     }
 
     public ValidationMode getValidationMode() {
