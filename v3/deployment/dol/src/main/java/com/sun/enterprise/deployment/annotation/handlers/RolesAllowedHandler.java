@@ -35,16 +35,10 @@
  */
 package com.sun.enterprise.deployment.annotation.handlers;
 
-import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.LoginConfigurationImpl;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.MethodPermission;
 import com.sun.enterprise.deployment.Role;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.enterprise.deployment.web.LoginConfiguration;
-import com.sun.enterprise.deployment.web.SecurityConstraint;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.annotation.security.DenyAll;
@@ -91,22 +85,6 @@ public class RolesAllowedHandler extends AbstractAuthAnnotationHandler {
         }
     }
 
-    @Override
-    protected void processSecurityConstraint(Annotation authAnnotation,
-            SecurityConstraint securityConstraint, WebComponentDescriptor webCompDesc) { 
-
-        WebBundleDescriptor webBundleDesc = webCompDesc.getWebBundleDescriptor();
-        RolesAllowed rolesAllowedAn = (RolesAllowed)authAnnotation;
-        AuthorizationConstraintImpl ac = new AuthorizationConstraintImpl();
-        for (String roleName : rolesAllowedAn.value()) {
-             // add role if not exists
-             Role role = new Role(roleName);
-             webBundleDesc.addRole(role);
-             ac.addSecurityRole(roleName);
-        }
-        securityConstraint.setAuthorizationConstraint(ac);
-    }
-
     /**
      * @return an array of annotation types this annotation handler would 
      * require to be processed (if present) before it processes it's own 
@@ -114,7 +92,7 @@ public class RolesAllowedHandler extends AbstractAuthAnnotationHandler {
      */
     @Override
     public Class<? extends Annotation>[] getTypeDependencies() {
-        return getEjbAndWebAnnotationTypes();
+        return getEjbAnnotationTypes();
     }
 
     @Override

@@ -35,12 +35,9 @@
  */
 package com.sun.enterprise.deployment.annotation.handlers;
 
-import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.MethodPermission;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.enterprise.deployment.web.SecurityConstraint;
 import org.jvnet.hk2.annotations.Service;
 
 import java.lang.annotation.Annotation;
@@ -75,14 +72,6 @@ public class DenyAllHandler extends AbstractAuthAnnotationHandler {
                 MethodPermission.getExcludedMethodPermission(), md);
     }
 
-    @Override
-    protected void processSecurityConstraint(Annotation authAnnotation,
-            SecurityConstraint securityConstraint, WebComponentDescriptor webCompDesc) { 
-
-        AuthorizationConstraintImpl ac = new AuthorizationConstraintImpl();
-        securityConstraint.setAuthorizationConstraint(ac);
-    }
-
     /**
      * @return an array of annotation types this annotation handler would 
      * require to be processed (if present) before it processes it's own 
@@ -90,7 +79,7 @@ public class DenyAllHandler extends AbstractAuthAnnotationHandler {
      */
     @Override
     public Class<? extends Annotation>[] getTypeDependencies() {
-        return getEjbAndWebAnnotationTypes();
+        return getEjbAnnotationTypes();
     }
 
     @Override
