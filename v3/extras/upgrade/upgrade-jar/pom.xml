@@ -63,7 +63,7 @@
                             <mainClass>com.sun.enterprise.tools.upgrade.UpgradeToolMain</mainClass>
                         </manifest>
                         <manifestEntries> 
-                        <Class-Path>kernel.jar admin-cli.jar stax-osgi.jar admin-cli-l10n.jar javahelp-2.0.02.jar</Class-Path>
+                        <Class-Path>common-util.jar javahelp.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -78,39 +78,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>admin-cli</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>cli-framework</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>server-mgmt</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.deployment</groupId>
-            <artifactId>deployment-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.deployment</groupId>
-            <artifactId>dol</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>kernel</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>javax.help</groupId>
             <artifactId>javahelp</artifactId>
-            <version>2.0.02</version>
         </dependency>
     </dependencies>
 </project>
