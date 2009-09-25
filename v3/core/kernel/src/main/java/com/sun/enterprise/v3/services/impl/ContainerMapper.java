@@ -37,6 +37,7 @@ import com.sun.grizzly.tcp.Response;
 import com.sun.grizzly.tcp.StaticResourcesAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.util.buf.ByteChunk;
+import com.sun.grizzly.util.buf.CharChunk;
 import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.buf.UDecoder;
 import com.sun.grizzly.util.http.HttpRequestURIDecoder;
@@ -69,7 +70,7 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
     protected final static int MAPPING_DATA = 12;
     protected final static int MAPPED_ADAPTER = 13;
     private static final String serverName =
-            System.getProperty("product.name") == null? "": System.getProperty("product.name");
+            System.getProperty("product.name") == null ? "" : System.getProperty("product.name");
     private final static byte[] errorBody =
             HttpUtils.getErrorPage(serverName,"HTTP Status 404");
 
@@ -136,7 +137,7 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
             // directly.
             // TODO: Not sure that will works with JRuby.
             if (!mapMultipleAdapter && mapper instanceof V3Mapper){
-                // Remove the MappingData as we might delegate the request 
+                // Remove the MappingData as we might delegate the request
                 // to be serviced directly by the WebContainer
                 req.setNote(MAPPING_DATA, null);
                 Adapter a = ((V3Mapper)mapper).getAdapter();
@@ -158,10 +159,15 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
             
             // Map the request without any trailling.
             ByteChunk uriBB = decodedURI.getByteChunk();
+            CharChunk uriCC = decodedURI.getCharChunk();
             int start = uriBB.getStart();
             int end = uriBB.getEnd();
             int semicolon = uriBB.indexOf(';', 0);
+            byte[] trailer = null;
+            
             if (semicolon > 0) {
+                trailer = new byte[end - semicolon];
+                System.arraycopy(uriBB.getBuffer(), semicolon, trailer, 0, trailer.length);
                 decodedURI.setBytes(uriBB.getBuffer(), uriBB.getStart(), semicolon);
             }
 
@@ -199,6 +205,9 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
                 // Re-set back the position.
                 if (semicolon > 0 && end != 0) {
                     decodedURI.setBytes(uriBB.getBuffer(), start, end);
+                    for(byte b: trailer){
+                        uriCC.append((char)b);
+                    }
                 }
                 req.setNote(MAPPED_ADAPTER, adapter);
 
@@ -219,9 +228,9 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
             }
         } catch (Exception ex) {
             try {
-                res.setStatus(404);
+                res.setStatus(500);
                 if (logger.isLoggable(Level.WARNING)) {
-                    logger.log(Level.WARNING, "Invalid URL: " + req.decodedURI(), ex);
+                    logger.log(Level.WARNING, "Internal Server error: " + req.decodedURI(), ex);
                 }
                 customizedErrorPage(req, res);
             } catch (Exception ex2) {
