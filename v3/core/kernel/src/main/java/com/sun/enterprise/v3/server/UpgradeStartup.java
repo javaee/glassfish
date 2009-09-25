@@ -89,6 +89,9 @@ public class UpgradeStartup implements ModuleStartup {
     @Inject
     ArchiveFactory archiveFactory;
 
+    @Inject 
+    ServerEnvironment env;
+
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Server server;
 
@@ -103,6 +106,9 @@ public class UpgradeStartup implements ModuleStartup {
     Logger logger;
 
     private final static String MODULE_TYPE = "moduleType";
+
+    private final static String J2EE_APPS = "j2ee-apps";
+    private final static String J2EE_MODULES = "j2ee-modules";
 
     public void setStartupContext(StartupContext startupContext) {
         appservStartup.setStartupContext(startupContext);
@@ -156,9 +162,9 @@ public class UpgradeStartup implements ModuleStartup {
                 continue;
             }
             logger.log(Level.INFO, "Redeploy application " + app.getName() + " located at " + app.getLocation());    
-            if (!redeployApp(app)) {
-                return;
-            }     
+            // we let upgrade proceed even if one application 
+            // failed to redeploy
+            redeployApp(app);
         }
 
         // re-enables all applications. 
@@ -185,6 +191,9 @@ public class UpgradeStartup implements ModuleStartup {
             }
         }
 
+        // clean up leftover directories
+        cleanupLeftOverDirectories();
+
         // stop-the server.
         Logger.getAnonymousLogger().info("Exiting after upgrade");
         try {
@@ -201,6 +210,55 @@ public class UpgradeStartup implements ModuleStartup {
 
     public void stop() {
         appservStartup.stop();
+    }
+
+    private void cleanupLeftOverDirectories() {
+        // 1. remove applications/j2ee-apps(modules) directory
+        File oldJ2eeAppsRepository = new File(
+            env.getApplicationRepositoryPath(), J2EE_APPS); 
+        FileUtils.whack(oldJ2eeAppsRepository);
+        File oldJ2eeModulesRepository = new File(
+            env.getApplicationRepositoryPath(), J2EE_MODULES);
+        FileUtils.whack(oldJ2eeModulesRepository);
+
+        // 2. remove generated/xml/j2ee-apps(modules) directory
+        File oldJ2eeAppsGeneratedXMLDir = new File( 
+           env.getApplicationGeneratedXMLPath(), J2EE_APPS);
+        FileUtils.whack(oldJ2eeAppsGeneratedXMLDir);
+        File oldJ2eeModulesGeneratedXMLDir = new File( 
+           env.getApplicationGeneratedXMLPath(), J2EE_MODULES);
+        FileUtils.whack(oldJ2eeModulesGeneratedXMLDir);
+
+        // 3. remove generated/ejb/j2ee-apps(modules) directory
+        File oldJ2eeAppsEJBStubDir = new File( 
+           env.getApplicationEJBStubPath(), J2EE_APPS);
+        FileUtils.whack(oldJ2eeAppsEJBStubDir);
+        File oldJ2eeModulesEJBStubDir = new File( 
+           env.getApplicationEJBStubPath(), J2EE_MODULES);
+        FileUtils.whack(oldJ2eeModulesEJBStubDir);
+
+        // 4. clean up generated/jsp/j2ee-apps(modules) directory
+        File oldJ2eeAppsJSPCompileDir = new File(
+           env.getApplicationCompileJspPath(), J2EE_APPS);
+        FileUtils.whack(oldJ2eeAppsJSPCompileDir);
+        File oldJ2eeModulesJSPCompileDir = new File(
+           env.getApplicationCompileJspPath(), J2EE_MODULES);
+        FileUtils.whack(oldJ2eeModulesJSPCompileDir);
+
+        // 5. clean up old system apps policy files
+        File policyRootDir = new File(env.getApplicationStubPath(), "policy");
+        File adminapp = new File(policyRootDir, "adminapp");
+        FileUtils.whack(adminapp);
+        File admingui = new File(policyRootDir, "admingui");
+        FileUtils.whack(admingui);
+        File ejbtimer = new File(policyRootDir, "__ejb_container_timer_app");
+        FileUtils.whack(ejbtimer);
+        File mejbapp = new File(policyRootDir, "MEjbApp");
+        FileUtils.whack(mejbapp);
+        File wstx = new File(policyRootDir, "WSTXServices");
+        FileUtils.whack(wstx);
+        File jwsappclient = new File(policyRootDir, "__JWSappclients");
+        FileUtils.whack(jwsappclient);
     }
 
     private boolean redeployApp(Application app) {
@@ -266,7 +324,7 @@ public class UpgradeStartup implements ModuleStartup {
         // it seems it might be useful to keep it around for debugging purpose
 
         if (report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
-            logger.log(Level.SEVERE, "Redeployment of application " + app.getName() + " failed: " + report.getMessage() + " Please reploy " + app.getName() + " manually.", report.getFailureCause());
+            logger.log(Level.SEVERE, "Redeployment of application " + app.getName() + " failed: " + report.getMessage() + "\nPlease redeploy " + app.getName() + " manually.", report.getFailureCause());
             return false;
         }
         return true;
