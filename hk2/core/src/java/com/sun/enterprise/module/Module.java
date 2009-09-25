@@ -210,5 +210,9 @@ public interface Module {
 
     void dumpState(PrintStream writer);
 
+    /**
+     * Removes the module from the registry backing store, the module will need
+     * be reinstalled to be loaded.
+     */
     void uninstall();
 }
