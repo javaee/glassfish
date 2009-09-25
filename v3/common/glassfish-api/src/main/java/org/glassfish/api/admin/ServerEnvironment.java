@@ -104,7 +104,9 @@ public interface ServerEnvironment {
 
     public String getModuleStubPath();
 
-    public String getApplicationGeneratedXMLPath();
+    public File getApplicationGeneratedXMLPath();
+
+    public File getApplicationEJBStubPath();
 
     /** A JCEKS keystore which is locked with a fixed-key. This is the "security-by-obfuscation"
      *  carried over from V2.

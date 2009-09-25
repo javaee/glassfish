@@ -52,11 +52,10 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
 
     /** folder where all generated code like compiled jsps, stubs is stored */
     public static final String kGeneratedDirName = "generated";
-    /** default folder where deployed j2ee-apps are stored */
     public static final String kRepositoryDirName = "applications";
-    public static final String kApplicationDirName = "j2ee-apps";
-    /** folder where deployed modules are stored */
-    public static final String kModuleDirName = "j2ee-modules";
+    public static final String kEJBStubDirName = "ejb";
+    public static final String kGeneratedXMLDirName = "xml";
+
     public static final String kConfigXMLFileName = "domain.xml";
     public static final String kLoggingPropertiesFileName = "logging.properties";
     /** folder where the configuration of this instance is stored */
@@ -201,8 +200,12 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
 
     }
 
-    public String getApplicationGeneratedXMLPath() {
-        return null;
+    public File getApplicationEJBStubPath() {
+        return new File(getApplicationStubPath(), kEJBStubDirName);
+    }
+
+    public File getApplicationGeneratedXMLPath() {
+        return new File(getApplicationStubPath(),kGeneratedXMLDirName);
     }
 
     /**
