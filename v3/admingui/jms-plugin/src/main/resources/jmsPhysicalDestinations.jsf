@@ -50,6 +50,8 @@
             setPageSessionAttribute(key="editPage" value="#{request.contextPath}/jms/jmsPhysicalDestinationEdit.jsf");
             setPageSessionAttribute(key="viewPage" value="#{request.contextPath}/jms/jmsPhysicalDestinationStats.jsf");
 
+            getPhysicalDestinations(targetName="#{param.name}", result=>$attribute{listOfRows});
+
             pingJms();
         />
     </event>

@@ -66,6 +66,7 @@
 
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         getPhysicalDestinationName(list="#{tableList}", physDestName="#{pageSession.physDestName}");
+        filterTable(table="#{requestScope.tableList}", key="Name", value="Name", keep="false");
 
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );

@@ -45,6 +45,13 @@
         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
         setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
 
+        createMap(result=>$attribute{nameMap});
+        mapPut(map="$attribute{nameMap}", key="selected", value="#{false}");
+        mapPut(map="$attribute{nameMap}", key="Name", value="Name");
+        mapPut(map="$attribute{nameMap}", key="Value", value="#{pageSession.physDestName}");
+        listAdd(list="$attribute{newList}", value="$attribute{nameMap}");
+        setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+
         prepareSuccessfulMsg();
         redirect(page="#{parentPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
     />
@@ -56,19 +63,16 @@
                 attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}", result => $attribute{objStr});
         createResourceRef(resourceName="#{pageSession.valueMap['Name']}", enabled="#{pageSession.valueMap2['Enabled'] == 'true'}");
 
-        // TODO: We might need to add something here to create the resource-ref, but I'm not seeing any examples of how
-        if (#{pageSession.hasPropertyTable}){
-            getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
 
-            createMap(result=>$attribute{nameMap});
-            mapPut(map="$attribute{nameMap}", key="selected", value="false");
-            mapPut(map="$attribute{nameMap}", key="Name", value="Name");
-            mapPut(map="$attribute{nameMap}", key="Value", value="#{pageSession.physDestName}");
-            listAdd(list="$attribute{newList}", value="$attribute{nameMap}");
-            
-            setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
-        }
+        createMap(result=>$attribute{nameMap});
+        mapPut(map="$attribute{nameMap}", key="selected", value="false");
+        mapPut(map="$attribute{nameMap}", key="Name", value="Name");
+        mapPut(map="$attribute{nameMap}", key="Value", value="#{pageSession.physDestName}");
+        listAdd(list="$attribute{newList}", value="$attribute{nameMap}");
+
+        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
         redirect(page="#{parentPage}?configName=#{configName}")
     />
 </sun:button>
