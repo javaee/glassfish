@@ -31,11 +31,11 @@
                         com.sun.enterprise.server.pluggable; \
                         com.sun.enterprise.security.jacc.provider; version=${project.osgi.version}
 Bundle-NativeCode: \
-        lib/libsolsparcauth.so ; \
+        libsolsparcauth.so ; \
         osname=SunOS ; \
         osname=Solaris ; \
         processor=sparc , \
-        lib/libsolx86auth.so ; \
+        libsolx86auth.so ; \
         osname=SunOS ; \
         osname=Solaris ; \
         processor=x86 , \

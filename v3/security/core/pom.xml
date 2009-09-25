@@ -87,12 +87,6 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
-                    <include>**/*.so</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
                     <include>**/admin-keyfile</include>
                 </includes>
             </resource>
@@ -139,6 +133,40 @@
                     </archive>
                 </configuration>
             </plugin>
+            <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-dependency-plugin</artifactId>
+           <executions>
+             <execution>
+               <id>copy-installed</id>
+               <phase>process-classes</phase>
+               <goals>
+                 <goal>copy</goal>
+               </goals>
+               <configuration>
+                 <artifactItems>
+                   <artifactItem>
+                     <groupId>solarisrealm</groupId>
+                     <artifactId>libsolsparcauth</artifactId>
+                     <version>1.0</version>
+                     <type>so</type>
+                   </artifactItem>
+                   <artifactItem>
+                     <groupId>solarisrealm</groupId>
+                     <artifactId>libsolx86auth</artifactId>
+                     <version>1.0</version>
+                     <type>so</type>
+                   </artifactItem>
+                 </artifactItems>
+                 <stripVersion>
+                    true
+                 </stripVersion>
+                 <!--<outputDirectory>${maven.project.build.outputDirectory}</outputDirectory>-->
+                 <outputDirectory>target/classes</outputDirectory>
+               </configuration>
+             </execution>
+           </executions>
+         </plugin> 
         </plugins> 
     </build>
     <dependencies>
