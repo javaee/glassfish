@@ -135,22 +135,22 @@ public class EjbCacheStatsProvider {
     @ManagedAttribute(id="cachemisses")
     @Description( "Number of times a user request fails to find an EJB in associated EJB cache instance")
     public RangeStatistic getCacheMisses() {
-        return EjbMonitoringUtils.getRangeStatisticForCurrentValue(
-                cacheMisses, delegate.getCacheMisses());
+        cacheMisses.setCount(delegate.getCacheMisses());
+        return cacheMisses.getStatistic();
     }
 
     @ManagedAttribute(id="cachehits")
     @Description( "Number of times a user request hits an EJB in associated EJB cache instance")
     public RangeStatistic getCacheHits() {
-        return EjbMonitoringUtils.getRangeStatisticForCurrentValue(
-                cacheHits, delegate.getCacheHits());
+        cacheHits.setCount(delegate.getCacheHits());
+        return cacheHits.getStatistic();
     }
 
     @ManagedAttribute(id="numbeansincache")
     @Description( "Number of EJBs in the associated EJB Cache")
     public RangeStatistic getNumBeansInCache() {
-        return EjbMonitoringUtils.getRangeStatisticForCurrentValue(
-                numBeans, delegate.getNumBeansInCache());
+        numBeans.setCount(delegate.getNumBeansInCache());
+        return numBeans.getStatistic();
     }
 
     @ManagedAttribute(id="numexpiredsessionsremoved")

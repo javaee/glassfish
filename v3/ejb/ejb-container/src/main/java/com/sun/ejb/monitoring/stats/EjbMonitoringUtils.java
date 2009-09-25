@@ -149,18 +149,4 @@ public class EjbMonitoringUtils {
         return beanSubTreeNode;
     }
 
-    static RangeStatistic getRangeStatisticForCurrentValue(
-            BoundedRangeStatisticImpl stat, long current) {
-        stat.setCurrent(current);
-
-        long mark = stat.getLowWaterMark();
-        stat.setLowWaterMark((current < mark) ? current : mark);
-
-        mark = stat.getHighWaterMark();
-        stat.setLowWaterMark((current > mark) ? current : mark);
-
-        stat.setLastSampleTime(System.currentTimeMillis());
-        return stat.getStatistic();
-    }
-
 }

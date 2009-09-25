@@ -120,15 +120,15 @@ public class EjbPoolStatsProvider {
     @ManagedAttribute(id="numbeansinpool")
     @Description( "Number of EJBs in associated pool")
     public RangeStatistic getNumBeansInPool() {
-        return EjbMonitoringUtils.getRangeStatisticForCurrentValue(
-                beansInPool, delegate.getNumBeansInPool());
+        beansInPool.setCount(delegate.getNumBeansInPool());
+        return beansInPool.getStatistic();
     }
 
     @ManagedAttribute(id="numthreadswaiting")
     @Description( "Number of threads waiting for free beans")
     public RangeStatistic getNumThreadsWaiting() {
-        return EjbMonitoringUtils.getRangeStatisticForCurrentValue(
-                threadsWaiting, delegate.getNumThreadsWaiting());
+        threadsWaiting.setCount(delegate.getNumThreadsWaiting());
+        return threadsWaiting.getStatistic();
     }
 
     @ManagedAttribute(id="totalbeanscreated")
