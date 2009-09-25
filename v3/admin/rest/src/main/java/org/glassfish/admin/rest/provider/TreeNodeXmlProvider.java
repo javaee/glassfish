@@ -146,10 +146,10 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
             if (node.hasChildNodes()) {
                 try {
                         result = result + Constants.INDENT; //indent
-                        result = result + getStartXmlElement(getResourcesKey());
+                        result = result + getStartXmlElement(getResourcesKey().replace(' ', '-'));
                         elementName = node.getName();
                         result = result + getElementLink(uriInfo, elementName);
-                        result = result + getEndXmlElement(getResourcesKey());
+                        result = result + getEndXmlElement(getResourcesKey().replace(' ', '-'));
                         result = result + "\n";
                 } catch (Exception e) {
                     e.printStackTrace();
