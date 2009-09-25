@@ -36,8 +36,16 @@
 import java.io.*;
 import java.net.*;
 import java.net.HttpURLConnection;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import com.sun.ejte.ccl.reporter.*;
+
 import org.apache.catalina.util.Base64;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /*
  * Unit test for Issue 9549: incorrect range stats
@@ -78,20 +86,20 @@ public class WebTest {
 
     public void doTest() {
         try {
-            int count503 = getCount("count503");
+            int count503 = getCount("count503", "Count503");
             System.out.println("count503 = " + count503);
-            int count5xx = getCount("count5xx");
+            int count5xx = getCount("count5xx", "Count5xx");
             System.out.println("count5xx = " + count5xx);
-            int errorcount = getCount("errorcount");
+            int errorcount = getCount("errorcount", "ErrorCount");
             System.out.println("errorcount = " + errorcount);
 
             invokeURL("http://" + host + ":" + port + contextRoot + "/statuscode?code=503");
             
-            int count503_2 = getCount("count503");
+            int count503_2 = getCount("count503", "Count503");
             System.out.println("count503_2 = " + count503_2);
-            int count5xx_2 = getCount("count5xx");
+            int count5xx_2 = getCount("count5xx", "Count5xx");
             System.out.println("count5xx_2 = " + count5xx_2);
-            int errorcount_2 = getCount("errorcount");
+            int errorcount_2 = getCount("errorcount", "ErrorCount");
             System.out.println("errorcount_2 = " + errorcount_2);
 
             boolean ok = (count503 >= 0 && count503_2 == (count503 + 1)) &&
@@ -107,12 +115,12 @@ public class WebTest {
 
     private String invokeURL(String urlString) throws Exception {
      
-        String line = null;
+        StringBuilder sb = new StringBuilder();
 
         URL url = new URL(urlString);
         System.out.println("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.addRequestProperty("accept", "application/json");
+        conn.addRequestProperty("accept", "application/xml");
         if (adminPassword != null) {
             conn.setRequestProperty("Authorization", "Basic " +
                 new String(Base64.encode((adminUser + ":" + adminPassword).getBytes())));
@@ -126,7 +134,10 @@ public class WebTest {
             try {
                 is = conn.getInputStream();
                 reader = new BufferedReader(new InputStreamReader(is));
-                line = reader.readLine();
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
             } finally {
                 if (is != null) {
                     try {
@@ -145,28 +156,30 @@ public class WebTest {
             System.out.println("Get response code: " + responseCode);
         }
 
-        return line;
+        return sb.toString();
     }
 
-    private int getCount(String monitorPath) throws Exception {
-        int count = -1;
+    private int getCount(String monitorPath, String countName) throws Exception {
         String result = invokeURL("http://" + adminHost + ":" + adminPort +
                 "/monitoring/domain/server/http-service/server/request/" + monitorPath);
-        if (result != null) {
-            count = parseCount(result);
-        }
-        return count;
+        return parseCount(result, countName);
     }
 
-    private int parseCount(String resultStr) throws Exception {
+    private int parseCount(String resultStr, String countName) throws Exception {
+        int count = -1;
         System.out.println("parseCount: " + resultStr);
-        String prefix = "\"Count\" :";
-        int ind1 = resultStr.indexOf(prefix);
-        int ind2 = -1;
-        if (ind1 > 0) {
-            ind2 = resultStr.indexOf(",", ind1);
+        if (resultStr != null) {
+            DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = db.parse(new InputSource(new ByteArrayInputStream(resultStr.getBytes())));
+            NodeList nlist = doc.getDocumentElement().getElementsByTagName(countName);
+            if (nlist != null && nlist.getLength() > 0) {
+                Element element = (Element) nlist.item(0);
+                String countStr = element.getAttribute("Count");
+                if (countStr != null) {
+                    count = Integer.parseInt(countStr);
+                }
+            }
         }
-        return ((ind1 != -1 && ind2 != -1) ?
-                Integer.parseInt(resultStr.substring(ind1 + prefix.length() + 1, ind2)) : -1);
+        return count;
     }
 }
