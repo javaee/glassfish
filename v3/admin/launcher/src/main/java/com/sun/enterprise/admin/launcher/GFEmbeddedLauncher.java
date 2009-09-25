@@ -40,7 +40,7 @@ class GFEmbeddedLauncher extends GFLauncher {
     String getMainClass() throws GFLauncherException {
         String className = System.getenv(GFE_RUNSERVER_CLASS);
         if (className == null)
-            return "org.glassfish.embedded.EmbeddedMain";
+            return "org.glassfish.tests.embedded.EmbeddedMain";
         return className;
     }
 
@@ -48,6 +48,7 @@ class GFEmbeddedLauncher extends GFLauncher {
     public synchronized void setup() throws GFLauncherException, MiniXmlParserException {
         // remember -- this is designed exclusively for SQE usage
         // don't do it mmore than once -- that would be silly!
+
 
         if (setup)
             return;
@@ -87,6 +88,10 @@ class GFEmbeddedLauncher extends GFLauncher {
             info.setDomainRootDir(new File(System.getenv(INSTALL_HOME)));
             MiniXmlParser parser = new MiniXmlParser(dx, instanceName);
             info.setAdminPorts(parser.getAdminPorts());
+            File logFile = new File(dom, "logs");
+            logFile = new File(logFile, "server.log");
+            logFilename = logFile.getAbsolutePath();
+
         }
         catch (Exception e) {
             // temp todo
@@ -100,6 +105,9 @@ class GFEmbeddedLauncher extends GFLauncher {
             adminPorts.add(4848);
             info.setAdminPorts(adminPorts);
         }
+        GFLauncherLogger.addLogFileHandler(getLogFilename(), info);
+
+        //super.fixLogFilename();
 
     /*
     String domainName = parser.getDomainName();
@@ -108,6 +116,10 @@ class GFEmbeddedLauncher extends GFLauncher {
     }
      */
 
+    }
+
+    public String getLogFilename() throws GFLauncherException {
+        return logFilename;
     }
 
     @Override
@@ -316,7 +328,7 @@ class GFEmbeddedLauncher extends GFLauncher {
     private File javaExe;
     private File domainDir;
     private File domainXml;
-    private String javaDbClassPath;
+    private String javaDbClassPath, logFilename;
     private static final String GFE_RUNSERVER_JAR = "GFE_RUNSERVER_JAR";
     private static final String GFE_RUNSERVER_CLASS = "GFE_RUNSERVER_CLASS";
     private static final String GFE_JAR = "GFE_JAR";
