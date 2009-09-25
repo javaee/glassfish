@@ -119,7 +119,15 @@ public class EnableMonitoring implements AdminCommand {
             for (String nv: strArr) { 
                 if (nv.length() > 0) {
                     nvArr = nv.split("=");
-                    setModuleMonitoringLevel(nvArr[0], nvArr[1], report);
+                    if (nvArr.length > 1) {
+                        if (isValidString(nvArr[1])) {
+                            setModuleMonitoringLevel(nvArr[0], nvArr[1], report);
+                        }
+                    } else {
+                        if (isValidString(nvArr[0])) {
+                            setModuleMonitoringLevel(nvArr[0], "HIGH", report);
+                        }
+                    }
                 }
             } 
         }
