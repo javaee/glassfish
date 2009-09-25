@@ -88,6 +88,7 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
                 public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {
                     Applications applications = (Applications) params[0];
                     Server servr = (Server) params[1];
+                    Domain dom = (Domain) params[2];
 
                     // 1. transform all old application elements to new 
                     //    application element
@@ -388,10 +389,16 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
                         }
                     }
 
+                    // 3. add a new empty system-applications element
+                    // for v3 system applications
+                    SystemApplications systemApps = dom.createChild(
+                        SystemApplications.class);
+                    dom.setSystemApplications(systemApps);
+
                     return null;
                 }
 
-            }, apps, server);
+            }, apps, server, domain);
         } catch(TransactionFailure tf) {
             Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading application", tf);
             throw new RuntimeException(tf);
