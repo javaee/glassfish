@@ -48,7 +48,7 @@ public class ProbeClientMethodHandleImpl
 
     private int clientMethodId;
 
-    private boolean enabled;
+    private boolean enabled = true;
 
     private ProbeClientInvoker clientMethodInvoker;
 

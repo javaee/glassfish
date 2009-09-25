@@ -39,12 +39,16 @@ package org.glassfish.flashlight.provider;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import java.util.*;
+import java.util.concurrent.*;
 import org.glassfish.flashlight.client.ProbeClientInvoker;
 import org.glassfish.flashlight.client.ProbeHandle;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import org.glassfish.api.monitoring.ProbeInfo;
 import org.glassfish.flashlight.FlashlightUtils;
 import org.glassfish.flashlight.impl.client.DTraceClientInvoker;
@@ -97,23 +101,45 @@ public class FlashlightProbe
     }
 
     public synchronized boolean addInvoker(ProbeClientInvoker invoker) {
-    	boolean isFirst = invokerList.size() == 0;
-        invokerList.add(invoker);
+    	boolean isFirst = invokers.isEmpty();
+
+        if(invokers.putIfAbsent(invoker.getId(), invoker) != null) {
+            printd("&&&&&&&&&&&&&&     Adding an invoker that already exists: " + invoker.getId() +  "  &&&&&&&&&&");
+        }
+        else
+            printd("$$$$$$$$$$$$   Adding an Invoker that does not exist: " + invoker.getId() +   " $$$$$$$$$$$$$");
+        //if (this.providerClazz.getName().equals("org.glassfish.web.admin.monitor.JspProbeProvider"))
+            printd("********************** Total invokers = " + invokers.size());
         listenerEnabled.set(true);
-        
         return isFirst;
     }
 
     public synchronized boolean removeInvoker(ProbeClientInvoker invoker) {
-        invokerList.remove(invoker);
-        listenerEnabled.set(invokerList.size() > 0);
+        ProbeClientInvoker pci = invokers.remove(invoker.getId());
+
+        if(pci != null) {
+            printd("##########     Removing an invoker that already exists: " + pci.getId() +  "  ##########");
+        }
+        else
+            printd("%%%%%%%%%     Failed to remove an invoker that does not exist: " + invoker.getId() +  "  %%%%%%%%%");
+        //if (this.providerClazz.getName().equals("org.glassfish.web.admin.monitor.JspProbeProvider"))
+            printd("********************** Total invokers = " + invokers.size());
+
+        listenerEnabled.set(!invokers.isEmpty());
         
         return listenerEnabled.get();
     }
 
     public void fireProbe(Object[] params) {
-        if(listenerEnabled.get()) {
-            for (ProbeClientInvoker invoker : invokerList)
+        if(!listenerEnabled.get())
+            return;
+
+        Set<Map.Entry<Integer, ProbeClientInvoker>> entries = invokers.entrySet();
+        
+        for (Map.Entry<Integer, ProbeClientInvoker> entry : entries) {
+            ProbeClientInvoker invoker = entry.getValue();
+            printd ("+++++++++++++++++  Invoking probe: " + entry.getKey());
+            if(invoker != null)
                 invoker.invoke(params);
         }
     }
@@ -204,7 +230,20 @@ public class FlashlightProbe
         return hidden;
     }
 
+    private void printd(String str) {
+        if (ddebug && (this.providerClazz.getName().equals("org.glassfish.web.admin.monitor.JspProbeProvider")))  {
+            System.out.println(this.providerClazz.getName() + " : " + str);
+            //printStackTrace();
+        }
+    }
+
+    private void printStackTrace() {
+        for(StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+            System.out.println("- " + stackTraceElement);
+        }
+    }
     public static String SELF = "@SELF";
+    private boolean ddebug = false;
     private int id;
     private Class providerClazz;
     private String moduleProviderName;
@@ -213,7 +252,7 @@ public class FlashlightProbe
     private String probeProviderName;
     private String[] probeParamNames;
     private Class[] paramTypes;
-    private List<ProbeClientInvoker> invokerList = new ArrayList(2);
+    //private List<ProbeClientInvoker> invokerList = new ArrayList(2);
     private String providerJavaMethodName;
     private AtomicBoolean listenerEnabled = new AtomicBoolean(false);
     private String probeDesc;
@@ -221,4 +260,5 @@ public class FlashlightProbe
     private Method  dtraceMethod;
     private boolean hasSelf;
     private boolean hidden;
+    private ConcurrentMap<Integer, ProbeClientInvoker> invokers = new ConcurrentHashMap<Integer, ProbeClientInvoker>();
 }
