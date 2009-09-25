@@ -42,39 +42,34 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
-import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
+import org.jvnet.hk2.component.Habitat;
+import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import org.jboss.webbeans.transaction.spi.TransactionServices;
 
 public class TransactionServicesImpl implements TransactionServices {
 
-    private TransactionManager transactionManager = null;
+    private JavaEETransactionManager transactionManager = null;
 
-    public TransactionServicesImpl() {
-        try {
-            InitialContext c = new InitialContext();
-            transactionManager = (TransactionManager)c.lookup("java:appserver/TransactionManager");
-        } catch (NamingException e) {
+    public TransactionServicesImpl(Habitat habitat) {
+        transactionManager = habitat.getByContract(JavaEETransactionManager.class);
+        if (transactionManager == null) {
             throw new RuntimeException("Unable to retrieve transaction mgr.");
         }
     }
 
     public boolean isTransactionActive() {
         try {
-            return getUserTransaction().getStatus() == STATUS_ACTIVE;
+            return transactionManager.getStatus() == STATUS_ACTIVE;
         } catch (SystemException e) {
             throw new RuntimeException("Unable to determine transaction status", e);
         }
     }
 
-    public TransactionManager getTransactionManager() {
-        return transactionManager;
-    }
-
     public void registerSynchronization(Synchronization observer) {
         try {
-            getTransactionManager().getTransaction().registerSynchronization(observer);
+            transactionManager.registerSynchronization(observer);
         } catch (Exception e) {
             throw new RuntimeException("Unable to register synchronization " + observer + 
             " for current transaction", e);
