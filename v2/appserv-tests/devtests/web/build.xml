@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="444"/>
+    <property name="TOTAL_EXPECTED" value="451"/>
 
     &commonSetup;
     &commonBuild;
@@ -177,11 +177,9 @@
         <ant dir="errorPageExceptionTypeWrapper" target="all"/>
         <ant dir="httpServletGetAllDeclaredMethods" target="all"/>
         <ant dir="getServerNameAndPort" target="all"/>
-<!-- XXX temporarily commented out due to IT 9704
         <ant dir="sessionIdUrlRewrite" target="all"/>
         <ant dir="servlet-3.0/sessionIdUrlRewriteSessionTrackingMode" target="all"/>
         <ant dir="servlet-3.0/sessionIdUrlRewriteSessionTrackingModeCustomCookieName" target="all"/>
--->
         <ant dir="sessionIdPresentInBothRewrittenUrlAndCookieByDefault" target="all"/>
         <ant dir="sessionIdPresentOnlyInCookieIfUrlRewritingDisabled" target="all"/>
         <ant dir="dirListing" target="all"/>
@@ -258,9 +256,7 @@
         <ant dir="servletEmptyLoadOnStartup" target="all"/>
         <ant dir="sessionExpired" target="all"/>
         <ant dir="servletSSLRequestAttributes" target="all"/>
-<!-- XXX temporarily commented out due to IT 9704
         <ant dir="servletRequestURIMultipleSemicolons" target="all"/>
--->
         <ant dir="servletToJspFileMapping" target="all"/>
         <ant dir="sessionSetAttributeJavaxNamingContext" target="all"/>
         <ant dir="servlet-3.0/sessionCookieConfig" target="all"/>
@@ -327,9 +323,7 @@
         <ant dir="relativeRedirectAllowed" target="all"/>
         <ant dir="invokerServletDisabled" target="all"/>
         <ant dir="jmxUndeployEvent" target="all"/>
-<!-- XXX temporarily commented out due to IT 9704
         <ant dir="jrouteIdInCookieOrURL" target="all"/>
--->
         <ant dir="formHintField" target="all"/>
         <ant dir="formHintFieldPostWithQueryParam" target="all"/>
         <ant dir="formHintFieldPostWithQueryParamPrecedence" target="all"/>
@@ -347,9 +341,7 @@
         <ant dir="serverRedirectWithQueryString" target="all"/>
         <ant dir="sessionIdCustomGenerator" target="all"/>
         <ant dir="sessionJvmRoute" target="all"/>
-<!-- XXX temporarily commented out due to IT 9704
         <ant dir="sessionPropertyEnableCookiesInstanceLevel" target="all"/>
--->
         <ant dir="sessionSerializeOnShutdownOnly" target="all"/>
         <ant dir="singleSignOnCookieSecure" target="all"/>
         <ant dir="singleSignOnHttpServiceDynamicReconfig" target="all"/>
@@ -418,9 +410,7 @@
         <ant dir="ssl" target="all"/>
         <ant dir="anonymousAccessForbidden" target="all"/>
         <ant dir="securityConstraintMapping" target="all"/>
-<!-- XXX temporarily commented out due to IT 9704
         <ant dir="sslCookie" target="all"/>
--->
         <ant dir="installationPathDisclosure" target="all"/>
         <ant dir="programmaticLogin" target="all"/>
         <ant dir="traceEnabled" target="all"/>
