@@ -38,6 +38,8 @@ package com.sun.ejb.monitoring.stats;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.ejb.containers.StatefulSessionContainer;
+
 import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.external.statistics.*;
@@ -51,28 +53,64 @@ import org.glassfish.gmbal.*;
  */
 public class StatefulSessionBeanStatsProvider extends EjbMonitoringStatsProvider {
 
-    private CountStatisticImpl messageCount = new CountStatisticImpl("MessageCount",
-            "count", "Number of messages received for a message-driven bean");
+    private BoundedRangeStatisticImpl methodReadyStat = null;
+    private BoundedRangeStatisticImpl passiveCount = null;
 
-    public StatefulSessionBeanStatsProvider(String appName, String moduleName, 
-            String beanName) {
+    private int methodReadyCount = 0;
+    private StatefulSessionContainer delegate;
+
+    public StatefulSessionBeanStatsProvider(StatefulSessionContainer delegate,
+            String appName, String moduleName, String beanName) {
+
         super(appName, moduleName, beanName);
+        this.delegate = delegate;
+
+        long now = System.currentTimeMillis();
+
+        methodReadyStat = new BoundedRangeStatisticImpl(
+            0, 0, 0, delegate.getMaxCacheSize(), 0,
+            "MethodReadyCount", "count", "Number of stateful session beans in MethodReady state",
+            now, now);
+
+        passiveCount = new BoundedRangeStatisticImpl(
+            0, 0, 0, Long.MAX_VALUE, 0,
+            "PassiveCount", "count", "Number of stateful session beans in Passive state",
+            now, now);
     }
 
-    @ManagedAttribute(id="messagecount")
-    @Description( "Number of messages received for a message-driven bean")
-    public CountStatistic getCreateCount() {
-        return messageCount.getStatistic();
+    @ManagedAttribute(id="methodreadycount")
+    @Description( "Number of stateful session beans in MethodReady state")
+    public RangeStatistic getMethodReadyCount() {
+        methodReadyStat.setCount(methodReadyCount);
+        return methodReadyStat.getStatistic();
     }
 
-    @ProbeListener("glassfish:ejb:bean:messageDeliveredEvent")
-    public void messageDeliveredEvent(
+    @ManagedAttribute(id="passivecount")
+    @Description( "Number of stateful session beans in Passive state")
+    public RangeStatistic getPassiveCount() {
+        passiveCount.setCount(delegate.getPassiveCount());
+        return passiveCount.getStatistic();
+    }
+
+    @ProbeListener("glassfish:ejb:bean:methodReadyAddEvent")
+    public void methodReadyAddEvent(
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {
         if (isValidRequest(appName, modName, ejbName)) {
-            log ("messageDeliveredEvent", "MessageDrivenBeanStatsProvider");
-            messageCount.increment();
+            log ("methodReadyAddEvent", "StatefulSessionBeanStatsProvider");
+            methodReadyCount++;
+        }
+    }
+
+    @ProbeListener("glassfish:ejb:bean:methodReadyRemoveEvent")
+    public void methodReadyRemoveEvent(
+            @ProbeParam("appName") String appName,
+            @ProbeParam("modName") String modName,
+            @ProbeParam("ejbName") String ejbName) {
+        if (isValidRequest(appName, modName, ejbName)) {
+            log ("methodReadyRemoveEvent", "StatefulSessionBeanStatsProvider");
+            methodReadyCount--;
         }
     }
 

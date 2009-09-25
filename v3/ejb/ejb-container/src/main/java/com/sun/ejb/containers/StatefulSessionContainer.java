@@ -355,7 +355,7 @@ public final class StatefulSessionContainer
 
     protected EjbMonitoringStatsProvider getMonitoringStatsProvider(
             String appName, String modName, String ejbName) {
-        return new StatefulSessionBeanStatsProvider(/**this,**/ appName, modName, ejbName);
+        return new StatefulSessionBeanStatsProvider(this, appName, modName, ejbName);
     }
 
 
@@ -3010,10 +3010,16 @@ public final class StatefulSessionContainer
 
     public void incrementMethodReadyStat() {
         statMethodReadyCount++;
+        ejbProbeNotifier.methodReadyAddEvent(
+                containerInfo.appName, containerInfo.modName,
+                containerInfo.ejbName);
     }
 
     public void decrementMethodReadyStat() {
         statMethodReadyCount--;
+        ejbProbeNotifier.methodReadyRemoveEvent(
+                containerInfo.appName, containerInfo.modName,
+                containerInfo.ejbName);
     }
 
 
