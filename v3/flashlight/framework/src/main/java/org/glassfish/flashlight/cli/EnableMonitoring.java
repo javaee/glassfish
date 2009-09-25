@@ -73,7 +73,7 @@ public class EnableMonitoring implements AdminCommand {
     private String options;
 
     @Param(optional=true)
-    private String level;
+    private String modules;
 
     @Param(optional=true)
     private String mbean;
@@ -113,8 +113,8 @@ public class EnableMonitoring implements AdminCommand {
         // elements should have been set to avoid multiple processing
 
         // module monitoring levels
-        if ((level != null) && (level.length() > 0)) {
-            String[] strArr = level.split(":"); 
+        if ((modules != null) && (modules.length() > 0)) {
+            String[] strArr = modules.split(":"); 
             String[] nvArr = null;
             for (String nv: strArr) { 
                 if (nv.length() > 0) {
