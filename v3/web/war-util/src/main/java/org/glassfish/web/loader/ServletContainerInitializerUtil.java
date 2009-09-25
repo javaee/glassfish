@@ -255,10 +255,14 @@ public class ServletContainerInitializerUtil {
                                     className = className.substring(0, className.length()-6);
                                     Class aClass = cl.loadClass(className);
                                     initializerList = checkAgainstInterestList(aClass, interestList, initializerList);
-                                } catch (ClassNotFoundException e) {
-                                    log.log(Level.WARNING,
-                                        "servletContainerInitializerUtil.cnfWarning",
-                                        anEntry.getName());
+                                } catch (Throwable t) {
+                                    if (log.isLoggable(Level.FINEST)) {
+                                        log.log(Level.FINEST,
+                                            "servletContainerInitializerUtil.classLoadingError",
+                                            new Object[] {
+                                                anEntry.getName(),
+                                                t.toString()});
+                                    }
                                     continue;
                                 }
                             }
@@ -357,17 +361,22 @@ public class ServletContainerInitializerUtil {
                 String fileName = file.getPath();
                 if (fileName.endsWith(".class")) {
                     try {
-                        Class aClass = cl.loadClass(getClassNameFromPath(fileName, path));
-                        initializerList = checkAgainstInterestList(aClass, interestList, initializerList);
-                    } catch (ClassNotFoundException e) {
-                        log.log(Level.WARNING,
-                            "servletContainerInitializerUtil.cnfWarning",
-                            fileName);
+                        Class aClass = cl.loadClass(getClassNameFromPath(
+                            fileName, path));
+                        initializerList = checkAgainstInterestList(aClass,
+                            interestList, initializerList);
+                    } catch (Throwable t) {
+                        if (log.isLoggable(Level.FINEST)) {
+                            log.log(Level.FINEST,
+                                "servletContainerInitializerUtil.classLoadingError",
+                                new Object[] {fileName, t.toString()});
+                        }
                         continue;
                     }
                 }
             } else {
-                initializerList = scanDirectory(file, path, cl, interestList, initializerList);
+                initializerList = scanDirectory(file, path, cl,
+                    interestList, initializerList);
             }
         }
         return initializerList;
