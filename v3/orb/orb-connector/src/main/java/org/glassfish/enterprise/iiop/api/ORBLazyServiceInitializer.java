@@ -55,19 +55,18 @@ import java.util.logging.Logger;
  *
  * @author Ken Saks
  */
-// TODO @Service
+@Service
 public class ORBLazyServiceInitializer implements LazyServiceInitializer, PostConstruct {
 
-static Logger logger = LogDomains.getLogger(ORBLazyServiceInitializer.class, LogDomains.CORBA_LOGGER);
+static Logger logger = LogDomains.getLogger(ORBLazyServiceInitializer.class, LogDomains.SERVER_LOGGER);
 
 
     @Inject
     private GlassFishORBHelper orbHelper;
 
-    private HandleRequestDelegate delegate;
+    boolean initializedSuccessfully = false;
 
     public void postConstruct() {
-       System.out.println("in ORBLazyServiceInitializer::postConstruct");
     }
 
     public String getServiceName() {
@@ -78,31 +77,33 @@ static Logger logger = LogDomains.getLogger(ORBLazyServiceInitializer.class, Log
 
     public boolean initializeService() {
 
-        boolean success = true;
         try {
 
             orbHelper.getORB();
 
+            initializedSuccessfully = true;
+
+            // TODO add check to ensure that lazy init is enabled for the orb
+            // and throw exception if not
+
         } catch(Exception e) {
             logger.log(Level.WARNING, "ORB initialization failed in lazy init", e);
-            success = false;
         }
 
-        return success;
+        return initializedSuccessfully;
     }
 
 
     public void handleRequest(SelectableChannel channel) {
-        delegate.handleRequest(channel);
+        if( initializedSuccessfully) {
+            orbHelper.getSelectableChannelDelegate().handleRequest(channel);
+        } else {
+            logger.log(Level.WARNING, "Cannot handle SelectableChannel request in ORBLazyServiceInitializer." +
+                    "ORB did not initialize successfully");
+        }
     }
 
-    public void setDelegate(HandleRequestDelegate d) {
-        delegate = d;
-    }
 
-    public static interface HandleRequestDelegate {
 
-        public void handleRequest(SelectableChannel channel);
 
-    }
 }

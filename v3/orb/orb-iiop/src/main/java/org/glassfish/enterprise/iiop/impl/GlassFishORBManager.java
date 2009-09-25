@@ -50,13 +50,20 @@ import org.glassfish.enterprise.iiop.api.GlassFishORBLifeCycleListener;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.omg.CORBA.ORB;
 
+import com.sun.corba.ee.spi.transport.CorbaTransportManager;
+import com.sun.corba.ee.spi.transport.TransportDefault;
+import com.sun.corba.ee.spi.transport.CorbaAcceptor;
+
 import com.sun.enterprise.util.Utility;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
@@ -500,7 +507,14 @@ public final class GlassFishORBManager {
                 // Add -ORBInitRef for INS to work
                 orbInitRefArgs = getORBInitRef(orbInitialHost, initialPort);
             }
-            checkAdditionalORBListeners(orbInitProperties);
+
+            // In a server, don't configure any default acceptors so that lazy init
+            // can be used.  Actual lazy init setup takes place in PEORBConfigurator
+            if (processType == ProcessType.Server) {
+                validateIiopListeners();
+                orbInitProperties.put(ORBConstants.NO_DEFAULT_ACCEPTORS, "true");
+            }
+
             checkConnectionSettings(orbInitProperties);
             checkMessageFragmentSize(orbInitProperties);
             checkServerSSLOutboundSettings(orbInitProperties);
@@ -524,7 +538,7 @@ public final class GlassFishORBManager {
             // is initialized based on configuration parameters found in
             // domain.xml. On the client side this is not done
 
-            if (processType == ProcessType.Server) {
+            if (processType.isServer()) {
                 PEORBConfigurator.setThreadPoolManager();
             }
 
@@ -543,7 +557,7 @@ public final class GlassFishORBManager {
             try {
                 Utility.setContextClassLoader(GlassFishORBManager.class.getClassLoader());
 
-                if( processType == ProcessType.Server) {
+                if( processType.isServer()) {
 
                     // start glassfish-corba-orb bundle
                     ModulesRegistry modulesRegistry = habitat.getComponent(ModulesRegistry.class);
@@ -567,13 +581,14 @@ public final class GlassFishORBManager {
                 //
                 // TODO @@@ ORB has a classloading dependency on OSGI classes so for now
                 // set osgi flag based on server vs. client
-                boolean useOSGI = (processType == ProcessType.Server);
+                boolean useOSGI = processType.isServer();
 
                 orb = ORBFactory.create(args, orbInitProperties, useOSGI);
 
             } finally {
                 Utility.setContextClassLoader(prevCL);
             }
+
 
             // Done to indicate this is a server and
             // needs to create listen ports.
@@ -585,7 +600,7 @@ public final class GlassFishORBManager {
             }
 
 
-            if( processType == ProcessType.Server ) {
+            if( processType.isServer() ) {
                 // J2EEServer's persistent server port is same as ORBInitialPort.
                 orbInitialPort = getORBInitialPort();
 
@@ -675,23 +690,6 @@ public final class GlassFishORBManager {
                 if (!Boolean.valueOf(iiopListenerBeans[0].getEnabled())) {
                     props.setProperty(ORB_DISABLED_PORTS_PROPERTY, initialPort);
                 }
-                // Set the default server port to equal the initial port.
-                // This will be the port that is used both for object refs and
-                // for the name service
-                // REVISIT: For now setting this value only if we have a valid
-                // server configuration. This is meant to circumvent a client-side
-                // problem. The ACC uses the same GlassFishORBManager and hence ends up
-                // creating a listener (yuk!) during root POA initialization (yuk!).
-                // It is best to let this listener not come up on any fixed port.
-                // Once this problem is fixed we can move this property setting
-                // outside.
-                if (!Boolean.valueOf(iiopListenerBeans[0].getEnabled())) {
-                    // If the plain iiop listener is disabled do not create
-                    // a listener on this port - bug 4927187
-                    props.setProperty(SUN_ORB_SERVER_PORT_PROPERTY, "-1");
-                } else {
-                    props.setProperty(SUN_ORB_SERVER_PORT_PROPERTY, initialPort);
-                }
             }
         }
 
@@ -703,13 +701,15 @@ public final class GlassFishORBManager {
         // use same port.
         props.setProperty(OMG_ORB_INIT_PORT_PROPERTY, initialPort);
 
+
         // Done to initialize the Persistent Server Port, before any
         // POAs are created. This was earlier done in POAEJBORB
-        // Do it only in the appserver, not on appclient
-        if (processType == ProcessType.Server) {
+        // Do it only in the appserver, not on appclient.  
+        if ( processType.isServer() ) {
             props.setProperty(ORBConstants.PERSISTENT_SERVER_PORT_PROPERTY,
                     initialPort);
         }
+       
 
         if (debug) {
             if (logger.isLoggable(Level.FINE))
@@ -721,52 +721,33 @@ public final class GlassFishORBManager {
         return initialPort;
     }
 
-    private void checkAdditionalORBListeners(Properties props) {
-        // REVISIT: Having to do the null check because this code is shared by the ACC
+    private void validateIiopListeners() {
         if (iiopListenerBeans != null) {
-            // This should be the only place we set additional ORB listeners.
-            // So there is no need to check if the property is already set.
-            StringBuffer listenSockets = new StringBuffer("");
-            for (int i = 0; i < iiopListenerBeans.length; i++) {
-                if (i == 0 && iiopListenerBeans[0].getSsl() == null) {
-                    // Ignore first listener if its non-SSL, because it
-                    // gets created by default using ORBInitialHost/Port.
-                    continue;
+            int lazyCount = 0 ;
+		    for (IiopListener ilb : iiopListenerBeans) {
+                boolean securityEnabled = Boolean.valueOf( ilb.getSecurityEnabled() ) ;
+                boolean isLazy = Boolean.valueOf( ilb.getLazyInit() ) ;
+                if( isLazy ) {
+                    lazyCount++;
+                }
+                if (lazyCount > 1) {
+                    throw new IllegalStateException("Invalid iiop-listener " + ilb.getId() +
+                            ". Only one iiop-listener can be configured with lazy-init=true");
                 }
 
-                if (Boolean.valueOf(iiopListenerBeans[i].getEnabled())) {
-                    if (!Boolean.valueOf(iiopListenerBeans[i].getSecurityEnabled()) ||
-                            iiopListenerBeans[i].getSsl() == null) {
-
-                        checkForAddrAny(props, iiopListenerBeans[i].getAddress());
-                        listenSockets.append((listenSockets.length() > 0 ? "," : "")
-                                + IIOP_CLEAR_TEXT_CONNECTION
-                                + ":" + iiopListenerBeans[i].getPort());
-                    } else {
-                        Ssl sslBean = null;
-                        sslBean = iiopListenerBeans[i].getSsl();
-                        assert sslBean != null;
-
-                        // parse clientAuth
-                        String type;
-                        boolean clientAuth = Boolean.valueOf(sslBean.getClientAuthEnabled());
-                        if (clientAuth)
-                            type = SSL_MUTUALAUTH;
-                        else
-                            type = SSL;
-
-                        // Ignoring cert alias etc.
-                        listenSockets.append((listenSockets.length() > 0 ? "," : "")
-                                + type + ":" + iiopListenerBeans[i].getPort());
+                if (securityEnabled || ilb.getSsl() == null) {
+                    // no-op
+                } else {
+                    if (isLazy) {
+                        throw new IllegalStateException("Invalid iiop-listener " + ilb.getId() +
+                                ". Lazy-init not supported for SSL iiop-listeners");
                     }
-                }
-            }
+                    Ssl sslBean = ilb.getSsl() ;
+                    assert sslBean != null ;
 
-            // Set the value both in the props object and in the system properties.
-            props.setProperty(ORB_LISTEN_SOCKET_PROPERTY, listenSockets.toString());
-        }
-
-        return;
+		        }
+		    }
+	    }
     }
 
     private void checkConnectionSettings(Properties props) {

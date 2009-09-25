@@ -44,9 +44,20 @@ import com.sun.corba.ee.spi.orb.ORBConfigurator;
 import com.sun.corba.ee.spi.orbutil.copyobject.ObjectCopierFactory;
 import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPoolManager;
 import com.sun.corba.ee.spi.presentation.rmi.InvocationInterceptor;
+import com.sun.corba.ee.spi.transport.CorbaTransportManager;
+import com.sun.corba.ee.spi.transport.CorbaAcceptor;
+import com.sun.corba.ee.spi.transport.TransportDefault;
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.config.serverbeans.IiopListener;
+import com.sun.grizzly.config.dom.Ssl;
 import org.glassfish.enterprise.iiop.api.IIOPConstants;
 import org.glassfish.enterprise.iiop.util.S1ASThreadPoolManager;
+
+import java.nio.channels.SocketChannel;
+import java.net.Socket;
+
+import org.glassfish.enterprise.iiop.api.ORBLazyServiceInitializer;
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 
 
 // TODO import org.omg.CORBA.TSIdentification;
@@ -56,16 +67,29 @@ import org.glassfish.enterprise.iiop.util.S1ASThreadPoolManager;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Arrays;
+import java.util.Properties;
+import java.nio.channels.SelectableChannel;
 
 public class PEORBConfigurator implements ORBConfigurator {
 
     private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(LogDomains.CORBA_LOGGER);
 
+    private static final String SSL = "SSL";
+    private static final String SSL_MUTUALAUTH = "SSL_MUTUALAUTH";
+    private static final String IIOP_CLEAR_TEXT_CONNECTION =
+            "IIOP_CLEAR_TEXT";
+    private static final String DEFAULT_ORB_INIT_HOST = "localhost";
+
     // TODO private static TSIdentification tsIdent;
     private static ORB theORB;
     private static ThreadPoolManager threadpoolMgr = null;
     private static boolean txServiceInitialized = false;
+
+    private CorbaAcceptor lazyAcceptor = null;
 
     static {
         // TODO tsIdent = new TSIdentificationImpl();
@@ -95,6 +119,16 @@ public class PEORBConfigurator implements ORBConfigurator {
 
         configureCopiers(orb);
         configureCallflowInvocationInterceptor(orb);
+
+        // In the server-case, iiop acceptors need to be set up after the initial part of the
+        // orb creation but before any portable interceptor initialization
+        IIOPUtils iiopUtils = IIOPUtils.getInstance();
+        if( iiopUtils.getProcessType().isServer() ) {
+            IiopListener[] iiopListenerBeans =   (IiopListener[]) IIOPUtils.getInstance().
+                    getIiopService().getIiopListener().toArray(new IiopListener[0]);
+            this.createORBListeners(iiopUtils, iiopListenerBeans, orb);
+        }
+
     }
 
     private static void configureCopiers(ORB orb) {
@@ -142,5 +176,98 @@ public class PEORBConfigurator implements ORBConfigurator {
                     }
                 }
         );
+    }
+
+    private CorbaAcceptor addAcceptor( org.omg.CORBA.ORB orb, boolean isLazy, String host, String type, int port ) {
+        com.sun.corba.ee.spi.orb.ORB theOrb = (com.sun.corba.ee.spi.orb.ORB) orb;
+	    CorbaTransportManager ctm = theOrb.getTransportManager() ;
+	    CorbaAcceptor acceptor ;
+	    if (isLazy) {
+            acceptor = TransportDefault.makeLazyCorbaAcceptor( theOrb, port, host, type );
+	    } else {
+		    acceptor = TransportDefault.makeStandardCorbaAcceptor( theOrb, port, host, type ) ;
+	    }
+	    ctm.registerAcceptor( acceptor ) ;
+        return acceptor;
+	}
+
+	private static final Set<String> ANY_ADDRS = new HashSet<String>(
+	    Arrays.asList( "0.0.0.0", "::", "::ffff:0.0.0.0" ) ) ;
+
+	private String handleAddrAny( String hostAddr )  {
+	    if (ANY_ADDRS.contains( hostAddr )) {
+            try {
+                return java.net.InetAddress.getLocalHost().getHostAddress() ;
+            } catch (java.net.UnknownHostException exc) {
+                logger.log( Level.WARNING, "Unknown host exception : Setting host to localhost" ) ;
+                return DEFAULT_ORB_INIT_HOST ;
+            }
+        } else {
+            return hostAddr ;
+        }
+	}
+
+    private void createORBListeners( IIOPUtils iiopUtils, IiopListener[] iiopListenerBeans, org.omg.CORBA.ORB orb ) {
+
+
+	    if (iiopListenerBeans != null) {
+            int lazyCount = 0 ;
+		    for (IiopListener ilb : iiopListenerBeans) {
+                boolean securityEnabled = Boolean.valueOf( ilb.getSecurityEnabled() ) ;
+                boolean isLazy = Boolean.valueOf( ilb.getLazyInit() ) ;
+                if( isLazy ) {
+                    lazyCount++;
+                }
+                if (lazyCount > 1) {
+                    throw new IllegalStateException("Invalid iiop-listener " + ilb.getId() +
+                            ". Only one iiop-listener can be configured with lazy-init=true");
+                }
+                int port = Integer.valueOf( ilb.getPort() ) ;
+                String host = handleAddrAny( ilb.getAddress() ) ;
+
+                if (securityEnabled || ilb.getSsl() == null) {
+                    CorbaAcceptor acceptor =
+                            addAcceptor( orb, isLazy, host, IIOP_CLEAR_TEXT_CONNECTION, port ) ;
+                    if( isLazy ) {
+                        lazyAcceptor = acceptor;
+                    }
+                } else {
+                    if (isLazy) {
+                        throw new IllegalStateException("Invalid iiop-listener " + ilb.getId() +
+                                ". Lazy-init not supported for SSL iiop-listeners");
+                    }
+                    Ssl sslBean = ilb.getSsl() ;
+                    assert sslBean != null ;
+
+                    boolean clientAuth = Boolean.valueOf( sslBean.getClientAuthEnabled() ) ;
+                    String type = clientAuth ? SSL_MUTUALAUTH : SSL ;
+                    addAcceptor( orb, isLazy, host, type, port ) ;
+		        }
+		    }
+
+            if( lazyCount == 1 ) {
+                GlassFishORBHelper orbHelper = iiopUtils.getHabitat().getComponent(GlassFishORBHelper.class);
+                orbHelper.setSelectableChannelDelegate(new AcceptorDelegateImpl(lazyAcceptor));
+            }
+	    }
+
+    }
+
+    private static class AcceptorDelegateImpl implements GlassFishORBHelper.SelectableChannelDelegate {
+
+        private CorbaAcceptor acceptor;
+
+        AcceptorDelegateImpl(CorbaAcceptor lazyAcceptor) {
+            acceptor = lazyAcceptor;
+        }
+
+        public void handleRequest(SelectableChannel channel) {
+
+            SocketChannel sch = (SocketChannel)channel ;
+            Socket socket = sch.socket() ;
+            acceptor.processSocket( socket ) ;
+
+        }
+
     }
 }

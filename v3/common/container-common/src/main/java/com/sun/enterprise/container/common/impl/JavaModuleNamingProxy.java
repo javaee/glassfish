@@ -208,19 +208,17 @@ public class JavaModuleNamingProxy
 
                     if( name.startsWith(JAVA_APP_CONTEXT) ) {
 
-                        // For portable EJB names relative to java:app, any module
+                        // For portable EJB names relative to java:app, module
                         // name is already contained in the lookup string.  We just
-                        // replace the logical java:app with the application name,
-                        // (which is the same as the module name for a stand-alone
-                        // module).
+                        // replace the logical java:app with the application name
+                        // in the case of an .ear.  Otherwise, in the stand-alone
+                        // module case the existing module-name already matches the global
+                        // syntax.
 
                         if (appName != null) {
                             javaGlobalName.append(appName);
                             javaGlobalName.append("/");
-                        } else {
-                            javaGlobalName.append(moduleName);
-                            javaGlobalName.append("/");
-                        }
+                        } 
 
                         // Replace java:app/ with the fully-qualified global portion
                         int javaAppLength = JAVA_APP_CONTEXT.length();

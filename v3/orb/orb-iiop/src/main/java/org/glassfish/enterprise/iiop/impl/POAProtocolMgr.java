@@ -118,16 +118,12 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
     @Inject
     private Habitat habitat;
 
-    private EjbService ejbService;
-
     public POAProtocolMgr() {}
 
     public void initialize(ORB o)
     {
 
         this.orb = (ORB)o;
-
-        ejbService = habitat.getByContract(EjbService.class);
 
         this.presentationMgr = 
             ((com.sun.corba.ee.spi.orb.ORB) orb).getPresentationManager();
@@ -354,6 +350,7 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
 			                + ejbKey + ": ejbId: " + ejbId);
 	        }
 
+            EjbService ejbService = habitat.getByContract(EjbService.class);
 
 		    result = ejbService.ejbIdToDescriptor(ejbId);
 

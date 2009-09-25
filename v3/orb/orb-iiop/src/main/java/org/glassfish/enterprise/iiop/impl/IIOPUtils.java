@@ -137,6 +137,15 @@ public class IIOPUtils implements PostConstruct {
         return habitat.getAllByContract(GlassFishORBLifeCycleListener.class);
     }
 
+    public ProcessType getProcessType() {
+        return processType;
+    }
+
+    public Habitat getHabitat() {
+        return habitat;
+    }
+
+
     public void setORB(ORB orb) {
         defaultORB = orb;
     }

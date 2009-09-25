@@ -17,6 +17,7 @@ import org.glassfish.internal.grizzly.LazyServiceInitializer;
 
 import java.util.Properties;
 import java.rmi.Remote;
+import java.nio.channels.SelectableChannel;
 
 import org.jvnet.hk2.component.PostConstruct;
 
@@ -65,6 +66,8 @@ public class GlassFishORBHelper implements PostConstruct {
     private volatile ProtocolManager protocolManager;
 
     private ORBLazyServiceInitializer lazyServiceInitializer;
+
+    private SelectableChannelDelegate selectableChannelDelegate;
 
     public void postConstruct() {
         orbFactory = habitat.getByContract(GlassFishORBFactory.class);
@@ -135,12 +138,19 @@ public class GlassFishORBHelper implements PostConstruct {
         return orb;
     }
 
-    public void setLazyServiceInitializer(ORBLazyServiceInitializer lazyInit) {
-        lazyServiceInitializer = lazyInit;
+
+    public void setSelectableChannelDelegate(SelectableChannelDelegate d) {
+        selectableChannelDelegate = d;
     }
 
-    public ORBLazyServiceInitializer getLazyServiceInitializer() {
-        return lazyServiceInitializer;
+    public SelectableChannelDelegate getSelectableChannelDelegate() {
+        return this.selectableChannelDelegate;
+    }
+
+    public static interface SelectableChannelDelegate {
+
+        public void handleRequest(SelectableChannel channel);
+
     }
     
 
