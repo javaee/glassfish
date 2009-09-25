@@ -170,7 +170,7 @@ public class ProviderUtil extends Util {
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         HashMap results = new HashMap();
         Class classObject = statistic.getClass();
-        Method[] methods = 	classObject.getDeclaredMethods();
+        Method[] methods = 	classObject.getMethods();
         for (Method method: methods) {
              int modifier = method.getModifiers();
              //consider only the public methods

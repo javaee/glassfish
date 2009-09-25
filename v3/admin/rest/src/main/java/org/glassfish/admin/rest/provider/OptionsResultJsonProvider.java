@@ -210,7 +210,7 @@ public class OptionsResultJsonProvider extends ProviderUtil implements MessageBo
         boolean first = true;
         while (iterator.hasNext()) {
            if (!first) {
-               result = result + ",";
+               result = result + ", ";
            }
            attributeName = iterator.next();
            String attributeValue =

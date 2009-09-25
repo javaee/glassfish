@@ -52,8 +52,10 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
+import org.glassfish.admin.rest.Constants;
+import org.glassfish.external.statistics.Statistic;
 import org.glassfish.flashlight.datatree.TreeNode;
-import  org.glassfish.external.statistics.Statistic;
+
 
 /**
  * @author Rajeshwar Patil
@@ -90,36 +92,39 @@ public class TreeNodeJsonProvider extends ProviderUtil implements MessageBodyWri
 
      private String getJson(List<TreeNode> proxy) {
         String result;
+        String indent = Constants.INDENT;
         result ="{" ;
-           result = result + getTypeKey();
-           result = result + ":";
-           result = result + "{";
-             result = result + getAttributes(proxy);
-           result = result + "}";
-           result = result + ",";
-           result = result + quote(getResourcesKey());
-           result = result + ":";
-           result = result + "[";
-             result = result + getResourcesLinks(proxy);
-           result = result + "]";
-        result = result + "}" ;
+        result = result + "\n\n" + indent;
+
+        result = result + getTypeKey() + ":{";
+        result = result + getAttributes(proxy, indent + Constants.INDENT);
+        result = result + "},";
+
+        result = result + "\n\n" + indent;
+        result = result + quote(getResourcesKey());
+        result = result + ":[";
+        result = result + getResourcesLinks(proxy, indent + Constants.INDENT);
+        result = result + "\n" + indent + "]";
+
+        result = result + "\n\n" + "}";
         return result;
     }
 
 
     private String getTypeKey() {
-       return upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/')));
+       return quote(upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/'))));
     }
 
 
-    private String getAttributes(List<TreeNode> nodeList) {
+    private String getAttributes(List<TreeNode> nodeList, String indent) {
         String result ="";
         for (TreeNode node : nodeList) {
             //process only the leaf nodes, if any
             if (!node.hasChildNodes()) {
                 //getValue() on leaf node will return one of the following -
                 //Statistic object, String object or the object for primitive type
-                result = result + quote(node.getName()) + " : " + jsonForNodeValue(node.getValue());
+                result = result +
+                        jsonForNodeValue(node.getName(), node.getValue(), indent);
                 result = result + ",";
             }
         }
@@ -130,7 +135,7 @@ public class TreeNodeJsonProvider extends ProviderUtil implements MessageBodyWri
     }
 
 
-    private String getResourcesLinks(List<TreeNode> nodeList) {
+    private String getResourcesLinks(List<TreeNode> nodeList, String indent) {
         String result = "";
         String elementName;
         for (TreeNode node: nodeList) {
@@ -138,6 +143,7 @@ public class TreeNodeJsonProvider extends ProviderUtil implements MessageBodyWri
             if (node.hasChildNodes()) {
                 try {
                     elementName = node.getName();
+                    result = result + "\n" + indent;
                     result = result + quote(getElementLink(uriInfo, elementName));
                     result = result + ",";
                 } catch (Exception e) {
@@ -152,9 +158,9 @@ public class TreeNodeJsonProvider extends ProviderUtil implements MessageBodyWri
     }
 
 
-    private String jsonForNodeValue(Object value) {
-        String result ="";
-        if (value == null) return result;
+    private String jsonForNodeValue(String name, Object value, String indent) {
+        String result = "";
+        if (value == null) return " " + quote(name) + ":";
 
         try {
             if (value instanceof Statistic) {
@@ -162,26 +168,23 @@ public class TreeNodeJsonProvider extends ProviderUtil implements MessageBodyWri
                 Map map = getStatistics(statisticObject);
                 Set<String> attributes = map.keySet();
                 Object attributeValue;
-                result = result + "{";
                 for (String attributeName: attributes) {
-                    
                     attributeValue = map.get(attributeName);
-                    result = result + quote(attributeName) + " : " + jsonValue(attributeValue);
+                    result = result + " " + quote(attributeName) + ":" + jsonValue(attributeValue);
                     result = result + ",";
                 }
 
                 int endIndex = result.length() - 1;
                 if (endIndex > 0) result = result.substring(0, endIndex);
 
-                result = result + "}";
+                result = "\n" + indent + quote(name) + ":" + "{" + result + "}";
                 return result;
             }
         } catch (Exception exception) {
             //log exception message as warning
         }
 
-        result = result + jsonValue(value);
-
+        result = " " + quote(name) + ":" + jsonValue(value);
         return result;
     }
 

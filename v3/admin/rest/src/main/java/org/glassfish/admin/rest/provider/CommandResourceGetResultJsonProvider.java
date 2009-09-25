@@ -98,6 +98,7 @@ public class CommandResourceGetResultJsonProvider extends ProviderUtil
         String result;
         String indent = Constants.INDENT;
         result ="{" ;
+        result = result + "\n\n" + indent;
 
         String commandDisplayName =
             upperCaseFirstLetter(eleminateHypen(proxy.getCommandDisplayName()));

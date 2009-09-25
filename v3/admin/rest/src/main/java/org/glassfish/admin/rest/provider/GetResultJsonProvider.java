@@ -98,6 +98,7 @@ public class GetResultJsonProvider extends ProviderUtil implements MessageBodyWr
         String result;
         String indent = Constants.INDENT;
         result ="{" ;
+        result = result + "\n\n" + indent;
 
         result = result + getTypeKey(proxy.getDom()) + ":{";
         result = result + getAttributes(proxy.getDom());
@@ -135,11 +136,11 @@ public class GetResultJsonProvider extends ProviderUtil implements MessageBodyWr
         String result ="";
         Set<String> attributes = proxy.model.getAttributeNames();
         for (String attribute : attributes) {
-            result = result + quote(attribute) + " : " + quote(proxy.attribute(attribute));
-            result = result + ",";
+            result = result + quote(attribute) + ":" + quote(proxy.attribute(attribute));
+            result = result + ", ";
         }
-        
-        int endIndex = result.length() - 1;
+
+        int endIndex = result.length() - 2;
         if (endIndex > 0) result = result.substring(0, endIndex );
         return result;
     }

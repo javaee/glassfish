@@ -99,7 +99,7 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
         }
 
         result = result + getResourcesLinks(proxy);
-        result = result + "\n" + getEndXmlElement(getTypeKey());
+        result = result + getEndXmlElement(getTypeKey());
         return result;
     }
 
@@ -115,11 +115,14 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
         for (TreeNode node : nodeList) {
             //process only the leaf nodes, if any
             if (!node.hasChildNodes()) {
-                result = result + " " + node.getName() + "=" + quote(xmlForPrimitiveValue(node.getValue()));
+                String value = xmlForPrimitiveValue(node.getValue());
+                if (value.length() > 0) {
+                    result = result + " " + node.getName() + "=" + quote(xmlForPrimitiveValue(node.getValue()));
+                }
             }
         }
 
-        result = result + ">";
+        result = result + ">" + "\n\n";
 
         //account for statistic values
         for (TreeNode node : nodeList) {
@@ -142,16 +145,20 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
             //process only the non-leaf nodes, if any
             if (node.hasChildNodes()) {
                 try {
-                        result = result + "\n";
                         result = result + Constants.INDENT; //indent
                         result = result + getStartXmlElement(getResourcesKey());
                         elementName = node.getName();
                         result = result + getElementLink(uriInfo, elementName);
                         result = result + getEndXmlElement(getResourcesKey());
+                        result = result + "\n";
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
+        }
+
+        if (result.length() > 1) {
+            result = result + "\n";
         }
 
         return result;
@@ -180,17 +187,17 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
                 Set<String> attributes = map.keySet();
                 Object attributeValue;
 
-                result = result + "\n";
                 result = result + Constants.INDENT;
                 result = result + "<" + statisticObject.getName();
                 for (String attributeName: attributes) {
                     attributeValue = map.get(attributeName);
-                    result = " " + result + attributeName + "=" +
+                    result = " " + result + " " + attributeName + "=" +
                          quote(attributeValue.toString());
                 }
                 result = result + ">";
                 result = result + getEndXmlElement(statisticObject.getName());
 
+                result = result + "\n\n";
                 return result;
             }
         } catch (Exception exception) {

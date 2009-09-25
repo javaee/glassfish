@@ -100,6 +100,7 @@ public class GetResultListJsonProvider extends ProviderUtil implements MessageBo
         String result;
         String indent = Constants.INDENT;
         result ="{" ;
+        result = result + "\n\n" + indent;
 
         result = result + getTypeKey() + ":{";
         result = result + getAttributes();
