@@ -47,7 +47,6 @@ import javax.security.auth.callback.*;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.*;
-import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -72,20 +71,29 @@ public final class TextLoginDialog implements LoginDialog {
 
     public TextLoginDialog() {
         BufferedReader d = 
-            new BufferedReader(new InputStreamReader(System.in)); 
+            new BufferedReader(new InputStreamReader(System.in));
+        String defaultUname = System.getProperty("user.name");
         do {
-            System.out.print
+            System.err.print
                 (localStrings.getLocalString
                     ("enterprise.security.login.username",
-                    "User Name: "));
+                    "User Name"));
+            if(defaultUname != null){
+                System.err.print("[" + defaultUname + "]: ");
+            }else{
+                System.err.print(": ");
+            }
             try {
                 username = d.readLine();
+                if((defaultUname != null) && ((username == null) || (username.trim().length() == 0))){
+                    username = defaultUname;
+                }
             } catch(IOException e) {
             }
         } while ((username == null) || (username.trim().length() == 0));
             
         do {
-            System.out.print
+            System.err.print
                 (localStrings.getLocalString
                     ("enterprise.security.login.password",
                     "Password: "));
@@ -103,10 +111,20 @@ public final class TextLoginDialog implements LoginDialog {
 		if(callbacks[i] instanceof NameCallback) {
 		    NameCallback nc = (NameCallback) callbacks[i];
 		    System.err.print(nc.getPrompt());
+                    if(nc.getDefaultName() != null){
+                        System.err.print("[" + nc.getDefaultName() + "]: ");
+                    }else{
+                        System.err.print(": ");
+                    }
+
 		    System.err.flush();
-		    nc.setName((new BufferedReader
+		    username=(new BufferedReader
 				(new
-				 InputStreamReader(System.in))).readLine());
+				 InputStreamReader(System.in))).readLine();
+                    if((nc.getDefaultName() != null) && ((username == null) || (username.trim().length() == 0))){
+                        username=nc.getDefaultName();
+                    }
+                    nc.setName(username);
 		    
 		} else if(callbacks[i] instanceof PasswordCallback) {
 		    PasswordCallback pc = (PasswordCallback) callbacks[i];
@@ -150,7 +168,7 @@ public final class TextLoginDialog implements LoginDialog {
 		    String lbl = (localStrings.getLocalString
 				  ("enterprise.security.keystore",
 				   "Enter the KeyStore Password "));
-		    String keystorePass = Globals.getDefaultHabitat().getComponent(SSLUtils.class).getKeyStorePass();
+		    String keystorePass = SSLUtils.getKeyStorePass();
 		    System.out.println (lbl+
 					" : (max 3 tries)"); 
 		    int cnt=0;

@@ -163,8 +163,13 @@ public class ClientPasswordLoginModule implements LoginModule {
             System.arraycopy (dest, 0, password, 0, dest.length);
 	} else{ 
 	    Callback[] callbacks = new Callback[2];
-	    callbacks[0] = new NameCallback(localStrings.getLocalString("login.username", "ClientPasswordModule username: "));
-	    callbacks[1] = new PasswordCallback(localStrings.getLocalString("login.password", "ClientPasswordModule password: "), false);
+            NameCallback nameCB = new NameCallback(localStrings.getLocalString("login.username", "ClientPasswordModule username"));
+            String defaultUname = System.getProperty("user.name");
+            if (defaultUname != null) {
+                nameCB = new NameCallback(localStrings.getLocalString("login.username", "ClientPasswordModule username"),defaultUname);
+            }
+            callbacks[0] = nameCB;
+            callbacks[1] = new PasswordCallback(localStrings.getLocalString("login.password", "ClientPasswordModule password: "), false);
 	    
 	    try {
 		callbackHandler.handle(callbacks);

@@ -200,14 +200,16 @@ class PassphraseDialog extends JDialog
 	    c.gridy = gridy;
 	    c.anchor = GridBagConstraints.CENTER;
 	    c.insets = new Insets(20, 10, 10, 2);
-	    JLabel jl = new JLabel(nameCallback.getPrompt());
+	    JLabel jl = new JLabel(nameCallback.getPrompt()+": ");
 	    gridbag.setConstraints(jl, c);
 	    pnl2.add(jl);
 	    c.gridx = gridx++;
 	    c.gridy = gridy++;
 	    c.fill = GridBagConstraints.HORIZONTAL;
 	    c.insets = new Insets(20, 3, 10, 10);
+            userField.setText(nameCallback.getDefaultName());
 	    gridbag.setConstraints(userField, c);
+            userField.selectAll();
 	    pnl2.add(userField);
 	}
 
@@ -242,7 +244,7 @@ class PassphraseDialog extends JDialog
 	    kpPanel.add (lbl);
 	    kpPanel.add (keystorePassword);
 	    /* get the keystore password */
-	    keystorePass = Globals.getDefaultHabitat().getComponent(SSLUtils.class).getKeyStorePass();
+	    keystorePass = SSLUtils.getKeyStorePass();
 	    // ok button For keystore password
 	    okForKP = new
 		JButton(localStrings.getLocalString
