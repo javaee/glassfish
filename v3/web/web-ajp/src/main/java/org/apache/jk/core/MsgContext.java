@@ -60,6 +60,7 @@ import java.io.ByteArrayInputStream;
 import java.net.InetAddress;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.logging.*;
 
 import com.sun.grizzly.tcp.ActionCode;
 import com.sun.grizzly.tcp.ActionHook;
@@ -82,10 +83,9 @@ import org.apache.jk.common.JkInputStream;
  * @author Costin Manolache
  */
 public class MsgContext implements ActionHook {
-    private static org.apache.commons.logging.Log log =
-        org.apache.commons.logging.LogFactory.getLog(MsgContext.class);
-    private static org.apache.commons.logging.Log logTime=
-        org.apache.commons.logging.LogFactory.getLog( "org.apache.jk.REQ_TIME" );
+
+    private static Logger log = Logger.getLogger(MsgContext.class.getName());
+    private static Logger logTime = Logger.getLogger( "org.apache.jk.REQ_TIME" );
 
     private int type;
     private Object notes[]=new Object[32];
@@ -122,7 +122,7 @@ public class MsgContext implements ActionHook {
         try {
             c2b = new C2BConverter("iso-8859-1");
         } catch(IOException iex) {
-            log.warn("Can't happen", iex);
+            log.log(Level.WARNING, "Can't happen", iex);
         }
        jkIS = new JkInputStream(this, bsize);
     }
@@ -226,7 +226,7 @@ public class MsgContext implements ActionHook {
     }
     
     public final boolean isLogTimeEnabled() {
-        return logTime.isDebugEnabled();
+        return logTime.isLoggable(Level.FINEST);
     }
 
     public JkInputStream getInputStream() {
@@ -294,26 +294,31 @@ public class MsgContext implements ActionHook {
     
     public void action(ActionCode actionCode, Object param) {
         if( actionCode==ActionCode.ACTION_COMMIT ) {
-            if( log.isDebugEnabled() ) log.debug("COMMIT " );
+            if( log.isLoggable(Level.FINEST) ) {
+                log.finest("COMMIT " );
+            }
             Response res=(Response)param;
 
             if(  res.isCommitted() ) {
-                if( log.isDebugEnabled() )
-                    log.debug("Response already committed " );
+                if( log.isLoggable(Level.FINEST) ) {
+                    log.finest("Response already committed " );
+                }
             } else {
                 try {
                     jkIS.appendHead( res );
                 } catch(IOException iex) {
-                    log.warn("Unable to send headers",iex);
+                    log.log(Level.WARNING, "Unable to send headers",iex);
                     setStatus(JK_STATUS_ERROR);
                 }
             }
         } else if( actionCode==ActionCode.ACTION_RESET ) {
-            if( log.isDebugEnabled() )
-                log.debug("RESET " );
-            
+            if( log.isLoggable(Level.FINEST) ) {
+                log.finest("RESET " );
+            }
         } else if( actionCode==ActionCode.ACTION_CLIENT_FLUSH ) {
-            if( log.isDebugEnabled() ) log.debug("CLIENT_FLUSH " );
+            if( log.isLoggable(Level.FINEST) ) {
+                log.finest("CLIENT_FLUSH " );
+            }
             Response res = (Response)param;
             if(!res.isCommitted()) {
 		action(ActionCode.ACTION_COMMIT, res);
@@ -322,18 +327,22 @@ public class MsgContext implements ActionHook {
                 source.flush( null, this );
             } catch(IOException iex) {
                 // This is logged elsewhere, so debug only here
-                log.debug("Error during flush",iex);
+                log.log(Level.FINEST, "Error during flush",iex);
                 res.setErrorException(iex);
                 setStatus(JK_STATUS_ERROR);
             }
             
         } else if( actionCode==ActionCode.ACTION_CLOSE ) {
-            if( log.isDebugEnabled() ) log.debug("CLOSE " );
-            
+            if( log.isLoggable(Level.FINEST) ) {
+                log.finest("CLOSE " );
+            }
             Response res=(Response)param;
             if( getStatus()== JK_STATUS_CLOSED || getStatus() == JK_STATUS_ERROR) {
                 // Double close - it may happen with forward 
-                if( log.isDebugEnabled() ) log.debug("Double CLOSE - forward ? " + res.getRequest().requestURI() );
+                if( log.isLoggable(Level.FINEST) ) {
+                    log.finest("Double CLOSE - forward ? " +
+                        res.getRequest().requestURI() );
+                }
                 return;
             }
                  
@@ -342,14 +351,14 @@ public class MsgContext implements ActionHook {
             try {            
                 jkIS.endMessage();
             } catch(IOException iex) {
-                log.debug("Error sending end packet",iex);
+                log.log(Level.FINEST, "Error sending end packet",iex);
                 setStatus(JK_STATUS_ERROR);
             }
             if(getStatus() != JK_STATUS_ERROR) {
                 setStatus(JK_STATUS_CLOSED );
             }
 
-            if( logTime.isDebugEnabled() ) 
+            if( logTime.isLoggable(Level.FINEST) ) 
                 logTime(res.getRequest(), res);
         } else if( actionCode==ActionCode.ACTION_REQ_SSL_ATTRIBUTE ) {
             Request req=(Request)param;
@@ -382,7 +391,7 @@ public class MsgContext implements ActionHook {
                         }
                     }
                 } catch(java.security.cert.CertificateException e) {
-                    log.error("Certificate convertion failed" , e );
+                    log.log(Level.SEVERE, "Certificate convertion failed" , e );
                     return;
                 }
  
@@ -400,16 +409,19 @@ public class MsgContext implements ActionHook {
                                                req.remoteAddr().toString()).
                                                getHostName());
                 } catch(IOException iex) {
-                    if(log.isDebugEnabled())
-                        log.debug("Unable to resolve "+req.remoteAddr());
+                    if(log.isLoggable(Level.FINEST)) {
+                        log.finest("Unable to resolve "+req.remoteAddr());
+                    }
                 }
             }
         } else if( actionCode==ActionCode.ACTION_ACK ) {
-            if( log.isTraceEnabled() )
-                log.trace("ACK " );
+            if( log.isLoggable(Level.FINEST) ) {
+                log.finest("ACK " );
+            }
         } else if ( actionCode == ActionCode.ACTION_REQ_SET_BODY_REPLAY ) {
-            if( log.isTraceEnabled() )
-                log.trace("Replay ");
+            if( log.isLoggable(Level.FINEST) ) {
+                log.finest("Replay ");
+            }
             ByteChunk bc = (ByteChunk)param;
             jkIS.setReplay(bc);
             req.setContentLength(bc.getLength()); // reset so re-read
@@ -430,9 +442,9 @@ public class MsgContext implements ActionHook {
         long t2= getLong( MsgContext.TIMER_POST_REQUEST ) -
             getLong( MsgContext.TIMER_PRE_REQUEST );
         
-        logTime.debug("Time pre=" + t1 + "/ service=" + t2 + " " +
-                      res.getContentLength() + " " + 
-                      uri );
+        logTime.finest("Time pre=" + t1 + "/ service=" + t2 + " " +
+                       res.getContentLength() + " " + 
+                       uri );
     }
 
     public void recycle() {
