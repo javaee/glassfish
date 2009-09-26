@@ -72,7 +72,8 @@ import java.util.logging.LogRecord;
  import static org.glassfish.admin.amx.logging.LogRecordEmitter.*;
  import static org.glassfish.admin.amx.logging.LogFileAccess.*;
  import static org.glassfish.admin.amx.logging.LogAnalyzer.*;
- 
+import org.jvnet.hk2.component.Habitat;
+
 //import com.sun.enterprise.server.logging.LoggingImplHook;
 
 /**
@@ -94,10 +95,12 @@ public final class LoggingImpl extends AMXImplBase
     private static final String	SERVER_LOG_NAME	= "server.log";
     private static final String	ACCESS_LOG_NAME	= "access.log";
     private final LoggingConfigImpl loggingConfig;
-//    private final GFFileHandler  gfFileHandler;
+    private final GFFileHandler  gfFileHandler;
     private final LogFilter logFilter;
     private final MessageIdCatalog msgIdCatalog;
     private final Logger logger;
+    private final Habitat mHabitat;
+
 
     final String  FILE_SEP;
     
@@ -131,13 +134,13 @@ public final class LoggingImpl extends AMXImplBase
     	
     	mLevelToNotificationTypeMap = initLevelToNotificationTypeMap();
         mNotificationTypeToNotificationBuilderMap  = new HashMap<String,NotificationBuilder>();
-// need to get reference to GFFileHandler to call methods directly.
         final ServerEnvironmentImpl env = InjectedValues.getInstance().getServerEnvironment();
         loggingConfig = new LoggingConfigImpl();
         loggingConfig.setupConfigDir(env.getConfigDirPath(), env.getLibPath());
         logFilter = new LogFilter();
         msgIdCatalog = new MessageIdCatalog();
-//        gfFileHandler =   InjectedValues.getInstance().getGFFileHandler();
+        mHabitat = InjectedValues.getInstance().getHabitat();
+        gfFileHandler = mHabitat.getComponent(GFFileHandler.class);
         logger = Logger.getAnonymousLogger();
 
     }
@@ -299,6 +302,7 @@ public final class LoggingImpl extends AMXImplBase
             attributes.put(gfHandler+".rotationTimelimitInMinutes", props.get(gfHandler+".rotationTimelimitInMinutes"));
             attributes.put(gfHandler+".rotationLimitInBytes", props.get(gfHandler+".rotationLimitInBytes"));
             attributes.put(gfHandler+".logtoConsole", props.get(gfHandler+".logtoConsole"));
+            attributes.put(gfHandler+".flushFrequency", props.get(gfHandler+".flushFrequency"));            
             attributes.put("handlers", props.get("handlers"));
             attributes.put(sysHandler+".useSystemLogging", props.get(sysHandler+".useSystemLogging"));
             return attributes;
@@ -321,16 +325,14 @@ public final class LoggingImpl extends AMXImplBase
         public synchronized void
     rotateAllLogFiles()
     {
-        unimplemented();
-    	//getLogMBean().rotateNow( );
+    	gfFileHandler.rotate( );
     }
 
 
         public synchronized void
     rotateLogFile( final String key )
     {
-        unimplemented();
-        
+
     	if ( ACCESS_KEY.equals( key ) )
     	{
     	    throw new IllegalArgumentException( "not supported: " + key );
@@ -338,8 +340,7 @@ public final class LoggingImpl extends AMXImplBase
     	}
     	else if ( SERVER_KEY.equals( key ) )
     	{
-    		// rotateAllLogFiles();
-            unimplemented();
+            gfFileHandler.rotate( );            
     	}
     	else
     	{
