@@ -147,7 +147,7 @@
         <antlr.version>2.7.6</antlr.version>
         <mq.version>4.4-016</mq.version>
         <jaxr.version>JAXR_RA_AS90_20060317</jaxr.version>
-        <webbeans.version>1.0.0.PREVIEW4</webbeans.version>
+        <webbeans.version>1.0.0.PREVIEW4.SP1</webbeans.version>
         <jersey.version>1.1.2-ea</jersey.version>
         <jbi.version>1.0</jbi.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
