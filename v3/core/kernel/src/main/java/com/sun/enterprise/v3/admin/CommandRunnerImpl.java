@@ -1281,6 +1281,10 @@ public class CommandRunnerImpl implements CommandRunner {
 
     private void doCommand(ExecutionContext inv, AdminCommand command) {
 
+        if (inv.parameters()==null) {
+            doCommand(inv.name(), inv.typedParams(), inv.report(), inv.inboundPayload(), inv.outboundPayload());
+            return;
+        }
         Properties parameters = inv.parameters();
         if (command==null) {
             command = getCommand(inv.name(), inv.report(), logger);
@@ -1375,6 +1379,7 @@ public class CommandRunnerImpl implements CommandRunner {
         }        
 
         private Properties parameters() { return params; }
+        private OpsParams typedParams() { return opsParams; }
         private String name() { return name; }
         private ActionReport report() { return report; }
         private Payload.Inbound inboundPayload() { return inbound; }
