@@ -95,8 +95,7 @@ public class Game implements Serializable
    public void reset()
    {
        System.out.println("In Game::reset()");
-       // @@@ Uncomment to force classloading problem
-       // sb.hello();
+       sb.hello();
 
       this.smallest = 0;
       this.guess = 0;
