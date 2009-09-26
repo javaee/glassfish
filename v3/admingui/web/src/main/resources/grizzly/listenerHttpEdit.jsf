@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
     setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/listenerHttpEdit.jsf?name=#{pageSession.Name}&listenerName=#{pageSession.listenerName}&configName=#{pageSession.configName}");
+    setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/networkListeners.jsf");
     setSessionAttribute(key="listenerTabs" value="httpTab");
 />
 <!composition template="/web/grizzly/http.layout"   >

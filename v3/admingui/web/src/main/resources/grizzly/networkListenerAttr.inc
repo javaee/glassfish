@@ -51,23 +51,38 @@
 
 
     <sun:property id="prop1" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.protocol}">
-    <sun:radioButton id="rdBtn" name="rdBtn"  label="$resource{i18n_web.grizzly.networkListener.createNewProtocol}"
+    <sun:radioButton id="rdBtn" name="rdBtn"
         selected="#{pageSession.rdBtn}"  selectedValue="create"  onClick="radioBtnAction('create');"  >
       <!beforeCreate
             setPageSessionAttribute(key="rdBtn", value="create");
       />
    </sun:radioButton>
-
+   <sun:staticText text="$resource{i18n_web.grizzly.networkListener.createNewProtocol}" />
    <sun:textField id="pName" required="#{false}" text="#{pageSession.valueMap['newProtocolName']}" submitForm="false" style="margin-left: 4pt" columns="$int{50}"  >
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{pNameId});
         />
     </sun:textField>
-   "<br/><br/>
 
-    <sun:radioButton id="existingRdBtn" name="rdBtn"  label="$resource{i18n_web.grizzly.networkListener.useExistingProtocol}"
+        "<br/><br/>
+        <sun:staticText text="$resource{i18n_web.http.defVirtualServerLabel}" style="margin-left: 12pt" />
+        <sun:dropDown id="vs" selected="#{pageSession.valueMap['DefaultVirtualServer']}" labels="$pageSession{vsList}"  values="$pageSession{vsList}" style="margin-left: 4pt" >
+        <!beforeCreate
+            getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service" type="virtual-server" result="#{pageSession.vsList}");
+            mapPut(map="#{pageSession.valueMap}" key="DefaultVirtualServer"  value="server")
+        />
+        <!afterCreate
+            getClientId(component="$this{component}" clientId=>$page{newVsId});
+        />
+       </sun:dropDown>
+
+   "<br/><br/><br/>
+
+    <sun:radioButton id="existingRdBtn" name="rdBtn"
         selected="#{pageSession.rdBtn}"  selectedValue="existing"  onClick="radioBtnAction('existing')"/>
-        <sun:dropDown id="protocoldw" selected="#{pageSession.valueMap['existingProtocolName']}"  disabled="true"  labels="$pageSession{protocolListLabel}" >
+
+        <sun:staticText text="$resource{i18n_web.grizzly.networkListener.useExistingProtocol}" />
+        <sun:dropDown id="protocoldw" selected="#{pageSession.valueMap['existingProtocolName']}"  disabled="true" style="margin-left: 4pt" labels="$pageSession{protocolListLabel}" >
             <!beforeCreate
                 getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols" type="protocol" result="#{pageSession.protocolListLabel}");
             />
@@ -84,7 +99,7 @@
                 getClientId(component="$this{component}" clientId=>$page{protocolChoiceId});
             />
         </sun:textField>
-        "<br/><br/>
+        "<br/><br/><br/>
         </sun:property>
 
         <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.status}"  helpText="$resource{i18n_web.grizzly.networkListener.statusHelp}" >

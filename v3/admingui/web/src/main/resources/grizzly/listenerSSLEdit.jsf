@@ -39,6 +39,7 @@
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
     setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/listenerSSLEdit.jsf?name=#{pageSession.Name}&listenerName=#{pageSession.listenerName}&configName=#{pageSession.configName}");
+    setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/networkListeners.jsf");
     setSessionAttribute(key="listenerTabs" value="sslTab");
 />
 

@@ -48,6 +48,8 @@ import java.util.HashMap;
 import javax.management.Attribute;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.core.Util;
+import org.glassfish.admin.amx.intf.config.grizzly.Http;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
 import org.glassfish.admingui.common.util.GuiUtil;
@@ -92,11 +94,17 @@ public class WebHandlers {
         // Take care protocol first.
         Map aMap = new HashMap();
         if ("create".equals(protocolChoice)){
+            //Setup to create HTTP also
+            Map httpAttrs = new HashMap();
+            httpAttrs.put("DefaultVirtualServer", attrMap.get("DefaultVirtualServer"));
+            aMap.put(Util.deduceType(Http.class), httpAttrs);
+
             aMap.put("Name",  attrMap.get("newProtocolName"));
             aMap.put("SecurityEnabled",  securityEnabled);
             AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getConfig("server-config").getNetworkConfig().child("protocols");
             AMXProxy pp = amx.createChild("protocol",  aMap);
             protocolName = pp.getName();
+
         }else{
             protocolName = (String) attrMap.get("existingProtocolName");
             AMXProxy amx = V3AMX.getInstance().getConfig("server-config").getNetworkConfig().child("protocols").childrenMap("protocol").get(protocolName);
