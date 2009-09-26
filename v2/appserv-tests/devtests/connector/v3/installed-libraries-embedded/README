@@ -10,7 +10,7 @@ jdbcra.rar (all other generated rars) will have jdbc.jar's extension-name (jdbc)
 in its EXTENSION_LIST so that it will be available at runtime.
 
 
-2) ant all--libraries
+2) ant all
 This test case tests installed libraries support (specified via deploy --libraries <lib> <EAR>) 
 of a resource-adapter by specyfing --libraries during deployment of .ear
 
