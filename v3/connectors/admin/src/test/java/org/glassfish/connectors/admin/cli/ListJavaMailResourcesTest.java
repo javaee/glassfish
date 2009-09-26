@@ -68,7 +68,7 @@ public class ListJavaMailResourcesTest extends ConfigApiTest {
     @Test
     public void testExecuteSuccessListOriginal() {
         ListJavaMailResources listCommand = habitat.getComponent(ListJavaMailResources.class);
-        cr.doCommand("list-javamail-resources", listCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("list-javamail-resources", context.getActionReport()).parameters(parameters).execute(listCommand);
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
         if (origNum == 0) {
             //Nothing to list
@@ -93,13 +93,13 @@ public class ListJavaMailResourcesTest extends ConfigApiTest {
         parameters.setProperty("jndi_name", "mailresource");
         CreateJavaMailResource createCommand = habitat.getComponent(CreateJavaMailResource.class);
         assertTrue(createCommand != null);
-        cr.doCommand("create-javamail-resource", createCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-javamail-resource", context.getActionReport()).parameters(parameters).execute(createCommand);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
 
         parameters.clear();
         ListJavaMailResources listCommand = habitat.getComponent(ListJavaMailResources.class);
         assertTrue(listCommand != null);
-        cr.doCommand("list-javamail-resources", listCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("list-javamail-resources", context.getActionReport()).parameters(parameters).execute(listCommand);
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
         assertEquals(origNum + 1, list.size());
         List<String> listStr = new ArrayList<String>();
@@ -121,12 +121,12 @@ public class ListJavaMailResourcesTest extends ConfigApiTest {
         parameters.setProperty("jndi_name", "mailresource");
         DeleteJavaMailResource deleteCommand = habitat.getComponent(DeleteJavaMailResource.class);
         assertTrue(deleteCommand != null);
-        cr.doCommand("delete-javamail-resource", deleteCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("delete-javamail-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
 
         parameters.clear();
         ListJavaMailResources listCommand = habitat.getComponent(ListJavaMailResources.class);
-        cr.doCommand("list-javamail-resources", listCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("list-javamail-resources", context.getActionReport()).parameters(parameters).execute(listCommand);
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
         assertEquals(origNum - 1, list.size());
         List<String> listStr = new ArrayList<String>();

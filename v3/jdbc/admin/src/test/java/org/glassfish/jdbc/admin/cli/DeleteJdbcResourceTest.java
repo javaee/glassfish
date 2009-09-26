@@ -105,7 +105,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
                 LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
         
-        cr.doCommand("create-jdbc-resource", createCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-jdbc-resource", context.getActionReport()).parameters(parameters).execute(createCommand);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         
         // Setup for delete-jdbc-resource
@@ -119,7 +119,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
         // Cleanup any leftover jdbc/foo resource - could be success or failure depending on the test
         parameters.clear();
         parameters.setProperty("DEFAULT", "jdbc/foo");
-        cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("delete-jdbc-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
     }
 
     /**
@@ -132,8 +132,8 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "jdbc/foo");
         
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
-        
+        cr.getCommandInvocation("delete-jdbc-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
+
         // Check the exit code is SUCCESS
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         
@@ -182,7 +182,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "jdbc/foo");
         
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("delete-jdbc-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         
         // Check the exit code is SUCCESS
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
@@ -231,7 +231,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "doesnotexist");
         
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("delete-jdbc-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         
         // Check the exit code is FAILURE
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
@@ -249,7 +249,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
     @Test
     public void testExecuteFailNoOperand() {
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("delete-jdbc-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         
         // Check the exit code is FAILURE
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
@@ -270,7 +270,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "jdbc/foo");
         
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("delete-jdbc-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         
         // Check the exit code is FAILURE
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
@@ -290,7 +290,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "jdbc/foo");
         
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("delete-jdbc-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         
         //Check that the resource was NOT deleted
         boolean isDeleted = true;

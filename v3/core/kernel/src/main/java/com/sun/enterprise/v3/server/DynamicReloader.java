@@ -199,8 +199,7 @@ public class DynamicReloader implements Runnable {
         deployParam.put(DeploymentProperties.PATH, appInfo.getApplicationDirectory().getCanonicalPath());
         deployParam.put(DeploymentProperties.NAME, appInfo.getApplication().getName());
         deployParam.put(DeploymentProperties.KEEP_REPOSITORY_DIRECTORY, "true");
-        final ActionReport report = new XMLActionReporter();
-        commandRunner.doCommand("deploy", deployParam, report);
+        commandRunner.getCommandInvocation("deploy", new XMLActionReporter()).parameters(deployParam).execute();
         
         
         appInfo.recordLoad();

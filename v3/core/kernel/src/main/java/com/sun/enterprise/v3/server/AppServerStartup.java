@@ -335,7 +335,7 @@ public class AppServerStartup implements ModuleStartup {
             if (context.getArguments().containsKey("--noforcedshutdown")) {
                 params.put("force", "false");    
             }
-            runner.doCommand("stop-domain", params, new PlainTextActionReporter());
+            runner.getCommandInvocation("stop-domain", new PlainTextActionReporter()).parameters(params).execute();
             return;
         }
     }

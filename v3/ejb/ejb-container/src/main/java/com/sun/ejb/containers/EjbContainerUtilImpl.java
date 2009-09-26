@@ -438,7 +438,7 @@ public class EjbContainerUtilImpl
                             params.origin = OpsParams.Origin.load;
                         }
 
-                        ExtendedDeploymentContext dc = deployment.getContext(_logger, app, params, report);
+                        ExtendedDeploymentContext dc = deployment.getBuilder(_logger, params, report).source(app).build();
                         deployment.deploy(dc);
 
                         if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {

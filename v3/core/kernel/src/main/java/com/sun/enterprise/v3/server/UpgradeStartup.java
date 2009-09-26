@@ -199,7 +199,7 @@ public class UpgradeStartup implements ModuleStartup {
         try {
             Thread.sleep(3000);
             if (runner!=null) {
-                runner.doCommand("stop-domain", new Properties(), new PlainTextActionReporter());
+                runner.getCommandInvocation("stop-domain", new PlainTextActionReporter()).execute();
             }
 
         } catch (InterruptedException e) {
@@ -317,8 +317,7 @@ public class UpgradeStartup implements ModuleStartup {
         deployParams.enabled = false;
 
         ActionReport report = new PlainTextActionReporter();
-
-        commandRunner.doCommand("deploy", deployParams, report, null, null);
+        commandRunner.getCommandInvocation("deploy", report).parameters(deployParams).execute();
 
         // should we delete the temp file after we are done
         // it seems it might be useful to keep it around for debugging purpose

@@ -4,6 +4,7 @@ import com.sun.enterprise.v3.common.HTMLActionReporter;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.*;
 import org.glassfish.tests.utils.ConfigApiTest;
 import org.glassfish.tests.utils.Utils;
 import static org.junit.Assert.assertEquals;
@@ -72,10 +73,8 @@ public class ConfigAttributeSetTest  extends ConfigApiTest implements ConfigList
         parameters.put("value", "8090");
         parameters.put("DEFAULT", "configs.config.server-config.http-service.http-listener.http-listener-1.port");
 
-        ActionReport report = new HTMLActionReporter();
-
         // execute the set command.
-        runner.doCommand("set",  parameters, report);
+        runner.getCommandInvocation("set", new HTMLActionReporter()).parameters(parameters).execute();
                                                                                                                                                                                                                            
         // check the result.
         String port = listener.getPort();

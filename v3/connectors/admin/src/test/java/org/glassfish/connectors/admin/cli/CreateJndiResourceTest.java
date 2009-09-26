@@ -85,7 +85,8 @@ public class CreateJndiResourceTest extends ConfigApiTest {
         parameters.setProperty("factoryclass", "sampleClass");
         parameters.setProperty("jndi_name", "sample_jndi_resource");
         CreateJndiResource command = habitat.getComponent(CreateJndiResource.class);
-        cr.doCommand("create-jndi-resource", command, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-jndi-resource", context.getActionReport()).parameters(parameters).execute(command);
+
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isCreated = false;
         for (Resource resource : resources.getResources()) {
@@ -134,7 +135,7 @@ public class CreateJndiResourceTest extends ConfigApiTest {
         parameters.setProperty("factoryclass", "sampleClass");
         parameters.setProperty("jndi_name", "dupRes");
         CreateJndiResource command1 = habitat.getComponent(CreateJndiResource.class);
-        cr.doCommand("create-jndi-resource", command1, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-jndi-resource", context.getActionReport()).parameters(parameters).execute(command1);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isCreated = false;
         for (Resource resource : resources.getResources()) {
@@ -150,7 +151,7 @@ public class CreateJndiResourceTest extends ConfigApiTest {
         assertTrue(isCreated);
 
         CreateJndiResource command2 = habitat.getComponent(CreateJndiResource.class);
-        cr.doCommand("create-jndi-resource", command2, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-jndi-resource", context.getActionReport()).parameters(parameters).execute(command2);
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
         int numDupRes = 0;
         for (Resource resource : resources.getResources()) {
@@ -180,7 +181,7 @@ public class CreateJndiResourceTest extends ConfigApiTest {
         parameters.setProperty("description", "External JNDI Resource");
         parameters.setProperty("jndi_name", "sample_jndi_resource");
         CreateJndiResource command = habitat.getComponent(CreateJndiResource.class);
-        cr.doCommand("create-jndi-resource", command, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-jndi-resource", context.getActionReport()).parameters(parameters).execute(command);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isCreated = false;
         for (Resource resource : resources.getResources()) {
@@ -213,7 +214,7 @@ public class CreateJndiResourceTest extends ConfigApiTest {
         parameters.setProperty("jndilookupname", "sample_jndi");
         parameters.setProperty("jndi_name", "sample_jndi_resource");
         CreateJndiResource command = habitat.getComponent(CreateJndiResource.class);
-        cr.doCommand("create-jndi-resource", command, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-jndi-resource", context.getActionReport()).parameters(parameters).execute(command);
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
     }
 
@@ -228,7 +229,7 @@ public class CreateJndiResourceTest extends ConfigApiTest {
         parameters.setProperty("restype", "queue");
         parameters.setProperty("jndi_name", "sample_jndi_resource");
         CreateJndiResource command = habitat.getComponent(CreateJndiResource.class);
-        cr.doCommand("create-jndi-resource", command, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-jndi-resource", context.getActionReport()).parameters(parameters).execute(command);
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
     }
 }

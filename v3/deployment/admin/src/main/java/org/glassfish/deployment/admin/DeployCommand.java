@@ -223,7 +223,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             }
 
             // create the parent class loader
-            final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, archive, this, report, archiveHandler, initialContext);
+            final ExtendedDeploymentContext deploymentContext =
+                    deployment.getBuilder(logger, this, report).
+                            source(archive).archiveHandler(archiveHandler).build(initialContext);
 
             // reset the properties (might be null) set by the deployers when undeploying.
             if (undeployProps!=null) {
@@ -401,7 +403,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 subReport.setExtraProperties(new Properties());
             }
 
-            commandRunner.doCommand("undeploy", undeployParams, subReport, null, null);
+            CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("undeploy", subReport);
+            inv.parameters(undeployParams).execute();
             return subReport.getExtraProperties();
         }
         return null;

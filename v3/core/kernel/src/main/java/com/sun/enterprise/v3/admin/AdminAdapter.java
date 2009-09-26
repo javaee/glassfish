@@ -45,8 +45,7 @@ import com.sun.grizzly.tcp.Request;
 import com.sun.logging.LogDomains;
 import org.glassfish.admin.payload.PayloadImpl;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.Payload;
-import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.container.Adapter;
@@ -352,7 +351,8 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
             if (validatePrivacy(adminCommand)) {
             //if (adminCommand.getClass().getAnnotation(Visibility.class).privacy().equals(visibility.privacy())) {
                 // todo : needs to be changed, we should reuse adminCommand
-                commandRunner.doCommand(command, parameters, report, inboundPayload, outboundPayload);
+                CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation(command, report);
+                inv.parameters(parameters).inbound(inboundPayload).outbound(outboundPayload).execute();
             } else {
                 report.failure( logger,
                                 adminStrings.getLocalString("adapter.wrongprivacy",

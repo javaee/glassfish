@@ -87,14 +87,14 @@ public class DeleteJavaMailResourceTest extends ConfigApiTest {
         parameters.setProperty("jndi_name", "mail/MyMailSession");
         CreateJavaMailResource createCommand = habitat.getComponent(CreateJavaMailResource.class);
         assertTrue(createCommand != null);
-        cr.doCommand("create-javamail-resource", createCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-javamail-resource", context.getActionReport()).parameters(parameters).execute(createCommand);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
 
         parameters.clear();
         parameters.setProperty("jndi_name", "mail/MyMailSession");
         DeleteJavaMailResource deleteCommand = habitat.getComponent(DeleteJavaMailResource.class);
         assertTrue(deleteCommand != null);
-        cr.doCommand("delete-javamail-resource", deleteCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("delete-javamail-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isDeleted = true;
         for (Resource resource : resources.getResources()) {
@@ -133,7 +133,7 @@ public class DeleteJavaMailResourceTest extends ConfigApiTest {
     public void testExecuteFailDoesNotExist() {
         parameters.setProperty("jndi_name", "doesnotexist");
         DeleteJavaMailResource deleteCommand = habitat.getComponent(DeleteJavaMailResource.class);
-        cr.doCommand("delete-javamail-resource", deleteCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("delete-javamail-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
         logger.fine("msg: " + context.getActionReport().getMessage());
     }

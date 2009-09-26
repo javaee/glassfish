@@ -69,7 +69,7 @@ public class ListCustomResourcesTest extends ConfigApiTest {
     @Test
     public void testExecuteSuccessListOriginal() {
         ListCustomResources listCommand = habitat.getComponent(ListCustomResources.class);
-        cr.doCommand("list-custom-resources", listCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("list-custom-resources", context.getActionReport()).parameters(parameters).execute(listCommand);
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
         if (origNum == 0) {
             //Nothing to list.
@@ -93,12 +93,12 @@ public class ListCustomResourcesTest extends ConfigApiTest {
         parameters.setProperty("restype", "topic");
         parameters.setProperty("factoryclass", "javax.naming.spi.ObjectFactory");
         parameters.setProperty("jndi_name", "custom_resource1");
-        cr.doCommand("create-custom-resource", createCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-custom-resource", context.getActionReport()).parameters(parameters).execute(createCommand);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
 
         parameters.clear();
         ListCustomResources listCommand = habitat.getComponent(ListCustomResources.class);
-        cr.doCommand("list-custom-resources", listCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("list-custom-resources", context.getActionReport()).parameters(parameters).execute(listCommand);
 
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
         assertEquals(origNum + 1, list.size());
@@ -121,12 +121,12 @@ public class ListCustomResourcesTest extends ConfigApiTest {
         DeleteCustomResource deleteCommand = habitat.getComponent(DeleteCustomResource.class);
         assertTrue(deleteCommand != null);
         parameters.setProperty("jndi_name", "custom_resource1");
-        cr.doCommand("delete-custom-resource", deleteCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("delete-custom-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
 
         parameters.clear();
         ListCustomResources listCommand = habitat.getComponent(ListCustomResources.class);
-        cr.doCommand("list-custom-resources", listCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("list-custom-resources", context.getActionReport()).parameters(parameters).execute(listCommand);
 
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
         if ((origNum - 1) == 0) {

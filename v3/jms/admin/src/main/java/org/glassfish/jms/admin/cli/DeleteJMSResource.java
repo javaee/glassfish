@@ -107,7 +107,7 @@ public class DeleteJMSResource implements AdminCommand {
             {
               Properties params = new Properties();
               params.setProperty("jndi_name", jndiName);
-              commandRunner.doCommand("delete-admin-object", params, subReport);
+	          commandRunner.getCommandInvocation("delete-admin-object", subReport).parameters(params).execute();
 
               if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
                     report.setMessage(localStrings.getLocalString("delete.jms.resource.cannotDeleteJMSAdminObject",
@@ -124,7 +124,7 @@ public class DeleteJMSResource implements AdminCommand {
                 {
                      Properties params = new Properties();
                      params.setProperty("connector_resource_name", jndiName);
-                     commandRunner.doCommand("delete-connector-resource", params, subReport);
+		             commandRunner.getCommandInvocation("delete-connector-resource", subReport).parameters(params).execute();
 
                     if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
                         report.setMessage(localStrings.getLocalString("delete.jms.resource.cannotDeleteJMSResource",
@@ -136,8 +136,7 @@ public class DeleteJMSResource implements AdminCommand {
 
                     params = new Properties();
                     params.setProperty("poolname", jndiName);
-
-                     commandRunner.doCommand("delete-connector-connection-pool", params, subReport);
+		            commandRunner.getCommandInvocation("delete-connector-connection-pool", subReport).parameters(params).execute();
 
                     if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
                         report.setMessage(localStrings.getLocalString("delete.jms.resource.cannotDeleteJMSPool",
@@ -160,7 +159,7 @@ public class DeleteJMSResource implements AdminCommand {
 
                      Properties params = new Properties();
                      params.setProperty("connector_resource_name", jndiName);
-                     commandRunner.doCommand("delete-connector-resource", params, subReport);
+		             commandRunner.getCommandInvocation("delete-connector-resource", subReport).parameters(params).execute();
 
                     if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
                         report.setMessage(localStrings.getLocalString("delete.jms.resource.cannotDeleteJMSResource",

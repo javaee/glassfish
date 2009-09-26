@@ -102,7 +102,7 @@ public class EmbeddedAdminCtrImpl implements EmbeddedAdminContainer {
                 return report.getMessage();
             }
         };
-        runner.doCommand(commandName, props, report);
+        runner.getCommandInvocation(commandName, report).parameters(props).execute();
         return ce;
     }
 

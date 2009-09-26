@@ -86,12 +86,12 @@ public class DeleteJndiResourceTest extends ConfigApiTest {
         parameters.setProperty("factoryclass", "javax.naming.spi.ObjectFactory");
         parameters.setProperty("jndi_name", "sample_jndi_resource");
         CreateJndiResource createCommand = habitat.getComponent(CreateJndiResource.class);
-        cr.doCommand("create-jndi-resource", createCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-jndi-resource", context.getActionReport()).parameters(parameters).execute(createCommand);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         parameters.clear();
         parameters.setProperty("jndi_name", "sample_jndi_resource");
         DeleteJndiResource deleteCommand = habitat.getComponent(DeleteJndiResource.class);
-        cr.doCommand("delete-jndi-resource", deleteCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("delete-jndi-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isDeleted = true;
         for (Resource resource : resources.getResources()) {
@@ -129,7 +129,7 @@ public class DeleteJndiResourceTest extends ConfigApiTest {
     public void testExecuteFailDoesNotExist() {
         parameters.setProperty("jndi_name", "doesnotexist");
         DeleteJndiResource deleteCommand = habitat.getComponent(DeleteJndiResource.class);
-        cr.doCommand("delete-jndi-resource", deleteCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("delete-jndi-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
         logger.fine("msg: " + context.getActionReport().getMessage());
     }

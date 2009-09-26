@@ -33,7 +33,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.internal.deployment.*;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 
 import java.util.*;
@@ -75,6 +75,9 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
     Map<String, ExtendedDeploymentContext> moduleDeploymentContexts = new HashMap<String, ExtendedDeploymentContext>();
 
     /** Creates a new instance of DeploymentContext */
+    public DeploymentContextImpl(Deployment.DeploymentContextBuilder builder, ServerEnvironment env) {
+        this(builder.report(), builder.logger(),  builder.sourceAsArchive(), builder.params(), env);
+    }
     public DeploymentContextImpl(ActionReport actionReport, Logger logger, 
         ReadableArchive source, OpsParams params, ServerEnvironment env) {
         this.originalSource = source;

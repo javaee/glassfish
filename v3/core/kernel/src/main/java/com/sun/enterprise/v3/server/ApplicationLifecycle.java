@@ -912,38 +912,105 @@ public class ApplicationLifecycle implements Deployment {
         return appRegistry.get(appName);
     }
 
-    public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params, ActionReport report)
-        throws IOException {
-        return getContext(logger, source, params, report, null);
+
+    public class DeploymentContextBuidlerImpl implements DeploymentContextBuilder {
+        private final Logger logger;
+        private final ActionReport report;
+        private final OpsParams params;
+        private File sFile;
+        private ReadableArchive sArchive;
+        private ArchiveHandler handler;
+
+        public DeploymentContextBuidlerImpl(Logger logger, OpsParams params, ActionReport report) {
+            this.logger = logger;
+            this.report = report;
+            this.params = params;
+        }
+
+        public DeploymentContextBuidlerImpl(DeploymentContextBuilder b) throws IOException {
+            this.logger = b.logger();
+            this.report = b.report();
+            this.params = b.params();
+            ReadableArchive archive = getArchive(b);
+            source(archive);
+            handler = b.archiveHandler();
+        }
+
+        public DeploymentContextBuilder source(File source) {
+            this.sFile = source;
+            return this;
+        }
+
+        public File sourceAsFile() {
+            return sFile;
+        }
+        public ReadableArchive sourceAsArchive() {
+            return sArchive;
+        }
+
+        public ArchiveHandler archiveHandler() {
+            return handler;
+        }
+
+        public DeploymentContextBuilder source(ReadableArchive archive) {
+            this.sArchive = archive;
+            return this;
+        }
+
+        public DeploymentContextBuilder archiveHandler(ArchiveHandler handler) {
+            this.handler = handler;
+            return this;
+        }
+
+        public ExtendedDeploymentContext build() throws IOException {
+            return build(null);
+        }
+        public Logger logger() { return logger; };
+        public ActionReport report() { return report; };
+        public OpsParams params() { return params; };
+
+        public ExtendedDeploymentContext build(ExtendedDeploymentContext initialContext) throws IOException {
+            return ApplicationLifecycle.this.getContext(initialContext, this);
+        }
     }
 
-    public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params, ActionReport report, ArchiveHandler handler)
-        throws IOException {
+    public DeploymentContextBuilder getBuilder(Logger logger, OpsParams params, ActionReport report) {
+        return new DeploymentContextBuidlerImpl(logger, params, report);
+    }
 
-        ReadableArchive archive = null;
-        if (source!=null) {
-             archive = habitat.getComponent(ArchiveFactory.class).openArchive(source);
+
+    // cannot put it on the builder itself since the builder is an official API.
+    private ReadableArchive getArchive(DeploymentContextBuilder builder) throws IOException {
+        ReadableArchive archive = builder.sourceAsArchive();
+        if (archive==null && builder.sourceAsFile()==null) {
+            throw new IOException("Source archive or file not provided to builder");
+        }
+        if (archive==null && builder.sourceAsFile()!=null) {
+             archive = habitat.getComponent(ArchiveFactory.class).openArchive(builder.sourceAsFile());
             if (archive==null) {
-                throw new IOException("Invalid archive type : " + source.getAbsolutePath());
+                throw new IOException("Invalid archive type : " + builder.sourceAsFile().getAbsolutePath());
             }
         }
-        return getContext(logger, archive, params, report, handler);
+        return archive;        
     }
 
+    private ExtendedDeploymentContext getContext(ExtendedDeploymentContext initial, DeploymentContextBuilder builder) throws IOException {
 
-    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report) throws IOException {
-        return getContext(logger, source, params, report, null);  
-    }
+        DeploymentContextBuilder copy = new DeploymentContextBuidlerImpl(builder);
 
-    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report, ArchiveHandler archiveHandler) throws IOException {
-        ExtendedDeploymentContext context = new DeploymentContextImpl(report, logger, source, params, env);
-        return getContext(logger, source, params, report, archiveHandler, context);
-    }
+        ReadableArchive archive = getArchive(copy);
+        copy.source(archive);
 
-    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report, ArchiveHandler archiveHandler, ExtendedDeploymentContext context) throws IOException {
-        if (archiveHandler == null) {
-            archiveHandler = getArchiveHandler(source);
+        if (initial==null) {
+            initial = new DeploymentContextImpl(copy, env);
         }
+
+        ArchiveHandler archiveHandler = copy.archiveHandler();
+        if (archiveHandler == null) {
+            archiveHandler = getArchiveHandler(archive);
+        }
+
+
 
         // add the default EE6 name to the property list to store this 
         // info in domain.xml
@@ -951,14 +1018,14 @@ public class ApplicationLifecycle implements Deployment {
         // --name option explicitly, the EE6 app name will be different
         // from the application's registration name and we need a way
         // to retrieve the EE6 app name for server restart code path
-        File sourceFile = new File(source.getURI().getSchemeSpecificPart());
-        context.getAppProps().put("default-EE6-app-name", 
+        File sourceFile = new File(archive.getURI().getSchemeSpecificPart());
+        initial.getAppProps().put("default-EE6-app-name", 
             DeploymentUtils.getDefaultEEName(sourceFile.getName()));   
 
         if (!(sourceFile.isDirectory())) {
             // create a temporary deployment context
             File expansionDir = new File(domain.getApplicationRoot(), 
-                params.name());
+                copy.params().name());
             if (!expansionDir.mkdirs()) {
                 /*
                  * On Windows especially a previous directory might have
@@ -971,25 +1038,27 @@ public class ApplicationLifecycle implements Deployment {
             try {
                 Long start = System.currentTimeMillis();
                 ArchiveFactory archiveFactory = habitat.getComponent(ArchiveFactory.class);
-                archiveHandler.expand(source, archiveFactory.createArchive(expansionDir), context);
-                System.out.println("Deployment expansion took " + (System.currentTimeMillis() - start));
+                archiveHandler.expand(archive, archiveFactory.createArchive(expansionDir), initial);
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("Deployment expansion took " + (System.currentTimeMillis() - start));
+                }
 
                 // Close the JAR archive before losing the reference to it or else the JAR remains locked.
                 try {
-                    source.close();
+                    archive.close();
                 } catch(IOException e) {
-                    logger.log(Level.SEVERE, localStrings.getLocalString("deploy.errorclosingarchive","Error while closing deployable artifact {0}", source.getURI().getSchemeSpecificPart()),e);
+                    logger.log(Level.SEVERE, localStrings.getLocalString("deploy.errorclosingarchive","Error while closing deployable artifact {0}", archive.getURI().getSchemeSpecificPart()),e);
                     throw e;
                 }
-                source = archiveFactory.openArchive(expansionDir);
-                context.setSource(source);
+                archive = archiveFactory.openArchive(expansionDir);
+                initial.setSource(archive);
             } catch(IOException e) {
                 logger.log(Level.SEVERE, localStrings.getLocalString("deploy.errorexpandingjar","Error while expanding archive file"),e);
                 throw e;
             }
         }
-        context.setArchiveHandler(archiveHandler);
-        return context;
+        initial.setArchiveHandler(archiveHandler);
+        return initial;
     }
 }
 

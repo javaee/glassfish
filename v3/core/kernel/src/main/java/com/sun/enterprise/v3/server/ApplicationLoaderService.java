@@ -221,7 +221,8 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                             parameters.name = appName;
                         }
                     }
-                    ExtendedDeploymentContext depContext = deployment.getContext(logger, sourceArchive, parameters, report);
+                    ExtendedDeploymentContext depContext = deployment.getBuilder(logger, parameters, report).source(sourceArchive).build();
+                    
                     ApplicationInfo appInfo = deployment.deploy(depContext);
                     if (appInfo==null) {
 
@@ -294,7 +295,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     archive = archiveFactory.get().openArchive(sourceFile, deploymentParams);
 
                     ActionReport report = new HTMLActionReporter();
-                    ExtendedDeploymentContext depContext = deployment.getContext(logger, archive, deploymentParams, report);
+                    ExtendedDeploymentContext depContext = deployment.getBuilder(logger, deploymentParams, report).source(archive).build();
 
                     depContext.getAppProps().putAll(app.getDeployProperties());
                     depContext.setModulePropsMap(app.getModulePropertiesMap());
@@ -366,7 +367,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                 parameters.origin = UndeployCommandParameters.Origin.unload;
 
                 try {
-                    ExtendedDeploymentContext depContext = deployment.getContext(logger, appInfo.getSource(), parameters, dummy);
+                    ExtendedDeploymentContext depContext = deployment.getBuilder(logger, parameters, dummy).source(appInfo.getSource()).build();
                     appInfo.stop(depContext, depContext.getLogger());
                     appInfo.unload(depContext);
                 } catch (IOException e) {

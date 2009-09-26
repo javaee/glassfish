@@ -64,7 +64,7 @@ public class ListJndiResourcesTest extends ConfigApiTest {
     @Test
     public void testExecuteSuccessListOriginal() {
         ListJndiResources listCommand = habitat.getComponent(ListJndiResources.class);
-        cr.doCommand("list-jndi-resources", listCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("list-jndi-resources", context.getActionReport()).parameters(parameters).execute(listCommand);
         List<ActionReport.MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
         if (origNum == 0) {
             //Nothing to list.
@@ -87,11 +87,11 @@ public class ListJndiResourcesTest extends ConfigApiTest {
         parameters.setProperty("factoryclass", "javax.naming.spi.ObjectFactory");
         parameters.setProperty("jndi_name", "resource");
         CreateJndiResource createCommand = habitat.getComponent(CreateJndiResource.class);
-        cr.doCommand("create-jndi-resource", createCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-jndi-resource", context.getActionReport()).parameters(parameters).execute(createCommand);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         parameters.clear();
         ListJndiResources listCommand = habitat.getComponent(ListJndiResources.class);
-        cr.doCommand("list-jndi-resources", listCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("list-jndi-resources", context.getActionReport()).parameters(parameters).execute(listCommand);
         List<ActionReport.MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
         assertEquals(origNum + 1, list.size());
         List<String> listStr = new ArrayList<String>();
@@ -111,11 +111,11 @@ public class ListJndiResourcesTest extends ConfigApiTest {
     public void testExecuteSuccessListNoResource() {
         parameters.setProperty("jndi_name", "resource");
         DeleteJndiResource deleteCommand = habitat.getComponent(DeleteJndiResource.class);
-        cr.doCommand("delete-jndi-resource", deleteCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("delete-jndi-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         parameters.clear();
         ListJndiResources listCommand = habitat.getComponent(ListJndiResources.class);
-        cr.doCommand("list-jndi-resources", listCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("list-jndi-resources", context.getActionReport()).parameters(parameters).execute(listCommand);
         List<ActionReport.MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
         if ((origNum - 1) == 0) {
             //Nothing to list.

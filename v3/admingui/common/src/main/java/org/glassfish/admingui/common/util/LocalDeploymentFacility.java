@@ -134,7 +134,7 @@ public class LocalDeploymentFacility extends AbstractDeploymentFacility {
         public DFDeploymentStatus run() throws CommandException {
             final ActionReport report = commandRunner.getActionReport("xml");
             final Properties parameters = prepareParameters(commandOptions, operands);
-            commandRunner.doCommand(commandName, parameters, report);
+       		commandRunner.getCommandInvocation(commandName, report).parameters(parameters).execute();
             final DFDeploymentStatus status = actionReportToStatus(report);
             return status;
         }

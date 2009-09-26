@@ -52,6 +52,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
+import org.glassfish.api.deployment.*;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
@@ -959,7 +960,7 @@ public class CommandRunnerImpl implements CommandRunner {
      * Currently supported types are BOOLEAN, FILE, PROPERTIES, PASSWORD, and
      * STRING.  (All of which should be defined constants on some class.)
      *
-     * @param p the ParamModel instance
+     * @param p the Java type
      * @return	the string representation of the asadmin type
      */
     private static String typeOf(CommandModel.ParamModel p) {
@@ -1221,15 +1222,15 @@ public class CommandRunnerImpl implements CommandRunner {
     }
 
 
-    public void doCommand(CommandBuilder b, ActionReport report, Logger logger) {
-        final AdminCommand command = getCommand(b.commandName, report, logger);
+    public void doCommand(ExecutionContext b, Object delegate, ActionReport report, Logger logger) {
+        final AdminCommand command = getCommand(b.name(), report, logger);
         if (command==null) {
             return;
         }
         CommandModel model = getModel(command);
         InjectionResolver<Param> resolver;
-        if (b.delegate==null) {
-            final Properties parameters = b.paramsAsProperties;
+        if (delegate==null) {
+            final Properties parameters = b.parameters();
             if (parameters.get("help")!=null || parameters.get("Xhelp")!=null) {
                 InputStream in = getManPage(model.getCommandName(), command);
                 String manPage = encodeManPage(in);
@@ -1266,12 +1267,123 @@ public class CommandRunnerImpl implements CommandRunner {
                 childPart.setMessage(getUsageText(command, model));
                 return;
             }
-            resolver = getPropsBasedResolver(model, b.paramsAsProperties);
+            resolver = getPropsBasedResolver(model, b.parameters());
         } else {
-            resolver = getDelegatedResolver(model, b.delegate);
+            resolver = getDelegatedResolver(model, delegate);
         }
-        doCommand(model, command, resolver, report, b.inbound, b.outbound);
+        doCommand(model, command, resolver, report, b.inboundPayload(), b.outboundPayload());
 
+    }
+
+    public CommandInvocation getCommandInvocation(String name, ActionReport report) {
+        return new ExecutionContext(name, report);
+    }
+
+    private void doCommand(ExecutionContext inv, AdminCommand command) {
+
+        Properties parameters = inv.parameters();
+        if (command==null) {
+            command = getCommand(inv.name(), inv.report(), logger);
+            if (command==null) {
+                return;
+            }
+        }
+
+        CommandModel model = new CommandModelImpl(command.getClass());
+        final ActionReport report = inv.report();
+
+
+        if (parameters.get("help")!=null || parameters.get("Xhelp")!=null) {
+            InputStream in = getManPage(model.getCommandName(), command);
+            String manPage = encodeManPage(in);
+
+            if(manPage != null && parameters.get("help")!=null) {
+                inv.report().getTopMessagePart().addProperty("MANPAGE", manPage);
+            }
+            else {
+                report.getTopMessagePart().addProperty(AdminCommandResponse.GENERATED_HELP, "true");
+                getHelp(command, report);
+            }
+            return;
+        }
+
+        try {
+            if (!skipValidation(command)) {
+                validateParameters(model, parameters);
+            }
+        } catch (ComponentException e) {
+            // if the cause is UnacceptableValueException -- we want the message
+            // from it.  It is wrapped with a less useful Exception
+
+            Exception exception = e;
+            Throwable cause = e.getCause();
+            if(cause != null && (cause instanceof UnacceptableValueException)) {
+                // throw away the wrapper.
+                exception = (Exception)cause;
+            }
+            logger.severe(exception.getMessage());
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(exception.getMessage());
+            report.setFailureCause(exception);
+            ActionReport.MessagePart childPart = report.getTopMessagePart().addChild();
+            childPart.setMessage(getUsageText(command, model));
+            return;
+        }
+
+        // initialize the injector.
+        InjectionResolver<Param> injectionMgr =  getPropsBasedResolver(model, parameters);
+        doCommand(model, command, injectionMgr, report, inv.inboundPayload(), inv.outboundPayload());
+    }
+
+    private class ExecutionContext implements CommandInvocation {
+
+        protected final String name;
+        protected final ActionReport report;
+        protected Properties params;
+        protected OpsParams opsParams;
+        protected Payload.Inbound inbound;
+        protected Payload.Outbound outbound;
+
+        private ExecutionContext(String name, ActionReport report) {
+            this.name = name;
+            this.report = report;
+        }
+
+
+        public CommandInvocation parameters(OpsParams opsParams) {
+            this.opsParams = opsParams;
+            return this;
+        }
+
+        public CommandInvocation parameters(Properties params) {
+            this.params = params;
+            return this;
+        }
+
+        public CommandInvocation inbound(Payload.Inbound inbound) {
+            this.inbound = inbound;
+            return this;
+        }
+
+        public CommandInvocation outbound(Payload.Outbound outbound) {
+            this.outbound = outbound;
+            return this;
+        }
+
+        public void execute() {
+            execute(null);
+        }        
+
+        private Properties parameters() { return params; }
+        private String name() { return name; }
+        private ActionReport report() { return report; }
+        private Payload.Inbound inboundPayload() { return inbound; }
+        private Payload.Outbound outboundPayload() { return outbound; }
+
+        public void execute(AdminCommand command) {
+            CommandRunnerImpl.this.doCommand(this, command);
+
+        }
     }
 }
 

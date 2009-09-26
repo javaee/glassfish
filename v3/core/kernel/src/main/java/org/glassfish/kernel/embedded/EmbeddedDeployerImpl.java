@@ -156,7 +156,7 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         ActionReport report = new PlainTextActionReporter();
         ExtendedDeploymentContext context = null;
         try {
-            context = deployment.getContext(logger, archive, params, report);
+            context = deployment.getBuilder(logger, params, report).source(archive).build();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -225,7 +225,8 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         
         ExtendedDeploymentContext deploymentContext = null;
         try {
-            deploymentContext = deployment.getContext(logger, source, params, report);
+            deploymentContext = deployment.getBuilder(logger, params, report).source(source).build();
+
             if (info!=null) {
                 for (ModuleInfo module : appInfo.getModuleInfos()) {
                     info.map.put(module.getName(), module.getModuleProps());

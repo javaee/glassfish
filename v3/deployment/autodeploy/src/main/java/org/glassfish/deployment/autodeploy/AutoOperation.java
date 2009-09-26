@@ -118,7 +118,8 @@ public abstract class AutoOperation {
     final AutodeploymentStatus run() throws AutoDeploymentException {
         try {
             ActionReport report = commandRunner.getActionReport("hk2-agent");
-            commandRunner.doCommand(commandName, command, props, report);
+            CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation(commandName, report);
+            inv.parameters(props).execute(command);
             AutodeploymentStatus ds = AutodeploymentStatus.forExitCode(report.getActionExitCode());
             Level messageLevel = (ds.status ? Level.INFO : Level.WARNING);
             sLogger.log(messageLevel, getMessageString(ds, file));

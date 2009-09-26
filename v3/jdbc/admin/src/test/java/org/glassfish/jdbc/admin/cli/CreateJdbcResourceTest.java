@@ -159,7 +159,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "jdbc/foo");
 
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("create-jdbc-resource", command, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-jdbc-resource", context.getActionReport()).parameters(parameters).execute(command);
         
         // Check the exit code is SUCCESS
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
@@ -214,7 +214,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         
 
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("create-jdbc-resource", command, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-jdbc-resource", context.getActionReport()).parameters(parameters).execute(command);
         
         // Check the exit code is SUCCESS
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
@@ -252,8 +252,8 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "dupRes");
 
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("create-jdbc-resource", command, parameters, context.getActionReport());
-        
+        cr.getCommandInvocation("create-jdbc-resource", context.getActionReport()).parameters(parameters).execute(command);
+
         // Check the exit code is SUCCESS
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         
@@ -273,7 +273,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         
         //Try to create a duplicate resource dupRes. Get a new instance of the command.
         CreateJdbcResource command2 = habitat.getComponent(CreateJdbcResource.class);
-        cr.doCommand("create-jdbc-resource", command2, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-jdbc-resource", context.getActionReport()).parameters(parameters).execute(command2);
         
         // Check the exit code is FAILURE
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
@@ -309,7 +309,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "jdbc/nopool");
         
         // Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("create-jdbc-resource", command, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-jdbc-resource", context.getActionReport()).parameters(parameters).execute(command);
         
         // Check the exit code is Failure
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
@@ -345,7 +345,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "jdbc/junk");
         
         // Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("create-jdbc-resource", command, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-jdbc-resource", context.getActionReport()).parameters(parameters).execute(command);
         
         // Check the exit code is Failure
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
@@ -365,7 +365,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "jdbc/sun");
         
         // Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("create-jdbc-resource", command, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-jdbc-resource", context.getActionReport()).parameters(parameters).execute(command);
         
         // Check the exit code is SUCCESS
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());

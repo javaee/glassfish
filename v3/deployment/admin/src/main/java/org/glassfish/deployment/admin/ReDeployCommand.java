@@ -92,8 +92,8 @@ public class ReDeployCommand extends DeployCommandParameters implements AdminCom
         }
         force = true;
 
-        commandRunner.doCommand("deploy", this, report,
-                context.getInboundPayload(), context.getOutboundPayload());
+        CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("deploy", report);
+        inv.parameters(this).inbound(context.getInboundPayload()).outbound(context.getOutboundPayload()).execute();
     }
 
         /**

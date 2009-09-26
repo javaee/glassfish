@@ -37,6 +37,7 @@
 package org.glassfish.api.admin;
 
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.deployment.*;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.util.Properties;
@@ -60,54 +61,6 @@ public interface CommandRunner {
     public ActionReport getActionReport(String name);
 
     /**
-     * Executes a command by name.
-     * <p>
-     * The commandName parameter value should correspond to the name of a
-     * command that is a service with that name.
-     * @param commandName the command to execute
-     * @param parameters name/value pairs to be passed to the command
-     * @param report will hold the result of the command's execution
-     */
-    public void doCommand(final String commandName, final Properties parameters, final ActionReport report);
-
-    /**
-     * Executes a command by name.
-     * <p>
-     * The commandName parameter value should correspond to the name of a
-     * command that is a service with that name.
-     * @param commandName the command to execute
-     * @param parameters name/value pairs to be passed to the command
-     * @param report will hold the result of the command's execution
-     * @param inboundPayload incoming data accompanying the command request
-     * @param outboundPayload outgoing data to be returned to the admin client
-     */
-    public void doCommand(final String commandName, final Properties parameters,
-            final ActionReport report,
-            final Payload.Inbound inboundPayload,
-            final Payload.Outbound outboundPayload);
-
-    public ActionReport doCommand(
-        final String commandName,
-        final Object parameters,
-        final ActionReport report,
-        final Payload.Inbound inboundPayload,
-        final Payload.Outbound outboundPayload);
-
-    /**
-     * Executes the provided command object.
-     * @param commandName name of the command (used for logging and reporting)
-     * @param command the command service to execute
-     * @param parameters name/value pairs to be passed to the command
-     * @param report will hold the result of the command's execution
-     */
-
-    public void doCommand(
-            final String commandName,
-            final AdminCommand command,
-            final Properties parameters,
-            final ActionReport report);
-
-    /**
      * Retuns the command model for a command name
      *
      * @param name command name
@@ -127,8 +80,67 @@ public interface CommandRunner {
      */
     public AdminCommand getCommand(String commandName, ActionReport report, Logger logger);
 
-    //public CommandBuilder newCommand(String name);
+    /**
+     * Obtain a new command invocation object. Command invocations can be configured and used
+     * to trigger a command execution.
+     *
+     * @param name name of the requested command to invoke
+     * @param report where to place the status of the command execution
+     * @return a new command invocation for that command name.
+     */
+    CommandInvocation getCommandInvocation(String name, ActionReport report);
 
-    void doCommand(CommandBuilder b, ActionReport report, Logger logger);
-    
+
+    /**
+     * CommandInvocation defines a command excecution context like the requested
+     * name of the command to execute, the parameters of the command, etc...
+     * 
+     */
+    public interface CommandInvocation {
+
+        /**
+         * Sets the command parameters as a typed inteface
+         * @param opsParams parameters
+         * @return itself
+         */
+        CommandInvocation parameters(OpsParams opsParams);
+
+        /**
+         * Sets the command parameters as a properties bag
+         * @param params the parameters
+         * @return itself
+         */
+        CommandInvocation parameters(Properties params);
+
+        /**
+         * Sets the data carried with the request (could be an attachment) 
+         * @param inbound inbound data
+         * @return itself
+         */
+        CommandInvocation inbound(Payload.Inbound inbound);
+
+        /**
+         * Sets the data carried with the response
+         * @param outbound outbound data
+         * @return itself
+         */
+        CommandInvocation outbound(Payload.Outbound outbound);
+
+        /**
+         * Executes the command and populate the report with the command
+         * execution result. Parameters must have been set before invoking
+         * this method.
+         */
+        void execute();
+
+        /**
+         * Executes the passed command with this context and populates the
+         * report with the execution result. Parameters must be set before
+         * invoking this command.
+         *
+         * @param command command implementation to execute
+         */
+        void execute(AdminCommand command);
+
+    }
 }

@@ -163,8 +163,7 @@ public class JMSPing implements AdminCommand {
         aoAttrList.setProperty("restype",  "javax.jms.QueueConnectionFactory");
         aoAttrList.setProperty("DEFAULT",  tmpJMSResource);
 
-        commandRunner.doCommand("create-jms-resource", aoAttrList, subReport);
-
+        commandRunner.getCommandInvocation("create-jms-resource", subReport).parameters(aoAttrList).execute();
 
     }
 
@@ -178,6 +177,6 @@ public class JMSPing implements AdminCommand {
         Properties aoAttrList = new Properties();
         aoAttrList.setProperty("DEFAULT",  tmpJMSResource);
 
-        commandRunner.doCommand("delete-jms-resource", aoAttrList, subReport);
+        commandRunner.getCommandInvocation("delete-jms-resource", subReport).parameters(aoAttrList).execute();
     }
 }

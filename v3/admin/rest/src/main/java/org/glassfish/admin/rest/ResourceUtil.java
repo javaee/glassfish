@@ -131,7 +131,7 @@ public class ResourceUtil extends Util {
         Properties p = new Properties();
         p.putAll(parameters);
 
-        cr.doCommand(commandName, p, ar);
+        cr.getCommandInvocation(commandName, ar).parameters(p).execute();
         return ar;
     }
 
@@ -149,7 +149,7 @@ public class ResourceUtil extends Util {
        CommandRunner cr = habitat.getComponent(CommandRunner.class);
        ActionReport ar = habitat.getComponent(ActionReport.class);
 
-       cr.doCommand(commandName, parameters, ar);
+       cr.getCommandInvocation(commandName, ar).parameters(parameters).execute();
        return ar;
     }
 

@@ -149,7 +149,7 @@ public class EventsTest extends ConfigApiTest {
         DeployCommandParameters params = new DeployCommandParameters(application);
         params.name = "fakeApplication";
         ActionReport report = habitat.getComponent(ActionReport.class, "hk2-agent");
-        ExtendedDeploymentContext dc = deployment.getContext(Logger.getAnonymousLogger(), application, params, report);
+        ExtendedDeploymentContext dc = deployment.getBuilder(Logger.getAnonymousLogger(), params, report).source(application).build();
         deployment.deploy(dc);
         events.unregister(listener);
         Assert.assertEquals(report.getActionExitCode(), ActionReport.ExitCode.SUCCESS);
@@ -174,7 +174,7 @@ public class EventsTest extends ConfigApiTest {
         Deployment deployment = habitat.getByContract(Deployment.class);
         UndeployCommandParameters params = new UndeployCommandParameters("fakeApplication");
         ActionReport report = habitat.getComponent(ActionReport.class, "hk2-agent");
-        ExtendedDeploymentContext dc = deployment.getContext(Logger.getAnonymousLogger(), application, params, report);
+        ExtendedDeploymentContext dc = deployment.getBuilder(logger, params, report).source(application).build();
         deployment.undeploy("fakeApplication", dc);
         Assert.assertEquals(report.getActionExitCode(), ActionReport.ExitCode.SUCCESS);
         for (EventTypes et : myTestEvents) {
@@ -188,7 +188,7 @@ public class EventsTest extends ConfigApiTest {
         Deployment deployment = habitat.getByContract(Deployment.class);
         UndeployCommandParameters params = new UndeployCommandParameters("notavalidname");
         ActionReport report = habitat.getComponent(ActionReport.class, "hk2-agent");
-        ExtendedDeploymentContext dc = deployment.getContext(Logger.getAnonymousLogger(), application, params, report);
+        ExtendedDeploymentContext dc = deployment.getBuilder(Logger.getAnonymousLogger(), params, report).source(application).build();
         deployment.undeploy("fakeApplication", dc);
         Assert.assertEquals(report.getActionExitCode(), ActionReport.ExitCode.FAILURE);
     }

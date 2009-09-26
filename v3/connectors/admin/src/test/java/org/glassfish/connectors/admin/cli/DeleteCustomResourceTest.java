@@ -85,14 +85,14 @@ public class DeleteCustomResourceTest extends ConfigApiTest {
         parameters.setProperty("restype", "topic");
         parameters.setProperty("factoryclass", "javax.naming.spi.ObjectFactory");
         parameters.setProperty("jndi_name", "sample_custom_resource");
-        cr.doCommand("create-Custom-resource", createCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-custom-resource", context.getActionReport()).parameters(parameters).execute(createCommand);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
 
         parameters.clear();
         DeleteCustomResource deleteCommand = habitat.getComponent(DeleteCustomResource.class);
         assertTrue(deleteCommand != null);
         parameters.setProperty("jndi_name", "sample_custom_resource");
-        cr.doCommand("delete-custom-resource", deleteCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("delete-custom-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isDeleted = true;
         for (Resource resource : resources.getResources()) {
@@ -132,7 +132,7 @@ public class DeleteCustomResourceTest extends ConfigApiTest {
         DeleteCustomResource deleteCommand = habitat.getComponent(DeleteCustomResource.class);
         assertTrue(deleteCommand != null);
         parameters.setProperty("jndi_name", "doesnotexist");
-        cr.doCommand("delete-custom-resource", deleteCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("delete-custom-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
         logger.fine("msg: " + context.getActionReport().getMessage());
     }

@@ -89,7 +89,7 @@ public class CreateCustomResourceTest extends ConfigApiTest {
         parameters.setProperty("jndi_name", "sample_custom_resource");
 
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("create-custom-resource", command, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-custom-resource", context.getActionReport()).parameters(parameters).execute(command);
 
         // Check the exit code is SUCCESS
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
@@ -144,7 +144,7 @@ public class CreateCustomResourceTest extends ConfigApiTest {
         parameters.setProperty("jndi_name", "dupRes");
 
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("create-custom-resource", command, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-custom-resource", context.getActionReport()).parameters(parameters).execute(command);
 
         // Check the exit code is SUCCESS
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
@@ -165,7 +165,7 @@ public class CreateCustomResourceTest extends ConfigApiTest {
 
         //Try to create a duplicate resource dupRes. Get a new instance of the command.
         CreateCustomResource command2 = habitat.getComponent(CreateCustomResource.class);
-        cr.doCommand("create-custom-resource", command2, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-custom-resource", context.getActionReport()).parameters(parameters).execute(command2);
 
         // Check the exit code is FAILURE
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
@@ -199,7 +199,7 @@ public class CreateCustomResourceTest extends ConfigApiTest {
         parameters.setProperty("jndi_name", "sample_custom_resource");
 
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("create-custom-resource", command, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-custom-resource", context.getActionReport()).parameters(parameters).execute(command);
 
         // Check the exit code is SUCCESS
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
@@ -235,7 +235,7 @@ public class CreateCustomResourceTest extends ConfigApiTest {
         parameters.setProperty("jndi_name", "sample_custom_resource");
 
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("create-custom-resource", command, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-custom-resource", context.getActionReport()).parameters(parameters).execute(command);
 
         // Check the exit code is SUCCESS
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());

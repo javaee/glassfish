@@ -128,28 +128,38 @@ public interface Deployment {
      */
     public final EventTypes<DeploymentContext> UNDEPLOYMENT_VALIDATION = EventTypes.create("Undeployment_Validation", DeploymentContext.class);
 
+
+    public interface DeploymentContextBuilder {
+
+        public DeploymentContextBuilder source(File source);
+        public DeploymentContextBuilder source(ReadableArchive archive);
+        public File sourceAsFile();
+        public ReadableArchive sourceAsArchive();
+        public ArchiveHandler archiveHandler();
+        public DeploymentContextBuilder archiveHandler(ArchiveHandler handler);
+
+        public Logger logger();
+        public ActionReport report();
+        public OpsParams params();
+        
+        public ExtendedDeploymentContext build() throws IOException;
+
+        public abstract ExtendedDeploymentContext build(ExtendedDeploymentContext initialContext)
+                throws IOException;
+
+    }
+
+
+
     /**
      * The following asynchronous event is sent after all applications are 
      * started in server start up.
      */
     public final EventTypes<DeploymentContext> ALL_APPLICATIONS_PROCESSED= EventTypes.create("All_Applications_Processed", DeploymentContext.class);
 
+    public DeploymentContextBuilder getBuilder(Logger loggger, OpsParams params, ActionReport report);
+
     public ArchiveHandler getArchiveHandler(ReadableArchive archive) throws IOException;
-
-    public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params, ActionReport report)
-            throws IOException;
-
-    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report)
-            throws IOException;
-
-    public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params, ActionReport report, ArchiveHandler handler)
-            throws IOException;
-
-    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report, ArchiveHandler handler)
-            throws IOException;
-
-    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report, ArchiveHandler handler, ExtendedDeploymentContext context)
-            throws IOException;
 
     public ModuleInfo prepareModule(
         List<EngineInfo> sortedEngineInfos, String moduleName,

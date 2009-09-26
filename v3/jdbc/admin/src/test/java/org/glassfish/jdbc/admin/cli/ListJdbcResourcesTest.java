@@ -120,8 +120,8 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
                 new PropsFileActionReporter());
         
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());
-                
+        cr.getCommandInvocation("list-jdbc-resources", context.getActionReport()).parameters(parameters).execute(listCommand);
+        
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
         assertEquals(origNum, list.size());
         
@@ -146,7 +146,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
                 new PropsFileActionReporter());
         
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());      
+        cr.getCommandInvocation("list-jdbc-resources", context.getActionReport()).parameters(parameters).execute(listCommand);
         
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();        
         assertEquals(origNum, list.size());
@@ -175,8 +175,8 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
-        
-        cr.doCommand("create-jdbc-resource", createCommand, parameters, context.getActionReport());
+
+        cr.getCommandInvocation("create-jdbc-resource", context.getActionReport()).parameters(parameters).execute(createCommand);
         
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         
@@ -189,7 +189,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
                 new PropsFileActionReporter());
         
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());
+        cr.getCommandInvocation("list-jdbc-resources", context.getActionReport()).parameters(parameters).execute(listCommand);
                 
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
         
@@ -224,9 +224,9 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
-        
-        cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
-        
+
+        cr.getCommandInvocation("delete-jdbc-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
+
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         
         // List JDBC Resources and check if bob is in the list
@@ -238,8 +238,8 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
                 new PropsFileActionReporter());
         
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());
-                
+        cr.getCommandInvocation("list-jdbc-resources", context.getActionReport()).parameters(parameters).execute(listCommand);
+
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
         
         assertEquals(origNum - 1, list.size());
@@ -272,7 +272,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
                 new PropsFileActionReporter());
         
         //Call CommandRunnerImpl.doCommand(..) to execute the command
-        cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());      
+       cr.getCommandInvocation("list-jdbc-resources", context.getActionReport()).parameters(parameters).execute(listCommand);
         
         // Need bug fix before uncommenting assertion
         //List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
@@ -296,9 +296,9 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
-        
-        cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());      
-        
+
+        cr.getCommandInvocation("list-jdbc-resources", context.getActionReport()).parameters(parameters).execute(listCommand);
+
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
         assertEquals(1, list.size());
         

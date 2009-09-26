@@ -161,7 +161,7 @@ public class CreateJMSResource implements AdminCommand {
           if (cpool == null) {
                 // Add connector-connection-pool.
               Properties parameters = populateConnectionPoolParameters();
-              commandRunner.doCommand("create-connector-connection-pool", parameters, subReport);
+	          commandRunner.getCommandInvocation("create-connector-connection-pool", subReport).parameters(parameters).execute();
               createdPool= true;
               if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
                     report.setMessage(localStrings.getLocalString("create.jms.resource.cannotCreateConnectionPool",
@@ -171,7 +171,7 @@ public class CreateJMSResource implements AdminCommand {
               }
           }
               Properties params = populateConnectionResourceParameters();
-              commandRunner.doCommand("create-connector-resource", params, subReport);
+	          commandRunner.getCommandInvocation("create-connector-resource", subReport).parameters(params).execute();
 
               if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
                     report.setMessage(localStrings.getLocalString("create.jms.resource.cannotCreateConnectorResource",
@@ -180,7 +180,8 @@ public class CreateJMSResource implements AdminCommand {
 
                 //rollback the connection pool ONLY if we created it...
                   if (createdPool)
-                     commandRunner.doCommand("delete-connector-connection-pool", populateConnectionPoolParameters(), subReport);
+	   	  	         commandRunner.getCommandInvocation("delete-connector-connection-pool", subReport).parameters(populateConnectionPoolParameters()).execute();
+                  
 
                     return;
               }
@@ -214,7 +215,7 @@ public class CreateJMSResource implements AdminCommand {
                 if(enabled!=null)
                     aoAttrList.put("enabled",  enabled);
 
-                commandRunner.doCommand("create-admin-object", aoAttrList, subReport);
+	            commandRunner.getCommandInvocation("create-admin-object", subReport).parameters(aoAttrList).execute();
 
                 if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
                     report.setMessage(localStrings.getLocalString("create.jms.resource.cannotCreateAdminObject",

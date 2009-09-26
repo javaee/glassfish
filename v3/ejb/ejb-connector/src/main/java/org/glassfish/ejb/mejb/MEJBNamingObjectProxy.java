@@ -99,8 +99,7 @@ public class MEJBNamingObjectProxy implements NamingObjectProxy {
         deployParams.name = "mejb";
         ActionReport report = habitat.getComponent(ActionReport.class, "plain");
         Deployment deployment = habitat.getComponent(Deployment.class);
-        ExtendedDeploymentContext dc = deployment.getContext(_logger, 
-            mejbArchive, deployParams, report);
+        ExtendedDeploymentContext dc = deployment.getBuilder(_logger, deployParams, report).source(mejbArchive).build();
         deployment.deploy(dc);
 
         if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {

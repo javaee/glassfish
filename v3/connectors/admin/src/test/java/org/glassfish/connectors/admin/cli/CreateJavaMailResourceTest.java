@@ -89,7 +89,7 @@ public class CreateJavaMailResourceTest extends ConfigApiTest {
         parameters.setProperty("jndi_name", "mail/MyMailSession");
         CreateJavaMailResource command = habitat.getComponent(CreateJavaMailResource.class);
         assertTrue(command != null);
-        cr.doCommand("create-javamail-resource", command, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-javamail-resource", context.getActionReport()).parameters(parameters).execute(command);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isCreated = false;
         for (Resource resource : resources.getResources()) {
@@ -144,7 +144,7 @@ public class CreateJavaMailResourceTest extends ConfigApiTest {
         parameters.setProperty("jndi_name", "dupRes");
         CreateJavaMailResource command1 = habitat.getComponent(CreateJavaMailResource.class);
         assertTrue(command1 != null);
-        cr.doCommand("create-javamail-resource", command1, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-javamail-resource", context.getActionReport()).parameters(parameters).execute(command1);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isCreated = false;
         for (Resource resource : resources.getResources()) {
@@ -160,7 +160,7 @@ public class CreateJavaMailResourceTest extends ConfigApiTest {
         assertTrue(isCreated);
 
         CreateJavaMailResource command2 = habitat.getComponent(CreateJavaMailResource.class);
-        cr.doCommand("create-javamail-resource", command2, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-javamail-resource", context.getActionReport()).parameters(parameters).execute(command2);
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
         int numDupRes = 0;
         for (Resource resource : resources.getResources()) {
@@ -199,7 +199,7 @@ public class CreateJavaMailResourceTest extends ConfigApiTest {
         parameters.setProperty("jndi_name", "mail/MyMailSession");
         CreateJavaMailResource command = habitat.getComponent(CreateJavaMailResource.class);
         assertTrue(command != null);
-        cr.doCommand("create-javamail-resource", command, parameters, context.getActionReport());
+        cr.getCommandInvocation("create-javamail-resource", context.getActionReport()).parameters(parameters).execute(command);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isCreated = false;
         for (Resource resource : resources.getResources()) {
