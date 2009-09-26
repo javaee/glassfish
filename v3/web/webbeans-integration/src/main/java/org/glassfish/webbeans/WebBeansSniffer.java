@@ -118,9 +118,17 @@ public class WebBeansSniffer extends GenericSniffer implements Sniffer {
             } 
         } 
 
+        // TODO This doesn't seem to match the ReadableArchive for a stand-alone ejb-jar.
+        // It might only be true for an ejb-jar wihtin an .ear.  Revisit when officially
+        // adding support for .ears
         if (!isWebBeansArchive && archive.getName().endsWith(EXPANDED_JAR_SUFFIX)) {
             isWebBeansArchive = isEntryPresent(archive, META_INF_BEANS_XML);
         }
+
+        // If stand-alone ejb-jar
+        if (!isWebBeansArchive && isEntryPresent(archive, META_INF_BEANS_XML) ) {
+            isWebBeansArchive = true;
+        }     
 
         return isWebBeansArchive;
     }

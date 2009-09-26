@@ -123,8 +123,15 @@ public class EjbContainerServicesImpl implements EjbContainerServices {
         }
 
         if( !isStatefulBean ) {
-            throw new UnsupportedOperationException("ejbRef for ejb " +
-                    ejbDesc.getName() + " is not a stateful bean ");
+
+             // TODO 299 impl may incorrectly call this for stateless/singleton
+            // beans.  Until it's fixed just treat it as a no-op. Otherwise, any app acquiring
+            // stateless/singleton references via 299 could fail until bug is fixed.
+            return;
+
+            // TODO reenable this after bug is fixed
+            //throw new UnsupportedOperationException("ejbRef for ejb " +
+             //       ejbDesc.getName() + " is not a stateful bean ");
         }
 
         try {
@@ -158,8 +165,15 @@ public class EjbContainerServicesImpl implements EjbContainerServices {
         }
 
         if( !isStatefulBean ) {
-            throw new UnsupportedOperationException("ejbRef for ejb " +
-                    ejbDesc.getName() + " is not a stateful bean ");
+
+            // TODO 299 impl is incorrectly calling isRemoved for stateless/singleton
+            // beans.  Until it's fixed just return false. Otherwise, any app acquiring
+            // stateless/singleton references via 299 will fail until bug is fixed.
+            return false;
+
+            // TODO reenable this per SessionObjectReference.isRemoved SPI
+            //throw new UnsupportedOperationException("ejbRef for ejb " +
+             //   ejbDesc.getName() + " is not a stateful bean ");
         }
 
         boolean removed = false;
