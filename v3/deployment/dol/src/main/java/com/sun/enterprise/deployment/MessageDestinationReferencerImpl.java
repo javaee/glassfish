@@ -185,6 +185,9 @@ public class MessageDestinationReferencerImpl implements
 
             BundleDescriptor bundleDescriptor = getBundleDescriptor();
             Application app = bundleDescriptor.getApplication();
+            if (app == null && bundleDescriptor instanceof Application) {
+                app = (Application)bundleDescriptor;
+            }
             BundleDescriptor targetBundle = null;
             String msgDestName = linkName;
             
