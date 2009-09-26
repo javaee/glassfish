@@ -65,6 +65,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.logging.*;
 
 import javax.management.ListenerNotFoundException;
 import javax.management.MBeanNotificationInfo;
@@ -115,8 +116,8 @@ import org.apache.tomcat.util.threads.ThreadPoolRunnable;
  */
 public class ChannelSocket extends JkHandler
     implements NotificationBroadcaster, JkChannel {
-    private static org.apache.commons.logging.Log log =
-        org.apache.commons.logging.LogFactory.getLog( ChannelSocket.class );
+    private static Logger log =
+        Logger.getLogger( ChannelSocket.class.getName() );
 
     private int startPort=8009;
     private int maxPort=8019; // 0 for backward compat.
@@ -182,7 +183,7 @@ public class ChannelSocket extends JkHandler
         try {
             this.inet= InetAddress.getByName( inet );
         } catch( Exception ex ) {
-            log.error("Error parsing "+inet,ex);
+            log.log(Level.SEVERE, "Error parsing "+inet,ex);
         }
     }
 
@@ -280,17 +281,17 @@ public class ChannelSocket extends JkHandler
 
 
     public void setMaxThreads( int i ) {
-        if( log.isDebugEnabled()) log.debug("Setting maxThreads " + i);
+        if( log.isLoggable(Level.FINEST)) log.finest("Setting maxThreads " + i);
         tp.setMaxThreads(i);
     }
     
     public void setMinSpareThreads( int i ) {
-        if( log.isDebugEnabled()) log.debug("Setting minSpareThreads " + i);
+        if( log.isLoggable(Level.FINEST)) log.finest("Setting minSpareThreads " + i);
         tp.setMinSpareThreads(i);
     }
     
     public void setMaxSpareThreads( int i ) {
-        if( log.isDebugEnabled()) log.debug("Setting maxSpareThreads " + i);
+        if( log.isLoggable(Level.FINEST)) log.finest("Setting maxSpareThreads " + i);
         tp.setMaxSpareThreads(i);
     }
 
@@ -350,13 +351,13 @@ public class ChannelSocket extends JkHandler
         }
         Socket s=sSocket.accept();
         ep.setNote( socketNote, s );
-        if(log.isDebugEnabled() )
-            log.debug("Accepted socket " + s );
+        if(log.isLoggable(Level.FINEST) )
+            log.finest("Accepted socket " + s );
 
         try {
             setSocketOptions(s);
         } catch(SocketException sex) {
-            log.debug("Error initializing Socket Options", sex);
+            log.log(Level.FINEST, "Error initializing Socket Options", sex);
         }
         
         requestCount++;
@@ -401,7 +402,7 @@ public class ChannelSocket extends JkHandler
         // Find a port.
         if (startPort == 0) {
             port = 0;
-            if(log.isInfoEnabled())
+            if(log.isLoggable(Level.INFO))
                 log.info("JK: ajp13 disabling channelSocket");
             running = true;
             return;
@@ -418,17 +419,17 @@ public class ChannelSocket extends JkHandler
                 port=i;
                 break;
             } catch( IOException ex ) {
-                if(log.isInfoEnabled())
+                if(log.isLoggable(Level.INFO))
                     log.info("Port busy " + i + " " + ex.toString());
                 continue;
             }
         }
 
         if( sSocket==null ) {
-            log.error("Can't find free port " + startPort + " " + maxPort );
+            log.severe("Can't find free port " + startPort + " " + maxPort );
             return;
         }
-        if(log.isInfoEnabled())
+        if(log.isLoggable(Level.INFO))
             log.info("JK: ajp13 listening on " + getAddress() + ":" + port );
 
         // If this is not the base port and we are the 'main' channleSocket and
@@ -468,7 +469,7 @@ public class ChannelSocket extends JkHandler
                 Registry.getRegistry(null, null)
                     .registerComponent(global, rgOName, null);
             } catch (Exception e) {
-                log.error("Can't register threadpool" );
+                log.severe("Can't register threadpool" );
             }
         }
 
@@ -504,7 +505,7 @@ public class ChannelSocket extends JkHandler
                         
                 Registry.getRegistry(null, null).registerComponent( rp, roname, null);
             } catch( Exception ex ) {
-                log.warn("Error registering request");
+                log.warning("Error registering request");
             }
         }
     }
@@ -559,7 +560,7 @@ public class ChannelSocket extends JkHandler
         } catch(Exception e) {
             log.info("Error shutting down the channel " + port + " " +
                     e.toString());
-            if( log.isDebugEnabled() ) log.debug("Trace", e);
+            if( log.isLoggable(Level.FINEST) ) log.log(Level.FINEST, "Trace", e);
         }
     }
 
@@ -569,8 +570,8 @@ public class ChannelSocket extends JkHandler
         byte buf[]=msg.getBuffer();
         int len=msg.getLen();
         
-        if(log.isTraceEnabled() )
-            log.trace("send() " + len + " " + buf[4] );
+        if(log.isLoggable(Level.FINEST) )
+            log.finest("send() " + len + " " + buf[4] );
 
         OutputStream os=(OutputStream)ep.getNote( osNote );
         os.write( buf, 0, len );
@@ -588,8 +589,8 @@ public class ChannelSocket extends JkHandler
 
     public int receive( Msg msg, MsgContext ep )
         throws IOException    {
-        if (log.isDebugEnabled()) {
-            log.debug("receive() ");
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("receive() ");
         }
 
         byte buf[]=msg.getBuffer();
@@ -604,7 +605,7 @@ public class ChannelSocket extends JkHandler
         
         if(rd < 0) {
             // Most likely normal apache restart.
-            // log.warn("Wrong message " + rd );
+            // log.warning("Wrong message " + rd );
             return rd;
         }
 
@@ -622,13 +623,13 @@ public class ChannelSocket extends JkHandler
         total_read = this.read(ep, buf, hlen, blen);
         
         if ((total_read <= 0) && (blen > 0)) {
-            log.warn("can't read body, waited #" + blen);
+            log.warning("can't read body, waited #" + blen);
             return  -1;
         }
         
         if (total_read != blen) {
-             log.warn( "incomplete read, waited #" + blen +
-                        " got only " + total_read);
+             log.warning("incomplete read, waited #" + blen +
+                         " got only " + total_read);
             return -2;
         }
         
@@ -665,15 +666,15 @@ public class ChannelSocket extends JkHandler
                 got = is.read(b, pos + offset, len - pos);
             } catch(SocketException sex) {
                 if(pos > 0) {
-                    log.info("Error reading data after "+pos+"bytes",sex);
+                    log.log(Level.INFO, "Error reading data after "+pos+"bytes",sex);
                 } else {
-                    log.debug("Error reading data", sex);
+                    log.log(Level.FINEST, "Error reading data", sex);
                 }
                 got = -1;
             }
-            if (log.isTraceEnabled()) {
-                log.trace("read() " + " " + (b==null ? 0: b.length) + " " +
-                          offset + " " + len + " = " + got );
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("read() " + " " + (b==null ? 0: b.length) + " " +
+                           offset + " " + len + " = " + got );
             }
 
             // connection just closed by remote. 
@@ -681,7 +682,7 @@ public class ChannelSocket extends JkHandler
                 // This happens periodically, as apache restarts
                 // periodically.
                 // It should be more gracefull ! - another feature for Ajp14
-                // log.warn( "server has closed the current connection (-1)" );
+                // log.warning( "server has closed the current connection (-1)" );
                 return -3;
             }
 
@@ -695,8 +696,8 @@ public class ChannelSocket extends JkHandler
     /** Accept incoming connections, dispatch to the thread pool
      */
     void acceptConnections() {
-        if( log.isDebugEnabled() )
-            log.debug("Accepting ajp connections on " + port);
+        if( log.isLoggable(Level.FINEST) )
+            log.finest("Accepting ajp connections on " + port);
         while( running ) {
 	    try{
                 MsgContext ep=createMsgContext(packetSize);
@@ -713,7 +714,7 @@ public class ChannelSocket extends JkHandler
                 tp.runIt( ajpConn );
 	    }catch(Exception ex) {
                 if (running)
-                    log.warn("Exception executing accept" ,ex);
+                    log.log(Level.WARNING, "Exception executing accept" ,ex);
 	    }
         }
     }
@@ -730,9 +731,9 @@ public class ChannelSocket extends JkHandler
                 int status= this.receive( recv, ep );
                 if( status <= 0 ) {
                     if( status==-3)
-                        log.debug( "server has been restarted or reset this connection" );
+                        log.finest( "server has been restarted or reset this connection" );
                     else 
-                        log.warn("Closing ajp connection " + status );
+                        log.warning("Closing ajp connection " + status );
                     break;
                 }
                 ep.setLong( MsgContext.TIMER_RECEIVED, System.currentTimeMillis());
@@ -741,7 +742,7 @@ public class ChannelSocket extends JkHandler
                 // Will call next
                 status= this.invoke( recv, ep );
                 if( status!= JkHandler.OK ) {
-                    log.warn("processCallbacks status " + status );
+                    log.warning("processCallbacks status " + status );
                     ep.action(ActionCode.ACTION_CLOSE, ep.getRequest().getResponse()); 
                     break;
                 }
@@ -749,11 +750,11 @@ public class ChannelSocket extends JkHandler
         } catch( Exception ex ) {
             String msg = ex.getMessage();
             if( msg != null && msg.indexOf( "Connection reset" ) >= 0)
-                log.debug( "Server has been restarted or reset this connection");
+                log.finest( "Server has been restarted or reset this connection");
             else if (msg != null && msg.indexOf( "Read timed out" ) >=0 )
-                log.debug( "connection timeout reached");            
+                log.finest( "connection timeout reached");            
             else
-                log.error( "Error, processing connection", ex);
+                log.log(Level.SEVERE, "Error, processing connection", ex);
         } finally {
 	    	/*
 	    	 * Whatever happened to this connection (remote closed it, timeout, read error)
@@ -765,7 +766,7 @@ public class ChannelSocket extends JkHandler
                 this.close( ep );
             }
             catch( Exception e) {
-                log.error( "Error, closing connection", e);
+                log.log(Level.SEVERE, "Error, closing connection", e);
             }
             try{
                 Request req = (Request)ep.getRequest();
@@ -777,7 +778,7 @@ public class ChannelSocket extends JkHandler
                     req.getRequestProcessor().setGlobalProcessor(null);
                 }
             } catch( Exception ee) {
-                log.error( "Error, releasing connection",ee);
+                log.log(Level.SEVERE, "Error, releasing connection",ee);
             }
         }
     }
@@ -788,7 +789,7 @@ public class ChannelSocket extends JkHandler
 
         switch( type ) {
         case JkHandler.HANDLE_RECEIVE_PACKET:
-            if( log.isDebugEnabled()) log.debug("RECEIVE_PACKET ?? ");
+            if( log.isLoggable(Level.FINEST)) log.finest("RECEIVE_PACKET ?? ");
             return receive( msg, ep );
         case JkHandler.HANDLE_SEND_PACKET:
             return send( msg, ep );
@@ -796,8 +797,8 @@ public class ChannelSocket extends JkHandler
             return flush( msg, ep );
         }
 
-        if( log.isDebugEnabled() )
-            log.debug("Call next " + type + " " + next);
+        if( log.isLoggable(Level.FINEST) )
+            log.finest("Call next " + type + " " + next);
 
         // Send notification
         if( nSupport!=null ) {

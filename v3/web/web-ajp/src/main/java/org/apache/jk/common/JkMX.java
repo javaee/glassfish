@@ -63,6 +63,7 @@ import javax.management.ObjectName;
 import javax.management.Attribute;
 import javax.management.MBeanServerFactory;
 import java.io.IOException;
+import java.util.logging.*;
 
 /**
  * Load the HTTP or RMI adapters for MX4J and JMXRI.
@@ -241,7 +242,7 @@ public class JkMX extends JkHandler
 
             } catch( Throwable t ) {
                 httpServerName=null;
-                log.error( "Can't load the MX4J http adapter ", t );
+                log.log(Level.SEVERE, "Can't load the MX4J http adapter ", t );
             }
         }
 
@@ -272,14 +273,14 @@ public class JkMX extends JkHandler
 		}
                 // starts the server
                 mserver.invoke(httpServerName, "start", null, null);
-                if(log.isInfoEnabled())
+                if(log.isLoggable(Level.INFO))
                     log.info( "Started MX4J console on host " + httphost + " at port " + httpport);
                 
                 httpAdapterLoaded = true;
 
             } catch( Throwable t ) {
                 httpServerName=null;
-                log.error( "Can't load the MX4J http adapter ", t );
+                log.log(Level.SEVERE, "Can't load the MX4J http adapter ", t );
             }
         }
 
@@ -290,7 +291,7 @@ public class JkMX extends JkHandler
 				mserver.setAttribute(jrmpServerName, new Attribute("Port", 
 				                                     new Integer(jrmpport)));
                 mserver.invoke(jrmpServerName, "start", null, null);
-                if(log.isInfoEnabled())
+                if(log.isLoggable(Level.INFO))
                     log.info( "Creating " + jrmpServerName );
 
                 // Create the JRMP adaptor
@@ -316,14 +317,14 @@ public class JkMX extends JkHandler
 
                 // Registers the JRMP adaptor in JNDI and starts it
                 mserver.invoke(adaptor, "start", null, null);
-                if(log.isInfoEnabled())
+                if(log.isLoggable(Level.INFO))
                     log.info( "Creating " + adaptor + " on host " + jrmphost + " at port " + jrmpport);
 
                 jrmpAdapterLoaded = true;
 
             } catch( Exception ex ) {
                 jrmpServerName = null;
-                log.error( "MX4j RMI adapter not loaded: " + ex.toString());
+                log.severe( "MX4j RMI adapter not loaded: " + ex.toString());
             }
         }
 
@@ -331,7 +332,7 @@ public class JkMX extends JkHandler
             try {
                 httpServerName=registerObject("com.sun.jdmk.comm.HtmlAdaptorServer",
                                               "Adaptor:name=html,port=" + httpport);
-                if(log.isInfoEnabled())
+                if(log.isLoggable(Level.INFO))
                     log.info("Registering the JMX_RI html adapter " + httpServerName + " at port " + httpport);
 
                 mserver.setAttribute(httpServerName,
@@ -342,18 +343,18 @@ public class JkMX extends JkHandler
                 httpAdapterLoaded = true;
             } catch( Throwable t ) {
                 httpServerName = null;
-                log.error( "Can't load the JMX_RI http adapter " + t.toString()  );
+                log.severe( "Can't load the JMX_RI http adapter " + t.toString()  );
             }
         }
 
         if ((!httpAdapterLoaded) && (!jrmpAdapterLoaded))
-            log.warn( "No adaptors were loaded but mx.enabled was defined.");
+            log.warning( "No adaptors were loaded but mx.enabled was defined.");
 
     }
 
     public void destroy() {
         try {
-            if(log.isInfoEnabled())
+            if(log.isLoggable(Level.INFO))
                 log.info("Stoping JMX ");
 
             if( httpServerName!=null ) {
@@ -363,7 +364,7 @@ public class JkMX extends JkHandler
                 mserver.invoke(jrmpServerName, "stop", null, null);
             }
         } catch( Throwable t ) {
-            log.error( "Destroy error" + t );
+            log.severe( "Destroy error" + t );
         }
     }
 
@@ -378,15 +379,15 @@ public class JkMX extends JkHandler
                 try {
                     registerObject("org.apache.log4j.jmx.HierarchyDynamicMBean" ,
                                    "log4j:hierarchy=default");
-                    if(log.isInfoEnabled())
+                    if(log.isLoggable(Level.INFO))
                          log.info("Registering the JMX hierarchy for Log4J ");
                 } catch( Throwable t ) {
-                    if(log.isInfoEnabled())
-                        log.info("Can't enable log4j mx: ",t);
+                    if(log.isLoggable(Level.INFO))
+                        log.log(Level.INFO, "Can't enable log4j mx: ",t);
                 }
             }
         } catch( Throwable t ) {
-            log.error( "Init error", t );
+            log.log(Level.SEVERE, "Init error", t );
         }
     }
 
@@ -409,7 +410,7 @@ public class JkMX extends JkHandler
             Thread.currentThread().getContextClassLoader().loadClass(className);
             return true;
         } catch(Throwable e) {
-            if (log.isInfoEnabled())
+            if (log.isLoggable(Level.INFO))
                 log.info( "className [" + className + "] does not exist");
             return false;
         }
@@ -424,8 +425,8 @@ public class JkMX extends JkHandler
         return objN;
     }
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( JkMX.class );
+    private static Logger log=
+        Logger.getLogger( JkMX.class.getName() );
 
 
 }

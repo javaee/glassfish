@@ -56,6 +56,7 @@
 package org.apache.jk.common;
 
 import java.io.IOException;
+import java.util.logging.*;
 
 import com.sun.grizzly.tcp.OutputBuffer;
 import com.sun.grizzly.tcp.InputBuffer;
@@ -77,8 +78,8 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
     
     private static final boolean USE_CUSTOM_STATUS_MSG_IN_HEADER = false;
     
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( JkInputStream.class );
+    private static Logger log=
+        Logger.getLogger( JkInputStream.class.getName() );
 
     private Msg bodyMsg ;
     private Msg outputMsg ;
@@ -147,7 +148,7 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
             try {
               receive();
             } catch(IOException iex) {
-              log.debug("Error consuming request body",iex);
+              log.log(Level.FINEST, "Error consuming request body",iex);
             }
         }
 
@@ -196,8 +197,8 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
             
             outputMsg.reset();
             outputMsg.appendByte( AjpConstants.JK_AJP13_SEND_BODY_CHUNK);
-            if( log.isTraceEnabled() ) 
-                log.trace("doWrite " + off + " " + thisTime + " " + len );
+            if( log.isLoggable(Level.FINEST) ) 
+                log.finest("doWrite " + off + " " + thisTime + " " + len );
             outputMsg.appendBytes( chunk.getBytes(), chunk.getOffset() + off, thisTime );
             off+=thisTime;
             mc.getSource().send( outputMsg, mc );
@@ -208,8 +209,8 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
     public int doRead(ByteChunk responseChunk, Request req) 
         throws IOException {
 
-        if( log.isDebugEnabled())
-            log.debug( "doRead "  + end_of_stream+
+        if( log.isLoggable(Level.FINEST))
+            log.finest( "doRead "  + end_of_stream+
                        " " + responseChunk.getOffset()+ " " + responseChunk.getLength());
         if( end_of_stream ) {
             return -1;
@@ -239,7 +240,7 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
         isFirst = false;
         bodyMsg.reset();
         int err = mc.getSource().receive(bodyMsg, mc);
-        if( log.isDebugEnabled() )
+        if( log.isLoggable(Level.FINEST) )
             log.info( "Receiving: getting request body chunk " + err + " " + bodyMsg.getLen() );
         
         if(err < 0) {
@@ -258,13 +259,13 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
             return false;
         }
 
-        if( log.isTraceEnabled() ) {
+        if( log.isLoggable(Level.FINEST) ) {
             bodyMsg.dump("Body buffer");
         }
         
         bodyMsg.getBytes(bodyBuff);
-        if( log.isTraceEnabled() )
-            log.trace( "Data:\n" + bodyBuff);
+        if( log.isLoggable(Level.FINEST) )
+            log.finest( "Data:\n" + bodyBuff);
         isEmpty = false;
         return true;
     }
@@ -283,8 +284,8 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
             end_of_stream = true; // we've read everything there is
         }
         if (end_of_stream) {
-            if( log.isDebugEnabled() ) 
-                log.debug("refillReadBuffer: end of stream " );
+            if( log.isLoggable(Level.FINEST) ) 
+                log.finest("refillReadBuffer: end of stream " );
             return false;
         }
 
@@ -294,8 +295,8 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
         // bodyMsg.appendInt(AjpConstants.MAX_READ_SIZE);
         bodyMsg.appendInt(packetSize - AjpConstants.H_SIZE - 2);
         
-        if( log.isDebugEnabled() )
-            log.debug("refillReadBuffer " + Thread.currentThread());
+        if( log.isLoggable(Level.FINEST) )
+            log.finest("refillReadBuffer " + Thread.currentThread());
 
         mc.getSource().send(bodyMsg, mc);
         mc.getSource().flush(bodyMsg, mc); // Server needs to get it
@@ -311,8 +312,8 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
     }
 
     public void appendHead(Response res) throws IOException {
-        if( log.isDebugEnabled() )
-            log.debug("COMMIT sending headers " + res + " " + res.getMimeHeaders() );
+        if( log.isLoggable(Level.FINEST) )
+            log.finest("COMMIT sending headers " + res + " " + res.getMimeHeaders() );
         
         C2BConverter c2b=mc.getConverter();
         

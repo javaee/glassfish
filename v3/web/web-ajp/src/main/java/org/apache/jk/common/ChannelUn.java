@@ -59,6 +59,8 @@ import java.net.URLEncoder;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.logging.*;
+
 import javax.management.ObjectName;
 
 import org.apache.jk.core.JkHandler;
@@ -110,7 +112,7 @@ public class ChannelUn extends JniHandler implements JkChannel {
     
     public void init() throws IOException {
         if( file==null ) {
-            log.debug("No file, disabling unix channel");
+            log.finest("No file, disabling unix channel");
             return;
             //throw new IOException( "No file for the unix socket channel");
         }
@@ -125,11 +127,11 @@ public class ChannelUn extends JniHandler implements JkChannel {
         if( !socketFile.isAbsolute() ) {
             String home=wEnv.getJkHome();
             if( home==null ) {
-                log.debug("No jkhome");
+                log.finest("No jkhome");
             } else {
                 File homef=new File( home );
                 socketFile=new File( homef, file );
-                log.debug( "Making the file absolute " +socketFile);
+                log.finest( "Making the file absolute " +socketFile);
             }
         }
         
@@ -139,14 +141,15 @@ public class ChannelUn extends JniHandler implements JkChannel {
                 fos.write( 1 );
                 fos.close();
             } catch( Throwable t ) {
-                log.error("Attempting to create the file failed, disabling channel" 
-                        + socketFile);
+                log.severe(
+                    "Attempting to create the file failed, disabling channel" 
+                    + socketFile);
                 return;
             }
         }
         // The socket file cannot be removed ...
         if (!socketFile.delete()) {
-            log.error( "Can't remove socket file " + socketFile);
+            log.severe( "Can't remove socket file " + socketFile);
             return;
         }
         
@@ -154,7 +157,7 @@ public class ChannelUn extends JniHandler implements JkChannel {
         super.initNative( "channel.un:" + file );
 
         if( apr==null || ! apr.isLoaded() ) {
-            log.debug("Apr is not available, disabling unix channel ");
+            log.finest("Apr is not available, disabling unix channel ");
             apr=null;
             return;
         }
@@ -192,7 +195,7 @@ public class ChannelUn extends JniHandler implements JkChannel {
 		Registry.getRegistry(null, null)
 		    .registerComponent(global, rgOName, null);
             } catch (Exception e) {
-                log.error("Can't register threadpool" );
+                log.severe("Can't register threadpool" );
             }
         }
         tp.start();
@@ -227,7 +230,7 @@ public class ChannelUn extends JniHandler implements JkChannel {
 		Registry.getRegistry(null, null).unregisterComponent(rgOName);
 	    }
         } catch(Exception e) {
-            log.error("Error in destroy",e);
+            log.log(Level.SEVERE, "Error in destroy",e);
         }
     }
 
@@ -244,7 +247,7 @@ public class ChannelUn extends JniHandler implements JkChannel {
                         
 		Registry.getRegistry(null, null).registerComponent( rp, roname, null);
 	    } catch( Exception ex ) {
-		log.warn("Error registering request");
+		log.warning("Error registering request");
 	    }
 	}
     }
@@ -276,14 +279,14 @@ public class ChannelUn extends JniHandler implements JkChannel {
         int rc=super.nativeDispatch( msg, ep, CH_READ, 1 );
 
         if( rc!=0 ) {
-            log.error("receive error:   " + rc, new Throwable());
+            log.log(Level.SEVERE, "receive error:   " + rc, new Throwable());
             return -1;
         }
         
         msg.processHeader();
         
-        if (log.isDebugEnabled())
-             log.debug("receive:  total read = " + msg.getLen());
+        if (log.isLoggable(Level.FINEST))
+             log.finest("receive:  total read = " + msg.getLen());
 
 	return msg.getLen();
     }
@@ -303,8 +306,8 @@ public class ChannelUn extends JniHandler implements JkChannel {
     void acceptConnections() {
         if( apr==null ) return;
 
-        if( log.isDebugEnabled() )
-            log.debug("Accepting ajp connections on " + file);
+        if( log.isLoggable(Level.FINEST) )
+            log.finest("Accepting ajp connections on " + file);
         
         while( running ) {
             try {
@@ -313,12 +316,12 @@ public class ChannelUn extends JniHandler implements JkChannel {
                 // blocking - opening a server connection.
                 int status=this.open(ep);
                 if( status != 0 && status != 2 ) {
-                    log.error( "Error acceptin connection on " + file );
+                    log.severe( "Error acceptin connection on " + file );
                     break;
                 }
 
-                //    if( log.isDebugEnabled() )
-                //     log.debug("Accepted ajp connections ");
+                //    if( log.isLoggable(Level.FINEST) )
+                //     log.finest("Accepted ajp connections ");
         
                 AprConnection ajpConn= new AprConnection(this, ep);
                 tp.runIt( ajpConn );
@@ -331,8 +334,8 @@ public class ChannelUn extends JniHandler implements JkChannel {
     /** Process a single ajp connection.
      */
     void processConnection(MsgContext ep) {
-        if( log.isDebugEnabled() )
-            log.debug( "New ajp connection ");
+        if( log.isLoggable(Level.FINEST) )
+            log.finest( "New ajp connection ");
         try {
             MsgAjp recv=new MsgAjp();
             while( running ) {
@@ -342,11 +345,11 @@ public class ChannelUn extends JniHandler implements JkChannel {
                     break;
                 }
                 ep.setType(0);
-                log.debug( "Process msg ");
+                log.finest( "Process msg ");
                 int status=next.invoke( recv, ep );
             }
-            if( log.isDebugEnabled() )
-                log.debug( "Closing un channel");
+            if( log.isLoggable(Level.FINEST) )
+                log.finest( "Closing un channel");
             try{
                 Request req = (Request)ep.getRequest();
                 if( req != null ) {
@@ -357,7 +360,7 @@ public class ChannelUn extends JniHandler implements JkChannel {
                     req.getRequestProcessor().setGlobalProcessor(null);
                 }
             } catch( Exception ee) {
-                log.error( "Error, releasing connection",ee);
+                log.log(Level.SEVERE, "Error, releasing connection",ee);
             }
             this.close( ep );
         } catch( Exception ex ) {
@@ -393,8 +396,8 @@ public class ChannelUn extends JniHandler implements JkChannel {
         return ("jk-" + encodedAddr);
     }
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( ChannelUn.class );
+    private static Logger log=
+        Logger.getLogger( ChannelUn.class.getName() );
 }
 
 class AprAcceptor implements ThreadPoolRunnable {

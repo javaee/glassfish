@@ -56,6 +56,7 @@
 package org.apache.jk.common;
 
 import java.io.IOException;
+import java.util.logging.*;
 
 import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.Msg;
@@ -91,8 +92,8 @@ public class ChannelJni extends JniHandler implements JkChannel {
                 next=wEnv.getHandler( "dispatch" );
             if( next==null )
                 next=wEnv.getHandler( "request" );
-            if( log.isDebugEnabled() )
-                log.debug("Setting default next " + next.getClass().getName());
+            if( log.isLoggable(Level.FINEST) )
+                log.finest("Setting default next " + next.getClass().getName());
         }
     }
 
@@ -106,8 +107,8 @@ public class ChannelJni extends JniHandler implements JkChannel {
         ep.setNote( receivedNote, null );
 
         if( sentResponse == null ) {
-            if( log.isDebugEnabled() )
-                log.debug("No send() prior to receive(), no data buffer");
+            if( log.isLoggable(Level.FINEST) )
+                log.finest("No send() prior to receive(), no data buffer");
             // No sent() was done prior to receive.
             msg.reset();
             msg.end();
@@ -116,11 +117,11 @@ public class ChannelJni extends JniHandler implements JkChannel {
         
         sentResponse.processHeader();
 
-        if( log.isTraceEnabled() )
+        if( log.isLoggable(Level.FINEST) )
             sentResponse.dump("received response ");
 
         if( msg != sentResponse ) {
-            log.error( "Error, in JNI mode the msg used for receive() must be identical with the one used for send()");
+            log.severe( "Error, in JNI mode the msg used for receive() must be identical with the one used for send()");
         }
         
         return 0;
@@ -134,7 +135,7 @@ public class ChannelJni extends JniHandler implements JkChannel {
         throws IOException
     {
         ep.setNote( receivedNote, null );
-        if( log.isDebugEnabled() ) log.debug("ChannelJni.send: "  +  msg );
+        if( log.isLoggable(Level.FINEST) ) log.finest("ChannelJni.send: "  +  msg );
 
         int rc=super.nativeDispatch( msg, ep, JK_HANDLE_JNI_DISPATCH, 0);
 
@@ -188,7 +189,7 @@ public class ChannelJni extends JniHandler implements JkChannel {
         long cEndpointP=ep.getJniContext();
 
         int type=ep.getType();
-        if( log.isDebugEnabled() ) log.debug("ChannelJni.invoke: "  + ep + " " + type);
+        if( log.isLoggable(Level.FINEST) ) log.finest("ChannelJni.invoke: "  + ep + " " + type);
 
         switch( type ) {
         case JkHandler.HANDLE_RECEIVE_PACKET:
@@ -206,16 +207,16 @@ public class ChannelJni extends JniHandler implements JkChannel {
         try {
             // first, we need to get an endpoint. It should be
             // per/thread - and probably stored by the C side.
-            if( log.isDebugEnabled() ) log.debug("Received request " + xEnv);
+            if( log.isLoggable(Level.FINEST) ) log.finest("Received request " + xEnv);
             
             // The endpoint will store the message pt.
             msg.processHeader();
 
-            if( log.isTraceEnabled() ) msg.dump("Incoming msg ");
+            if( log.isLoggable(Level.FINEST) ) msg.dump("Incoming msg ");
 
             int status= next.invoke(  msg, ep );
             
-            if( log.isDebugEnabled() ) log.debug("after processCallbacks " + status);
+            if( log.isLoggable(Level.FINEST) ) log.finest("after processCallbacks " + status);
             
             return status;
         } catch( Exception ex ) {
@@ -224,7 +225,7 @@ public class ChannelJni extends JniHandler implements JkChannel {
         return 0;
     }    
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( ChannelJni.class );
+    private static Logger log=
+        Logger.getLogger( ChannelJni.class.getName() );
 
 }

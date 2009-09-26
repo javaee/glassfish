@@ -61,6 +61,7 @@ import java.io.IOException;
 import java.io.CharConversionException;
 import java.net.InetAddress;
 import java.util.Properties;
+import java.util.logging.*;
 
 import org.apache.catalina.util.HexUtils;
 import com.sun.grizzly.tcp.Request;
@@ -102,8 +103,8 @@ import org.apache.tomcat.util.threads.ThreadWithAttributes;
  */
 public class HandlerRequest extends JkHandler
 {
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( HandlerRequest.class );
+    private static Logger log =
+        Logger.getLogger( HandlerRequest.class.getName() );
 
     /*
      * Note for Host parsing.
@@ -152,8 +153,8 @@ public class HandlerRequest extends JkHandler
         
         if( next==null )
             next=wEnv.getHandler( "container" );
-        if( log.isDebugEnabled() )
-            log.debug( "Container handler " + next + " " + next.getName() +
+        if( log.isLoggable(Level.FINEST) )
+            log.finest( "Container handler " + next + " " + next.getName() +
                        " " + next.getClass().getName());
 
         // should happen on start()
@@ -236,14 +237,14 @@ public class HandlerRequest extends JkHandler
         File f2=new File( f1, "conf" );
         
         if( ! f2.exists() ) {
-            log.error( "No conf dir for ajp13.id " + f2 );
+            log.severe( "No conf dir for ajp13.id " + f2 );
             return;
         }
         
         File sf=new File( f2, "ajp13.id");
         
-        if( log.isDebugEnabled())
-            log.debug( "Using stop file: "+sf);
+        if( log.isLoggable(Level.FINEST))
+            log.finest( "Using stop file: "+sf);
 
         try {
             Properties props=new Properties();
@@ -259,8 +260,8 @@ public class HandlerRequest extends JkHandler
             FileOutputStream stopF=new FileOutputStream( sf );
             props.store( stopF, "Automatically generated, don't edit" );
         } catch( IOException ex ) {
-            if(log.isDebugEnabled())
-                log.debug( "Can't create stop file: "+sf,ex );
+            if(log.isLoggable(Level.FINEST))
+                log.log(Level.FINEST, "Can't create stop file: "+sf,ex );
         }
     }
     
@@ -290,8 +291,8 @@ public class HandlerRequest extends JkHandler
             ep.setNote( tmpBufNote, tmpMB);
         }
 
-        if( log.isDebugEnabled() )
-            log.debug( "Handling " + type );
+        if( log.isLoggable(Level.FINEST) )
+            log.finest( "Handling " + type );
         
         switch( type ) {
         case AjpConstants.JK_AJP13_FORWARD_REQUEST:
@@ -307,7 +308,7 @@ public class HandlerRequest extends JkHandler
                 }
             } catch( Exception ex ) {
                 /* If we are here it is because we have a bad header or something like that */
-                log.error( "Error decoding request ", ex );
+                log.log(Level.SEVERE, "Error decoding request ", ex );
                 msg.dump( "Incomming message");
                 Response res=ep.getRequest().getResponse();
                 if ( res==null ) {
@@ -326,8 +327,8 @@ public class HandlerRequest extends JkHandler
                     return ERROR;
             }
             /* XXX it should be computed from request, by workerEnv */
-            if(log.isDebugEnabled() )
-                log.debug("Calling next " + next.getName() + " " +
+            if(log.isLoggable(Level.FINEST) )
+                log.finest("Calling next " + next.getName() + " " +
                   next.getClass().getName());
 
             int err= next.invoke( msg, ep );
@@ -335,8 +336,8 @@ public class HandlerRequest extends JkHandler
                 twa.setCurrentStage(control, "JkDone");
             }
 
-            if( log.isDebugEnabled() )
-                log.debug( "Invoke returned " + err );
+            if( log.isLoggable(Level.FINEST) )
+                log.finest( "Invoke returned " + err );
             return err;
         case AjpConstants.JK_AJP13_SHUTDOWN:
             String epSecret=null;
@@ -348,27 +349,27 @@ public class HandlerRequest extends JkHandler
             
             if( requiredSecret != null &&
                 requiredSecret.equals( epSecret ) ) {
-                if( log.isDebugEnabled() )
-                    log.debug("Received wrong secret, no shutdown ");
+                if( log.isLoggable(Level.FINEST) )
+                    log.finest("Received wrong secret, no shutdown ");
                 return ERROR;
             }
 
             // XXX add isSameAddress check
             JkChannel ch=ep.getSource();
             if( !ch.isSameAddress(ep) ) {
-                log.error("Shutdown request not from 'same address' ");
+                log.severe("Shutdown request not from 'same address' ");
                 return ERROR;
             }
 
             if( !shutdownEnabled ) {
-                log.warn("Ignoring shutdown request: shutdown not enabled");
+                log.warning("Ignoring shutdown request: shutdown not enabled");
                 return ERROR;
             }
             // forward to the default handler - it'll do the shutdown
             checkRequest(ep);
             next.invoke( msg, ep );
 
-            if(log.isInfoEnabled())
+            if(log.isLoggable(Level.INFO))
                 log.info("Exiting");
             System.exit(0);
             
@@ -386,7 +387,7 @@ public class HandlerRequest extends JkHandler
             return OK;
 
         default:
-            if(log.isInfoEnabled())
+            if(log.isLoggable(Level.INFO))
                 log.info("Unknown message " + type);
         }
 
@@ -466,8 +467,8 @@ public class HandlerRequest extends JkHandler
             }
         }
     
-        if (log.isTraceEnabled()) {
-            log.trace(req.toString());
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest(req.toString());
          }
 
         return OK;
@@ -498,8 +499,8 @@ public class HandlerRequest extends JkHandler
                 msg.getBytes( tmpMB );
                 String v=tmpMB.toString();
                 req.setAttribute(n, v );
-                if(log.isTraceEnabled())
-                    log.trace("jk Attribute set " + n + "=" + v);
+                if(log.isLoggable(Level.FINEST))
+                    log.finest("jk Attribute set " + n + "=" + v);
             }
 
 
@@ -570,8 +571,8 @@ public class HandlerRequest extends JkHandler
             case AjpConstants.SC_A_SECRET  :
                 msg.getBytes(tmpMB);
                 String secret=tmpMB.toString();
-                if(log.isTraceEnabled())
-                    log.trace("Secret: " + secret );
+                if(log.isLoggable(Level.FINEST))
+                    log.finest("Secret: " + secret );
                 // endpoint note
                 ep.setNote( secretNote, secret );
                 break;

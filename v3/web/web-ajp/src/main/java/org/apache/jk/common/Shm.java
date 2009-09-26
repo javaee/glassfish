@@ -57,6 +57,7 @@ package org.apache.jk.common;
 
 import java.io.IOException;
 import java.util.Vector;
+import java.util.logging.*;
 
 import org.apache.jk.apr.AprImpl;
 import org.apache.jk.core.Msg;
@@ -171,7 +172,7 @@ public class Shm extends JniHandler {
         super.initNative( "shm" );
         if( apr==null ) return;
         if( file==null ) {
-            log.error("No shm file, disabling shared memory");
+            log.severe("No shm file, disabling shared memory");
             apr=null;
             return;
         }
@@ -252,8 +253,8 @@ public class Shm extends JniHandler {
             appendString(msg, instanceId, c2b);
         }
 
-        if (log.isDebugEnabled())
-            log.debug("Register " + instanceId );
+        if (log.isLoggable(Level.FINEST))
+            log.finest("Register " + instanceId );
         this.invoke( msg, mCtx );
     }
 
@@ -273,8 +274,8 @@ public class Shm extends JniHandler {
         msg.appendInt( 0 );
         msg.appendInt( 0 );
         
-        if (log.isDebugEnabled())
-            log.debug("UnRegister " + slotName );
+        if (log.isLoggable(Level.FINEST))
+            log.finest("UnRegister " + slotName );
         this.invoke( msg, mCtx );
     }
 
@@ -287,13 +288,12 @@ public class Shm extends JniHandler {
         throws IOException
     {
         if( apr==null ) return 0;
-        log.debug("ChannelShm.invoke: "  + ep );
+        log.finest("ChannelShm.invoke: "  + ep );
         super.nativeDispatch( msg, ep, JK_HANDLE_SHM_DISPATCH, 0 );
         return 0;
     }    
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( Shm.class );
+    private static Logger log = Logger.getLogger( Shm.class.getName() );
 
     
     //-------------------- Main - use the shm functions from ant or CLI ------
@@ -307,7 +307,7 @@ public class Shm extends JniHandler {
         wEnv.addHandler( "shm", this );
         apr.init();
         if( ! apr.isLoaded() ) {
-            log.error( "No native support. " +
+            log.severe("No native support. " +
                        "Make sure libapr.so and libjkjni.so are available in LD_LIBRARY_PATH");
             return;
         }
@@ -329,22 +329,22 @@ public class Shm extends JniHandler {
                 registerTomcat( host, port, unixSocket );
             }
         } catch (Exception ex ) {
-            log.error( "Error executing Shm", ex);
+            log.log(Level.SEVERE, "Error executing Shm", ex);
         }
     }
 
     public void setHelp( boolean b ) {
-        if (log.isDebugEnabled()) {
-            log.debug("Usage: ");
-            log.debug("  Shm [OPTIONS]");
-            log.debug("");
-            log.debug("  -file SHM_FILE");
-            log.debug("  -group GROUP ( can be specified multiple times )");
-            log.debug("  -host HOST");
-            log.debug("  -port PORT");
-            log.debug("  -unixSocket UNIX_FILE");
-            //        log.debug("  -priority XXX");
-            //        log.debug("  -lbFactor XXX");
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Usage: ");
+            log.finest("  Shm [OPTIONS]");
+            log.finest("");
+            log.finest("  -file SHM_FILE");
+            log.finest("  -group GROUP ( can be specified multiple times )");
+            log.finest("  -host HOST");
+            log.finest("  -port PORT");
+            log.finest("  -unixSocket UNIX_FILE");
+            //        log.finest("  -priority XXX");
+            //        log.finest("  -lbFactor XXX");
         }
         help=true;
         return;

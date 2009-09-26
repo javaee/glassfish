@@ -75,7 +75,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-
+import java.util.logging.*;
 import javax.management.ListenerNotFoundException;
 import javax.management.MBeanNotificationInfo;
 import javax.management.Notification;
@@ -125,8 +125,8 @@ import org.apache.tomcat.util.threads.ThreadPoolRunnable;
  */
 public class ChannelNioSocket extends JkHandler
     implements NotificationBroadcaster, JkChannel {
-    private static org.apache.commons.logging.Log log =
-        org.apache.commons.logging.LogFactory.getLog( ChannelNioSocket.class );
+    private static Logger log =
+        Logger.getLogger( ChannelNioSocket.class.getName() );
 
     private int startPort=8009;
     private int maxPort=8019; // 0 for backward compat.
@@ -219,7 +219,7 @@ public class ChannelNioSocket extends JkHandler
         try {
             this.inet= InetAddress.getByName( inet );
         } catch( Exception ex ) {
-            log.error("Error parsing "+inet,ex);
+            log.log(Level.SEVERE, "Error parsing "+inet,ex);
         }
     }
 
@@ -298,17 +298,23 @@ public class ChannelNioSocket extends JkHandler
 
 
     public void setMaxThreads( int i ) {
-        if( log.isDebugEnabled()) log.debug("Setting maxThreads " + i);
+        if( log.isLoggable(Level.FINEST)) {
+            log.finest("Setting maxThreads " + i);
+        }
         tp.setMaxThreads(i);
     }
     
     public void setMinSpareThreads( int i ) {
-        if( log.isDebugEnabled()) log.debug("Setting minSpareThreads " + i);
+        if( log.isLoggable(Level.FINEST)) {
+            log.finest("Setting minSpareThreads " + i);
+        }
         tp.setMinSpareThreads(i);
     }
 
     public void setMaxSpareThreads( int i ) {
-        if( log.isDebugEnabled()) log.debug("Setting maxSpareThreads " + i);
+        if( log.isLoggable(Level.FINEST)) {
+            log.finest("Setting maxSpareThreads " + i);
+        }
         tp.setMaxSpareThreads(i);
     }
 
@@ -371,13 +377,13 @@ public class ChannelNioSocket extends JkHandler
         SocketChannel sc=sSocket.getChannel().accept();
         Socket s = sc.socket();
         ep.setNote( socketNote, s );
-        if(log.isDebugEnabled() )
-            log.debug("Accepted socket " + s +" channel "  + sc.isBlocking());
+        if(log.isLoggable(Level.FINEST) )
+            log.finest("Accepted socket " + s +" channel "  + sc.isBlocking());
 
         try {
             setSocketOptions(s);
         } catch(SocketException sex) {
-            log.debug("Error initializing Socket Options", sex);
+            log.log(Level.FINEST, "Error initializing Socket Options", sex);
         }
         
         requestCount++;
@@ -419,7 +425,7 @@ public class ChannelNioSocket extends JkHandler
         // Find a port.
         if (startPort == 0) {
             port = 0;
-            if(log.isInfoEnabled())
+            if(log.isLoggable(Level.INFO))
                 log.info("JK: ajp13 disabling channelNioSocket");
             running = true;
             return;
@@ -441,17 +447,17 @@ public class ChannelNioSocket extends JkHandler
                 port=i;
                 break;
             } catch( IOException ex ) {
-                if(log.isInfoEnabled())
+                if(log.isLoggable(Level.INFO))
                     log.info("Port busy " + i + " " + ex.toString());
                 sSocket = null;
             }
         }
 
         if( sSocket==null ) {
-            log.error("Can't find free port " + startPort + " " + maxPort );
+            log.log(Level.SEVERE, "Can't find free port " + startPort + " " + maxPort );
             return;
         }
-        if(log.isInfoEnabled())
+        if(log.isLoggable(Level.INFO))
             log.info("JK: ajp13 listening on " + getAddress() + ":" + port );
 
         selector = Selector.open();
@@ -491,7 +497,7 @@ public class ChannelNioSocket extends JkHandler
                 Registry.getRegistry(null, null)
                     .registerComponent(global, rgOName, null);
             } catch (Exception e) {
-                log.error("Can't register threadpool" );
+                log.log(Level.SEVERE, "Can't register threadpool" );
             }
         }
 
@@ -527,7 +533,7 @@ public class ChannelNioSocket extends JkHandler
                         
                 Registry.getRegistry(null, null).registerComponent( rp, roname, null);
             } catch( Exception ex ) {
-                log.warn("Error registering request");
+                log.warning("Error registering request");
             }
         }
     }
@@ -565,7 +571,7 @@ public class ChannelNioSocket extends JkHandler
         } catch(Exception e) {
             log.info("Error shutting down the channel " + port + " " +
                     e.toString());
-            if( log.isDebugEnabled() ) log.debug("Trace", e);
+            if( log.isLoggable(Level.FINEST) ) log.log(Level.FINEST, "Trace", e);
         }
     }
 
@@ -575,8 +581,8 @@ public class ChannelNioSocket extends JkHandler
         byte buf[]=msg.getBuffer();
         int len=msg.getLen();
         
-        if(log.isTraceEnabled() )
-            log.trace("send() " + len + " " + buf[4] );
+        if(log.isLoggable(Level.FINEST) )
+            log.finest("send() " + len + " " + buf[4] );
 
         OutputStream os=(OutputStream)ep.getNote( osNote );
         os.write( buf, 0, len );
@@ -592,8 +598,8 @@ public class ChannelNioSocket extends JkHandler
 
     public int receive( Msg msg, MsgContext ep )
         throws IOException    {
-        if (log.isTraceEnabled()) {
-            log.trace("receive() ");
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("receive() ");
         }
 
         byte buf[]=msg.getBuffer();
@@ -626,13 +632,13 @@ public class ChannelNioSocket extends JkHandler
         total_read = this.read(ep, buf, hlen, blen);
         
         if ((total_read <= 0) && (blen > 0)) {
-            log.warn("can't read body, waited #" + blen);
+            log.warning("can't read body, waited #" + blen);
             return  -1;
         }
         
         if (total_read != blen) {
-             log.warn( "incomplete read, waited #" + blen +
-                        " got only " + total_read);
+             log.warning("incomplete read, waited #" + blen +
+                         " got only " + total_read);
             return -2;
         }
         
@@ -670,14 +676,14 @@ public class ChannelNioSocket extends JkHandler
                 got = is.read(b, pos + offset, len - pos);
             } catch(ClosedChannelException sex) {
                 if(pos > 0) {
-                    log.info("Error reading data after "+pos+"bytes",sex);
+                    log.log(Level.INFO, "Error reading data after "+pos+"bytes",sex);
                 } else {
-                    log.debug("Error reading data", sex);
+                    log.log(Level.FINEST, "Error reading data", sex);
                 }
                 got = -1;
             }
-            if (log.isTraceEnabled()) {
-                log.trace("read() " + " " + (b==null ? 0: b.length) + " " +
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("read() " + " " + (b==null ? 0: b.length) + " " +
                           offset + " " + len + " = " + got );
             }
 
@@ -716,7 +722,7 @@ public class ChannelNioSocket extends JkHandler
                 ajpConn.register(ep);
             }catch(Exception ex) {
                 if (running)
-                    log.warn("Exception executing accept" ,ex);
+                    log.log(Level.WARNING, "Exception executing accept" ,ex);
             }
         }
     }
@@ -728,7 +734,7 @@ public class ChannelNioSocket extends JkHandler
 
         switch( type ) {
         case JkHandler.HANDLE_RECEIVE_PACKET:
-            if( log.isDebugEnabled()) log.debug("RECEIVE_PACKET ?? ");
+            if( log.isLoggable(Level.FINEST)) log.finest("RECEIVE_PACKET ?? ");
             return receive( msg, ep );
         case JkHandler.HANDLE_SEND_PACKET:
             return send( msg, ep );
@@ -736,8 +742,8 @@ public class ChannelNioSocket extends JkHandler
             return flush( msg, ep );
         }
 
-        if( log.isTraceEnabled() )
-            log.trace("Call next " + type + " " + next);
+        if( log.isLoggable(Level.FINEST) )
+            log.finest("Call next " + type + " " + next);
 
         // Send notification
         if( nSupport!=null ) {
@@ -881,9 +887,9 @@ public class ChannelNioSocket extends JkHandler
                     int status= receive( recv, ep );
                     if( status <= 0 ) {
                         if( status==-3)
-                            log.debug( "server has been restarted or reset this connection" );
+                            log.finest( "server has been restarted or reset this connection" );
                         else 
-                            log.warn("Closing ajp connection " + status );
+                            log.warning("Closing ajp connection " + status );
                         return false;
                     }
                     ep.setLong( MsgContext.TIMER_RECEIVED, System.currentTimeMillis());
@@ -892,7 +898,7 @@ public class ChannelNioSocket extends JkHandler
                     // Will call next
                     status= invoke( recv, ep );
                     if( status != JkHandler.OK ) {
-                        log.warn("processCallbacks status " + status );
+                        log.warning("processCallbacks status " + status );
                         ep.action(ActionCode.ACTION_CLOSE, ep.getRequest().getResponse());
                         return false;
                     }
@@ -903,19 +909,19 @@ public class ChannelNioSocket extends JkHandler
                         if(!haveInput) {
                             setFinished();
                         } else {
-                            if(log.isDebugEnabled())
-                                log.debug("KeepAlive: "+sis.available());
+                            if(log.isLoggable(Level.FINEST))
+                                log.finest("KeepAlive: "+sis.available());
                         }
                     }
                 } 
             } catch( Exception ex ) {
                 String msg = ex.getMessage();
                 if( msg != null && msg.indexOf( "Connection reset" ) >= 0)
-                    log.debug( "Server has been restarted or reset this connection");
+                    log.finest( "Server has been restarted or reset this connection");
                 else if (msg != null && msg.indexOf( "Read timed out" ) >=0 )
-                    log.debug( "connection timeout reached");            
+                    log.finest( "connection timeout reached");            
                 else
-                    log.error( "Error, processing connection", ex);
+                    log.log(Level.SEVERE, "Error, processing connection", ex);
                 return false;
             } 
             return true;
@@ -954,7 +960,7 @@ public class ChannelNioSocket extends JkHandler
             try{
                 close(ep);
             } catch(Exception e) {
-                log.error("Error closing connection", e);
+                log.log(Level.SEVERE, "Error closing connection", e);
             }
             try{
                 Request req = (Request)ep.getRequest();
@@ -966,7 +972,7 @@ public class ChannelNioSocket extends JkHandler
                     req.getRequestProcessor().setGlobalProcessor(null);
                 }
             } catch( Exception ee) {
-                log.error( "Error, releasing connection",ee);
+                log.log(Level.SEVERE, "Error, releasing connection",ee);
             }
         }
 
@@ -975,7 +981,7 @@ public class ChannelNioSocket extends JkHandler
             try {
                 s.getChannel().register(selector, SelectionKey.OP_READ, this);
             } catch(IOException iex) {
-                log.error("Unable to register connection",iex);
+                log.log(Level.SEVERE, "Unable to register connection",iex);
                 unregister(ep);
             }
         }
@@ -995,8 +1001,8 @@ public class ChannelNioSocket extends JkHandler
             while(running) {
                 try {
                     int ns = selector.select(serverTimeout);
-                    if(log.isDebugEnabled())
-                        log.debug("Selecting "+ns+" channels");
+                    if(log.isLoggable(Level.FINEST))
+                        log.finest("Selecting "+ns+" channels");
                     if(ns > 0) {
                         Set sels = selector.selectedKeys();
                         Iterator it = sels.iterator();
@@ -1012,14 +1018,14 @@ public class ChannelNioSocket extends JkHandler
                         }
                     }
                 } catch(ClosedSelectorException cse) {
-                    log.debug("Selector is closed");
+                    log.finest("Selector is closed");
                     return;
                 } catch(CancelledKeyException cke) {
-                    log.debug("Key Cancelled", cke);
+                    log.log(Level.FINEST, "Key Cancelled", cke);
                 } catch(IOException iex) {
-                    log.warn("IO Error in select",iex);
+                    log.log(Level.WARNING, "IO Error in select",iex);
                 } catch(Exception ex) {
-                    log.warn("Error processing select",ex);
+                    log.log(Level.WARNING, "Error processing select",ex);
                 }
             }
         }
@@ -1076,8 +1082,8 @@ public class ChannelNioSocket extends JkHandler
             if(buffer.remaining() > 0) {
                 // should rarely happen, so short-lived GC shouldn't hurt
                 // as much as allocating a long-lived buffer for this
-                if(log.isDebugEnabled())
-                    log.debug("Saving old buffer: "+buffer.remaining());
+                if(log.isLoggable(Level.FINEST))
+                    log.finest("Saving old buffer: "+buffer.remaining());
                 oldData = new byte[buffer.remaining()];
                 buffer.get(oldData);
             }
@@ -1091,7 +1097,7 @@ public class ChannelNioSocket extends JkHandler
                     eof = true;
                     break;
                 } else if(count == 0) {
-                    log.debug("Failed to recieve signaled read: ");
+                    log.finest("Failed to recieve signaled read: ");
                     break;
                 }
                 read += count;
@@ -1106,17 +1112,17 @@ public class ChannelNioSocket extends JkHandler
                 dataAvailable = true;
                 notify();
             } else if(dataAvailable) {
-                log.debug("Race Condition");
+                log.finest("Race Condition");
             } else {
                 int nr=0;
 
                 try {
                     nr = fill(1);
                 } catch(ClosedChannelException cce) {
-                    log.debug("Channel is closed",cce);
+                    log.log(Level.FINEST, "Channel is closed",cce);
                     nr = -1;
                 } catch(IOException iex) {
-                    log.warn("Exception processing read",iex);
+                    log.log(Level.WARNING, "Exception processing read",iex);
                     nr = -1; // Can't handle this yet
                 }
                 if(nr < 0) {
@@ -1162,12 +1168,12 @@ public class ChannelNioSocket extends JkHandler
             }
             if(!dataAvailable) {
                 blocking = true;
-                if(log.isDebugEnabled())
-                    log.debug("Waiting for "+len+" bytes to be available");
+                if(log.isLoggable(Level.FINEST))
+                    log.finest("Waiting for "+len+" bytes to be available");
                 try{
                     wait(socketTimeout);
                 }catch(InterruptedException iex) {
-                    log.debug("Interrupted",iex);
+                    log.log(Level.FINEST, "Interrupted",iex);
                 }
                 blocking = false;
             }
@@ -1216,8 +1222,8 @@ public class ChannelNioSocket extends JkHandler
                     synchronized(this) {
                         SelectionKey key = channel.keyFor(selector);
                         key.interestOps(SelectionKey.OP_WRITE);
-                        if(log.isDebugEnabled())
-                            log.debug("Blocking for channel write: "+buffer.remaining());
+                        if(log.isLoggable(Level.FINEST))
+                            log.finest("Blocking for channel write: "+buffer.remaining());
                         try {
                             wait();
                         } catch(InterruptedException iex) {

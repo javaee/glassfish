@@ -64,6 +64,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.logging.*;
 import javax.management.MBeanServer;
 import javax.management.AttributeNotFoundException;
 import javax.management.MBeanException;
@@ -72,8 +73,6 @@ import javax.management.Attribute;
 import javax.management.ObjectName;
 
 import org.apache.jk.core.JkHandler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.modeler.Registry;
 import org.apache.tomcat.util.modeler.BaseModelMBean;
 import org.apache.tomcat.util.modeler.ManagedBean;
@@ -96,7 +95,7 @@ import org.apache.tomcat.util.modeler.OperationInfo;
  */
 public class ModJkMX extends JkHandler
 {
-    private static Log log = LogFactory.getLog(ModJkMX.class);
+    private static Logger log = Logger.getLogger(ModJkMX.class.getName());
 
     MBeanServer mserver;
     String webServerHost="localhost";
@@ -187,7 +186,7 @@ public class ModJkMX extends JkHandler
                 }
             }
         } catch( Throwable t ) {
-            log.error( "Destroy error", t );
+            log.log(Level.SEVERE, "Destroy error", t );
         }
     }
 
@@ -199,7 +198,7 @@ public class ModJkMX extends JkHandler
             refreshMetadata();
             refreshAttributes();
         } catch( Throwable t ) {
-            log.error( "Init error", t );
+            log.log(Level.SEVERE, "Init error", t );
         }
     }
 
@@ -238,8 +237,8 @@ public class ModJkMX extends JkHandler
                 if( "".equals(line) || line.startsWith("#") ) continue;
 
                 // for each mbean, create a proxy
-                if(log.isDebugEnabled())
-                    log.debug("Read " + line);
+                if(log.isLoggable(Level.FINEST))
+                    log.finest("Read " + line);
 
                 if(line.startsWith( "[")) {
                     name=line.substring(1);
@@ -253,8 +252,8 @@ public class ModJkMX extends JkHandler
                 att=line.substring(0, idx );
                 val=line.substring(idx+1);
 
-                if( log.isDebugEnabled())
-                    log.debug("name: " + name + " att=" + att +
+                if( log.isLoggable(Level.FINEST))
+                    log.finest("name: " + name + " att=" + att +
                             " val=" + val);
 
                 MBeanProxy proxy=(MBeanProxy)mbeans.get(name);
@@ -267,7 +266,7 @@ public class ModJkMX extends JkHandler
             }
             log.info( "Refreshing attributes " + cnt);
         } catch( Exception ex ) {
-            log.info("Error ", ex);
+            log.log(Level.INFO, "Error ", ex);
         }
     }
 
@@ -300,8 +299,8 @@ public class ModJkMX extends JkHandler
             ArrayList methods=new ArrayList();
             while(true) {
                 String line=is.readLine();
-                if( log.isDebugEnabled())
-                    log.debug("Read " + line);
+                if( log.isLoggable(Level.FINEST))
+                    log.finest("Read " + line);
 
                 // end of section
                 if( line == null || line.startsWith("[") ) {
@@ -314,8 +313,8 @@ public class ModJkMX extends JkHandler
                             mproxy.init( name, getters, setters, methods);
                             mbeans.put( name, mproxy );
                         }
-                        if( log.isDebugEnabled())
-                            log.debug("mbean name: " + name + " type=" + type);
+                        if( log.isLoggable(Level.FINEST))
+                            log.finest("mbean name: " + name + " type=" + type);
 
                         getters.clear();
                         setters.clear();
@@ -348,7 +347,7 @@ public class ModJkMX extends JkHandler
             }
             log.info( "Refreshing metadata " + cnt + " " +  newCnt);
         } catch( Exception ex ) {
-            log.info("Error ", ex);
+            log.log(Level.INFO, "Error ", ex);
         }
     }
 
@@ -356,7 +355,7 @@ public class ModJkMX extends JkHandler
      * get/set methods.
      */
     static class MBeanProxy extends BaseModelMBean {
-        private static Log log = LogFactory.getLog(MBeanProxy.class);
+        private static Logger log = Logger.getLogger(MBeanProxy.class.getName());
 
         String jkName;
         List getAttNames;
@@ -371,8 +370,8 @@ public class ModJkMX extends JkHandler
         void init( String name, List getters, List setters, List methods )
             throws Exception
         {
-            if(log.isDebugEnabled())
-                log.debug("Register " + name );
+            if(log.isLoggable(Level.FINEST))
+                log.finest("Register " + name );
             int col=name.indexOf( ':' );
             this.jkName=name;
             String type=name.substring(0, col );
@@ -428,7 +427,7 @@ public class ModJkMX extends JkHandler
         }
 
         private void update( String name, String val ) {
-            log.debug( "Updating " + jkName + " " + name + " " + val);
+            log.finest( "Updating " + jkName + " " + name + " " + val);
             atts.put( name, val);
         }
 
@@ -454,8 +453,8 @@ public class ModJkMX extends JkHandler
                         name + "|" + val);
                 if( is==null ) return;
                 String res=is.readLine();
-                if( log.isDebugEnabled())
-                    log.debug( "Setting " + jkName + " " + name + " result " + res);
+                if( log.isLoggable(Level.FINEST))
+                    log.finest( "Setting " + jkName + " " + name + " result " + res);
 
                 jkmx.refreshMetadata();
                 jkmx.refreshAttributes();
@@ -472,8 +471,8 @@ public class ModJkMX extends JkHandler
                         name );
                 if( is==null ) return null;
                 String res=is.readLine();
-                if( log.isDebugEnabled())
-                    log.debug( "Invoking " + jkName + " " + name + " result " + res);
+                if( log.isLoggable(Level.FINEST))
+                    log.finest( "Invoking " + jkName + " " + name + " result " + res);
 
                 jkmx.refreshMetadata();
                 jkmx.refreshAttributes();

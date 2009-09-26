@@ -56,6 +56,7 @@
 package org.apache.jk.common;
 
 import java.io.IOException;
+import java.util.logging.*;
 
 import org.apache.jk.core.Msg;
 import com.sun.grizzly.util.buf.ByteChunk;
@@ -77,8 +78,8 @@ import com.sun.grizzly.util.buf.MessageBytes;
  * @author Costin Manolache
  */
 public class MsgAjp extends Msg {
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( MsgAjp.class );
+    private static Logger log=
+        Logger.getLogger( MsgAjp.class.getName() );
 
     // that's the original buffer size in ajp13 - otherwise we'll get interoperability problems.
     private byte buf[];
@@ -195,7 +196,7 @@ public class MsgAjp extends Msg {
 
     public void appendByteChunk(ByteChunk bc) throws IOException {
         if(bc==null) {
-            log.error("appendByteChunk() null");
+            log.severe("appendByteChunk() null");
             appendInt( 0);
             appendByte(0);
             return;
@@ -227,10 +228,10 @@ public class MsgAjp extends Msg {
     
     private void cpBytes( byte b[], int off, int numBytes ) {
         if( pos + numBytes >= buf.length ) {
-            log.error("Buffer overflow: buffer.len=" + buf.length + " pos=" +
-                      pos + " data=" + numBytes );
+            log.severe("Buffer overflow: buffer.len=" + buf.length + " pos=" +
+                       pos + " data=" + numBytes );
             dump("Overflow/coBytes");
-            log.error( "Overflow ", new Throwable());
+            log.log(Level.SEVERE, "Overflow ", new Throwable());
             return;
         }
         System.arraycopy( b, off, buf, pos, numBytes);
@@ -295,7 +296,7 @@ public class MsgAjp extends Msg {
         int length = getInt();
         if( length > buf.length ) {
             // XXX Should be if(pos + length > buff.legth)?
-            log.error("getBytes() buffer overflow " + length + " " + buf.length );
+            log.severe("getBytes() buffer overflow " + length + " " + buf.length );
         }
 	
         if( (length == 0xFFFF) || (length == -1) ) {
@@ -337,26 +338,26 @@ public class MsgAjp extends Msg {
 	    
         if( mark != 0x1234 && mark != 0x4142 ) {
             // XXX Logging
-            log.error("BAD packet signature " + mark);
+            log.severe("BAD packet signature " + mark);
             dump( "In: " );
             return -1;
         }
 
-        if( log.isDebugEnabled() ) 
-            log.debug( "Received " + len + " " + buf[0] );
+        if( log.isLoggable(Level.FINEST) ) 
+            log.finest( "Received " + len + " " + buf[0] );
         return len;
     }
     
     public void dump(String msg) {
-        if( log.isDebugEnabled() ) 
-            log.debug( msg + ": " + " " + pos +"/" + (len + 4));
+        if( log.isLoggable(Level.FINEST) ) 
+            log.finest( msg + ": " + " " + pos +"/" + (len + 4));
         int max=pos;
         if( len + 4 > pos )
             max=len+4;
         if( max >1000 ) max=1000;
-        if( log.isDebugEnabled() ) 
+        if( log.isLoggable(Level.FINEST) ) 
             for( int j=0; j < max; j+=16 ) 
-                log.debug( hexLine( buf, j, len ));
+                log.finest( hexLine( buf, j, len ));
 	
     }
 

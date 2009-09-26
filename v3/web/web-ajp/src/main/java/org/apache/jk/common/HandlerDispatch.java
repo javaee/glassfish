@@ -56,6 +56,7 @@
 package org.apache.jk.common;
 
 import java.io.IOException;
+import java.util.logging.*;
 
 import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.Msg;
@@ -72,8 +73,8 @@ import org.apache.jk.core.MsgContext;
  */
 public class HandlerDispatch extends JkHandler
 {
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( HandlerDispatch.class );
+    private static Logger log=
+        Logger.getLogger( HandlerDispatch.class.getName() );
 
     public HandlerDispatch() 
     {
@@ -92,8 +93,8 @@ public class HandlerDispatch extends JkHandler
     public int registerMessageType( int id, String name, JkHandler h,
                                     String sig[] )
     {
-        if( log.isDebugEnabled() )
-            log.debug( "Register message " + id + " " + h.getName() +
+        if( log.isLoggable(Level.FINEST) )
+            log.finest( "Register message " + id + " " + h.getName() +
                  " " + h.getClass().getName());
 	if( id < 0 ) {
 	    // try to find it by name
@@ -123,13 +124,13 @@ public class HandlerDispatch extends JkHandler
         
         if( type > handlers.length ||
             handlers[type]==null ) {
-	    if( log.isDebugEnabled() )
-                log.debug( "Invalid handler " + type );
+	    if( log.isLoggable(Level.FINEST) )
+                log.finest( "Invalid handler " + type );
 	    return ERROR;
 	}
 
-        if( log.isDebugEnabled() )
-            log.debug( "Received " + type + " " + handlers[type].getName());
+        if( log.isLoggable(Level.FINEST) )
+            log.finest( "Received " + type + " " + handlers[type].getName());
         
 	JkHandler handler=handlers[type];
         

@@ -56,6 +56,7 @@
 package org.apache.jk.common;
 
 import java.io.IOException;
+import java.util.logging.*;
 
 import javax.management.ObjectName;
 
@@ -137,13 +138,13 @@ public class JniHandler extends JkHandler {
                     Registry.getRegistry(null, null).registerComponent(apr, aprname, null);
                 }
             } catch( Throwable t ) {
-                log.debug("Can't load apr", t);
+                log.log(Level.FINEST, "Can't load apr", t);
                 apr=null;
             }
         }
         if( apr==null || ! apr.isLoaded() ) {
-            if( log.isDebugEnabled() )
-                log.debug("No apr, disabling jni proxy ");
+            if( log.isLoggable(Level.FINEST) )
+                log.finest("No apr, disabling jni proxy ");
             apr=null;
             return;
         }
@@ -153,14 +154,14 @@ public class JniHandler extends JkHandler {
             nativeJkHandlerP=apr.getJkHandler(xEnv, nativeComponentName );
             
             if( nativeJkHandlerP==0 ) {
-                log.debug("Component not found, creating it " + nativeComponentName );
+                log.finest("Component not found, creating it " + nativeComponentName );
                 nativeJkHandlerP=apr.createJkHandler(xEnv, nativeComponentName);
             }
-            log.debug("Native proxy " + nativeJkHandlerP );
+            log.finest("Native proxy " + nativeJkHandlerP );
             apr.releaseJkEnv(xEnv);
         } catch( Throwable t ) {
             apr=null;
-            log.info("Error calling apr ", t);
+            log.log(Level.INFO, "Error calling apr ", t);
         }
    }
 
@@ -222,7 +223,7 @@ public class JniHandler extends JkHandler {
             msgCtx.setNote( MB_NOTE, tmpMB );
             return msgCtx;
         } catch( Exception ex ) {
-            log.error("Can't create endpoint", ex);
+            log.log(Level.SEVERE, "Can't create endpoint", ex);
             return null;
         }
     }
@@ -231,7 +232,7 @@ public class JniHandler extends JkHandler {
         if( apr==null ) return;
 
         if( nativeJkHandlerP == 0 ) {
-            log.error( "Unitialized component " + name+ " " + val );
+            log.severe( "Unitialized component " + name+ " " + val );
             return;
         }
 
@@ -246,7 +247,7 @@ public class JniHandler extends JkHandler {
         if( apr==null ) return;
 
         if( nativeJkHandlerP == 0 ) {
-            log.error( "Unitialized component " );
+            log.severe( "Unitialized component " );
             return;
         }
 
@@ -261,7 +262,7 @@ public class JniHandler extends JkHandler {
         if( apr==null ) return;
 
         if( nativeJkHandlerP == 0 ) {
-            log.error( "Unitialized component " );
+            log.severe( "Unitialized component " );
             return;
         }
 
@@ -279,7 +280,7 @@ public class JniHandler extends JkHandler {
         msgCtx.setJniEnv( xEnv );
 
         long epP=apr.createJkHandler(xEnv, "endpoint");
-        log.debug("create ep " + epP );
+        log.finest("create ep " + epP );
         if( epP == 0 ) return;
         apr.jkInit( xEnv, epP );
         msgCtx.setJniContext( epP );
@@ -296,13 +297,13 @@ public class JniHandler extends JkHandler {
     protected int nativeDispatch( Msg msg, MsgContext ep, int code, int raw )
         throws IOException
     {
-        if( log.isDebugEnabled() )
-            log.debug( "Sending packet " + code + " " + raw);
+        if( log.isLoggable(Level.FINEST) )
+            log.finest( "Sending packet " + code + " " + raw);
 
         if( raw == 0 ) {
             msg.end();
 
-            if( log.isTraceEnabled() ) msg.dump("OUT:" );
+            if( log.isLoggable(Level.FINEST) ) msg.dump("OUT:" );
         }
 
         // Create ( or reuse ) the jk_endpoint ( the native pair of
@@ -316,7 +317,7 @@ public class JniHandler extends JkHandler {
         }
 
         if( xEnv==0 || nativeContext==0 || nativeJkHandlerP==0 ) {
-            log.error("invokeNative: Null pointer ");
+            log.severe("invokeNative: Null pointer ");
             return -1;
         }
 
@@ -328,10 +329,10 @@ public class JniHandler extends JkHandler {
                                  code, msg.getBuffer(), 0, msg.getLen(), raw );
 
         if( status != 0 && status != 2 ) {
-            log.error( "nativeDispatch: error " + status, new Throwable() );
+            log.log(Level.SEVERE, "nativeDispatch: error " + status, new Throwable() );
         }
 
-        if( log.isDebugEnabled() ) log.debug( "Sending packet - done " + status);
+        if( log.isLoggable(Level.FINEST) ) log.finest( "Sending packet - done " + status);
         return status;
     }
 
@@ -351,6 +352,6 @@ public class JniHandler extends JkHandler {
         return status;
     }
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( JniHandler.class );
+    private static Logger log=
+        Logger.getLogger( JniHandler.class.getName() );
 }

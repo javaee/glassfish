@@ -59,6 +59,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.logging.*;
 
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
@@ -74,8 +75,8 @@ public class Shm14 extends Shm {
     
     // Not ready yet.
     
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( Shm14.class );
+    private static Logger log=
+        Logger.getLogger( Shm14.class.getName() );
     
     MappedByteBuffer bb;
 
@@ -104,8 +105,8 @@ public class Shm14 extends Shm {
     public  int invoke(Msg msg, MsgContext ep )
         throws IOException
     {
-        if (log.isDebugEnabled())
-            log.debug("ChannelShm14.invoke: "  + ep );
+        if (log.isLoggable(Level.FINEST))
+            log.finest("ChannelShm14.invoke: "  + ep );
 
         // 
         
