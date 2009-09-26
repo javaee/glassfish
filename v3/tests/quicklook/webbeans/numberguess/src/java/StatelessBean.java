@@ -3,17 +3,19 @@ package org.jboss.webbeans.examples.numberguess;
 import javax.ejb.*;
 import javax.annotation.*;
 
-import org.omg.CORBA.ORB;
-
 import javax.inject.Inject;
 
 @Stateless
-public class StatelessBean {
+public class StatelessBean implements StatelessLocal {
 
+    @Inject 
+	private SingletonBean singleton;
+    
 
     @PostConstruct
 	public void init() {
 	System.out.println("In StatelessBean::init()");
+	System.out.println("singleton = " + singleton);
     }
 
     public void hello() {

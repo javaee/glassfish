@@ -8,16 +8,14 @@ import org.omg.CORBA.ORB;
 import javax.inject.Inject;
 
 @Singleton
-// TODO enable after classloading bug fix @Startup
+@Startup
 public class SingletonBean {
 
     @Resource
     private ORB orb;
-    
-    /** causing classloading bug
+
     @Inject
-	private StatelessBean statelessBean;
-    */
+    private StatelessLocal statelessLocal;
 
     @PostConstruct
 	public void init() {
@@ -30,6 +28,7 @@ public class SingletonBean {
 
     public void hello() {
 	System.out.println("In SingletonBean::hello()");
+	statelessLocal.hello();
     }
 
     @PreDestroy
