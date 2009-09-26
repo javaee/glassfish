@@ -48,8 +48,14 @@
         setPageSessionAttribute(key="childType" value="security-service");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        println("#{pageSession.valueMap}")
+        //println("#{pageSession.valueMap}")
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        
+        //For Security Manager
+        setPageSessionAttribute(key="additionalSaveHandler" value="saveSecurityManagerValue");
+        setPageSessionAttribute(key="additionalSaveHandlerArgs" value="value:%23{pageSession.securityManagerStatus}");
+        setPageSessionAttribute(key="convertToFalseList" value={"AuditEnabled"})
+        
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{false}" );

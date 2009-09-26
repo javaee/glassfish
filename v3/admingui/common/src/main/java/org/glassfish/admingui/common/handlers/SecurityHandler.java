@@ -45,13 +45,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.faces.context.ExternalContext;
 import javax.management.Attribute;
-import javax.servlet.http.HttpServletRequest;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.intf.config.AuthRealm;
+import org.glassfish.admin.amx.intf.config.JavaConfig;
 import org.glassfish.admin.amx.intf.config.MessageSecurityConfig;
 import org.glassfish.admin.amx.intf.config.Property;
 import org.glassfish.admin.amx.intf.config.ProviderConfig;
@@ -772,6 +771,68 @@ public class SecurityHandler {
     }
 
 
+    @Handler(id="saveSecurityManagerValue",
+         input={
+            @HandlerInput(name="configName", type=String.class),
+            @HandlerInput(name="value", type=String.class, required=true)
+     })
+     public static void saveSecurityManagerValue(HandlerContext handlerCtx){
+        String configName = (String) handlerCtx.getInputValue("configName");
+        if (GuiUtil.isEmpty(configName))
+            configName = "server-config";
+        JavaConfig javaC = V3AMX.getInstance().getConfig(configName).getJavaConfig();
+        Boolean status = isSecurityManagerEnabled(javaC);
+        String value= (String) handlerCtx.getInputValue("value");
+        Boolean userValue = new Boolean(value);
+        if (status.equals(userValue)){
+            //no need to change
+            return;
+        }
+
+        ArrayList newOptions = new ArrayList();
+        String[] origOptions = javaC.getJvmOptions();
+        if(userValue){
+            for(int i=0; i<origOptions.length; i++){
+                newOptions.add(origOptions[i]);
+            }
+            newOptions.add(JVM_OPTION_SECURITY_MANAGER);
+        }else{
+            for(int i=0; i<origOptions.length; i++){
+                if (! (origOptions[i].trim().equals(JVM_OPTION_SECURITY_MANAGER) ||
+                        origOptions[i].trim().startsWith(JVM_OPTION_SECURITY_MANAGER_WITH_EQUAL))){
+                   newOptions.add(origOptions[i]);
+                }
+            }
+        }
+        String[] jvmOptions = (String[])newOptions.toArray(new String[0]);
+        javaC.setJvmOptions(jvmOptions);
+    }
+
+    @Handler(id="getSecurityManagerValue",
+         input={
+            @HandlerInput(name="configName", type=String.class)},
+        output={
+            @HandlerOutput(name="value", type=String.class)}
+     )
+     public static void getSecurityManagerValue(HandlerContext handlerCtx){
+        String configName = (String) handlerCtx.getInputValue("configName");
+        if (GuiUtil.isEmpty(configName))
+            configName = "server-config";
+        JavaConfig javaC = V3AMX.getInstance().getConfig(configName).getJavaConfig();
+        handlerCtx.setOutputValue("value",  isSecurityManagerEnabled(javaC).toString());
+    }
+
+    private static Boolean isSecurityManagerEnabled(JavaConfig javaC){
+        final String[] jvmOptions = javaC.getJvmOptions();
+        for(int i=0; i<jvmOptions.length; i++){
+            if (jvmOptions[i].trim().equals(JVM_OPTION_SECURITY_MANAGER) ||
+                    jvmOptions[i].trim().startsWith(JVM_OPTION_SECURITY_MANAGER_WITH_EQUAL)){
+                return Boolean.TRUE;
+            }
+        }
+        return Boolean.FALSE;
+    }
+
     private static MessageSecurityConfig getMsgSecurityProxy(String msgSecurityName){
         Set<AMXProxy> pSet = V3AMX.getInstance().getDomainRoot().getQueryMgr().queryTypeName("message-security-config", msgSecurityName);
         for(AMXProxy msgProxy : pSet){
@@ -785,5 +846,7 @@ public class SecurityHandler {
         return (aa==null) ? "" : aa;
     }
 
+    private static final String JVM_OPTION_SECURITY_MANAGER = "-Djava.security.manager";
+    private static final String JVM_OPTION_SECURITY_MANAGER_WITH_EQUAL = "-Djava.security.manager=";
     
 }
