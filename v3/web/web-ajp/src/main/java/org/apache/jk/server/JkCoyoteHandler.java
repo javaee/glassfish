@@ -57,6 +57,7 @@ package org.apache.jk.server;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.logging.*;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -78,8 +79,8 @@ import org.apache.jk.core.MsgContext;
  * jmx:notification-handler name="com.sun.grizzly.tcp.ACTION_COMMIT
  */
 public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
-    protected static final org.apache.commons.logging.Log log 
-        = org.apache.commons.logging.LogFactory.getLog(JkCoyoteHandler.class);
+    protected static final Logger log 
+        = Logger.getLogger(JkCoyoteHandler.class.getName());
     // Set debug on this logger to see the container request time
 
     // ----------------------------------------------------------- DoPrivileged
@@ -92,8 +93,8 @@ public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
      * be used instead.
      */
     public void setProperty( String name, String value ) {
-        if( log.isTraceEnabled())
-            log.trace("setProperty " + name + " " + value );
+        if( log.isLoggable(Level.FINEST))
+            log.finest("setProperty " + name + " " + value );
         getJkMain().setProperty( name, value );
         properties.put( name, value );
     }
@@ -109,8 +110,8 @@ public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
     /** Pass config info
      */
     public void setAttribute( String name, Object value ) {
-        if( log.isDebugEnabled())
-            log.debug("setAttribute " + name + " " + value );
+        if( log.isLoggable(Level.FINEST))
+            log.finest("setAttribute " + name + " " + value );
         if( value instanceof String )
             this.setProperty( name, (String)value );
     }
@@ -163,7 +164,7 @@ public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
             getJkMain().init();
 
         } catch( Exception ex ) {
-            log.error("Error during init",ex);
+            log.log(Level.SEVERE, "Error during init",ex);
         }
     }
 
@@ -176,12 +177,12 @@ public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
                     Registry.getRegistry(null, null)
                         .registerComponent(getJkMain(), jkmainOname, "JkMain");
                 } catch (Exception e) {
-                    log.error( "Error registering jkmain " + e );
+                    log.severe( "Error registering jkmain " + e );
                 }
             }
             getJkMain().start();
         } catch( Exception ex ) {
-            log.error("Error during startup",ex);
+            log.log(Level.SEVERE, "Error during startup",ex);
         }
     }
 
@@ -217,8 +218,8 @@ public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
         Request req=ep.getRequest();
         Response res=req.getResponse();
 
-        if( log.isDebugEnabled() )
-            log.debug( "Invoke " + req + " " + res + " " + req.requestURI().toString());
+        if( log.isLoggable(Level.FINEST) )
+            log.finest( "Invoke " + req + " " + res + " " + req.requestURI().toString());
         
         res.setNote( epNote, ep );
         ep.setStatus( MsgContext.JK_STATUS_HEAD );
@@ -227,7 +228,7 @@ public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
         try {
             adapter.service( req, res );
         } catch( Exception ex ) {
-            log.info("Error servicing request " + req,ex);
+            log.log(Level.INFO, "Error servicing request " + req,ex);
         }
         if(ep.getStatus() != MsgContext.JK_STATUS_CLOSED) {
             res.finish();

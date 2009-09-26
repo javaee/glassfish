@@ -65,6 +65,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.*;
 
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
@@ -150,7 +151,7 @@ public class JkMain implements MBeanRegistration
             }
             System.setProperty("java.protocol.handler.pkgs", value);
         } catch(Exception ex ) {
-            log.info("Error adding SSL Protocol Handler",ex);
+            log.log(Level.INFO, "Error adding SSL Protocol Handler",ex);
         }
     }
 
@@ -284,8 +285,8 @@ public class JkMain implements MBeanRegistration
         if( home==null ) {
             log.info( "Can't find home, jk2.properties not loaded");
         }
-        if(log.isDebugEnabled())
-            log.debug("Starting Jk2, base dir= " + home  );
+        if(log.isLoggable(Level.FINEST))
+            log.finest("Starting Jk2, base dir= " + home  );
         loadPropertiesFile();
 
         String initHTTPS = props.getProperty("class.initHTTPS");
@@ -317,7 +318,7 @@ public class JkMain implements MBeanRegistration
                 try {
                     wEnv.getHandler(i).destroy();
                 } catch( IOException ex) {
-                    log.error("Error stopping " + wEnv.getHandler(i).getName(), ex);
+                    log.log(Level.SEVERE, "Error stopping " + wEnv.getHandler(i).getName(), ex);
                 }
             }
         }
@@ -362,7 +363,7 @@ public class JkMain implements MBeanRegistration
                     if( "apr".equals(wEnv.getHandler(i).getName() )) {
                         log.info( "APR not loaded, disabling jni components: " + ex.toString());
                     } else {
-                        log.error( "error initializing " + wEnv.getHandler(i).getName(), ex );
+                        log.log(Level.SEVERE, "error initializing " + wEnv.getHandler(i).getName(), ex );
                     }
                 }
             }
@@ -395,8 +396,8 @@ public class JkMain implements MBeanRegistration
     public void setBeanProperty( Object target, String name, String val ) {
         if( val!=null )
             val=IntrospectionUtils.replaceProperties( val, (Hashtable)props, null );
-        if( log.isDebugEnabled())
-            log.debug( "setProperty " + target + " " + name + "=" + val );
+        if( log.isLoggable(Level.FINEST))
+            log.finest( "setProperty " + target + " " + name + "=" + val );
         
         IntrospectionUtils.setProperty( target, name, val );
     }
@@ -405,8 +406,8 @@ public class JkMain implements MBeanRegistration
      * Set a handler property
      */
     public void setPropertyString( String handlerN, String name, String val ) {
-        if( log.isDebugEnabled() )
-            log.debug( "setProperty " + handlerN + " " + name + "=" + val );
+        if( log.isLoggable(Level.FINEST) )
+            log.finest( "setProperty " + handlerN + " " + name + "=" + val );
         Object target=getWorkerEnv().getHandler( handlerN );
 
         setBeanProperty( target, name, val );
@@ -454,7 +455,7 @@ public class JkMain implements MBeanRegistration
             jkMain.init();
             jkMain.start();
         } catch( Exception ex ) {
-            log.warn("Error running",ex);
+            log.log(Level.WARNING, "Error running",ex);
         }
     }
 
@@ -484,7 +485,7 @@ public class JkMain implements MBeanRegistration
         try {
             props.load( new FileInputStream(propsF) );
         } catch(IOException ex ){
-            log.warn("Unable to load properties from "+propsF,ex);
+            log.log(Level.WARNING, "Unable to load properties from "+propsF,ex);
         }
     }
 
@@ -492,16 +493,16 @@ public class JkMain implements MBeanRegistration
         if( !saveProperties) return;
         
         if(propsF == null) {
-            log.warn("No properties file specified. Unable to save");
+            log.warning("No properties file specified. Unable to save");
             return;
         }
         // Temp - to check if it works
         File outFile= new File(propsF.getParentFile(), propsF.getName()+".save");
-        log.debug("Saving properties " + outFile );
+        log.finest("Saving properties " + outFile );
         try {
             props.store( new FileOutputStream(outFile), "AUTOMATICALLY GENERATED" );
         } catch(IOException ex ){
-            log.warn("Unable to save to "+outFile,ex);
+            log.log(Level.WARNING, "Unable to save to "+outFile,ex);
         }
     }
 
@@ -539,8 +540,8 @@ public class JkMain implements MBeanRegistration
             Object propValue=props.getProperty( key );
             String replacement= replacements.get(key);
             props.put(replacement, propValue);
-            if( log.isDebugEnabled()) 
-                log.debug("Substituting " + key + " " + replacement + " " + 
+            if( log.isLoggable(Level.FINEST)) 
+                log.finest("Substituting " + key + " " + replacement + " " + 
                     propValue);
         }
     }
@@ -580,8 +581,8 @@ public class JkMain implements MBeanRegistration
             return;
         }
         
-        if( log.isDebugEnabled() )
-            log.debug( "Processing " + type + ":" + localName + ":" + fullName + " " + propName );
+        if( log.isLoggable(Level.FINEST) )
+            log.finest( "Processing " + type + ":" + localName + ":" + fullName + " " + propName );
         if( "class".equals( type ) || "handler".equals( type ) ) {
             return;
         }
@@ -593,8 +594,8 @@ public class JkMain implements MBeanRegistration
         if( comp==null )
             return;
         
-        if( log.isDebugEnabled() ) 
-            log.debug("Setting " + propName + " on " + fullName + " " + comp);
+        if( log.isLoggable(Level.FINEST) ) 
+            log.finest("Setting " + propName + " on " + fullName + " " + comp);
         setBeanProperty( comp, propName, propValue );
     }
 
@@ -603,7 +604,7 @@ public class JkMain implements MBeanRegistration
         JkHandler handler;
         String classN=modules.getProperty(type);
         if( classN == null ) {
-            log.error("No class name for " + fullName + " " + type );
+            log.severe("No class name for " + fullName + " " + type );
             return null;
         }
         try {
@@ -611,7 +612,7 @@ public class JkMain implements MBeanRegistration
             handler=(JkHandler)channelclass.newInstance();
         } catch (Throwable ex) {
             handler=null;
-            log.error( "Can't create " + fullName, ex );
+            log.log(Level.SEVERE, "Can't create " + fullName, ex );
             return null;
         }
         if(domain != null ) {
@@ -620,7 +621,7 @@ public class JkMain implements MBeanRegistration
                     (domain + ":" + "type=JkHandler,name=" + fullName);
                 Registry.getRegistry(null, null).registerComponent(handler, handlerOname, classN);
             } catch (Exception e) {
-                log.error( "Error registering " + fullName, e );
+                log.log(Level.SEVERE, "Error registering " + fullName, e );
             }
 
         }
@@ -640,7 +641,7 @@ public class JkMain implements MBeanRegistration
             String name= k.substring( plen );
             String propValue=props.getProperty( k );
 
-            if( log.isDebugEnabled()) log.debug("Register " + name + " " + propValue );
+            if( log.isLoggable(Level.FINEST)) log.finest("Register " + name + " " + propValue );
             modules.put( name, propValue );
         }
     }
@@ -673,8 +674,8 @@ public class JkMain implements MBeanRegistration
         }
     }
 
-    static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( JkMain.class );
+    static Logger log=
+        Logger.getLogger( JkMain.class.getName() );
 
     protected String domain;
     protected ObjectName oname;

@@ -80,16 +80,6 @@
         </resources>
     </build>
     <dependencies>
-        <!-- Specify this dependency before web-core, as we want
-             maven-bundle-plugin to see org.apache.commons.modeler.* classes
-             from this artifact so that it can generate appropriate
-             matching attribute while importing them. Sahoo.
-        -->
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>apache-commons</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>web-core</artifactId>

@@ -58,6 +58,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Hashtable;
+import java.util.logging.*;
 import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.MsgContext;
 import org.apache.jk.core.JkChannel;
@@ -322,7 +323,7 @@ public class AprImpl extends JkHandler { // This will be o.a.t.util.handler.TcHa
         try {
             if( nativeSo == null ) {
                 // This will load libjkjni.so or jkjni.dll in LD_LIBRARY_PATH
-                log.debug("Loading jkjni from " + System.getProperty("java.library.path"));
+                log.finest("Loading jkjni from " + System.getProperty("java.library.path"));
                 System.loadLibrary( "jkjni" );
             } else {
                 System.load( nativeSo );
@@ -339,10 +340,10 @@ public class AprImpl extends JkHandler { // This will be o.a.t.util.handler.TcHa
             System.load( libPath );
         } catch( Throwable ex ) {
             ok=false;
-            if( log.isDebugEnabled() ) 
-                log.debug( "Error loading native library ", ex);
+            if( log.isLoggable(Level.FINEST) ) 
+                log.log(Level.FINEST, "Error loading native library ", ex);
         }
     }
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( AprImpl.class );
+    private static Logger log=
+        Logger.getLogger( AprImpl.class.getName() );
 }
