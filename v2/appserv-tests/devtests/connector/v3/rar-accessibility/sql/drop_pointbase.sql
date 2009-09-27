@@ -1,0 +1,2 @@
+Drop table TXLEVELSWITCH;
+Drop table TXLEVELSWITCH2;
