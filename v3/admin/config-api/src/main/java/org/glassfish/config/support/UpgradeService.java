@@ -83,6 +83,12 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
         Applications apps = domain.getApplications();
         Server server = domain.getServerNamed("server");
 
+        // workaround to not execute any upgrade if the admin console or
+        // any other system app is already installed
+        if (domain.getSystemApplications().getModules().size()>0) {
+            return;
+        }
+
         try {
             ConfigSupport.apply(new ConfigCode() {
                 public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {
