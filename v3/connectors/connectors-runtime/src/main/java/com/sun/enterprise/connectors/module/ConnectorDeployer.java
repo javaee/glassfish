@@ -55,6 +55,7 @@ import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.javaee.services.ResourceManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ConnectorClassFinder;
+import org.glassfish.internal.api.DelegatingClassLoader;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -102,7 +103,6 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
 
     private static Logger _logger = LogDomains.getLogger(ConnectorDeployer.class, LogDomains.RSR_LOGGER);
 
-    private ConnectorClassFinder ccf = null;
 
     public ConnectorDeployer() {
     }
@@ -148,13 +148,13 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         }
 
         boolean isEmbedded = ConnectorsUtil.isEmbedded(context);
+        ConnectorClassFinder ccf = null;
         ClassLoader classLoader = null;
         //this check is not needed as system-rars are never deployed, just to be safe.
         if (!ConnectorsUtil.belongsToSystemRA(moduleName)) {
             try {
                 //for a connector deployer, classloader will always be ConnectorClassFinder
-                ccf = (ConnectorClassFinder) context.getClassLoader();
-                classLoader = ccf;
+                classLoader =  context.getClassLoader();
                 //for embedded .rar, compute the embedded .rar name
                 if (isEmbedded) {
                     moduleName = ConnectorsUtil.getEmbeddedRarModuleName(
@@ -164,15 +164,14 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 //don't add the class-finder to the chain if its embedded .rar
 
                 if (!(isEmbedded)) {
-                    classLoader = clh.getConnectorClassLoader(null);
+                    ccf = (ConnectorClassFinder) context.getClassLoader();
                     clh.getConnectorClassLoader(null).addDelegate(ccf);
                 }
 
                 registerBeanValidator(moduleName, context.getSource());
 
                 ConnectorDescriptor cd = context.getModuleMetaData(ConnectorDescriptor.class);
-                runtime.createActiveResourceAdapter(cd, moduleName, sourcePath, ccf);
-                //runtime.createActiveResourceAdapter(sourcePath, moduleName, ccf);
+                runtime.createActiveResourceAdapter(cd, moduleName, sourcePath, classLoader);
 
             } catch (Exception cre) {
                 _logger.log(Level.WARNING, " unable to load the resource-adapter [ " + moduleName + " ]", cre);
@@ -217,7 +216,14 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
             //remove it only if it is not embedded
             if (!ConnectorsUtil.isEmbedded(context)) {
                 //remove the class-finder (class-loader) from connector-class-loader chain
-                clh.getConnectorClassLoader(null).removeDelegate(ccf);
+                DelegatingClassLoader dcl = clh.getConnectorClassLoader(null);
+                for(DelegatingClassLoader.ClassFinder cf : dcl.getDelegates()){
+                    ConnectorClassFinder ccf = (ConnectorClassFinder)cf;
+                    if(ccf.getResourceAdapterName().equals(moduleName)){
+                        dcl.removeDelegate(ccf);
+                        break;
+                    }
+                }
             }
 
             unregisterBeanValidator(moduleName);
