@@ -166,8 +166,10 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
             adminObjectsDefined = true;
         }
 
-        return !cd.getInBoundDefined() && (cd.getOutBoundDefined() || adminObjectsDefined) &&
-                !("".equals(cd.getResourceAdapterClass()));
+        return  (!cd.getInBoundDefined()) &&
+                ( (cd.getOutBoundDefined() && cd.getOutboundResourceAdapter().getConnectionDefs().size() > 1 ) ||
+                adminObjectsDefined || !("".equals(cd.getResourceAdapterClass())));
+
     }
 
 

@@ -297,7 +297,19 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
      * {@inheritDoc}
      */
     public boolean handles(ConnectorDescriptor cd, String moduleName) {
-        return "".equals(cd.getResourceAdapterClass());
+
+        boolean adminObjectsDefined = false;
+        Set adminObjects = cd.getAdminObjects();
+        if (adminObjects != null && adminObjects.size() > 0) {
+            adminObjectsDefined = true;
+        }
+
+        return  (!cd.getInBoundDefined()) &&
+                (cd.getOutBoundDefined() && cd.getOutboundResourceAdapter().getConnectionDefs().size() < 2 ) &&
+                !adminObjectsDefined &&
+                ("".equals(cd.getResourceAdapterClass())
+                );
+
     }
 
     /**
