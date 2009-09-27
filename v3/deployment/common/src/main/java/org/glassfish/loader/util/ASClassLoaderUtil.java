@@ -58,14 +58,10 @@ import java.net.URL;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
-import java.util.StringTokenizer;
-import java.util.Collection;
+import java.util.*;
 
 public class ASClassLoaderUtil {
 
@@ -153,6 +149,26 @@ public class ASClassLoaderUtil {
 
 
     /**
+     * converts libraries specified via EXTENSION_LIST entry in MANIFEST.MF of
+     * all of the libraries of the deployed archive to
+     * The libraries  are made available to 
+     * the application in the order specified.
+     *
+     * @param librariesStr is a comma-separated list of library JAR files
+     * @param env the server environment
+     * @return array of URL
+     */
+    public static URL[] getLibrariesAsURLs(Set<String> librariesStr,
+        ServerEnvironment env) {
+        if(librariesStr == null)
+            return null;
+        final URL [] urls = new URL[librariesStr.size()];
+        String [] librariesStrArray  = new String[librariesStr.size()];
+        librariesStrArray  = librariesStr.toArray(librariesStrArray);
+        return getDeployParamLibrariesAsURLs(env, librariesStrArray, urls);
+    }
+
+    /**
      * converts libraries specified via the --libraries deployment option to
      * URL[].  The library JAR files are specified by either relative or
      * absolute paths.  The relative path is relative to 
@@ -171,6 +187,11 @@ public class ASClassLoaderUtil {
         if(librariesStrArray == null)
             return null;
         final URL [] urls = new URL[librariesStrArray.length];
+        return getDeployParamLibrariesAsURLs(env, librariesStrArray, urls);
+    }
+
+    private static URL[] getDeployParamLibrariesAsURLs(ServerEnvironment env, String[] librariesStrArray,
+                                                       URL[] urls) {
         final String appLibsDir = env.getLibPath()
                 + File.separator + "applibs";
 

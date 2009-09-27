@@ -69,6 +69,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
+import org.glassfish.deployment.common.InstalledLibrariesResolver;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 
 /**
@@ -140,6 +141,12 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
     public void postConstruct() {
         
         assert env!=null;
+        try{
+            logger.fine("satisfy.optionalpkg.dependency");
+            InstalledLibrariesResolver.initializeInstalledLibRegistry(env.getLibPath().getAbsolutePath());
+        }catch(Exception e){
+            logger.log(Level.WARNING, "optionalpkg.error", e);
+        }
 
         List<Application> allApplications = applications.getApplications();
 

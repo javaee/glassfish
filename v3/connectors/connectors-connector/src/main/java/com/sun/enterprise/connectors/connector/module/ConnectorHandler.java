@@ -40,6 +40,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.appserv.connectors.internal.api.ConnectorsClassLoaderUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -49,6 +50,12 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 
 /**
@@ -64,6 +71,8 @@ public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveH
 
     private static final Class[] connectorAnnotations = new Class[] {
             javax.resource.spi.Connector.class };
+
+    private Logger _logger = LogDomains.getLogger(ConnectorHandler.class, LogDomains.RSR_LOGGER);
 
     /**
      * {@inheritDoc}
@@ -93,6 +102,16 @@ public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveH
             String moduleDir = context.getSource().getURI().getPath();
             String moduleName = context.getSource().getName();
 
+            List<URI> appLibs = null;
+            try {
+                appLibs = context.getAppLibs();
+                if(_logger.isLoggable(Level.FINEST)){
+                    _logger.log(Level.FINEST, "installed libraries (--applibs and EXTENSTION_LIST) for rar " +
+                        "[ "+moduleName+" ] :  " + appLibs);
+                }
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
             if (isEmbedded(context)) {
                 String applicationName = ConnectorsUtil.getApplicationName(context);
                 String embeddedRarName = ConnectorsUtil.getEmbeddedRarModuleName(applicationName, moduleName);
@@ -100,9 +119,9 @@ public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveH
                 // -> embedded-RAR-CL -> ear-lib-CL.
                 // parent provided here is ear-CL, we need to use
                 // ear-lib-CL as parent for embedded-RAR module-CL 
-                return loader.createRARClassLoader(moduleDir, parent.getParent().getParent(), embeddedRarName);
+                return loader.createRARClassLoader(moduleDir, parent.getParent().getParent(), embeddedRarName, appLibs);
             } else {
-                return loader.createRARClassLoader(moduleDir, null, moduleName);
+                return loader.createRARClassLoader(moduleDir, null, moduleName, appLibs);
             }
         } catch (ConnectorRuntimeException e) {
             throw new RuntimeException(e);

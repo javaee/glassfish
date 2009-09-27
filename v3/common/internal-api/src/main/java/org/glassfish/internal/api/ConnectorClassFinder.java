@@ -37,7 +37,6 @@ package org.glassfish.internal.api;
 
 import com.sun.enterprise.loader.EJBClassLoader;
 
-
 /**
  * connector-class-finder to provide a class from its .rar
  *
@@ -45,17 +44,43 @@ import com.sun.enterprise.loader.EJBClassLoader;
  */
 public class ConnectorClassFinder extends EJBClassLoader implements DelegatingClassLoader.ClassFinder {
 
+        private DelegatingClassLoader.ClassFinder librariesClassFinder;
         private String raName;
-        public ConnectorClassFinder(ClassLoader parent, String raName){
+
+    public ConnectorClassFinder(ClassLoader parent, String raName,
+                                              DelegatingClassLoader.ClassFinder librariesClassFinder){
             super(parent);
             this.raName = raName;
+            // There should be better approach to skip libraries Classloader when none specified.
+            // casting to DelegatingClassLoader is not a clean approach
+            if(((DelegatingClassLoader)librariesClassFinder).getDelegates().size() > 0){
+                this.librariesClassFinder = librariesClassFinder;
+            }
         }
 
-        public Class<?> findClass(String name) throws ClassNotFoundException {
+    public Class<?> findClass(String name) throws ClassNotFoundException {
+            Class c = null;
+
+            if(librariesClassFinder != null){
+                try{
+                    c = librariesClassFinder.findClass(name);
+                }catch(ClassNotFoundException cnfe){
+                    //ignore
+                }
+                if(c != null){
+                    return c;
+                }
+            }
             return super.findClass(name);
         }
 
         public Class<?> findExistingClass(String name) {
+            if(librariesClassFinder != null){
+                Class claz = librariesClassFinder.findExistingClass(name);
+                if(claz != null){
+                    return claz;
+                }
+            }
             return super.findLoadedClass(name);
         }
 

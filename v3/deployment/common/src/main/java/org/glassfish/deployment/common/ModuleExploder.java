@@ -143,7 +143,7 @@ public class ModuleExploder {
 
             // check for optional packages depencies
             // XXX : JEROME look if this is still done
-            // optionalPkgDependencyLogic(new File(directory, fileName));
+            // resolveDependencies(new File(directory, fileName));
 
              /*
               *Expand the file only if it is a jar and only if it does not lie in WEB-INF/lib.

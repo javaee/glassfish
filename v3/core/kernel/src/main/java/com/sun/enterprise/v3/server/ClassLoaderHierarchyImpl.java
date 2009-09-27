@@ -82,7 +82,8 @@ public class ClassLoaderHierarchyImpl implements ClassLoaderHierarchy {
     //For distributions where connector module is not available.
     @Inject(optional = true) ConnectorClassLoaderService connectorCLS;
 
-    @Inject AppLibClassLoaderServiceImpl applibCLS;
+    @Inject
+    AppLibClassLoaderServiceImpl applibCLS;
 
     @Inject
     ModulesRegistry modulesRegistry;
@@ -118,6 +119,10 @@ public class ClassLoaderHierarchyImpl implements ClassLoaderHierarchy {
 
     public ClassLoader getAppLibClassLoader(String application, List<URI> libURIs) throws MalformedURLException {
         return applibCLS.getAppLibClassLoader(application, libURIs);
+    }
+
+    public DelegatingClassLoader.ClassFinder getAppLibClassFinder(List<URI> libURIs) throws MalformedURLException {
+        return applibCLS.getAppLibClassFinder(libURIs);
     }
 
     /**

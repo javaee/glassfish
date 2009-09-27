@@ -41,26 +41,29 @@ import org.glassfish.internal.api.DelegatingClassLoader;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Singleton;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.io.IOException;
 
 /**
  * This class is responsible for constructing class loader that has visibility
- * to deploy time libraries (--libraries) for an application. It is different
- * from CommonClassLoader in a sense that the libraries that are part of
+ * to deploy time libraries (--libraries and EXTENSION_LIST of MANIFEST.MF,
+ * provided the library is available in 'applibs' directory) for an application.
+ * It is different from CommonClassLoader in a sense that the libraries that are part of
  * common class loader are shared by all applications, where as this class
  * loader adds a scope to a library.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 @Service
+@Scoped(Singleton.class)
 public class AppLibClassLoaderServiceImpl {
     /*
      * TODO(Sahoo): Not Yet Properly Implemented, as we have to bring in
@@ -75,37 +78,66 @@ public class AppLibClassLoaderServiceImpl {
     @Inject
     CommonClassLoaderServiceImpl commonCLS;
 
-    Map<URI, DelegatingClassLoader.ClassFinder> classFinderRegistry =
+    private Map<URI, DelegatingClassLoader.ClassFinder> classFinderRegistry =
             new HashMap<URI, DelegatingClassLoader.ClassFinder>();
 
+    /**
+     * @see org.glassfish.internal.api.ClassLoaderHierarchy#getAppLibClassLoader(String, List<URI>) 
+     */
     public ClassLoader getAppLibClassLoader(String application, List<URI> libURIs)
             throws MalformedURLException {
 
         ClassLoaderHierarchy clh = habitat.getComponent(ClassLoaderHierarchy.class);
         DelegatingClassLoader connectorCL = clh.getConnectorClassLoader(application);
 
-            if (libURIs == null || libURIs.isEmpty()) {
-                // Optimization: when there are no libraries, why create an empty
-                // class loader in the hierarchy? Instead return the parent.
-                return connectorCL;
-            }
+        if (libURIs == null || libURIs.isEmpty()) {
+            // Optimization: when there are no libraries, why create an empty
+            // class loader in the hierarchy? Instead return the parent.
+            return connectorCL;
+        }
 
-        DelegatingClassLoader applibCL ;
-                applibCL = new DelegatingClassLoader(connectorCL.getParent(), connectorCL.getDelegates());
-        
+        ClassLoader commonCL = commonCLS.getCommonClassLoader();
+        DelegatingClassLoader applibCL = new DelegatingClassLoader(commonCL);
+
+        // order of classfinders is important here :
+        // connector's classfinders should be added before libraries' classfinders
+        // as the delegation hierarchy is appCL->app-libsCL->connectorCL->commonCL->API-CL
+        // since we are merging connector and applib classfinders to be at same level,
+        // connector classfinders need to be be before applib classfinders in the horizontal
+        // search path
+        for (DelegatingClassLoader.ClassFinder cf : connectorCL.getDelegates()) {
+            applibCL.addDelegate(cf);
+        }
+        addDelegates(libURIs, applibCL);
+
+        return applibCL;
+    }
+
+    private void addDelegates(Collection<URI> libURIs, DelegatingClassLoader holder)
+            throws MalformedURLException {
+
+        ClassLoader commonCL = commonCLS.getCommonClassLoader();
         for (URI libURI : libURIs) {
             synchronized (this) {
-                DelegatingClassLoader.ClassFinder libCF =
-                        classFinderRegistry.get(libURI);
+                DelegatingClassLoader.ClassFinder libCF = classFinderRegistry.get(libURI);
                 if (libCF == null) {
-                    libCF = new URLClassFinder(new URL[]{libURI.toURL()},
-                            applibCL.getParent());
+                    libCF = new URLClassFinder(new URL[]{libURI.toURL()}, commonCL);
                     classFinderRegistry.put(libURI, libCF);
                 }
-                applibCL.addDelegate(libCF);
+                holder.addDelegate(libCF);
             }
         }
-        return applibCL;
+    }
+
+    /**
+     * @see org.glassfish.internal.api.ClassLoaderHierarchy#getAppLibClassFinder(List<URI>) 
+     */
+    public DelegatingClassLoader.ClassFinder getAppLibClassFinder(Collection<URI> libURIs)
+            throws MalformedURLException {
+        ClassLoader commonCL = commonCLS.getCommonClassLoader();
+        DelegatingClassLoader appLibClassFinder = new AppLibClassFinder(commonCL);
+        addDelegates(libURIs, appLibClassFinder);
+        return (DelegatingClassLoader.ClassFinder)appLibClassFinder;
     }
 
     private static class URLClassFinder extends URLClassLoader
@@ -125,6 +157,31 @@ public class AppLibClassLoaderServiceImpl {
 
         public Class<?> findExistingClass(String name) {
             return super.findLoadedClass(name);
+        }
+    }
+
+    private static class AppLibClassFinder extends DelegatingClassLoader implements DelegatingClassLoader.ClassFinder {
+
+        public AppLibClassFinder(ClassLoader parent, List<DelegatingClassLoader.ClassFinder> delegates)
+                throws IllegalArgumentException {
+            super(parent, delegates);
+        }
+
+        public AppLibClassFinder(ClassLoader parent) {
+            super(parent);
+        }
+
+        public Class<?> findExistingClass(String name) {
+            // no action needed as parent is delegating classloader which will never be a defining classloader
+            return null;
+        }
+
+        public URL findResource(String name) {
+            return super.findResource(name);
+        }
+
+        public Enumeration<URL> findResources(String name) throws IOException {
+            return super.findResources(name);
         }
     }
 }

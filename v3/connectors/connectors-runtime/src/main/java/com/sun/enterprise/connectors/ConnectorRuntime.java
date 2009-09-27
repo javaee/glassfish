@@ -42,6 +42,8 @@ import java.io.PrintWriter;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.URI;
+import java.net.URISyntaxException;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
@@ -94,6 +96,7 @@ import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.DelegatingClassLoader;
 import org.glassfish.internal.api.ConnectorClassLoaderService;
 import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -180,6 +183,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
     @Inject
     private ConnectorClassLoaderService connectorClassLoaderService;
+
+    @Inject
+    ServerEnvironmentImpl env;
+
 
     // performance improvement, cache the lookup of transaction manager.
     private JavaEETransactionManager transactionManager;
@@ -983,7 +990,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      */
     public ClassLoader createConnectorClassLoader(String moduleDirectory, ClassLoader parent, String rarModuleName)
             throws ConnectorRuntimeException{
-        return cclUtil.createRARClassLoader(moduleDirectory, parent, rarModuleName);
+        List<URI> libraries = ConnectorsUtil.getInstalledLibrariesFromManifest(moduleDirectory, env);
+        return cclUtil.createRARClassLoader(moduleDirectory, parent, rarModuleName, libraries);
     }
 
     public ResourceDeployer getResourceDeployer(Object resource){

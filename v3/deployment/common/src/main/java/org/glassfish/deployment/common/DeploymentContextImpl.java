@@ -38,7 +38,9 @@ import org.glassfish.loader.util.ASClassLoaderUtil;
 
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -338,12 +340,12 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
      * Returns the list of transformers registered to this context.
      *
      * @return the transformers list
-     */
+     */ 
     public List<ClassFileTransformer> getTransformers() {
         return transformers;
     }
 
-    private List<URI> getAppLibs()
+    public List<URI> getAppLibs()
             throws URISyntaxException {
         List<URI> libURIs = new ArrayList<URI>();
         if (parameters.libraries() != null) {
@@ -354,6 +356,22 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
                 libURIs.add(url.toURI());
             }
         }
+
+        Set<String> extensionList = null;
+        try{
+            extensionList = InstalledLibrariesResolver.getInstalledLibraries(source);
+        }catch(IOException ioe){
+            throw new RuntimeException(ioe);
+        }
+        URL[] extensionListLibraries = ASClassLoaderUtil.getLibrariesAsURLs(extensionList, env);
+        for (URL url : extensionListLibraries) {
+            libURIs.add(url.toURI());
+            if(logger.isLoggable(Level.FINEST)){
+                logger.log(Level.FINEST, "Detected [EXTENSION_LIST]" +
+                        " installed-library [ " + url + " ] for archive [ "+source.getName()+ "]");
+            }
+        }
+
         return libURIs;
     }
 

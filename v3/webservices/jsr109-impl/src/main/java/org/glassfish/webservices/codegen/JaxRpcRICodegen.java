@@ -63,7 +63,7 @@ import com.sun.enterprise.deployment.util.DefaultDOLVisitor;
 import com.sun.enterprise.deployment.util.ModuleContentLinker;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.*;
-import org.glassfish.deployment.common.OptionalPkgDependency;
+import org.glassfish.deployment.common.InstalledLibrariesResolver;
 import org.glassfish.deployment.common.ClientArtifactsManager;
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.loader.EJBClassLoader;
@@ -625,7 +625,7 @@ public class JaxRpcRICodegen extends ModuleContentLinker
         // wscompile doesn't support the -extdirs option, so the best we
         // can do is prepend the ext dir jar files to the classpath.
         String optionalDependencyClassPath =
-                OptionalPkgDependency.getExtDirFilesAsClasspath();
+                InstalledLibrariesResolver.getExtDirFilesAsClasspath();
         if(optionalDependencyClassPath.length() > 0) {
             moduleClassPath = optionalDependencyClassPath +
                     File.pathSeparatorChar + moduleClassPath;

@@ -104,7 +104,8 @@ public interface ClassLoaderHierarchy {
 
     /**
      * Returns AppLibClassLoader. As the name suggests, this class loader
-     * has visibility to deploy time libraries (--libraries) for an application.
+     * has visibility to deploy time libraries (--libraries and EXTENSION_LIST of MANIFEST.MF, provided the library is
+     * available in 'applibs' directory) for an application.
      * It is different from CommonClassLoader in a sense that the libraries that
      * are part of common class loader are shared by all applications,
      * where as this class loader adds a scope to a library.
@@ -113,8 +114,29 @@ public interface ClassLoaderHierarchy {
      * @return class loader that has visibility to appropriate
      * application specific libraries.
      * @throws MalformedURLException
+     * @see #getAppLibClassFinder(List<URI>)
      */
     ClassLoader getAppLibClassLoader(String application, List<URI> libURIs)
+            throws MalformedURLException;
+
+    /**
+     * Returns ApplibClassFinder. As the name suggests, this class finder
+     * has visibility to deploy time libraries (--libraries and EXTENSION_LIST of MANIFEST.MF,
+     * provided the library is available in 'applibs' directory) for an application.
+     * It is different from CommonClassLoader in a sense that the libraries that
+     * are part of common class loader are shared by all applications,
+     * where as this class loader adds a scope to a library.    <br>
+     * <b>NOTE :</b> Difference between this API and getAppLibClassLoader(String, List&lt;URI&gt;) is the latter
+     * will be used by all applications (for its parent classloader) whereas this API will be used only by connector
+     * classloader. All other application classloaders will have AppLibClassLoader as parent where as connector classloader
+     * will be above AppLibClassLoader and hence simple delegation is not feasible.
+     * @param libURIs list of URIs, where each URI represent a library
+     * @return class loader that has visibility to appropriate
+     * application specific libraries.
+     * @throws MalformedURLException
+     * @see #getAppLibClassLoader(String, List<URI>)
+     */
+    DelegatingClassLoader.ClassFinder getAppLibClassFinder(List<URI> libURIs)
             throws MalformedURLException;
 
 

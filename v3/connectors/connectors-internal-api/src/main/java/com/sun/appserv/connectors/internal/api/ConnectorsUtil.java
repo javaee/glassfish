@@ -38,6 +38,7 @@ package com.sun.appserv.connectors.internal.api;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.logging.LogDomains;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
@@ -45,14 +46,21 @@ import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
+import java.net.URI;
+import java.net.URL;
+import java.net.URISyntaxException;
 
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.deployment.common.InstalledLibrariesResolver;
+import org.glassfish.loader.util.ASClassLoaderUtil;
 
 /**
  * Util class for connector related classes
@@ -799,4 +807,38 @@ public class ConnectorsUtil {
         return applicationName;
     }
 
+    public static List<URI> getInstalledLibrariesFromManifest(String moduleDirectory, ServerEnvironment env) 
+            throws ConnectorRuntimeException {
+
+        // this method will be called during system-rar creation.
+        // Though there are code paths that will call this method for creation of rars during recovery / via
+        // API exposed for GUI, they will not call this method as non-system rars are always started during server startup
+        // system-rars can specify only EXTENSTION_LIST in MANIFEST.MF and do not have a way to use --libararies option.
+        // So, satisfying system-rars alone as of now.
+        
+        List<URI> libURIs = new ArrayList<URI>();
+        try{
+            File module = new File(moduleDirectory);
+
+            FileArchive fileArchive = new FileArchive();
+            fileArchive.open(module.toURI());  // directory where rar is exploded
+            Set<String> extensionList = InstalledLibrariesResolver.getInstalledLibraries(fileArchive);
+
+            URL[] extensionListLibraries = ASClassLoaderUtil.getLibrariesAsURLs(extensionList, env);
+            for (URL url : extensionListLibraries) {
+                libURIs.add(url.toURI());
+                _logger.log(Level.FINEST, "adding URL [ "+url+" ] to installedLibraries");
+            }
+        }catch(IOException ioe){
+            ConnectorRuntimeException cre = new ConnectorRuntimeException(ioe.getMessage());
+            cre.initCause(ioe);
+            throw cre;
+        } catch (URISyntaxException e) {
+            ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
+            cre.initCause(e);
+            throw cre;
+        }
+
+        return libURIs;
+    }
 }

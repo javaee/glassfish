@@ -51,8 +51,9 @@ import com.sun.enterprise.tools.verifier.util.VerifierConstants;
 import com.sun.enterprise.tools.verifier.web.WebVerifier;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
-import org.glassfish.deployment.common.OptionalPkgDependency;
+import org.glassfish.deployment.common.InstalledLibrariesResolver;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -84,6 +85,9 @@ public class Verifier
 
     @Inject
     private ClassLoaderHierarchy clh;
+
+    @Inject
+    private ServerEnvironment env;
 
     private Application application = null;
 
@@ -320,13 +324,13 @@ public class Verifier
         // initialize /tmp/* directories
         initVerifierTmpDirs();
         String jarFile = verifierFrameworkContext.getJarFileName();
-        //We must call OptionalPkgDependency.satisfyOptionalPackageDependencies() before explodeArchive,
+        //We must call InstalledLibrariesResolver.initializeInstalledLibRegistry() before explodeArchive,
         //because inside this call, the list of installed optional packages in the system gets initialised.
-        //That list is then used inside optionalPackageDependencyLogic() code.
+        //That list is then used inside resolveDependencies() code.
         //It looks to be a bug as ideally this kind of dependency should be taken care of inside
-        //OptionalPkgDependency class itself.
+        //InstalledLibrariesResolver class itself.
         //But any way, we don't have a choice but to make this work around in our code.
-        OptionalPkgDependency.satisfyOptionalPackageDependencies();
+        InstalledLibrariesResolver.initializeInstalledLibRegistry(env.getLibPath().getAbsolutePath());
         try
         {
             DescriptorFactory.ResultHolder result =

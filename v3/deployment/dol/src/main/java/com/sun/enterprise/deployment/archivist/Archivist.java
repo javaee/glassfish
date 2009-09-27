@@ -57,7 +57,7 @@ import org.glassfish.apf.impl.ProcessingResultImpl;
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
-import org.glassfish.deployment.common.OptionalPkgDependency;
+import org.glassfish.deployment.common.InstalledLibrariesResolver;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.ComponentException;
@@ -985,7 +985,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         boolean dependenciesSatisfied = true;
         Manifest m = archive.getManifest();
         if (m != null) {
-            dependenciesSatisfied = OptionalPkgDependency.optionalPkgDependencyLogic(m, archive.getURI().getSchemeSpecificPart());
+            dependenciesSatisfied = InstalledLibrariesResolver.resolveDependencies(m, archive.getURI().getSchemeSpecificPart());
         }
         // now check my libraries.
         Vector<String> libs = getLibraries(archive);
@@ -996,7 +996,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                     jis = new JarInputStream(archive.getEntry(libUri));
                     m = jis.getManifest();
                     if (m != null) {
-                        if (!OptionalPkgDependency.optionalPkgDependencyLogic(m, libUri)) {
+                        if (!InstalledLibrariesResolver.resolveDependencies(m, libUri)) {
                             dependenciesSatisfied = false;
                         }
                     }

@@ -38,6 +38,8 @@ package com.sun.appserv.connectors.internal.api;
 
 import org.glassfish.internal.api.ConnectorClassFinder;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.DelegatingClassLoader;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -45,6 +47,7 @@ import org.jvnet.hk2.component.Singleton;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.util.logging.Level;
@@ -73,7 +76,11 @@ public class ConnectorsClassLoaderUtil {
 
     private Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
 
-    public ConnectorClassFinder createRARClassLoader(String moduleDir, ClassLoader deploymentParent, String moduleName)
+    @Inject
+    private ServerEnvironment env;
+
+    public ConnectorClassFinder createRARClassLoader(String moduleDir, ClassLoader deploymentParent,
+                                                     String moduleName, List<URI> appLibs)
             throws ConnectorRuntimeException {
 
         ClassLoader parent = null;
@@ -89,19 +96,26 @@ public class ConnectorsClassLoaderUtil {
         }else{
             parent = deploymentParent;
         }
-        return createRARClassLoader(parent, moduleDir, moduleName);
+        return createRARClassLoader(parent, moduleDir, moduleName, appLibs);
     }
 
-    private ConnectorClassFinder createRARClassLoader(final ClassLoader parent, String moduleDir, final String moduleName)
+    private DelegatingClassLoader.ClassFinder getLibrariesClassLoader(List<URI> appLibs)
+            throws MalformedURLException {
+        return clh.getAppLibClassFinder(appLibs);
+    }
+
+    private ConnectorClassFinder createRARClassLoader(final ClassLoader parent, String moduleDir,
+                                                      final String moduleName, List<URI> appLibs)
             throws ConnectorRuntimeException{
         ConnectorClassFinder cl = null;
 
         try{
-        cl = (ConnectorClassFinder)AccessController.doPrivileged(new PrivilegedExceptionAction() {
-            public Object run() throws Exception {
-                    return new ConnectorClassFinder(parent, moduleName);
-            }
-        });
+            final DelegatingClassLoader.ClassFinder librariesCL = getLibrariesClassLoader(appLibs);
+            cl = (ConnectorClassFinder)AccessController.doPrivileged(new PrivilegedExceptionAction() {
+                public Object run() throws Exception {
+                        return new ConnectorClassFinder(parent, moduleName, librariesCL);
+                }
+            });
         } catch (Exception ex) {
             _logger.log(Level.SEVERE, "failed to create connector classloader", ex);
             ConnectorRuntimeException cre = new ConnectorRuntimeException(ex.getMessage());
@@ -120,16 +134,20 @@ public class ConnectorsClassLoaderUtil {
     }
 
     public Collection<ConnectorClassFinder> getSystemRARClassLoaders() throws ConnectorRuntimeException {
-        if(systemRARClassLoaders == null){
+        //if(systemRARClassLoaders == null){
             List<ConnectorClassFinder> classLoaders = new ArrayList<ConnectorClassFinder>();
             for(String rarName : ConnectorConstants.systemRarNames){
                 String location = ConnectorsUtil.getSystemModuleLocation(rarName);
-                ConnectorClassFinder ccf = createRARClassLoader(location, null, rarName);
+                // Embedded Server does not seem to have installed libraries path ?
+                // List<URI> libraries = ConnectorsUtil.getInstalledLibrariesFromManifest(location, env);
+                List<URI> libraries = new ArrayList<URI>();
+                ConnectorClassFinder ccf = createRARClassLoader(location, null, rarName, libraries);
                 classLoaders.add(ccf);
             }
-            systemRARClassLoaders = classLoaders;
-        }
-        return systemRARClassLoaders;
+        //    systemRARClassLoaders = classLoaders;
+        //}
+        //return systemRARClassLoaders;
+        return classLoaders;
     }
 
     public ConnectorClassFinder getSystemRARClassLoader(String rarName) throws ConnectorRuntimeException {

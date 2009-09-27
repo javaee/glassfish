@@ -172,7 +172,7 @@ public class DelegatingClassLoader extends ClassLoader {
     }
 
     @Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException {
+    public Class<?> findClass(String name) throws ClassNotFoundException {
         for (ClassFinder d : delegates) {
             try {
                 Class c = null;

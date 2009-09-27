@@ -41,10 +41,14 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import java.io.File;
+import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.util.Properties;
 import java.util.Collection;
 import java.util.Map;
+import java.util.List;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Useful services for Deployer service implementation
@@ -208,4 +212,14 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
      * @return an action report
      */
     public ActionReport getActionReport();
+
+    /**
+     * gets the app-libs specified for this archive<br>
+     * This list includes --libraries as well EXTENSION_LIST specified in the manifest entries
+     * @return list of library URIs
+     * @throws URISyntaxException  when unable to get the library URIs
+     */
+    public List<URI> getAppLibs()
+            throws URISyntaxException;
+
 }
