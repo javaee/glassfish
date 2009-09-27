@@ -61,7 +61,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     @Inject
     private Domain domain;
     @Inject
-    ModulesRegistry registry;
+    private ModulesRegistry registry;
     @Inject
     protected ProbeProviderFactory probeProviderFactory;
     @Inject
@@ -111,12 +111,11 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     private void discoverProbeProviders() {
         // Iterate thru existing modules
         for (Module m : registry.getModules()) {
-            if (m.getState() == ModuleState.READY) {
-                printd( " In (discoverProbeProviders) ModuleState - Ready : " + m.getName());
-                moduleStarted(m);
+            if ((m.getState() == ModuleState.READY)){// || (m.getState() == ModuleState.RESOLVED)) {
+                printd( " In (discoverProbeProviders) ModuleState - " + m.getState() + " : " + m.getName());
+                verifyModule(m);
             }
         }
-
     }
 
     public void preDestroy() {
@@ -151,15 +150,22 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     }
 
     public void moduleResolved(Module module) {
-        printd(" In module resolved, but not registering, module = " + module.getName());
-        //TODO - Should we call moduleStarted()?
+        if (module == null) return;
+        printd(" In module resolved, module = " + module.getName());
+        verifyModule(module);
     }
 
     public synchronized void moduleStarted(Module module) {
         if (module == null) return;
+        printd(" In module Started, module = " + module.getName());
+        verifyModule(module);
+    }
+
+    private synchronized void verifyModule(Module module) {
+        if (module == null) return;
         String str = module.getName();
         if (!map.containsKey(str)) {
-            //printd("moduleStarted: " + str);
+            printd(" Verifying module - " + module.getState() + ": " + str);
             map.put(str, module);
             addProvider(module);
         }
@@ -178,6 +184,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     }
 
     private void addProvider(Module module) {
+        printd(" Adding the Provider - verified the module");
         String mname = module.getName();
         //printd("addProvider for " + mname + "...");
         ClassLoader mcl = module.getClassLoader();
