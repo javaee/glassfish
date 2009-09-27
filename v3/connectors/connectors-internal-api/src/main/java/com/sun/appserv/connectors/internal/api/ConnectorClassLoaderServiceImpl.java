@@ -37,10 +37,7 @@
 
 package com.sun.appserv.connectors.internal.api;
 
-import org.glassfish.internal.api.DelegatingClassLoader;
-import org.glassfish.internal.api.ConnectorClassFinder;
-import org.glassfish.internal.api.ConnectorClassLoaderService;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -96,13 +93,17 @@ public class ConnectorClassLoaderServiceImpl implements ConnectorClassLoaderServ
        if(globalConnectorCL == null){
            synchronized (ConnectorClassLoaderServiceImpl.class){
                if(globalConnectorCL == null){
-                    globalConnectorCL =  new DelegatingClassLoader(getCommonClassLoader());
+                   ClassLoader parent = getCommonClassLoader();
+                    globalConnectorCL =  new DelegatingClassLoader(parent);
+/*                  TODO V3
+                    for(DelegatingClassLoader.ClassFinder cf : appsSpecificCCLUtil.getSystemRARClassLoaders()){
+                        globalConnectorCL.addDelegate(cf);
+                    }
+*/
                }
            }
         }
-        Collection<String> requiredRars = appsSpecificCCLUtil.getRequiredResourceAdapters(appName);
-
-        if (appName == null || appsSpecificCCLUtil.useGlobalConnectorClassLoader() || !(requiredRars.size() > 0)) {
+        if (hasGlobalAccessForRARs(appName)) {
             assert (globalConnectorCL != null);
             loader = globalConnectorCL;
         } else {
@@ -110,6 +111,11 @@ public class ConnectorClassLoaderServiceImpl implements ConnectorClassLoaderServ
             loader = createConnectorClassLoaderForApplication(appName);
         }
         return loader;
+    }
+
+    private boolean hasGlobalAccessForRARs(String appName) {
+        return appName == null || appsSpecificCCLUtil.useGlobalConnectorClassLoader() ||
+                appsSpecificCCLUtil.getRequiredResourceAdapters(appName).contains("*");
     }
 
     private ClassLoader getCommonClassLoader(){
@@ -147,6 +153,12 @@ public class ConnectorClassLoaderServiceImpl implements ConnectorClassLoaderServ
             appSpecificConnectorClassLoader.addDelegate(cf);
         }else{
             //not possible
+/*          TODO V3
+            if(!ConnectorsUtil.isEmbedded(appName, raName)){
+                throw new IllegalStateException("RAR Classloader of RAR [ "+raName+" ] not found for " +
+                    "application [ "+appName+" ]");
+            }
+*/
         }
     }
 

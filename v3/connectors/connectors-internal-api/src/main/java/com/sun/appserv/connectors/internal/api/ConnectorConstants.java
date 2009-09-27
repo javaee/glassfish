@@ -389,10 +389,13 @@ public interface ConnectorConstants {
     public static final String PROPERTIES_FACTORY = "org.glassfish.resources.custom.factory.PropertiesFactory";
 
     //service-names for the ActiveResourceAdapter contract's implementations
-
     // service providing inbound support
     public static final String AIRA = "ActiveInboundResourceAdapter";
     // service providing outbound support
     public static final String AORA = "ActiveOutboundResourceAdapter";
 
+    //flag to indicate that all applications have access to all deployed standalone RARs
+    public static final String ACCESS_ALL_RARS = "access-all-rars";
+    //flag to indiate additional RARs required for an application, apart from the ones referred via app's DD
+    public static final String REQUIRED_RARS_FOR_APP_PREFIX="required-rars-for-";
 }
