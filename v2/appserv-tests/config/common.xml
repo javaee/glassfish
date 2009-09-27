@@ -517,9 +517,11 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   <echo message="Deploying ${rarfile}" level="verbose"/>
   <echo message="asadmin deploy ${as.props} --target ${appserver.instance.name} --force=${force} ${rarfile}"/>
     <property name="force" value="false"/>
+    <property name="extra-params" value=""/>
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="deploy"/>
     <arg line="${as.props}"/>
+    <arg line="${extra-params}"/>
     <arg line="--force=${force}"/>
     <arg line="--target ${appserver.instance.name}"/>
     <arg line="${rarfile}"/>
@@ -965,9 +967,11 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <target name="deploy-common-pe" depends="init-common" unless="ee">
   <property name="deployed.app" value="${assemble.dir}/${appname}App.ear"/>
+   <property name="extra-params" value=""/>
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="deploy"/>
     <arg line="${as.props}"/>    
+    <arg line="${extra-params}"/>    
     <arg line="--target ${appserver.instance.name}"/>
     <arg line="--retrieve ${assemble.dir}"/>
 <!-- deployed.app defaults to ${assemble.dir}/${appname}App.ear defined in properties.xml-->
