@@ -37,7 +37,11 @@
 
 <sun:treeNode
     id="httpService"
-    text="$resource{i18n.tree.httpService}"
+    text="$resource{i18n_web.tree.httpService}"
     url="/web/configuration/accessLog.jsf?configName=server-config"
     imageURL="/resource/web/images/httpservice.gif"
-/>
+    >
+    <!beforeCreate
+        setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+    />
+</sun:treeNode>

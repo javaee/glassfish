@@ -38,21 +38,11 @@
 
 <sun:property>
     <sun:hyperlink 
-        toolTip="$resource{i18n.tree.jvmSettings.tooltip}"
-        url="/common/javaConfig/serverInstJvmGeneral.jsf?configName=#{configName}"
+        toolTip="$resource{i18n.tree.adminService.tooltip}"
+        url="/common/configuration/jmxConnectorEdit.jsf?configName=#{configName}"
         >
-        <sun:image url="/resource/images/jvm.gif" />
-        <sun:staticText text="$resource{i18n.tree.jvmSettings}" />
-    </sun:hyperlink>
-</sun:property>
-
-<sun:property>
-    <sun:hyperlink 
-        toolTip="$resource{i18n.tree.loggerSettings.tooltip}"
-        url="/common/configuration/loggerGeneral.jsf"
-        >
-        <sun:image url="/resource/images/logger.gif" />
-        <sun:staticText text="$resource{i18n.tree.loggerSettings}" />
+    <sun:image url="/resource/web/images/httpservice.gif" />
+    <sun:staticText text="$resource{i18n.tree.adminService}" />
     </sun:hyperlink>
 </sun:property>
 

@@ -8,4 +8,13 @@
                 parentId="configuration" 
                 content="pluginTreeNodeJts.jsf"
         />
+
+        <!-- Add a link under the Configuration Page  -->
+        <integration-point
+                id="jts_ConfigurationLink"
+                type="org.glassfish.admingui:configuration"
+                priority="400"
+                parentId="propSheetSection"
+                content="jtsConfigurationLink.jsf"
+        />
 </console-config>

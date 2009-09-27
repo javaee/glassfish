@@ -43,10 +43,13 @@
     childImageURL="/resource/web/images/threadPool.gif"
     childExpanded="$boolean{false}"
     childURL="/web/configuration/threadPoolEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
-    text="$resource{i18n.tree.threadPools}"
+    text="$resource{i18n_web.tree.threadPools}"
     url="/web/configuration/threadPools.jsf?configName=#{configName}"
     >
     <!facet image>
         <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/configuration/threadPools.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
     </facet>
+    <!beforeCreate
+        setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+    />
 </dynamicTreeNode>

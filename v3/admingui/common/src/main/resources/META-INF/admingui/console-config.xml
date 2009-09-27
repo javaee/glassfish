@@ -66,13 +66,27 @@
         />
 
 
-        <!-- Add a link under the Configuration Page  -->
+        <!-- Add a link under the Configuration Page, matching the tree node order  -->
         <integration-point
                 id="common_ConfigurationLink"
-                type="org.glassfish.admingui:configuration" 
+                type="org.glassfish.admingui:configuration"
                 priority="100"
                 parentId="propSheetSection"
                 content="configuration/configurationLink.jsf"
+        />
+        <integration-point
+                id="common_securityLink"
+                type="org.glassfish.admingui:configuration"
+                priority="350"
+                parentId="propSheetSection"
+                content="security/configurationLink.jsf"
+        />
+        <integration-point
+                id="common_adminServiceLink"
+                type="org.glassfish.admingui:configuration"
+                priority="700"
+                parentId="propSheetSection"
+                content="configuration/jmxConfigurationLink.jsf"
         />
 
 

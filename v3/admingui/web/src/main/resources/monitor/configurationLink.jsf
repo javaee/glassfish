@@ -38,21 +38,14 @@
 
 <sun:property>
     <sun:hyperlink 
-        toolTip="$resource{i18n.tree.jvmSettings.tooltip}"
-        url="/common/javaConfig/serverInstJvmGeneral.jsf?configName=#{configName}"
+        toolTip="$resource{i18n_web.tree.monitoring.tooltip}"
+        url="/web/monitor/monitoringPage.jsf?configName=#{configName}" 
         >
-        <sun:image url="/resource/images/jvm.gif" />
-        <sun:staticText text="$resource{i18n.tree.jvmSettings}" />
+        <sun:image url="/resource/web/images/monitor.gif" />
+        <sun:staticText text="$resource{i18n_web.tree.monitoring}" />
     </sun:hyperlink>
-</sun:property>
-
-<sun:property>
-    <sun:hyperlink 
-        toolTip="$resource{i18n.tree.loggerSettings.tooltip}"
-        url="/common/configuration/loggerGeneral.jsf"
-        >
-        <sun:image url="/resource/images/logger.gif" />
-        <sun:staticText text="$resource{i18n.tree.loggerSettings}" />
-    </sun:hyperlink>
+    <!beforeCreate
+        setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+    />
 </sun:property>
 

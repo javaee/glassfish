@@ -38,7 +38,7 @@
 
 <sun:treeNode
     id="networkConfig"
-    text="$resource{i18n.tree.grizzly.networkConfig}"
+    text="$resource{i18n_web.tree.grizzly.networkConfig}"
     url="/web/grizzly/networkConfig.jsf?configName=server-config"
     imageURL="/resource/web/images/httpservice.gif"
     >
@@ -51,7 +51,7 @@
         childImageURL="/resource/web/images/http.gif"
         childExpanded="$boolean{false}"
         childURL="/web/grizzly/networkListenerEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
-        text="$resource{i18n.tree.grizzly.networkListeners}"
+        text="$resource{i18n_web.tree.grizzly.networkListeners}"
         url="/web/grizzly/networkListeners.jsf?configName=#{configName}"
         >
         <!facet image>
@@ -67,7 +67,7 @@
         childImageURL="/resource/web/images/http.gif"
         childExpanded="$boolean{false}"
         childURL="/web/grizzly/protocolEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
-        text="$resource{i18n.tree.grizzly.protocols}"
+        text="$resource{i18n_web.tree.grizzly.protocols}"
         url="/web/grizzly/protocols.jsf?configName=#{configName}"
         >
         <!facet image>
@@ -83,13 +83,15 @@
         childImageURL="/resource/web/images/http.gif"
         childExpanded="$boolean{false}"
         childURL="/web/grizzly/transportEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
-        text="$resource{i18n.tree.grizzly.transports}"
+        text="$resource{i18n_web.tree.grizzly.transports}"
         url="/web/grizzly/transports.jsf?configName=#{configName}"
         >
         <!facet image>
             <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/transports.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
         </facet>
     </dynamicTreeNode>
-
+    <!beforeCreate
+        setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+    />
 </sun:treeNode>
 

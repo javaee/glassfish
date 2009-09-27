@@ -38,21 +38,16 @@
 
 <sun:property>
     <sun:hyperlink 
-        toolTip="$resource{i18n.tree.jvmSettings.tooltip}"
-        url="/common/javaConfig/serverInstJvmGeneral.jsf?configName=#{configName}"
+        toolTip="$resource{i18n_jts.tree.transactionService.tooltip}"
+        url="/jts/transactionService.jsf?configName=server-config"
         >
-        <sun:image url="/resource/images/jvm.gif" />
-        <sun:staticText text="$resource{i18n.tree.jvmSettings}" />
+        <sun:image url="/resource/jts/images/transactionService.gif" />
+        <sun:staticText text="$resource{i18n_jts.tree.transactionService}" />
     </sun:hyperlink>
+    <!beforeCreate
+        setResourceBundle(key="i18n_jts" bundle="org.glassfish.jts.admingui.Strings");
+    />
 </sun:property>
 
-<sun:property>
-    <sun:hyperlink 
-        toolTip="$resource{i18n.tree.loggerSettings.tooltip}"
-        url="/common/configuration/loggerGeneral.jsf"
-        >
-        <sun:image url="/resource/images/logger.gif" />
-        <sun:staticText text="$resource{i18n.tree.loggerSettings}" />
-    </sun:hyperlink>
-</sun:property>
+
 

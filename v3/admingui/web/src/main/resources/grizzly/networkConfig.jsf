@@ -55,31 +55,31 @@
     <sun:propertySheetSection>
 <sun:property>
     <sun:hyperlink 
-        toolTip="$resource{i18n.tree.grizzly.networkListeners.tooltip}"
+        toolTip="$resource{i18n_web.tree.grizzly.networkListeners.tooltip}"
         url="/web/grizzly/networkListeners.jsf?configName=#{configName}"
         >
         <sun:image url="/resource/web/images/http.gif" />
-        <sun:staticText text="$resource{i18n.tree.grizzly.networkListeners}" />
+        <sun:staticText text="$resource{i18n_web.tree.grizzly.networkListeners}" />
     </sun:hyperlink>
 </sun:property>
 
 <sun:property>
     <sun:hyperlink
-        toolTip="$resource{i18n.tree.grizzly.protocols.tooltip}"
+        toolTip="$resource{i18n_web.tree.grizzly.protocols.tooltip}"
         url="/web/grizzly/protocols.jsf?configName=#{configName}"
         >
         <sun:image url="/resource/web/images/http.gif" />
-        <sun:staticText text="$resource{i18n.tree.grizzly.protocols}" />
+        <sun:staticText text="$resource{i18n_web.tree.grizzly.protocols}" />
     </sun:hyperlink>
 </sun:property>
 
 <sun:property>
     <sun:hyperlink
-        toolTip="$resource{i18n.tree.grizzly.transports.tooltip}"
+        toolTip="$resource{i18n_web.tree.grizzly.transports.tooltip}"
         url="/web/grizzly/transports.jsf?configName=#{configName}"
         >
         <sun:image url="/resource/web/images/http.gif" />
-        <sun:staticText text="$resource{i18n.tree.grizzly.transports}" />
+        <sun:staticText text="$resource{i18n_web.tree.grizzly.transports}" />
     </sun:hyperlink>
 </sun:property>
 

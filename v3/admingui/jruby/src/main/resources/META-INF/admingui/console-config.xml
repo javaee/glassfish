@@ -10,6 +10,15 @@
         content="pluginTreeNodeJruby.jsf"
     />
 
+    <!-- Add a link under the Configuration Page -->
+    <integration-point
+        id="jruby_ConfigurationLink"
+        type="org.glassfish.admingui:configuration"
+        priority="280"
+        parentId="propSheetSection"
+        content="configLinks.jsf"
+    />
+
 
     <!-- add the property sheet for deployment page, specific for web app -->
     <integration-point
@@ -38,14 +47,7 @@
             content="Ruby Application;jruby"
     />
 
-    <!-- Add a link under the Configuration Page -->
-    <integration-point
-        id="jruby_ConfigurationLink"
-        type="org.glassfish.admingui:configuration"
-        priority="230"
-        parentId="propSheetSection"
-        content="configLinks.jsf"
-    />
+    
 
 
 </console-config>

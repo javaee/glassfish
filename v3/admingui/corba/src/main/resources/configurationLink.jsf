@@ -38,11 +38,14 @@
 
 <sun:property>
     <sun:hyperlink 
-        toolTip="$resource{i18n.tree.orb.tooltip}"
+        toolTip="$resource{i18n_corba.tree.orb.tooltip}"
         url="/corba/orb.jsf?configName=#{configName}"
         >
         <sun:image url="/resource/corba/images/orb.gif" />
-        <sun:staticText text="$resource{i18n.tree.orb}" />
+        <sun:staticText text="$resource{i18n_corba.tree.orb}" />
     </sun:hyperlink>
+    <!beforeCreate
+        setResourceBundle(key="i18n_corba" bundle="org.glassfish.corba.admingui.Strings")
+    />
 </sun:property>
 

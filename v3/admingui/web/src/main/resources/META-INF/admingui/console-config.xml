@@ -49,14 +49,29 @@
                 content="monitor/monitoringNode.jsf"
         />
 
-        <!-- Add a link under the Configuration Page  -->
+        <!-- Add links under the Configuration Page  -->
         <integration-point
-                id="webConfigurationLink"
+                id="web_containerConfigurationLink"
                 type="org.glassfish.admingui:configuration"
-                priority="300"
+                priority="200"
+                parentId="propSheetSection"
+                content="configuration/webContainerConfigurationLink.jsf"
+        />
+        <integration-point
+                id="web_ConfigurationLink"
+                type="org.glassfish.admingui:configuration"
+                priority="450"
                 parentId="propSheetSection"
                 content="configuration/configurationLink.jsf"
         />
+        <integration-point
+                id="web_MonitorConfigurationLink"
+                type="org.glassfish.admingui:configuration"
+                priority="750"
+                parentId="propSheetSection"
+                content="monitor/configurationLink.jsf"
+        />
+
 
         <!-- add the property sheet for deployment page, specific for web app -->
         <integration-point

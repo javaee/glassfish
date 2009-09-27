@@ -36,7 +36,7 @@
 
 <sun:treeNode
     id="orb"
-    text="$resource{i18n.tree.orb}"
+    text="$resource{i18n_corba.tree.orb}"
     url="/corba/orb.jsf?configName=#{configName}"
     imageURL="/resource/corba/images/orb.gif"
     >
@@ -55,4 +55,7 @@
             <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/corba/iiopListeners.jsf"  border="$int{0}" immediate="$boolean{true}" />
         </facet>
     </dynamicTreeNode>
+    <!beforeCreate
+        setResourceBundle(key="i18n_corba" bundle="org.glassfish.corba.admingui.Strings")
+    />
 </sun:treeNode>

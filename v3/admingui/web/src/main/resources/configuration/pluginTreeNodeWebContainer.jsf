@@ -37,7 +37,11 @@
 
 <sun:treeNode
     id="webContainer"
-    text="$resource{i18n.tree.webContainer}"
+    text="$resource{i18n_web.tree.webContainer}"
     url="/web/configuration/webContainerGeneral.jsf?configName=server-config"
     imageURL="/resource/web/images/container.gif"
-/>
+>
+    <!beforeCreate
+        setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+    />
+</sun:treeNode>

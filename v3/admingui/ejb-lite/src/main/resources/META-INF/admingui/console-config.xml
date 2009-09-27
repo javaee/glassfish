@@ -13,7 +13,7 @@
         <integration-point 
                 id="ejbLiteConfigurationLink"
                 type="org.glassfish.admingui:configuration" 
-                priority="200"
+                priority="250"
                 parentId="propSheetSection"
                 content="configuration/ejbLiteConfigLink.jsf"
         />
