@@ -410,7 +410,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             if (authenticator != null) {
                 Request req = greq.getRequest();
                 String[] userPass = AdminAdapter.getUserPassword(req);
-                if (!authenticator.loginAsAdmin(userPass[0], userPass[1], as.getAuthRealmName())) {
+                String pswd = (userPass.length >= 2) ? userPass[1] : "";
+                if (!authenticator.loginAsAdmin(userPass[0], pswd, as.getAuthRealmName())) {
                     setStateMsg(AdapterState.AUTHENTICATING);
                     gres.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
                     gres.addHeader("WWW-Authenticate", "BASIC");
@@ -441,12 +442,20 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         }
 
         Property locProp = adminService.getProperty(ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION);
-        if(locProp == null){
+        if(locProp == null || locProp.getValue()==null || locProp.getValue().equals("")){
             String iRoot = System.getProperty(INSTALL_ROOT) + "/lib/install/applications/admingui.war";
             warFile = new File(iRoot.replace('/', File.separatorChar));
             writeAdminServiceProp(ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION, "${" + INSTALL_ROOT + "}/lib/install/applications/admingui.war");
         }else{
-            warFile = new File(locProp.getValue());
+            //For any non-absolute path, we start from the installation, ie glassfishv3
+            //eg, v3 prelude upgrade, where the location property was "glassfish/lib..."
+            String locValue = locProp.getValue();
+            if ( (!locValue.startsWith("/")) && (!locValue.startsWith("\\"))){
+                File tmp = new File (System.getProperty(INSTALL_ROOT), "..");
+                warFile = new File (tmp, locValue);
+            }else {
+                warFile = new File(locValue);
+            }
         }
 
         Property prop = adminService.getProperty(ServerTags.ADMIN_CONSOLE_VERSION);
