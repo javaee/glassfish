@@ -386,6 +386,11 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
                         if (application.getObjectType().startsWith(
                             "system-")) {
                             applications.getModules().remove(application);
+                            ApplicationRef appRef = servr.getApplicationRef(
+                                application.getName());
+                            if (appRef != null) {
+                                servr.getApplicationRef().remove(appRef);
+                            }
                         }
                     }
 
