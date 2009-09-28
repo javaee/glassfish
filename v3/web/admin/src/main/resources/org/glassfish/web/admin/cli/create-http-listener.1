@@ -8,10 +8,11 @@ SYNOPSIS
      create-http-listener
      [--help]
       --listeneraddress  address --listenerport listener_port
-     --defaultvs virtual_server [--servername server_name]
-     [--acceptorthreads acceptor-threads] [--xpowered={true|false}]
-     [ --redirectport  redirect_port] [--securityenabled={true|false}]
-     [ --enabled ={true|false}] [ --target  server] listener_id
+     [--defaultvs virtual_server] [--defaultvs virtual_server]
+     [--servername server_name] [--acceptorthreads acceptor-threads]
+     [--xpowered={true|false}] [ --redirectport  redirect_port]
+     [--securityenabled={true|false}] [ --enabled ={true|false}]
+     [ --target  server] listener_id
 
 DESCRIPTION
      The create-http-listener command creates an  HTTP  listener.
@@ -30,6 +31,7 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --listeneraddress
+
          The IP address or the hostname (resolvable by DNS).
 
      --listenerport
@@ -40,9 +42,10 @@ OPTIONS
          Configuring  an  SSL listen socket to listen on port 443
          is recommended.
 
-     --defaultvs
+     --default-virtual-server or --defaultvs
+
          The ID attribute of the default virtual server for  this
-         listener.
+         listener.  --defaultvs is kept for compatibility.
 
      --servername
 
@@ -67,6 +70,7 @@ asadmin Utility Subcommands               create-http-listener(1)
          machine. The default value is 1.
 
      --xpowered
+
          If set to true, adds the X-Powered-By:  Servlet/2.4  and
          X-Powered-By:   JSP/2.0   headers   to  the  appropriate
          responses. The Servlet 2.4 specification defines the  X-
@@ -90,6 +94,7 @@ asadmin Utility Subcommands               create-http-listener(1)
          request to this port number.
 
      --securityenabled
+
          If set to true, the HTTP listener runs SSL. You can turn
          SSL2 or SSL3 ON or OFF and set ciphers using an SSL ele-
          ment. The security setting globally enables or  disables
@@ -126,7 +131,7 @@ EXAMPLES
        asadmin> create-http-listener --user admin1
        --passwordfile passwords.txt --host host1 --port 4848
        --listeneraddress 0.0.0.0 --listenerport 7272
-       --defaultvs server --servername host1.sun.com
+       --default-virtual-server server --servername host1.sun.com
        --acceptorthreads 100 --securityenabled=false
        --enabled=false sampleListener
        Command create-http-listener executed successfully.

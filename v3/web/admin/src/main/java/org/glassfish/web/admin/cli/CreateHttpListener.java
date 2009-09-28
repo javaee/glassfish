@@ -87,7 +87,10 @@ public class CreateHttpListener implements AdminCommand {
     @Param(name = "listenerport")
     String listenerPort;
 
-    @Param(name = "defaultvs")
+    @Param(name = "defaultvs", optional = true)
+    String defaultVS;
+
+    @Param(name = "default-virtual-server", optional = true)
     String defaultVirtualServer;
 
     @Param(name = "servername", optional = true)
@@ -212,6 +215,15 @@ public class CreateHttpListener implements AdminCommand {
     }
 
     private boolean verifyDefaultVirtualServer(ActionReport report, HttpService httpService) {
+        if(defaultVS != null && defaultVirtualServer != null && !defaultVS.equals(defaultVirtualServer)) {
+            report.setMessage(localStrings.getLocalString("create.http.listener.vs.bothparams",
+                "--defaultVS and --default-virtual-server conflict.  Please use only --default-virtu     al-server"
+                    + " to specify this value."));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return false;
+        } else if(defaultVirtualServer == null && defaultVS != null) {
+            defaultVirtualServer = defaultVS;
+        }
         //no need to check the other things (e.g. id) for uniqueness
         // ensure that the specified default virtual server exists
         if (!defaultVirtualServerExists(httpService)) {

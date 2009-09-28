@@ -46,12 +46,27 @@ public class WebtierTests extends BaseAsadminTest {
     }
 
     @Test(groups = {"pulse"})
-    // test method
     public void createListener() {
         if (!getListeners().contains(LISTENER_NAME)) {
             String CMD = "create-http-listener";
             Map<String, String> options = getCreateOptions();
             String operand = LISTENER_NAME;
+            String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
+            //Reporter.log("url: " + up);
+            Manifest man = super.invokeURLAndGetManifest(up);
+            String ec = GeneralUtils.getValueForTypeFromManifest(man, GeneralUtils.AsadminManifestKeyType.EXIT_CODE);
+            GeneralUtils.handleManifestFailure(man);
+        }
+    }
+
+    @Test(groups = {"pulse"})
+    public void createListenerWithOldParam() {
+        String operand = LISTENER_NAME + "2";
+        if (!getListeners().contains(operand)) {
+            String CMD = "create-http-listener";
+            Map<String, String> options = getCreateOptions();
+            options.put("defaultvs", options.get("default-virtual-server"));
+				options.remove("default-virtual-server");
             String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
             //Reporter.log("url: " + up);
             Manifest man = super.invokeURLAndGetManifest(up);
@@ -97,7 +112,7 @@ public class WebtierTests extends BaseAsadminTest {
         Map<String, String> opts = new HashMap<String, String>();
         opts.put("listeneraddress", "0.0.0.0");
         opts.put("listenerport", "1234");
-        opts.put("defaultvs", "server");
+        opts.put("default-virtual-server", "server");
         return (opts);
     }
 
