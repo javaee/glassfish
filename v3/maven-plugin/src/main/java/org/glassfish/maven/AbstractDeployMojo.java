@@ -43,12 +43,13 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 
 public abstract class AbstractDeployMojo extends AbstractServerMojo {
 /**
- * @parameter expression="${name}" default-value="test"
+ * @parameter expression="${name}"
+ * @required
  */
     protected String name;
 
 /**
- * @parameter expression="${contextroot}" default-value="test"
+ * @parameter expression="${contextroot}" 
  */
     protected String contextRoot;
 /**
@@ -65,6 +66,8 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
 
     void configureDeployCommandParameters(DeployCommandParameters cmdParams) {
         cmdParams.name = name;
+        if (contextRoot == null)
+            contextRoot = name;
         cmdParams.contextroot = contextRoot;
         if (precompilejsp != null)
             cmdParams.precompilejsp = precompilejsp;

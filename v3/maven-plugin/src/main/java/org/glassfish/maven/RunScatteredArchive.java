@@ -59,6 +59,7 @@ public class RunScatteredArchive extends AbstractDeployMojo{
 
 /**
  * @parameter expression="${rootdirectory}"
+ * @required
  */
     protected String rootdirectory;
 /**
@@ -87,7 +88,6 @@ public class RunScatteredArchive extends AbstractDeployMojo{
 
             File f = new File(rootdirectory);
             ScatteredArchive.Builder builder = new ScatteredArchive.Builder(name, f);
-            System.out.println("rootdir = " + f);
             if (resources == null) 
                 resources = rootdirectory;
             builder.resources(new File(resources));

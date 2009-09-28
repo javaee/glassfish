@@ -62,11 +62,15 @@ public class DeployMojo extends AbstractDeployMojo  {
     public void execute() throws MojoExecutionException, MojoFailureException {
         Server server = Server.getServer(serverID);
 
+        File deployArchive = new File(app);
+        if (!deployArchive.exists()) {
+            throw new MojoExecutionException ("", new java.io.FileNotFoundException(app));
+        }
         try {
             EmbeddedDeployer deployer = server.getDeployer();
             DeployCommandParameters cmdParams = new DeployCommandParameters();
             configureDeployCommandParameters(cmdParams);
-            deployer.deploy(new File(app), cmdParams);
+            deployer.deploy(deployArchive, cmdParams);
         } catch (Exception ex) {
            throw new MojoExecutionException(ex.getMessage(),ex);
         }

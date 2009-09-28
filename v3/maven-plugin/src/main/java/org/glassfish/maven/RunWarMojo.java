@@ -54,14 +54,20 @@ import org.glassfish.api.embedded.ContainerBuilder;
 public class RunWarMojo extends AbstractDeployMojo {
 
 /**
- * @parameter expression="${webapp}"
+ * @parameter expression="${app}"
+ * @required
  */
-    protected String webapp;
+    protected String app;
 
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
+        File deployArchive = new File(app);
+        if (!deployArchive.exists()) {
+            throw new MojoExecutionException ("", new java.io.FileNotFoundException(app));
+        }
         try {
+
             Server server = Util.getServer(serverID, installRoot, instanceRoot, configFile);
             if (port != -1)
                 server.createPort(port);
@@ -73,10 +79,10 @@ public class RunWarMojo extends AbstractDeployMojo {
             configureDeployCommandParameters(cmdParams);
 
             while(true) {
-                deployer.deploy(new File(webapp), cmdParams);
-                System.out.println("Deployed Application " + name + "[" + webapp + "]"
+                deployer.deploy(deployArchive, cmdParams);
+                System.out.println("Deployed Application " + name + "[" + app + "]"
                         + " contextroot is " + contextRoot);
-                System.out.println("Hit ENTER to redeploy " + name + "[" + webapp + "]"
+                System.out.println("Hit ENTER to redeploy " + name + "[" + app + "]"
                         + " X to exit");
                 String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
                 if (str.equalsIgnoreCase("X"))
