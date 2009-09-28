@@ -242,6 +242,21 @@
         <echo message="@@## datasource-definition##@@"/>
         <ant dir="datasource-definition" target="${connector-target}"/>
 
+        <echo message="@@## installed libraries EXTENSION_LIST ##@@"/>
+        <ant dir="installed-libraries" target="all-ext"/>
+
+        <echo message="@@## installed libraries (--libraries) ##@@"/>
+        <ant dir="installed-libraries" target="all--libraries"/>
+
+        <echo message="@@## installed libraries embedded rar (--libraries) ##@@"/>
+        <ant dir="installed-libraries-embedded" target="all"/>
+	
+        <echo message="@@## installed libraries embedded rar EXTENSION_LIST ##@@"/>
+        <ant dir="installed-libraries-embedded" target="all-ext"/>
+
+        <!--<echo message="@@## rar-accessibility ##@@"/>
+        <ant dir="rar-accessibility" target="all"/>-->
+
         <antcall target="report"/>
         <record name="connector.output" action="stop"/>
     </target>
