@@ -42,8 +42,10 @@
             result = (checkRequired('#{dirPathId}', '#{reqMsg}'));
         }
         if(result == true) {
-                if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'))
+                if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
+                    disableAllButtons();
                     return submitAndDisable(this, '$resource{i18n.button.Processing}');
+                }
         }
         return false;"
      >

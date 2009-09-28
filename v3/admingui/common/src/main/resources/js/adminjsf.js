@@ -47,6 +47,17 @@ function disableButton(id){
     button.disabled=true; 
 }
 
+//To disable all buttons in the page.
+//TODO: other components maybe of type "submit" even though it is not a button, need to fix this.
+function disableAllButtons(){
+    var inputs = document.getElementsByTagName("input");
+    for ( i=0; i < inputs.length; i++) {
+        component = inputs[i];
+        if (component.type == "submit"){
+            component.disabled=true; 
+        }
+    }
+}
 
 function getField(theForm, fieldName) {
     for (i=0; i < theForm.elements.length; i++) {

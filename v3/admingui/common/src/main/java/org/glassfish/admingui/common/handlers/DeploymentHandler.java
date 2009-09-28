@@ -90,8 +90,6 @@ public class DeploymentHandler {
     })
     public static void deploy(HandlerContext handlerCtx) {
 
-        String xx = System.getProperty("com.sun.aas.installRoot");
-        System.out.println("=========== xx" + xx);
         String appType = (String) handlerCtx.getInputValue("appType");
         String origPath = (String) handlerCtx.getInputValue("origPath");
         String filePath = (String) handlerCtx.getInputValue("filePath");
