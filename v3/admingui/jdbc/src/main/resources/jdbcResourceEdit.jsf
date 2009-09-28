@@ -56,7 +56,7 @@
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
     //set the following for including buttons.inc
     setPageSessionAttribute(key="edit" value="#{true}" );
-    setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+    setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
     setPageSessionAttribute(key="showCancelButton" value="#{true}" );
     setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
     setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
@@ -75,6 +75,12 @@
     
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcResource.editPageTitle}" helpText="$resource{i18njdbc.jdbcResource.editPageTitleHelp}" >
+        <sun:button style="margin-left: 8pt" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
+            <!command
+                getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+                getDefaultProxyAttrs( parentObjectNameStr="amx:pp=/domain/servers,type=server,name=server" childType="resource-ref"  valueMap="#{pageSession.valueMap2}")
+            />
+        </sun:button>
 #include "/common/shared/editPageButtons.inc"
     </sun:title>
     "<br><br>
@@ -85,7 +91,7 @@
     <sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcResourceEdit}" />
 </sun:form>
             "<br/>
-#include "/common/shared/changeButtonsJS.inc" 
+//#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>
 
