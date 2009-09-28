@@ -757,14 +757,14 @@ public class StandardHostDeployer implements Deployer {
         if (context == null)
             throw new IllegalArgumentException
                 (sm.getString("standardHost.pathMissing", contextPath));
-        log.info("standardHost.start " + contextPath);
+        log.info(sm.getString("standardHost.start", contextPath));
         try {
             ((Lifecycle) context).start();
         } catch (LifecycleException e) {
-            log.log(Level.INFO, "standardHost.start " + contextPath + ": ",
-                    e);
-            throw new IllegalStateException
-                ("standardHost.start " + contextPath + ": " + e);
+            log.log(Level.SEVERE, sm.getString("standardHost.start",
+                    contextPath), e);
+            throw new IllegalStateException(sm.getString("standardHost.start",
+                    contextPath), e);
         }
     }
 
@@ -795,14 +795,14 @@ public class StandardHostDeployer implements Deployer {
         if (context == null)
             throw new IllegalArgumentException
                 (sm.getString("standardHost.pathMissing", contextPath));
-        log.info("standardHost.stop " + contextPath);
+        log.info(sm.getString("standardHost.stop", contextPath));
         try {
             ((Lifecycle) context).stop();
         } catch (LifecycleException e) {
-            log.log(Level.SEVERE, "standardHost.stop " + contextPath + ": ",
-                    e);
-            throw new IllegalStateException
-                ("standardHost.stop " + contextPath + ": " + e);
+            log.log(Level.SEVERE, sm.getString("standardHost.stop",
+                    contextPath), e);
+            throw new IllegalStateException(sm.getString("standardHost.stop",
+                    contextPath), e);
         }
 
     }
