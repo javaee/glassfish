@@ -394,8 +394,7 @@ public class EJBUtils {
 
         try {
             
-            ClassLoader loader = 
-                getBusinessIntfClassLoader(businessInterface);
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
             Class genericEJBHome = loadGeneratedGenericEJBHomeClass
                 (loader);
