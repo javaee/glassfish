@@ -92,10 +92,5 @@
              <version>${project.version}</version>
              <scope>test</scope>
         </dependency>
-        <dependency>
-             <groupId>org.glassfish.ejb</groupId>
-             <artifactId>ejb-internal-api</artifactId>
-             <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>

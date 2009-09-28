@@ -1281,14 +1281,15 @@ public class CommandRunnerImpl implements CommandRunner {
 
     private void doCommand(ExecutionContext inv, AdminCommand command) {
 
-        if (inv.parameters()==null) {
-            if (inv.typedParams()==null) {
-                throw new IllegalArgumentException("CommandInvocation instance does not container any parameters setting");                
-            }
+        if (inv.typedParams()!=null) {
             doCommand(inv.name(), inv.typedParams(), inv.report(), inv.inboundPayload(), inv.outboundPayload());
             return;
         }
         Properties parameters = inv.parameters();
+        if (parameters==null) {
+            // no parameters, pass an empty collection
+            parameters=new Properties();            
+        }
         if (command==null) {
             command = getCommand(inv.name(), inv.report(), logger);
             if (command==null) {
