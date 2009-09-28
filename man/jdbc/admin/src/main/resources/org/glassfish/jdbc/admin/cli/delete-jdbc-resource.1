@@ -1,0 +1,68 @@
+
+asadmin Utility Subcommands               delete-jdbc-resource(1)
+
+NAME
+     delete-jdbc-resource - removes  a  JDBC  resource  with  the
+     specified JNDI name
+
+SYNOPSIS
+     delete-jdbc-resource
+     [--help]
+     [ --target  target]
+     jndi_name
+
+DESCRIPTION
+     The delete-jdbc-resource command removes  a  JDBC  resource.
+     Ensure  that  all  associations  to  the  JDBC  resource are
+     removed before you execute this  command.  This  command  is
+     supported in remote mode only.
+
+OPTIONS
+     --help
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     jndi_name                   The  JNDI  name  of  this   JDBC
+                                 resource to be removed.
+
+EXAMPLES
+     Example 1 Using the delete-jdbc-resource command
+
+     The following example shows how to delete a JDBC resource in
+     a domain whose profile is the developer profile.
+
+       asadmin> delete-jdbc-resource --user admin --passwordfile passwords.txt
+       jdbc/DerbyPool
+       Command delete-jdbc-resource executed successfully.
+
+     Example 2 Using the delete-jdbc-resource command
+
+Java EE 6            Last change: 2 Sep 2008                    1
+
+asadmin Utility Subcommands               delete-jdbc-resource(1)
+
+     The following example shows how to delete a JDBC resource in
+     a domain whose profile is the cluster profile.
+
+       asadmin> delete-jdbc-resource --user admin --passwordfile passwords.txt
+       --target domain jdbc/DerbyPool
+       Command delete-jdbc-resource executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-jdbc-resource(1), list-jdbc-resources(1)
+
+Java EE 6            Last change: 2 Sep 2008                    2
+

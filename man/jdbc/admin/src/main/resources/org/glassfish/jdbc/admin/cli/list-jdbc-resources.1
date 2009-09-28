@@ -1,0 +1,46 @@
+
+asadmin Utility Subcommands                list-jdbc-resources(1)
+
+NAME
+     list-jdbc-resources - gets all JDBC resources
+
+SYNOPSIS
+     list-jdbc-resources
+     [--help]
+     [target]
+
+DESCRIPTION
+     The list-jdbc-resources command  displays  a  list  of  JDBC
+     resources  that have been created. This command is supported
+     in remote mode only.
+
+OPTIONS
+     --help
+
+         Displays the help text for the subcommand.
+
+OPERANDS
+     target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Using the list-jdbc-resources command
+
+       asadmin> list-jdbc-resources --user admin --passwordfile passwords.txt
+       jdbc/DerbyPool
+       Command list-jdbc-resources executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-jdbc-resource(1), delete-jdbc-resource(1)
+
+Java EE 6            Last change: 3 May 2009                    1
+

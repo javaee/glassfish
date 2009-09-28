@@ -1,0 +1,75 @@
+
+asadmin Utility Subcommands               create-jdbc-resource(1)
+
+NAME
+     create-jdbc-resource - creates  a  JDBC  resource  with  the
+     specified JNDI name
+
+SYNOPSIS
+     create-jdbc-resource
+     [--help]
+     [ --target  target]
+     --connectionpoolid id [--enabled=true]
+     [--description text] [--property (name=value)[:name=value]*]
+      jndi_name
+
+DESCRIPTION
+     The  create-jdbc-resource  command  creates   a   new   JDBC
+     resource. This command is supported in remote mode only.
+
+OPTIONS
+     --help
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+     --connectionpoolid
+
+         The name of the JDBC connection pool.  If  two  or  more
+         JDBC resource elements point to the same connection pool
+         element, they use the same pool connection at runtime.
+
+     --enabled
+         Determines whether the JDBC resource is enabled at  run-
+         time. The default value is true.
+
+     --description
+
+         Text  providing  descriptive  details  about  the   JDBC
+         resource.
+
+     --property
+         Optional attribute name/value pairs for configuring  the
+         resource.
+
+Java EE 6            Last change: 2 Sep 2008                    1
+
+asadmin Utility Subcommands               create-jdbc-resource(1)
+
+OPERANDS
+     jndi_name                   The  JNDI  name  of  this   JDBC
+                                 resource.
+
+EXAMPLES
+     Example 1 Using the create-jdbc-resource command
+
+       asadmin> create-jdbc-resource --user admin --passwordfile passwords.txt
+       --connectionpoolid sample_derby_pool jdbc/DerbyPool
+       Command create-jdbc-resource executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     delete-jdbc-resource(1), list-jdbc-resources(1)
+
+Java EE 6            Last change: 2 Sep 2008                    2
+
