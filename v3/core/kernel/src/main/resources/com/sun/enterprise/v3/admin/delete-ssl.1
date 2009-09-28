@@ -41,11 +41,9 @@ OPTIONS
          The type of service or listener for  which  the  SSL  is
          deleted. The type must be one of the following types:
 
-             o    http-listener
+             o    network-listener
 
              o    iiop-listener
-
-             o    iiop-service
 
 Java EE 6           Last change: 28 Aug 2009                    1
 
@@ -57,9 +55,6 @@ OPERANDS
           The ID of the listener from which the SSL element is to
          be deleted.
 
-         The listener_id operand is not required if the --type is
-         iiop-service.
-
 EXAMPLES
      Example 1 Using delete-ssl
 
@@ -67,7 +62,7 @@ EXAMPLES
      from an HTTP listener named http-listener-1.
 
        asadmin> delete-ssl
-       --type http-listener http-listener-1
+       --type network-listener http-listener-1
        Command delete-ssl executed successfully.
 
 EXIT STATUS

@@ -9,7 +9,7 @@ SYNOPSIS
      create-ssl
      [--help]
      [ --target  target]
-     --type listener_or_service_type  --certname cert_name
+     --type listener_type  --certname cert_name
      [--ssl2enabled=false  ] [--ssl2ciphers ss12ciphers ]
      [--ssl3enabled=true ] [--tlsenabled=true ]
      [--ssl3tlsciphers ssl3tlsciphers ] [--tlsrollbackenabled=true ]
@@ -44,19 +44,13 @@ OPTIONS
          The type of service or listener for  which  the  SSL  is
          created. The type can be:
 
-             o    http-listener
+             o    network-listener
 
              o    iiop-listener
-
-             o    iiop-service
-         When the type  is  iiop-service,  the  ssl-client-config
 
 Java EE 6           Last change: 28 Aug 2009                    1
 
 asadmin Utility Subcommands                         create-ssl(1)
-
-         along  with  the  embedded  ssl  element  is  created in
-         domain.xml.
 
      --certname
 
