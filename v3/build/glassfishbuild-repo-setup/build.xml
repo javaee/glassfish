@@ -60,6 +60,12 @@ own identifying information: Portions Copyright [yyyy]
         <exec dir="target/source" executable="python" failonerror="true">
 		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-locale" />
 	</exec>
+	<exec dir="target/source" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-docs" />
+	</exec>
+	<exec dir="target/source" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-branding" />
+	</exec>
 
     </target>
 </project>
