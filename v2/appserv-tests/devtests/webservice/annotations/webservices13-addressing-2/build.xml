@@ -7,7 +7,7 @@
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
-<project name="webservices13-addressing" default="all" basedir=".">
+<project name="webservices13-addressing-2" default="all" basedir=".">
 
     &commonSetup;
     &commonBuild;
@@ -50,7 +50,7 @@
       </antcall> -->
       <antcall target="compile"/>
       <antcall target="pkg-war">
-        <param name="wsdlfile.location" value="${env.APS_HOME}/devtests/webservice/annotations/webservices13-addressing"/>
+        <param name="wsdlfile.location" value="${env.APS_HOME}/devtests/webservice/annotations/webservices13-addressing-2"/>
         <param name="wsdlfile.name" value="SubtractNumbers.wsdl"/>
         <param name="war.classes" value="${build.classes.dir}"/>
         <param name="war.file" value="${assemble.dir}/${appname}-web.war"/>
@@ -61,7 +61,7 @@
       <mkdir dir="${build.classes.dir}/webclient/WEB-INF/classes"/>
       <antcall target="wsimport">
         <param name="wsimport.args"
-          value="-p client  -Xendorsed -keep -d ${build.classes.dir}/webclient/WEB-INF/classes http://localhost:8080/webservices13-addressing/webservice/SubtractNumbersService?wsdl"/>
+          value="-p client  -Xendorsed -keep -d ${build.classes.dir}/webclient/WEB-INF/classes http://localhost:8080/webservices13-addressing-2/webservice/SubtractNumbersService?wsdl"/>
       </antcall>
       <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
             includes="webclient/**">

@@ -18,10 +18,10 @@ public class TestClient {
     public boolean found2 = false;
 
     public static void main (String[] args) {
-        stat.addDescription("webservices13-descoverride-annotation");
+        stat.addDescription("webservices13-descoverride-annotation-2");
         TestClient client = new TestClient();
         client.doTest(args);
-        stat.printSummary("webservices13-annotation");
+        stat.printSummary("webservices13-annotation-2");
     }
 
     public void doTest(String[] args) {
@@ -73,10 +73,10 @@ public class TestClient {
     }
 
     private void pass() {
-        stat.addStatus("WEBSERVICES13-addressing", stat.PASS);
+        stat.addStatus("WEBSERVICES13-addressing-2", stat.PASS);
     }
 
     private void fail() {
-        stat.addStatus("WEBSERVICES13-addressing", stat.FAIL);
+        stat.addStatus("WEBSERVICES13-addressing-2", stat.FAIL);
     }
 }
