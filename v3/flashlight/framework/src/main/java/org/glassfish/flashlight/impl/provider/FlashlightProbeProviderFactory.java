@@ -1,3 +1,4 @@
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
@@ -36,6 +37,8 @@
 
 package org.glassfish.flashlight.impl.provider;
 
+import org.glassfish.external.probe.provider.annotations.*;
+import org.glassfish.flashlight.xml.ProbeProviderXMLParser;
 import com.sun.enterprise.config.serverbeans.MonitoringService;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import java.io.FileInputStream;
@@ -248,8 +251,8 @@ public class FlashlightProbeProviderFactory
             }
             mprint("InputStream = " + is);
             ProbeProviderXMLParser providerXMLParser = new ProbeProviderXMLParser(is);
-            List<ProbeProviderXMLParser.Provider> providers = providerXMLParser.getProviders();
-            for (ProbeProviderXMLParser.Provider provider : providers) {
+            List<org.glassfish.flashlight.xml.Provider> providers = providerXMLParser.getProviders();
+            for (org.glassfish.flashlight.xml.Provider provider : providers) {
                 mprint(provider.toString());
                 registerProvider(cl, provider);
 }
@@ -307,13 +310,13 @@ public class FlashlightProbeProviderFactory
          FlashlightProbeClientMediator.getInstance().registerDTraceListener(provider);
     }
 
-    private void registerProvider(ClassLoader cl, ProbeProviderXMLParser.Provider provider) {
+    private void registerProvider(ClassLoader cl, org.glassfish.flashlight.xml.Provider provider) {
 
         String moduleProviderName = provider.getModuleProviderName();
         String moduleName = provider.getModuleName();
         String probeProviderName = provider.getProbeProviderName();
         String providerClass = provider.getProbeProviderClass();
-        List<ProbeProviderXMLParser.Probe> probes = provider.getProbes();
+        List<org.glassfish.flashlight.xml.Probe> probes = provider.getProbes();
         Class<?> providerClazz = null;
 
         try {
@@ -332,7 +335,7 @@ public class FlashlightProbeProviderFactory
         FlashlightProbeProvider flProvider = new FlashlightProbeProvider(
             		moduleProviderName, moduleName, probeProviderName, providerClazz);
 
-        for (ProbeProviderXMLParser.Probe probe : probes) {
+        for (org.glassfish.flashlight.xml.Probe probe : probes) {
             String probeName = probe.getProbeName();
             String probeMethod = probe.getProbeMethod();
             boolean hasSelf = probe.hasSelf();
@@ -343,7 +346,7 @@ public class FlashlightProbeProviderFactory
             Class<?>[] paramTypes = new Class[probe.getProbeParams().size()];
 
             int i = 0;
-            for (ProbeProviderXMLParser.ProbeParam param : probe.getProbeParams()) {
+            for (org.glassfish.flashlight.xml.ProbeParam param : probe.getProbeParams()) {
                 probeParams[i] = param.getName();
                 mprint("          probeParam[" + i + "] = " + probeParams[i]);
                 paramTypes[i] = getParamType(cl, param.getType());

@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.flashlight.impl.provider;
+package org.glassfish.flashlight.xml;
 
 import javax.xml.parsers.DocumentBuilder; 
 import javax.xml.parsers.DocumentBuilderFactory;  
@@ -54,6 +54,7 @@ import java.util.logging.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
+import static org.glassfish.flashlight.xml.XmlConstants.*;
 
 /**
  * This Class reads the Probe Provider from the xml file supplied
@@ -64,19 +65,6 @@ public class ProbeProviderXMLParser
     private List<Provider> providers = new ArrayList();
     private Document document;
     
-    private static String PROBE_PROVIDER = "probe-provider";
-    private static String MODULE_PROVIDER_NAME = "moduleProviderName";
-    private static String MODULE_NAME = "moduleName";
-    private static String PROBE_PROVIDER_NAME = "probeProviderName";
-    private static String PROBE_PROVIDER_CLASS = "class";
-    private static String PROBE = "probe";
-    private static String PROBE_NAME = "name";
-    private static String PROBE_SELF = "self";
-    private static String PROBE_HIDDEN = "hidden";
-    private static String METHOD = "method";
-    private static String PROBE_PARAM = "probe-param";
-    private static String PROBE_PARAM_TYPE = "type";
-    private static String PROBE_PARAM_NAME = "name";
     private boolean debug = false;
 
     /** Creates new ProbeProviderXMLParser */
@@ -241,124 +229,4 @@ public class ProbeProviderXMLParser
         if (debug)
             System.out.println(string);
     }
-
-    public class Provider {
-        private String moduleProviderName = null;
-        private String moduleName = null;
-        private String probeProviderName = null;
-        private String probeProviderClass = null;
-        private List<Probe> probes = null;
-
-        public String getModuleName() {
-            return moduleName;
-        }
-
-        public String getModuleProviderName() {
-            return moduleProviderName;
-        }
-
-        public String getProbeProviderName() {
-            return probeProviderName;
-        }
-
-        public String getProbeProviderClass() {
-            return probeProviderClass;
-        }
-
-        public List<Probe> getProbes() {
-            return probes;
-        }
-
-        public Provider(String moduleProviderName, String moduleName,
-                        String probeProviderName, String providerClass,
-                        List<Probe> probes) {
-            this.moduleProviderName = moduleProviderName;
-            this.moduleName = moduleName;
-            this.probeProviderName = probeProviderName;
-            this.probeProviderClass = providerClass;
-            this.probes = probes;
-
-        }
-
-        @Override
-        public String toString() {
-            String probeStr = "moduelProviderName=" + moduleProviderName + " moduleName=" +
-                    moduleName + " probeProvidername=" + probeProviderName + " probeProviderClass=" + probeProviderClass;
-            for (Probe probe : probes) {
-                probeStr += "\n    " + probe.toString();
-            }
-            return (probeStr);
-        }
-    }
-
-    public class Probe {
-        String probeName = null;
-        String probeMethod = null;
-        List<ProbeParam> probeParams = null;
-        boolean hasSelf = false;
-        boolean isHidden = false;
-
-        public String getProbeName() {
-            return probeName;
-        }
-
-        public String getProbeMethod() {
-            return probeMethod;
-        }
-
-        public List<ProbeParam> getProbeParams() {
-            return probeParams;
-        }
-
-        public boolean hasSelf() {
-            return hasSelf;
-        }
-
-        public boolean isHidden() {
-            return isHidden;
-        }
-
-        public Probe(String probeName, String method, List<ProbeParam> params, boolean hasSelf, boolean isHidden) {
-            this.probeName = probeName;
-            probeMethod = method;
-            probeParams = params;
-            this.hasSelf = hasSelf;
-            this.isHidden = isHidden;
-
-        }
-
-        @Override
-        public String toString() {
-            String paramsStr = "     \n";
-            for (ProbeParam param : probeParams) {
-                paramsStr += "         , Param " + param.toString();
-            }
-            return (" Probe name = " + probeName +
-                    " , method = " + probeMethod + paramsStr);
-        }
-
-    }
-
-    public class ProbeParam {
-        String name = null;
-        String type = null;
-
-        public String getName() {
-            return name;
-        }
-
-        public String getType() {
-            return type;
-        }
-        public ProbeParam(String name, String type) {
-            this.name = name;
-            this.type = type;
-        }
-
-        @Override
-        public String toString() {
-            return " Name=" + name + " Type=" + type;
-        }
-    }
 }
-
