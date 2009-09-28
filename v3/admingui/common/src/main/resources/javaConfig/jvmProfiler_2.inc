@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -34,7 +34,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- shared/jvmProfiler_2.inc -->
+<!-- javaConfig/jvmProfiler_2.inc -->
 
 #include "/common/shared/alertMsg.inc"
                 <!-- Page Title -->
@@ -43,7 +43,10 @@
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18nc.button.CreateProfiler}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                    onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
+                        disableAllButtons();
+                        return submitAndDisable(this, '$resource{i18n.button.Processing}');
+                    }" >
                 <!command
                     createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
@@ -57,7 +60,10 @@
                 />
             </sun:button>
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                    onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
+                        disableAllButtons();
+                        return submitAndDisable(this, '$resource{i18n.button.Processing}');
+                    }" >
                 <!command
                     saveBeanAttributes(objectNameStr="#{pageSession.profilerObjectNameStr}"  attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
@@ -73,7 +79,7 @@
 
             <sun:button id="deleteButton" rendered="#{edit}" text="$resource{i18nc.button.DeleteProfiler}"
                 onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
-                    { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
+                    { disableAllButtons(); return submitAndDisable(this, '$resource{i18n.button.Processing}');}
                     else {return false;} " >
                 <!command
                     deleteChild(objectNameStr="#{pageSession.parentObjectNameStr}" type="profiler")
