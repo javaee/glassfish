@@ -217,7 +217,7 @@ public class StartDomainCommand extends LocalDomainCommand {
         }
         info.addSecurityToken(mpn, mpv);
         long t1 = System.currentTimeMillis();
-        logger.printMessage("Time spent in master password extraction: " + (t1-t0) + " msec");       //TODO
+        logger.printDebugMessage("Time spent in master password extraction: " + (t1-t0) + " msec");       //TODO
     }
 
     private String retry(int times) throws CommandException {
