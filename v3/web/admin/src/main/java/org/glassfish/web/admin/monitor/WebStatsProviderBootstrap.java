@@ -50,8 +50,11 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
     private Server server;
     private static final String APPLICATIONS = "applications";
     // Map of apps and its StatsProvider list
-    Map<String, List> statsProviderToAppMap = new HashMap();
-    ArrayList webContainerStatsProviderList = new ArrayList();
+    private Map<String, List> statsProviderToAppMap = new HashMap();
+    private ArrayList webContainerStatsProviderList = new ArrayList();
+
+    private Map<String, Set<String>> moduleNamesMap =
+        new HashMap<String, Set<String>>();
 
     public WebStatsProviderBootstrap() {
     }
@@ -91,6 +94,7 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
 
         //Register the Web stats providers
         registerWebStatsProviders();
+
         //Register the Applications stats providers
         registerApplicationStatsProviders();
     }
@@ -104,10 +108,10 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
         StatsProviderManager.register("web-container", PluginPoint.SERVER, "web/request", wsp);
         StatsProviderManager.register("web-container", PluginPoint.SERVER, "web/servlet", svsp);
         StatsProviderManager.register("web-container", PluginPoint.SERVER,  "web/session", sssp);
-        this.webContainerStatsProviderList.add(jsp);
-        this.webContainerStatsProviderList.add(wsp);
-        this.webContainerStatsProviderList.add(svsp);
-        this.webContainerStatsProviderList.add(sssp);
+        webContainerStatsProviderList.add(jsp);
+        webContainerStatsProviderList.add(wsp);
+        webContainerStatsProviderList.add(svsp);
+        webContainerStatsProviderList.add(sssp);
     }
 
     public void registerApplicationStatsProviders() {
@@ -179,7 +183,6 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
     public static String getVirtualServerName(String hostName,
                                               String listenerPort) {
         try {
-            //
             if (hostName == null) {
                 return null;
             }
@@ -214,7 +217,7 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
         for (PropertyChangeEvent event : events) {
             if (event.getPropertyName().equals("application-ref")) {
                 String propName = event.getPropertyName();
-                HashSet<String> moduleNames = null;
+                Set<String> moduleNames = null;
                 String appName = null;
                 if (event.getNewValue() != null) {
                     // This means its a deployed event
@@ -223,18 +226,18 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
                     for (String moduleName : moduleNames) {
                         addStatsForVirtualServers(appName, moduleName);
                     }
+                    moduleNamesMap.put(appName, moduleNames);
                 } else if (event.getOldValue() != null) {
                     // This means its an undeployed event
                     appName = ((ApplicationRef)(event.getOldValue())).getRef();
-                    moduleNames = getModulesNames(appName);
+                    moduleNames = moduleNamesMap.remove(appName);
                     //unregister the StatsProviders for the modules
                     for (String moduleName : moduleNames) {
-                        List statsProviders = statsProviderToAppMap.get(
+                        List statsProviders = statsProviderToAppMap.remove(
                             moduleName);
                         for (Object statsProvider : statsProviders) {
                             StatsProviderManager.unregister(statsProvider);
                         }
-                        statsProviderToAppMap.remove(moduleName);
                     }
                     if (statsProviderToAppMap.isEmpty()) {
                         for (Object statsProvider : webContainerStatsProviderList) {
