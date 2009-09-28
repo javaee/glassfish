@@ -254,11 +254,10 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         }
         String enc = authHeader.substring(BASIC.length());
         String dec = new String(decoder.decodeBuffer(enc));
-        String[] up = dec.split(":");        
-        if (up == null || up.length == 0) {
-            return new String[]{"", ""};
-        }
-        return up;  
+        int i = dec.indexOf(':');
+        if (i < 0)
+            return new String[] { "", "" };
+        return new String[] { dec.substring(0, i), dec.substring(i + 1) };
     }
 
     private boolean authenticate(GrizzlyRequest req, ActionReport report, GrizzlyResponse res)
