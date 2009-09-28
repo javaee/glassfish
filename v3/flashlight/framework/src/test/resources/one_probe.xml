@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<probe-providers>
+    <probe-provider moduleProviderName="MyModuleProviderName"
+                moduleName="MyModuleName"
+                probeProviderName="MyProbeProviderName"
+                class="com.sun.enterprise.web.WebModule">
+        <probe name="MyProbeName">
+            <method>MyProbeMethodName</method>
+            <probe-param type="String" name="MyStringParam" />
+        </probe>
+        <probe name="MySecondProbeName">
+            <method>MySecondProbeMethodName</method>
+            <probe-param type="String" name="s1" />
+            <probe-param type="String" name="s2" />
+            <probe-param type="String" name="s3" />
+            <probe-param type="String" name="s4" />
+            <probe-param type="String" name="s5" />
+        </probe>
+    </probe-provider>
+</probe-providers>
