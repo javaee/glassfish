@@ -86,6 +86,7 @@
             <configuration>
               <tasks>
                 <property name="finaljar" value="${project.build.directory}/glassfish-embedded-all.jar"/>
+                <property name="bundlename" value="org.glassfish.embedded.all"/>
                 <ant dir="." antfile="../build.xml" target="create.distribution"/>
               </tasks>
             </configuration>

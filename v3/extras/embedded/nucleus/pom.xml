@@ -83,8 +83,9 @@
             </goals>
             <configuration>
               <tasks>
-                <property name="finaljar" value="${project.build.directory}/glassfish-embedded-nucleus.jar"/>
-                <ant dir="." antfile="../build.xml" target="create.distribution"/>
+                 <property name="bundlename" value="org.glassfish.embedded.nucleus"/>
+                 <property name="finaljar" value="${project.build.directory}/glassfish-embedded-nucleus.jar"/>
+                 <ant dir="." antfile="../build.xml" target="create.distribution"/>
               </tasks>
             </configuration>
           </execution>
