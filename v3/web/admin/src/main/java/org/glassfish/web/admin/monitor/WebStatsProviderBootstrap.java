@@ -221,6 +221,9 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
                 String appName = null;
                 if (event.getNewValue() != null) {
                     // This means its a deployed event
+                    if (statsProviderToAppMap.isEmpty()) {
+                        registerWebStatsProviders();
+                    }
                     appName = ((ApplicationRef)(event.getNewValue())).getRef();
                     moduleNames = getModulesNames(appName);
                     for (String moduleName : moduleNames) {
@@ -243,6 +246,7 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
                         for (Object statsProvider : webContainerStatsProviderList) {
                             StatsProviderManager.unregister(statsProvider);
                         }
+                        webContainerStatsProviderList.clear();
                     }
                 }
                 if (logger.isLoggable(Level.FINEST)) {
