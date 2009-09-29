@@ -69,12 +69,16 @@ public class DomainXmlTransformer {
 
     private File in;
     private File out;
+    private final XMLEventFactory xmlEventFactory = XMLEventFactory.newInstance();
     private final XMLOutputFactory xof = XMLOutputFactory.newInstance();
+
     private Logger _logger = Logger.getAnonymousLogger(
             "com.sun.logging.enterprise.system.container.ejb.LogStrings");
 
     private static final String IIOP_LISTENER = "iiop-listener";
     private static final String LAZY_INIT_ATTR = "lazy-init";
+    private static final String PROTOCOLS = "protocols";
+    private static final String APPLICATIONS = "applications";
 
     private static final StringManager localStrings = 
         StringManager.getManager(DomainXmlTransformer.class);
@@ -98,7 +102,6 @@ public class DomainXmlTransformer {
                 XMLInputFactory.newInstance() :
                 XMLInputFactory.newInstance(XMLInputFactory.class.getName(),
                         XMLInputFactory.class.getClassLoader());
-        XMLEventFactory xmlEventFactory = XMLEventFactory.newInstance();
         
         try {
             fis = new FileInputStream(in);
@@ -117,25 +120,14 @@ public class DomainXmlTransformer {
                 if (event.isStartElement()) {
                     String name = event.asStartElement().getName().getLocalPart();
                     if (name.equals("network-listeners") 
-                            || name.equals("protocols")
+                            || name.equals(PROTOCOLS)
                             || name.equals(IIOP_LISTENER)
-                            || name.equals("applications")) {
+                            || name.equals(APPLICATIONS)) {
                         if( name.equals(IIOP_LISTENER)) {
-
-                            Set attributes = new HashSet();
 
                             // Make sure lazy init is not enabled by creating a new start element
                             // based on the original but that never includes the lazy init attribute
-                            for(java.util.Iterator i = event.asStartElement().getAttributes(); i.hasNext();) {
-                                Attribute a = (Attribute) i.next();
-                                if( !a.getName().getLocalPart().equals(LAZY_INIT_ATTR) ) {
-                                    attributes.add(a);
-                                }
-                            }
-
-                            StartElement oldStartEvent = event.asStartElement();
-                            StartElement newStartEvent =  xmlEventFactory.createStartElement(oldStartEvent.getName(), attributes.iterator(),
-                                    oldStartEvent.getNamespaces());
+                            StartElement newStartEvent = getAdjustedStartEvent(event, LAZY_INIT_ATTR);
                             writer.add(newStartEvent);
 
                         } else {
@@ -203,5 +195,23 @@ public class DomainXmlTransformer {
 
         throw new EOFException(localStrings.getString(
                         "ejb.embedded.no_matching_end_element", name));
+    }
+
+    /** Create a new start element based on the original but that does not include 
+     * the specified attribute.
+     */
+    private StartElement getAdjustedStartEvent(XMLEvent event, String skipValue) {
+        Set attributes = new HashSet();
+
+        for(java.util.Iterator i = event.asStartElement().getAttributes(); i.hasNext();) {
+            Attribute a = (Attribute) i.next();
+            if( !a.getName().getLocalPart().equals(skipValue) ) {
+                attributes.add(a);
+            }
+        }
+
+        StartElement oldStartEvent = event.asStartElement();
+        return xmlEventFactory.createStartElement(oldStartEvent.getName(), 
+                attributes.iterator(), oldStartEvent.getNamespaces());
     }
 }
