@@ -40,7 +40,7 @@
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.log.LogLevelsPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.log.LogLevelsPageTitle}" >
 <!define name="content">
 <event>
     <!beforeCreate
@@ -55,14 +55,14 @@
             <sun:form id="form1">
 #include "/common/configuration/loggingTabs.inc"
 #include "/common/shared/alertMsg.inc"
-<sun:title id="title" title="$resource{i18n.log.LogLevelsPageTitle}"  helpText="$resource{i18n.log.LogLevelsPageTitleHelp}">
+<sun:title id="title" title="$resource{i18nc.log.LogLevelsPageTitle}"  helpText="$resource{i18nc.log.LogLevelsPageTitleHelp}">
 #include "/common/configuration/loggerLevelsButtons.jsf"
 </sun:title>
 "<br/>
-        <sun:staticText id="text1" text="$resource{i18n.log.LogTableHelp}" />
+        <sun:staticText id="text1" text="$resource{i18nc.log.LogTableHelp}" />
 "<br/>
 <!-- Table .... -->
-<sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18n.log.LoggerLevelTableTitle}"
+<sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18nc.log.LoggerLevelTableTitle}"
             deselectMultipleButton="$boolean{true}"
             deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
             selectMultipleButton="$boolean{true}"
@@ -104,10 +104,10 @@
                 onClick="setTimeout('initAllRows(); changeOneTableButton()', 0)"
             />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{i18n.log.LoggerNameCol}" sort="loggerName" rowHeader="$boolean{false}" id="col2">
+        <sun:tableColumn headerText="$resource{i18nc.log.LoggerNameCol}" sort="loggerName" rowHeader="$boolean{false}" id="col2">
             <sun:staticText id="col1St" text="#{td.value.loggerName}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{i18n.log.LoggerLeveCol}" sort="level" rowHeader="$boolean{false}" id="col3">
+        <sun:tableColumn headerText="$resource{i18nc.log.LoggerLeveCol}" sort="level" rowHeader="$boolean{false}" id="col3">
             //<sun:textField columns="$int{30}" id="col1St" value="#{td.value.level}" />
             <sun:dropDown id="level" selected="#{td.value.level}" labels="$pageSession{levelList}" />
         </sun:tableColumn>

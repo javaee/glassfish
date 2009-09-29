@@ -39,7 +39,7 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.log.LoggingSettings}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.log.LoggingSettings}" >
 <!define name="content">
 <event>
     <!beforeCreate
@@ -52,7 +52,7 @@
             <sun:form id="form1">
 #include "/common/configuration/loggingTabs.inc"
 #include "/common/shared/alertMsg.inc"
-<sun:title id="propertyContentPage" title="$resource{i18n.log.LoggingSettings}" helpText="$resource{i18n.log.LoggingSettingsHelp}" >
+<sun:title id="propertyContentPage" title="$resource{i18nc.log.LoggingSettings}" helpText="$resource{i18nc.log.LoggingSettingsHelp}" >
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton"  text="$resource{i18n.button.Save}" >
@@ -69,29 +69,32 @@
 <sun:propertySheet >
     <sun:propertySheetSection>
             
-          <sun:property id="writeSystemLogEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.log.WriteSystemLog}" helpText="$resource{i18n.log.WriteSystemlogHelp}">
+          <sun:property id="writeSystemLogEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.WriteSystemLog}" helpText="$resource{i18nc.log.WriteSystemlogHelp}">
                 <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['useSystemLogging']}" selectedValue="true" />
            </sun:property> 
 
-           <sun:property id="logtoConsole"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.log.LogtoConsole}" helpText="$resource{i18n.log.LogtoConsoleHelp}">
+           <sun:property id="logtoConsole"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.LogtoConsole}" helpText="$resource{i18nc.log.LogtoConsoleHelp}">
                 <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['logtoConsole']}"  selectedValue="true" />
            </sun:property>
 
-           <sun:property id="logFileProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.log.LogFile}" helpText="$resource{i18n.log.LogFileHelp}">
+           <sun:property id="logFileProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.LogFile}" helpText="$resource{i18nc.log.LogFileHelp}">
                 <sun:textField id="LogFile" columns="$int{70}" text="#{pageSession.valueMap['file']}"/>
             </sun:property>
 
-            <sun:property id="logHandlerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.log.Handler}" helpText="$resource{i18n.log.HandlerHelp}">
+            <sun:property id="logHandlerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.Handler}" helpText="$resource{i18nc.log.HandlerHelp}">
                 <sun:textField id="LogHandler" columns="$int{70}" text="#{pageSession.valueMap['handlers']}" />
             </sun:property>
 
-            <sun:property id="FileRotationLimitProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.log.FileRotationLimit}" helpText="$resource{i18n.log.FileRotationLimitHelp}">
+            <sun:property id="FileRotationLimitProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.FileRotationLimit}" helpText="$resource{i18nc.log.FileRotationLimitHelp}">
                 <sun:textField id="FileRotationLimit" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['rotationLimitInBytes']}" />
                 <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
             </sun:property>
-            <sun:property id="FileRotationTimeLimitProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.log.FileRotationTimeLimit}" helpText="$resource{i18n.log.FileRotationTimeLimitHelp}">
+            <sun:property id="FileRotationTimeLimitProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.FileRotationTimeLimit}" helpText="$resource{i18nc.log.FileRotationTimeLimitHelp}">
                 <sun:textField id="FileRotationTimeLimit" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['rotationTimelimitInMinutes']}"/>
                 <sun:staticText id="min" style="padding: 8pt" text="$resource{i18n.common.Minutes}"/>
+            </sun:property>
+            <sun:property id="FlushFrequencyProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.FlushFrequency}" helpText="$resource{i18nc.log.FlushFrequencyHelp}">
+                <sun:textField id="FlushFrequency" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['flushFrequency']}"/>
             </sun:property>
 
     </sun:propertySheetSection>

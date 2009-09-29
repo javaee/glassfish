@@ -46,7 +46,7 @@
 	/>
 	</sun:tab>
 
-    <sun:tab id="loggerLevels" immediate="true" text="$resource{i18n.log.LogLevels}">
+    <sun:tab id="loggerLevels" immediate="true" text="$resource{i18nc.log.LogLevels}">
 	<!command
             setSessionAttribute(key="loggingTabs" value="loggerLevels");
             redirect(page="#{request.contextPath}/common/configuration/loggerLevels.jsf");
