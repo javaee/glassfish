@@ -267,14 +267,14 @@ final class RegistrationSupport
         final AMXConfigProxy moduleConfig = getModuleConfig(appConfig, moduleName );
         meta.setCorrespondingConfig(moduleConfig.objectName());
         
-        final ObjectName objectName = registerJ2EEChild(parentMBean, meta, EJBModule.class, EJBModuleImpl.class, moduleName);
-
+        final ObjectName ejbModuleObjectName = registerJ2EEChild(parentMBean, meta, EJBModule.class, EJBModuleImpl.class, moduleName);
+        
         meta.remove( Metadata.CORRESPONDING_CONFIG );   // none for an EJB MBean
         for (final EjbDescriptor desc : ejbBundleDescriptor.getEjbs())
         {
-            createEJBMBean(parentMBean, meta, desc);
+            final ObjectName ejbObjectName = createEJBMBean(ejbModuleObjectName, meta, desc);
         }
-        return objectName;
+        return ejbModuleObjectName;
     }
 
     private ObjectName createEJBMBean(
@@ -755,13 +755,13 @@ final class RegistrationSupport
             {
                 if ( type.equals( mResourceRefType ) )
                 {
-                    cdebug( "NEW ResourceRef MBEAN REGISTERED: " + objectName);
+                    ImplUtil.getLogger().info("New ResourceRef MBEAN registered: " + objectName);
                     final ResourceRef ref = mProxyFactory.getProxy(objectName, ResourceRef.class);
                     processResourceRef(ref);
                 }
                 else if ( type.equals( mApplicationRefType ) )
                 {
-                    cdebug( "NEW ApplicationRef MBEAN REGISTERED: " + objectName);
+                    ImplUtil.getLogger().info( "NEW ApplicationRef MBEAN registered: " + objectName);
                     final ApplicationRef ref = mProxyFactory.getProxy(objectName, ApplicationRef.class);
                     processApplicationRef(ref);
                 }
@@ -774,14 +774,14 @@ final class RegistrationSupport
                     final ObjectName mbean77 = mConfigRefTo77.remove(objectName);
                     if (mbean77 != null)
                     {
-                        cdebug( "UNREGISTERING MBEAN FOR REF: " + objectName);
+                        ImplUtil.getLogger().info( "Unregistering MBEAN for ref: " + objectName);
                         try
                         {
                             mMBeanServer.unregisterMBean(mbean77);
                         }
                         catch (final Exception e)
                         {
-                            ImplUtil.getLogger().log( Level.INFO, "Can't unregister MBean: " + objectName, e);
+                            ImplUtil.getLogger().log( Level.WARNING, "Can't unregister MBean: " + objectName, e);
                         }
                     }
                 }
