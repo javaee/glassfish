@@ -35,7 +35,8 @@ public class Client {
                     return;
                 }
                 System.out.println("Add result = " + ret);
-                stat.addStatus("webservices13-addressing-appclient", stat.PASS);
+//Since addressing headers are being printed
+                    stat.addStatus("webservices13-addressing-appclient", stat.FAIL);
             } catch(Exception e) {
                 e.printStackTrace();
                 stat.addStatus("webservices13-addressing-appclient", stat.FAIL);
