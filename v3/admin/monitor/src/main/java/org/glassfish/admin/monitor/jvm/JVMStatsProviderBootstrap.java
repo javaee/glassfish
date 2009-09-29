@@ -80,6 +80,7 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
     //protected static final Logger _logger = LogDomains.getLogger(
     //        JVMStatsProviderBootstrap.class, LogDomains.MONITORING_LOGGER);
 
+    private ServerRuntimeStatsProvider srtStatsProvider = new ServerRuntimeStatsProvider();
     private JVMClassLoadingStatsProvider clStatsProvider = new JVMClassLoadingStatsProvider();
     private JVMCompilationStatsProvider compileStatsProvider = new JVMCompilationStatsProvider();
     private JVMMemoryStatsProvider memoryStatsProvider = new JVMMemoryStatsProvider();
@@ -108,6 +109,7 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
         //createMonitoringConfig();
 
         /* register with monitoring */
+        StatsProviderManager.register("jvm", PluginPoint.SERVER, "runtime", srtStatsProvider);
         StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/class-loading-system", clStatsProvider);
         StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/compilation-system", compileStatsProvider);
         for (GarbageCollectorMXBean gc : ManagementFactory.getGarbageCollectorMXBeans()) {
@@ -172,6 +174,7 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
 
     /*public void event(Event event) {
         if (event.name().equals(EventTypes.PREPARE_SHUTDOWN_NAME)) {
+            StatsProviderManager.unregister(this.srtStatsProvider);
             StatsProviderManager.unregister(this.clStatsProvider);
             StatsProviderManager.unregister(this.compileStatsProvider);
             StatsProviderManager.unregister(this.memoryStatsProvider);
