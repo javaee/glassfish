@@ -450,11 +450,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             //For any non-absolute path, we start from the installation, ie glassfishv3
             //eg, v3 prelude upgrade, where the location property was "glassfish/lib..."
             String locValue = locProp.getValue();
-            if ( (!locValue.startsWith("/")) && (!locValue.startsWith("\\"))){
+            warFile = new File (locValue);
+            if (! warFile.isAbsolute()){
                 File tmp = new File (System.getProperty(INSTALL_ROOT), "..");
                 warFile = new File (tmp, locValue);
-            }else {
-                warFile = new File(locValue);
             }
         }
 
