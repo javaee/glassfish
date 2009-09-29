@@ -166,6 +166,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     private static final String DOL_DEPLOYMENT =
             "com.sun.enterprise.web.deployment.backend";
 
+    private static final String MONITORING_NODE_SEPARATOR = "/";
+
     /**
      * The logger to use for logging ALL web container related messages.
      */
@@ -229,7 +231,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     Engine engine;
     String instanceName;
 
-    private String logLevel="INFO";
+    private String logLevel = "INFO";
     
     
     private WebConnector jkConnector;
@@ -1810,9 +1812,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             } else {
                 // Nested (inside EAR) web module
                 moduleName = wbd.getModuleDescriptor().getArchiveUri();
-                // Strip off ".war" suffix
-                monitoringNodeName = app.getRegistrationName() + "#" +
-                    moduleName.substring(0, moduleName.length() - 4);
+                StringBuilder sb = new StringBuilder();
+                sb.append(app.getRegistrationName()).
+                    append(MONITORING_NODE_SEPARATOR).append(moduleName);
+                monitoringNodeName = sb.toString().replaceAll("\\.", "\\\\.").
+                    replaceAll("_war", "\\\\.war");
             }
             // S1AS END WORKAROUND FOR 6174360
         }

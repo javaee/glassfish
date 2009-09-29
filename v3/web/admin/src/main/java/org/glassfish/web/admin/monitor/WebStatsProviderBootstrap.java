@@ -104,13 +104,20 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
 
     private void registerWebStatsProviders() {
         JspStatsProvider jsp = new JspStatsProvider(null, null, logger);
-        RequestStatsProvider wsp = new RequestStatsProvider(null, null, logger);
-        ServletStatsProvider svsp = new ServletStatsProvider(null, null, logger);
-        SessionStatsProvider sssp = new SessionStatsProvider(null, null, logger);
-        StatsProviderManager.register("web-container", PluginPoint.SERVER, "web/jsp", jsp);
-        StatsProviderManager.register("web-container", PluginPoint.SERVER, "web/request", wsp);
-        StatsProviderManager.register("web-container", PluginPoint.SERVER, "web/servlet", svsp);
-        StatsProviderManager.register("web-container", PluginPoint.SERVER,  "web/session", sssp);
+        RequestStatsProvider wsp = new RequestStatsProvider(null, null,
+            logger);
+        ServletStatsProvider svsp = new ServletStatsProvider(null, null,
+            logger);
+        SessionStatsProvider sssp = new SessionStatsProvider(null, null,
+            logger);
+        StatsProviderManager.register("web-container", PluginPoint.SERVER,
+            "web/jsp", jsp);
+        StatsProviderManager.register("web-container", PluginPoint.SERVER,
+            "web/request", wsp);
+        StatsProviderManager.register("web-container", PluginPoint.SERVER,
+            "web/servlet", svsp);
+        StatsProviderManager.register("web-container", PluginPoint.SERVER,
+            "web/session", sssp);
         webContainerStatsProviderList.add(jsp);
         webContainerStatsProviderList.add(wsp);
         webContainerStatsProviderList.add(svsp);
@@ -140,7 +147,9 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
             if (vsL != null) {
                 for (String host : vsL.split(",")) {
                     //create stats providers for each virtual server 'host'
-                    String node = getNode(appName, moduleName, host);
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(moduleName).append(NODE_SEPARATOR).append(host);
+                    String node = sb.toString();
                     List statspList = statsProviderToAppMap.get(moduleName);
                     if (statspList == null) {
                         statspList = new ArrayList();
@@ -174,12 +183,6 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
             }
             return;
         }
-    }
-
-    private String getNode(String appName, String moduleName, String host) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(moduleName).append(NODE_SEPARATOR).append(host);
-        return sb.toString();
     }
 
     public static String getVirtualServerName(String hostName,
@@ -260,7 +263,6 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
         return null;
     }
 
-
     /**
      * Looks up the Application with the given appName, and returns a set
      * of the names of its enclosed web modules (if any).
@@ -288,11 +290,9 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
                         moduleNames.add(module.getName());
                         break;
                     } else {
-                        // WAR nested inside EAR. Strip off ".war" suffix
-                        String nameWithSuffix = module.getName();
-                        String moduleName = nameWithSuffix.substring(0,
-                            nameWithSuffix.length() - 4);
-                        moduleNames.add(appName + "#" + moduleName);
+                        // WAR nested inside EAR
+                        moduleNames.add(getNestedModuleName(appName,
+                            module.getName()));
                     }
                 }
             }
@@ -300,4 +300,12 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
 
         return moduleNames;
     }
+
+    private String getNestedModuleName(String appName, String moduleName) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(appName).append(NODE_SEPARATOR).append(moduleName);
+        return sb.toString().replaceAll("\\.", "\\\\.").
+            replaceAll("_war", "\\\\.war");
+    }
+
 }
