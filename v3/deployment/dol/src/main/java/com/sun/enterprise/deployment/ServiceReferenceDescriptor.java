@@ -191,37 +191,41 @@ public class ServiceReferenceDescriptor extends EnvironmentProperty
 
     public ServiceReferenceDescriptor(ServiceReferenceDescriptor other) {
         super(other);
-	serviceInterface = other.serviceInterface;
+        serviceInterface = other.serviceInterface;
         mappedName = other.mappedName;
-	wsdlFileUri = other.wsdlFileUri;
-	wsdlFileUrl = other.wsdlFileUrl;
-	mappingFileUri = other.mappingFileUri;
-	mappingFile = other.mappingFile;
-	serviceNamespaceUri = other.serviceNamespaceUri;
-	serviceLocalPart = other.serviceLocalPart;
-	serviceNameNamespacePrefix = other.serviceNameNamespacePrefix;
-	portsInfo = new HashSet(); // ServiceRefPortInfo
-	for (Iterator i = other.portsInfo.iterator(); i.hasNext();) {
-	    ServiceRefPortInfo port = new ServiceRefPortInfo(
-		(ServiceRefPortInfo)i.next());
-	    port.setServiceReference(this); // reset reference
-	    portsInfo.add(port);
-	}
-	handlers = new LinkedList(); // WebServiceHandler
-	for (Iterator i = other.handlers.iterator(); i.hasNext();) {
-	    handlers.add(new WebServiceHandler
-                ((WebServiceHandler)i.next()));
-	}
-	handlerChain = new LinkedList(); // WebServiceHandlerChain
-	for (Iterator i = other.handlerChain.iterator(); i.hasNext();) {
-	    handlerChain.add(new WebServiceHandlerChain((WebServiceHandlerChain)i.next()));
-	}
+        wsdlFileUri = other.wsdlFileUri;
+        wsdlFileUrl = other.wsdlFileUrl;
+        addressing = other.addressing;
+        mtomEnabled = other.mtomEnabled;
+        respectBinding = other.respectBinding;
+        mappingFileUri = other.mappingFileUri;
+        mappingFile = other.mappingFile;
+        serviceNamespaceUri = other.serviceNamespaceUri;
+        serviceLocalPart = other.serviceLocalPart;
+        serviceNameNamespacePrefix = other.serviceNameNamespacePrefix;
+        otherAnnotations = other.otherAnnotations;
+        portsInfo = new HashSet(); // ServiceRefPortInfo
+        for (Iterator i = other.portsInfo.iterator(); i.hasNext();) {
+            ServiceRefPortInfo port = new ServiceRefPortInfo(
+                    (ServiceRefPortInfo)i.next());
+            port.setServiceReference(this); // reset reference
+            portsInfo.add(port);
+        }
+        handlers = new LinkedList(); // WebServiceHandler
+        for (Iterator i = other.handlers.iterator(); i.hasNext();) {
+            handlers.add(new WebServiceHandler
+                    ((WebServiceHandler)i.next()));
+        }
+        handlerChain = new LinkedList(); // WebServiceHandlerChain
+        for (Iterator i = other.handlerChain.iterator(); i.hasNext();) {
+            handlerChain.add(new WebServiceHandlerChain((WebServiceHandlerChain)i.next()));
+        }
         callProperties = new HashSet(); // NameValuePairDescriptor
-	for (Iterator i = other.callProperties.iterator(); i.hasNext();) {
-	    callProperties.add(new NameValuePairDescriptor(
-		(NameValuePairDescriptor)i.next()));
-	}
-	serviceImplClassName = other.serviceImplClassName;
+        for (Iterator i = other.callProperties.iterator(); i.hasNext();) {
+            callProperties.add(new NameValuePairDescriptor(
+                    (NameValuePairDescriptor)i.next()));
+        }
+        serviceImplClassName = other.serviceImplClassName;
     }
 
     public ServiceReferenceDescriptor(String name, String description, 

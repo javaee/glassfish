@@ -64,28 +64,38 @@ import javax.xml.ws.WebServiceException;
 public final class InstanceResolverImpl<T> extends InstanceResolver<T> {
    
     //delegate to this InstanceResolver
-    private final InstanceResolver<T> resolver;
-    private final T instance;
+    private  InstanceResolver<T> resolver;
+    private  T instance;
+    private Class<T> classtobeResolved;
+
+    private WSWebServiceContext wsc;
+    private WSEndpoint endpoint;
 
     public  InstanceResolverImpl(@NotNull Class<T> clasz) {
-        InjectionManager injManager = WebServiceContractImpl.getInstance()
-                .getHabitat().getByContract(InjectionManager.class);
-        try {
-            instance = (T)injManager.createManagedObject(clasz);
-        } catch (InjectionException e) {
-            throw new WebServiceException(e);
-        }
-        resolver = InstanceResolver.createSingleton(instance);
+        this.classtobeResolved = clasz;
 
     }
 
     public @NotNull T resolve(Packet request) {
+        //See iss 9721
+        //Injection and instantiation is now done lazily
+         InjectionManager injManager = WebServiceContractImpl.getInstance()
+                .getHabitat().getByContract(InjectionManager.class);
+       try {
+            instance = (T)injManager.createManagedObject(classtobeResolved);
+        } catch (InjectionException e) {
+            throw new WebServiceException(e);
+        }
+
+        resolver = InstanceResolver.createSingleton(instance);
+        getResourceInjector(endpoint).inject(wsc, instance);
         return resolver.resolve(request);
     }
 
     public void start(WSWebServiceContext wsc, WSEndpoint endpoint) {
-       
-        getResourceInjector(endpoint).inject(wsc, instance);
+        this.wsc = wsc;
+        this.endpoint = endpoint;
+
     }
 
     public void dispose() {
