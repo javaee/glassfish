@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.webbeans;
+package org.glassfish.webbeans.services;
 
 import static javax.transaction.Status.STATUS_ACTIVE;
 

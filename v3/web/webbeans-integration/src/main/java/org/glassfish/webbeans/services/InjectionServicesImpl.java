@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.webbeans;
+package org.glassfish.webbeans.services;
 
 import org.jboss.webbeans.injection.spi.InjectionServices;
 import org.jboss.webbeans.injection.spi.InjectionContext;

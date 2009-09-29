@@ -35,35 +35,33 @@
  */
 
 
-package org.glassfish.webbeans;
-
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
-
-import java.util.Collection;
+package org.glassfish.webbeans.services;
 
 import com.sun.enterprise.container.common.spi.JCDIService;
-
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 
-import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
-import org.jboss.webbeans.bootstrap.WebBeansBootstrap;
-import javax.enterprise.inject.spi.BeanManager;
+import java.util.Collection;
 
-import org.glassfish.api.invocation.ComponentInvocation;
-import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
-import org.glassfish.api.invocation.InvocationManager;
-
-import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.InjectionTarget;
+
+import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.webbeans.WebBeansDeployer;
+
+import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
+import org.jboss.webbeans.bootstrap.WebBeansBootstrap;
 import org.jboss.webbeans.manager.api.WebBeansManager;
 
-
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 
 @Service
 public class JCDIServiceImpl implements JCDIService

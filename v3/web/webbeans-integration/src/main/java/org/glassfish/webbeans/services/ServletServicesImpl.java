@@ -34,14 +34,16 @@
  * holder.
  */
 
-package org.glassfish.webbeans;
+package org.glassfish.webbeans.services;
 
 import javax.servlet.ServletContext;
 
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.webbeans.DeploymentImpl;
+import org.glassfish.webbeans.WebBeansDeployer;
 
-import org.jboss.webbeans.servlet.api.ServletServices;
 import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
+import org.jboss.webbeans.servlet.api.ServletServices;
 
 public class ServletServicesImpl implements ServletServices {
 

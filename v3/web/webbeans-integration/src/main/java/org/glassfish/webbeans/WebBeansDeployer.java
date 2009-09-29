@@ -36,15 +36,19 @@
 
 package org.glassfish.webbeans;
 
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.AppListenerDescriptorImpl;
+import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.Application;
-import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
 
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collection;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
@@ -55,27 +59,24 @@ import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.SimpleDeployer;
 import org.glassfish.ejb.api.EjbContainerServices;
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.webbeans.ejb.EjbServicesImpl;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.webbeans.services.EjbServicesImpl;
+import org.glassfish.webbeans.services.InjectionServicesImpl;
+import org.glassfish.webbeans.services.ServletServicesImpl;
+import org.glassfish.webbeans.services.TransactionServicesImpl;
 
 import org.jboss.webbeans.bootstrap.WebBeansBootstrap;
 import org.jboss.webbeans.bootstrap.api.Environments;
+import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.webbeans.context.api.helpers.ConcurrentHashMapBeanStore;
 import org.jboss.webbeans.ejb.spi.EjbServices;
-import org.jboss.webbeans.servlet.api.ServletServices;
-
-import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import org.jboss.webbeans.injection.spi.InjectionServices;
+import org.jboss.webbeans.servlet.api.ServletServices;
+import org.jboss.webbeans.transaction.spi.TransactionServices;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collection;
-import java.util.Map;
-import java.util.HashMap;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
 
 @Service
 public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeansApplicationContainer> 
@@ -83,9 +84,9 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
     public static final String WEB_BEAN_EXTENSION = "org.glassfish.webbeans";
 
-    /* package */ static final String WEB_BEAN_BOOTSTRAP = "org.glassfish.webbeans.WebBeansBootstrap";
+    public static final String WEB_BEAN_DEPLOYMENT = "org.glassfish.webbeans.WebBeansDeployment";
 
-    /* package */ static final String WEB_BEAN_DEPLOYMENT = "org.glassfish.webbeans.WebBeansDeployment";
+    /* package */ static final String WEB_BEAN_BOOTSTRAP = "org.glassfish.webbeans.WebBeansBootstrap";
 
     private static final String WEB_BEAN_LISTENER = "org.jboss.webbeans.servlet.WebBeansListener";
 
@@ -159,15 +160,15 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
         }
     }
 
-    BeanDeploymentArchive getBeanDeploymentArchiveForBundle(BundleDescriptor bundle) {
+    public BeanDeploymentArchive getBeanDeploymentArchiveForBundle(BundleDescriptor bundle) {
         return bundleToBeanDeploymentArchive.get(bundle);
     }
 
-    boolean is299Enabled(BundleDescriptor bundle) {
+    public boolean is299Enabled(BundleDescriptor bundle) {
         return bundleToBeanDeploymentArchive.containsKey(bundle);
     }
 
-    WebBeansBootstrap getBootstrapForApp(Application app) {
+    public WebBeansBootstrap getBootstrapForApp(Application app) {
         return appToBootstrap.get(app);
     }
 
@@ -224,9 +225,13 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
         }
 
-        // TODO change this -- can't assume that 299-enabled module is a web module
+        // Add services
+
         ServletServices servletServices = new ServletServicesImpl(context);
         deploymentImpl.getServices().add(ServletServices.class, servletServices);
+
+        TransactionServices transactionServices = new TransactionServicesImpl(habitat);
+        deploymentImpl.getServices().add(TransactionServices.class, transactionServices);
 
 
         // Register EE injection manager at the bean deployment archive level.

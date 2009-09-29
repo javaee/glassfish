@@ -35,26 +35,25 @@
  */
 
 
-package org.glassfish.webbeans.ejb;
+package org.glassfish.webbeans.services;
 
-import org.jboss.webbeans.ejb.spi.EjbServices;
-
-import org.jboss.webbeans.ejb.api.SessionObjectReference;
-
-import org.jboss.webbeans.ejb.spi.EjbDescriptor;
 import com.sun.enterprise.deployment.*;
 
-
-import java.util.Set;
 import java.util.HashSet;
-
-
-import org.jvnet.hk2.component.Habitat;
+import java.util.Set;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.glassfish.ejb.api.EjbContainerServices;
+import org.glassfish.webbeans.ejb.EjbDescriptorImpl;
+import org.glassfish.webbeans.ejb.SessionObjectReferenceImpl;
+
+import org.jboss.webbeans.ejb.spi.EjbServices;
+import org.jboss.webbeans.ejb.spi.EjbDescriptor;
+import org.jboss.webbeans.ejb.api.SessionObjectReference;
+
+import org.jvnet.hk2.component.Habitat;
 
 /**
  */
