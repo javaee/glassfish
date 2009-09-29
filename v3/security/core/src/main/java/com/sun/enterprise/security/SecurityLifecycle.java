@@ -173,7 +173,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
              }
              
              webStatsProvider = new WebSecurityDeployerStatsProvider();
-             StatsProviderManager.register("security", PluginPoint.SERVER, "web-security", webStatsProvider);
+             StatsProviderManager.register("security", PluginPoint.SERVER, "security/web", webStatsProvider);
              
 
             //TODO:V3 LoginContextDriver has a static variable dependency on AuditManager

@@ -279,7 +279,7 @@ public final class EJBSecurityManager
             synchronized (EjbSecurityStatsProvider.class) {
                 if (ejbStatsProvider == null) {
                     ejbStatsProvider = new EjbSecurityStatsProvider();
-                    StatsProviderManager.register("security", PluginPoint.SERVER, "ejb-security", ejbStatsProvider);
+                    StatsProviderManager.register("security", PluginPoint.SERVER, "security/ejb", ejbStatsProvider);
                 }
 
             }
