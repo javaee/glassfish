@@ -28,6 +28,7 @@
 	<ant dir="libdependent-2" target="all"/>
         <ant dir="svchandler" target="all"/>
 	<ant dir="wsctxt" target="all"/>
+	<ant dir="sessionctx" target="all"/>
 	<ant dir="wsnameejbname" target="all"/>
 	<ant dir="dependencynoinjection" target="all"/>
 	<ant dir="exception" target="all"/>
