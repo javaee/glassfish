@@ -81,6 +81,10 @@
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-cometd</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
 	    <artifactId>grizzly-http-servlet</artifactId>
         </dependency>
         <!-- previous package - required for dependency graph calculation -->
