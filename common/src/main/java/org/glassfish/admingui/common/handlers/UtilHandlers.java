@@ -47,10 +47,12 @@ package org.glassfish.admingui.common.handlers;
 
 import org.glassfish.admingui.common.util.GuiUtil;
 
+import javax.faces.component.UIViewRoot;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.LayoutDefinitionManager;
+import com.sun.jsftemplating.layout.ViewRootUtil;
 import com.sun.jsftemplating.layout.descriptors.LayoutElement;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerDefinition;
@@ -532,8 +534,7 @@ public class UtilHandlers {
         return false;
     }
 
-
-     @Handler(id = "convertStrToBoolean",
+    @Handler(id = "convertStrToBoolean",
     input = {
         @HandlerInput(name = "str", type = String.class, required = true)},
     output = {
@@ -542,11 +543,28 @@ public class UtilHandlers {
 
         String str = (String) handlerCtx.getInputValue("str");
         handlerCtx.setOutputValue("out", "true".equals(str));
-     }
+    }
 
-
-
-
+    /**
+     *	<p> This method returns a new UIViewRoot with the basic JSFT settings
+     *	    from the current ViewRoot.  If you intend to set this before the
+     *	    current view is created (in an effort to swap out the UIViewRoot),
+     *	    you should do so during the initPage event (take care to only do
+     *	    this during the first request, or you might lose all child
+     *	    components).</p>
+     */
+    @Handler(id = "createDefaultViewRoot",
+	output = {
+	    @HandlerOutput(name="viewRoot", type=UIViewRoot.class)})
+    public static void createDefaultViewRoot(HandlerContext handlerCtx) {
+	UIViewRoot oldVR = handlerCtx.getFacesContext().getViewRoot();
+	UIViewRoot newVR = new UIViewRoot();
+	newVR.setViewId(oldVR.getViewId());
+	ViewRootUtil.setLayoutDefinitionKey(newVR, ViewRootUtil.getLayoutDefinitionKey(oldVR));
+	newVR.setLocale(oldVR.getLocale());
+	newVR.setRenderKitId(oldVR.getRenderKitId());
+        handlerCtx.setOutputValue("viewRoot", newVR);
+    }
 
     private static final String PATH_SEPARATOR = "${path.separator}";
 }
