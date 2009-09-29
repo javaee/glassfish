@@ -477,27 +477,23 @@ public class CoyoteAdapter
             }
             // END GlassFish Issue 2339
         }
-
-        // Parse session Id
-        String sessionParam = SESSION_PARAMETER;
-        Context ctx = (Context) request.getMappingData().context;
-        if (ctx != null && ctx.isSessionCookieConfigInitialized() &&
-                ctx.getSessionCookieName() != null) {
-            sessionParam = ";" + ctx.getSessionCookieName() + "=";
-        }
-        request.parseSessionId(sessionParam);
         // END CR 6309511
 
-        // Remove any remaining parameters (other than session id, which has
-        // already been removed in parseSessionId()) from the URI, so they
-        // won't be considered by the mapping algorithm.
+        /*
+         * Remove any parameters from the URI, so they won't be considered
+         * by the mapping algorithm, and save them in a temporary CharChunk,
+         * so that any session id param may be parsed once the target
+         * context, which may use a custom session parameter name, has been
+         * identified
+         */
+        CharChunk uriParamsCC = request.getURIParams();
         CharChunk uriCC = decodedURI.getCharChunk();
         int semicolon = uriCC.indexOf(';');
-        String sessionVersionString = null;
         if (semicolon > 0) {
-            sessionVersionString = request.parseSessionVersion();
-            decodedURI.setChars
-                (uriCC.getBuffer(), uriCC.getStart(), semicolon);
+            uriParamsCC.setChars(uriCC.getBuffer(), semicolon,
+                uriCC.getEnd() - semicolon);
+            decodedURI.setChars(uriCC.getBuffer(), uriCC.getStart(),
+                semicolon);
         }
  
         if (compatWithTomcat || !v3Enabled) {
@@ -507,7 +503,18 @@ public class CoyoteAdapter
             MappingData md = request.getMappingData();
             req.setNote(MAPPING_DATA, md);
             request.updatePaths(md);
-            ctx = (Context) request.getMappingData().context;
+        }
+
+        Context ctx = (Context) request.getMappingData().context;
+
+        // Parse session id
+        if (ctx != null && !uriParamsCC.isNull()) {
+            String sessionParam = SESSION_PARAMETER;
+            if (ctx.isSessionCookieConfigInitialized() &&
+                    ctx.getSessionCookieName() != null) {
+                sessionParam = ";" + ctx.getSessionCookieName() + "=";
+            }
+            request.parseSessionId(sessionParam, uriParamsCC);
         }
 
         // START GlassFish 1024
@@ -608,10 +615,6 @@ public class CoyoteAdapter
         // START SJSAS 6346226
         request.parseJrouteCookie();
         // END SJSAS 6346226
-
-        if (sessionVersionString != null) {
-            request.parseSessionVersionString(sessionVersionString);
-        }
 
         return true;
     }

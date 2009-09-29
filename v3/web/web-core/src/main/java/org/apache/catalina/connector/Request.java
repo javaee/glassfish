@@ -355,10 +355,8 @@ public class Request
     // The requested session cookie path, see IT 7426
     protected String requestedSessionCookiePath;
 
-    /**
-     * The requested session version (if any) for this request.
-     */
-    protected String requestedSessionVersion = null;
+    // Temporary holder for URI params from which session id is parsed
+    protected CharChunk uriParamsCC = new CharChunk();
 
     /**
      * Was the requested session ID received in a URL?
@@ -627,7 +625,7 @@ public class Request
         attributes.clear();
         notes.clear();
         cookies.clear();
-        
+
         unsuccessfulSessionFind = false;
 
         if (session != null) {
@@ -637,8 +635,8 @@ public class Request
         requestedSessionCookie = false;
         requestedSessionId = null;
         requestedSessionCookiePath = null;
-        requestedSessionVersion = null;
         requestedSessionURL = false;
+        uriParamsCC.recycle();
 
         // START GlassFish 896
         sessionTracker.reset();
@@ -2670,12 +2668,7 @@ public class Request
             return (false);
         Session localSession = null;
         try {
-            if (manager.isSessionVersioningSupported()) {
-                localSession = manager.findSession(requestedSessionId,
-                                                   requestedSessionVersion);
-            } else {
-                localSession = manager.findSession(requestedSessionId);
-            }
+            localSession = manager.findSession(requestedSessionId);
         } catch (IOException e) {
             localSession = null;
         }
@@ -2793,7 +2786,6 @@ public class Request
         // Return the current session if it exists and is valid
         if ((session != null) && !session.isValid()) {
             session = null;
-            requestedSessionVersion = null;
         }
         if (session != null)
             return (session);
@@ -2807,14 +2799,7 @@ public class Request
         if (requestedSessionId != null) {
             if (!checkUnsuccessfulSessionFind || !unsuccessfulSessionFind) {
                 try {
-                    if (manager.isSessionVersioningSupported()) {
-                        session = manager.findSession(requestedSessionId,
-                                                      requestedSessionVersion);
-                        incrementSessionVersion((StandardSession) session,
-                                                context);
-                    } else {
-                        session = manager.findSession(requestedSessionId);
-                    }
+                    session = manager.findSession(requestedSessionId);
                     if(session == null) {
                         unsuccessfulSessionFind = true;
                     }
@@ -2897,10 +2882,6 @@ public class Request
 
         // Creating a new session cookie based on the newly created session
         if ((session != null) && (getContext() != null)) {
-
-            if (manager.isSessionVersioningSupported()) {
-                incrementSessionVersion((StandardSession) session, context);
-            }
 
             if (getContext().getCookies()) {
                 String jvmRoute = ((StandardContext) getContext()).getJvmRoute();
@@ -3333,12 +3314,10 @@ public class Request
     /**
      * Parse session id in URL.
      */
-    protected void parseSessionId(String sessionParam) {
-
-        CharChunk uriBB = coyoteRequest.decodedURI().getCharChunk();
+    protected void parseSessionId(String sessionParam, CharChunk uriBB) {
         int semicolon = uriBB.indexOf(sessionParam, 0, sessionParam.length(),
                 0);
-        if (semicolon > 0) {
+        if (semicolon >= 0) {
 
             // Parse session ID, and extract it from the decoded request URI
             int start = uriBB.getStart();
@@ -3419,47 +3398,6 @@ public class Request
     }
     // END CR 6309511
 
-    /**
-     * Parses and removes any session version (if present) from the request
-     * URI, and returns it
-     *
-     * @return The session version that was parsed from the request URI
-     */
-    protected String parseSessionVersion() {
-
-        String sessionVersionString = null;
-
-        ByteChunk uriBB = coyoteRequest.decodedURI().getByteChunk();
-        int semicolon = uriBB.indexOf(Globals.SESSION_VERSION_PARAMETER, 0,
-            Globals.SESSION_VERSION_PARAMETER.length(), 0);
-        if (semicolon > 0) {
-
-            int start = uriBB.getStart();
-            int end = uriBB.getEnd();
-
-            int sessionVersionStart = start + semicolon
-                + Globals.SESSION_VERSION_PARAMETER.length();
-            int semicolon2 = uriBB.indexOf(';', sessionVersionStart);
-            if (semicolon2 >= 0) {
-                sessionVersionString = new String(
-                    uriBB.getBuffer(),
-                    sessionVersionStart, 
-                    semicolon2 - semicolon - Globals.SESSION_VERSION_PARAMETER.length());
-            } else {
-                sessionVersionString = new String(
-                    uriBB.getBuffer(),
-                    sessionVersionStart, 
-                    end - sessionVersionStart);
-            }
-
-            if (!coyoteRequest.requestURI().getByteChunk().isNull()) {
-                removeSessionVersionFromRequestURI();
-            }
-        }
-
-        return sessionVersionString;
-    }
-
     // START SJSWS 6376484
     /**
      * Extracts the session ID from the request URI.
@@ -3490,67 +3428,6 @@ public class Request
         }
     }
     // END SJSWS 6376484
-
-    /**
-     * Removes the session version from the request URI.
-     */
-    protected void removeSessionVersionFromRequestURI() {
-
-        int start, end, sessionVersionStart, semicolon, semicolon2;
-
-        ByteChunk uriBC = coyoteRequest.requestURI().getByteChunk();
-        start = uriBC.getStart();
-        end = uriBC.getEnd();
-        semicolon = uriBC.indexOf(Globals.SESSION_VERSION_PARAMETER, 0,
-                                  Globals.SESSION_VERSION_PARAMETER.length(),
-                                  0);
-        if (semicolon > 0) {
-            sessionVersionStart = start + semicolon;
-            semicolon2 = uriBC.indexOf
-                (';', semicolon + Globals.SESSION_VERSION_PARAMETER.length());
-            uriBC.setEnd(start + semicolon);
-            byte[] buf = uriBC.getBuffer();
-            if (semicolon2 >= 0) {
-                for (int i = 0; i < end - start - semicolon2; i++) {
-                    buf[start + semicolon + i] 
-                        = buf[start + i + semicolon2];
-                }
-                uriBC.setBytes(buf, start, semicolon 
-                               + (end - start - semicolon2));
-            }
-        }
-    }
-
-    /*
-     * Parses the given session version string into its components. Each
-     * component is stored as an entry in a HashMap, which maps a context
-     * path to its session version number. The HashMap is stored as a 
-     * request attribute, to make it available to any target contexts to which
-     * this request may be dispatched.
-     *
-     * This method also sets the session version number for the context with
-     * which this request has been associated.
-     */
-    void parseSessionVersionString(String sessionVersionString) {
-
-        if (sessionVersionString == null || !isSessionVersionSupported()) {
-            return;
-        }
-
-        HashMap<String, String> sessionVersions =
-            RequestUtil.parseSessionVersions(sessionVersionString);
-        if (sessionVersions != null) {
-            attributes.put(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE,
-                           sessionVersions);
-            if (context != null) {
-                String path = context.getPath();
-                if ("".equals(path)) {
-                    path = "/";
-                }
-                this.requestedSessionVersion = sessionVersions.get(path);
-            }
-        }
-    }
 
     /**
      * Parses the value of the JROUTE cookie, if present.
@@ -3626,12 +3503,7 @@ public class Request
                 if (!isRequestedSessionIdFromCookie()) {
                     // Accept only the first session id cookie
                     B2CConverter.convertASCII(scookie.getValue());
-                    setRequestedSessionId
-                        (scookie.getValue().toString());
-                    // TODO: Pass cookie path into
-                    // getSessionVersionFromCookie()
-                    String sessionVersionString = getSessionVersionFromCookie();
-                    parseSessionVersionString(sessionVersionString);
+                    setRequestedSessionId(scookie.getValue().toString());
                     setRequestedSessionCookie(true);
                     setRequestedSessionURL(false);
                     if (log.isLoggable(Level.FINE)) {
@@ -3643,13 +3515,7 @@ public class Request
                     if (!isRequestedSessionIdValid()) {
                         // Replace the session id until one is valid
                         B2CConverter.convertASCII(scookie.getValue());
-                        setRequestedSessionId
-                            (scookie.getValue().toString());
-                        // TODO: Pass cookie path into
-                        // getSessionVersionFromCookie()
-                        String sessionVersionString =
-                            getSessionVersionFromCookie();
-                        parseSessionVersionString(sessionVersionString);
+                        setRequestedSessionId(scookie.getValue().toString());
                     }
                 }
             }
@@ -3658,33 +3524,10 @@ public class Request
     // END CR 6309511
 
     /*
-     * Returns the value of the first JSESSIONIDVERSION cookie, or null
-     * if no such cookie present in the request.
-     *
-     * TODO: Add cookie path argument, and return value of JSESSIONIDVERSION
-     * cookie with the specified path.
+     * @return temporary holder for URI params from which session id is parsed
      */
-    private String getSessionVersionFromCookie() {
-
-        if (!isSessionVersionSupported()) {
-            return null;
-        }
-
-        Cookies serverCookies = coyoteRequest.getCookies();
-        int count = serverCookies.getCookieCount();
-        if (count <= 0) {
-            return null;
-        }
-
-        for (int i = 0; i < count; i++) {
-            ServerCookie scookie = serverCookies.getCookie(i);
-            if (scookie.getName().equals(
-                                Globals.SESSION_VERSION_COOKIE_NAME)) {
-                return scookie.getValue().toString();
-            }
-        }
-
-        return null;
+    CharChunk getURIParams() {
+        return uriParamsCC;
     }
 
     // START CR 6309511
@@ -4148,39 +3991,6 @@ public class Request
         notes.put(Globals.SESSION_TRACKER, sessionTracker);
     }
     // END GlassFish 896
-
-    /**
-     * Increments the version of the given session, and stores it as a
-     * request attribute, so it can later be included in a response cookie.
-     */
-    private void incrementSessionVersion(StandardSession ss,
-                                         Context context) {
-
-        if (ss == null || context == null) {
-            return;
-        }
-
-        String versionString = Long.toString(ss.incrementVersion());
-
-        HashMap<String, String> sessionVersions = (HashMap<String, String>)
-            getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
-        if (sessionVersions == null) {
-            sessionVersions = new HashMap<String, String>();
-            setAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE,
-                         sessionVersions);
-        }
-        String path = context.getPath();
-        if ("".equals(path)) {
-            path = "/";
-        }
-        sessionVersions.put(path, versionString);
-    }
-
-    private boolean isSessionVersionSupported() {
-        return (context != null
-            && context.getManager() != null
-            && context.getManager().isSessionVersioningSupported());
-    }
 
     /**
      * Class holding all the information required for invoking an
