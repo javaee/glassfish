@@ -38,7 +38,7 @@
 package org.glassfish.flashlight.impl.provider;
 
 import org.glassfish.external.probe.provider.annotations.*;
-import org.glassfish.flashlight.xml.ProbeProviderXMLParser;
+import org.glassfish.flashlight.xml.ProbeProviderStaxParser;
 import com.sun.enterprise.config.serverbeans.MonitoringService;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import java.io.FileInputStream;
@@ -250,7 +250,7 @@ public class FlashlightProbeProviderFactory
                 is = new FileInputStream(xml);
             }
             mprint("InputStream = " + is);
-            ProbeProviderXMLParser providerXMLParser = new ProbeProviderXMLParser(is);
+            ProbeProviderStaxParser providerXMLParser = new ProbeProviderStaxParser(is);
             List<org.glassfish.flashlight.xml.Provider> providers = providerXMLParser.getProviders();
             for (org.glassfish.flashlight.xml.Provider provider : providers) {
                 mprint(provider.toString());

@@ -12,15 +12,15 @@ import java.util.logging.Logger;
 import javax.xml.stream.XMLStreamException;
 import static org.glassfish.flashlight.xml.XmlConstants.*;
 /**
- *
+ * Read the XML file, parse it and return a list of ProbeProvider objects
  * @author bnevins
  */
 public class ProbeProviderStaxParser extends StaxParser{
-    ProbeProviderStaxParser(File f) throws XMLStreamException {
+    public ProbeProviderStaxParser(File f) throws XMLStreamException {
         super(f);
     }
 
-    ProbeProviderStaxParser(InputStream in) throws XMLStreamException {
+    public ProbeProviderStaxParser(InputStream in) throws XMLStreamException {
         super(in);
     }
 
@@ -34,6 +34,12 @@ public class ProbeProviderStaxParser extends StaxParser{
                 close();
             }
         }
+        if (providers.isEmpty()) {
+            // this line snatched from the previous implementation (DOM)
+            Logger.getLogger(ProbeProviderXMLParser.class.getName()).log(Level.SEVERE,
+                    " No providers identified from the xml ");
+        }
+
         return providers;
     }
 
