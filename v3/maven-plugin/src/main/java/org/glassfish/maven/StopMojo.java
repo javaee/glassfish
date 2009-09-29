@@ -59,7 +59,7 @@ public class StopMojo extends AbstractMojo  {
     protected String serverID;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        Server server = new Server.Builder(serverID).build();
+        Server server = Server.getServer(serverID);
 
         try {
             server.stop();
