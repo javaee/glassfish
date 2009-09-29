@@ -107,6 +107,7 @@ public class ProgressObjectImpl extends DFProgressObject {
 
     public ProgressObjectImpl(TargetImpl[] targets) {
         this.targetsList = targets;
+        this.target = targets[0];
         deploymentStatus = new DeploymentStatusImpl(this);
         deploymentStatus.setState(StateType.RELEASED);
         finalDeploymentStatus = new DFDeploymentStatus();
@@ -217,31 +218,35 @@ public class ProgressObjectImpl extends DFProgressObject {
      */
     public TargetModuleID[] getResultTargetModuleIDs() {
 
-//        /**
-//         * this should go once CTS has fixed their bugs...
-//         */
-//        if (targetModuleIDs==null) {
-//            if(target != null) {
-//                initializeTargetModuleIDs(moduleID);
+        /**
+         * this should go once CTS has fixed their bugs...
+         */
+        if (targetModuleIDs==null) {
+            if(target != null) {
+                initializeTargetModuleIDs(moduleID);
 //            } else if(targetsList != null) {
 //                initializeTargetModuleIDForAllServers(null, null);
-//            }
-//        }
+            }
+        }
         // will return null until the operation is completed
         return targetModuleIDs;
     }
     
-//    /**
-//     * initialize the target module IDs with the passed application moduleID
-//     * and the descriptors
-//     */
-//    protected void initializeTargetModuleIDs(String moduleID) {
-//        TargetModuleIDImpl parentTargetModuleID = new TargetModuleIDImpl(target, moduleID);        
-//        
-//        targetModuleIDs = new TargetModuleIDImpl[1];        
-//        targetModuleIDs[0] = parentTargetModuleID;
-//    }
-//
+    public void setModuleID(String id) {
+        moduleID = id;
+    }
+
+    /**
+     * initialize the target module IDs with the passed application moduleID
+     * and the descriptors
+     */
+    protected void initializeTargetModuleIDs(String moduleID) {
+        TargetModuleIDImpl parentTargetModuleID = new TargetModuleIDImpl(target, moduleID);        
+        
+        targetModuleIDs = new TargetModuleIDImpl[1];        
+        targetModuleIDs[0] = parentTargetModuleID;
+    }
+
 //    /**
 //     * Initialize the target module IDs with the application information stored
 //     * in the DeploymentStatus for all the server in the target list.

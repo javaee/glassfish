@@ -349,8 +349,10 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                     "deploy", deploymentOptions, new String[]{tmpFile.getAbsolutePath()});
             DFDeploymentStatus ds = commandRunner.run();
             DFDeploymentStatus mainStatus = ds.getMainStatus();
+            String moduleID = mainStatus.getProperty(DFDeploymentProperties.NAME);
+            po.setModuleID(moduleID);
+
             if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
-                String moduleID = mainStatus.getProperty(DFDeploymentProperties.NAME);
                 // TODO: support multiple targets
                 TargetModuleIDImpl[] targetModuleIDs = new TargetModuleIDImpl[targets.length];
                 int i = 0;
