@@ -39,6 +39,7 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
 @Service(name = "web")
 @Scoped(Singleton.class)
 public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener {
+    private static final String NODE_SEPARATOR = "/";
 
     @Inject
     private Logger logger;
@@ -48,8 +49,9 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
 
     private static HttpService httpService = null;
     private static NetworkConfig networkConfig = null;
+
     private Server server;
-    private static final String APPLICATIONS = "applications";
+
     // Map of apps and its StatsProvider list
     private Map<String, List> statsProviderToAppMap = new HashMap();
     private ArrayList webContainerStatsProviderList = new ArrayList();
@@ -136,49 +138,48 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
             }
             String vsL = ar.getVirtualServers();
             if (vsL != null) {
-                for (String str : vsL.split(",")) {
-                    //create stats providers for each virtual server 'str'
+                for (String host : vsL.split(",")) {
+                    //create stats providers for each virtual server 'host'
+                    String node = getNode(appName, moduleName, host);
                     List statspList = statsProviderToAppMap.get(moduleName);
                     if (statspList == null) {
                         statspList = new ArrayList();
                     }
                     JspStatsProvider jspStatsProvider =
-                        new JspStatsProvider(moduleName, str, logger);
+                        new JspStatsProvider(moduleName, host, logger);
                     StatsProviderManager.register(
-                            "web-container",
-                            PluginPoint.SERVER, APPLICATIONS + "/" +
-                                moduleName + "/" + str,
-                            jspStatsProvider);
+                        "web-container", PluginPoint.APPLICATIONS, node,
+                        jspStatsProvider);
                     statspList.add(jspStatsProvider);
                     ServletStatsProvider servletStatsProvider =
-                        new ServletStatsProvider(moduleName, str, logger);
+                        new ServletStatsProvider(moduleName, host, logger);
                     StatsProviderManager.register(
-                            "web-container",
-                            PluginPoint.SERVER, APPLICATIONS + "/" +
-                                moduleName + "/" + str,
-                            servletStatsProvider);
+                        "web-container", PluginPoint.APPLICATIONS, node,
+                        servletStatsProvider);
                     statspList.add(servletStatsProvider);
                     SessionStatsProvider sessionStatsProvider =
-                        new SessionStatsProvider(moduleName, str, logger);
+                        new SessionStatsProvider(moduleName, host, logger);
                     StatsProviderManager.register(
-                            "web-container",
-                            PluginPoint.SERVER, APPLICATIONS + "/" +
-                                moduleName + "/" + str,
-                            sessionStatsProvider);
+                        "web-container", PluginPoint.APPLICATIONS, node,
+                        sessionStatsProvider);
                     statspList.add(sessionStatsProvider);
                     RequestStatsProvider websp =
-                        new RequestStatsProvider(moduleName, str, logger);
+                        new RequestStatsProvider(moduleName, host, logger);
                     StatsProviderManager.register(
-                            "web-container",
-                            PluginPoint.SERVER, APPLICATIONS + "/" +
-                                moduleName + "/" + str,
-                            websp);
+                        "web-container", PluginPoint.APPLICATIONS, node,
+                        websp);
                     statspList.add(websp);
                     statsProviderToAppMap.put(moduleName, statspList);
                 }
             }
             return;
         }
+    }
+
+    private String getNode(String appName, String moduleName, String host) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(moduleName).append(NODE_SEPARATOR).append(host);
+        return sb.toString();
     }
 
     public static String getVirtualServerName(String hostName,
