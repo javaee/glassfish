@@ -101,7 +101,7 @@ public class FlashlightProbe
     }
 
     public synchronized boolean addInvoker(ProbeClientInvoker invoker) {
-    	boolean isFirst = invokers.isEmpty();
+    	boolean isFirst = (invokers.isEmpty() && firstTransform);
 
         if(invokers.putIfAbsent(invoker.getId(), invoker) != null) {
             printd("&&&&&&&&&&&&&&     Adding an invoker that already exists: " + invoker.getId() +  "  &&&&&&&&&&");
@@ -111,6 +111,7 @@ public class FlashlightProbe
         //if (this.providerClazz.getName().equals("org.glassfish.web.admin.monitor.JspProbeProvider"))
             printd("********************** Total invokers = " + invokers.size());
         listenerEnabled.set(true);
+        firstTransform = false;
         return isFirst;
     }
 
@@ -260,5 +261,6 @@ public class FlashlightProbe
     private Method  dtraceMethod;
     private boolean hasSelf;
     private boolean hidden;
+    private boolean firstTransform = true;
     private ConcurrentMap<Integer, ProbeClientInvoker> invokers = new ConcurrentHashMap<Integer, ProbeClientInvoker>();
 }
