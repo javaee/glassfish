@@ -414,11 +414,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
                 ((StatisticImpl) value).reset();
             }
         } else if (value instanceof Stats) {
-            if (Proxy.isProxyClass(value.getClass())) {
-                ((StatsImpl) Proxy.getInvocationHandler(value)).reset();
-            } else {
-                ((StatsImpl) value).reset();
-            }
+            ((StatsImpl) value).reset();
         }
     }
 

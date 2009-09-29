@@ -81,14 +81,14 @@ public class StatefulSessionBeanStatsProvider extends EjbMonitoringStatsProvider
     @ManagedAttribute(id="methodreadycount")
     @Description( "Number of stateful session beans in MethodReady state")
     public RangeStatistic getMethodReadyCount() {
-        methodReadyStat.setCount(methodReadyCount);
+        methodReadyStat.setCurrent(methodReadyCount);
         return methodReadyStat.getStatistic();
     }
 
     @ManagedAttribute(id="passivecount")
     @Description( "Number of stateful session beans in Passive state")
     public RangeStatistic getPassiveCount() {
-        passiveCount.setCount(delegate.getPassiveCount());
+        passiveCount.setCurrent(delegate.getPassiveCount());
         return passiveCount.getStatistic();
     }
 

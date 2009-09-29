@@ -66,7 +66,6 @@ public class JVMClassLoadingStatsProvider {
     @Description( "number of classes currently loaded in the JVM" )
     public CountStatistic getLoadedClassCount() {
         loadedClassCount.setCount(clBean.getLoadedClassCount());
-        loadedClassCount.setLastSampleTime(System.currentTimeMillis());
         return loadedClassCount;
     }
 
@@ -74,7 +73,6 @@ public class JVMClassLoadingStatsProvider {
     @Description( "total number of classes loaded since the JVM started" )
     public CountStatistic getTotalLoadedClassCount() {
         totalLoadedClassCount.setCount(clBean.getTotalLoadedClassCount());
-        totalLoadedClassCount.setLastSampleTime(System.currentTimeMillis());
         return totalLoadedClassCount;
     }
 
@@ -82,7 +80,6 @@ public class JVMClassLoadingStatsProvider {
     @Description( "total number of classes unloaded since the JVM started" )
     public CountStatistic getUnloadedClassCount() {
         unloadedClassCount.setCount(clBean.getUnloadedClassCount());
-        unloadedClassCount.setLastSampleTime(System.currentTimeMillis());
         return unloadedClassCount;
     }
 }

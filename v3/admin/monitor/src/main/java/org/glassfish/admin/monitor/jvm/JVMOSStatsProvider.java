@@ -74,7 +74,6 @@ public class JVMOSStatsProvider {
     @Description( "operating system architecture" )
     public StringStatistic getArch() {
         arch.setCurrent(osBean.getArch());
-        arch.setLastSampleTime(System.currentTimeMillis());
         return arch;
     }
 
@@ -82,7 +81,6 @@ public class JVMOSStatsProvider {
     @Description( "number of processors available to the Java virtual machine" )
     public CountStatistic getAvailableProcessors() {
         availableProcessors.setCount(osBean.getAvailableProcessors());
-        availableProcessors.setLastSampleTime(System.currentTimeMillis());
         return availableProcessors;
     }
 
@@ -90,7 +88,6 @@ public class JVMOSStatsProvider {
     @Description( "operating system name" )
     public StringStatistic getOSName() {
         osName.setCurrent(osBean.getName());
-        osName.setLastSampleTime(System.currentTimeMillis());
         return osName;
     }
 
@@ -98,7 +95,6 @@ public class JVMOSStatsProvider {
     @Description( "operating system version" )
     public StringStatistic getOSVersion() {
         osVersion.setCurrent(osBean.getVersion());
-        osVersion.setLastSampleTime(System.currentTimeMillis());
         return osVersion;
     }
 
@@ -106,7 +102,6 @@ public class JVMOSStatsProvider {
     @Description( "system load average for the last minute" )
     public CountStatistic getSystemLoadAverage() {
         sysLoadAverage.setCurrent(osBean.getSystemLoadAverage());
-        sysLoadAverage.setLastSampleTime(System.currentTimeMillis());
         return sysLoadAverage;
     }*/
 }

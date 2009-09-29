@@ -79,14 +79,14 @@ public class EntityBeanStatsProvider extends EjbMonitoringStatsProvider {
     @ManagedAttribute(id="pooledcount")
     @Description( "Number of entity beans in pooled state")
     public RangeStatistic getPooledCount() {
-        pooledCount.setCount(delegate.getPooledCount());
+        pooledCount.setCurrent(delegate.getPooledCount());
         return pooledCount.getStatistic();
     }
 
     @ManagedAttribute(id="readycount")
     @Description( "Number of entity beans in ready state")
     public RangeStatistic getReadyCount() {
-        readyCount.setCount(delegate.getReadyCount());
+        readyCount.setCurrent(delegate.getReadyCount());
         return readyCount.getStatistic();
     }
 }

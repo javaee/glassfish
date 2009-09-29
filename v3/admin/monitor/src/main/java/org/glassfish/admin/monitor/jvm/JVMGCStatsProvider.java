@@ -79,7 +79,6 @@ public class JVMGCStatsProvider {
             }
         }
         collectionCount.setCount(counts);
-        collectionCount.setLastSampleTime(System.currentTimeMillis());
         return collectionCount;
     }
 
@@ -94,7 +93,6 @@ public class JVMGCStatsProvider {
             }
         }
         collectionTimeCount.setCount(times);
-        collectionTimeCount.setLastSampleTime(System.currentTimeMillis());
         return collectionTimeCount;
     }
 

@@ -67,7 +67,6 @@ public class JVMCompilationStatsProvider {
     @Description( "name of the Just-in-time (JIT) compiler" )
     public StringStatistic getCompilerName() {
         compilerName.setCurrent(compBean.getName());
-        compilerName.setLastSampleTime(System.currentTimeMillis());
         return compilerName;
     }
 
@@ -75,7 +74,6 @@ public class JVMCompilationStatsProvider {
     @Description( "approximate accumlated elapsed time (in milliseconds) spent in compilation" )
     public CountStatistic getTotalCompilationTime() {
         totalCompilationTime.setCount(compBean.getTotalCompilationTime());
-        totalCompilationTime.setLastSampleTime(System.currentTimeMillis());
         return totalCompilationTime;
     }
 }

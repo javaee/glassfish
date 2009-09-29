@@ -89,8 +89,6 @@ public class JVMRuntimeStatsProvider {
     @Description( "boot class path that is used by the bootstrap class loader to search for class files" )
     public StringStatistic getBootClassPath() {
         bootClassPath.setCurrent(rtBean.getBootClassPath());
-        bootClassPath.setStartTime(rtBean.getStartTime());
-        bootClassPath.setLastSampleTime(System.currentTimeMillis());
         return bootClassPath;
     }
 
@@ -98,8 +96,6 @@ public class JVMRuntimeStatsProvider {
     @Description( "Java class path that is used by the system class loader to search for class files" )
     public StringStatistic getClassPath() {
         classPath.setCurrent(rtBean.getClassPath());
-        classPath.setStartTime(rtBean.getStartTime());
-        classPath.setLastSampleTime(System.currentTimeMillis());
         return classPath;
     }
 
@@ -114,8 +110,6 @@ public class JVMRuntimeStatsProvider {
         }
         String finalString = sb.substring(0, sb.lastIndexOf(","));
         inputArguments.setCurrent(finalString);
-        inputArguments.setStartTime(rtBean.getStartTime());
-        inputArguments.setLastSampleTime(System.currentTimeMillis());
         return inputArguments;
     }
 
@@ -123,8 +117,6 @@ public class JVMRuntimeStatsProvider {
     @Description( "Java library path" )
     public StringStatistic getLibraryPath() {
         libraryPath.setCurrent(rtBean.getLibraryPath());
-        libraryPath.setStartTime(rtBean.getStartTime());
-        libraryPath.setLastSampleTime(System.currentTimeMillis());
         return libraryPath;
     }
 
@@ -132,8 +124,6 @@ public class JVMRuntimeStatsProvider {
     @Description( "version of the specification for the management interface implemented by the running Java virtual machine" )
     public StringStatistic getManagementSpecVersion() {
         mgmtSpecVersion.setCurrent(rtBean.getManagementSpecVersion());
-        mgmtSpecVersion.setStartTime(rtBean.getStartTime());
-        mgmtSpecVersion.setLastSampleTime(System.currentTimeMillis());
         return mgmtSpecVersion;
     }
 
@@ -141,8 +131,6 @@ public class JVMRuntimeStatsProvider {
     @Description( "name representing the running Java virtual machine" )
     public StringStatistic getRuntimeName() {
         runtimeName.setCurrent(rtBean.getName());
-        runtimeName.setStartTime(rtBean.getStartTime());
-        runtimeName.setLastSampleTime(System.currentTimeMillis());
         return runtimeName;
     }
 
@@ -150,8 +138,6 @@ public class JVMRuntimeStatsProvider {
     @Description( "Java virtual machine specification name" )
     public StringStatistic getSpecName() {
         specName.setCurrent(rtBean.getSpecName());
-        specName.setStartTime(rtBean.getStartTime());
-        specName.setLastSampleTime(System.currentTimeMillis());
         return specName;
     }
 
@@ -159,8 +145,6 @@ public class JVMRuntimeStatsProvider {
     @Description( "Java virtual machine specification vendor" )
     public StringStatistic getSpecVendor() {
         specVendor.setCurrent(rtBean.getSpecVendor());
-        specVendor.setStartTime(rtBean.getStartTime());
-        specVendor.setLastSampleTime(System.currentTimeMillis());
         return specVendor;
     }
 
@@ -168,8 +152,6 @@ public class JVMRuntimeStatsProvider {
     @Description( "Java virtual machine specification version" )
     public StringStatistic getSpecVersion() {
         specVersion.setCurrent(rtBean.getSpecVersion());
-        specVersion.setStartTime(rtBean.getStartTime());
-        specVersion.setLastSampleTime(System.currentTimeMillis());
         return specVersion;
     }
 
@@ -177,8 +159,6 @@ public class JVMRuntimeStatsProvider {
     @Description( "uptime of the Java virtual machine in milliseconds" )
     public CountStatistic getUptime() {
         uptime.setCount(rtBean.getUptime());
-        uptime.setStartTime(rtBean.getStartTime());
-        uptime.setLastSampleTime(System.currentTimeMillis());
         return uptime;
     }
 
@@ -186,8 +166,6 @@ public class JVMRuntimeStatsProvider {
     @Description( "Java virtual machine implementation name" )
     public StringStatistic getVmName() {
         vmName.setCurrent(rtBean.getVmName());
-        vmName.setStartTime(rtBean.getStartTime());
-        vmName.setLastSampleTime(System.currentTimeMillis());
         return vmName;
     }
 
@@ -195,8 +173,6 @@ public class JVMRuntimeStatsProvider {
     @Description( "Java virtual machine implementation vendor" )
     public StringStatistic getVmVendor() {
         vmVendor.setCurrent(rtBean.getVmVendor());
-        vmVendor.setStartTime(rtBean.getStartTime());
-        vmVendor.setLastSampleTime(System.currentTimeMillis());
         return vmVendor;
     }
 
@@ -204,8 +180,6 @@ public class JVMRuntimeStatsProvider {
     @Description( "Java virtual machine implementation version" )
     public StringStatistic getVmVersion() {
         vmVersion.setCurrent(rtBean.getVmVersion());
-        vmVersion.setStartTime(rtBean.getStartTime());
-        vmVersion.setLastSampleTime(System.currentTimeMillis());
         return vmVersion;
     }   
 }

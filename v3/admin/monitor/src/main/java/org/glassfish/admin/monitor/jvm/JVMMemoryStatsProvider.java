@@ -90,7 +90,6 @@ public class JVMMemoryStatsProvider {
     @Description( "amount of memory in bytes that is committed for the Java virtual machine to use" )
     public CountStatistic getCommittedHeap() {
         committedHeap.setCount(memUsageHeap.getCommitted());
-        committedHeap.setLastSampleTime(System.currentTimeMillis());
         return committedHeap;
     }
 
@@ -98,7 +97,6 @@ public class JVMMemoryStatsProvider {
     @Description( "amount of memory in bytes that the Java virtual machine initially requests from the operating system for memory management" )
     public CountStatistic getInitHeap() {
         initHeap.setCount(memUsageHeap.getInit());
-        initHeap.setLastSampleTime(System.currentTimeMillis());
         return initHeap;
     }
 
@@ -106,7 +104,6 @@ public class JVMMemoryStatsProvider {
     @Description( "maximum amount of memory in bytes that can be used for memory management" )
     public CountStatistic getMaxHeap() {
         maxHeap.setCount(memUsageHeap.getMax());
-        maxHeap.setLastSampleTime(System.currentTimeMillis());
         return maxHeap;
     }
 
@@ -114,7 +111,6 @@ public class JVMMemoryStatsProvider {
     @Description( "amount of used memory in bytes" )
     public CountStatistic getUsedHeap() {
         usedHeap.setCount(memUsageHeap.getUsed());
-        usedHeap.setLastSampleTime(System.currentTimeMillis());
         return usedHeap;
     }
 
@@ -122,7 +118,6 @@ public class JVMMemoryStatsProvider {
     @Description( "amount of memory in bytes that is committed for the Java virtual machine to use" )
     public CountStatistic getCommittedNonHeap() {
         committedNonHeap.setCount(memUsageNonHeap.getCommitted());
-        committedNonHeap.setLastSampleTime(System.currentTimeMillis());
         return committedNonHeap;
     }
 
@@ -130,7 +125,6 @@ public class JVMMemoryStatsProvider {
     @Description( "amount of memory in bytes that the Java virtual machine initially requests from the operating system for memory management" )
     public CountStatistic getInitNonHeap() {
         initNonHeap.setCount(memUsageNonHeap.getInit());
-        initNonHeap.setLastSampleTime(System.currentTimeMillis());
         return initNonHeap;
     }
 
@@ -138,7 +132,6 @@ public class JVMMemoryStatsProvider {
     @Description( "maximum amount of memory in bytes that can be used for memory management" )
     public CountStatistic getMaxNonHeap() {
         maxNonHeap.setCount(memUsageNonHeap.getMax());
-        maxNonHeap.setLastSampleTime(System.currentTimeMillis());
         return maxNonHeap;
     }
 
@@ -146,7 +139,6 @@ public class JVMMemoryStatsProvider {
     @Description( "amount of used memory in bytes" )
     public CountStatistic getUsedNonHeap() {
         usedNonHeap.setCount(memUsageNonHeap.getUsed());
-        usedNonHeap.setLastSampleTime(System.currentTimeMillis());
         return usedNonHeap;
     }
 
@@ -154,7 +146,6 @@ public class JVMMemoryStatsProvider {
     @Description( "approximate number of objects for which finalization is pending" )
     public CountStatistic getObjectPendingFinalizationCount() {
         objectPendingFinalizationCount.setCount(memBean.getObjectPendingFinalizationCount());
-        objectPendingFinalizationCount.setLastSampleTime(System.currentTimeMillis());
         return objectPendingFinalizationCount;
     }
 }
