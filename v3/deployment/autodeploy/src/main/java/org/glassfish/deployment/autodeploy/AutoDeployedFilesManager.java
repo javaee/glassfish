@@ -64,12 +64,21 @@ public class AutoDeployedFilesManager {
     static final String STATUS_DIR_NAME = ".autodeploystatus";
 
     /*
-     * For example, Macs use .DS_Store in a folder to track information about
+     * Macs use .DS_Store in a folder to track information about
      * changes to the contents of the folder.  If a user uses Finder to move
      * a previously-autodeployed file to the Trash, the system creates and/or updates .DS_Store.
      * Clearly we do not want to try deploying that file.
      */
-    private static final List<String> FILE_NAMES_TO_IGNORE_FOR_AUTODEPLOY = Arrays.asList(".DS_Store");
+    private static final String DS_STORE = ".DS_Store"; 
+
+    /* 
+     * We need to exclude the osgi bundles from being processed by AutoDeployer
+     * and let FileInstall monitor them.
+     */
+    private static final String OSGI_AUTODEPLOY_DIR ="bundles";
+
+    private List<String> FILE_NAMES_TO_IGNORE_FOR_AUTODEPLOY = 
+         new ArrayList();
 
     protected  String statDir = null;
 
@@ -79,6 +88,8 @@ public class AutoDeployedFilesManager {
     
     protected AutoDeployedFilesManager(String s) {
         statDir = s;
+        FILE_NAMES_TO_IGNORE_FOR_AUTODEPLOY.add(DS_STORE);
+        FILE_NAMES_TO_IGNORE_FOR_AUTODEPLOY.add(OSGI_AUTODEPLOY_DIR);
     }
     
     /**
