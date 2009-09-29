@@ -56,12 +56,13 @@
                     onClick="enableClassnameFields('predefine'); "
                 />                              
                 <sun:dropDown id="Classname" labels="$pageSession{builtInEntries}"  values="$pageSession{builtInEntries}"  selected="#{pageSession.valueMap['ResType']}" 
-                    disabled="#{!attrMap.predefinedClassname}" 
-                    submitForm="#{true}" immediate="#{true}"  >
+                    disabled="#{!attrMap.predefinedClassname}" onChange="updateFactoryClass(this.value);"
+                    submitForm1="#{true}" immediate1="#{true}"  >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{classnameDropdownId});
                     />
                     <!command
+                        /* This should no longer be needed.
                                     setAttribute(key="click" value="$this{component}");
                                     setAttribute(key="resChosen" value="#{click.selected}")
                                     setAttribute(key="name" value="#{pageSession.Name}")
@@ -78,6 +79,7 @@
                                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});                   
                                     navigate(page="#{selfPage}");
+                        */
                     />
                 </sun:dropDown>
                 "<br /><br />

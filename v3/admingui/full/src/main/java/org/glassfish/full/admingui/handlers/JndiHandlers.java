@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
+import java.util.Set;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.GuiUtil;
 
@@ -72,23 +73,37 @@ public class JndiHandlers {
   
     @Handler(id="getJndiResourceForCreate",
     output={
-        @HandlerOutput(name="result",        type=List.class),
-        @HandlerOutput(name="attrMap",      type=Map.class),
-        @HandlerOutput(name="classnameOption",      type=String.class)})
+        @HandlerOutput(name="result", type=List.class),
+        @HandlerOutput(name="attrMap", type=Map.class),
+        @HandlerOutput(name="classnameOption", type=String.class),
+        @HandlerOutput(name="factoryMap", type=String.class)})
     public static void getJndiResourceForCreate(HandlerContext handlerCtx) {
         
         List result = new ArrayList();
         try{
             Map<String, Object> entries = (Map)V3AMX.getInstance().getConnectorRuntime().attributesMap().get("BuiltInCustomResources");
+            StringBuilder factoryMap = new StringBuilder();
             Map emap = (Map)entries.get(CUSTOM_RESOURCES_MAP_KEY);
             if(emap != null) {
                 result.addAll(emap.keySet());
+                String sep = "";
+                for (String key : (Set<String>)emap.keySet()) {
+                    factoryMap.append(sep)
+                            .append("\"")
+                            .append(key)
+                            .append("\": '")
+                            .append(getFactoryClass(key))
+                            .append("'");
+                    sep = ",";
+                }
+
             }
             handlerCtx.setOutputValue("result",result);
             handlerCtx.setOutputValue("classnameOption", "predefine");
             Map attrMap = new HashMap();
             attrMap.put("predefinedClassname", Boolean.TRUE);
             handlerCtx.setOutputValue("attrMap", attrMap);
+            handlerCtx.setOutputValue("factoryMap", "{" + factoryMap.toString() + "}");
         }catch(Exception ex){
             ex.printStackTrace();
         }
@@ -100,8 +115,12 @@ public class JndiHandlers {
         @HandlerInput(name="resType", type=String.class)},
     output={
         @HandlerOutput(name="result",        type=String.class)})
-    public static void getFactoryClass(HandlerContext handlerCtx) {
+    public static void getFactoryClassHandler(HandlerContext handlerCtx) {
         String resType = (String) handlerCtx.getInputValue("resType");
+        handlerCtx.setOutputValue("result", getFactoryClass(resType));
+    }
+
+    private static String getFactoryClass(String resType) {
         String fc = "";
         try {
             if (!GuiUtil.isEmpty(resType)) {
@@ -112,8 +131,8 @@ public class JndiHandlers {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        handlerCtx.setOutputValue("result", fc);
-    }    
+        return fc;
+    }
     
    
     @Handler(id="getJndiResourceAttrForEdit",

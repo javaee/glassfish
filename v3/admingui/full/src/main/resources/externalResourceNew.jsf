@@ -69,7 +69,7 @@
             mapPut(map="#{pageSession.valueMap}" key="JNDILookupName" value="#{jndiLookup}") 
             setAttribute(key="tableList" value="#{newList}");
         }
-        getJndiResourceForCreate(result="#{requestScope.entriesList}", classnameOption=>$page{classnameOption}, attrMap="#{pageSession.attrMap}" );
+        getJndiResourceForCreate(result="#{requestScope.entriesList}", classnameOption=>$page{classnameOption}, attrMap="#{pageSession.attrMap}", factoryMap="#{pageSession.factoryMap}" );
         addEmptyFirstElement(in="$attribute{entriesList}"  out="#{pageSession.builtInEntries}")
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");  
         //set the following for including buttons.inc
@@ -81,6 +81,14 @@
 
     />
     </event>
+    <f:verbatim>
+        <script type="text/javascript">
+            var factoryMap = #{pageSession.factoryMap};
+            function updateFactoryClass(selected) {
+                document.getElementById("#{pageSession.factoryClassTextId}_field").value = factoryMap[selected];
+            }
+        </script>
+    </f:verbatim>
 #include "/common/shared/restart.inc"
             <sun:form id="form1">
         //#include treeBreadcrumbs.inc
