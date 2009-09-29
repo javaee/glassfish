@@ -42,6 +42,7 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
 
     @Inject
     private Logger logger;
+
     @Inject
     private static Domain domain;
 
@@ -221,7 +222,7 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
                 String appName = null;
                 if (event.getNewValue() != null) {
                     // This means its a deployed event
-                    if (statsProviderToAppMap.isEmpty()) {
+                    if (webContainerStatsProviderList.isEmpty()) {
                         registerWebStatsProviders();
                     }
                     appName = ((ApplicationRef)(event.getNewValue())).getRef();
