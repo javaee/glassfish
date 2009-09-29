@@ -216,6 +216,7 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
     }
 
     public List<TreeNode> getNodes(String pattern, boolean ignoreDisabled, boolean gfv2Compatible) {
+        pattern = pattern.replace("\\.","\\\\\\."); 
         List<TreeNode> regexMatchedTree = new ArrayList<TreeNode>();
 
 
