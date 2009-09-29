@@ -870,8 +870,9 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         } catch (IllegalArgumentException e) {
             //end the request after getting IllegalArgumentException while checking
             //user data permission
+            String msgWithId = rb.getString("realmAdapter.badRequestWithId");
+            _logger.log(Level.WARNING, msgWithId, e);
             String msg = rb.getString("realmAdapter.badRequest");
-            _logger.log(Level.WARNING, msg, e);
             ((HttpServletResponse) response.getResponse()).sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
             return false;
         }
