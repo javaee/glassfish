@@ -95,7 +95,6 @@ public class JspStatsProvider{
     
     @ProbeListener("glassfish:web:jsp:jspLoadedEvent")
     public void jspLoadedEvent(
-            @ProbeParam("jsp") Servlet jsp,
             @ProbeParam("appName") String appName,
             @ProbeParam("hostName") String hostName) {
         if (isValidEvent(appName, hostName)) {
@@ -114,7 +113,6 @@ public class JspStatsProvider{
 
     @ProbeListener("glassfish:web:jsp:jspDestroyedEvent")
     public void jspDestroyedEvent(
-            @ProbeParam("jsp") Servlet jsp,
             @ProbeParam("appName") String appName,
             @ProbeParam("hostName") String hostName) {
         if (isValidEvent(appName, hostName)) {
