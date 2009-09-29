@@ -85,7 +85,8 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
 
         // workaround to not execute any upgrade if the admin console or
         // any other system app is already installed
-        if (domain.getSystemApplications().getModules().size()>0) {
+        SystemApplications sApps = domain.getSystemApplications();
+        if (sApps != null && sApps.getModules().size()>0) {
             return;
         }
 
