@@ -49,16 +49,21 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.ejb.embeddable.EJBContainer;
 import javax.ejb.EJBException;
+import javax.transaction.TransactionManager;
 
 import com.sun.logging.LogDomains;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.LifecycleException;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.deployment.common.ModuleExploder;
-import org.glassfish.ejb.embedded.EmbeddedEjbContainer;
+
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 
 /**
  * GlassFish implementation of the EJBContainer.
@@ -79,15 +84,26 @@ public class EJBContainerImpl extends EJBContainer {
 
     private String deployedAppName;
 
-    private boolean open = true;
+    private Habitat habitat;
+
+    private volatile int state = STARTING;
+    private Cleanup cleanup = null;
+
+    private final static int STARTING = 0;
+    private final static int RUNNING = 1;
+    private final static int CLOSING = 2;
+    private final static int CLOSED = 3;
 
     /**
      * Construct new EJBContainerImpl instance 
      */                                               
-    EJBContainerImpl(Server server, EmbeddedEjbContainer ejbContainer, EmbeddedDeployer deployer) {
+    EJBContainerImpl(Habitat habitat, Server server, 
+            EmbeddedEjbContainer ejbContainer, EmbeddedDeployer deployer) {
+        this.habitat = habitat;
         this.server = server;
         this.ejbContainer = ejbContainer;
         this.deployer = deployer;
+        state = RUNNING;
     }
 
     /**
@@ -110,6 +126,7 @@ public class EJBContainerImpl extends EJBContainer {
                 dp.name = app.getName();
             }
             deployedAppName = deployer.deploy(app, dp);
+            cleanup = new Cleanup(this);
         } catch (IOException e) {
             throw new EJBException("Failed to deploy EJB modules", e);
         }
@@ -141,32 +158,32 @@ public class EJBContainerImpl extends EJBContainer {
      * Shutdown an embeddable EJBContainer instance.
      */
     public void close() {
+        if (cleanup != null) {
+            cleanup.disable();
+        }
+        if (isOpen()) {
+            forceClose();
+        }
+    }
+
+    void forceClose() {
+        state = CLOSING;
+
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("IN close()");
         }
 
-        if (deployedAppName != null) {
-            try {
-                deployer.undeploy(deployedAppName, null);
-            } catch (Exception e) {
-                _logger.warning("Cannot undeploy deployed modules: " + e.getMessage());
-            }
-        }
-
-        try {
-            server.stop();
-        } catch (LifecycleException e) {
-            _logger.warning("Cannot stop embedded container " + e.getMessage());
-        } finally {
-            open = false;
-        }
+        cleanupTransactions();
+        cleanupConnectorRuntime();
+        undeploy();
+        stop();
     }
 
     /**
      * Returns true if there are deployed modules associated with this container.
      */
     boolean isOpen() {
-        return open;
+        return state == RUNNING;
     }
 
     /** 
@@ -223,5 +240,82 @@ public class EJBContainerImpl extends EJBContainer {
             }
         }
         return result;
+    }
+
+    private void cleanupTransactions() {
+        try {
+            Inhabitant<TransactionManager> inhabitant =
+                    habitat.getInhabitantByType(TransactionManager.class);
+            if (inhabitant != null && inhabitant.isInstantiated()) {
+                TransactionManager txmgr = inhabitant.get();
+                txmgr.rollback();
+            }
+        } catch (Throwable t) {
+            _logger.log(Level.SEVERE, "Error in cleanupTransactions", t);
+        }
+
+    }
+
+    private void cleanupConnectorRuntime() {
+        try {
+            Inhabitant<ConnectorRuntime> inhabitant =
+                    habitat.getInhabitantByType(ConnectorRuntime.class);
+            if (inhabitant != null && inhabitant.isInstantiated()) {
+                ConnectorRuntime connectorRuntime = inhabitant.get();
+                connectorRuntime.cleanUpResourcesAndShutdownAllActiveRAs();
+            }
+        } catch (Throwable t) {
+            _logger.log(Level.SEVERE, "Error in cleanupConnectorRuntime", t);
+        }
+    }
+
+    private void undeploy() {
+        if (deployedAppName != null) {
+            try {
+                deployer.undeploy(deployedAppName, null);
+            } catch (Exception e) {
+                _logger.warning("Cannot undeploy deployed modules: " + e.getMessage());
+            }
+        }
+    }
+
+    private void stop() {
+        try {
+            server.stop();
+        } catch (LifecycleException e) {
+            _logger.warning("Cannot stop embedded container " + e.getMessage());
+        } finally {
+            state = CLOSED;
+        }
+    }
+
+    private static class Cleanup implements Runnable {
+
+        private Thread cleanupThread = null;
+        private EJBContainerImpl container = null;
+
+        Cleanup(EJBContainerImpl container) {
+            this.container = container;
+            Runtime.getRuntime().addShutdownHook(
+                    cleanupThread = new Thread(this, "EJBContainerImplCleanup"));
+        }
+
+        void disable() {
+            java.security.AccessController.doPrivileged(
+                new java.security.PrivilegedAction() {
+                    @Override
+                    public Object run() {
+                        Runtime.getRuntime().removeShutdownHook(cleanupThread);
+                        return null;
+                    }
+                }
+            );
+        }
+
+        public void run() {
+            if (container.isOpen()) {
+                container.forceClose();
+            }
+        }
     }
 }

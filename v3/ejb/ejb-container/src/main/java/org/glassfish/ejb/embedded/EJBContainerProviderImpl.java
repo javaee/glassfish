@@ -173,7 +173,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 Sniffer sniffer = habitat.getComponent(Sniffer.class, "Ejb");
                 ejbAnnotations = sniffer.getAnnotationTypes();
 
-                container = new EJBContainerImpl(server, ejbContainer, deployer);
+                container = new EJBContainerImpl(habitat, server, ejbContainer, deployer);
             // }
         }
     }
