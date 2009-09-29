@@ -84,6 +84,8 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
 
     @Inject(optional=true)
     private MonitoringRuntimeDataRegistry mrdr;
+
+    private final String DOTTED_NAME = ".dotted-name";
     
     public void execute(AdminCommandContext context) {
 
@@ -213,6 +215,10 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
             TreeMap map, org.glassfish.flashlight.datatree.TreeNode tn1, String exactMatch){
         String name = tn1.getCompletePathName();
         Object value = tn1.getValue();
+        if (tn1.getParent() != null) {
+            map.put(tn1.getParent().getCompletePathName() + DOTTED_NAME,
+                    tn1.getParent().getCompletePathName());
+        }
         if (value instanceof Stats) {
             for (Statistic s: ((Stats)value).getStatistics()) {
                 addStatisticInfo(s, name+"."+s.getName(), map);
