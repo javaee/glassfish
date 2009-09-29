@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.monitor.jvm.statistics;
 
+import java.util.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
@@ -168,74 +169,35 @@ public class JVMStatsImpl implements MonitorContract {
         return report;
     }
 
+    // @author bnevins
+    private long getFirstTreeNodeAsLong(TreeNode parent, String name) {
+        long ret = 0;
+        List<TreeNode> nodes = parent.getNodes(name);
 
+        if(!nodes.isEmpty()) {
+            TreeNode node = nodes.get(0);
+            Object val = node.getValue();
+
+            if(val != null)
+                ret = (Long) val;
+        }
+
+        return ret;
+    }
+
+    // @author bnevins
     private ActionReport v2JVM(final ActionReport report, TreeNode serverNode) {
-
-        TreeNode tn = null;
-
-        //server.jvm.runtime.uptime
-        long uptime = 0;
-        tn = (serverNode.getNodes("server.jvm.runtime.uptime")).get(0);
-        if (tn != null) {
-            if (tn.getValue() != null) {
-                uptime = (Long) tn.getValue();
-            }
-        }
-
-        //server.jvm.memory.initNonHeapSize
-        //server.jvm.memory.initHeapSize
-        long min = 0;
-        tn = (serverNode.getNodes("server.jvm.memory.initNonHeapSize")).get(0);
-        if (tn != null) {
-            if (tn.getValue() != null) {
-                min = (Long) tn.getValue();
-            }
-        }
-        tn = (serverNode.getNodes("server.jvm.memory.initHeapSize")).get(0);
-        if (tn != null) {
-            if (tn.getValue() != null) {
-                min = min + (Long) tn.getValue();
-            }
-        }
-
-        //server.jvm.memory.maxHeapSize
-        //server.jvm.memory.maxNonHeapSize
-        long max = 0;
-        tn = (serverNode.getNodes("server.jvm.memory.maxHeapSize")).get(0);
-        if (tn != null) {
-            if (tn.getValue() != null) {
-                max = (Long) tn.getValue();
-            }
-        }
-        tn = (serverNode.getNodes("server.jvm.memory.maxNonHeapSize")).get(0);
-        if (tn != null) {
-            if (tn.getValue() != null) {
-                max = max + (Long) tn.getValue();
-            }
-        }
-
-        long low = 0;
-        long high = 0;
-
-        //server.jvm.memory.committedHeapSize
-        //server.jvm.memory.committedNonHeapSize
-        long count = 0;
-        tn = (serverNode.getNodes("server.jvm.memory.committedHeapSize")).get(0);
-        if (tn != null) {
-            if (tn.getValue() != null) {
-                count = (Long) tn.getValue();
-            }
-        }
-        tn = (serverNode.getNodes("server.jvm.memory.committedNonHeapSize")).get(0);
-        if (tn != null) {
-            if (tn.getValue() != null) {
-                count = count + (Long) tn.getValue();
-            }
-        }
+        long uptime = getFirstTreeNodeAsLong(serverNode,    "server.jvm.runtime.uptime");
+        long min = getFirstTreeNodeAsLong(serverNode,       "server.jvm.memory.initNonHeapSize");
+        min += getFirstTreeNodeAsLong(serverNode,           "server.jvm.memory.initHeapSize");
+        long max = getFirstTreeNodeAsLong(serverNode,       "server.jvm.memory.maxHeapSize");
+        max += getFirstTreeNodeAsLong(serverNode,           "server.jvm.memory.maxNonHeapSize");
+        long count = getFirstTreeNodeAsLong(serverNode,     "server.jvm.memory.committedHeapSize");
+        count += getFirstTreeNodeAsLong(serverNode,         "server.jvm.memory.committedNonHeapSize");
 
         String displayFormat = "%1$-25s %2$-10s %3$-10s %4$-10s %5$-10s %6$-10s";
         report.setMessage(
-            String.format(displayFormat, uptime, min, max, low, high, count));
+            String.format(displayFormat, uptime, min, max, 0, 0, count));
 
         report.setActionExitCode(ExitCode.SUCCESS);
         return report;
