@@ -129,7 +129,7 @@ public interface WebModule extends ConfigBeanProxy, Injectable, Named, PropertyB
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     public String getEnabled();
 
     /**
@@ -180,7 +180,7 @@ public interface WebModule extends ConfigBeanProxy, Injectable, Named, PropertyB
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     public String getAvailabilityEnabled();
 
     /**
@@ -199,7 +199,7 @@ public interface WebModule extends ConfigBeanProxy, Injectable, Named, PropertyB
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     public String getDirectoryDeployed();
 
     /**

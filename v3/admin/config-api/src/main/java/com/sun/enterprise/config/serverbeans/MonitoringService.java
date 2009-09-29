@@ -98,7 +98,7 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, Property
      *
      * @return present monitoring activity status
      */
-    @Attribute(defaultValue="true")
+    @Attribute(defaultValue="true",dataType=Boolean.class)
     public String getMbeanEnabled();
 
     /**
@@ -123,7 +123,7 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, Property
      *
      * @return present monitoring activity status
      */
-    @Attribute(defaultValue="true")
+    @Attribute(defaultValue="true",dataType=Boolean.class)
     public String getMonitoringEnabled();
 
     /**
@@ -138,7 +138,7 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, Property
      *
      * @return present dtrace status
      */
-    @Attribute(defaultValue="false")
+    @Attribute(defaultValue="false",dataType=Boolean.class)
     public String getDtraceEnabled();
 
     /**

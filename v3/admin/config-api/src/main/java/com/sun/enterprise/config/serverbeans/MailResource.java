@@ -204,7 +204,7 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource, Pro
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     public String getDebug();
 
     /**
@@ -238,7 +238,7 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource, Pro
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     public String getEnabled();
 
     /**

@@ -118,7 +118,7 @@ public interface JdbcResource extends ConfigBeanProxy, Injectable, Resource, Pro
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     @Param
     String getEnabled();
 

@@ -75,7 +75,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getComputeChecksum();
 
     /**
@@ -95,7 +95,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getVerifyConfig();
 
     /**
@@ -115,7 +115,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getCaptureInstallLog();
 
     /**
@@ -134,7 +134,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getCaptureSystemInfo();
 
     /**
@@ -153,7 +153,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getCaptureHadbInfo();
 
     /**
@@ -174,7 +174,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getCaptureAppDd();
 
     /**

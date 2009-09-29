@@ -162,7 +162,7 @@ public interface SecurityService extends ConfigBeanProxy, Injectable, PropertyBa
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     public String getAuditEnabled();
 
     /**
@@ -226,7 +226,7 @@ public interface SecurityService extends ConfigBeanProxy, Injectable, PropertyBa
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     public String getActivateDefaultPrincipalToRoleMapping();
 
     /**

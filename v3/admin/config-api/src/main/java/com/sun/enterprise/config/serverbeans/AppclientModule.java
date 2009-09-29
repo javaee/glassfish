@@ -82,7 +82,7 @@ public interface AppclientModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getDirectoryDeployed();
 
     /**
@@ -101,7 +101,7 @@ public interface AppclientModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getJavaWebStartEnabled();
 
     /**

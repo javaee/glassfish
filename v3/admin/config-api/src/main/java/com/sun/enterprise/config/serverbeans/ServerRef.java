@@ -111,7 +111,7 @@ public interface ServerRef extends ConfigBeanProxy, Injectable, Ref  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     public String getLbEnabled();
 
     /**
@@ -131,7 +131,7 @@ public interface ServerRef extends ConfigBeanProxy, Injectable, Ref  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     public String getEnabled();
 
     /**

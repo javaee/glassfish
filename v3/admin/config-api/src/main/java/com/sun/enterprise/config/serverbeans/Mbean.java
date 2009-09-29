@@ -133,7 +133,7 @@ public interface Mbean extends ConfigBeanProxy, Injectable, Named, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     public String getEnabled();
 
     /**

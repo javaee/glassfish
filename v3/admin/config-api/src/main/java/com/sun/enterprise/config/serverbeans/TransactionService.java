@@ -74,7 +74,7 @@ public interface TransactionService extends ConfigBeanProxy, Injectable, Propert
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     public String getAutomaticRecovery();
 
     /**
@@ -95,7 +95,7 @@ public interface TransactionService extends ConfigBeanProxy, Injectable, Propert
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="0")
+    @Attribute (defaultValue="0",dataType=Integer.class)
     public String getTimeoutInSeconds();
 
     /**
@@ -167,7 +167,7 @@ public interface TransactionService extends ConfigBeanProxy, Injectable, Propert
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="600")
+    @Attribute (defaultValue="600",dataType=Integer.class)
     public String getRetryTimeoutInSeconds();
 
     /**

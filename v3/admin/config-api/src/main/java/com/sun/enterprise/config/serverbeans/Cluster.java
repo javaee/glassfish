@@ -122,7 +122,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getHeartbeatEnabled();
 
     /**

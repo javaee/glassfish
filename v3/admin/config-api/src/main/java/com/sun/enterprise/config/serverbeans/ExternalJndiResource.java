@@ -145,7 +145,7 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getEnabled();
 
     /**

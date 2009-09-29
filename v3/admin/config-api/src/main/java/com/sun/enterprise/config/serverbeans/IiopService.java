@@ -65,7 +65,7 @@ public interface IiopService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     public String getClientAuthenticationRequired();
 
     /**

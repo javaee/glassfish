@@ -67,7 +67,7 @@ public interface ApplicationRef extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     public String getEnabled();
 
     /**
@@ -103,7 +103,7 @@ public interface ApplicationRef extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     public String getLbEnabled();
 
     /**

@@ -108,7 +108,7 @@ public interface EjbModule extends ConfigBeanProxy, Injectable, Named, PropertyB
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getEnabled();
 
     /**
@@ -160,7 +160,7 @@ public interface EjbModule extends ConfigBeanProxy, Injectable, Named, PropertyB
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getAvailabilityEnabled();
 
     /**
@@ -180,7 +180,7 @@ public interface EjbModule extends ConfigBeanProxy, Injectable, Named, PropertyB
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getDirectoryDeployed();
 
     /**

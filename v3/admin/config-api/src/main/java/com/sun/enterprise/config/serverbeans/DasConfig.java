@@ -75,7 +75,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getDynamicReloadEnabled();
 
     /**
@@ -121,7 +121,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getAutodeployEnabled();
 
     /**
@@ -184,7 +184,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getAutodeployVerifierEnabled();
 
     /**
@@ -203,7 +203,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getAutodeployJspPrecompilationEnabled();
 
     /**

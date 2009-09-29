@@ -137,7 +137,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getIsFailureFatal();
 
     /**
@@ -174,7 +174,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getEnabled();
 
     /**

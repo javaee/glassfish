@@ -103,7 +103,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getDebugEnabled();
 
     /**
@@ -330,7 +330,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getEnvClasspathIgnored();
 
     /**

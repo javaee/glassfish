@@ -257,7 +257,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getFailAllConnections();
 
     /**
@@ -300,7 +300,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getIsConnectionValidationRequired();
 
     /**
@@ -368,7 +368,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getConnectionLeakReclaim();
 
     /**
@@ -431,7 +431,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getLazyConnectionEnlistment();
 
     /**
@@ -453,7 +453,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getLazyConnectionAssociation();
 
     /**
@@ -475,7 +475,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getAssociateWithThread();
 
     /**
@@ -494,7 +494,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getPooling();
 
     /**
@@ -535,7 +535,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getMatchConnections();
 
     /**

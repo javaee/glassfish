@@ -84,7 +84,7 @@ public interface JmsAvailability extends ConfigBeanProxy, Injectable, PropertyBa
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getAvailabilityEnabled();
 
     /**

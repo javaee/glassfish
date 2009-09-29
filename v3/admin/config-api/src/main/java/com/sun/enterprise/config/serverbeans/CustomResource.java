@@ -132,7 +132,7 @@ public interface CustomResource extends ConfigBeanProxy, Injectable, Resource,
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getEnabled();
 
     /**

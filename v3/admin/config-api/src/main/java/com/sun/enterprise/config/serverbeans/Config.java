@@ -121,7 +121,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getDynamicReconfigurationEnabled();
 
     /**

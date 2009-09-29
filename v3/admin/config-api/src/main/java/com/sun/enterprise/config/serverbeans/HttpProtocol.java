@@ -83,7 +83,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute  (defaultValue="false")
+    @Attribute  (defaultValue="false",dataType=Boolean.class)
     String getDnsLookupEnabled();
 
     /**
@@ -181,7 +181,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getSslEnabled();
 
     /**

@@ -109,7 +109,7 @@ public interface LoadBalancer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(defaultValue="false")
+    @Attribute(defaultValue="false",dataType=Boolean.class)
     @NotNull
     public String getAutoApplyEnabled();
 
