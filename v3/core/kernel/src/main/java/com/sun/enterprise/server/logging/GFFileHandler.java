@@ -51,6 +51,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Singleton;
+import com.sun.appserv.server.util.Version;
 
 
 import java.io.*;
@@ -88,6 +89,8 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
     @Inject(optional=true)
     Agent agent;
 
+    @Inject
+    Version version;
 
     // This is a OutputStream to keep track of number of bytes
     // written out to the stream
@@ -253,10 +256,13 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                     }
                 } catch (RuntimeException e) {
 
-                }
+                }               
             }
         };
         pump.start();
+        LogRecord lr = new LogRecord(Level.INFO, "Running GlassFish Version: "+version.getFullVersion());
+        this.publish(lr);
+
     }
 
     public void preDestroy() {
