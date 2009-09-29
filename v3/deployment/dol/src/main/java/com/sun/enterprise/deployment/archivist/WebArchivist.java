@@ -304,9 +304,12 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
 
         // process annotations in web-fragment
         // extension annotation processing will be done in top level
-        Map<ExtensionsArchivist, RootDeploymentDescriptor> localExtensions = new HashMap<ExtensionsArchivist, RootDeploymentDescriptor>();
-        for (WebFragmentDescriptor wfDesc : wfList) {
-            super.readAnnotations(archive, wfDesc, localExtensions);
+        if (isProcessAnnotation(descriptor)) {
+            Map<ExtensionsArchivist, RootDeploymentDescriptor> localExtensions =
+                    new HashMap<ExtensionsArchivist, RootDeploymentDescriptor>();
+            for (WebFragmentDescriptor wfDesc : wfList) {
+                super.readAnnotations(archive, wfDesc, localExtensions);
+            }
         }
 
         WebFragmentDescriptor mergedWebFragment = null;

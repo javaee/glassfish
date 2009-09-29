@@ -362,22 +362,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                                  Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions)
             throws IOException {
         
-        // if the system property is set to process annotation for pre-JavaEE5
-        // DD, the semantics of isFull flag is: full attribute is set to 
-        // true in DD. Otherwise the semantics is full attribute set to 
-        // true or it is pre-JavaEE5 DD.
-        boolean isFull = false;
-        if (processAnnotationForOldDD) {
-            isFull = descriptor.isFullAttribute();
-        } else {
-            isFull = descriptor.isFullFlag();
-        }
-
-        // only process annotation when these two requirements satisfied:
-        // 1. It is not a full deployment descriptor
-        // 2. It is called through dynamic deployment
-        if (!isFull && annotationProcessingRequested
-                && classLoader != null) {
+        if (isProcessAnnotation(descriptor)) {
             try {
                 ProcessingResult result = processAnnotations(descriptor, archive);
 
@@ -1715,5 +1700,23 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     // for backward compat, we are not implementing those methods directly
     public Object readMetaInfo(ReadableArchive archive) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    protected boolean isProcessAnnotation(T descriptor) {
+        // if the system property is set to process annotation for pre-JavaEE5
+        // DD, the semantics of isFull flag is: full attribute is set to 
+        // true in DD. Otherwise the semantics is full attribute set to 
+        // true or it is pre-JavaEE5 DD.
+        boolean isFull = false;
+        if (processAnnotationForOldDD) {
+            isFull = descriptor.isFullAttribute();
+        } else {
+            isFull = descriptor.isFullFlag();
+        }
+
+        // only process annotation when these two requirements satisfied:
+        // 1. It is not a full deployment descriptor
+        // 2. It is called through dynamic deployment
+        return (!isFull && annotationProcessingRequested && classLoader != null);
     }
 }
