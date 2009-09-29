@@ -43,7 +43,7 @@
   <packaging>pom</packaging>
   <version>3.0-SNAPSHOT</version>
 
-  <name>Maven TESTER</name>
+  <name>Maven deploy test</name>
 
   <build>
   <defaultGoal>install</defaultGoal>
@@ -53,25 +53,23 @@
         <artifactId>maven-glassfish-plugin</artifactId>
         <configuration>
           <goalPrefix>glassfish</goalPrefix>
-	  <installRoot>/ws/v3/publish/glassfishv3/glassfish</installRoot>
-    	  <port>8989</port>
-          <app>/wsp/apps/test/test.war</app>
+          <app>test.war</app>
+          <port>8080</port> 
+         <name>test</name>
        </configuration>
   
        <executions>
-                <execution>
-                        <phase>install</phase>
-                        <goals>
-                                <goal>startweb</goal>
-				<goal>deploy</goal>
-                        </goals>
-                </execution>
-        </executions>
-
-    </plugin>
-
+          <execution>
+             <phase>install</phase>
+             <goals>
+                <goal>runweb</goal>
+              </goals>
+          </execution>
+       </executions>
+     </plugin>
     </plugins>
-    <extensions>
+ 
+   <extensions>
       <extension>
         <groupId>org.jvnet.wagon-svn</groupId>
         <artifactId>wagon-svn</artifactId>
@@ -92,54 +90,7 @@
       <version>2.0</version>
     </dependency>
 
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
-
-  <reporting>
-    <plugins>
-      <plugin>
-        <artifactId>maven-plugin-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </reporting>
-
-  <distributionManagement>
-    <repository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>java.net-maven2-repository</id>
-      <url>java-net:/maven2-repository/trunk/www/repository/</url>
-    </repository>
-    <site>
-      <id>maven-glassfish-plugin-www</id>
-      <url>java-net:/maven-glassfish-plugin/trunk/www/</url>
-    </site>
-  </distributionManagement>
-
-  <repositories>
-    <repository>
-      <id>glassfish-repository</id>
-      <name>Java.net Repository for Glassfish</name>
-      <url>http://download.java.net/maven/glassfish</url>
-    </repository>
-    <repository>
-      <id>java.net2</id>
-      <name>Java.net Maven2 Repository</name>
-      <url>http://download.java.net/maven/2</url>
-    </repository>
-  </repositories>
-
-  <licenses>
-    <license>
-      <distribution>repo</distribution>
-      <name>CDDL and GPLv2 w/ classpath execption dual license</name>
-      <url>https://glassfish.dev.java.net/public/CDDL+GPL.html</url>
-    </license>
-  </licenses>
 
 </project>
 
