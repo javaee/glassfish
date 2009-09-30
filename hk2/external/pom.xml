@@ -49,7 +49,6 @@
     <packaging>pom</packaging>
     <name>OSGi repackaging of HK2 dependencies</name>
     <modules>
-	    <module>stax</module>
 	    <module>tiger-types</module>
     </modules>
 </project>

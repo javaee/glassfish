@@ -124,9 +124,11 @@ public class DefaultModuleDefinition implements ModuleDefinition {
         
         // class imported
         String imported = attr.getValue(ManifestConstants.BUNDLE_IMPORT_NAME);
-        for( String token : new Tokenizer(imported,",")) {
-            // no versioning so far...
-            dependencies.add(new ModuleDependency(token,""));
+        if (imported!=null) {
+            for( String token : new Tokenizer(imported,",")) {
+                // no versioning so far...
+                dependencies.add(new ModuleDependency(token,""));
+            }
         }
 
         importPolicy = attr.getValue(ManifestConstants.IMPORT_POLICY);
