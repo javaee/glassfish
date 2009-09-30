@@ -142,7 +142,7 @@ public class Packager {
                     dependencyModuleNames.add(name);
 
                 // even optional modules need to be listed here
-                dependencyModules.add(a.getGroupId() + ':' + a.getArtifactId() + ':');
+                dependencyModules.add(a.getGroupId() + '.' + a.getArtifactId() + ':' + a.getVersion());
             }
         }
         if(!dependencyModuleNames.isEmpty()) {

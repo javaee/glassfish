@@ -52,7 +52,7 @@ import java.io.Serializable;
  * 
  * @author Kohsuke Kawaguchi
  */
-public final class MultiMap<K,V> implements Serializable {
+public class MultiMap<K,V> implements Serializable {
     private final Map<K,List<V>> store;
 
     public final String toString() {
