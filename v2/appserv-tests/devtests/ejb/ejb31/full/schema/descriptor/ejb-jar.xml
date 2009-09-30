@@ -121,7 +121,6 @@
           <method-params>
             <method-param>int</method-param>
 	  </method-params>
-          <method-intf>Local</method-intf>
 	</async-method>
         <post-construct>
           <lifecycle-callback-class>com.acme.SingletonBean2</lifecycle-callback-class>
