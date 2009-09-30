@@ -63,6 +63,7 @@ public class WebTest {
     private String adminPort;
     private String adminUser;
     private String adminPassword;
+    private String instanceName;
     private String host;
     private String port;
     private String contextRoot;
@@ -72,9 +73,10 @@ public class WebTest {
         adminPort = args[1];
         adminUser = args[2];
         adminPassword = args[3];
-        host = args[4];
-        port = args[5];
-        contextRoot = args[6];
+        instanceName = args[4];
+        host = args[5];
+        port = args[6];
+        contextRoot = args[7];
     }
     
     public static void main(String[] args) {
@@ -161,7 +163,8 @@ public class WebTest {
 
     private int getCount(String monitorPath, String countName) throws Exception {
         String result = invokeURL("http://" + adminHost + ":" + adminPort +
-                "/monitoring/domain/server/http-service/server/request/" + monitorPath);
+                "/monitoring/domain/server/http-service/" + instanceName + 
+                "/request/" + monitorPath);
         return parseCount(result, countName);
     }
 
