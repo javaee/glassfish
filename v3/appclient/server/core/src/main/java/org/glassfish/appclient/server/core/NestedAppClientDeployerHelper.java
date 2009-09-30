@@ -179,7 +179,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
      */
     private void addEJBJARs(final StringBuilder cpForFacade, final Set<URI> dependencyURIsProcessed) throws IOException {
         final Application app = appClientDesc().getApplication();
-        for (ModuleDescriptor md : app.getModuleDescriptorsByType(XModuleType.EAR)) {
+        for (ModuleDescriptor md : app.getModuleDescriptorsByType(XModuleType.EJB)) {
             addJar(cpForFacade,
                    new File(new File(earURI), md.getArchiveUri()).toURI(),
                    dependencyURIsProcessed);
@@ -205,7 +205,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         }
 
         addJARsFromDir(cpForFacade, dependencyURIsProcessed,
-                new File(earURI).getParentFile(),
+                new File(earURI),
                 new FileFilter() {
                     public boolean accept(final File pathname) {
                         return pathname.getName().endsWith(".jar") && ! pathname.isDirectory()
