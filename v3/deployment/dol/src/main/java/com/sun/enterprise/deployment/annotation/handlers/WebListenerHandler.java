@@ -110,7 +110,7 @@ public class WebListenerHandler extends AbstractWebHandler {
         WebListener listenerAn = (WebListener)ainfo.getAnnotation();
         AppListenerDescriptor appListener =
             new AppListenerDescriptorImpl(listenerClass.getName());
-        appListener.setDescription(listenerAn.description());
+        appListener.setDescription(listenerAn.value());
         webBundleDesc.addAppListenerDescriptor(appListener);
         return getDefaultProcessedResult();
     }
