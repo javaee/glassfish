@@ -74,6 +74,7 @@ import org.glassfish.api.admin.RestRedirect;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.ValidationException;
 
 import org.glassfish.admin.rest.provider.GetResult;
 import org.glassfish.admin.rest.provider.OptionsResult;
@@ -119,7 +120,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
-        return new GetResult(Dom.unwrap(getEntity()), getDeleteCommand(),
+        return new GetResult((ConfigBean)Dom.unwrap(getEntity()), getDeleteCommand(),
                 getCommandResourcesPaths(), options());
     }
 
@@ -159,8 +160,12 @@ public class TemplateResource<E extends ConfigBeanProxy> {
                     "\"{0}\" updated successfully.", new Object[] {uriInfo.getAbsolutePath()});
            return __resourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo);
         } catch (Exception ex) {
-            System.out.println("exception" + ex);
-            throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+            if (ex.getCause() instanceof ValidationException) {
+                return __resourceUtil.getResponse(400, /*400 - bad request*/
+                    ex.getMessage(), requestHeaders, uriInfo);
+            } else {
+                throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+            }
         }
     }
 

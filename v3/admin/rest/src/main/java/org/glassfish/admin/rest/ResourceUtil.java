@@ -35,6 +35,10 @@
  */
 package org.glassfish.admin.rest;
 
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,6 +51,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -218,31 +223,55 @@ public class ResourceUtil extends Util {
      * @return MethodMetaData the meta-data store for the resource method.
      */
     public MethodMetaData getMethodMetaData(ConfigBean configBean) {
+        return getMethodMetaData(configBean, Constants.MESSAGE_PARAMETER);
+    }
+
+
+    /**
+     * Constructs and returns the resource method meta-data. This method is
+     * called to get meta-data in case of update method (POST).
+     * @param configBean the config bean associated with the resource.
+     * @param parameterType the type of parameter. Possible values are
+     *        Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
+     * @return MethodMetaData the meta-data store for the resource method.
+     */
+    public MethodMetaData getMethodMetaData(ConfigBean configBean,
+            int pamameterType) {
         MethodMetaData methodMetaData = new MethodMetaData();
 
         if (configBean != null) {
-            //POST meta data
-            //FIXME -- Get hold of meta-data for config bean attributes to
-            //set it in MethodMetaData object. For now, just provide POST method
-            //without any message/entity information.
+            Class<? extends ConfigBeanProxy> configBeanProxy = null;
+             try {
+                configBeanProxy = (Class<? extends ConfigBeanProxy>)
+                    configBean.model.classLoaderHolder.get().loadClass(
+                        configBean.model.targetTypeName);
 
-            /*Collection<CommandModel.ParamModel> params =
-                getParamMetaData(command, habitat, logger);
-            Iterator<CommandModel.ParamModel> iterator = params.iterator();
-            CommandModel.ParamModel paramModel;
-            while(iterator.hasNext()) {
-                paramModel = iterator.next();
-                Param param = paramModel.getParam();
+                Set<String> attributeNames = configBean.model.getAttributeNames();
+                for (String attributeName : attributeNames) {
+                    String methodName = getAttributeMethodName(attributeName);
+                    try {
+                        Method method = configBeanProxy.getMethod(methodName);
+                        Attribute attribute = method.getAnnotation(Attribute.class);
+                        if (attribute != null) {
+                            ParameterMetaData parameterMetaData =
+                                getParameterMetaData(attribute);
 
-                ParameterMetaData parameterMetaData =
-                    getParameterMetaData(paramModel);
-
-                String parameterName =
-                    (paramModel.getParam().primary())?"id":paramModel.getName();
-
-                methodMetaData.putParameterMetaData(parameterName,
-                    parameterMetaData);
-            }*/
+                            if (pamameterType == Constants.QUERY_PARAMETER) {
+                                methodMetaData.putQureyParamMetaData(attributeName,
+                                    parameterMetaData);
+                            } else {
+                                //message parameter
+                                methodMetaData.putParameterMetaData(attributeName,
+                                    parameterMetaData);
+                            }
+                        }
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
         return methodMetaData;
@@ -301,13 +330,30 @@ public class ResourceUtil extends Util {
         Param param = paramModel.getParam();
         ParameterMetaData parameterMetaData = new ParameterMetaData();
 
-        parameterMetaData.putAttribute("Type", paramModel.getType().toString());
-        parameterMetaData.putAttribute("Optional", Boolean.toString(param.optional()));
-        parameterMetaData.putAttribute("Default Value", param.defaultValue());
-        parameterMetaData.putAttribute("Acceptable Values", param.acceptableValues());
+        parameterMetaData.putAttribute(Constants.TYPE, getXsdType(paramModel.getType().toString()));
+        parameterMetaData.putAttribute(Constants.OPTIONAL, Boolean.toString(param.optional()));
+        parameterMetaData.putAttribute(Constants.DEFAULT_VALUE, param.defaultValue());
+        parameterMetaData.putAttribute(Constants.ACCEPTABLE_VALUES, param.acceptableValues());
         //parameterMetaData.putAttribute("name1", paramModel.getName());
         //parameterMetaData.putAttribute("Name", param.name());
         //parameterMetaData.putAttribute("I18n", paramModel.getI18n().value());
+
+        return parameterMetaData;
+    }
+
+
+    //Construct parameter meta-data from the attribute annotation
+    private ParameterMetaData getParameterMetaData(Attribute attribute) {
+        ParameterMetaData parameterMetaData = new ParameterMetaData();
+        parameterMetaData.putAttribute(Constants.TYPE, getXsdType(attribute.dataType().toString()));
+        parameterMetaData.putAttribute(Constants.OPTIONAL, Boolean.toString(!attribute.required()));
+        if (!(attribute.defaultValue().equals("\u0000"))) {
+            parameterMetaData.putAttribute(Constants.DEFAULT_VALUE, attribute.defaultValue());
+        }
+        parameterMetaData.putAttribute(Constants.KEY, Boolean.toString(attribute.key()));
+        //FIXME - Currently, Attribute class does not provide acceptable values.
+        //parameterMetaData.putAttribute(Contants.ACCEPTABLE_VALUES,
+        //    getXsdType(attribute.acceptableValues()));
 
         return parameterMetaData;
     }
@@ -357,5 +403,23 @@ public class ResourceUtil extends Util {
         }
 
         return false;
+    }
+
+
+    private String getXsdType(String javaType) {
+        if (javaType.indexOf(Constants.JAVA_STRING_TYPE) != -1)
+            return Constants.XSD_STRING_TYPE;
+        if (javaType.indexOf(Constants.JAVA_BOOLEAN_TYPE) != -1)
+            return Constants.XSD_BOOLEAN_TYPE;
+        if (javaType.indexOf(Constants.JAVA_INT_TYPE) != -1)
+            return Constants.XSD_INT_TYPE;
+        if (javaType.indexOf(Constants.JAVA_PROPERTIES_TYPE) != -1)
+            return Constants.XSD_PROPERTIES_TYPE;
+        return javaType;
+    }
+
+
+    private String getAttributeMethodName(String attributeName) {
+        return methodNameFromDtdName(attributeName, "get");
     }
 }

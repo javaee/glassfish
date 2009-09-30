@@ -188,4 +188,35 @@ public class Util {
         result = result + "</body></html>";
         return result;
     }
+
+
+    /**
+     * Constructs a method name from  element's dtd name
+     * name for a given prefix.(schema2beans convention)
+     *
+     * @param elementName the given element name
+     * @param prefix the given prefix
+     * @return a method name formed from the given name and the prefix
+     */
+    public String methodNameFromDtdName(String elementName, String prefix){
+        return methodNameFromBeanName(eleminateHypen(elementName), prefix);
+    }
+
+
+    /**
+     * Constructs a method name from  element's bean
+     * name for a given prefix.(schema2beans convention)
+     *
+     * @param elementName the given element name
+     * @param prefix the given prefix
+     * @return a method name formed from the given name and the prefix
+     */
+    public String methodNameFromBeanName(String elementName, String prefix){
+        if((null == elementName) || (null == prefix) ||
+                (prefix.length() <= 0 )){
+            return elementName;
+        }
+        String methodName = upperCaseFirstLetter(elementName);
+        return methodName = prefix + methodName;
+    }
 }

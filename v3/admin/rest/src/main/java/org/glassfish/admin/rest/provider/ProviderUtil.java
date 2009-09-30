@@ -48,8 +48,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.Dom;
 
+import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
@@ -195,13 +197,27 @@ public class ProviderUtil extends Util {
     }
 
 
-    static protected String getHtmlRespresentationForAttributes(Dom proxy,
+    static protected String getHtmlRespresentationForAttributes(ConfigBean proxy,
             UriInfo uriInfo) {
         String result = "";
+
         Set<String> attributes = proxy.model.getAttributeNames();
-        for (String attribute : attributes) { //for each attribute
-            result = result + "<dt><label for=\"" + attribute + "\">" + attribute + ":&nbsp;" + "</label></dt>";
-            result = result + "<dd><input name=\"" + attribute + "\" value =\"" + proxy.attribute(attribute) + "\" type=\"text\"></dd>";
+        System.out.println("attributes: " + attributes);
+
+        ResourceUtil resourceUtil = new ResourceUtil();
+        MethodMetaData methodMetaData = resourceUtil.getMethodMetaData(proxy);
+
+        Set<String> parameters = methodMetaData.parameters();
+        Iterator<String> iterator = parameters.iterator();
+        ParameterMetaData parameterMetaData;
+        String parameter;
+
+        while (iterator.hasNext()) {
+            parameter = iterator.next();
+            parameterMetaData = methodMetaData.getParameterMetaData(parameter);
+            result = result +
+                getHtmlRespresentationForParameter(parameter, parameterMetaData,
+                    proxy.attribute(parameter));
         }
 
         if (result != "") {
@@ -326,59 +342,86 @@ public class ProviderUtil extends Util {
 
 
     static private String getHtmlRespresentationForParameter(String parameter,
-            ParameterMetaData parameterMetaData) {
+        ParameterMetaData parameterMetaData) {
+        return getHtmlRespresentationForParameter(parameter,
+            parameterMetaData, null);
+    }
+
+
+    static private String getHtmlRespresentationForParameter(String parameter,
+            ParameterMetaData parameterMetaData, String parameterValue) {
         String result = parameter;
         
         //indicate mandatory field with * super-script
-        if (parameterMetaData.getAttributeValue("Optional").equalsIgnoreCase("false")) {
+        if (parameterMetaData.getAttributeValue(Constants.OPTIONAL).equalsIgnoreCase("false")) {
             result = result + "<sup>*</sup>";
         }
 
         result = "<dt><label for=\"" + parameter + "\">" + result + ":&nbsp;" + "</label></dt>";
 
         boolean isBoolean = false;
-        if(parameterMetaData.getAttributeValue("Type").endsWith("java.lang.Boolean")) {
+        if((parameterMetaData.getAttributeValue(Constants.TYPE).endsWith(Constants.JAVA_BOOLEAN_TYPE)) ||
+                (parameterMetaData.getAttributeValue(Constants.TYPE).equals(Constants.XSD_BOOLEAN_TYPE))) {
             isBoolean = true;
         }
 
         boolean hasAcceptableValues = false;
-        String acceptableValues = parameterMetaData.getAttributeValue("Acceptable Values");
+        String acceptableValues =
+            parameterMetaData.getAttributeValue(Constants.ACCEPTABLE_VALUES);
         if ((acceptableValues != null) && (acceptableValues.length() > 0)) {
             hasAcceptableValues = true;
         }
 
-        String defaultValue = parameterMetaData.getAttributeValue("Default Value");
-        boolean hasDefaultValue = false;
-        if ((defaultValue != null) && (defaultValue.length() > 0)) {
-            hasDefaultValue = true;
+        boolean hasValue = false;
+        if ((parameterValue == null) || (parameterValue.equals(""))) {
+            String defaultValue =
+                parameterMetaData.getAttributeValue(Constants.DEFAULT_VALUE);
+            if ((defaultValue != null) && (defaultValue.length() > 0)) {
+                parameterValue = defaultValue;
+            }
         }
 
-        if (isBoolean || hasAcceptableValues) {
-            //use combo box
-            result = result + "<dd><select name=" + parameter + ">";
-            String[] values;
-            if (isBoolean) {
-                values = new String[] {"true", "false"};
-            } else {
-                values = stringToArray(acceptableValues, ",");
-            }
+        if ((parameterValue != null) && (parameterValue.length() > 0)) {
+            hasValue = true;
+        }
 
-            for (String value : values) {
-                if ((hasDefaultValue) && (value.equalsIgnoreCase(defaultValue))){
-                    if (isBoolean) { defaultValue = defaultValue.toLowerCase();} //boolean options are all displayed as lowercase
-                    result = result + "<option selected>" + defaultValue + "<br>";
-                } else {
-                    result = result + "<option>" + value + "<br>";
-                }
-            }
-            result = result + "</select></dd>";
-        } else {
-            //use text box
-            if (hasDefaultValue) {
+        boolean keyAttribute = Boolean.valueOf(
+            parameterMetaData.getAttributeValue(Constants.KEY)).booleanValue();
+        if (keyAttribute) {
+            if (hasValue) {
                 result = result + "<dd><input name=\"" + parameter + "\" value =\"" +
-                    defaultValue + "\" type=\"text\"></dd>";
+                    parameterValue + "\" type=\"text\" disabled=\"disabled\"></dd>";
             } else {
-                result = result + "<dd><input name=\"" + parameter + "\" type=\"text\"></dd>";
+                //control should never reach here.
+            }
+        } else {
+            if (isBoolean || hasAcceptableValues) {
+                //use combo box
+                result = result + "<dd><select name=" + parameter + ">";
+                String[] values;
+                if (isBoolean) {
+                    values = new String[] {"true", "false"};
+                } else {
+                    values = stringToArray(acceptableValues, ",");
+                }
+
+                for (String value : values) {
+                    if ((hasValue) && (value.equalsIgnoreCase(parameterValue))){
+                        if (isBoolean) { parameterValue = parameterValue.toLowerCase();} //boolean options are all displayed as lowercase
+                        result = result + "<option selected>" + parameterValue + "<br>";
+                    } else {
+                        result = result + "<option>" + value + "<br>";
+                    }
+                }
+                result = result + "</select></dd>";
+            } else {
+                //use text box
+                if (hasValue) {
+                    result = result + "<dd><input name=\"" + parameter + "\" value =\"" +
+                        parameterValue + "\" type=\"text\"></dd>";
+                } else {
+                    result = result + "<dd><input name=\"" + parameter + "\" type=\"text\"></dd>";
+                }
             }
         }
 

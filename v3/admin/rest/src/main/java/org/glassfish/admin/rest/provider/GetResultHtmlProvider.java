@@ -42,6 +42,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Set;
 
+import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.Dom;
 
 import javax.ws.rs.core.Context;
@@ -94,7 +95,7 @@ public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWr
         String result = getHtmlHeader();
         result = result + "<h1>" + getTypeKey(proxy.getDom()) + "</h1>";
 
-        String attributes = getHtmlRespresentationForAttributes(proxy.getDom(), uriInfo);
+        String attributes = getHtmlRespresentationForAttributes((ConfigBean)proxy.getDom(), uriInfo);
         result = getHtmlForComponent(attributes, "Attributes", result);
 
         String command = proxy.getDeleteCommand();

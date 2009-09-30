@@ -36,6 +36,7 @@
 package org.glassfish.admin.rest.provider;
 
 import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.ConfigBean;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -51,9 +52,9 @@ public class GetResult extends Result {
     /**
      * Constructor
      */
-    public GetResult(Dom dom, String deleteCommand,
+    public GetResult(ConfigBean configBean, String deleteCommand,
             String[][] commandResourcesPaths, OptionsResult metaData) {
-        __dom = dom;
+        __dom = configBean;
         __deleteCommand = deleteCommand;
         __commandResourcesPaths = commandResourcesPaths;
         __metaData = metaData;
@@ -87,7 +88,7 @@ public class GetResult extends Result {
         return __metaData;
     }
 
-    Dom __dom;
+    ConfigBean __dom;
     String __deleteCommand;
     String[][] __commandResourcesPaths;
     OptionsResult __metaData;

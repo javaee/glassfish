@@ -54,4 +54,30 @@ public interface Constants {
     public static final String FALSE = "false";
 
     public static final String OFF = "off";
+
+    public static final String JAVA_STRING_TYPE = "java.lang.String";
+
+    public static final String JAVA_BOOLEAN_TYPE = "java.lang.Boolean";
+
+    public static final String JAVA_INT_TYPE = "java.lang.Integer";
+
+    public static final String JAVA_PROPERTIES_TYPE = "java.util.Properties";
+
+    public static final String XSD_STRING_TYPE = "string";
+
+    public static final String XSD_BOOLEAN_TYPE = "boolean";
+
+    public static final String XSD_INT_TYPE = "int";
+
+    public static final String XSD_PROPERTIES_TYPE = "string"; //?
+
+    public static final String TYPE = "Type";
+
+    public static final String KEY = "Key";
+
+    public static final String OPTIONAL = "Optional";
+
+    public static final String DEFAULT_VALUE = "Default Value";
+
+    public static final String ACCEPTABLE_VALUES = "Acceptable Values";
 }
