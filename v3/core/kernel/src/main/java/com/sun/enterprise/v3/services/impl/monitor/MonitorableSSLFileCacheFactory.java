@@ -58,6 +58,7 @@ public class MonitorableSSLFileCacheFactory extends SSLFileCacheFactory {
         this.grizzlyMonitoring = grizzlyMonitoring;
         this.fileCacheName = fileCacheName;
         cacheManager = new ConcurrentLinkedQueue<FileCacheEntry>();
+        isMonitoringEnabled = true;
     }
     
     @Override
@@ -65,4 +66,7 @@ public class MonitorableSSLFileCacheFactory extends SSLFileCacheFactory {
         return new MonitorableSSLFileCache(grizzlyMonitoring, fileCacheName);
     }
 
+    @Override
+    public void setIsMonitoringEnabled(boolean isMonitoringEnabled) {
+    }
 }

@@ -58,6 +58,7 @@ public class MonitorableFileCacheFactory extends FileCacheFactory {
         this.grizzlyMonitoring = grizzlyMonitoring;
         this.fileCacheName = fileCacheName;
         cacheManager = new ConcurrentLinkedQueue<FileCacheEntry>();
+        isMonitoringEnabled = true;
     }
     
     @Override
@@ -65,4 +66,7 @@ public class MonitorableFileCacheFactory extends FileCacheFactory {
         return new MonitorableFileCache(grizzlyMonitoring, fileCacheName);
     }
 
+    @Override
+    public void setIsMonitoringEnabled(boolean isMonitoringEnabled) {
+    }
 }
