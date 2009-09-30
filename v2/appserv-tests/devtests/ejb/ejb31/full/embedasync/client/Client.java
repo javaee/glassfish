@@ -74,8 +74,15 @@ public class Client {
 	    Thread.sleep(1000);
 
 	    SingletonBean sb = (SingletonBean) ic.
-		lookup("java:global/classes/SingletonBean");
-	    
+		lookup("java:global/classes/SingletonBean!com.acme.SingletonBean");
+	    sb.hello();
+
+	    /**
+	    HelloRemote hr = (HelloRemote) ic.
+		lookup("java:global/classes/SingletonBean!com.acme.HelloRemote");
+	    hr.hello();
+	    */
+
 	    if( sb.getPassed() ) {
 		System.out.println("getPassed() returned true");
 		stat.addStatus("embedded async test", stat.PASS);

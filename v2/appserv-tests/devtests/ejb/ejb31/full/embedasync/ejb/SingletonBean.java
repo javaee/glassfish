@@ -3,11 +3,20 @@ package com.acme;
 import javax.ejb.*;
 import javax.annotation.*;
 
+import javax.naming.*;
+
+import javax.enterprise.inject.spi.BeanManager;
+
 @Singleton
 @Startup
-public class SingletonBean {
+@LocalBean
+    public class SingletonBean /* implements HelloRemote */ {
 
     @EJB SingletonBean me;
+
+    // TODO look into implications of using @Resource
+    // given endorsed dir and location within JDK
+    // @Resource SessionContext sesCtx;
 
     private boolean gotAsyncCall = false;
 
@@ -16,6 +25,18 @@ public class SingletonBean {
         System.out.println("In SingletonBean::init()");
 	System.out.println("Thread = " + Thread.currentThread());
 	me.fooAsync();
+
+	try {
+		BeanManager beanMgr = (BeanManager)
+		    new InitialContext().lookup("java:comp/BeanManager");
+	System.out.println("Successfully retrieved bean manager " +
+			   beanMgr + " for JCDI enabled app");
+	} catch(Exception e) {
+	    e.printStackTrace();
+	    throw new EJBException(e);
+	}
+	
+
     }
     
     public String hello() {

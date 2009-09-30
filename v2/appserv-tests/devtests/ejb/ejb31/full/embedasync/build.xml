@@ -26,6 +26,8 @@
 
     <target name="build" depends="compile">
         <mkdir dir="${assemble.dir}"/>
+        <mkdir dir="${build.classes.dir}/META-INF"/>
+	<copy file="descriptor/beans.xml" todir="${build.classes.dir}/META-INF"/>
 	<!--
         <jar jarfile="${assemble.dir}/${appname}-ejb.jar" 
              basedir="${build.classes.dir}" 
