@@ -123,12 +123,13 @@ public abstract class DomainXml implements Populator {
     protected void upgrade() {
         
         // run the upgrades...
-        try {
-            for (ConfigurationUpgrade cu : habitat.getAllByContract(ConfigurationUpgrade.class)) {
+        for (ConfigurationUpgrade cu : habitat.getAllByContract(ConfigurationUpgrade.class)) {
+            try {
                 Logger.getAnonymousLogger().fine("Upgrading domain.xml with " + cu.getClass());
+            } catch (Exception e) {
+                Logger.getAnonymousLogger().log(Level.FINE,e.toString(),e);
+                Logger.getAnonymousLogger().severe(cu.getClass() + " upgrading domain.xml failed " + e);
             }
-        } catch (Exception e) {
-            Logger.getAnonymousLogger().severe("Upgrading domain.xml failed " + e.getMessage());
         }
     }
 

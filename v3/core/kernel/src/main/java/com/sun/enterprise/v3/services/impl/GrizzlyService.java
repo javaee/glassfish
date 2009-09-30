@@ -252,13 +252,8 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     public void postConstruct() {
         NetworkConfig networkConfig = config.getNetworkConfig();
 
-        ConstructorWomb<DynamicConfigListener> womb =
-                new ConstructorWomb<DynamicConfigListener>(
-                DynamicConfigListener.class,
-                habitat,
-                null);
-        configListener = womb.get(null);
-
+        configListener = new DynamicConfigListener();
+        
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(networkConfig.getNetworkListeners());
         bean.addListener(configListener);
 

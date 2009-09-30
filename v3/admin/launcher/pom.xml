@@ -74,10 +74,5 @@
             <artifactId>glassfish</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.sun.enterprise</groupId>
-            <artifactId>stax-osgi</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 </project>
