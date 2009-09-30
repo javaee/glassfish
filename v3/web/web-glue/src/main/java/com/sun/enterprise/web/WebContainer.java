@@ -396,8 +396,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         //createMonitoringConfig();
 
-        createStatsProviders();
-
         setJspFactory();
 
         _modulesWorkRoot =
@@ -617,8 +615,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     public void event(Event event) {
         if (event.is(Deployment.ALL_APPLICATIONS_PROCESSED)) {
-            // configure default web modules for virtual servers after all applications are processed
+            // configure default web modules for virtual servers after all
+            // applications are processed
             loadDefaultWebModulesAfterAllAppsProcessed();
+            createStatsProviders();
         } else if (event.is(EventTypes.PREPARE_SHUTDOWN)) {
             isShutdown = true;
         }
