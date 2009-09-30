@@ -32,7 +32,7 @@
       </http-service>
       <iiop-service>
         <orb use-thread-pool-ids="thread-pool-1" />
-        <iiop-listener address="0.0.0.0" port="%%%ORB_LISTENER_PORT%%%" id="orb-listener-1" />
+        <iiop-listener address="0.0.0.0" port="%%%ORB_LISTENER_PORT%%%" id="orb-listener-1" lazy-init="true"/>
         <iiop-listener security-enabled="true" address="0.0.0.0" port="%%%ORB_SSL_PORT%%%" id="SSL">
           <ssl cert-nickname="s1as" />
         </iiop-listener>
@@ -62,7 +62,7 @@
       <mdb-container steady-pool-size="0" max-pool-size="32" pool-resize-quantity="8" >
       </mdb-container>
       <jms-service type="EMBEDDED" default-jms-host="default_JMS_host">
-        <jms-host name="default_JMS_host" host="localhost" port="%%%JMS_PROVIDER_PORT%%%" admin-user-name="%%%JMS_PROVIDER_USERID%%%" admin-password="%%%JMS_PROVIDER_PASSWORD%%%"/>
+        <jms-host name="default_JMS_host" host="localhost" port="%%%JMS_PROVIDER_PORT%%%" admin-user-name="%%%JMS_PROVIDER_USERID%%%" admin-password="%%%JMS_PROVIDER_PASSWORD%%%" lazy-init="true"/>
       </jms-service>
       <log-service file="${com.sun.aas.instanceRoot}/logs/server.log" log-rotation-limit-in-bytes="2000000">
         <module-log-levels />
