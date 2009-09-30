@@ -178,7 +178,7 @@ public class WebTest {
 
     private int getCount(String monitorPath, String countName) throws Exception {
         String result = invokeURL("http://" + adminHost + ":" + adminPort +
-                "/monitoring/domain/" + instanceName + "/" + monitorPath);
+                "/monitoring/domain/server/" + monitorPath);
         
         return parseCount(result, countName);
     }
