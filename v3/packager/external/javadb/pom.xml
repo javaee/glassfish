@@ -68,7 +68,8 @@
 				        dest="target/classes/glassfish">
                                     <patternset>
                                         <exclude name="javadb/demo/**"/>
-                                        <exclude name="javadb/3RDPARTY.zip"/>
+                                        <exclude name="javadb/docs/**"/>
+                                        <exclude name="javadb/javadoc/**"/>
                                     </patternset>
                                 </unzip>
                             </tasks>
@@ -100,7 +101,7 @@
         <dependency>
             <groupId>javadb</groupId>
             <artifactId>javadb</artifactId>
-	    <version>10.4.2.1-20081020</version>
+	    <version>${javadb.version}</version>
 	    <type>zip</type>
         </dependency>
     </dependencies>
