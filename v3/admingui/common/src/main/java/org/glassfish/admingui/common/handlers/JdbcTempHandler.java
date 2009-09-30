@@ -264,6 +264,9 @@ public class JdbcTempHandler {
         String driverfield = (String) extra.get("DriverClassnameField");
         attrs.put("Name", name);
         attrs.put("ResType", resType);
+        if ("".equals(attrs.get("TransactionIsolationLevel"))) {
+            attrs.remove("TransactionIsolationLevel");
+        }
         if (!GuiUtil.isEmpty(classnamefield) || !GuiUtil.isEmpty(driverfield)) {
             attrs.put("DatasourceClassname", classnamefield);
             attrs.put("DriverClassname", driverfield);
