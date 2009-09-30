@@ -64,6 +64,7 @@ public class WebTest {
     private String adminPort;
     private String adminUser;
     private String adminPassword;
+    private String instanceName;
     private String host;
     private String port;
     private String contextRoot;
@@ -73,9 +74,10 @@ public class WebTest {
         adminPort = args[1];
         adminUser = args[2];
         adminPassword = args[3];
-        host = args[4];
-        port = args[5];
-        contextRoot = args[6];
+        instanceName = args[4];
+        host = args[5];
+        port = args[6];
+        contextRoot = args[7];
     }
     
     public static void main(String[] args) {
@@ -89,7 +91,7 @@ public class WebTest {
         try {
             int webReqCount1 = getCount("web/request/requestcount", "RequestCount");
             System.out.println("web request count: " + webReqCount1);
-            int appReqCount1 = getCount("applications" + contextRoot + "-web/server/requestcount", "RequestCount");
+            int appReqCount1 = getCount("applications" + contextRoot + "-web/" + instanceName + "/requestcount", "RequestCount");
             System.out.println("app request count: " + appReqCount1);
 
             String testResult = invokeURL("http://" + host + ":" + port + contextRoot + "/test");
@@ -97,7 +99,7 @@ public class WebTest {
             
             int webReqCount2 = getCount("web/request/requestcount", "RequestCount");
             System.out.println("web request count: " + webReqCount2);
-            int appReqCount2 = getCount("applications" + contextRoot + "-web/server/requestcount", "RequestCount");
+            int appReqCount2 = getCount("applications" + contextRoot + "-web/" + instanceName + "/requestcount", "RequestCount");
             System.out.println("app request count: " + appReqCount2);
 
             boolean ok1 = (EXPECTED.equals(testResult) &&
@@ -107,14 +109,14 @@ public class WebTest {
 
             int webErrorCount1 = getCount("web/request/errorcount", "ErrorCount");
             System.out.println("web error count: " + webErrorCount1);
-            int appErrorCount1 = getCount("applications" + contextRoot + "-web/server/errorcount", "ErrorCount");
+            int appErrorCount1 = getCount("applications" + contextRoot + "-web/" + instanceName + "/errorcount", "ErrorCount");
             System.out.println("app error count: " + appErrorCount1);
 
             invokeURL("http://" + host + ":" + port + contextRoot + "/badrequest");
             
             int webErrorCount2 = getCount("web/request/errorcount", "ErrorCount");
             System.out.println("web error count: " + webErrorCount2);
-            int appErrorCount2 = getCount("applications" + contextRoot + "-web/server/errorcount", "ErrorCount");
+            int appErrorCount2 = getCount("applications" + contextRoot + "-web/" + instanceName + "/errorcount", "ErrorCount");
             System.out.println("app error count: " + appErrorCount2);
 
             boolean ok2 = (webErrorCount1 >= 0 && webErrorCount2 == (webErrorCount1 + 1)) &&
@@ -176,7 +178,7 @@ public class WebTest {
 
     private int getCount(String monitorPath, String countName) throws Exception {
         String result = invokeURL("http://" + adminHost + ":" + adminPort +
-                "/monitoring/domain/server/" + monitorPath);
+                "/monitoring/domain/" + instanceName + "/" + monitorPath);
         
         return parseCount(result, countName);
     }

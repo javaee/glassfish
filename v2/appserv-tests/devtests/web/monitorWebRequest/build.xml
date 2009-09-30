@@ -95,6 +95,7 @@
           <arg value="${admin.port}"/>
           <arg value="${admin.user}"/>
           <arg value="${admin.password}"/>
+          <arg value="${appserver.instance.name}"/>
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
           <arg value="${contextroot}"/>
