@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import java.util.Set;
 import java.util.Map;
 import java.util.List;
+import java.util.Collections;
 import java.util.HashMap;
 import java.lang.reflect.Method;
 import java.lang.reflect.Member;
@@ -108,6 +109,10 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, Post
     private ProcessEnvironment processEnv;
 
     private ProcessType processType;
+
+    // Keep track of contexts for managed bean instances instantiated via JCDI
+    private Map<BundleDescriptor, Map<Object, JCDIService.JCDIInjectionContext>> jcdiManagedBeanInstanceMap =
+            new HashMap<BundleDescriptor, Map<Object, JCDIService.JCDIInjectionContext>>();
 
     public void postConstruct() {
         events.register(this);
@@ -241,6 +246,9 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, Post
                     " with name = " + next.getName(), e);
                 }
             }
+
+            jcdiManagedBeanInstanceMap.put(bundle,
+                Collections.synchronizedMap(new HashMap<Object, JCDIService.JCDIInjectionContext>()));
         }
 
     }
@@ -279,12 +287,23 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, Post
                 continue;
             }
 
+            Map<Object, JCDIService.JCDIInjectionContext> jcdiInstances =
+                    jcdiManagedBeanInstanceMap.remove(bundle);
+
+            for(JCDIService.JCDIInjectionContext next : jcdiInstances.values()) {
+                try {
+                    next.cleanup(true);
+                } catch(Exception e) {
+                    _logger.log(Level.FINE, "Exception during JCDI cleanup for " + next, e);
+                }
+            }
+
             for(ManagedBeanDescriptor next : bundle.getManagedBeans()) {
 
                 for(Object instance : next.getBeanInstances()) {
 
                     InterceptorInvoker invoker = (InterceptorInvoker)
-                            next.getInterceptorInfoForBeanInstance(instance);
+                        next.getSupportingInfoForBeanInstance(instance);
 
                     try {
                         invoker.invokePreDestroy();
@@ -292,11 +311,10 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, Post
                         _logger.log(Level.FINE, "Managed bean " + next.getBeanClassName() + " PreDestroy", e);
                     }
 
-                }
+                }                                 
 
                 com.sun.enterprise.container.common.spi.util.ComponentEnvManager compEnvManager =
                     habitat.getByContract(com.sun.enterprise.container.common.spi.util.ComponentEnvManager.class);
-
 
                 try {
                     compEnvManager.unbindFromComponentNamespace(next);
@@ -357,7 +375,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, Post
 
     /**
      *
-     * @param desc ignored if JCDI enabled
+     * @param desc can be null if JCDI enabled bundle.
      * @param managedBeanClass
      * @return
      * @throws Exception
@@ -369,26 +387,14 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, Post
         BundleDescriptor bundleDescriptor = null;
 
         if( desc == null ) {
-            ComponentInvocation inv = invocationMgr.getCurrentInvocation();
-
-            JndiNameEnvironment componentEnv =
-                compEnvManager.getJndiNameEnvironment(inv.getComponentId());
-
-            if( componentEnv != null ) {
-
-                if( componentEnv instanceof BundleDescriptor ) {
-                    bundleDescriptor = (BundleDescriptor) componentEnv;
-                } else if( componentEnv instanceof EjbDescriptor ) {
-                    bundleDescriptor = ((EjbDescriptor) componentEnv).getEjbBundleDescriptor();
-                }
-            }
+            bundleDescriptor = getBundle();
         } else {
             bundleDescriptor = desc.getBundleDescriptor();
         }
 
         if( bundleDescriptor == null ) {
             throw new IllegalStateException
-                        ("Class " + managedBeanClass + " is not a valid EE ManagedBean class");
+                ("Class " + managedBeanClass + " is not a valid EE ManagedBean class");
         }
 
         Object callerObject = null;
@@ -397,7 +403,14 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, Post
 
             // Have 299 create, inject, and call PostConstruct on managed bean
 
-            callerObject = jcdiService.createManagedObject(managedBeanClass, bundleDescriptor);
+            JCDIService.JCDIInjectionContext jcdiContext =
+                jcdiService.createManagedObject(managedBeanClass, bundleDescriptor);
+            callerObject = jcdiContext.getInstance();
+
+            // Need to keep track of context in order to destroy properly
+            Map<Object, JCDIService.JCDIInjectionContext> bundleNonManagedObjs =
+                jcdiManagedBeanInstanceMap.get(bundleDescriptor);
+            bundleNonManagedObjs.put(callerObject, jcdiContext);
 
         } else {
 
@@ -455,42 +468,72 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, Post
 
     public void destroyManagedBean(Object managedBean)  {
 
-        // TODO handle 299 enabled case
-
-        Object managedBeanInstance = null;
-
-        try {
-
-            Field proxyField = managedBean.getClass().getDeclaredField("__ejb31_delegate");
-
-            final Field finalF = proxyField;
-                java.security.AccessController.doPrivileged(
-                new java.security.PrivilegedExceptionAction() {
-                    public java.lang.Object run() throws Exception {
-                        if( !finalF.isAccessible() ) {
-                            finalF.setAccessible(true);
-                        }
-                        return null;
-                    }
-                });
-
-            Proxy proxy = (Proxy) proxyField.get(managedBean);
-
-            InterceptorInvoker invoker = (InterceptorInvoker) Proxy.getInvocationHandler(proxy);
-
-            managedBeanInstance = invoker.getTargetInstance();
-
-        } catch(Exception e) {
-
-            throw new IllegalArgumentException("invalid managed bean " + managedBean, e);
-        }
-
-
         BundleDescriptor bundle = getBundle();
 
-        ManagedBeanDescriptor desc = getManagedBeanDescriptor(bundle, managedBeanInstance.getClass());
+        JCDIService jcdiService = habitat.getByContract(JCDIService.class);
 
-        desc.clearBeanInstanceInfo(managedBeanInstance);
+        if( (jcdiService != null) && jcdiService.isJCDIEnabled(bundle)) {
+
+            Map<Object, JCDIService.JCDIInjectionContext> bundleNonManagedObjs =
+                jcdiManagedBeanInstanceMap.get(bundle);
+            JCDIService.JCDIInjectionContext context =
+                    bundleNonManagedObjs.remove(managedBean);  
+
+            if( context == null ) {
+                throw new IllegalStateException("Unknown JCDI-enabled managed bean " +
+                    managedBean + " of class " + managedBean.getClass());
+            }
+
+            // Call PreDestroy and cleanup
+            context.cleanup(true);
+
+        } else {
+
+            Object managedBeanInstance = null;
+
+            try {
+
+                Field proxyField = managedBean.getClass().getDeclaredField("__ejb31_delegate");
+
+                final Field finalF = proxyField;
+                    java.security.AccessController.doPrivileged(
+                    new java.security.PrivilegedExceptionAction() {
+                        public java.lang.Object run() throws Exception {
+                            if( !finalF.isAccessible() ) {
+                                finalF.setAccessible(true);
+                            }
+                            return null;
+                        }
+                    });
+
+                Proxy proxy = (Proxy) proxyField.get(managedBean);
+
+                InterceptorInvoker invoker = (InterceptorInvoker) Proxy.getInvocationHandler(proxy);
+
+                managedBeanInstance = invoker.getTargetInstance();
+
+            } catch(Exception e) {
+                throw new IllegalArgumentException("invalid managed bean " + managedBean, e);
+            }
+
+            ManagedBeanDescriptor desc = getManagedBeanDescriptor(bundle, managedBeanInstance.getClass());
+
+            if( desc == null ) {
+                throw new IllegalStateException("Could not retrieve managed bean descriptor for " +
+                    managedBean + " of class " + managedBean.getClass());
+            }
+
+            InterceptorInvoker invoker = (InterceptorInvoker)
+                desc.getSupportingInfoForBeanInstance(managedBeanInstance);
+
+            try {
+                invoker.invokePreDestroy();
+            } catch(Exception e) {
+                _logger.log(Level.FINE, "Managed bean " + desc.getBeanClassName() + " PreDestroy", e);
+            }
+
+            desc.clearBeanInstanceInfo(managedBeanInstance);
+        }                      
 
     }
 

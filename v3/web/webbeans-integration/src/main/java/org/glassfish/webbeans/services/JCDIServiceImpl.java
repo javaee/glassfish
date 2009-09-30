@@ -35,33 +35,35 @@
  */
 
 
-package org.glassfish.webbeans.services;
-
-import com.sun.enterprise.container.common.spi.JCDIService;
-import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.JndiNameEnvironment;
-
-import java.util.Collection;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.InjectionTarget;
-
-import org.glassfish.api.invocation.ComponentInvocation;
-import org.glassfish.api.invocation.InvocationManager;
-import org.glassfish.webbeans.WebBeansDeployer;
-
-import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
-import org.jboss.webbeans.bootstrap.WebBeansBootstrap;
-import org.jboss.webbeans.manager.api.WebBeansManager;
+package org.glassfish.webbeans;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
+
+import java.util.Collection;
+
+import com.sun.enterprise.container.common.spi.JCDIService;
+
+import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.JndiNameEnvironment;
+
+import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
+import org.jboss.webbeans.bootstrap.WebBeansBootstrap;
+import javax.enterprise.inject.spi.BeanManager;
+
+import org.glassfish.api.invocation.ComponentInvocation;
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import org.glassfish.api.invocation.InvocationManager;
+
+import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
+import org.jboss.webbeans.manager.api.WebBeansManager;
+
+
 
 @Service
 public class JCDIServiceImpl implements JCDIService
@@ -139,11 +141,11 @@ public class JCDIServiceImpl implements JCDIService
         // NOTE : PostConstruct is handled by ejb container
 
 
-        return new JCDIInjectionContextImpl(it, cc);
+        return new JCDIInjectionContextImpl(it, cc, instance);
 
     }
 
-    public Object createManagedObject(Class managedClass, BundleDescriptor bundle) {
+    public JCDIInjectionContext createManagedObject(Class managedClass, BundleDescriptor bundle) {
 
         Object managedObject = null;
 
@@ -168,9 +170,7 @@ public class JCDIServiceImpl implements JCDIService
 
         it.postConstruct(managedObject);
 
-        // TODO return new  JCDIInjectionContextImpl(it, cc);      
-
-        return managedObject;
+        return new JCDIInjectionContextImpl(it, cc, managedObject);
 
     }
 
@@ -178,20 +178,29 @@ public class JCDIServiceImpl implements JCDIService
 
         private InjectionTarget it;
         private CreationalContext cc;
+        private Object instance;
 
-        JCDIInjectionContextImpl(InjectionTarget it, CreationalContext cc) {
+        JCDIInjectionContextImpl(InjectionTarget it, CreationalContext cc, Object i) {
             this.it = it;
             this.cc = cc;
+            this.instance = i;
         }
 
-        public void cleanup(Object instance) {
+
+        public Object getInstance() {
+            return instance;
+        }
+
+        public void cleanup(boolean callPreDestroy) {
+
+            if( callPreDestroy ) {
+                it.preDestroy(instance);
+            }
 
             it.dispose(instance);
             cc.release();
 
         }
-
-
 
     }
 

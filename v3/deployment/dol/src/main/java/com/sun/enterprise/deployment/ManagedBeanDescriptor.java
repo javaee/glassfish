@@ -65,7 +65,7 @@ public class ManagedBeanDescriptor extends JndiEnvironmentRefsGroupDescriptor {
 
     private Object interceptorBuilder = null;
     private Collection beanInstances = new HashSet();
-    private Map<Object, Object> beanInterceptorInfo = new HashMap<Object, Object>();
+    private Map<Object, Object> beanSupportingInfo = new HashMap<Object, Object>();
 
     private List<InterceptorDescriptor> classInterceptorChain = new LinkedList<InterceptorDescriptor>();
 
@@ -137,10 +137,10 @@ public class ManagedBeanDescriptor extends JndiEnvironmentRefsGroupDescriptor {
      }
 
     // InterceptorInfo can be null
-    public void addBeanInstanceInfo(Object o, Object interceptorInfo) {
+    public void addBeanInstanceInfo(Object o, Object supportingInfo) {
         beanInstances.add(o);
-        if( interceptorInfo != null ) {
-            beanInterceptorInfo.put(o, interceptorInfo);
+        if( supportingInfo != null ) {
+            beanSupportingInfo.put(o, supportingInfo);
         }
     }
 
@@ -148,20 +148,20 @@ public class ManagedBeanDescriptor extends JndiEnvironmentRefsGroupDescriptor {
         return new HashSet(beanInstances);
     }
 
-    public Object getInterceptorInfoForBeanInstance(Object o) {
-        return beanInterceptorInfo.get(o);
+    public Object getSupportingInfoForBeanInstance(Object o) {
+        return beanSupportingInfo.get(o);
     }
 
     public void clearBeanInstanceInfo(Object beanInstance) {
 
         beanInstances.remove(beanInstance);
-        beanInterceptorInfo.remove(beanInstance);     
+        beanSupportingInfo.remove(beanInstance);
 
     }
 
     public void clearAllBeanInstanceInfo() {
         beanInstances.clear();
-        beanInterceptorInfo.clear();
+        beanSupportingInfo.clear();
         interceptorBuilder = null;
     }
 

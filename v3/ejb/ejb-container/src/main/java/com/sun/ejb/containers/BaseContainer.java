@@ -1565,7 +1565,7 @@ public abstract class BaseContainer
 
         JCDIService.JCDIInjectionContext jcdiCtx = context.getJCDIInjectionContext();
         if( jcdiCtx != null ) {
-            jcdiCtx.cleanup(context.getEJB());
+            jcdiCtx.cleanup(false);
         }
 
     }

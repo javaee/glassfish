@@ -557,11 +557,17 @@ public final class GlassFishORBManager {
             try {
                 Utility.setContextClassLoader(GlassFishORBManager.class.getClassLoader());
 
+                // TODO Right now we need to explicitly set useOSGI flag.  If it's set to
+                // OSGI mode and we're not in OSGI mode, orb initialization fails.  
+                boolean useOSGI = false;
+
                 if( processType.isServer()) {
+
+                    Module corbaOrbModule = null;
 
                     // start glassfish-corba-orb bundle
                     ModulesRegistry modulesRegistry = habitat.getComponent(ModulesRegistry.class);
-                    Module corbaOrbModule = null; // modulesRegistry.makeModuleFor("glassfish-corba-orb", null);
+
                     for(Module m : modulesRegistry.getModules()) {
                         if( m.getName().equals("glassfish-corba-orb") ) {
                             corbaOrbModule = m;
@@ -570,18 +576,10 @@ public final class GlassFishORBManager {
                     }
 
                     if( corbaOrbModule != null) {
+                        useOSGI = true;
                         corbaOrbModule.start();
                     }
                 }
-
-                // Set boolean useOSGI property to true.  If it's not an OSGI environment
-                // the ORB will just fall back to normal non-OSGI behavior.  This prevents
-                // us from having to figure out osgi vs. non-osgi ourselves.
-
-                //
-                // TODO @@@ ORB has a classloading dependency on OSGI classes so for now
-                // set osgi flag based on server vs. client
-                boolean useOSGI = processType.isServer();
 
                 orb = ORBFactory.create(args, orbInitProperties, useOSGI);
 

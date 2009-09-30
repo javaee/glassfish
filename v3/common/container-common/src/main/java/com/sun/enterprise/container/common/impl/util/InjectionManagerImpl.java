@@ -296,6 +296,8 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
                         
                 } else {
 
+                    // Not in a 299-enabled module and not annoated with @ManagedBean, so
+                    // just instantiate using new and perform injection
                     Constructor noArgCtor = clazz.getConstructor();
 
                     managedObject = noArgCtor.newInstance();
@@ -322,8 +324,6 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
      */
     public void destroyManagedObject(Object managedObject)
         throws InjectionException {
-
-        // TODO if ( 299 enabled app ) Use 299 SPI to destroy managed bean
                       
         Class managedObjectClass = managedObject.getClass();
 
@@ -331,18 +331,28 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
 
         ManagedBeanManager managedBeanMgr = habitat.getByContract(ManagedBeanManager.class);
 
-        // If the object's class has @ManagedBean it's a managed bean.  Otherwise, ask
-        // managed bean manager.
-        boolean isManagedBean = (managedBeanAnn != null) ||
-                managedBeanMgr.isManagedBean(managedObject);
+        JCDIService jcdiService = habitat.getByContract(JCDIService.class);
 
-        if( isManagedBean ) {
+        if( (jcdiService != null) && jcdiService.isCurrentModuleJCDIEnabled() ) {
 
+            // If 299-enabled always delegate to managed bean manager
             managedBeanMgr.destroyManagedBean(managedObject);
 
         } else {
 
-            this.invokeInstancePreDestroy(managedObject);
+            // If the object's class has @ManagedBean it's a managed bean.  Otherwise, ask
+            // managed bean manager.
+            boolean isManagedBean = (managedBeanAnn != null) ||
+                    managedBeanMgr.isManagedBean(managedObject);
+
+            if( isManagedBean ) {
+
+                managedBeanMgr.destroyManagedBean(managedObject);
+
+            } else {
+
+                this.invokeInstancePreDestroy(managedObject);
+            }
         }
 
     }

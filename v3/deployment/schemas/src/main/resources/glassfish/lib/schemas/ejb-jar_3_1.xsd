@@ -64,7 +64,7 @@
       This is the XML Schema for the EJB 3.1 deployment descriptor.
       
       All EJB deployment descriptors must indicate
-      the ejb-jar schema by using the Java EE namespace:
+      the schema by using the Java EE namespace:
       
       http://java.sun.com/xml/ns/javaee
       
@@ -126,7 +126,8 @@
         <xsd:documentation>
 
           The ejb-name element contains the name of an enterprise
-          bean. The name must be unique within the ejb-jar file.
+          bean. The name must be unique within the ejb-jar or
+          .war file.
           
         </xsd:documentation>
       </xsd:annotation>
@@ -212,10 +213,6 @@
         The async-methodType element specifies that a session
         bean method has asynchronous invocation semantics.
         
-        The optional method-intf element constrains the async
-        method behavior to the client views of the given method-intf 
-        type.  This value must be either Remote or Local.  
-        
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
@@ -223,9 +220,6 @@
                    type="javaee:string"/>
       <xsd:element name="method-params"
                    type="javaee:method-paramsType"
-                   minOccurs="0"/>
-      <xsd:element name="method-intf"
-                   type="javaee:method-intfType"
                    minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="id"
@@ -398,7 +392,7 @@
         omitted if the lists represented by them are empty.
         
         Providing an assembly-descriptor in the deployment
-        descriptor is optional for the ejb-jar file producer.
+        descriptor is optional for the ejb-jar or .war file producer.
         
       </xsd:documentation>
     </xsd:annotation>
@@ -762,6 +756,8 @@
         icon file name
         - an optional module name. Only applicable to
         stand-alone ejb-jars or ejb-jars packaged in an ear.
+        Ignored if specified for an ejb-jar.xml within a .war.
+        In that case, standard .war module-name rules apply.
         - structural information about all included
         enterprise beans that is not specified through
         annotations
@@ -809,7 +805,7 @@
           <xsd:documentation>
 
             Providing an assembly-descriptor in the deployment
-            descriptor is optional for the ejb-jar file
+            descriptor is optional for the ejb-jar or .war file
             producer.
             
           </xsd:documentation>
@@ -892,10 +888,10 @@
 <![CDATA[[
         The ejb-nameType specifies an enterprise bean's name. It is
         used by ejb-name elements. This name is assigned by the
-        ejb-jar file producer to name the enterprise bean in the
-        ejb-jar file's deployment descriptor. The name must be
+        file producer to name the enterprise bean in the
+        ejb-jar or .war file's deployment descriptor. The name must be
         unique among the names of the enterprise beans in the same
-        ejb-jar file.
+        ejb-jar or .war file.
         
         There is no architected relationship between the used
         ejb-name in the deployment descriptor and the JNDI name that
@@ -1664,7 +1660,7 @@
       <xsd:documentation>
 
         The interceptorsType element declares one or more interceptor
-        classes used by components within this ejb-jar.  The declaration
+        classes used by components within this ejb-jar or .war.  The declaration
         consists of :
         
         - An optional description.
@@ -1747,13 +1743,13 @@
       <xsd:documentation>
 <![CDATA[[
         The interceptor-bindingType element describes the binding of
-        interceptor classes to beans within the ejb-jar.
+        interceptor classes to beans within the ejb-jar or .war.
         It consists of :
         
         - An optional description.
-        - The name of an ejb within the ejb-jar or the wildcard value "*",
+        - The name of an ejb within the module or the wildcard value "*",
         which is used to define interceptors that are bound to all
-        beans in the ejb-jar.
+        beans in the ejb-jar or .war.
         - A list of interceptor classes that are bound to the contents of
         the ejb-name element or a specification of the total ordering
         over the interceptors defined for the given level and above.
@@ -1767,7 +1763,7 @@
         of a method-level interceptor.
         
         Interceptors bound to all classes using the wildcard syntax
-        "*" are default interceptors for the components in the ejb-jar. 
+        "*" are default interceptors for the components in the ejb-jar or .war. 
         In addition, interceptors may be bound at the level of the bean
         class (class-level interceptors) or business methods (method-level
         interceptors ).
@@ -1787,7 +1783,7 @@
         
         Specifying the ejb-name as the wildcard value "*" designates
         default interceptors (interceptors that apply to all session and
-        message-driven beans contained in the ejb-jar).
+        message-driven beans contained in the ejb-jar or .war).
         
         2. 
         <interceptor-binding>
