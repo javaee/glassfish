@@ -137,12 +137,14 @@ public class JVMStatsImpl implements MonitorContract {
         MethodInvoker tn = (MethodInvoker) (serverNode.getNode("jvm")).getNode("committedHeapSize");
         //TreeNode tn = (serverNode.getNode("jvm")).getNode("committedHeapSize");
 
-        logger.finest("JVMStatsImpl: tn name = " + tn.getName());
-        logger.finest("JVMStatsImpl: tn class name = " + (tn.getClass()).getName());
-        logger.finest("JVMStatsImpl: tn value = " + tn.getValue());
-        logger.finest("JVMStatsImpl: tn value class name = " + ((tn.getValue()).getClass()).getName());
-        logger.finest("JVMStatsImpl: tn instance = " + tn.getInstance());
-        logger.finest("JVMStatsImpl: tn instance class name = " + ((tn.getInstance()).getClass()).getName());
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("JVMStatsImpl: tn name = " + tn.getName());
+            logger.finest("JVMStatsImpl: tn class name = " + (tn.getClass()).getName());
+            logger.finest("JVMStatsImpl: tn value = " + tn.getValue());
+            logger.finest("JVMStatsImpl: tn value class name = " + ((tn.getValue()).getClass()).getName());
+            logger.finest("JVMStatsImpl: tn instance = " + tn.getInstance());
+            logger.finest("JVMStatsImpl: tn instance class name = " + ((tn.getInstance()).getClass()).getName());
+        }
 
         MemoryUsage mu = (MemoryUsage) tn.getInstance();
 
