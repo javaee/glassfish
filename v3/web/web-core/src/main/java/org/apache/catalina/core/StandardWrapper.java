@@ -1832,55 +1832,6 @@ public class StandardWrapper
         return (getName());
     }
 
-
-    public long getProcessingTimeMillis() {
-        return swValve.getProcessingTimeMillis();
-    }
-
-    public void setProcessingTimeMillis(long processingTimeMillis) {
-        swValve.setProcessingTimeMillis(processingTimeMillis);
-    }
-
-    public long getMaxTimeMillis() {
-        return swValve.getMaxTimeMillis();
-    }
-
-    public void setMaxTimeMillis(long maxTimeMillis) {
-        swValve.setMaxTimeMillis(maxTimeMillis);
-    }
-
-    public long getMinTimeMillis() {
-        return swValve.getMinTimeMillis();
-    }
-
-    public void setMinTimeMillis(long minTimeMillis) {
-        swValve.setMinTimeMillis(minTimeMillis);
-    }
-
-    public int getRequestCount() {
-        return swValve.getRequestCount();
-    }
-
-    public void setRequestCount(int requestCount) {
-        swValve.setRequestCount(requestCount);
-    }
-
-    public int getErrorCount() {
-        return swValve.getErrorCount();
-    }
-
-    public void setErrorCount(int errorCount) {
-           swValve.setErrorCount(errorCount);
-    }
-
-
-    /**
-     * Increment the error count used for monitoring.
-     */
-    public void incrementErrorCount(){
-        swValve.setErrorCount(swValve.getErrorCount() + 1);
-    }
-
     public long getLoadTime() {
         return loadTime;
     }

@@ -4570,27 +4570,8 @@ public class StandardContext
         wrapperListeners.clear();
     }
 
-    /**
-     * Gets the cumulative processing times of all servlets in this
-     * StandardContext.
-     *
-     * @return Cumulative processing times of all servlets in this
-     * StandardContext
-     */
-    public long getProcessingTimeMillis() {
-
-        long result = 0;
-
-        for (Container child : findChildren()) {
-            result += ((StandardWrapper)child).getProcessingTimeMillis();
-        }
-
-        return result;
-    }
-
 
     // --------------------------------------------------------- Public Methods
-
 
     /**
      * Configure and initialize the set of filters for this Context.

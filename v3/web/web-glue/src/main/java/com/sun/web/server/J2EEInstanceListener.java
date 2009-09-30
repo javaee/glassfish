@@ -44,10 +44,8 @@ import java.security.ProtectionDomain;
 import java.security.Principal;
 import java.text.MessageFormat;
 import javax.transaction.Transaction;
-import javax.servlet.Servlet;
-import javax.servlet.ServletRequest; // IASRI 4713234
-import javax.servlet.ServletRequestWrapper;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.*;
+import javax.servlet.http.*;
 import org.apache.catalina.Context;
 import org.apache.catalina.InstanceEvent;
 import org.apache.catalina.InstanceListener;
@@ -255,6 +253,8 @@ public final class J2EEInstanceListener implements InstanceListener {
         try {
             im.preInvoke(inv);
             if (eventType==InstanceEvent.EventType.BEFORE_SERVICE_EVENT) {
+                // Emit monitoring probe event
+                wm.beforeServiceEvent(event.getWrapper().getName());
                 // enlist resources with TM for service method
                 Transaction tran;
                 if ((tran = tm.getTransaction()) != null) {
@@ -280,7 +280,8 @@ public final class J2EEInstanceListener implements InstanceListener {
                     // Ideally we should even do the J2EE injection in a
                     // decorator
                     Collection<WebComponentDecorator> decorators =
-                        wm.getServerContext().getDefaultHabitat().getAllByContract(WebComponentDecorator.class);
+                        wm.getServerContext().getDefaultHabitat().
+                            getAllByContract(WebComponentDecorator.class);
                     if (decorators == null || decorators.isEmpty()) {
                         // Perform dependency injection and invoke
                         // PostConstruct-annotated method
@@ -292,7 +293,8 @@ public final class J2EEInstanceListener implements InstanceListener {
                             d.decorate(instance, wm);
                         }
                         // Invoke post construct method
-                        injectionMgr.invokeInstancePostConstruct(instance, desc);
+                        injectionMgr.invokeInstancePostConstruct(instance,
+                            desc);
                     }
                 } 
             }
@@ -387,8 +389,19 @@ public final class J2EEInstanceListener implements InstanceListener {
                     }
                 }
             }
-            if (eventType==(InstanceEvent.EventType.AFTER_FILTER_EVENT) ||
-                eventType==(InstanceEvent.EventType.AFTER_SERVICE_EVENT)) {
+            if (eventType == InstanceEvent.EventType.AFTER_FILTER_EVENT ||
+                    eventType == InstanceEvent.EventType.AFTER_SERVICE_EVENT) {
+                // Emit monitoring probe event
+                if (eventType == InstanceEvent.EventType.AFTER_SERVICE_EVENT) {
+                    ServletResponse response = event.getResponse();
+                    int status = -1;
+                    if (response != null &&
+                            response instanceof HttpServletResponse) {
+                        status = ((HttpServletResponse) response).getStatus();
+                    }
+                    wm.afterServiceEvent(wrapper.getName(), status);
+                }
+
                 // check it's top level invocation
                 // BEGIN IASRI# 4646060
                 if (im.getCurrentInvocation() == null) {

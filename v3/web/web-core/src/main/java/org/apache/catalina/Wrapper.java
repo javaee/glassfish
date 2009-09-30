@@ -365,12 +365,6 @@ public interface Wrapper extends Container {
 
 
     /**
-     * Increment the error count value used when monitoring.
-     */
-    public void incrementErrorCount();
-
-
-    /**
      * Load and initialize an instance of this servlet, if there is not already
      * at least one initialized instance.  This can be used, for example, to
      * load servlets that are marked in the deployment descriptor to be loaded

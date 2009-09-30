@@ -84,19 +84,6 @@ final class StandardWrapperValve extends ValveBase {
         java.util.logging.Logger.getLogger(
             StandardWrapperValve.class.getName());
 
-    // ----------------------------------------------------- Instance Variables
-
-
-    // Some JMX statistics. This vavle is associated with a StandardWrapper.
-    // We exponse the StandardWrapper as JMX ( j2eeType=Servlet ). The fields
-    // are here for performance.
-    private long processingTimeMillis;
-    private long maxTimeMillis;
-    private volatile long minTimeMillis = Long.MAX_VALUE;
-    private AtomicInteger requestCount = new AtomicInteger(0);
-    private int errorCount;
-
-
     /**
      * The string manager for this package.
      */
@@ -121,15 +108,15 @@ final class StandardWrapperValve extends ValveBase {
     public int invoke(Request request, Response response)
             throws IOException, ServletException {
 
-        // Initialize local variables we may need
         boolean unavailable = false;
         Throwable throwable = null;
-        // This should be a Request attribute...
-        long t1=System.currentTimeMillis();
-        requestCount.incrementAndGet();
-        StandardWrapper wrapper = (StandardWrapper) getContainer();
-        HttpRequest hrequest = (HttpRequest) request;
         Servlet servlet = null;
+
+        StandardWrapper wrapper = (StandardWrapper) getContainer();
+        Context context = (Context) wrapper.getParent();
+
+        HttpRequest hrequest = (HttpRequest) request;
+
         /*
          * Create a request facade such that if the request was received
          * at the root context, and the root context is mapped to a
@@ -144,7 +131,7 @@ final class StandardWrapperValve extends ValveBase {
             (HttpServletResponse) response.getResponse();
 
         // Check for the application being marked unavailable
-        if (!((Context) wrapper.getParent()).getAvailable()) {
+        if (!context.getAvailable()) {
             /* S1AS 4878272
             hres.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
                            sm.getString("standardContext.isUnavailable"));
@@ -393,12 +380,6 @@ final class StandardWrapperValve extends ValveBase {
                 exception(request, response, e);
             }
         }
-        long t2=System.currentTimeMillis();
-
-        long time=t2-t1;
-        processingTimeMillis += time;
-        if( time > maxTimeMillis) maxTimeMillis = time;
-        if( time < minTimeMillis) minTimeMillis = time;
 
         return END_PIPELINE;
     }
@@ -411,10 +392,7 @@ final class StandardWrapperValve extends ValveBase {
     public void invoke(org.apache.catalina.connector.Request request,
                        org.apache.catalina.connector.Response response)
             throws IOException, ServletException {
-
         invoke((Request) request, (Response) response);
-
-        return;
     }
 
 
@@ -493,46 +471,6 @@ final class StandardWrapperValve extends ValveBase {
         ((HttpServletResponse) sresponse).setStatus
             (HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         // END GlassFish 6386229
-    }
-
-    public long getProcessingTimeMillis() {
-        return processingTimeMillis;
-    }
-
-    public void setProcessingTimeMillis(long processingTimeMillis) {
-        this.processingTimeMillis = processingTimeMillis;
-    }
-
-    public long getMaxTimeMillis() {
-        return maxTimeMillis;
-    }
-
-    public void setMaxTimeMillis(long maxTimeMillis) {
-        this.maxTimeMillis = maxTimeMillis;
-    }
-
-    public long getMinTimeMillis() {
-        return minTimeMillis;
-    }
-
-    public void setMinTimeMillis(long minTimeMillis) {
-        this.minTimeMillis = minTimeMillis;
-    }
-
-    public int getRequestCount() {
-        return requestCount.get();
-    }
-
-    public void setRequestCount(int count) {
-        this.requestCount.set(count);
-    }
-
-    public int getErrorCount() {
-        return errorCount;
-    }
-
-    public void setErrorCount(int errorCount) {
-        this.errorCount = errorCount;
     }
 
     // Don't register in JMX

@@ -1397,31 +1397,6 @@
                is="true"
                type="boolean"/>
 
-    <attribute name="processingTimeMillis"
-               description="Total execution time of the servlet's service method"
-               type="long"
-               writeable="false" />
-
-    <attribute name="maxTimeMillis"
-               description="Maximum processing time of a request"
-               type="long"
-               writeable="false" />
-
-    <attribute name="minTimeMillis"
-               description="Minimum processing time of a request"
-               type="long"
-               writeable="false" />
-
-    <attribute name="requestCount"
-               description="Number of requests processed by this wrapper"
-               type="int"
-               writeable="false" />
-
-    <attribute name="errorCount"
-               description="Error count"
-               type="int"
-               writeable="false" />
-
     <attribute name="loadTime"
                description="Load time"
                type="long"
@@ -1453,15 +1428,14 @@
          group="Valve"
          type="org.apache.catalina.core.StandardWrapperValve">
          
-     <attribute name="className"
-                description="Fully qualified class name of the managed object"
-                type="java.lang.String"
-                writeable="false"/>  
+    <attribute name="className"
+               description="Fully qualified class name of the managed object"
+               type="java.lang.String"
+               writeable="false"/>  
                     
     <attribute name="debug"
                description="The debugging detail level for this component"
                type="int"/>
-
   </mbean>
 
 </mbeans-descriptors>

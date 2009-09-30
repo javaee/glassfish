@@ -1296,12 +1296,8 @@ public class Response
                 (sm.getString("coyoteResponse.sendError.ise"));
 
         // Ignore any call from an included servlet
-        if (included)
+        if (included) {
             return; 
-
-        Wrapper wrapper = getRequest().getWrapper();
-        if (wrapper != null) {
-            wrapper.incrementErrorCount();
         }
 
         setError();

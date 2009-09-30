@@ -50,11 +50,6 @@ public class ServletProbeProvider {
     /**
      * Emits notification that a servlet has been initialized.
      *
-     * To get additional information (such as the servlet name) about the
-     * servlet that was initialized, call servlet.getServletConfig(),
-     * and on the returned ServletConfig, getServletName() (or any of the
-     * other getters).
-     *
      * @param servletName the name of the servlet that was initialized
      * @param appName the name of the app to which the servlet belongs
      * @param hostName the name of the virtual server on which the app has 
@@ -66,14 +61,8 @@ public class ServletProbeProvider {
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName) {}
 
-
     /**
      * Emits notification that a servlet has been destroyed.
-     *
-     * To get additional information (such as the servlet name) about the
-     * servlet that was destroyed, call servlet.getServletConfig(),
-     * and on the returned ServletConfig, getServletName() (or any of the
-     * other getters).
      *
      * @param servletName the name of the servlet that was destroyed
      * @param appName the name of the app to which the servlet belongs
@@ -86,4 +75,35 @@ public class ServletProbeProvider {
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName) {}
 
+    /**
+     * Emits notification that a servlet is about to enter its service
+     * method.
+     *
+     * @param servletName the name of the servlet
+     * @param appName the name of the app to which the servlet belongs
+     * @param hostName the name of the virtual server on which the app has 
+     * been deployed
+     */
+    @Probe(name="beforeServiceEvent")
+    public void beforeServiceEvent(
+        @ProbeParam("servletName") String servletName,
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName) {}
+
+    /**
+     * Emits notification that a servlet has returned from its service
+     * method.
+     *
+     * @param servletName the name of the servlet
+     * @param responseStatus the response status
+     * @param appName the name of the app to which the servlet belongs
+     * @param hostName the name of the virtual server on which the app has 
+     * been deployed
+     */
+    @Probe(name="afterServiceEvent")
+    public void afterServiceEvent(
+        @ProbeParam("servletName") String servletName,
+        @ProbeParam("responseStatus") int responseStatus,
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName) {}
 }

@@ -1933,6 +1933,16 @@ public class WebModule extends PwcWebModule {
             monitoringNodeName, vsId);
     }
 
+    public void beforeServiceEvent(String servletName) {
+        servletProbeProvider.beforeServiceEvent(servletName,
+            monitoringNodeName, vsId);
+    }
+
+    public void afterServiceEvent(String servletName, int status) {
+        servletProbeProvider.afterServiceEvent(servletName,
+            status, monitoringNodeName, vsId);
+    }
+
 
     /*
      * HTTP session related probe events
