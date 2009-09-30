@@ -86,8 +86,7 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
     }
 
     public File getInstallRoot() {
-        // $instanceRoot/../..
-        return instanceRoot.getParentFile().getParentFile();
+        return startupContext.getRootDirectory().getParentFile();
     }
 
     public String getInstanceName() {
