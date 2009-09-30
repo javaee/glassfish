@@ -39,7 +39,9 @@
 package com.sun.enterprise.v3.services.impl.monitor;
 
 import com.sun.grizzly.http.FileCache;
+import com.sun.grizzly.http.FileCache.FileCacheEntry;
 import com.sun.grizzly.http.FileCacheFactory;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Monitoring aware {@link FileCacheFactory} implementation.
@@ -55,6 +57,7 @@ public class MonitorableFileCacheFactory extends FileCacheFactory {
             String fileCacheName) {
         this.grizzlyMonitoring = grizzlyMonitoring;
         this.fileCacheName = fileCacheName;
+        cacheManager = new ConcurrentLinkedQueue<FileCacheEntry>();
     }
     
     @Override
