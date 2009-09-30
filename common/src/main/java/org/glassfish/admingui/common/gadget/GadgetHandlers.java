@@ -143,7 +143,7 @@ public class GadgetHandlers {
      *		<li><b>args</b> - (required) This specifies all of the
      *		    arguments to be passed to the handler (both input and
      *		    output arguments).  The value of this should be a String
-     *		    formatted as a comma separated list of name-value paires
+     *		    formatted as a comma separated list of name-value pairs
      *		    (which are themselves separated by colons (:).  The value
      *		    of the name-value pairs should be URL encoded (so that
      *		    commas are escaped).</li>
