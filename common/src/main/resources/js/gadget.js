@@ -15,13 +15,14 @@ admingui.gadget = {
 	if (typeof(callback) == 'undefined') {
 	    callback = admingui.gadget.noop;
 	}
-	var button = document.getElementById("setPref");
+	var button = document.getElementById("execHandler");
 	var params = 'h=' + handler + '&a=';
 	for (var param in args) {
 	    // Create a String to represent all the parameters
 	    // Double escape, this will prevent the server-side from fully
 	    // urldecoding it.  Allowing me to first parse the commas, then
 	    // decode the content.
+	    // FIXME: I think 1 escape is all that is needed?? Test this.
 	    params += param + ':' + escape(escape(args[param])) + ',';
 	}
 	DynaFaces.fireAjaxTransaction(
