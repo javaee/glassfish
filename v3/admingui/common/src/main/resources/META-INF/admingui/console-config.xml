@@ -121,5 +121,35 @@
                 parentId="configuration"
                 content="pluginTreeNodeAdminService.jsf"
         />
-
+        <integration-point
+                id="monitor"
+                type="org.glassfish.admingui:navNode"
+                priority="750"
+                parentId="configuration"
+                content="monitor/monitoringNode.jsf"
+        />
+        <integration-point
+                id="monitoring"
+                type="org.glassfish.admingui:serverInstTab"
+                priority="20"
+                parentId="serverInstTabs"
+                content="monitor/monitoringTab.jsf" />
+        <integration-point
+                id="monitor_appstats"
+                type="org.glassfish.admingui:serverInstTab"
+                priority="20"
+                parentId="monitoring"
+                content="monitor/monitoringAppStatsTab.jsf" />
+        <integration-point
+                id="monitor_server"
+                type="org.glassfish.admingui:serverInstTab"
+                priority="30"
+                parentId="monitoring"
+                content="monitor/monitoringServerTab.jsf" />
+       <integration-point
+                id="monitor_resources"
+                type="org.glassfish.admingui:serverInstTab"
+                priority="40"
+                parentId="monitoring"
+                content="monitor/monitoringResourcesTab.jsf" />
 </console-config>

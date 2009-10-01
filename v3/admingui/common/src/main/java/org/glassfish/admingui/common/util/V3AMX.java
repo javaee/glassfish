@@ -28,6 +28,7 @@ import org.glassfish.admin.amx.base.RuntimeRoot;
 import org.glassfish.admin.amx.base.ConnectorRuntimeAPIProvider;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.base.Query;
 import org.glassfish.external.amx.AMXGlassfish;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.intf.config.AMXConfigHelper;
@@ -523,6 +524,23 @@ public class V3AMX {
             return amx;
          }catch(Exception ex){
              System.out.println("Cannot find object: " + objectNameStr);
+             return null;
+         }
+     }
+
+     public static List getProxyListByType(String type){
+         List result = new ArrayList();
+         try {
+            Query query = V3AMX.getInstance().getDomainRoot().getQueryMgr();
+            Set data = (Set) query.queryType(type);
+            Iterator iter = data.iterator();
+            while (iter.hasNext()) {
+                Map attr = ((AMXProxy) iter.next()).attributesMap();
+                String obj = (String) attr.get("Name");
+                result.add(obj);
+            }
+            return result;
+         }catch(Exception ex){
              return null;
          }
      }

@@ -520,13 +520,15 @@ public class ProxyHandlers {
      */
     @Handler(id = "getProxyNamesByType",
         input = {
-            @HandlerInput(name = "type", type = String.class, required = true)},
+            @HandlerInput(name = "type", type = String.class, required = true),
+            @HandlerInput(name = "end", type = Boolean.class)},
         output = {
             @HandlerOutput(name = "result", type = List.class),
             @HandlerOutput(name = "firstItem", type = String.class)})
     public static void getProxyNamesByType(HandlerContext handlerCtx) {
         try {
             String type = (String) handlerCtx.getInputValue("type");
+            Boolean end = (Boolean) handlerCtx.getInputValue("end");
             List result = new ArrayList();
             Query query = V3AMX.getInstance().getDomainRoot().getQueryMgr();
             Set data = (Set) query.queryType(type);
@@ -536,7 +538,12 @@ public class ProxyHandlers {
             while (iter.hasNext()) {
                 Map attr = ((AMXProxy) iter.next()).attributesMap();
                 String obj = (String) attr.get("Name");
-                name = obj.substring(obj.indexOf("/")+1, (obj.lastIndexOf("/") == obj.indexOf("/")) ? obj.length() : obj.lastIndexOf("/"));
+                if(end){
+                    name = obj.substring(obj.lastIndexOf("/")+1, obj.length());
+
+                } else {
+                    name = obj.substring(obj.indexOf("/")+1, (obj.lastIndexOf("/") == obj.indexOf("/")) ? obj.length() : obj.lastIndexOf("/"));
+                }
                 if (GuiUtil.isEmpty(firstItem)) {
                     firstItem = name;
                 }

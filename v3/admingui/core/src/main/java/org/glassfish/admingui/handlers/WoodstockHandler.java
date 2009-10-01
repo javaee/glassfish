@@ -61,13 +61,23 @@ import com.sun.webui.jsf.component.Hyperlink;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import com.sun.webui.jsf.model.Option;
+import com.sun.webui.jsf.model.OptionGroup;
+import com.sun.webui.jsf.model.OptionTitle;
+
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
+import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.handlers.MonitoringHandlers;
 import org.glassfish.admingui.util.SunOptionUtil;
 
 
@@ -271,4 +281,190 @@ public class WoodstockHandler {
 		}
         handlerCtx.setOutputValue("pattern", pattern);
     }
+
+  /**
+     *  <p> Returns the list of monitorable server components</p>
+     *
+     */
+  @Handler(id="populateServerMonitorDropDown",
+        input={
+            @HandlerInput(name="VSList", type=List.class, required=true),
+            @HandlerInput(name="ThreadSystemList", type=List.class, required=true)},
+        output={
+            @HandlerOutput(name="MonitorList", type=Option[].class)})
+    public void populateServerMonitorDropDown(HandlerContext handlerCtx) {
+        List vsList = (List) handlerCtx.getInputValue("VSList");
+        List threadList = (List) handlerCtx.getInputValue("ThreadSystemList");
+        ArrayList menuList = new ArrayList();
+        menuList.add(new Option("", ""));
+        ListIterator vs = vsList.listIterator();
+        // Menu for Instances
+        while (vs.hasNext()) {            
+          Option[] groupedOptions1 = new Option[0];
+          OptionGroup jumpGroup1 =  new OptionGroup();
+          ArrayList optionList = new ArrayList();
+          String name = (String) vs.next();
+          jumpGroup1.setLabel(name);
+          String listeners = (String) V3AMX.getAttribute("amx:pp=/domain/configs/config[server-config]/http-service,type=virtual-server,name=" + name, "NetworkListeners");
+          if (listeners != null) {
+             StringTokenizer tokens = new StringTokenizer(listeners, ",");
+              while (tokens.hasMoreTokens()) {
+                  optionList.add(new Option(name, name));
+                  String token = tokens.nextToken().trim();
+                  optionList.add(new Option(token, token));
+              }
+              groupedOptions1 = (Option[]) optionList.toArray(new Option[optionList.size()]);
+          }
+          jumpGroup1.setOptions(groupedOptions1);
+          menuList.add(jumpGroup1);
+      }
+
+        // Menu for Thread System
+        ArrayList tList = new ArrayList();
+        Option[] groupedOptions2 = new Option[0];
+        ListIterator tl = threadList.listIterator();
+        tList.add(new Option("thread-system", "thead-system"));
+        while (tl.hasNext()) {
+            String name = (String) tl.next();
+            tList.add(new Option(name, name));
+        }
+        groupedOptions2 = (Option[])tList.toArray(new Option[tList.size()]);
+        OptionGroup jumpGroup2 = new OptionGroup();
+        jumpGroup2.setLabel("thread-system");
+        jumpGroup2.setOptions(groupedOptions2);
+        menuList.add(jumpGroup2);
+
+        // Add Menu Options.
+         jumpMenuOptions = (Option[])menuList.toArray(new Option[menuList.size()]);
+         
+        handlerCtx.setOutputValue("MonitorList", jumpMenuOptions);
+    }
+
+   /**
+     *  <p> Returns the list of monitorable resource components</p>
+     *
+     */
+  @Handler(id="populateResourceMonitorDropDown",
+        input={
+            @HandlerInput(name="ResourceList", type=List.class, required=true)},
+        output={
+            @HandlerOutput(name="MonitorList", type=Option[].class),
+            @HandlerOutput(name="FirstItem", type=String.class)})
+    public void populateResourceMonitorDropDown(HandlerContext handlerCtx) {
+        List rList = (List) handlerCtx.getInputValue("ResourceList");
+         ArrayList menuList = new ArrayList();
+        // Menu for Resources
+        ArrayList resList = new ArrayList();
+        Option[] groupedOptions1 = new Option[0];
+        String firstItem = "";
+        if (rList != null) {
+        ListIterator rl = rList.listIterator();
+            while (rl.hasNext()) {
+                String name = (String) rl.next();
+                resList.add(new Option(name, name));
+                if (GuiUtil.isEmpty(firstItem)) {
+                    firstItem = name;
+                }
+            }
+        }
+        groupedOptions1 = (Option[]) resList.toArray(new Option[resList.size()]);
+        OptionGroup jumpGroup1 = new OptionGroup();
+        jumpGroup1.setLabel("resources");
+        jumpGroup1.setOptions(groupedOptions1);
+        menuList.add(jumpGroup1);
+
+
+        // Add Menu Options.
+        jumpMenuOptions = (Option[]) menuList.toArray(new Option[menuList.size()]);
+
+        handlerCtx.setOutputValue("MonitorList", jumpMenuOptions);
+        handlerCtx.setOutputValue("FirstItem", firstItem);
+    }
+
+   /**
+     *  <p> Returns the list of monitorable resource components</p>
+     *
+     */
+  @Handler(id="populateApplicationsMonitorDropDown",
+        input={
+            @HandlerInput(name="AppsList", type=List.class, required=true)},
+        output={
+            @HandlerOutput(name="MonitorList", type=Option[].class),
+            @HandlerOutput(name="FirstItem", type=String.class)})
+    public void populateApplicationsMonitorDropDown(HandlerContext handlerCtx) {
+        List aList = (List) handlerCtx.getInputValue("AppsList");
+        ArrayList menuList = new ArrayList();
+        // Menu for Resources
+        ArrayList appsList = new ArrayList();
+        Option[] groupedOptions1 = new Option[0];
+        String firstItem = "";
+        if (aList != null) {
+            ListIterator al = aList.listIterator();
+            while (al.hasNext()) {
+                String name = (String) al.next();
+                appsList.add(new Option(name, name));
+                if (GuiUtil.isEmpty(firstItem)) {
+                    firstItem = name;
+                }
+            }
+        }
+        groupedOptions1 = (Option[]) appsList.toArray(new Option[appsList.size()]);
+        OptionGroup jumpGroup1 = new OptionGroup();
+        jumpGroup1.setLabel("applications");
+        jumpGroup1.setOptions(groupedOptions1);
+        menuList.add(jumpGroup1);
+
+          // Menu for ejb app info
+        OptionGroup ejbAppOptions = setEjbGroupOptions("ejb-application-mon", "ejb-application-info");
+        if(ejbAppOptions !=null){
+            menuList.add(ejbAppOptions);
+        }
+        
+         // Menu for bean-cache
+        OptionGroup bcOptions = setEjbGroupOptions("bean-cache-mon", "bean-cache");
+        if(bcOptions !=null){
+            menuList.add(bcOptions);
+        }
+        
+          // Menu for bean-pool
+        OptionGroup bpOptions = setEjbGroupOptions("bean-pool-mon", "bean-pool");
+        if(bpOptions !=null){
+            menuList.add(bpOptions);
+        }
+
+        // Menu for bean-methods
+        OptionGroup bmOptions = setEjbGroupOptions("bean-method-mon", "bean-methods");
+        if(bmOptions !=null){
+            menuList.add(bmOptions);
+        }
+        
+        // Add Menu Options.
+        jumpMenuOptions = (Option[]) menuList.toArray(new Option[menuList.size()]);
+
+        handlerCtx.setOutputValue("MonitorList", jumpMenuOptions);
+        handlerCtx.setOutputValue("FirstItem", firstItem);
+    }
+
+    public static OptionGroup setEjbGroupOptions(String type, String label) {
+        List nameList = V3AMX.getProxyListByType(type);
+        if (nameList != null && nameList.size() != 0) {
+            ArrayList nList = new ArrayList();
+            ListIterator nl = nameList.listIterator();
+            while (nl.hasNext()) {
+                String name = (String) nl.next();
+                nList.add(new Option(name, name));
+            }
+            Option[] groupedOptions = new Option[0];
+            groupedOptions = (Option[]) nList.toArray(new Option[nList.size()]);
+            OptionGroup jumpGroup = new OptionGroup();
+            jumpGroup.setLabel(label);
+            jumpGroup.setOptions(groupedOptions);
+            return jumpGroup;
+        } else {
+            return null;
+        }
+    }
+
+    private Option[] jumpMenuOptions = null;
+
 }
