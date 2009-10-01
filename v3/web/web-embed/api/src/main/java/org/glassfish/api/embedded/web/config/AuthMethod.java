@@ -35,12 +35,16 @@
  *
  */
 
-package org.glassfish.web.embed;
+package org.glassfish.api.embedded.web.config;
 
 /**
+ * Enumeration of supported authentication methods.
+ * 
  * @author Rajiv Mordani
  */
-//TODO: 
-public interface AjpListener extends WebListener {
-    
+public enum AuthMethod {
+    BASIC,
+    FORM,
+    SSL,
+    DIGEST
 }

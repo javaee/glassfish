@@ -37,9 +37,9 @@
 
 package org.glassfish.web.embed.impl;
 
-import org.glassfish.web.embed.ConfigException;
 import org.glassfish.api.embedded.LifecycleException;
-import org.glassfish.web.embed.config.WebListenerConfig;
+import org.glassfish.api.embedded.web.ConfigException;
+import org.glassfish.api.embedded.web.config.WebListenerConfig;
 import org.apache.catalina.connector.Connector;
 
 /**
@@ -51,7 +51,7 @@ import org.apache.catalina.connector.Connector;
  * @author Amy Roh
  */
 public class WebListener extends Connector 
-        implements org.glassfish.web.embed.WebListener {
+        implements org.glassfish.api.embedded.web.WebListener {
 
     private WebListenerConfig config;
     

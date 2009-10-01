@@ -47,9 +47,9 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
-import org.glassfish.web.embed.ConfigException;
 import org.glassfish.api.embedded.LifecycleException;
-import org.glassfish.web.embed.config.VirtualServerConfig;
+import org.glassfish.api.embedded.web.ConfigException;
+import org.glassfish.api.embedded.web.config.VirtualServerConfig;
 import org.glassfish.web.valve.GlassFishValve;
 import org.apache.catalina.authenticator.SingleSignOn;
 
@@ -65,7 +65,7 @@ import org.apache.catalina.authenticator.SingleSignOn;
  * @author Amy Roh
  */
 public class VirtualServer extends StandardHost implements 
-        org.glassfish.web.embed.VirtualServer {
+        org.glassfish.api.embedded.web.VirtualServer {
 
     
     private static Logger log = 
@@ -146,7 +146,7 @@ public class VirtualServer extends StandardHost implements
      * @return the collection of <tt>WebListener</tt> instances from which
      * this <tt>VirtualServer</tt> receives requests.
      */
-    public Collection<org.glassfish.web.embed.WebListener> getWebListeners() {
+    public Collection<org.glassfish.api.embedded.web.WebListener> getWebListeners() {
         // TODO
         return null;        
     }
@@ -166,7 +166,7 @@ public class VirtualServer extends StandardHost implements
      * @throws LifecycleException if the given <tt>context</tt> fails
      * to be started
      */
-    public void addContext(org.glassfish.web.embed.Context context, String contextRoot)
+    public void addContext(org.glassfish.api.embedded.web.Context context, String contextRoot)
         throws ConfigException, LifecycleException {
         addChild((Container)context);
     }
@@ -180,7 +180,7 @@ public class VirtualServer extends StandardHost implements
      * @throws LifecycleException if an error occurs during the stopping
      * or removal of the given <tt>context</tt>
      */
-    public void removeContext(org.glassfish.web.embed.Context context) {
+    public void removeContext(org.glassfish.api.embedded.web.Context context) {
         removeChild((Container)context);
     }
 
@@ -211,9 +211,9 @@ public class VirtualServer extends StandardHost implements
      * @return the (possibly empty) collection of <tt>Context</tt>
      * instances registered with this <tt>VirtualServer</tt>
      */
-    public Collection<org.glassfish.web.embed.Context> getContexts() {
-        org.glassfish.web.embed.Context[] contexts = 
-                (org.glassfish.web.embed.Context[]) findChildren();
+    public Collection<org.glassfish.api.embedded.web.Context> getContexts() {
+        org.glassfish.api.embedded.web.Context[] contexts = 
+                (org.glassfish.api.embedded.web.Context[]) findChildren();
         return Arrays.asList(contexts);
     }
     

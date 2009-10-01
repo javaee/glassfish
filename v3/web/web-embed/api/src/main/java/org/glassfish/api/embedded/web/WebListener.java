@@ -35,27 +35,70 @@
  *
  */
 
-package org.glassfish.web.embed;
+package org.glassfish.api.embedded.web;
 
-import org.glassfish.api.embedded.LifecycleException;
+import org.glassfish.api.embedded.web.config.WebListenerConfig;
 
 /**
- * Interface for lifecycle events
+ * Representation of a network listener for web requests.
+ *
+ * <p>Instances of <tt>WebListener</tt> may be in one of two states:
+ * <i>stopped</i> or <i>started</i>.
+ *
+ * @author Rajiv Mordani
  */
-public interface Lifecycle {
+public interface WebListener extends Lifecycle {
+    
+    /**
+     * Sets the id for this <tt>WebListener</tt>.
+     *
+     * @param the id for this <tt>WebListener</tt>
+     */
+    public void setId(String id);
+    
+    /**
+     * Gets the id of this <tt>WebListener</tt>.
+     *
+     * @return the id of this <tt>WebListener</tt>
+     */
+    public String getId();
+    
+    /**
+     * Sets the port number for this <tt>WebListener</tt>.
+     *
+     * @param port the port number for this <tt>WebListener</tt>
+     */
+    public void setPort(int port);
 
     /**
-     * Enables this component.
-     * 
-     * @throws LifecycleException if this component fails to be enabled
+     * Gets the port number of this <tt>WebListener</tt>.
+     *
+     * @return the port number of this <tt>WebListener</tt>
      */
-    public void enable() throws LifecycleException;
+    public int getPort();
 
     /**
-     * Disables this component.
+     * Reconfigures this <tt>WebListener</tt> with the given
+     * configuration.
+     *
+     * <p>In order for the given configuration to take effect, this
+     * <tt>WebListener</tt> may be stopped and restarted.
+     *
+     * @param config the configuration to be applied
      * 
-     * @throws org.glassfish.api.embedded.LifecycleException if this component fails to be disabled
+     * @throws ConfigException if the configuration requires a restart,
+     * and this <tt>WebListener</tt> fails to be restarted
      */
-    public void disable() throws LifecycleException;
+    public void setConfig(WebListenerConfig config)
+        throws ConfigException;
+
+    /**
+     * Gets the current configuration of this <tt>WebListener</tt>.
+     *
+     * @return the current configuration of this <tt>WebListener</tt>,
+     * or <tt>null</tt> if no special configuration was ever applied to this
+     * <tt>WebListener</tt>
+     */
+    public WebListenerConfig getConfig();
 
 }

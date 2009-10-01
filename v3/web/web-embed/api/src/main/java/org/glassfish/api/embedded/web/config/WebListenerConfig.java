@@ -35,70 +35,34 @@
  *
  */
 
-package org.glassfish.web.embed;
-
-import org.glassfish.web.embed.config.WebListenerConfig;
+package org.glassfish.api.embedded.web.config;
 
 /**
- * Representation of a network listener for web requests.
+ * Class that is used for configuring WebListener instances.
  *
- * <p>Instances of <tt>WebListener</tt> may be in one of two states:
- * <i>stopped</i> or <i>started</i>.
- *
- * @author Rajiv Mordani
+ * @see org.glassfish.web.embed.WebListener
  */
-public interface WebListener extends Lifecycle {
-    
-    /**
-     * Sets the id for this <tt>WebListener</tt>.
-     *
-     * @param the id for this <tt>WebListener</tt>
-     */
-    public void setId(String id);
-    
-    /**
-     * Gets the id of this <tt>WebListener</tt>.
-     *
-     * @return the id of this <tt>WebListener</tt>
-     */
-    public String getId();
-    
-    /**
-     * Sets the port number for this <tt>WebListener</tt>.
-     *
-     * @param port the port number for this <tt>WebListener</tt>
-     */
-    public void setPort(int port);
+public class WebListenerConfig {
+
+    private boolean traceEnabled;
 
     /**
-     * Gets the port number of this <tt>WebListener</tt>.
+     * Enables or disables support for TRACE requests.
      *
-     * @return the port number of this <tt>WebListener</tt>
+     * @param traceEnabled true if support for TRACE requests is to be
+     * enabled, false otherwise
      */
-    public int getPort();
+    public void setTraceEnabled(boolean traceEnabled) {
+        this.traceEnabled = traceEnabled;
+    }
 
     /**
-     * Reconfigures this <tt>WebListener</tt> with the given
-     * configuration.
+     * Checks if support for TRACE requests is enabled.
      *
-     * <p>In order for the given configuration to take effect, this
-     * <tt>WebListener</tt> may be stopped and restarted.
-     *
-     * @param config the configuration to be applied
-     * 
-     * @throws ConfigException if the configuration requires a restart,
-     * and this <tt>WebListener</tt> fails to be restarted
+     * @return true if support for TRACE requests is enabled, false otherwise
      */
-    public void setConfig(WebListenerConfig config)
-        throws ConfigException;
-
-    /**
-     * Gets the current configuration of this <tt>WebListener</tt>.
-     *
-     * @return the current configuration of this <tt>WebListener</tt>,
-     * or <tt>null</tt> if no special configuration was ever applied to this
-     * <tt>WebListener</tt>
-     */
-    public WebListenerConfig getConfig();
+    public boolean isTraceEnabled() {
+        return traceEnabled;
+    }
 
 }

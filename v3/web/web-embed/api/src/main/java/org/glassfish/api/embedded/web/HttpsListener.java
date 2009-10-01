@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,84 +32,32 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
+ *
  */
-package org.glassfish.web.embed;
 
-import org.glassfish.api.embedded.ContainerBuilder;
-import org.glassfish.api.embedded.Port;
-import org.glassfish.api.embedded.Server;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
+package org.glassfish.api.embedded.web;
 
-import java.net.URL;
-import java.io.File;
+import org.glassfish.api.embedded.web.config.SslConfig;
 
 /**
- * Configuration for the WebContainer instance
- *
- * @author Jerome Dochez
+ * @author Rajiv Mordani
  */
-@Service(name="web")
-public class WebBuilder implements ContainerBuilder<EmbeddedWebContainer> {
-
-    @Inject
-    Habitat habitat;
-    
-    URL     defaultWebXml;
-    String  listenerName;
-    File    docRoot;
-    boolean listings;
-
-    private EmbeddedWebContainer container=null;
-
-    public WebBuilder setDefaultWebXml(URL url) {
-        defaultWebXml = url;
-        return this;
-    }
-
-    public URL getDefaultWebXml() {
-        if (defaultWebXml == null) {
-            defaultWebXml = getClass().getClassLoader().getResource("org/glassfish/web/embed/default-web.xml");
-        }
-        return defaultWebXml;
-    }
-
-    public WebBuilder setHttpListenerName(String name) {
-        listenerName = name;
-        return this;
-    }
-
-    public WebBuilder setDocRootDir(File f) {
-        docRoot = f;
-        return this;
-    }
-
-    public File getDocRootDir() {
-        return docRoot;
-    }
-
-    public WebBuilder setListings(boolean b) {
-        this.listings = b;
-        return this;        
-    }
-
-    public synchronized EmbeddedWebContainer create(Server server) {
-        if (container==null) {
-            container=habitat.getByContract(EmbeddedWebContainer.class);
-            container.setConfiguration(this);
-        }
-        return container;
-    }
+public interface HttpsListener extends WebListener {
 
     /**
+     * Sets the SSL configuration for this web listener
      *
-     * @return
+     * @see org.glassfish.web.embed.config.SslConfig
+     *
+     * @param sslConfig the SSL configuration for this web listener
      */
+    public void setSslConfig(SslConfig sslConfig);
     /**
-     * uncomment when this moves into web-glue.
-     * public void setConfig(HttpService config) {
-     * }
+     * Gets the SslConfig for this web listener
+     *
+     * @see org.glassfish.web.embed.config.SslConfig
+     *
+     * @return the SSL configuration for this listener
      */
-
+    public SslConfig getSslConfig();
 }

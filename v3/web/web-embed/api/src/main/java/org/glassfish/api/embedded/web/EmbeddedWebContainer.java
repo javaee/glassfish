@@ -35,12 +35,12 @@
  *
  */
 
-package org.glassfish.web.embed;
+package org.glassfish.api.embedded.web;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.logging.Level;
-import org.glassfish.web.embed.config.*;
+import org.glassfish.api.embedded.web.config.*;
 import org.glassfish.api.embedded.LifecycleException;
 import org.glassfish.api.embedded.EmbeddedContainer;
 import org.jvnet.hk2.annotations.Contract;

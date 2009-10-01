@@ -38,7 +38,7 @@ package org.glassfish.web.embed.impl;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.web.embed.WebBuilder;
+import org.glassfish.api.embedded.web.WebBuilder;
 import org.glassfish.apf.ProcessingResult;
 import org.glassfish.apf.AnnotationProcessorException;
 

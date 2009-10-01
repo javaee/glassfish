@@ -35,12 +35,12 @@
  *
  */
 
-package org.glassfish.web.embed;
+package org.glassfish.api.embedded.web;
 
 import java.util.*;
 import javax.servlet.*;
 import org.apache.catalina.Valve;
-import org.glassfish.web.embed.config.SecurityConfig;
+import org.glassfish.api.embedded.web.config.SecurityConfig;
 
 /**
  * Representation of a web application.

@@ -35,29 +35,108 @@
  *
  */
 
-package org.glassfish.web.embed;
+package org.glassfish.api.embedded.web.config;
 
-import org.glassfish.web.embed.config.SslConfig;
+import org.glassfish.api.embedded.web.config.SslType;
+
+import java.io.File;
+import java.util.Set;
 
 /**
  * @author Rajiv Mordani
  */
-public interface HttpsListener extends WebListener {
+public class SslConfig {
+
+    private String keyStore;
+    private File trustStore;
+    private String keyPassword;
+    private long timeoutMilliSeconds;
+    private Set<SslType> algorithms;
 
     /**
-     * Sets the SSL configuration for this web listener
      *
-     * @see org.glassfish.web.embed.config.SslConfig
-     *
-     * @param sslConfig the SSL configuration for this web listener
      */
-    public void setSslConfig(SslConfig sslConfig);
+    public SslConfig() {
+        
+    }
+
     /**
-     * Gets the SslConfig for this web listener
      *
-     * @see org.glassfish.web.embed.config.SslConfig
-     *
-     * @return the SSL configuration for this listener
+     * @param keyStore
      */
-    public SslConfig getSslConfig();
+    public void setKeyStore(String keyStore) {
+        this.keyStore = keyStore;
+    }
+
+    /**
+     *
+     * @param trustStore
+     */
+    public void setTrustStore(File trustStore) {
+        this.trustStore = trustStore;
+    }
+
+    /**
+     *
+     * @param keyPassword
+     */
+    public void setKeyPassword(String keyPassword) {
+        this.keyPassword = keyPassword;
+    }
+
+    /**
+     *
+     * @param timeoutMilliSeconds
+     */
+    public void setHandshakeTimeout(long timeoutMilliSeconds) {
+        this.timeoutMilliSeconds = timeoutMilliSeconds;
+    }
+
+    /**
+     *
+     * @param algorithms
+     */
+    public void setAlgorithms(Set<SslType> algorithms) {
+        this.algorithms = algorithms;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getKeyStore() {
+        return this.keyStore;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public File getTrustStore() {
+        return this.trustStore;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getKeyPassword() {
+        return this.keyPassword;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public long getHandshakeTimeout() {
+        return this.timeoutMilliSeconds;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Set<SslType> getAlgorithms() {
+        return this.algorithms;
+    }
 }

@@ -35,12 +35,12 @@
  *
  */
 
-package org.glassfish.web.embed;
+package org.glassfish.api.embedded.web;
 
 import java.io.File;
 import java.util.Collection;
 import org.apache.catalina.Valve;
-import org.glassfish.web.embed.config.VirtualServerConfig;
+import org.glassfish.api.embedded.web.config.VirtualServerConfig;
 import org.glassfish.api.embedded.LifecycleException;
 
 /**
