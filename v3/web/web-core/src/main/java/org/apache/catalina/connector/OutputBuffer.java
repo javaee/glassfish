@@ -365,7 +365,6 @@ public class OutputBuffer extends Writer
 
         doFlush = true;
         if (initial){
-            addSessionVersionCookieIfNecessary();
             addSessionCookieWithJvmRoute();
             response.sendHeaders();
             initial = false;
@@ -414,7 +413,6 @@ public class OutputBuffer extends Writer
 
         // If we really have something to write
         if (cnt > 0) {
-            addSessionVersionCookieIfNecessary();
             addSessionCookieWithJvmRoute();
             // real write to the adapter
             outputChunk.setBytes(buf, off, cnt);
@@ -661,34 +659,6 @@ public class OutputBuffer extends Writer
     }
 
     
-    /**
-     * Adds a session version cookie to the response if necessary.
-     */
-    private void addSessionVersionCookieIfNecessary() {
-
-        Request req = (Request) coyoteResponse.getRequest();
-        if (req.isRequestedSessionIdFromURL()) {
-            return;
-        }
-
-        StandardContext ctx = (StandardContext) coyoteResponse.getContext();
-        if (ctx != null && !ctx.getCookies()) {
-            // cookies disabled
-            return;
-        }
-
-        HashMap<String, String> sessionVersions = (HashMap<String, String>)
-            req.getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
-        if (sessionVersions != null) {
-            Cookie cookie = new Cookie(
-                Globals.SESSION_VERSION_COOKIE_NAME,
-                RequestUtil.makeSessionVersionString(sessionVersions));
-            req.configureSessionCookie(cookie);
-            response.addHeader(SET_COOKIE_HEADER,
-                               coyoteResponse.getCookieString(cookie));
-        }
-    }
-
     /**
      * Adds JSESSIONID cookie whose value includes jvmRoute if necessary.
      */

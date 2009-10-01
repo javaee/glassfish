@@ -536,36 +536,4 @@ public final class RequestUtil {
 
         return result;
     }
-
-
-    /**
-     * Gets the string representation of the given session version mappings.
-     *
-     * @param sessionVersions The session version mappings
-     *
-     * @return The string representation of the given session version mappings
-     */
-    public static String makeSessionVersionString(HashMap sessionVersions) {
-
-        if (sessionVersions == null) {
-            return null;
-        }
-
-        StringBuffer sb = new StringBuffer();
-        Iterator<String> iter = sessionVersions.keySet().iterator();
-        boolean first = true;
-        while (iter.hasNext()) {
-            if (first) {
-                first = false;
-            } else {
-                sb.append(':');
-            }
-            String contextPath = iter.next();
-            sb.append(contextPath);
-            sb.append(SESSION_VERSION_SEPARATOR);
-            sb.append(sessionVersions.get(contextPath));
-        }
-
-        return sb.toString();
-    }
 }
