@@ -630,7 +630,7 @@ admingui.util = {
     },
 
     log : function(msg) {
-        if (console.log) {
+        if (!(typeof(console) === 'undefined') && (typeof(console.log) === 'function')) {
             console.log((new Date()).toString() + ":  " + msg);
         }
     }
@@ -1992,8 +1992,8 @@ admingui.ajax = {
 	// FIXME: These 2 functions only need to be replaced after a FPR...
         webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
         webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
-        admingui.ajax.processElement(contentNode);
-        admingui.ajax.processScripts(contentNode);
+        admingui.ajax.processElement(o, contentNode, true);
+        admingui.ajax.processScripts(o);
     },
 
     submitFormAjax : function (form) {
@@ -2031,7 +2031,8 @@ admingui.ajax = {
         return uploading;
     },
 
-    processElement : function (node) {
+    processElement : function (context, node, queueScripts) {
+	var recurse = true;
         if (node instanceof HTMLAnchorElement) {
             if (!admingui.ajax._isTreeNodeControl(node) && (node.target == '')) { //  && (typeof node.onclick != 'function'))
                 var shouldReplace = true;
@@ -2063,49 +2064,35 @@ admingui.ajax = {
             }
         } else  if (node instanceof HTMLTitleElement) {
             document.title = node.text;
-        }
+        } else if (node instanceof HTMLScriptElement) {
+	    recurse = false;  // don't walk scripts
+	    if (queueScripts) {
+		// Queue it...
+		if (typeof(context.scriptQueue) === "undefined") {
+		    context.scriptQueue = new Array();
+		}
+		context.scriptQueue.push(node);
+	    }
+	}
 
-        for (var i = 0; i < node.childNodes.length; i++) {
-            admingui.ajax.processElement(node.childNodes[i]);
-        }
+	// If recurse flag is true... recurse
+	if (recurse) {
+	    for (var i = 0; i < node.childNodes.length; i++) {
+		admingui.ajax.processElement(context, node.childNodes[i], queueScripts);
+	    }
+	}
     },
 
     _isTreeNodeControl : function (node) {
         return isTreeNodeControl = (node.id.indexOf("_turner") > -1); // probably needs some work.  This will do for now.
     },
 
-    showPage : function () {
-        if (window.frames['buffer'].document) {
-            var sourceNode = window.frames['buffer'].document.body; //getElementById('content');
-            var contentNode = document.getElementById('content');
-            if (window.frames['buffer'].location != admingui.ajax.lastPageLoaded) {
-
-
-                var newContent = sourceNode.innerHTML;
-                contentNode.innerHTML = newContent;
-
-                admingui.ajax.updateCurrentPageLink(window.frames['buffer'].location);
-            }
-            admingui.ajax.processNewPage(contentNode);
-        }
-
-        webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
-        webui.suntheme.jumpDropDown.changed.prototype = admingui.woodstock.dropDownChanged;
-    },
-
-    processNewPage : function(node) {
-        admingui.ajax.processElement(node);
-        admingui.ajax.processScripts(node);
-    },
-
-    processScripts : function (node) {
-        for (var i = 0; i < node.childNodes.length; i++) {
-            if (node instanceof HTMLScriptElement) {
-                var script = node.text;
-                globalEval(script);
-            }
-            admingui.ajax.processScripts(node.childNodes[i]);
-        }
+    processScripts : function(context) {
+	if (typeof(context.scriptQueue) === "undefined") {
+	    // Nothing to do...
+	    return;
+	}
+	globalEvalNextScript(context.scriptQueue);
     },
 
     modifyUrl : function (url) {
@@ -2154,7 +2141,6 @@ admingui.ajax = {
 
         for (var i = 0; i < admingui.ajax.whitelist.length; i++) {
             prop = admingui.ajax.whitelist[i];
-            var foo = source[prop];
             if (typeof(source[prop]) != 'undefined') {
                 node[prop] = source[prop];
             }
@@ -2176,29 +2162,60 @@ admingui.ajax = {
         return false;
     },
 
-    maximizeIFrame : function () {
-        var iframe = document.getElementById('buffer');
-        var iframeBody = window.frames['buffer'].document.body;
-        var layoutUnit = document.getElementById('buffer').parentNode.parentNode;
-        var layoutUnitHeight = parseInt(YAHOO.util.Dom.getStyle(layoutUnit, 'height').replace("px",""));
-        var layoutUnitWidth = parseInt(YAHOO.util.Dom.getStyle(layoutUnit, 'width').replace("px",""));
-        var iframeHeight = 0;
-        for (var i = 0; i < iframeBody.childNodes.length; i++) {
-            try {
-                var elHeight = YAHOO.util.Dom.getStyle(iframeBody.childNodes[i], "height")
-                elHeight = elHeight.replace ("px", "");
-                if (!/\D/.test(elHeight)) {
-                    iframeHeight += parseInt(elHeight);
-                }
-            } catch (err) {
+    /**
+     *	handler - The name of the handler to invoke.
+     *	args - An object containing properties / values for the parameters.
+     *	callback - A JS function that should be notified.
+     *	depth - the max depth of all return variables to be encoded in json
+     *	async - false if a syncronous request is desired, default: true
+     */
+    invoke: function(handler, args, callback, depth, async) {
+	if ((typeof(handler) === 'undefined') || (handler == '')) {
+	    return;
+	}
+	if (typeof(callback) === 'undefined') {
+	    callback = function() {};
+	}
+	var params = '';
+	for (var param in args) {
+	    // Create a String to represent all the parameters
+	    // Double escape, this will prevent the server-side from fully
+	    // urldecoding it.  Allowing me to first parse the commas, then
+	    // decode the content.
+	    params += param + ':' + escape(args[param]) + ',';
+	}
+	if (typeof(async) === 'undefined') {
+	    async = true;
+	}
+	if (!(typeof(jsf) === 'undefined') && !(typeof(jsf.ajax) === 'undefined')) {
+	    // Warp user's function to make easier to use
+	    var func = function(data) {
+		if (data.status === 'success') {
+		    var result = '(' + document.getElementById('execResp').value + ')';
+		    callback(eval(result).content, data);
+		}
+	    }
+	    if (typeof(depth) === 'undefined') {
+		depth = 3;
+	    }
+	    jsf.ajax.request(document.getElementById('execButton'), null,
+		{
+		    execute: 'execButton',
+		    render: 'execResp',
+		    execButton: 'execButton',
+		    h: handler,
+		    d: depth,
+		    a: params,
+		    onevent: func,
+		    asynchronous: async
+		});
+	} else {
+	    alert('JSF2+ Ajax Missing!');
+	}
+    },
 
-            }
-        }
-        YAHOO.util.Dom.setStyle(iframe, 'height', layoutUnitHeight + 'px');
-        YAHOO.util.Dom.setStyle(iframe, 'width', layoutUnitWidth);
-        YAHOO.util.Dom.setStyle(layoutUnit.parentNode, 'height', iframeHeight + 'px');
-        
-        admingui.ajax.processElement(iframeBody);
+    getResource: function(path, callback) {
+	admingui.ajax.invoke("gf.serveResource", {path:path, content:content}, callback, 1, true);
     }
 }
 
@@ -2273,13 +2290,33 @@ admingui.woodstock = {
     }
 }
 
-var globalEval = function globalEval(src) {
+    var globalEvalNextScript = function(scriptQueue) {
+	if (typeof(scriptQueue) === "undefined") {
+	    // Nothing to do...
+	    return;
+	}
+	var node = scriptQueue.shift();
+	if (typeof(node) == 'undefined') {
+	    // Nothing to do...
+	    return;
+	}
+	if (node.src === "") {
+	    // use text...
+	    globalEval(node.text);
+	    globalEvalNextScript(scriptQueue);
+	} else {
+	    // Get via Ajax
+	    admingui.ajax.getResource(node.src, function(result) { globalEval(result); globalEvalNextScript(scriptQueue);} );
+	}
+    }
+
+var globalEval = function(src) {
     if (window.execScript) {
         window.execScript(src);
         return;
     }
     var fn = function() {
-        window.eval.call(window,src);
+        window.eval.call(window, src);
     };
     fn();
 };
