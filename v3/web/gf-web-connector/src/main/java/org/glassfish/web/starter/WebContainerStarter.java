@@ -58,6 +58,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import org.jvnet.hk2.config.types.Property;
 
@@ -73,7 +74,8 @@ import org.jvnet.hk2.config.types.Property;
  */
 @Service
 @Scoped(Singleton.class)
-public class WebContainerStarter implements Startup, PostConstruct {
+public class WebContainerStarter
+        implements Startup, PostConstruct {
 
     private static final Logger logger = LogDomains.getLogger(
         WebContainerStarter.class, LogDomains.WEB_LOGGER);
@@ -82,6 +84,8 @@ public class WebContainerStarter implements Startup, PostConstruct {
         "authPassthroughEnabled";
 
     private static final String PROXY_HANDLER = "proxyHandler";
+
+    private static final String ALTERNATE_DOCROOT = "alternatedocroot_";
 
     @Inject
     Domain domain;
@@ -110,43 +114,66 @@ public class WebContainerStarter implements Startup, PostConstruct {
                     ConfigBeansUtilities.toBoolean(
                         httpService.getSsoEnabled())) {
                 startNeeded = true;
+                break;
             }
 
-            if (!startNeeded) {
-                List<Property> props = httpService.getProperty();
-                if (props != null) {
-                    for (Property prop : props) {
-                        String propName = prop.getName();
-                        String propValue = prop.getValue();
-                        if (AUTH_PASSTHROUGH_ENABLED.equals(propName)) {
-                            startNeeded = ConfigBeansUtilities.toBoolean(
-                                    propValue);
-                            if (startNeeded) break;
-                        } else if (PROXY_HANDLER.equals(propName)) {
-                            startNeeded = true;
-                            break;
+            List<Property> props = httpService.getProperty();
+            if (props != null) {
+                for (Property prop : props) {
+                    String propName = prop.getName();
+                    String propValue = prop.getValue();
+                    if (AUTH_PASSTHROUGH_ENABLED.equals(propName)) {
+                        startNeeded = ConfigBeansUtilities.toBoolean(propValue);
+                        if (startNeeded) break;
+                    } else if (PROXY_HANDLER.equals(propName)) {
+                        startNeeded = true;
+                        break;
+                    }
+                }
+                // break from the outer for loop
+                if (startNeeded) {
+                    break;
+                }
+            }
+            
+            List<VirtualServer> hosts = httpService.getVirtualServer();
+            if (hosts != null) {
+                for (VirtualServer host : hosts) {
+                    if (ConfigBeansUtilities.toBoolean(
+                                host.getAccessLoggingEnabled()) ||
+                            ConfigBeansUtilities.toBoolean(
+                                host.getSsoEnabled())) {
+                        startNeeded = true;
+                        break;
+                    }
+     
+                    /*
+                     * Iterate over the virtual server properties.
+                     * alternatedocroot is the only property that's
+                     * supported by Grizzly's static resource handler.
+                     * Any other properties can be handled only by the
+                     * web container.
+                     */
+                    props = host.getProperty();
+                    if (props != null) {
+                        for (Property prop : props) {
+                            if (!prop.getName().startsWith(
+                                    ALTERNATE_DOCROOT)) {
+                                startNeeded = true;
+                                break;                
+                            }
                         }
                     }
                 }
-            }
-
-            if (!startNeeded) {
-                List<VirtualServer> hosts = httpService.getVirtualServer();
-                if (hosts != null) {
-                    for (VirtualServer host : hosts) {
-                        if (ConfigBeansUtilities.toBoolean(
-                                    host.getAccessLoggingEnabled()) ||
-                                ConfigBeansUtilities.toBoolean(
-                                    host.getSsoEnabled())) {
-                            startNeeded = true;
-                        }
-                    }
+                // break from the outer for loop
+                if (startNeeded) {
+                    break;
                 }
             }
+        }
 
-            if (startNeeded) {
-                startWebContainer();
-            }
+        if (startNeeded) {
+            startWebContainer();
         }
     }
 
