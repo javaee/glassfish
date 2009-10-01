@@ -108,7 +108,7 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
         if (handler != null) {
             this.callbackHandler = handler;
         } else {
-            handler = new LoginCallbackHandler(useGUIAuth);
+            this.callbackHandler = new LoginCallbackHandler(useGUIAuth);
         }
         this.targetServers = tServers;
         this.msgSecConfigs = configs;
