@@ -9,27 +9,38 @@
     <enterprise-beans>
 
         <!-- Simple EJB -->
-        <entity>
+        <session>
             <display-name>SimpleBMPEJB</display-name>
             <ejb-name>SimpleBMPEJB</ejb-name>
             <home>com.sun.s1asdev.jdbc.connectionleaktracing.ejb.SimpleBMPHome</home>
             <remote>com.sun.s1asdev.jdbc.connectionleaktracing.ejb.SimpleBMP</remote>
-            <ejb-class>com.sun.s1asdev.jdbc.connectionleaktracing.ejb.SimpleBMPBean</ejb-class>
-            <persistence-type>Bean</persistence-type>
+	    <ejb-class>com.sun.s1asdev.jdbc.connectionleaktracing.ejb.SimpleBMPBean</ejb-class>
+	    <session-type>Stateful</session-type>
+	    <transaction-type>Container</transaction-type>
+	    <!--<persistence-type>Bean</persistence-type>
             <prim-key-class>java.lang.Integer</prim-key-class>
             <reentrant>False</reentrant>
             <security-identity>
                 <description></description>
                 <use-caller-identity></use-caller-identity>
-            </security-identity>
+	</security-identity>-->
             <resource-ref>
                 <res-ref-name>DataSource</res-ref-name>
                 <res-type>javax.sql.DataSource</res-type>
                 <res-auth>Container</res-auth>
                 <res-sharing-scope>Shareable</res-sharing-scope>
             </resource-ref>
-        </entity>
+        </session>
     </enterprise-beans>
 
+    <assembly-descriptor>
+        <container-transaction>
+            <method>
+                <ejb-name>SimpleBMPEJB</ejb-name>
+                <method-name>*</method-name>
+            </method>
+            <trans-attribute>Required</trans-attribute>
+        </container-transaction>
+    </assembly-descriptor>
 </ejb-jar>
 

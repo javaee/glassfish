@@ -6,18 +6,13 @@ import javax.sql.*;
 import java.sql.*;
 
 public class SimpleBMPBean
-        implements EntityBean {
+        implements SessionBean {
 
     protected DataSource ds;
+    private transient javax.ejb.SessionContext m_ctx = null;
 
-    public void setEntityContext(EntityContext entityContext) {
-        Context context = null;
-        try {
-            context = new InitialContext();
-            ds = (DataSource) context.lookup("java:comp/env/DataSource");
-        } catch (NamingException e) {
-            throw new EJBException("cant find datasource");
-        }
+    public void setSessionContext(SessionContext context) {
+	m_ctx = context;
     }
 
     public Integer ejbCreate() throws CreateException {
@@ -30,6 +25,13 @@ public class SimpleBMPBean
     public boolean test1() {
         Connection conn = null;
         boolean passed = true;
+        Context context = null;
+        try {
+            context = new InitialContext();
+            ds = (DataSource) context.lookup("java:comp/env/DataSource");
+        } catch (NamingException e) {
+            throw new EJBException("cant find datasource");
+        }
         try {
             conn = ds.getConnection();
             insertEntry(conn);

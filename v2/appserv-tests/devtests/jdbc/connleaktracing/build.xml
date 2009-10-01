@@ -2,11 +2,9 @@
 
 <!DOCTYPE project [
         <!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
-        <!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+	<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
         <!ENTITY testproperties SYSTEM "file:./build.properties">
-        <!ENTITY run SYSTEM "file:./../../../config/run.xml">
-        <!ENTITY eeSetup SYSTEM "file:./../config/ee-common.xml">
-        <!ENTITY eeProperties SYSTEM "file:./../config/ee-properties.xml">
+	<!ENTITY run SYSTEM "file:./../config/run.xml">
         ]>
 
 <project name="mix" default="usage" basedir=".">
@@ -17,9 +15,6 @@
     &run;
     &testproperties;
 
-    <!--&eeSetup;
-    &eeProperties;
-    &testproperties;-->
 
     <target name="all" depends="build,deploy, run,undeploy"/>
 
@@ -39,10 +34,11 @@
     <target name="build" depends="compile">
         <antcall target="build-ear-common">
             <param name="ejbjar.classes"
-                   value="**/*.class"/>
+		    value="**/ejb/*.class"/>
             <param name="appclientjar.classes"
-                   value="**/SimpleBMP.class, **/SimpleBMPHome.class,**/*Client*.class"/>
+		    value="**/SimpleBMP.class, **/SimpleBMPHome.class,**/*Client*.class"/>
         </antcall>
+
     </target>
 
     <target name="deploy" depends="init-common">
@@ -54,9 +50,7 @@
     </target>
 
     <target name="run" depends="init-common">
-
-        <antcall target="runclient-common">
-        </antcall>
+	    <antcall target="runclient-common"/>
 
     </target>
 
@@ -66,7 +60,7 @@
             <param name="sql.file" value="sql/drop_pointbase.sql"/>
         </antcall>
         <antcall target="delete-jdbc-stuff"/>
-        <antcall target="undeploy-common"/>
+	<antcall target="undeploy-common"/>
     </target>
 
     <target name="usage">
@@ -117,4 +111,5 @@
             <param name="jdbc.conpool.name" value="${poolname}"/>
         </antcall>
     </target>
+
 </project>

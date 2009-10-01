@@ -7,7 +7,7 @@
     <display-name>jdbc-connectionleaktracingClient</display-name>
     <ejb-ref>
         <ejb-ref-name>ejb/SimpleBMPHome</ejb-ref-name>
-        <ejb-ref-type>Entity</ejb-ref-type>
+        <ejb-ref-type>Session</ejb-ref-type>
         <home>com.sun.s1asdev.jdbc.connectionleaktracing.ejb.SimpleBMPHome</home>
         <remote>com.sun.s1asdev.jdbc.connectionleaktracing.ejb.SimpleBMP</remote>
     </ejb-ref>
