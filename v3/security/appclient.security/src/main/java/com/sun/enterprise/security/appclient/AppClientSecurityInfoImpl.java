@@ -40,6 +40,7 @@ import com.sun.enterprise.security.J2EESecurityManager;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.UsernamePasswordStore;
 import com.sun.enterprise.security.appclient.integration.AppClientSecurityInfo;
+import com.sun.enterprise.security.auth.login.LoginCallbackHandler;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.common.SecurityConstants;
 import com.sun.enterprise.security.common.Util;
@@ -79,6 +80,7 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
     private CallbackHandler callbackHandler;
     private CredentialType  appclientCredentialType;
     boolean isJWS;
+    boolean useGUIAuth;
     private List<TargetServer> targetServers;
     private List<MessageSecurityConfig> msgSecConfigs;
     
@@ -97,12 +99,17 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
             List<TargetServer> tServers,
             List<MessageSecurityConfig> configs, CallbackHandler handler, 
             CredentialType credType, String username, 
-            String password, boolean isJWS) {
+            String password, boolean isJWS, boolean useGUIAuth) {
        
            /* security init */
         this.isJWS = isJWS;
+        this.useGUIAuth = useGUIAuth;
         this.appclientCredentialType = credType;
-        this.callbackHandler = handler;
+        if (handler != null) {
+            this.callbackHandler = handler;
+        } else {
+            handler = new LoginCallbackHandler(useGUIAuth);
+        }
         this.targetServers = tServers;
         this.msgSecConfigs = configs;
         

@@ -64,6 +64,7 @@ public interface AppClientSecurityInfo {
      * @param username the static username if any was configured
      * @param password the static password if any was configured
      * @Param isJWS set to true if it is Java WebStart client
+     * @Param useGUIAuth flag when set to true indicates the use of GUI Authentication
      */
     public void initializeSecurity(
             List<TargetServer> tServers,
@@ -71,7 +72,7 @@ public interface AppClientSecurityInfo {
             CallbackHandler handler,
             CredentialType appclientCredType,
             String username, String password, 
-            boolean isJWS);
+            boolean isJWS, boolean useGUIAuth);
 
     
     /**
