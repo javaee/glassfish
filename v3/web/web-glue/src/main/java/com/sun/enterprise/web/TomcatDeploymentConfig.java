@@ -351,6 +351,13 @@ public class TomcatDeploymentConfig {
     protected static void configureContextParam(WebModule webModule,
                                                 WebBundleDescriptor wmd) {
         for (ContextParameter ctxParam : wmd.getContextParametersSet()) {
+            if ("com.sun.faces.injectionProvider".equals(
+                            ctxParam.getName()) && 
+                    "com.sun.faces.vendor.GlassFishInjectionProvider".equals(
+                            ctxParam.getValue())) {
+                // Ignore, see IT 9641
+                continue;
+            }
             webModule.addParameter(ctxParam.getName(), ctxParam.getValue());
         }
     }
