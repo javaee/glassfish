@@ -85,9 +85,22 @@ public class JdbcConnPoolProbeProvider {
      * @param poolName for which decrement numConnFree is got
      * @param steadyPoolSize 
      */
-    @Probe(name="decrementFreeConnectionsSizeEvent")
-    public void decrementFreeConnectionsSizeEvent(
-            @ProbeParam("poolName") String poolName, 
+    @Probe(name="decrementNumConnFreeEvent")
+    public void decrementNumConnFreeEvent(
+            @ProbeParam("poolName") String poolName) { }
+
+    /**
+     * Emits probe event/notification that the given jdbc connection pool 
+     * <code>poolName</code>has got a increment free connections size event.
+     * 
+     * @param poolName for which increment numConnFree is got
+     * @param beingDestroyed if connection is destroyed due to error
+     * @param steadyPoolSize 
+     */
+    @Probe(name="incrementNumConnFreeEvent")
+    public void incrementNumConnFreeEvent(
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("beingDestroyed") boolean beingDestroyed,            
             @ProbeParam("steadyPoolSize") int steadyPoolSize) { }
 
     /**
@@ -95,14 +108,10 @@ public class JdbcConnPoolProbeProvider {
      * <code>poolName</code>has got a decrement connections used event.
      * 
      * @param poolName for which decrement numConnUsed is got
-     * @param beingDestroyed if the connection is destroyed due to error
-     * @param steadyPoolSize 
      */
     @Probe(name="decrementConnectionUsedEvent")
     public void decrementConnectionUsedEvent(
-            @ProbeParam("poolName") String poolName, 
-            @ProbeParam("beingDestroyed") boolean beingDestroyed,
-            @ProbeParam("steadyPoolSize") int steadyPoolSize) { }
+            @ProbeParam("poolName") String poolName) { }
     
     /**
      * Emits probe event/notification that the given jdbc connection pool 

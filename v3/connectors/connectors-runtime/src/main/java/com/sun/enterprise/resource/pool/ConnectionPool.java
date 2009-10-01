@@ -453,6 +453,8 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                 }
                 if (poolLifeCycleListener != null) {
                     poolLifeCycleListener.connectionUsed();
+                    //Decrement numConnFree
+                    poolLifeCycleListener.decrementNumConnFree();
                 }
             }
         }
@@ -883,10 +885,23 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
                 if (resourceHandle.getResourceState().isBusy()) {
                     //Destroying a Connection due to error
-                    poolLifeCycleListener.decrementConnectionUsed(true, steadyPoolSize);
+                    poolLifeCycleListener.decrementConnectionUsed();
+                    if(!resourceHandle.isMarkedForReclaim()) {
+                        //If a connection is not reclaimed (in case of a reconfig)
+                        //increment numConnFree
+                        poolLifeCycleListener.incrementNumConnFree(true, steadyPoolSize);
+                    }
                 } else {
                     //Destroying a free Connection
-                    poolLifeCycleListener.decrementFreeConnectionsSize(steadyPoolSize);
+                    //if free + used > SPS then decrement
+                    PoolStatus status = getPoolStatus();
+                    if(status.getNumConnFree() + status.getNumConnUsed() > steadyPoolSize) {
+                        if (_logger.isLoggable(Level.FINEST)) {
+                            _logger.log(Level.FINEST, "Free + Used greater than steady pool size." +
+                                " Decrementing numConnFree");                
+                        }
+                        poolLifeCycleListener.decrementNumConnFree();
+                    }
                 }
             }
         }
@@ -957,7 +972,8 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         ds.returnResource(resourceHandle);
         //update the monitoring data
         if (poolLifeCycleListener != null) {
-            poolLifeCycleListener.decrementConnectionUsed(false, steadyPoolSize);
+            poolLifeCycleListener.decrementConnectionUsed();
+            poolLifeCycleListener.incrementNumConnFree(false, steadyPoolSize);
         }
         
         if (maxConnectionUsage_ > 0) {
@@ -1226,6 +1242,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         //is on
         if (!isSelfManaged()) {
             int _maxPoolSize = Integer.parseInt(poolResource.getMaxPoolSize());
+            int oldMaxPoolSize = maxPoolSize;
 
             if (_maxPoolSize < steadyPoolSize) {
                 //should not happen, admin must throw exception when this condition happens.
@@ -1234,8 +1251,10 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
             } else {
                 maxPoolSize = _maxPoolSize;
             }
-
-
+            
+            if(oldMaxPoolSize != maxPoolSize) {
+                ds.setMaxSize(maxPoolSize);
+            }
             int _steadyPoolSize = Integer.parseInt(poolResource.getSteadyPoolSize());
             int oldSteadyPoolSize = steadyPoolSize;
 
@@ -1461,7 +1480,12 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     }
 
     public void reclaimConnection(ResourceHandle handle) {
-        freeResource(handle);
+        //all reclaimed connections must be killed instead of returning them
+        //to the pool 
+        //Entity beans when used in bean managed transaction will face an issue
+        //since connections are destroyed during reclaim. Stateful session beans 
+        // will work fine.
+        ds.removeResource(handle);
     }
 
     /**

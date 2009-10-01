@@ -151,43 +151,34 @@ public class ConnectorConnPoolStatsProvider {
     /**
      * Decrement numconnfree event
      * @param poolName
-     * @param steadyPoolSize
      */
-    @ProbeListener(JCA_PROBE_LISTENER + "decrementFreeConnectionsSizeEvent")
-    public void decrementFreeConnectionsSizeEvent(
-            @ProbeParam("poolName") String poolName, 
-            @ProbeParam("steadyPoolSize") int steadyPoolSize) {
+    @ProbeListener(JCA_PROBE_LISTENER + "decrementNumConnFreeEvent")
+    public void decrementNumConnFreeEvent(
+            @ProbeParam("poolName") String poolName) {
 	// handle the num conn free decrement event
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
             logger.finest("Decrement Num Connections Free event received - poolName = " + 
                              poolName);
             //Decrement counter
-            if(numConnFree.getCount() + numConnUsed.getCount() > steadyPoolSize) {
-                logger.finest("Free + Used greater than steady pool size." +
-                        " Decrementing numConnFree");                
-                numConnFree.decrement();
-            }
+            numConnFree.decrement();
         }
     }
     
     /**
-     * Decrement numConnUsed event
+     * Increment numconnfree event
      * @param poolName
-     * @param beingDestroyed if the connection is destroyed due to error
+     * @param beingDestroyed if the connection is destroyed due to error 
      * @param steadyPoolSize
      */
-    @ProbeListener(JCA_PROBE_LISTENER + "decrementConnectionUsedEvent")
-    public void decrementConnectionUsedEvent(
-            @ProbeParam("poolName") String poolName, 
-            @ProbeParam("beingDestroyed") boolean beingDestroyed,
-            @ProbeParam("steadyPoolSize") int steadyPoolSize) {
-	// handle the num conn used decrement event
+    @ProbeListener(JCA_PROBE_LISTENER + "incrementNumConnFreeEvent")
+    public void incrementNumConnFreeEvent(
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("beingDestroyed") boolean beingDestroyed,            
+            @ProbeParam("steadyPoolSize") int steadyPoolSize) {            
+	// handle the num conn free increment event
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            logger.finest("Decrement Num Connections Used event received - poolName = " + 
+            logger.finest("Increment Num Connections Free event received - poolName = " + 
                              poolName);
-            //Decrement numConnUsed counter
-            numConnUsed.decrement();
-            //TODO V3 : increment numConnFree accordingly needed?
             if(beingDestroyed) {
                 //if pruned by resizer thread
                 if(numConnFree.getCount() + numConnUsed.getCount() < steadyPoolSize) {
@@ -195,7 +186,23 @@ public class ConnectorConnPoolStatsProvider {
                 }                    
             } else {
                 numConnFree.increment();
-            }
+            }                        
+        }
+    }
+    
+    /**
+     * Decrement numConnUsed event
+     * @param poolName
+     */
+    @ProbeListener(JCA_PROBE_LISTENER + "decrementConnectionUsedEvent")
+    public void decrementConnectionUsedEvent(
+            @ProbeParam("poolName") String poolName) {
+	// handle the num conn used decrement event
+        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
+            logger.finest("Decrement Num Connections Used event received - poolName = " + 
+                             poolName);
+            //Decrement numConnUsed counter
+            numConnUsed.decrement();
         }
     }
     
@@ -233,9 +240,6 @@ public class ConnectorConnPoolStatsProvider {
                              poolName);
             //increment numConnUsed
             numConnUsed.increment();
-            //decrement numConnFree
-            numConnFree.decrement();
-            numConnFree.setCount(numConnFree.getCount()<0 ? 0 : numConnFree.getCount());
         }
     }
 

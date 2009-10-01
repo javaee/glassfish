@@ -111,9 +111,20 @@ public interface PoolLifeCycleListener {
      */
     void connectionsFreed(int count);
 
-    //TODO V3 interface mismatch.
-    void decrementConnectionUsed(boolean beingDestroyed, int steadyPoolSize);
+    /**
+     * indicates that connection count that is used has to be decremented.
+     */
+    void decrementConnectionUsed();
 
-    //TODO V3 interface mismatch.
-    void decrementFreeConnectionsSize(int steadyPoolSize);    
+    /**
+     * indicates that free connections count in the pool has to be decremented.
+     */
+    void decrementNumConnFree();    
+    
+    /**
+     * indicates that a connection is freed and the count is to be incremented.
+     * @param beingDestroyed in case of an error.
+     * @param steadyPoolSize
+     */
+    void incrementNumConnFree(boolean beingDestroyed, int steadyPoolSize);
 }

@@ -117,6 +117,9 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
                     }
                     if(poolLifeCycleListener != null) {
                         poolLifeCycleListener.connectionUsed();
+                        //Decrement numConnFree
+                        poolLifeCycleListener.decrementNumConnFree();
+                        
                     }
                     return ar;
                 }
@@ -225,7 +228,8 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
         }
         //update monitoring data
         if(poolLifeCycleListener != null){
-            poolLifeCycleListener.decrementConnectionUsed(false, steadyPoolSize);
+            poolLifeCycleListener.decrementConnectionUsed();
+            poolLifeCycleListener.incrementNumConnFree(false, steadyPoolSize);
         }
 
         if (maxConnectionUsage_ > 0) {

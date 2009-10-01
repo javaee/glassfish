@@ -197,4 +197,14 @@ public class RWLockDataStructure implements DataStructure {
     public int getResourcesSize() {
         return resources.size();
     }
+
+    /**
+     * Set maxSize based on the new max pool size set on the connection pool 
+     * during a reconfiguration. 
+     * 
+     * @param maxSize
+     */
+    public void setMaxSize(int maxSize) {
+        this.maxSize = maxSize;
+    }
 }

@@ -59,7 +59,7 @@ public class ConnectionLeakDetector {
     private long connectionLeakTimeoutInMillis;
     private boolean connectionLeakReclaim;
     private String connectionPoolName;
-    private Set<ConnectionLeakListener> listeners;
+    private Map<ResourceHandle, ConnectionLeakListener> listeners;
 
     //Lock on HashMap to trace connection leaks
     private final Object connectionLeakLock;
@@ -73,7 +73,7 @@ public class ConnectionLeakDetector {
         connectionPoolName = poolName;
         connectionLeakThreadStackHashMap = new HashMap<ResourceHandle, StackTraceElement[]>();
         connectionLeakTimerTaskHashMap = new HashMap<ResourceHandle, ConnectionLeakTask>();
-        listeners = new HashSet<ConnectionLeakListener>();
+        listeners = new HashMap<ResourceHandle, ConnectionLeakListener>();
         connectionLeakLock = new Object();
         connectionLeakTracing = leakTracing;
         connectionLeakTimeoutInMillis = leakTimeoutInMillis;
@@ -89,12 +89,12 @@ public class ConnectionLeakDetector {
         connectionLeakReclaim = leakReclaim;
     }
 
-    private void registerListener(ConnectionLeakListener listener) {
-        listeners.add(listener);
+    private void registerListener(ResourceHandle handle, ConnectionLeakListener listener) {
+        listeners.put(handle, listener);
     }
 
-    private void unRegisterListener(ConnectionLeakListener listener) {
-        listeners.remove(listener);
+    private void unRegisterListener(ResourceHandle handle) {
+        listeners.remove(handle);
     }
 
     /**
@@ -110,7 +110,7 @@ public class ConnectionLeakDetector {
                     connectionLeakThreadStackHashMap.put(resourceHandle, Thread.currentThread().getStackTrace());
                     ConnectionLeakTask connectionLeakTask = new ConnectionLeakTask(resourceHandle);
                     connectionLeakTimerTaskHashMap.put(resourceHandle, connectionLeakTask);
-                    registerListener(listener);
+                    registerListener(resourceHandle, listener);
                     if (getTimer() != null)
                         getTimer().schedule(connectionLeakTask, connectionLeakTimeoutInMillis);
                 }
@@ -132,7 +132,7 @@ public class ConnectionLeakDetector {
                     ConnectionLeakTask connectionLeakTask = connectionLeakTimerTaskHashMap.remove(resourceHandle);
                     connectionLeakTask.cancel();
                     getTimer().purge();
-                    unRegisterListener(listener);
+                    unRegisterListener(resourceHandle);
                 }
             }
         }
@@ -148,15 +148,15 @@ public class ConnectionLeakDetector {
             if (connectionLeakThreadStackHashMap.containsKey(resourceHandle)) {
                 StackTraceElement[] threadStack = connectionLeakThreadStackHashMap.remove(resourceHandle);
                 connectionLeakTimerTaskHashMap.remove(resourceHandle);
+                ConnectionLeakListener connLeakListener = listeners.get(resourceHandle);
                 if (connectionLeakReclaim) {
-                    for (ConnectionLeakListener listener : listeners) {
-                        listener.reclaimConnection(resourceHandle);
-                    }
+                    resourceHandle.markForReclaim(true);
+                    connLeakListener.reclaimConnection(resourceHandle);
                 }
-                for (ConnectionLeakListener listener : listeners) {
-                    listener.potentialConnectionLeakFound();
-                }
-                printConnectionLeakTrace(threadStack);
+                connLeakListener.potentialConnectionLeakFound();
+                printConnectionLeakTrace(threadStack, connLeakListener);
+                //Unregister here as the listeners would still be present in the map.
+                unRegisterListener(resourceHandle);
             }
         }
     }
@@ -166,7 +166,8 @@ public class ConnectionLeakDetector {
      *
      * @param threadStackTrace Application(caller) thread stack trace
      */
-    private void printConnectionLeakTrace(StackTraceElement[] threadStackTrace) {
+    private void printConnectionLeakTrace(StackTraceElement[] threadStackTrace,
+            ConnectionLeakListener connLeakListener) {
         StringBuffer stackTrace = new StringBuffer();
         String msg = localStrings.getStringWithDefault(
                 "potential.connection.leak.msg",
@@ -179,9 +180,7 @@ public class ConnectionLeakDetector {
             stackTrace.append(threadStackTrace[i].toString());
             stackTrace.append("\n");
         }
-        for (ConnectionLeakListener listener : listeners) {
-            listener.printConnectionLeakTrace(stackTrace);
-        }
+        connLeakListener.printConnectionLeakTrace(stackTrace);
         _logger.log(Level.WARNING, stackTrace.toString(), "ConnectionPoolName=" + connectionPoolName);
     }
 

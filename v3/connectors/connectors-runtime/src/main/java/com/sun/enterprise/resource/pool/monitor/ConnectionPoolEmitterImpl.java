@@ -37,8 +37,6 @@ package com.sun.enterprise.resource.pool.monitor;
 
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.listener.PoolLifeCycleListener;
-import com.sun.enterprise.resource.pool.monitor.ConnectorConnPoolProbeProvider;
-import com.sun.enterprise.resource.pool.monitor.JdbcConnPoolProbeProvider;
 
 /**
  * Implementation of PoolLifeCycleListener interface to listen to events related
@@ -186,22 +184,31 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * Fires probe event related to the fact the given jdbc connection pool has
      * got a decrement connection used event.
      * 
-     * @param beingDestroyed if the connection is destroyed due to error
-     * @param steadyPoolSize 
      */
-    public void decrementConnectionUsed(boolean beingDestroyed, int steadyPoolSize) {
-        connectorConnProbeProvider.decrementConnectionUsedEvent(poolName, beingDestroyed, steadyPoolSize);
-        jdbcProbeProvider.decrementConnectionUsedEvent(poolName, beingDestroyed, steadyPoolSize);
+    public void decrementConnectionUsed() {
+        connectorConnProbeProvider.decrementConnectionUsedEvent(poolName);
+        jdbcProbeProvider.decrementConnectionUsedEvent(poolName);
     }
 
     /**
      * Fires probe event related to the fact the given jdbc connection pool has
      * got a decrement free connections size event.
      * 
+     */
+    public void decrementNumConnFree() {
+        connectorConnProbeProvider.decrementNumConnFreeEvent(poolName);
+        jdbcProbeProvider.decrementNumConnFreeEvent(poolName);
+    }
+    
+    /**
+     * Fires probe event related to the fact the given jdbc connection pool has
+     * got a decrement free connections size event.
+     * 
+     * @param beingDestroyed if the connection is destroyed due to error
      * @param steadyPoolSize 
      */
-    public void decrementFreeConnectionsSize(int steadyPoolSize) {
-        connectorConnProbeProvider.decrementFreeConnectionsSizeEvent(poolName, steadyPoolSize);
-        jdbcProbeProvider.decrementFreeConnectionsSizeEvent(poolName, steadyPoolSize);
+    public void incrementNumConnFree(boolean beingDestroyed, int steadyPoolSize) {
+        connectorConnProbeProvider.incrementNumConnFreeEvent(poolName, beingDestroyed, steadyPoolSize);
+        jdbcProbeProvider.incrementNumConnFreeEvent(poolName, beingDestroyed, steadyPoolSize);
     }
 }

@@ -175,15 +175,21 @@ public class PoolLifeCycleListenerRegistry implements PoolLifeCycleListener {
         }
     }
 
-    public void decrementConnectionUsed(boolean beingDestroyed, int steadyPoolSize) {
+    public void decrementConnectionUsed() {
         for (PoolLifeCycleListener listener : poolListenersList) {
-            listener.decrementConnectionUsed(beingDestroyed, steadyPoolSize);
+            listener.decrementConnectionUsed();
         }
     }
 
-    public void decrementFreeConnectionsSize(int steadyPoolSize) {
+    public void decrementNumConnFree() {
         for (PoolLifeCycleListener listener : poolListenersList) {
-            listener.decrementFreeConnectionsSize(steadyPoolSize);
+            listener.decrementNumConnFree();
         }
     }
+    
+    public void incrementNumConnFree(boolean beingDestroyed, int steadyPoolSize) {
+        for (PoolLifeCycleListener listener : poolListenersList) {
+            listener.incrementNumConnFree(beingDestroyed, steadyPoolSize);
+        }
+    }    
 }

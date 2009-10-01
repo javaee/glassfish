@@ -98,7 +98,8 @@ public class ResourceHandle implements
             return idSequence;
         }
     }
-
+    private boolean markedReclaim = false;
+    
     public ResourceHandle(Object resource,
                           ResourceSpec spec,
                           ResourceAllocator alloc,
@@ -169,6 +170,19 @@ public class ResourceHandle implements
 
     public void setEnlistmentSuspended(boolean enlistmentSuspended) {
         this.enlistmentSuspended = enlistmentSuspended;
+    }
+
+    public void markForReclaim(boolean reclaim) {
+        this.markedReclaim = reclaim;
+    }
+
+    /**
+     * To check if the resourceHandle is marked for leak reclaim or not. <br>
+     * 
+     * @return boolean
+     */
+    public boolean isMarkedForReclaim() {
+        return markedReclaim;
     }
 
     public boolean supportsXA() {

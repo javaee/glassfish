@@ -52,20 +52,55 @@ import java.util.concurrent.Semaphore;
 public class ListDataStructure implements DataStructure {
     private final ArrayList<ResourceHandle> free;
     private final ArrayList<ResourceHandle> resources;
+    //Max Size of the datastructure.Depends mostly on the max-pool-size of 
+    // the connection pool.
     private int maxSize;
+    private final DynamicSemaphore dynSemaphore;
+
     private ResourceHandler handler;
     private ResourceSelectionStrategy strategy;
-    private Semaphore semaphore;
 
     public ListDataStructure(String parameters, int maxSize, ResourceHandler handler, String strategyClass) {
         resources = new ArrayList<ResourceHandle>((maxSize > 1000) ? 1000 : maxSize);
         free = new ArrayList<ResourceHandle>((maxSize > 1000) ? 1000 : maxSize);
-        this.maxSize = maxSize;
         this.handler = handler;
         initializeStrategy(strategyClass);
-        semaphore = new Semaphore(this.maxSize);
+        dynSemaphore = new DynamicSemaphore();
+        setMaxSize(maxSize);
     }
 
+    
+    /**
+     * Set maxSize based on the new max pool size set on the connection pool 
+     * during a reconfiguration. 
+     * 1. When permits contained within the dynamic semaphore are greater than 0,
+     * maxSize is increased and hence so many permits are released.
+     * 2. When permits contained within the dynamic semaphore are less than 0, 
+     * maxSize has reduced to a smaller value. Hence so many permits are reduced 
+     * from the semaphore's available limit for the subsequent resource requests 
+     * to act based on the new configuration.
+     * @param newMaxSize
+     */
+    public synchronized void setMaxSize(int newMaxSize) {
+            
+        //Find currently open with the current maxsize
+        int permits = newMaxSize - this.maxSize;
+
+        if (permits == 0) {
+            //None are open
+            return;
+        } else if (permits > 0) {
+            //Case when no of permits are increased
+            this.dynSemaphore.release(permits);
+        } else {
+            //permits would be a -ve value
+            //Case when no of permits are to be reduced.
+            permits *= -1;
+            this.dynSemaphore.reducePermits(permits);
+        }
+        this.maxSize = newMaxSize;
+    }
+    
     private void initializeStrategy(String strategyClass) {
         //TODO V3 handle later
     }
@@ -78,7 +113,7 @@ public class ListDataStructure implements DataStructure {
      */
     public void addResource(ResourceAllocator allocator, int count) throws PoolingException {
         for (int i = 0; i < count && resources.size() < maxSize; i++) {
-            boolean lockAcquired = semaphore.tryAcquire();
+            boolean lockAcquired = dynSemaphore.tryAcquire();
             if(lockAcquired) {
                 try {
                     ResourceHandle handle = handler.createResource(allocator);
@@ -89,7 +124,7 @@ public class ListDataStructure implements DataStructure {
                         }
                     }
                 } catch (Exception e) {
-                    semaphore.release();
+                    dynSemaphore.release();
                     PoolingException pe = new PoolingException(e.getMessage());
                     pe.initCause(e);
                     throw pe;
@@ -129,7 +164,7 @@ public class ListDataStructure implements DataStructure {
                 resources.remove(resource);
             }
         }
-        semaphore.release();
+        dynSemaphore.release();
         handler.deleteResource(resource);
     }
 
@@ -162,7 +197,7 @@ public class ListDataStructure implements DataStructure {
                 while (resources.size() > 0) {
                     ResourceHandle handle = resources.remove(0);
                     free.remove(handle);
-                    semaphore.release();
+                    dynSemaphore.release();
                     handler.deleteResource(handle);
                 }
             }
@@ -178,5 +213,22 @@ public class ListDataStructure implements DataStructure {
      */
     public int getResourcesSize() {
         return resources.size();
+    }
+
+    /**
+     * Semaphore whose available permits change according to the 
+     * changes in max-pool-size via a reconfiguration.
+     */
+    private static final class DynamicSemaphore extends Semaphore {
+        
+        DynamicSemaphore() {
+            //Default is 0
+            super(0);
+        }
+        
+        @Override
+        protected void reducePermits(int size) {
+            super.reducePermits(size);
+        }
     }
 }
