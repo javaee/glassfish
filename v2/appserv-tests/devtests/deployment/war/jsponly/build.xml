@@ -48,7 +48,7 @@
 
     <target name="redeploy.asadmin" depends="prepare">
         <antcall target="common.redeploy.asadmin">
-            <param name="arg.list" value="--force=true ${all.war}"/>
+            <param name="arg.list" value="${all.war}"/>
             <param name="testName" value="${testName}"/>
         </antcall>
     </target>
