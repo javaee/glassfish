@@ -121,6 +121,8 @@ public class GrizzlyProxy implements NetworkProxy {
      * configuration object.
      */
     private void configureGrizzly() {
+        registerMonitoringStatsProviders();
+
         grizzlyListener = new GrizzlyListener(grizzlyService.getMonitoring(), new Controller(), networkListener.getName());
         grizzlyListener.configure(networkListener, grizzlyService.habitat);
 
@@ -169,8 +171,6 @@ public class GrizzlyProxy implements NetworkProxy {
                 Mapper.class.getName(), networkListener.getPort());
             grizzlyService.notifyMapperUpdateListeners(networkListener, mapper);
         }
-
-        registerMonitoringStatsProviders();
     }
 
     /**
