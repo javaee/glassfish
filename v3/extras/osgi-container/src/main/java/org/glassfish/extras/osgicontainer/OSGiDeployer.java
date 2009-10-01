@@ -42,11 +42,19 @@ public class OSGiDeployer implements Deployer<OSGiContainer, OSGiDeployedBundle>
 
     public void unload(OSGiDeployedBundle appContainer, DeploymentContext context) {
         appContainer.cl.preDestroy();
+        context.addModuleMetaData(appContainer.m);
     }
 
 
 
     public void clean(DeploymentContext context) {
+        OpsParams params = context.getCommandParameters(OpsParams.class);
+        if (params!=null) {
+            if (params.origin== OpsParams.Origin.undeploy) {
+                Module m = context.getModuleMetaData(Module.class);
+                m.uninstall();
+            }
+        }
 
     }
 

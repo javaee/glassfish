@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.logging.*;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
@@ -230,7 +231,7 @@ public class CMPDeployerImpl implements CMPDeployer {
 
         } catch (GeneratorException e) {
             _logger.warning(e.getMessage());
-            throw new DeploymentException(e.getMessage());
+            throw new DeploymentException(e);
 
         } catch (Throwable e) {
             String eType = e.getClass().getName();
@@ -294,7 +295,8 @@ public class CMPDeployerImpl implements CMPDeployer {
 
         // class path for javac
         String classPath = ctx.getTransientAppMetaData(CMPDeployer.MODULE_CLASSPATH, String.class); 
-        List<String> options    = javaConfig.getJavacOptionsAsList();
+        List<String> options    = new ArrayList<String>();
+        options.addAll(javaConfig.getJavacOptionsAsList());
 
         StringBuffer msgBuffer = new StringBuffer();
         boolean compilationResult = false;

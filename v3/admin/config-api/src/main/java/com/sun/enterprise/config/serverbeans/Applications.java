@@ -46,8 +46,7 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -104,7 +103,9 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
                     modules.add(type.cast(module));
                 }
             }
-            return modules;
+            // you have to return an umodifiable list since this list
+            // is not the real list of elements as maintained by this config bean
+            return Collections.unmodifiableList(modules);
         }
                                                                                               
         public static <T> T getModule(Applications apps, Class<T> type, String moduleID) {
@@ -132,7 +133,9 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
         public static List<Application> getApplicationsWithSnifferType(
             Applications apps, String snifferType, 
             boolean onlyStandaloneModules) {
-            List <Application> result = new ArrayList<Application>();
+            List <Application> result = new ArrayList<Application>() {
+
+            };
 
             List<Application> applications = 
                 getModules(apps, Application.class);      
@@ -149,7 +152,7 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
                 }
             }
 
-            return result;
+            return Collections.unmodifiableList(result);
         }
     }
 }

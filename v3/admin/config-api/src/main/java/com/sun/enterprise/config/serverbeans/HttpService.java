@@ -39,8 +39,7 @@
 package com.sun.enterprise.config.serverbeans;
 
 import java.beans.PropertyVetoException;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
@@ -269,7 +268,7 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
                     nonAdminVSList.add(v.getId());
                 }
             }
-            return nonAdminVSList;
+            return Collections.unmodifiableList(nonAdminVSList);
         }
 
         @Deprecated

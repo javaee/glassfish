@@ -40,11 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import java.beans.PropertyVetoException;
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.net.URISyntaxException;
@@ -358,7 +354,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
                     modulePropertiesMap.put(module.getName(), moduleProps);
                 }
             }
-            return modulePropertiesMap;
+            return Collections.unmodifiableMap(modulePropertiesMap);
         }
 
         public static boolean isStandaloneModule(Application me) {

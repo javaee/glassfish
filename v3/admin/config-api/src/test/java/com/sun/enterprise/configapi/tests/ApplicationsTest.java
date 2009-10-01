@@ -39,9 +39,11 @@ package com.sun.enterprise.configapi.tests;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import org.glassfish.api.admin.config.Named;
-import com.sun.enterprise.config.serverbeans.Applications;
+import org.jvnet.hk2.config.*;
+import com.sun.enterprise.config.serverbeans.*;
 
 import java.util.List;
+import java.beans.*;
 
 /**
  * Applications related tests
@@ -68,5 +70,30 @@ public class ApplicationsTest extends ConfigApiTest {
             logger.fine("Module = " + module.getName());
         }
         assertTrue(modules!=null);
+    }
+
+    /**
+     * Test which is expecting an UnsupportedOperationException since we are
+     * operating on a copy list of the original getModules() list.
+     * 
+     * @throws TransactionFailure
+     */
+    @Test(expected = UnsupportedOperationException.class)
+    public void removalTest() throws Throwable {
+        Applications apps = getHabitat().getComponent(Applications.class);
+        try {
+            ConfigSupport.apply(new SingleConfigCode<Applications>() {
+                public Object run(Applications param) throws PropertyVetoException, TransactionFailure {
+                    List<Application> appList = param.getApplications();
+                    for (Application application : param.getApplicationsWithSnifferType("web")) {
+                        assertTrue(appList.remove(application));
+                    }
+                    return null;
+                }
+            }, apps);
+        } catch(TransactionFailure e) {
+            // good, an exception was thrown, hopfully the right one !
+            throw e.getCause();
+        }
     }
 }

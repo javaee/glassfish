@@ -158,7 +158,7 @@ public interface WebModuleConfig extends ConfigBeanProxy, ApplicationConfig, Inj
             } else {
                 result = instance.getEnvEntry();
             }
-            return result;
+            return Collections.unmodifiableList(result);
         }
 
         public static List<ContextParam> contextParamsMatching(final WebModuleConfig instance,
@@ -175,7 +175,7 @@ public interface WebModuleConfig extends ConfigBeanProxy, ApplicationConfig, Inj
             } else {
                 result = instance.getContextParam();
             }
-            return result;
+            return Collections.unmodifiableList(result);
 
         }
 

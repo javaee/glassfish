@@ -47,9 +47,7 @@ import org.jvnet.hk2.config.DuckTyped;
 
 
 import java.beans.PropertyVetoException;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.jvnet.hk2.config.types.Property;

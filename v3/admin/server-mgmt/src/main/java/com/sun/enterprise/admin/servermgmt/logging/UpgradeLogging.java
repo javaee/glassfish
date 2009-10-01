@@ -50,15 +50,12 @@ import com.sun.enterprise.admin.servermgmt.pe.PEFileLayout;
 import com.sun.enterprise.admin.servermgmt.RepositoryConfig;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
-import com.sun.common.util.logging.LoggingPropertyNames;
-import com.sun.logging.LogDomains;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.io.File;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.logging.Handler;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -94,8 +91,8 @@ public class UpgradeLogging implements ConfigurationUpgrade, PostConstruct {
             String configDir = rc.getRepositoryRoot()+  File.separator +rc.getRepositoryName() +
                      File.separator+ rc.getInstanceName() +File.separator + "config";
 	        PEFileLayout layout = new PEFileLayout(rc);
-	        File src = new File(layout.getTemplatesDir(), layout.LOGGING_PROPERTIES_FILE);
-	        File dest = new File (configDir, layout.LOGGING_PROPERTIES_FILE);
+	        File src = new File(layout.getTemplatesDir(), PEFileLayout.LOGGING_PROPERTIES_FILE);
+	        File dest = new File (configDir, PEFileLayout.LOGGING_PROPERTIES_FILE);
             if  (!dest.exists())
                 FileUtils.copy(src, dest);
              
@@ -107,12 +104,11 @@ public class UpgradeLogging implements ConfigurationUpgrade, PostConstruct {
             //Get the logLevels
             ModuleLogLevels mll = logService.getModuleLogLevels();
 
-            Map logLevels = mll.getAllLogLevels();
+            Map<String, String> logLevels = mll.getAllLogLevels();
             String file=logService.getFile();
             String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
             if (file.contains(instanceRoot)){
-                String f = file.replace(instanceRoot ,"${com.sun.aas.instanceRoot}");
-                file = f;
+                file = file.replace(instanceRoot ,"${com.sun.aas.instanceRoot}");
             }
             logLevels.put("file", file);
             logLevels.put("use-system-logging", logService.getUseSystemLogging());

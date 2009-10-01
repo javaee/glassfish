@@ -52,8 +52,7 @@ import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 @Configured
@@ -384,7 +383,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
                         allSysApps.add((Application)m);
                 }
             }
-            return allSysApps;
+            return Collections.unmodifiableList(allSysApps);
         }
 
         public static ApplicationRef getApplicationRefInServer(Domain me, String sn, String name) {
@@ -427,7 +426,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
                     }
                 }
             }
-            return referencedApps;
+            return Collections.unmodifiableList(referencedApps);
         }
 
         public static Application getSystemApplicationReferencedFrom(Domain d, String sn, String appName) {

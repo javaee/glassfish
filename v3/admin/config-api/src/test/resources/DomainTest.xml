@@ -1,6 +1,21 @@
 <domain log-root="${com.sun.aas.instanceRoot}/logs" application-root="${com.sun.aas.instanceRoot}/applications" version="10.0">
-  <system-applications />
-  <applications />
+  <system-applications>
+    <application context-root="" location="${com.sun.aas.installRootURI}/lib/install/applications/__admingui" name="__admingui" directory-deployed="true" object-type="system-admin">
+      <module name="__admingui">
+        <engine sniffer="web" />
+        <engine sniffer="security" />
+      </module>
+    </application>
+  </system-applications>
+  <applications>
+    <application context-root="/simple" location="${com.sun.aas.instanceRootURI}/applications/simple/" name="simple" object-type="user">
+      <property name="default-EE6-app-name" value="simple" />
+      <module name="simple">
+        <engine sniffer="security" />
+        <engine sniffer="web" />
+      </module>
+    </application>
+  </applications>
   <resources>
     <jdbc-resource pool-name="__TimerPool" jndi-name="jdbc/__TimerPool" object-type="system-admin" />
     <jdbc-resource pool-name="DerbyPool" jndi-name="jdbc/__default" />
