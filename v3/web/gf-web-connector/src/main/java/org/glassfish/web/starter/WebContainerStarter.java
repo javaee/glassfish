@@ -44,6 +44,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.v3.server.ContainerStarter;
@@ -58,6 +59,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
+import org.jvnet.hk2.config.types.Property;
 
 /**
  * Startup service for the web container.
@@ -75,6 +77,11 @@ public class WebContainerStarter implements Startup, PostConstruct {
 
     private static final Logger logger = LogDomains.getLogger(
         WebContainerStarter.class, LogDomains.WEB_LOGGER);
+
+    private static final String AUTH_PASSTHROUGH_ENABLED =
+        "authPassthroughEnabled";
+
+    private static final String PROXY_HANDLER = "proxyHandler";
 
     @Inject
     Domain domain;
@@ -94,12 +101,50 @@ public class WebContainerStarter implements Startup, PostConstruct {
      * the web container
      */ 
     public void postConstruct() {
+        boolean startNeeded = false;
         List<Config> configs = domain.getConfigs().getConfig();
         for (Config config : configs) {
             HttpService httpService = config.getHttpService();
             if (ConfigBeansUtilities.toBoolean(
-                    httpService.getAccessLoggingEnabled())) {
-                // TODO Add more conditions
+                        httpService.getAccessLoggingEnabled()) ||
+                    ConfigBeansUtilities.toBoolean(
+                        httpService.getSsoEnabled())) {
+                startNeeded = true;
+            }
+
+            if (!startNeeded) {
+                List<Property> props = httpService.getProperty();
+                if (props != null) {
+                    for (Property prop : props) {
+                        String propName = prop.getName();
+                        String propValue = prop.getValue();
+                        if (AUTH_PASSTHROUGH_ENABLED.equals(propName)) {
+                            startNeeded = ConfigBeansUtilities.toBoolean(
+                                    propValue);
+                            if (startNeeded) break;
+                        } else if (PROXY_HANDLER.equals(propName)) {
+                            startNeeded = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!startNeeded) {
+                List<VirtualServer> hosts = httpService.getVirtualServer();
+                if (hosts != null) {
+                    for (VirtualServer host : hosts) {
+                        if (ConfigBeansUtilities.toBoolean(
+                                    host.getAccessLoggingEnabled()) ||
+                                ConfigBeansUtilities.toBoolean(
+                                    host.getSsoEnabled())) {
+                            startNeeded = true;
+                        }
+                    }
+                }
+            }
+
+            if (startNeeded) {
                 startWebContainer();
             }
         }
