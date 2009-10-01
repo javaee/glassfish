@@ -1,0 +1,4 @@
+
+grant codeBase "file:${com.sun.aas.instanceRoot}/applications/numberguess/-" {
+      permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+};
