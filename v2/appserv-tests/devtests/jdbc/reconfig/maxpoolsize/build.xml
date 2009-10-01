@@ -105,21 +105,18 @@
 	<param name="operand.props" value="${resources.dottedname.prefix}.jdbc-connection-pool.${maxpoolsize-poolName}-xa.max_wait_time_in_millis=1000"/>
       </antcall>
 
-      <!-- Commenting out for now. Needs to be uncommented when derby supports XA
       <antcall target="runclient-common">
         <param name="appclient.application.args" value="3"/>
       </antcall>
-      -->  
       <!-- set the maxpoolsize to 15 -->
       <antcall target="asadmin-common">
         <param name="admin.command" value="set"/>
 	<param name="operand.props" value="${resources.dottedname.prefix}.jdbc-connection-pool.${maxpoolsize-poolName}-xa.max_pool_size=20"/>
       </antcall>
-      <!-- Commenting out for now. Needs to be uncommented when derby supports XA
+
       <antcall target="runclient-common">
         <param name="appclient.application.args" value="4"/>
       </antcall>
-      -->
 
     </target>
  
