@@ -1,0 +1,9 @@
+<sun:treeNode	id="monitor"
+		text="$resource{i18n_web.tree.monitoring}"
+		url="/common/monitor/monitoringPage.jsf?configName=server-config"
+		imageURL="/resource/common/images/monitor.gif"
+        expanded="$boolean{true}" >
+    <!beforeCreate
+        setResourceBundle(key="i18n_web" bundle="org.glassfish.common.admingui.Strings");
+    />
+</sun:treeNode>

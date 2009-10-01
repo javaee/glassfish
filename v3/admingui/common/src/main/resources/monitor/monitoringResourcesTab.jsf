@@ -1,0 +1,6 @@
+<sun:tab id="monitor_resources" immediate="true" text="$resource{i18n_web.resources}">
+    <!command
+	setSessionAttribute(key="serverInstTabs" value="monitor_resources");
+	redirect(page="#{request.contextPath}/monitor/monitoringResourcesStatsPage.jsf");
+    />
+</sun:tab>
