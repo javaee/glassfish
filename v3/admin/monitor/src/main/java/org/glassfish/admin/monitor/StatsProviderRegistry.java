@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
@@ -28,7 +29,7 @@ public class StatsProviderRegistry {
     private boolean ddebug = false;
     
     static final String[] defaultConfigLevels = new String[] {"LOW","HIGH"};
-    public static Map<String, Integer> configLevelsMap = new HashMap();
+    public static Map<String, Integer> configLevelsMap = new ConcurrentHashMap();
 
     public StatsProviderRegistry(MonitoringRuntimeDataRegistry mrdr) {
         this.mrdr = mrdr;
@@ -215,8 +216,8 @@ public class StatsProviderRegistry {
         }
 
         public boolean isEnableAllowed(String userConfigLevelStr) {
-            int userConfigLevel = StatsProviderRegistry.configLevelsMap.get(userConfigLevelStr.toUpperCase());
-            if ((userConfigLevel != -1) && (userConfigLevel >= configLevel))
+            Integer userConfigLevel = StatsProviderRegistry.configLevelsMap.get(userConfigLevelStr.toUpperCase());
+            if ((userConfigLevel != null) && (userConfigLevel >= configLevel))
                 return true;
             return false;
         }
