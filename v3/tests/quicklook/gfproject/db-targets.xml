@@ -116,6 +116,22 @@
     </exec>
 </target>
 
+<target name="add-quicklook-policy-grants">
+  <move file="${glassfish.home}/domains/domain1/config/server.policy"
+        tofile="${glassfish.home}/domains/domain1/config/server_policy.orig"/>
+  <concat append="true"
+          destfile="${glassfish.home}/domains/domain1/config/server.policy">
+    <fileset file="${glassfish.home}/domains/domain1/config/server_policy.orig"/>
+    <fileset file="${basedir}/webbeans/numberguess/numberguess.policy"/>
+  </concat>
+</target>
+
+<target name="remove-quicklook-policy-grants">
+  <delete file="${glassfish.home}/domains/domain1/config/server.policy"/>
+  <move file="${glassfish.home}/domains/domain1/config/server_policy.orig"
+        tofile="${glassfish.home}/domains/domain1/config/server.policy"/>
+</target>
+
 <target name="startDerby" depends="initprop">
     <echo message="Starting Derby DB servers in the Network Mode"/>    
     
