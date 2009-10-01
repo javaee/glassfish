@@ -64,7 +64,6 @@ import com.sun.ejb.containers.EjbContainerUtilImpl;
 @Description("Ejb Application Statistics")
 public class EjbMonitoringStatsProvider {
 
-    private Map<Method, String> methodMappingMap = new HashMap<Method, String>();
     private Map<String, EjbMethodStatsProvider> methodMonitorMap = 
             new HashMap<String, EjbMethodStatsProvider>();
 
@@ -93,7 +92,6 @@ public class EjbMonitoringStatsProvider {
         if (isValidRequest(appName, moduleName, beanName)) {
             for (Method m : methods) {
                 String mname = EjbMonitoringUtils.stringify(m);
-                methodMappingMap.put(m, mname);
                 if (methodMonitorMap.get(mname) == null) {
                     // Use 1 monitor for all methods that represent the same method in the bean
                     EjbMethodStatsProvider monitor = new EjbMethodStatsProvider(mname);
@@ -140,7 +138,7 @@ public class EjbMonitoringStatsProvider {
         if (isValidRequest(appName, modName, ejbName)) {
             log ("ejbMethodStartEvent", method);
             EjbMethodStatsProvider monitor = methodMonitorMap.get(
-                    methodMappingMap.get(EjbMonitoringUtils.stringify(method)));
+                    EjbMonitoringUtils.stringify(method));
             if (monitor != null) {
                 monitor.methodStart();
             }
@@ -157,7 +155,7 @@ public class EjbMonitoringStatsProvider {
         if (isValidRequest(appName, modName, ejbName)) {
             log ("ejbMethodEndEvent", method);
             EjbMethodStatsProvider monitor = methodMonitorMap.get(
-                    methodMappingMap.get(EjbMonitoringUtils.stringify(method)));
+                   EjbMonitoringUtils.stringify(method));
             if (monitor != null) {
                 monitor.methodEnd((exception == null));
             }
@@ -237,8 +235,10 @@ public class EjbMonitoringStatsProvider {
     }
 
     void log(String mname, String provider) {
-        _logger.fine("===> In " + provider + " for: [" 
-                + mname + "] " + appName + "::" + moduleName + "::" + beanName);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("===> In " + provider + " for: [" 
+                    + mname + "] " + appName + "::" + moduleName + "::" + beanName);
+        }
     }
 
     private void log(String mname) {
@@ -246,9 +246,11 @@ public class EjbMonitoringStatsProvider {
     }
 
     private void log(String mname, Method m) {
-        _logger.fine("===> In EjbMonitoringStatsProvider for: [" 
-                + mname + "] " + appName + "::" + moduleName + "::" + beanName
-                + "::" + EjbMonitoringUtils.stringify(m));
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("===> In EjbMonitoringStatsProvider for: [" 
+                    + mname + "] " + appName + "::" + moduleName + "::" + beanName
+                    + "::" + EjbMonitoringUtils.stringify(m));
+        }
     }
 
 }

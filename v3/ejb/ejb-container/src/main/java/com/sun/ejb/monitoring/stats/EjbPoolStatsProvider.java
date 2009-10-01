@@ -146,6 +146,7 @@ public class EjbPoolStatsProvider {
     @ManagedAttribute(id="jmsmaxmessagesload")
     @Description( "Provides the maximum number of messages to load into a JMS session, at a time")
     public CountStatistic getJmsMaxMessagesLoad() {
+        jmsStat.setCount(delegate.getJmsMaxMessagesLoad());
         return jmsStat;
     }
 
