@@ -267,6 +267,9 @@ public class FileStoreManager
     public void removeAll() {
         try {
 	    String[] fileNames = baseDir.list();
+ 	    if (fileNames == null) {
+                 return;
+ 	    }
 	    for (int i=0; i<fileNames.length; i++) {
                 remove(fileNames[i]);
 	    }
@@ -297,6 +300,9 @@ public class FileStoreManager
 	int expiredSessions = 0;
         try {
 	    String[] fileNames = baseDir.list();
+ 	    if (fileNames == null) {
+            return 0;
+ 	    }
 	    int size = fileNames.length;
 	    for (int i=0; (i<size) && (! shutdown); i++) {
 		File file = new File(baseDir, fileNames[i]);
@@ -361,7 +367,10 @@ public class FileStoreManager
     public int getCurrentSize() {
         //return passivatedSessions.getEntryCount();
 	try {
-	    return baseDir.list().length;
+	    String[] fileList = baseDir.list();
+	    if (fileList != null) {
+	        return fileList.length;
+	    }
 	} catch (Exception ex) {
 	}
 	return 0;
