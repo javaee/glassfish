@@ -1,9 +1,0 @@
-<sun:tab id="monitoring" immediate="true" text="$resource{i18n_web.monitoring}">
-    <!beforeCreate
-        setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-    />
-    <!command
-	setSessionAttribute(key="serverInstTabs" value="monitoring");
-	redirect(page="#{request.contextPath}/monitor/monitoringAppStatsPage.jsf");
-    />
-</sun:tab>
