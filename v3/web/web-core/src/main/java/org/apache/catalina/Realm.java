@@ -269,12 +269,14 @@ public interface Realm {
      * @param response Response we are creating
      * @param context The Context to which client of this class is attached.
      * @param authenticator the current authenticator.
+     * @param true if the call originates from HttpServletRequest.authenticate
      * @exception IOException if an input/output error occurs
      */
     public boolean invokeAuthenticateDelegate(HttpRequest request,
                                               HttpResponse response,
                                               Context context,
-                                              Authenticator authenticator)
+                                              Authenticator authenticator,
+                                              boolean calledFromAuthenticate)
           throws IOException;
 
     /**

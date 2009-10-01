@@ -1072,7 +1072,8 @@ public abstract class RealmBase
     public boolean invokeAuthenticateDelegate(HttpRequest request,
                                               HttpResponse response,
                                               Context context,
-                                              Authenticator authenticator)
+                                              Authenticator authenticator,
+                                              boolean calledFromAuthenticate)
           throws IOException {
         LoginConfig config = context.getLoginConfig();
         return ((AuthenticatorBase) authenticator).authenticate(

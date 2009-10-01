@@ -578,7 +578,7 @@ public abstract class AuthenticatorBase
                 log.fine(" Calling authenticate()");
             }
             boolean authenticateResult = realm.invokeAuthenticateDelegate(
-                    hrequest, hresponse, context, this);
+                    hrequest, hresponse, context, this, false);
             if(!authenticateResult) {
                 if(log.isLoggable(Level.FINE)) {
                     log.fine(" Failed authenticate() test");

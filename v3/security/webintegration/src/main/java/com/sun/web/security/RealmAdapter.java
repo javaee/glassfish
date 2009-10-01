@@ -1150,7 +1150,8 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     public boolean invokeAuthenticateDelegate(HttpRequest request,
             HttpResponse response,
             Context context,
-            Authenticator authenticator)
+            Authenticator authenticator,
+            boolean calledFromAuthenticate)
             throws IOException {
 
         boolean result = false;
@@ -1167,7 +1168,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         }
         if (serverAuthConfig != null) {
             //JSR 196 is enabled for this application
-            result = validate(request, response, config, authenticator);
+            result = validate(request, response, config, authenticator, calledFromAuthenticate);
         } else {
             //jsr196 is not enabled.  Use the current authenticator.
             result = ((AuthenticatorBase) authenticator).authenticate(
@@ -1226,7 +1227,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
 
     /**
      * Return <tt>true</tt> if a Security Extension is available.
-     * @return <tt>true</tt> if a Security Extension is available. 
+     * @return <tt>true</tt> if a Security Extension is available. 1171
      */
     public boolean isSecurityExtensionEnabled() {
         if (helper == null) {
@@ -1261,7 +1262,8 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     private boolean validate(HttpRequest request,
             HttpResponse response,
             LoginConfig config,
-            Authenticator authenticator)
+            Authenticator authenticator,
+            boolean calledFromAuthenticate)
             throws IOException {
 
         HttpServletRequest req = (HttpServletRequest) request.getRequest();
@@ -1276,11 +1278,11 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         try {
             WebSecurityManager webSecMgr = getWebSecurityManager(true);
             isMandatory = !webSecMgr.permitAll(req);
-            //Issue  - 9578 - commenting as required
-         //   if (isMandatory) {
+            //Issue  - 9578 - produce user challenge if call originates from HttpRequest.authenticate
+            if (isMandatory || calledFromAuthenticate) {
                 messageInfo.getMap().put(HttpServletConstants.IS_MANDATORY,
                         Boolean.TRUE.toString());
-           // }
+            }
             ServerAuthContext sAC =
                     helper.getServerAuthContext(messageInfo,
                     null); // null serviceSubject
