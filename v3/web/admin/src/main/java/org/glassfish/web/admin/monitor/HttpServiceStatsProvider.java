@@ -68,31 +68,76 @@ public class HttpServiceStatsProvider implements PostConstruct {
     //private Counter requestCount = CounterFactory.createCount();
     //Provides the cumulative value of the error count. The error count represents 
     //the number of cases where the response code was greater than or equal to 400.
+    private static final String ERROR_COUNT_DESCRIPTION =
+            "Cumulative value of the error count, with error count representing the number of cases where the response code was greater than or equal to 400";
+    private static final String MAX_TIME_DESCRIPTION =
+            "Longest response time for a request; not a cumulative value, but the largest response time from among the response times";
+    private static final String PROCESSING_TIME_DESCRIPTION =
+            "Average request processing time";
+    private static final String REQUEST_COUNT_DESCRIPTION =
+            "Cumulative number of requests processed so far";
+    private static final String COUNT_200_DESCRIPTION =
+            "Number of responses with a status code equal to 200";
+    private static final String COUNT_2xx_DESCRIPTION =
+            "Number of responses with a status code in the 2xx range";
+    private static final String COUNT_302_DESCRIPTION =
+            "Number of responses with a status code equal to 302";
+    private static final String COUNT_304_DESCRIPTION =
+            "Number of responses with a status code equal to 304";
+    private static final String COUNT_3xx_DESCRIPTION =
+            "Number of responses with a status code in the 3xx range";
+    private static final String COUNT_400_DESCRIPTION =
+            "Number of responses with a status code equal to 400";
+    private static final String COUNT_401_DESCRIPTION =
+            "Number of responses with a status code equal to 401";
+    private static final String COUNT_403_DESCRIPTION =
+            "Number of responses with a status code equal to 403";
+    private static final String COUNT_404_DESCRIPTION =
+            "Number of responses with a status code equal to 404";
+    private static final String COUNT_4xx_DESCRIPTION =
+            "Number of responses with a status code in the 4xx range";
+    private static final String COUNT_503_DESCRIPTION =
+            "Number of responses with a status code equal to 503";
+    private static final String COUNT_5xx_DESCRIPTION =
+            "Number of responses with a status code in the 5xx range";
+    private static final String COUNT_OTHER_DESCRIPTION =
+            "Number of responses with a status code outside the 2xx, 3xx, 4xx, and 5xx range";
+
     private CountStatisticImpl errorCount = new CountStatisticImpl("ErrorCount",
-            StatisticImpl.UNIT_COUNT,
-            "Cumulative value of the error count, with error count representing the number of cases where the response code was greater than or equal to 400");
+            StatisticImpl.UNIT_COUNT, ERROR_COUNT_DESCRIPTION);
     private CountStatisticImpl maxTime = new CountStatisticImpl("MaxTime",
-            StatisticImpl.UNIT_MILLISECOND,
-            "Longest response time for a request; not a cumulative value, but the largest response time from among the response times");
+            StatisticImpl.UNIT_MILLISECOND, MAX_TIME_DESCRIPTION);
     private CountStatisticImpl processingTime = new CountStatisticImpl("ProcessingTime",
-            StatisticImpl.UNIT_MILLISECOND,
-            "Cumulative value of the times taken to process each request, with processing time being the average of request processing times over the request count");
+            StatisticImpl.UNIT_MILLISECOND, PROCESSING_TIME_DESCRIPTION);
     private CountStatisticImpl requestCount = new CountStatisticImpl("RequestCount",
-            StatisticImpl.UNIT_COUNT,
-            "Cumulative number of requests processed so far");
-    private CountStatisticImpl count200 = new CountStatisticImpl("Count200", "count", "Number of responses with a status code equal to 200");
-    private CountStatisticImpl count2xx = new CountStatisticImpl("Count2xx", "count", "Number of responses with a status code in the 2xx range");
-    private CountStatisticImpl count302 = new CountStatisticImpl("Count302", "count", "Number of responses with a status code equal to 302");
-    private CountStatisticImpl count304 = new CountStatisticImpl("Count304", "count", "Number of responses with a status code equal to 304");
-    private CountStatisticImpl count3xx = new CountStatisticImpl("Count3xx", "count", "Number of responses with a status code in the 3xx range");
-    private CountStatisticImpl count400 = new CountStatisticImpl("Count400", "count", "Number of responses with a status code equal to 400");
-    private CountStatisticImpl count401 = new CountStatisticImpl("Count401", "count", "Number of responses with a status code equal to 401");
-    private CountStatisticImpl count403 = new CountStatisticImpl("Count403", "count", "Number of responses with a status code equal to 403");
-    private CountStatisticImpl count404 = new CountStatisticImpl("Count404", "count", "Number of responses with a status code equal to 404");
-    private CountStatisticImpl count4xx = new CountStatisticImpl("Count4xx", "count", "Number of responses with a status code in the 4xx range");
-    private CountStatisticImpl count503 = new CountStatisticImpl("Count503", "count", "Number of responses with a status code equal to 503");
-    private CountStatisticImpl count5xx = new CountStatisticImpl("Count5xx", "count", "Number of responses with a status code in the 5xx range");
-    private CountStatisticImpl countOther = new CountStatisticImpl("CountOther", "count", "Number of responses with a status code outside the 2xx, 3xx, 4xx, and 5xx range");
+            StatisticImpl.UNIT_COUNT, REQUEST_COUNT_DESCRIPTION);
+    private CountStatisticImpl count200 = new CountStatisticImpl("Count200",
+            StatisticImpl.UNIT_COUNT, COUNT_200_DESCRIPTION);
+    private CountStatisticImpl count2xx = new CountStatisticImpl("Count2xx",
+            StatisticImpl.UNIT_COUNT, COUNT_2xx_DESCRIPTION);
+    private CountStatisticImpl count302 = new CountStatisticImpl("Count302",
+            StatisticImpl.UNIT_COUNT, COUNT_302_DESCRIPTION);
+    private CountStatisticImpl count304 = new CountStatisticImpl("Count304",
+            StatisticImpl.UNIT_COUNT, COUNT_304_DESCRIPTION);
+    private CountStatisticImpl count3xx = new CountStatisticImpl("Count3xx",
+            StatisticImpl.UNIT_COUNT, COUNT_3xx_DESCRIPTION);
+    private CountStatisticImpl count400 = new CountStatisticImpl("Count400",
+            StatisticImpl.UNIT_COUNT, COUNT_400_DESCRIPTION);
+    private CountStatisticImpl count401 = new CountStatisticImpl("Count401",
+            StatisticImpl.UNIT_COUNT, COUNT_401_DESCRIPTION);
+    private CountStatisticImpl count403 = new CountStatisticImpl("Count403",
+            StatisticImpl.UNIT_COUNT, COUNT_403_DESCRIPTION);
+    private CountStatisticImpl count404 = new CountStatisticImpl("Count404",
+            StatisticImpl.UNIT_COUNT, COUNT_404_DESCRIPTION);
+    private CountStatisticImpl count4xx = new CountStatisticImpl("Count4xx",
+            StatisticImpl.UNIT_COUNT, COUNT_4xx_DESCRIPTION);
+    private CountStatisticImpl count503 = new CountStatisticImpl("Count503",
+            StatisticImpl.UNIT_COUNT, COUNT_503_DESCRIPTION);
+    private CountStatisticImpl count5xx = new CountStatisticImpl("Count5xx",
+            StatisticImpl.UNIT_COUNT, COUNT_5xx_DESCRIPTION);
+    private CountStatisticImpl countOther = new CountStatisticImpl("CountOther",
+            StatisticImpl.UNIT_COUNT, COUNT_OTHER_DESCRIPTION);
+
     private TimeStatisticImpl requestProcessTime = new TimeStatisticImpl(0L, 0L, 0L, 0L,
             "", "", "", System.currentTimeMillis(), -1L);
     private Logger logger = Logger.getLogger(HttpServiceStatsProvider.class.getName());
@@ -123,106 +168,106 @@ public class HttpServiceStatsProvider implements PostConstruct {
     }
 
     @ManagedAttribute(id="maxtime")
-    @Description( "Provides the longest response time for a response - not a cumulative value, but the largest response time from among response times." )
+    @Description(MAX_TIME_DESCRIPTION)
     public CountStatistic getMaxTime() {
         maxTime.setCount(requestProcessTime.getMaxTime());
         return maxTime;
     }
 
     @ManagedAttribute(id="requestcount")
-    @Description( "Provides cumulative number of requests processed so far" )
+    @Description(REQUEST_COUNT_DESCRIPTION)
     public CountStatistic getCount() {
         requestCount.setCount(requestProcessTime.getCount());
         return requestCount;
     }
 
     @ManagedAttribute(id="processingtime")
-    @Description( "Provides cumulative value of the times taken to process each request The processing time is the average request processing times over the request count." )
+    @Description(PROCESSING_TIME_DESCRIPTION)
     public CountStatistic getTime() {
         processingTime.setCount(this.getProcessTime());
         return processingTime;
     }
 
     @ManagedAttribute(id="errorcount")
-    @Description( "" )
+    @Description(ERROR_COUNT_DESCRIPTION)
     public CountStatistic getErrorCount() {
         return errorCount;
     }
     
     @ManagedAttribute(id="count200")
-    @Description( "" )
+    @Description(COUNT_200_DESCRIPTION)
     public CountStatistic getCount200() {
         return count200.getStatistic();
     }
     
     @ManagedAttribute(id="count2xx")
-    @Description( "" )
+    @Description(COUNT_2xx_DESCRIPTION)
     public CountStatistic getCount2xx() {
         return count2xx.getStatistic();
     }
     
     @ManagedAttribute(id="count302")
-    @Description( "" )
+    @Description(COUNT_302_DESCRIPTION)
     public CountStatistic getCount302() {
         return count302.getStatistic();
     }
     
     @ManagedAttribute(id="count304")
-    @Description( "" )
+    @Description(COUNT_304_DESCRIPTION)
     public CountStatistic getCount304() {
         return count304.getStatistic();
     }
 
     @ManagedAttribute(id="count3xx")
-    @Description( "" )
+    @Description(COUNT_3xx_DESCRIPTION) 
     public CountStatistic getCount3xxt() {
         return count3xx.getStatistic();
     }
 
     @ManagedAttribute(id="count400")
-    @Description( "" )
+    @Description(COUNT_400_DESCRIPTION)
     public CountStatistic getCount400() {
         return count400.getStatistic();
     }
 
     @ManagedAttribute(id="count401")
-    @Description( "" )
+    @Description(COUNT_401_DESCRIPTION)
     public CountStatistic getCount401() {
         return count401.getStatistic();
     }
 
     @ManagedAttribute(id="count403")
-    @Description( "" )
+    @Description(COUNT_403_DESCRIPTION)
     public CountStatistic getCount403() {
         return count403.getStatistic();
     }
 
     @ManagedAttribute(id="count404")
-    @Description( "" )
+    @Description(COUNT_404_DESCRIPTION)
     public CountStatistic getCount404() {
         return count404.getStatistic();
     }
 
     @ManagedAttribute(id="count4xx")
-    @Description( "" )
+    @Description(COUNT_4xx_DESCRIPTION)
     public CountStatistic getCount4xx() {
         return count4xx.getStatistic();
     }
 
     @ManagedAttribute(id="count503")
-    @Description( "" )
+    @Description(COUNT_503_DESCRIPTION)
     public CountStatistic getCount503() {
         return count503.getStatistic();
     }
 
     @ManagedAttribute(id="count5xx")
-    @Description( "" )
+    @Description(COUNT_5xx_DESCRIPTION)
     public CountStatistic getCount5xx() {
         return this.count5xx.getStatistic();
     }
 
     @ManagedAttribute(id="countother")
-    @Description( "" )
+    @Description(COUNT_OTHER_DESCRIPTION)
     public CountStatistic getCountOther() {
         return this.countOther.getStatistic();
     }
@@ -350,42 +395,5 @@ public class HttpServiceStatsProvider implements PostConstruct {
         this.maxTime.reset();
         this.processingTime.reset();
         this.requestCount.reset();
-    }
-
-    private class TimeStatData {
-        private long entryTime = 0;
-        private long exitTime = 0;
-        private long totalTime = 0;
-
-
-        public long getEntryTime() {
-            return entryTime;
-        }
-
-        public void setEntryTime(long entryTime) {
-            this.entryTime = entryTime;
-        }
-
-        public long getExitTime() {
-            return exitTime;
-        }
-
-        public void setExitTime(long exitTime) {
-            this.exitTime = exitTime;
-        }
-
-        public long getTotalTime() {
-            totalTime = exitTime - entryTime;
-            return totalTime;
-        }
-
-        public void setTotalTime(long totalTime) {
-            this.totalTime = totalTime;
-        }
-        public void setReset (){
-            entryTime = 0;
-            exitTime = 0;
-            totalTime = 0;
-        }
     }
 }

@@ -15,6 +15,8 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebComponentDescriptor;
 import java.beans.PropertyChangeEvent;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -24,6 +26,8 @@ import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
+import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.data.ApplicationInfo;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -46,6 +50,9 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
 
     @Inject
     private static Domain domain;
+
+    @Inject
+    private ApplicationRegistry appRegistry;
 
     private static HttpService httpService = null;
     private static NetworkConfig networkConfig = null;
@@ -100,6 +107,7 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
 
         //Register the Applications stats providers
         registerApplicationStatsProviders();
+
     }
 
     private void registerWebStatsProviders() {
@@ -124,7 +132,7 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
         webContainerStatsProviderList.add(sssp);
     }
 
-    public void registerApplicationStatsProviders() {
+    private void registerApplicationStatsProviders() {
         List<Application> webApps =
             domain.getApplications().getApplicationsWithSnifferType("web");
         for (Application webApp : webApps) {
@@ -147,9 +155,7 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
             if (vsL != null) {
                 for (String host : vsL.split(",")) {
                     //create stats providers for each virtual server 'host'
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(moduleName).append(NODE_SEPARATOR).append(host);
-                    String node = sb.toString();
+                    String node = getNodeString(moduleName, host);
                     List statspList = statsProviderToAppMap.get(moduleName);
                     if (statspList == null) {
                         statspList = new ArrayList();
@@ -177,6 +183,17 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
                     StatsProviderManager.register(
                         "web-container", PluginPoint.APPLICATIONS, node,
                         websp);
+
+                    List<String> servletNames = getServletNames(moduleName);
+                    for (String servletName : servletNames) {
+                        ServletInstanceStatsProvider servletInstanceStatsProvider = 
+                            new ServletInstanceStatsProvider(servletName, moduleName, host, logger);
+                        StatsProviderManager.register(
+                            "web-container", PluginPoint.APPLICATIONS,
+                            getNodeString(moduleName, host, servletName),
+                            servletInstanceStatsProvider);
+                    }
+
                     statspList.add(websp);
                     statsProviderToAppMap.put(moduleName, statspList);
                 }
@@ -263,6 +280,14 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
         return null;
     }
 
+    private String getNodeString(String moduleName, String... others) {
+        StringBuffer sb = new StringBuffer(moduleName);
+        for (String other: others) {
+            sb.append(NODE_SEPARATOR).append(other);
+        }
+        return sb.toString();
+    }
+
     /**
      * Looks up the Application with the given appName, and returns a set
      * of the names of its enclosed web modules (if any).
@@ -308,4 +333,19 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
             replaceAll("_war", "\\\\.war");
     }
 
+    private List<String> getServletNames(String appName) {
+        List<String> servletNames = new ArrayList<String>();
+        ApplicationInfo appInfo = appRegistry.get(appName);
+        com.sun.enterprise.deployment.Application app =
+                appInfo.getMetaData(com.sun.enterprise.deployment.Application.class);
+
+        for (WebBundleDescriptor webBundleDesc : app.getWebBundleDescriptors()) {
+            for (WebComponentDescriptor webCompDesc : webBundleDesc.getWebComponentDescriptors()) {
+                if (webCompDesc.isServlet()) {
+                    servletNames.add(webCompDesc.getCanonicalName());
+                }
+            }
+        }
+        return servletNames;
+    }
 }

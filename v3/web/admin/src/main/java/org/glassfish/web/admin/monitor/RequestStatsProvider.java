@@ -71,8 +71,16 @@ public class RequestStatsProvider {
     //the number of cases where the response code was greater than or equal to 400.
     private static final String PROCESSING_TIME_DESCRIPTION = 
         "The request processing time (average, maximum, minimum, and total)";
-    private CountStatisticImpl requestCount = new CountStatisticImpl("RequestCount", "count", "Cumulative number of requests processed so far");
-    private CountStatisticImpl errorCount = new CountStatisticImpl("ErrorCount", "count", "Cumulative value of the error count, with error count representing the number of cases where the response code was greater than or equal to 400");
+    private static final String REQUEST_COUNT_DESCRIPTION =
+        "Cumulative number of requests processed so far";
+    private static final String ERROR_COUNT_DESCRIPTION =
+        "Cumulative value of the error count, with error count representing the number of cases where the response code was greater than or equal to 400";
+
+    private CountStatisticImpl requestCount = new CountStatisticImpl("RequestCount",
+            StatisticImpl.UNIT_COUNT, REQUEST_COUNT_DESCRIPTION);
+    private CountStatisticImpl errorCount = new CountStatisticImpl("ErrorCount",
+            StatisticImpl.UNIT_COUNT, ERROR_COUNT_DESCRIPTION);
+
     private TimeStats requestProcessTime = TimeStatsFactory.createTimeStatsMilli();
     private Logger logger;
     
@@ -86,13 +94,13 @@ public class RequestStatsProvider {
     }
 
     @ManagedAttribute(id="requestcount")
-    @Description("Cumulative number of requests processed so far")
+    @Description(REQUEST_COUNT_DESCRIPTION)
     public CountStatistic getRequestCount() {
         return requestCount;
     }
 
     @ManagedAttribute(id="errorcount")
-    @Description("Number of responses with a status code that is greater than or equal to 400")
+    @Description(ERROR_COUNT_DESCRIPTION)
     public CountStatistic getErrorCount() {
         return errorCount;
     }
