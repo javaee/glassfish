@@ -128,8 +128,13 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         pattern = parentNodes[0].relativeName;
 
         Map<Dom, String> matchingNodes = getMatchingNodes(dottedNames, pattern);
+        if (matchingNodes.isEmpty() && pattern.lastIndexOf('.')!=-1) {
+        // it's possible the user is just looking for an attribute, let's remove the
+        // last element from the pattern.
+            matchingNodes = getMatchingNodes(dottedNames, pattern.substring(0, pattern.lastIndexOf(".")));
+        }
 
-        //if no matches found - report the failure and return
+        //No matches found - report the failure and return
         if (matchingNodes.isEmpty()) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage("Attribute \"" + pattern.substring(pattern.lastIndexOf(".") + 1,
