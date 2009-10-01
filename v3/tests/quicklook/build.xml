@@ -63,6 +63,7 @@
 
     <target name="all_wd_security" depends="clean">
         <record name="allrun.output" action="start"/>
+        <antcall target="add-quicklook-policy-grants" />
         <property name="env.security_manager" value="ON"/>
 
         <antcall target="start_server_with_security_manager_enabled" />
@@ -73,6 +74,7 @@
         <antcall target="undeploy"/>
         <antcall target="quicklook-summary"/>
 
+        <antcall target="remove-quicklook-policy-grants" />
         <antcall target="stop_server_with_security_manager_enabled" />
 
         <antcall target="testng-summary"/>
@@ -121,6 +123,7 @@
     <!-- Target for testing glassfish distribution (containing EJB)  -->
     <target name="all_gd_security" depends="clean">
         <record name="allrun.output" action="start"/>
+        <antcall target="add-quicklook-policy-grants" />
         <property name="env.security_manager" value="ON"/>
         <antcall target="start-derby"/>
         <antcall target="start-server-felix"/>
@@ -134,6 +137,7 @@
         <antcall target="undeploy"/>
         <antcall target="undeploy-gd"/>
         <antcall target="quicklook-summary"/>
+        <antcall target="remove-quicklook-policy-grants" />
         <antcall target="disable-security-manager"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
@@ -172,6 +176,7 @@
         <ant dir="ejb/slsbnicmt" target="build-deploy"/>
         <ant dir="ejb/sfulnoi" target="build-deploy"/>
         <ant dir="bean-validator/simple-bv-servlet" target="build-deploy"/>
+        <ant dir="webbeans/numberguess" target="build-deploy"/>
         <record name="build.output" action="stop"/>
     </target>
 
@@ -182,7 +187,6 @@
         <ant dir="ejb/cmp" target="build-deploy"/>
         <ant dir="ejb/mdb" target="build"/>
         <ant dir="wsit/JaxwsFromWsdl" target="build-deploy"/>
-        <ant dir="webbeans/numberguess" target="build-deploy"/>
     </target>
     
     <target name="undeploy">
@@ -197,6 +201,7 @@
         <ant dir="ejb/slsbnicmt" target="undeploy"/>
         <ant dir="ejb/sfulnoi" target="undeploy"/>
         <ant dir="bean-validator/simple-bv-servlet" target="undeploy"/>
+        <ant dir="webbeans/numberguess" target="undeploy"/>
         <record name="undeploy.output" action="stop"/>
     </target>
 
@@ -205,7 +210,6 @@
         <ant dir="ejb/remoteview" target="undeploy"/>
         <ant dir="ejb/cmp" target="undeploy"/>
         <ant dir="wsit/JaxwsFromWsdl" target="undeploy"/>
-        <ant dir="webbeans/numberguess" target="undeploy"/>
     </target>
     
     <!-- Target is re-definted here as didn't want to specify ws.root property -->
