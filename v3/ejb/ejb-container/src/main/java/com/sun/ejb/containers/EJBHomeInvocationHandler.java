@@ -235,11 +235,15 @@ final class EJBHomeInvocationHandler
                 
                 if( invInfo.targetMethod1 == null ) {
                     
+                    _logger.log(Level.SEVERE,
+                            "ejb.bean_class_method_not_found", new Object[] {
+                                    invInfo.ejbName, "Home",
+                                    invInfo.method.toString() });
+                    //in exception use message without ID
                     String errorMsg = localStrings.getLocalString
                         ("ejb.bean_class_method_not_found", "", new Object[]
                             { invInfo.ejbName, "Home", 
                               invInfo.method.toString() });
-                    _logger.log(Level.SEVERE, errorMsg);
                     throw new RemoteException(errorMsg);            
                     
                 }
