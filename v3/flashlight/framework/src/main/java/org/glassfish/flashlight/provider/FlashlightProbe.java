@@ -193,19 +193,21 @@ public class FlashlightProbe
 		return providerClazz;
 	}
 
-	public String toString() {
-        StringBuilder sbldr = new StringBuilder(moduleProviderName + ":" + moduleName
-        		+ ":" + probeProviderName + ":" + probeName);
-        sbldr.append(" ").append(providerJavaMethodName).append("(");
-        String delim = "";
-        for (Class c : paramTypes) {
-            sbldr.append(delim).append((c == null) ? " " : c.getName());
-            delim = ", ";
-        }
-        sbldr.append(")");
+	 public String toString() {
+         StringBuilder sbldr = new StringBuilder(moduleProviderName + ":" + moduleName
+         		+ ":" + probeProviderName + ":" + probeName);
+         String delim = " (";
+         for (int i = 0; i < paramTypes.length; i++) {
+             sbldr.append(delim).append((paramTypes[i] == null) ? " " : paramTypes[i].getName());
+             sbldr.append(" ").append((probeParamNames[i] == null) ? " " : probeParamNames[i]);
+             delim = ", ";
+         }
+         if (paramTypes.length == 0)
+             sbldr.append(" (");
+         sbldr.append(")");
 
-        return sbldr.toString();
-    }
+         return sbldr.toString();
+     }
 
     public void setDTraceProviderImpl(Object impl) {
         dtraceProviderImpl = impl;

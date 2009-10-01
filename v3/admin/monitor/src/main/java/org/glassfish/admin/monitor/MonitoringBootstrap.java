@@ -111,7 +111,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     private void discoverProbeProviders() {
         // Iterate thru existing modules
         for (Module m : registry.getModules()) {
-            if ((m.getState() == ModuleState.READY)){// || (m.getState() == ModuleState.RESOLVED)) {
+            if ((m.getState() == ModuleState.READY) || (m.getState() == ModuleState.RESOLVED)) {
                 printd( " In (discoverProbeProviders) ModuleState - " + m.getState() + " : " + m.getName());
                 verifyModule(m);
             }
@@ -345,21 +345,20 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
 
             if (event.getSource() instanceof ModuleMonitoringLevels) {
                 printd("Event received from " + event.getSource().getClass().getName() + " New Level = " + newVal + " Old Level=" + oldVal);
-                boolean newEnabled = parseLevelsBoolean(newVal.toString());
-                boolean oldEnabled = (oldVal == null) ? !newEnabled : parseLevelsBoolean(oldVal.toString());
-                if((newEnabled != oldEnabled) && (spr != null)) // no spr -- means no work can be done.
+                String newEnabled = newVal.toString().toUpperCase();
+                String oldEnabled = (oldVal == null) ? "OFF" : oldVal.toString().toUpperCase();
+                if ((!newEnabled.equals(oldEnabled)) && (spr != null)) {
                     handleLevelChange(propName, newEnabled);
+                }
             }
             else if (event.getSource() instanceof ContainerMonitoring) {
                 ContainerMonitoring cm = (ContainerMonitoring)event.getSource();
-                boolean newEnabled = parseLevelsBoolean(newVal.toString());
 
-                // complications!  What if old is null? we fake out the rest of
-                // the logic to think it changed...
-                boolean oldEnabled = (oldVal == null) ? !newEnabled : parseLevelsBoolean(oldVal.toString());
-
-                if((newEnabled != oldEnabled) && (spr != null)) // no spr -- means no work can be done.
+                String newEnabled = newVal.toString().toUpperCase();
+                String oldEnabled = (oldVal == null) ? "OFF" : oldVal.toString().toUpperCase();
+                if ((!newEnabled.equals(oldEnabled)) && (spr != null)) {
                     handleLevelChange(cm.getName(), newEnabled);
+                }
             }
             else if(event.getSource() instanceof MonitoringService) {
                 // we don't want to get fooled because config allows ANY string.
@@ -376,15 +375,15 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
        return null;
     }
 
-    private void handleLevelChange(String propName, boolean enabled) {
-        printd("In handleLevelChange(), spmd = " + spmd + "  Enabled="+enabled);
+    private void handleLevelChange(String propName, String enabledStr) {
+        printd("In handleLevelChange(), spmd = " + spmd + "  Enabled="+enabledStr);
         if(!ok(propName))
             return;
 
         if(spmd == null)
             return; // nothing to do!
 
-        if (enabled)
+        if (parseLevelsBoolean(enabledStr))
             spmd.enableStatsProviders(propName);
         else
             spmd.disableStatsProviders(propName);

@@ -11,12 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
-import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.gmbal.ManagedObjectManager;
-import org.glassfish.gmbal.ManagedObjectManagerFactory;
-import org.glassfish.external.statistics.annotations.Reset;
-import org.glassfish.external.probe.provider.StatsProvider;
 import org.glassfish.external.probe.provider.PluginPoint;
+import org.glassfish.external.probe.provider.StatsProviderInfo;
 
 public class StatsProviderRegistry {
     List<StatsProviderRegistryElement> regElements = new ArrayList();
@@ -28,22 +25,33 @@ public class StatsProviderRegistry {
     private MonitoringRuntimeDataRegistry mrdr;
     private boolean isAMXReady = false;
     private boolean isMBeanEnabled = true;
+    private boolean ddebug = false;
+    
+    static final String[] defaultConfigLevels = new String[] {"LOW","HIGH"};
+    public static Map<String, Integer> configLevelsMap = new HashMap();
 
     public StatsProviderRegistry(MonitoringRuntimeDataRegistry mrdr) {
         this.mrdr = mrdr;
+        for (int i = 0; i < defaultConfigLevels.length; i++) {
+            printd("       configLevel[" + i + "] = " + defaultConfigLevels[i]);
+            configLevelsMap.put(defaultConfigLevels[i].toUpperCase(), i);
+        }
     }
 
-    public void registerStatsProvider(String configStr, PluginPoint pp, String subTreePath,
-                        String parentTreeNodePath, List<String> childTreeNodeNames,
-                        Collection<ProbeClientMethodHandle> handles,
-                        Object statsProvider,
-                        String mbeanName,
-                        ManagedObjectManager mom) {
+    public void registerStatsProvider(StatsProviderInfo spInfo) {
+        String configLevelStr = spInfo.getConfigLevel();
+
+        if (configLevelStr == null) {
+            // Pick the highest in the configLevels
+            spInfo.setConfigLevel(defaultConfigLevels[defaultConfigLevels.length-1]);
+        }
 
         StatsProviderRegistryElement spre =
-                    new StatsProviderRegistryElement(
-                            configStr, pp, subTreePath, parentTreeNodePath, childTreeNodeNames,
-                            handles, statsProvider, mbeanName, mom);
+                    new StatsProviderRegistryElement(spInfo);
+        initialize(spre, spInfo.getConfigElement(), spInfo.getStatsProvider());
+    }
+
+    private void initialize(StatsProviderRegistryElement spre, String configStr, Object statsProvider) {
         // add a mapping from config to StatsProviderRegistryElement, so you can easily
         // retrieve all stats element for enable/disable functionality
         if (configToRegistryElementMap.containsKey(configStr)) {
@@ -111,34 +119,47 @@ public class StatsProviderRegistry {
         return this.isMBeanEnabled;
     }
 
+    private void printd(String s) {
+        if (ddebug)
+            System.out.println("APK:" + s);
+    }
+
     class StatsProviderRegistryElement {
         String configStr;
         PluginPoint pp;
         String subTreePath;
-        String parentTreeNodePath;
-        List<String> childTreeNodeNames;
-        Collection<ProbeClientMethodHandle> handles;
+        String parentTreeNodePath = null;
+        List<String> childTreeNodeNames = null;
+        Collection<ProbeClientMethodHandle> handles = null;
         Object statsProvider;
-        String mbeanName;
-        ManagedObjectManager mom;
-        Method resetMethod;
+        String mbeanName = null;
+        ManagedObjectManager mom = null;
+        Method resetMethod = null;
         boolean isEnabled = false;
+        int configLevel;
+        boolean ddebug = false;
 
-        public StatsProviderRegistryElement(String configStr, PluginPoint pp, String subTreePath,
-                        String parentTreeNodePath, List<String> childTreeNodeNames,
-                        Collection<ProbeClientMethodHandle> handles,
-                        Object statsProvider,
-                        String mbeanName,
-                        ManagedObjectManager mom) {
-           this.configStr = configStr;
-           this.pp = pp;
-           this.subTreePath = subTreePath;
-           this.handles = handles;
-           this.parentTreeNodePath = parentTreeNodePath;
-           this.childTreeNodeNames = childTreeNodeNames;
-           this.statsProvider = statsProvider;
-           this.mbeanName = mbeanName;
-           this.mom = mom;
+        public StatsProviderRegistryElement(StatsProviderInfo spInfo) {
+
+            this.configStr = spInfo.getConfigElement();
+            this.pp = spInfo.getPluginPoint();
+            this.subTreePath = spInfo.getSubTreeRoot();
+            this.statsProvider = spInfo.getStatsProvider();
+            this.mbeanName = spInfo.getSubTreeRoot();
+            String configLevelStr = spInfo.getConfigLevel();
+
+            printd("  StatsProvider = " + statsProvider.getClass().getName() +
+                        " configLevelstr = " + configLevelStr);
+
+            configLevel =
+                    StatsProviderRegistry.configLevelsMap.get(configLevelStr.toUpperCase());
+
+            printd("  configLevel = " + configLevel);
+        }
+
+        private void printd(String s) {
+            if (ddebug)
+                System.out.println("APK:" + s);
         }
 
         public String getConfigStr() {
@@ -169,7 +190,7 @@ public class StatsProviderRegistry {
             return statsProvider;
         }
 
-        private void setStatsProvider(Object statsProvider) {
+        public void setStatsProvider(Object statsProvider) {
             this.statsProvider = statsProvider;
         }
 
@@ -181,16 +202,23 @@ public class StatsProviderRegistry {
             return mom;
         }
 
-        void setManagedObjectManager(ManagedObjectManager mom) {
+        public void setManagedObjectManager(ManagedObjectManager mom) {
             this.mom = mom;
         }
 
-        boolean isEnabled() {
+        public boolean isEnabled() {
             return isEnabled;
         }
 
-        void setEnabled(boolean enabled) {
+        public void setEnabled(boolean enabled) {
             isEnabled = enabled;
+        }
+
+        public boolean isEnableAllowed(String userConfigLevelStr) {
+            int userConfigLevel = StatsProviderRegistry.configLevelsMap.get(userConfigLevelStr.toUpperCase());
+            if ((userConfigLevel != -1) && (userConfigLevel >= configLevel))
+                return true;
+            return false;
         }
 
         public void setParentTreeNodePath(String completePathName) {
@@ -212,10 +240,6 @@ public class StatsProviderRegistry {
         }
 
         public String toString() {
-            this.pp = pp;
-            this.subTreePath = subTreePath;
-            this.handles = handles;
-            this.parentTreeNodePath = parentTreeNodePath;
             String str = "    configStr = " + configStr + "\n" +
                          "    statsProvider = " + statsProvider.getClass().getName() + "\n" +
                          "    PluginPoint = " + pp + "\n" +

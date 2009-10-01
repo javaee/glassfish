@@ -26,6 +26,7 @@ import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManagerDelegate;
 import org.glassfish.external.statistics.Statistic;
 import org.glassfish.external.statistics.Stats;
+import org.glassfish.external.probe.provider.StatsProviderInfo;
 import org.glassfish.external.statistics.annotations.Reset;
 import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.external.statistics.impl.StatsImpl;
@@ -85,7 +86,14 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     }
 
     public void register(String configElement, PluginPoint pp,
-            String subTreePath, Object statsProvider) {
+                         String subTreePath, Object statsProvider) {
+        StatsProviderInfo spInfo = new StatsProviderInfo(configElement, pp, subTreePath, statsProvider);
+        register(spInfo);
+    }
+    
+    public void register(StatsProviderInfo spInfo) {
+        String configElement = spInfo.getConfigElement();
+        Object statsProvider = spInfo.getStatsProvider();
         // register the statsProvider
         printd("registering a statsProvider ");
         StatsProviderRegistryElement spre;
@@ -95,17 +103,18 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             spre = statsProviderRegistry.getStatsProviderRegistryElement(statsProvider);
 
             if (spre == null) {
-                statsProviderRegistry.registerStatsProvider(configElement, pp, subTreePath,
-                        null, null, null, statsProvider, subTreePath, null);
+                statsProviderRegistry.registerStatsProvider(spInfo);
                 spre = statsProviderRegistry.getStatsProviderRegistryElement(statsProvider);
             }
-            enableStatsProvider(spre);
+            //Enable the StatsProvider if the enable is allowed
+            if (spre.isEnableAllowed(getMonitoringLevel(configElement))) {
+                enableStatsProvider(spre);
+            }
 
         } else {
             printd(" enabled is false ");
             // Register with null values so to know that we need to register them individually and config is on
-            statsProviderRegistry.registerStatsProvider(configElement, pp, subTreePath,
-                    null, null, null, statsProvider, subTreePath, null);
+            statsProviderRegistry.registerStatsProvider(spInfo);
             spre = statsProviderRegistry.getStatsProviderRegistryElement(statsProvider);
         }
 
@@ -179,13 +188,16 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         for (String configElement : statsProviderRegistry.getConfigElementList()) {
             Collection<StatsProviderRegistryElement> spreList =
                         statsProviderRegistry.getStatsProviderRegistryElement(configElement);
+            boolean isConfigEnabled = getEnabledValue(configElement);
+            //Continue with the next configElement if this is not enabled
+            if (!isConfigEnabled)
+                continue;
+
             for (StatsProviderRegistryElement spre : spreList) {
-                boolean isConfigEnabled = getEnabledValue(configElement);
-                if (isConfigEnabled != spre.isEnabled) {
-                    if (isConfigEnabled)
-                        enableStatsProvider(spre);
-                    else
-                        disableStatsProvider(spre);
+                //Assuming the spre's are disabled to start with
+                boolean isEnableAllowed = spre.isEnableAllowed(getMonitoringLevel(configElement));
+                if (isEnableAllowed) {
+                    enableStatsProvider(spre);
                 }
             }
         }
@@ -210,14 +222,28 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         //If monitoring-enabled is false, just return
         if (!getMonitoringEnabled())
             return;
+        String configLevel = getMonitoringLevel(configElement);
         //Enable all the StatsProviders for a given configElement
         printd("Enabling all the statsProviders for - " + configElement);
         List<StatsProviderRegistryElement> spreList = statsProviderRegistry.getStatsProviderRegistryElement(configElement);
         if (spreList == null)
             return;
         for (StatsProviderRegistryElement spre : spreList) {
-            if (!spre.isEnabled())
-                enableStatsProvider(spre);
+            //Check to see if the enable is allowed
+            // Not allowed if statsProvider is registered for Low and configLevel is HIGH
+            boolean isEnableAllowed = spre.isEnableAllowed(configLevel);
+            if (!spre.isEnabled()) {
+                //OFF->LOW, OFF->HIGH
+                if (isEnableAllowed) {
+                    enableStatsProvider(spre);
+                }
+            } else {
+                //Disable if the stats were enabled, but current level is not allowed for these stats(HIGH->LOW) and
+                // stats were registered at HIGH
+                if (!isEnableAllowed) {
+                    disableStatsProvider(spre);
+                }// else, Dont do anything LOW->HIGH (stats were registered at LOW)
+            }
         }
     }
 
@@ -286,8 +312,6 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             spre.setManagedObjectManager(mom);
         }
 
-        // Keep track of enabled flag for configElement.  Used later for register gmbal when AMXReady.
-        String configElement = spre.getConfigStr();
         spre.setEnabled(true);
     }
 
@@ -607,17 +631,20 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     }
 
     private boolean getEnabledValue(String configElement) {
-        boolean enabled = false;
-        String level = monitoringService.getMonitoringLevel(configElement);
+        boolean enabled = true;
+        String level = getMonitoringLevel(configElement);
         if (level != null) {
-            if (level.equals(ContainerMonitoring.LEVEL_HIGH) ||
-                    level.equals(ContainerMonitoring.LEVEL_LOW)) {
-                enabled = true;
+            if (level.equals(ContainerMonitoring.LEVEL_OFF)) {
+                enabled = false;
             }
         } else {
             Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.WARNING, "module-monitoring-level or container-monitoring config element for " + configElement + " does not exist.");
         }
         return enabled;
+    }
+
+    private String getMonitoringLevel(String configElement) {
+        return monitoringService.getMonitoringLevel(configElement);    
     }
 
     private boolean getMbeanEnabledValue() {
