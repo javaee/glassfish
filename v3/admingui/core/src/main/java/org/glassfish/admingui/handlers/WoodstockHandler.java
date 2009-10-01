@@ -419,6 +419,12 @@ public class WoodstockHandler {
         if(ejbAppOptions !=null){
             menuList.add(ejbAppOptions);
         }
+
+           // Menu for ejb app info
+        OptionGroup ejbTimerOptions = setEjbGroupOptions("ejb-timed-object-mon", "ejb-timer");
+        if(ejbTimerOptions !=null){
+            menuList.add(ejbTimerOptions);
+        }
         
          // Menu for bean-cache
         OptionGroup bcOptions = setEjbGroupOptions("bean-cache-mon", "bean-cache");

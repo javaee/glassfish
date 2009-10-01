@@ -109,6 +109,15 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
+    <sun:tableRowGroup id="ejbTimerStats" rendered="#{hasStatsEJBTimer}" data={"$attribute{EJBTimerStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.EJBTimer} : #{viewVal} "
+        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="ejb-application-mon" name="#{viewVal}", result=>$attribute{EJBTimerStatsList}  hasStats=>$attribute{hasStatsEJBTimer});
+         />
+
+#include "/common/monitor/monitoringTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup>
      <sun:tableRowGroup id="ejbMethodStats" rendered="#{hasStatsEjbMethod}" data={"$attribute{EjbMethodStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.EJBMethod} : #{viewVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
