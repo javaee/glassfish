@@ -133,3 +133,12 @@ function findContainingTreeNode(link) {
         return undefined;
     }
 }
+
+function fixTree(treeId) {
+    var tree = document.getElementById(treeId);
+    tree.isTreeHandle = fixedIsTreeHandle;
+    tree.expandCollapse = fixedExpandCollapse;
+    tree.findNodeByTypeAndProp = fixedFindNodeByTypeAndProp;
+    tree.treeNodeIsExpanded = treeNodeIsExpanded;
+    tree.findContainingTreeNode = findContainingTreeNode;
+}
