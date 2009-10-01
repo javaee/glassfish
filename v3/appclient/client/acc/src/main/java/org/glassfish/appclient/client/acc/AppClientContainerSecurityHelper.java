@@ -114,7 +114,7 @@ public class AppClientContainerSecurityHelper {
                     clientCredential.getPassword() == null ||
                     clientCredential.getPassword().get() == null 
                         ? null : new String(clientCredential.getPassword().get())),
-                false /* isJWS */, false /*useGUIAuth*/);
+                false /* isJWS */, ! isTextAuth /*useGUIAuth*/);
 
         initHttpAuthenticator(AppClientSecurityInfo.CredentialType.USERNAME_PASSWORD);
     }
@@ -154,7 +154,7 @@ public class AppClientContainerSecurityHelper {
          * Choose a callback handler in this order:
          * 1. callback handler class set by the program that created the AppClientContainerBuilder.
          * 2. callback handler class name set in the app client descriptor
-         * 3. our default GUI callback handler
+         * 3. null, in which case the security layer provides a default callback handler
          *
          * Our default handler uses no injection, but a user-provided one might.
          */
@@ -165,19 +165,12 @@ public class AppClientContainerSecurityHelper {
                 callbackHandler = newCallbackHandlerInstance(
                         descriptorCallbackHandlerClassName, acDesc, classLoader);
             } else {
-                callbackHandler = chooseDefaultCallbackHandler();
+                callbackHandler = null;
             }
         }
-        logger.config("Callback handler class = " + callbackHandler.getClass().getName());
+        logger.config("Callback handler class = " + 
+                (callbackHandler == null ? "(default)" : callbackHandler.getClass().getName()));
         return callbackHandler;
-    }
-
-    private CallbackHandler chooseDefaultCallbackHandler() {
-        if (isTextAuth) {
-            return new DefaultTextCallbackHandler();
-        } else {
-            return new DefaultGUICallbackHandler();
-        }
     }
 
     private CallbackHandler newCallbackHandlerInstance(final String callbackHandlerClassName,
@@ -193,19 +186,9 @@ public class AppClientContainerSecurityHelper {
     private CallbackHandler newCallbackHandlerInstance(final Class<? extends CallbackHandler> callbackHandlerClass,
             final ApplicationClientDescriptor acDesc) throws InstantiationException, IllegalAccessException, InjectionException {
 
-        CallbackHandlerInvocationHandler invHandler = new CallbackHandlerInvocationHandler(
-                chooseDefaultCallbackHandler());
-        
-        CallbackHandler handlerProxy = (CallbackHandler) Proxy.newProxyInstance(
-                classLoader, 
-                new Class[] {CallbackHandler.class}, 
-                invHandler);
-        
-        
         CallbackHandler userHandler = callbackHandlerClass.newInstance();
         injectionManager.injectInstance(userHandler, acDesc);
-        invHandler.setDelegate(userHandler);
-        return handlerProxy;
+        return userHandler;
     }
 
 
