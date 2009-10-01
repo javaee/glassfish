@@ -41,13 +41,6 @@
                 content="configuration/pluginTreeNodeThreadPool.jsf"
         />
 
-        <integration-point
-                id="monitor"
-                type="org.glassfish.admingui:navNode"
-                priority="750"
-                parentId="configuration"
-                content="monitor/monitoringNode.jsf"
-        />
 
         <!-- Add links under the Configuration Page  -->
         <integration-point
@@ -131,29 +124,5 @@
                 parentId="monitoring"
                 content="monitor/webViewMonitoringDataTask.jsf"/>-->
                 
-        <!-- Adding Tabs to the Server Instance General page -->        
-        <integration-point
-                id="monitoring" 
-                type="org.glassfish.admingui:serverInstTab" 
-                priority="20" 
-                parentId="serverInstTabs" 
-                content="monitor/monitoringTab.jsf" />
-        <integration-point
-                id="monitor_appstats" 
-                type="org.glassfish.admingui:serverInstTab" 
-                priority="20" 
-                parentId="monitoring" 
-                content="monitor/monitoringAppStatsTab.jsf" />
-        <integration-point
-                id="monitor_server" 
-                type="org.glassfish.admingui:serverInstTab" 
-                priority="30" 
-                parentId="monitoring" 
-                content="monitor/monitoringServerTab.jsf" />
-       <!--<integration-point
-                id="monitor_server" 
-                type="org.glassfish.admingui:serverInstTab" 
-                priority="20" 
-                parentId="serverInstTabs" 
-                content="monitor/monitoringServerTab.jsf" />-->
+       
 </console-config>
