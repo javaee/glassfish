@@ -101,8 +101,9 @@ public class ASMainStatic extends ASMainNonOSGi {
         StartupContext sc = getContext(StartupContext.class);
         if (sc==null) {
             Properties p = ArgumentManager.argsToMap(args);
-            for (String arg : args) {
-                if (arg.equals("-upgrade")) {
+            for (int i = 0; i < args.length; i++) {
+                String arg = args[i];
+                if (arg.equals("-upgrade") && i+1<args.length && !args[i+1].equals("false"))  {
                     p.put(StartupContext.STARTUP_MODULESTARTUP_NAME, "upgrade" );
                 }
             }
