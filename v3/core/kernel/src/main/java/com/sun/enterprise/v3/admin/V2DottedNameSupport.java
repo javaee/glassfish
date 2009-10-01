@@ -126,10 +126,20 @@ public class V2DottedNameSupport {
             if (property==null) {
                 property = node.model.findIgnoreCase("*");
             }
-            String value = node.leafElement(leafName);
-            if (value!=null) {
-                result.put(leafName, value);
+            List values = node.leafElements(leafName);
+            Iterator i = values.iterator();
+            StringBuffer value = new StringBuffer();
+            while (i.hasNext()) {
+                String nextValue = (String) i.next();
+
+                if (nextValue!=null) {
+                    value.append(nextValue);
+                    if(i.hasNext()) {
+                        value.append(",");
+                    }
+                }
             }
+            result.put(leafName, value.toString());
         }
         return result;
     }
