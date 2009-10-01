@@ -13,23 +13,6 @@
         }
     </ui:event>
 
-    <ui:remove>
-        <sun:page>
-            <sun:html>
-                <sun:head title="#{guiTitle}" debug="false" parseOnLoad="true">
-                    <script src="#{request.contextPath}/resources/yui/yahoo-dom-event.js"></script>
-                    <jsfExt:scripts/>
-                    <ui:insert name="guiTemplateExtraHead" />
-                    <ui:insert name="guiExtraHead" />
-                </sun:head>
-
-                <sun:body onLoad="#{guiOnLoad}#{guiTemplateOnLoad}">
-                    <div id="content" style="padding-left: 5px; padding-right: 5px;">
-                    </div>
-                </sun:body>
-            </sun:html>
-        </sun:page>
-    </ui:remove>
     <ui:composition>
 	<sun:messageGroup />
 	<ui:insert name="content">

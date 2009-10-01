@@ -53,11 +53,11 @@
 
                     setPageSessionAttribute(key="iframeUrl", value="#{request.requestURL}?#{request.queryString}&amp;bare=true");
                 </ui:event>
-                <sun:head title="#{guiTitle}" debug="true" parseOnLoad="false">
+                <sun:head title="#{guiTitle}" javaScript="true" debug="false" parseOnLoad="false">
                     <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/yui/reset-fonts-grids.css"/>
                     <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/yui/assets/skins/sam/resize.css"/>
                     <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/yui/assets/skins/sam/layout.css"/>
-                    <script src="#{resource['javax.faces/jsf-compressed.js']}"></script>
+		    <h:outputScript name="jsf.js" library="javax.faces" target="head" />
                     <script src="#{request.contextPath}/resources/yui/yahoo-dom-event.js"></script>
                     <script src="#{request.contextPath}/resources/yui/dragdrop-min.js"></script>
                     <script src="#{request.contextPath}/resources/yui/element-min.js"></script>
@@ -69,7 +69,6 @@
                      <link rel="stylesheet" type="text/css" href="#{request.contextPath}/style.css" />
                     -->
                     <sun:script url="/resource/common/js/adminjsf.js" />
-                    <sun:script url="/resource/templates/tree.js" />
                     <sun:script url="/resource/dw_loader.js" />
                     <jsfExt:scripts/>
                     <ui:insert name="guiTemplateExtraHead" />
@@ -103,12 +102,20 @@
                 </sun:head>
 
                 <sun:body styleClass="yui-skin-sam" 
-                          onLoad="#{guiOnLoad}#{guiTemplateOnLoad};admingui.ajax.processElement(document.getElementById('leftNav')); admingui.ajax.loadPage({url:'$pageSession{iframeUrl}', target:document.getElementById('content')});">
+                          onLoad="#{guiOnLoad}#{guiTemplateOnLoad};admingui.ajax.processElement(window, document.getElementById('leftNav'), false); admingui.ajax.loadPage({url:'$pageSession{iframeUrl}', target:document.getElementById('content')});">
                     <div class="yui-skin-sam">
                         <div id="gfLayoutTop">
                             <div class="header_main">
-                                <sun:form id="headerForm">
-                                    <h:commandButton id="setPref" style="display: none;">
+				<sun:form id="af" prependId="false">
+				    <h:commandButton id="execButton" text="na" style="display:none;">
+					<ui:event type="command">
+					    gf.invokeHandler(handler="#{param.h}" args="#{param.a}" depth="#{param.d}" values="#{requestScope.execResp}");
+					</ui:event>
+				    </h:commandButton>
+				    <h:inputText id="execResp" value="#{requestScope.execResp}" style="display:none;" />
+
+				    <!-- The following button is used in a couple places, should be replaced by the above button... -->
+                                    <h:commandButton id="setPref" style="display:none;">
                                         <ui:event type="afterCreate">
                                             setPageSessionAttribute(key="setPrefId" value="$this{clientId}");
                                         </ui:event>
@@ -120,14 +127,13 @@
                                             }
                                         </ui:event>
                                     </h:commandButton>
-                                    <!-- Customizing the masthead -->
+                                    <!-- Masthead Integration Point -->
                                     <ui:event type="afterCreate">
-                                        getClientId(component="$this{component}" clientId=>$attribute{formId})
-                                        getUIComponent(clientId="#{formId}"  component=>$attribute{component})
-                                        includeFirstIntegrationPoint(type="org.glassfish.admingui:masthead" root="#{requestScope.component}");
+                                        includeFirstIntegrationPoint(type="org.glassfish.admingui:masthead" root="$this{component}");
                                     </ui:event>
                                 </sun:form>
-                                <sun:hyperlink id="currentPageLink" text="Current Page" url="#{iframeUrl}" />
+				<!-- FIXME: Remove or fix this link up: -->
+                                <sun:hyperlink id="currentPageLink" text="Current Page" visible="false" url="#{iframeUrl}" />
                             </div>
                         </div>
 
@@ -139,10 +145,6 @@
 
                         <div id="gfLayoutCenter">
 
-                            <ui:remove>
-                            <ui:insert name="guiTopNav" />
-                                <iframe id="buffer" name="buffer" src="$pageSession{iframeUrl}" onload="admingui.ajax.maximizeIFrame();" height="400" width="99%" style="border: 0px"></iframe>
-                            </ui:remove>
                             <!-- Content -->
                             <div id="content" style="padding-left: 5px; padding-right: 5px;">
                                 <h:messages />
@@ -153,11 +155,6 @@
                                     </ui:insert>
                                 </ui:insert>
                             </div>
-                            <ui:remove>
-                            <iframe id="buffer" name="buffer" src="$pageSession{iframeUrl}"
-                                onload="admingui.ajax.showPage(window.frames['buffer'].document.getElementById('content'),document.getElementById('content'))"
-                                height="200" width="100%" style="border: 0px; visibility: hidden"></iframe>
-                            </ui:remove>
                         </div>
 
                         <ui:remove>
@@ -226,10 +223,7 @@
 
             <!-- FIXME: this should be in adminjsf.js -->
             <script type="text/javascript">
-                var iframeName = "buffer";
-                //admingui.ajax.lastPageLoaded = "$pageSession{iframeUrl}";
-                
-                <ui:remove>
+	<ui:remove>
                 function submitTagForm(el) {
                     YAHOO.util.Dom.get('tagForm:url').value = window.location;
                     DynaFaces.fireAjaxTransaction(el,
@@ -274,7 +268,7 @@
                 YAHOO.util.Event.addListener(document, "keypress", showSearchPanel);
                 -->
                 */
-                </ui:remove>
+	</ui:remove>
 
                 // Save the prefs button so it is accessible via our JS
                 if (typeof(admingui) === "undefined") {
@@ -291,7 +285,7 @@
                 });
                 layout.render();
 
-                <ui:remove>
+	<ui:remove>
                 // Collapse panels if necessary
                 /*
                 YAHOO.util.Event.onDOMReady(function (ev) {
@@ -320,7 +314,7 @@
                     }
                 });
                 */
-                </ui:remove>
+	</ui:remove>
             </script>
         </sun:page>
     </ui:composition>
