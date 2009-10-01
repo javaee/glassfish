@@ -104,6 +104,14 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
             return;
         }
 
+        //check for incomplete dotted name
+        if(!pattern.equals("*")) {
+            if (pattern.lastIndexOf(".") == -1 || pattern.lastIndexOf(".") == (pattern.length() - 1)) {
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage("Missing expected dotted name part");
+                return;
+            }
+        }
         
         // first let's get the parent for this pattern.
         TreeNode[] parentNodes = getAliasedParent(domain, pattern);
@@ -120,12 +128,17 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         pattern = parentNodes[0].relativeName;
 
         Map<Dom, String> matchingNodes = getMatchingNodes(dottedNames, pattern);
-        if (matchingNodes.isEmpty() && pattern.lastIndexOf('.')!=-1) {
-            // it's possible the user is just looking for an attribute, let's remove the
-            // last element from the pattern.
-            matchingNodes = getMatchingNodes(dottedNames, pattern.substring(0, pattern.lastIndexOf(".")));
+
+        //if no matches found - report the failure and return
+        if (matchingNodes.isEmpty()) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage("Attribute \"" + pattern.substring(pattern.lastIndexOf(".") + 1,
+                    pattern.length()) + "\" not found.");
+            return;
         }
+
         List<Map.Entry> matchingNodesSorted = sortNodesByDottedName(matchingNodes);
+        boolean foundMatch = false;
         for (Map.Entry<Dom, String> node : matchingNodesSorted) {
             // if we get more of these special cases, we should switch to a Renderer pattern
             if (Property.class.getName().equals(node.getKey().model.targetTypeName)) {
@@ -134,6 +147,7 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
                     ActionReport.MessagePart part = report.getTopMessagePart().addChild();
                     part.setChildrenType("DottedName");
                     part.setMessage(prefix + node.getValue() + "=" + encode(node.getKey().attribute("value")));
+                    foundMatch = true;
                 }
             }   else {
                 Map<String, String> attributes = getNodeAttributes(node.getKey(), pattern);
@@ -144,8 +158,13 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
                         ActionReport.MessagePart part = report.getTopMessagePart().addChild();
                         part.setChildrenType("DottedName");
                         part.setMessage(prefix + node.getValue() + "." + name.getKey() + "=" + name.getValue());
+                        foundMatch = true;
                     }
                 }
+            }
+            if (!foundMatch && !pattern.equals("*")) {
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage("No object found matching " + pattern);
             }
         }
     }
