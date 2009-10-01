@@ -43,26 +43,29 @@
 <!define name="content">
 <event>
     <!beforeCreate
-    setSessionAttribute(key="connectorPoolTabs" value="general");
-    getRequestValue(key="name" value="#{pageSession.Name}");
-    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorConnectionPoolEdit.jsf?name=#{pageSession.Name}");
-    setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
-    setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
-    setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
-    setPageSessionAttribute(key="childType" value="connector-connection-pool");
-    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-    setPageSessionAttribute(key="convertToFalseList" value={"IsConnectionValidationRequired" "FailAllConnections" "AssociateWithThread" "ConnectionLeakReclaim" "LazyConnectionAssociation" "LazyConnectionEnlistment" "MatchConnections" });
-    setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
-    //set the following for including buttons.inc
-    setPageSessionAttribute(key="edit" value="#{true}" );
-    setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
-    setPageSessionAttribute(key="showCancelButton" value="#{true}" );
-    setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
-    setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
-    getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{requestScope.rarList}");
-    addSystemConnectors(rarList="#{requestScope.rarList}" result="#{pageSession.modList}")
-    getConnectionDefinitionsForRA(resourceAdapter="#{valueMap.ResourceAdapterName}" result="#{pageSession.cdList}");
-    
+        setSessionAttribute(key="connectorPoolTabs" value="general");
+        getRequestValue(key="name" value="#{pageSession.Name}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorConnectionPoolEdit.jsf?name=#{pageSession.Name}");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
+        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
+        setPageSessionAttribute(key="childType" value="connector-connection-pool");
+
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="convertToFalseList" value={"IsConnectionValidationRequired" "FailAllConnections" "AssociateWithThread" "ConnectionLeakReclaim" "LazyConnectionAssociation" "LazyConnectionEnlistment" "MatchConnections" });
+        setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
+
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
+
+        getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{requestScope.rarList}");
+        addSystemConnectors(rarList="#{requestScope.rarList}" result="#{pageSession.modList}")
+
+        getConnectionDefinitionsForRA(resourceAdapter="#{valueMap.ResourceAdapterName}" result="#{pageSession.cdList}");
     />
 </event>
 #include "/common/shared/restart.inc"

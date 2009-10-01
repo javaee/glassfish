@@ -55,16 +55,22 @@
         > 
        <!command
             updateJdbcConnectionPoolWizardStep2();
-                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                            attrs="#{valueMap}"
-                            convertToFalse="#{pageSession.convertToFalseList}"
-                            result => $attribute{objStr});
-                    if (#{pageSession.hasPropertyTable}){
-                        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
-                    }
-                    redirect(page="#{parentPage}?configName=#{configName}");
+            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
+                    attrs="#{valueMap}"
+                    convertToFalse="#{pageSession.convertToFalseList}"
+                    result => $attribute{objStr});
+            if (#{pageSession.hasPropertyTable}){
+                getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+            }
+            if ("#{valueMap['Ping']}") {
+                pingJdbcConnectionPool(jndiName="#{valueMap['Name']}");
+                redirect(page="#{parentPage}?configName=#{configName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+            }
+            if ("!#{valueMap['Ping']}") {
+                redirect(page="#{parentPage}?configName=#{configName}");
+            }
         />    
     </sun:button>
     <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" > 
