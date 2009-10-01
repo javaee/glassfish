@@ -52,14 +52,18 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.LayoutDefinitionManager;
+//import com.sun.jsftemplating.layout.LayoutViewHandler;
 import com.sun.jsftemplating.layout.ViewRootUtil;
 import com.sun.jsftemplating.layout.descriptors.LayoutElement;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerDefinition;
+import com.sun.jsftemplating.util.FileUtil;
 
 import java.io.File;
 import java.util.GregorianCalendar;
 import java.util.Map;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.util.Iterator;
@@ -125,6 +129,59 @@ public class UtilHandlers {
     public static void getFile(HandlerContext handlerCtx) {
         String pathname = (String) handlerCtx.getInputValue("Pathname");
         handlerCtx.setOutputValue("File", pathname != null ? new File(pathname) : null);        
+    }
+
+    /**
+     *	<p> This handler serves a resource via JSFTemplating's FileStreamer.</p>
+     */
+    @Handler(id="gf.serveResource",
+    	input={
+	    @HandlerInput(name="path", type=String.class, required=true)},
+	output={
+	    @HandlerOutput(name="content", type=String.class)})
+    public static void serveResource(HandlerContext ctx) throws java.io.IOException {
+	/*
+	  JSF 2.0 impl sets the writer before the render response phase (in
+	  apply request values).  So we can't control the output of an Ajax
+	  request. :(  Therefor the following is commented out.
+	 
+	    LayoutViewHandler.serveResource(
+		ctx.getFacesContext(), (String) ctx.getInputValue("path"));
+	 */
+	String path = (String) ctx.getInputValue("path");
+	int idx = path.lastIndexOf("://");
+	String port = null;
+	if (idx != -1) {
+	    // Strip off protocol
+	    path = path.substring(idx + 3);
+
+	    // Now looks like: host.domain:port/resource
+// FIXME: port 80 may be omitted (or 443 for https)
+	    if ((idx = path.indexOf(':')) != -1) {
+		path = path.substring(idx + 1);
+		if ((idx = path.indexOf('/')) != -1) {
+		    port = path.substring(0, idx);
+		    path = path.substring(idx);
+		}
+	    }
+	}
+	URL url = FileUtil.searchForFile(path, null);
+	if ((url == null) && (port != null)) {
+	    // Attempt to read from localhost
+	    path = "http://localhost:" + port + path;
+	    try {
+		url = new URL(path);
+	    } catch (MalformedURLException ex) {
+		url = null;
+	    }
+	}
+	String content = "";
+	if (url != null) {
+	    content = new String(FileUtil.readFromURL(url));
+	}
+
+	// Set the output
+	ctx.setOutputValue("content", content);
     }
     
     /**
