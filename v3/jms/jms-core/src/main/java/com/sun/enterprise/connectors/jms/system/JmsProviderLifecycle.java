@@ -38,6 +38,7 @@
 package com.sun.enterprise.connectors.jms.system;
 
 import org.glassfish.api.Startup;
+import org.glassfish.internal.api.MQInitializer;
 //import org.glassfish.api.monitoring.MonitoringItem;
 import org.glassfish.internal.api.Globals;
 //import org.glassfish.jms.admin.monitor.config.JmsServiceMI;
@@ -65,7 +66,7 @@ import com.sun.enterprise.config.serverbeans.JmsService;
 //import java.util.List;
 
 @Service
-public class JmsProviderLifecycle implements Startup, PostConstruct{
+public class JmsProviderLifecycle implements Startup, PostConstruct, MQInitializer{
     private static final String JMS_EAGER_STARTUP = "org.glassfish.jms.EagerStartup";
     //Lifecycle properties
     public static final String EMBEDDED="EMBEDDED";
@@ -88,10 +89,7 @@ public class JmsProviderLifecycle implements Startup, PostConstruct{
        if (eagerStartupRequired())
        {
         try {
-             String module = ConnectorConstants.DEFAULT_JMS_ADAPTER;
-             String loc = ConnectorsUtil.getSystemModuleLocation(module);
-             ConnectorRuntime connectorRuntime = habitat.getComponent(ConnectorRuntime.class);
-             connectorRuntime.createActiveResourceAdapter(loc, module, null);
+                initializeBroker();
                } catch (ConnectorRuntimeException e) {
                    e.printStackTrace();
                    //logger.log(Level.WARNING, "Failed to start JMS RA");
@@ -103,6 +101,13 @@ public class JmsProviderLifecycle implements Startup, PostConstruct{
 
     }
 
+    public void initializeBroker () throws ConnectorRuntimeException
+    {
+            String module = ConnectorConstants.DEFAULT_JMS_ADAPTER;
+            String loc = ConnectorsUtil.getSystemModuleLocation(module);
+            ConnectorRuntime connectorRuntime = habitat.getComponent(ConnectorRuntime.class);
+            connectorRuntime.createActiveResourceAdapter(loc, module, null);
+    }
     private boolean eagerStartupRequired(){
         String integrationMode =getJmsService().getType();
 
