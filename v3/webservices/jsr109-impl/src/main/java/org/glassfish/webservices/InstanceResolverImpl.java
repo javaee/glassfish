@@ -99,7 +99,7 @@ public final class InstanceResolverImpl<T> extends InstanceResolver<T> {
     }
 
     public void dispose() {
-        resolver.dispose();
+        //resolver.dispose();
     }
     
     private ResourceInjector getResourceInjector(WSEndpoint endpoint) {

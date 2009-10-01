@@ -38,13 +38,11 @@ package org.glassfish.webservices;
 import com.sun.xml.ws.api.server.Adapter;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.text.MessageFormat;
 
 /**
  * Registry of JAXWS Adapter of endpoints.
@@ -53,10 +51,9 @@ public class JAXWSAdapterRegistry {
     
     private static JAXWSAdapterRegistry registry = null;
     private Map store;
-    private static final StringManager localStrings =
-        StringManager.getManager(JAXWSAdapterRegistry.class);
+
     final Logger logger = LogDomains.getLogger(JAXWSAdapterRegistry.class,LogDomains.WEBSERVICES_LOGGER);
-    
+    private  ResourceBundle rb = logger.getResourceBundle();
     /** Creates a new instance of JAXWSServletUtil */
     private JAXWSAdapterRegistry() {
         store = new HashMap();
@@ -115,14 +112,14 @@ public class JAXWSAdapterRegistry {
             if (urlPattern.indexOf("*.") != -1) {
                 // cannot deal with implicit mapping right now
                 logger.log(Level.SEVERE, 
-                        localStrings.getString("enterprise.webservice.implicitMappingNotSupported"));
+                        rb.getString("enterprise.webservice.implicitMappingNotSupported"));
             } else if (urlPattern.endsWith("/*")) {
                 pathUrlPatternEndpoints.add(info);
             } else {
                 if (fixedUrlPatternEndpoints.containsKey(urlPattern)) {
                     logger.log(Level.SEVERE, 
-                            localStrings.getString("enterprise.webservice.duplicateService", 
-                            new Object[]{urlPattern}));
+                           format( rb.getString("enterprise.webservice.duplicateService"),
+                            urlPattern));
                 }
                 fixedUrlPatternEndpoints.put(urlPattern, info);
             }
@@ -152,5 +149,9 @@ public class JAXWSAdapterRegistry {
                 return s;
             }
         }
+    }
+
+    private String format(String key, String ... values){
+        return MessageFormat.format(key, (Object [])values);
     }
 }

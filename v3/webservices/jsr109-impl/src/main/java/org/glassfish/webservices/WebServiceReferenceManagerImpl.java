@@ -14,6 +14,7 @@ import com.sun.xml.ws.resources.ModelerMessages;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
+import javax.naming.InitialContext;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceFactory;
 import javax.xml.ws.soap.MTOMFeature;
@@ -67,6 +68,13 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
         Class serviceInterfaceClass = null;
         Object returnObj = null;
         WsUtil wsUtil = new WsUtil();
+
+        //Implementation for new lookup element in WebserviceRef
+        InitialContext iContext = new InitialContext();
+        if( desc.hasLookupName()) {
+            return iContext.lookup(desc.getLookupName());
+
+        }
 
         try {
 
