@@ -492,4 +492,22 @@ public class StringUtils {
         }
         return value;
     }
+
+    /**
+     * Remove a character from a String
+     *
+     * @param strOrig original string
+     * @param c character to remove from the string
+     * @return String with specified characters removed
+     */
+    public static String removeChar(String strOrig, char c) {
+        String strNew = "";
+        for (int i = 0; i < strOrig.length(); i ++) {
+            if (strOrig.charAt(i) != c) {
+                strNew += strOrig.charAt(i);
+            }
+        }
+        return strNew;
+    }
+
 }

@@ -32,6 +32,7 @@ import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.external.statistics.impl.StatsImpl;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.util.StringUtils;
 import java.lang.management.ManagementFactory;
 import java.io.IOException;
 
@@ -290,7 +291,10 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             updateTreeNodes(spre, true);
         }
 
-        /* Step 2. register the StatsProvider to the flashlight */
+        /* Step 2. reset statistics (OFF --> LOW, OFF --> HIGH)*/
+        resetStatistics(spre);
+
+        /* Step 3. register the StatsProvider to the flashlight */
         if (spre.getHandles() == null) {
             // register with flashlight and save the handles
             Collection<ProbeClientMethodHandle> handles = registerStatsProviderToFlashlight(statsProvider);
@@ -303,7 +307,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             }
         }
 
-        /* Step 3. gmbal registration */
+        /* Step 4. gmbal registration */
         ManagedObjectManager mom = null;
         if (AMXReady && getMbeanEnabledValue()) {
             //Create mom root using the statsProvider
@@ -359,7 +363,6 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         //Enable/Disable the child TreeNodes
         String parentNodePath = spre.getParentTreeNodePath();
         List<String> childNodeNames = spre.getChildTreeNodeNames();
-        Method resetMethod = spre.getResetMethod();
         TreeNode rootNode = mrdr.get("server");
         if (rootNode != null) {
             // This has to return one node
@@ -374,11 +377,6 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
                     if (childNode.isEnabled() != enable) {
                         printd(((enable)?"En":"Dis") + "abling the child node - " + childNode.getCompletePathName());
                         childNode.setEnabled(enable);
-                        if (enable && resetMethod == null) {
-                            // call reset method on Statistic class only if there isn't an
-                            // @Reset method on the statsProvider.  Call on enable b/c to use current time stamp.
-                            resetStatistic(childNode.getValue());
-                        }
                         hasUpdatedNode = true;
                     }
                 }
@@ -388,7 +386,6 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             //Make sure the tree path is affected with the changes.
             if (enable) {
                 enableTreeNode(parentNode);
-                invokeResetMethod(resetMethod, spre.getStatsProvider());
             } else {
                 disableTreeNode(parentNode);
             }
@@ -430,19 +427,46 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         }
     }
 
-    private void resetStatistic(Object value) {
+    //Invoke @Reset method on stats provider if available, otherwise call
+    // reset() method on Statistic class
+    private void resetStatistics(StatsProviderRegistryElement spre) {
+        if (spre.getResetMethod() == null) {
+            String parentNodePath = spre.getParentTreeNodePath();
+            List<String> childNodeNames = spre.getChildTreeNodeNames();
+            resetChildNodeStatistics(parentNodePath, childNodeNames);
+        } else {
+            invokeStatsProviderResetMethod(spre.getResetMethod(), spre.getStatsProvider());
+        }
+
+    }
+
+    private void resetChildNodeStatistics(String parentNodePath, List<String> childNodeNames) {
+        TreeNode rootNode = mrdr.get("server");
+        if (rootNode != null) {
+            List<TreeNode> nodeList = rootNode.getNodes(parentNodePath, false, true);
+            TreeNode parentNode = nodeList.get(0);
+            Collection<TreeNode> childNodes = parentNode.getChildNodes();
+            for (TreeNode childNode : childNodes) {
+                if (childNodeNames.contains(childNode.getName())) {
+                    invokeStatisticResetMethod(childNode.getValue());
+                }
+            }
+        }
+    }
+
+    private void invokeStatisticResetMethod(Object value) {
         if (value instanceof Statistic) {
             if (Proxy.isProxyClass(value.getClass())) {
                 ((StatisticImpl) Proxy.getInvocationHandler(value)).reset();
             } else {
                 ((StatisticImpl) value).reset();
             }
-        } else if (value instanceof Stats) {
+        } else if (value instanceof StatsImpl) {
             ((StatsImpl) value).reset();
         }
     }
 
-    private void invokeResetMethod(Method m, Object statsProvider) {
+    private void invokeStatsProviderResetMethod(Method m, Object statsProvider) {
          if (m != null) {
             try {
                 m.invoke(statsProvider);
@@ -563,18 +587,19 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
 
     private ManagedObjectManager registerGmbal(Object statsProvider, String mbeanName) {
         ManagedObjectManager mom = null;
-        //String mbeanName = subTreePath;
         try {
             // 1 mom per statsProvider
             mom = ManagedObjectManagerFactory.createFederated(MONITORING_SERVER);
             if (mom != null) {
-                    mom.stripPackagePrefix();
-                    if (mbeanName != null && !mbeanName.isEmpty()) {
-                        mom.createRoot(statsProvider, mbeanName);
-                    } else {
-                        mom.createRoot(statsProvider);
+                mom.stripPackagePrefix();
+                if (mbeanName != null && !mbeanName.isEmpty()) {
+                    if (mbeanName.indexOf('\\') > 0) {
+                        mbeanName = StringUtils.removeChar(mbeanName, '\\');
                     }
-                //}
+                    mom.createRoot(statsProvider, mbeanName);
+                } else {
+                    mom.createRoot(statsProvider);
+                }
             }
         //To register hierarchy in mom specify parent ManagedObject, and the ManagedObject itself
         //DynamicMBean mbean = (DynamicMBean)mom.register(parent, obj);
