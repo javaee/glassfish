@@ -54,8 +54,6 @@ import com.sun.enterprise.config.serverbeans.JmsHost;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.v3.admin.AdminAdapter;
-import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
 import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
@@ -253,6 +251,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      *
      * @return the life expectency.
      */
+    @Override
     public Lifecycle getLifecycle() {
         return Lifecycle.SERVER;                
     }
@@ -331,6 +330,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         }
     }
 
+    @Override
     public List<Future<Result<Thread>>> getFutures() {
         return futures;
     }
@@ -435,6 +435,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * @param contextRoot for the proxy
      * @param endpointAdapter servicing requests.
      */
+    @Override
     public void registerEndpoint(String contextRoot, Adapter endpointAdapter,
                                  ApplicationContainer container) throws EndpointRegistrationException {
 
@@ -450,6 +451,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * @param application container
      * @param virtualServers comma separated list of the virtual servers
      */
+    @Override
     public void registerEndpoint(String contextRoot, Adapter endpointAdapter,
         ApplicationContainer container, String virtualServers) throws EndpointRegistrationException {
         List<String> virtualServerList = new ArrayList<String>();
@@ -471,6 +473,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * @param contextRoot for the proxy
      * @param endpointAdapter servicing requests.
      */
+    @Override
     public void registerEndpoint(String contextRoot, Collection<String> vsServers,
             Adapter endpointAdapter,
             ApplicationContainer container) throws EndpointRegistrationException {
@@ -487,6 +490,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * Registers a new endpoint for the given context root at the given port
      * number.
      */
+    @Override
     public void registerEndpoint(String contextRoot,
                                  int port,
                                  Collection<String> vsServers,
@@ -504,6 +508,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     /**
      * Removes the contex-root from our list of endpoints.
      */
+    @Override
     public void unregisterEndpoint(String contextRoot) throws EndpointRegistrationException {
         unregisterEndpoint(contextRoot, null);
     }
@@ -511,6 +516,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     /**
      * Removes the contex-root from our list of endpoints.
      */
+    @Override
     public void unregisterEndpoint(String contextRoot, 
             ApplicationContainer app) throws EndpointRegistrationException {
         for (NetworkProxy proxy : proxies) {
@@ -525,6 +531,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      */
     public static class NoopInvocationHandler implements InvocationHandler {
 
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args) {
             // Deliberate no-op
             return null;

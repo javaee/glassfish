@@ -88,7 +88,7 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
     private final static byte[] errorBody =
             HttpUtils.getErrorPage(serverName,"HTTP Status 404");
 
-    private HK2Dispatcher hk2Dispatcher = new HK2Dispatcher();
+    private final HK2Dispatcher hk2Dispatcher = new HK2Dispatcher();
 
     /**
      * Are we running multiple {@ Adapter} or {@link GrizzlyAdapter}
