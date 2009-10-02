@@ -39,15 +39,14 @@ package com.sun.enterprise.connectors;
 import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.deployment.MessageDestinationDescriptor;
 import com.sun.enterprise.connectors.authentication.RuntimeSecurityMap;
 import com.sun.enterprise.connectors.module.ConnectorApplication;
 import com.sun.logging.LogDomains;
 
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.validation.Validator;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -447,5 +446,24 @@ public class ConnectorRegistry {
      */
     public void removeConnectorApplication(String rarName){
         rarModules.remove(rarName);
+    }
+
+    /**
+     * get the list of resource-adapters that support this message-listener-type
+     * @param messageListener message-listener class-name
+     * @return List of resource-adapters
+     */
+    public List<String> getConnectorsSupportingMessageListener(String messageListener){
+
+        List<String> rars = new ArrayList<String>();
+        for(ActiveResourceAdapter ara : resourceAdapters.values()){
+            ConnectorDescriptor desc = ara.getDescriptor();
+            if(desc.getInBoundDefined()){
+                if(desc.getInboundResourceAdapter().getMessageListener(messageListener) != null){
+                    rars.add(ara.getModuleName());
+                }
+            }
+        }
+        return rars;
     }
 }

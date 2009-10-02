@@ -373,6 +373,7 @@ public interface ConnectorConstants {
     public static final String JMS_TOPIC = "javax.jms.Topic";
     public static final String JMS_QUEUE_CONNECTION_FACTORY = "javax.jms.QueueConnectionFactory";
     public static final String JMS_TOPIC_CONNECTION_FACTORY = "javax.jms.TopicConnectionFactory";
+    public static final String JMS_MESSAGE_LISTENER = "javax.jms.MessageListener";
     /** resource type residing in an external JNDI repository */
     public static final String EXT_JNDI_RES_TYPE = "external-jndi-resource";
 

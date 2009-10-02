@@ -43,6 +43,7 @@ import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.connectors.util.*;
 import com.sun.enterprise.connectors.*;
 import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.*;
 
@@ -51,6 +52,8 @@ import java.lang.reflect.Proxy;
 import java.security.AccessController;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.resource.spi.ActivationSpec;
@@ -92,6 +95,9 @@ public final class ConnectorMessageBeanClient
     private final long WAIT_TIME = 60000;
 
     private static final String RA_MID="com.sun.enterprise.connectors.inbound.ramid";
+
+    private StringManager localStrings =
+                StringManager.getManager(ConnectorMessageBeanClient.class);
 
     //unique identify a message-driven bean
     private String beanID_; //appName:modlueID:beanName
@@ -142,12 +148,34 @@ public final class ConnectorMessageBeanClient
             resourceAdapterMid = System.getProperty(RA_MID);
         }
 
-        //TODO V3 Instead of assigning DEFAULT_JMS_ADAPTER by default, check whether the message-listener of
-        //the MDB is supported by JMS_ADAPTER and then assign it ?
-        
         if (resourceAdapterMid == null) {
-            resourceAdapterMid = ConnectorRuntime.DEFAULT_JMS_ADAPTER;
-            logger.fine("No ra-mid is specified, using default JMS Resource Adapter");
+            String messageListener = descriptor_.getMessageListenerType();
+            descriptor_.getActivationConfigDescriptor().getActivationConfig();
+            //DOL of MDB descriptor has default value as "javax.jms.MessageListener" which
+            //will take care of the case when the message-listener-type is not specified in the DD
+            if(ConnectorConstants.JMS_MESSAGE_LISTENER.equals(messageListener)){
+                resourceAdapterMid = ConnectorRuntime.DEFAULT_JMS_ADAPTER;
+                logger.fine("No ra-mid is specified, using default JMS Resource Adapter for message-listener-type " +
+                        "["+descriptor_.getMessageListenerType()+"]");
+            }else{
+                List<String> resourceAdapters =
+                        ConnectorRegistry.getInstance().getConnectorsSupportingMessageListener(messageListener);
+                if(resourceAdapters.size() == 1){
+                    resourceAdapterMid = resourceAdapters.get(0);
+                    String message = localStrings.getString("msg-bean-client.defaulting.message-listener.supporting.rar",
+                            resourceAdapterMid, messageListener);
+                    logger.info(message);
+                }else if(resourceAdapters.size()<=0){
+                    String message = localStrings.getString("msg-bean-client.could-not-detect-ra-mid",
+                            descriptor_.getMessageListenerType() );
+
+                    throw new ConnectorRuntimeException(message);
+                }else{
+                    String message = localStrings.getString("msg-bean-client.multiple-ras-supporting-message-listener",
+                            messageListener);
+                    throw new ConnectorRuntimeException(message);
+                }
+            }
         }
         ActiveInboundResourceAdapter aira = getActiveResourceAdapter(resourceAdapterMid);
 

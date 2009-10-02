@@ -39,6 +39,7 @@ package com.sun.enterprise.deployment.util;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
 import org.glassfish.internal.api.Globals;
 
 import javax.security.auth.Subject;
@@ -48,6 +49,7 @@ import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class validates a EJB Bundle descriptor once loaded from an .jar file
@@ -60,6 +62,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
     protected EjbDescriptor ejb = null;
     private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(EjbBundleValidator.class);
+    private Logger _logger = LogDomains.getLogger(DOLUtils.class, LogDomains.DPL_LOGGER);
             
     /** visits an ejb bundle descriptor
      * @param bundleDescriptor ejb bundle descriptor
@@ -272,8 +275,34 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
             re.initCause(e);
             throw re;
         }
-        
-
+        //make sure that the MDB class in question implements the message-listener-type specified in DD
+        if(ejb instanceof EjbMessageBeanDescriptor){
+            EjbMessageBeanDescriptor msgBeanDescriptor = (EjbMessageBeanDescriptor)ejb;
+            String messageListenerType = msgBeanDescriptor.getMessageListenerType();
+            String className = ejb.getEjbClassName();
+            boolean matchFound = false;
+            try {
+                ClassLoader cl = ejb.getEjbBundleDescriptor().getClassLoader();
+                Class ejbClass  = cl.loadClass(className);
+                Class messageListenerIntf = cl.loadClass(messageListenerType);
+                Class[] interfaces = ejbClass.getInterfaces();
+                for(Class intf : interfaces){
+                    if(messageListenerIntf.isAssignableFrom(intf)){
+                        matchFound = true;
+                    }
+                }
+            } catch (ClassNotFoundException e) {
+                String msg = localStrings.getLocalString("enterprise.deployment.mdb_validation_failure",
+                        "Exception during MDB validation");
+                _logger.log(Level.WARNING,msg, e);
+            }
+            if(!matchFound){
+                Object args[] = new Object[]{className, messageListenerType};
+                String msg = localStrings.getLocalString("enterprise.deployment.mdb_validation_invalid_msg_listener",
+                        "Class " + className + " does not implement messageListener type [ "+messageListenerType+" ] ");
+                throw new RuntimeException(msg);
+            }
+        }
     }    
         
     public void accept(WebService webService) {
