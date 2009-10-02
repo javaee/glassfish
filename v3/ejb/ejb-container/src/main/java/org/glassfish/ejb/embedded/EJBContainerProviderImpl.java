@@ -149,7 +149,6 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                     EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
                     efsb.configurationFile(rs.domain_file);
                     efsb.installRoot(rs.installed_root, true);
-                    efsb.instanceRoot(rs.instance_root);
 
                     builder.embeddedFileSystem(efsb.build());
                     server = builder.build();
@@ -411,7 +410,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                         } else {
                             _logger.log(Level.SEVERE, "ejb.embedded.failed_create_temporary_domain_xml_file");
                         }
-                        rs = new Result(installed_root, instance_root, domain_file);
+                        rs = new Result(installed_root, domain_file);
                     }
                 }
             }
@@ -422,12 +421,10 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
     private class Result {
         File installed_root;
-        File instance_root;
         File domain_file;
 
-        Result (File installed_root, File instance_root, File domain_file) {
+        Result (File installed_root, File domain_file) {
             this.installed_root  = installed_root;
-            this.instance_root  = instance_root;
             this.domain_file  = domain_file;
         }
     }
