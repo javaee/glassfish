@@ -95,7 +95,40 @@ public class MonitoringHandlers {
                 //if (oneMonComp.endsWith(".level")){
                 if ((!oneMonComp.equals("Parent")) && (!oneMonComp.equals("Children")) && (!oneMonComp.equals("Name")) && (!oneMonComp.equals("Property"))) {
                     Map oneRow = new HashMap();
-                    oneRow.put("monCompName", oneMonComp);
+                    String name = null;
+                    if(oneMonComp.equals("Jvm"))
+                       name = JVM;
+                    if(oneMonComp.equals("WebContainer"))
+                        name = WEB_CONTAINER;
+                    if(oneMonComp.equals("HttpService"))
+                        name = HTTP_SERVICE;
+                    if(oneMonComp.equals("ThreadPool"))
+                        name = THREAD_POOL;
+                    if(oneMonComp.equals("JdbcConnectionPool"))
+                        name = JDBC_CONNECTION_POOL;
+                    if(oneMonComp.equals("Connector Connection Pool"))
+                        name = CONNECTOR_CONNECTION_POOL;
+                    if(oneMonComp.equals("EjbContainer"))
+                        name = EJB_CONTAINER;
+                    if(oneMonComp.equals("TransactionService"))
+                        name = TRANSACTION_SERVICE;
+                    if(oneMonComp.equals("Orb"))
+                        name = ORB;
+                    if(oneMonComp.equals("ConnectorService"))
+                        name = CONNECTOR_SERVICE;
+                    if(oneMonComp.equals("JmsService"))
+                        name = JMS_SERVICE;
+                    if(oneMonComp.equals("WebServicesContainer"))
+                        name = WEB_SERVICES_CONTAINER;
+                    if(oneMonComp.equals("Jpa"))
+                        name = JPA;
+                    if(oneMonComp.equals("Security"))
+                        name = SECURITY;
+                    if(oneMonComp.equals("Jersey"))
+                        name = JERSEY;
+                    if(name == null)
+                        name = oneMonComp;
+                    oneRow.put("monCompName", name);
                     oneRow.put("level", attrs.get(oneMonComp));
                     oneRow.put("selected", false);
                     result.add(oneRow);
@@ -279,8 +312,42 @@ public class MonitoringHandlers {
     public static void updateMonitorLevels(HandlerContext handlerCtx) {
         String objectNameStr = (String) handlerCtx.getInputValue("objectName");
         List<Map<String,String>> allRows = (List<Map<String,String>>) handlerCtx.getInputValue("allRows");
-        for(Map<String,String> oneRow : allRows){
-             V3AMX.setAttribute(objectNameStr, new Attribute(oneRow.get("monCompName"), oneRow.get("level")));
+        for (Map<String, String> oneRow : allRows) {
+            String name = oneRow.get("monCompName");
+            String value = null;
+            if (name.equals(JVM))
+                value = "Jvm";
+            if (name.equals(WEB_CONTAINER)) 
+                value = "WebContainer";
+            if (name.equals(HTTP_SERVICE))
+                value = "HttpService";
+            if (name.equals(THREAD_POOL))
+                value = "ThreadPool";
+            if (name.equals(JDBC_CONNECTION_POOL)) 
+                value = "JdbcConnectionPool";
+            if (name.equals(CONNECTOR_CONNECTION_POOL)) 
+                value = "Connector Connection Pool";
+            if (name.equals(EJB_CONTAINER)) 
+                value = "EjbContainer";
+            if (name.equals(TRANSACTION_SERVICE)) 
+                value = "TransactionService";
+            if (name.equals(ORB)) 
+                value = "Orb";
+            if (name.equals(CONNECTOR_SERVICE)) 
+                value = "ConnectorService";
+            if (name.equals(JMS_SERVICE))
+                value = "JmsService";
+            if (name.equals(WEB_SERVICES_CONTAINER))
+                value = "WebServicesContainer";
+            if (name.equals(JPA))
+                value = "Jpa";
+            if (name.equals(SECURITY))
+                value = "Security";
+            if (name.equals(JERSEY)) 
+                value = "Jersey";
+            if(value == null)
+                value = name;
+            V3AMX.setAttribute(objectNameStr, new Attribute(value, oneRow.get("level")));
         }
      }
 
@@ -339,4 +406,23 @@ public class MonitoringHandlers {
         levels.add("LOW");
         levels.add("HIGH");
     }
+    //monitoring component names
+    public static final String JVM = "JVM";
+    public static final String WEB_CONTAINER = "Web Container";
+    public static final String HTTP_SERVICE = "HTTP Service";
+    public static final String THREAD_POOL = "Thread Pool";
+    public static final String JDBC_CONNECTION_POOL = "JDBC Connection Pool";
+    public static final String CONNECTOR_CONNECTION_POOL = "Connector Connection Pool";
+    public static final String EJB_CONTAINER = "EJB Container";
+    public static final String TRANSACTION_SERVICE = "Transaction Service";
+    public static final String ORB = "ORB";
+    public static final String CONNECTOR_SERVICE = "Connector Service";
+    public static final String JMS_SERVICE = "JMS Service";
+    public static final String WEB_SERVICES_CONTAINER = "Web Services Container";
+    public static final String JPA = "JPA";
+    public static final String SECURITY = "Security";
+    public static final String JERSEY = "Jersey";
+
+
+
 }

@@ -51,7 +51,6 @@
         populateApplicationsMonitorDropDown(AppsList="#{appList}", MonitorList=>$attribute{monitorList} FirstItem=>$attribute{firstVal});
         if(!#{viewVal}) {
             setAttribute(key="viewVal" value="#{firstVal}");
-            setAttribute(key="appName" value="applications/#{viewVal}/server");
         }
     />
 </event>    
@@ -195,10 +194,10 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-        <sun:tableRowGroup id="servlets" rendered="#{hasStatsSS}" data={"$attribute{servletList}"}  sourceVar="td" headerText="$resource{web.monitoring.servletStatisticsWeb} : #{viewVal}"
+    <sun:tableRowGroup id="servlets" rendered="#{hasStatsSS}" data={"$attribute{servletList}"}  sourceVar="td" headerText="$resource{web.monitoring.servletStatisticsWeb} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="#{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="servlet-mon" name="#{appName}", result=>$attribute{servletList}  hasStats=>$attribute{hasStatsSS});
+            getStatsbyTypeName(type="servlet-mon" name="#{viewVal}/server", result=>$attribute{servletList}  hasStats=>$attribute{hasStatsSS});
 
          />
 #include "/common/monitor/monitoringTableRows.inc"
@@ -208,7 +207,7 @@
     <sun:tableRowGroup id="session" rendered="#{hasStatsSSP}" data={"$attribute{sessionList}"}  sourceVar="td" headerText="$resource{web.monitoring.sessionStatisticsWeb} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="session-mon" name="#{appName}", result=>$attribute{sessionList}  hasStats=>$attribute{hasStatsSSP});
+            getStatsbyTypeName(type="session-mon" name="#{viewVal}/server", result=>$attribute{sessionList}  hasStats=>$attribute{hasStatsSSP});
 
          />
 
@@ -218,7 +217,7 @@
     <sun:tableRowGroup id="requestStats" rendered="#{hasStatsWR}" data={"$attribute{requestStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.requestStatisticsWeb} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="web-request-mon" name="#{appName}", result=>$attribute{requestStatsList}  hasStats=>$attribute{hasStatsWR});
+            getStatsbyTypeName(type="web-request-mon" name="#{viewVal}/server", result=>$attribute{requestStatsList}  hasStats=>$attribute{hasStatsWR});
 
          />
 
@@ -228,13 +227,14 @@
     <sun:tableRowGroup id="jspStats" rendered="#{hasStatsJSP}" data={"$attribute{jspStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jspStatisticsWeb} : #{viewVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="jsp-mon" name="#{appName}", result=>$attribute{jspStatsList}  hasStats=>$attribute{hasStatsJSP});
+            getStatsbyTypeName(type="jsp-mon" name="#{viewVal}/server", result=>$attribute{jspStatsList}  hasStats=>$attribute{hasStatsJSP});
 
          />
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
+
 </sun:table>
 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help_web.monitorApps}" />

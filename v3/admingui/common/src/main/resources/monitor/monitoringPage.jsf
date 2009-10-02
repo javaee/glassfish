@@ -46,6 +46,11 @@
 <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
+        setPageSessionAttribute(key="childType" value="monitoring-service");
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=monitoring-service");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="convertToFalseList" value={"DtraceEnabled"});
         getMonitorLevels(objectName="amx:pp=/domain/configs/config[server-config]/monitoring-service,type=module-monitoring-levels" monitorCompList="#{requestScope.tableList}")
         getValidMonitorLevels(monitorLevelList="#{pageSession.levelList}")
         
@@ -64,6 +69,11 @@
                     getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="${tableRowGroup}" Rows=>$attribute{allRows});
                     updateMonitorLevels(objectName="amx:pp=/domain/configs/config[server-config]/monitoring-service,type=module-monitoring-levels", allRows="#{requestScope.allRows}")
+                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                        skipAttrs="#{pageSession.skipAttrsList}"
+                        convertToFalse="#{pageSession.convertToFalseList}"
+                        onlyUseAttrs="#{pageSession.onlyUseAttrs}"
+                    );
                     prepareSuccessfulMsg();
                     redirect(page="#{request.contextPath}/common/monitor/monitoringPage.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />
@@ -71,7 +81,14 @@
         </sun:panelGroup>
     </facet>
 </sun:title>
-
+<sun:propertySheet id="propertySheet">
+    <sun:propertySheetSection id="propertSectionTextField">
+        <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.DTrace}">
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['DtraceEnabled']}" selectedValue="true" />
+        </sun:property>
+        "<br /><br />
+    </sun:propertySheetSection>
+</sun:propertySheet>
 <!-- Table .... -->
 <sun:table id="basicTable"  style="padding: 10pt" title="$resource{web.monitoring.MonitorLevelTableTitle}"
             deselectMultipleButton="$boolean{true}"

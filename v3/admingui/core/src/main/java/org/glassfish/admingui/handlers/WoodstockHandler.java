@@ -356,13 +356,13 @@ public class WoodstockHandler {
         // Menu for Resources
         ArrayList resList = new ArrayList();
         Option[] groupedOptions1 = new Option[0];
-        String firstItem = "";
+        String firstItem = null;
         if (rList != null) {
         ListIterator rl = rList.listIterator();
             while (rl.hasNext()) {
                 String name = (String) rl.next();
                 resList.add(new Option(name, name));
-                if (GuiUtil.isEmpty(firstItem)) {
+                if (firstItem == null) {
                     firstItem = name;
                 }
             }
@@ -397,13 +397,13 @@ public class WoodstockHandler {
         // Menu for Resources
         ArrayList appsList = new ArrayList();
         Option[] groupedOptions1 = new Option[0];
-        String firstItem = "";
+        String firstItem = null;
         if (aList != null) {
             ListIterator al = aList.listIterator();
             while (al.hasNext()) {
                 String name = (String) al.next();
                 appsList.add(new Option(name, name));
-                if (GuiUtil.isEmpty(firstItem)) {
+                if (firstItem == null) {
                     firstItem = name;
                 }
             }

@@ -65,7 +65,9 @@
         getStatsbyTypeName(type="memory-mon" name="jvm/memory", result=>$attribute{jvmMemStatsList}  hasStats=>$attribute{hasStatsJVMM});
         getStatsbyTypeName(type="security-realm-mon" name="realm", result=>$attribute{realmStatsList} hasStats=>$attribute{hasStatsRealm});
 	getStatsbyTypeName(type="transaction-service-mon" name="transaction-service", result=>$attribute{txnServiceStatsList} hasStats=>$attribute{hasStatsTXN});
-        getStatsbyTypeName(type="web-security-deployer-mon" name="web-security", result=>$attribute{webSecurityStatsList}  hasStats=>$attribute{hasStatsWSD});
+        getStatsbyTypeName(type="web-security-deployer-mon" name="security/web", result=>$attribute{webSecurityStatsList}  hasStats=>$attribute{hasStatsWSD});
+        getStatsbyTypeName(type="web-service-mon" name="webservices", result=>$attribute{webServicesStatsList}  hasStats=>$attribute{hasStatsWS});
+        getStatsbyTypeName(type="GlobalStatsProvider" name="/jersey/global", result=>$attribute{jerseyGlobalStatsList}  hasStats=>$attribute{hasStatsJG});
         if(#{viewVal}){
             setAttribute(key="hasStatsTXN" value="#{false}");
             setAttribute(key="hasStatsEJB" value="#{false}");
@@ -82,6 +84,8 @@
             setAttribute(key="hasStatsRealm" value="#{false}");
             setAttribute(key="hasStatsGCC" value="#{false}");
             setAttribute(key="hasStatsWSD" value="#{false}");
+            setAttribute(key="hasStatsWS" value="#{false}");
+            setAttribute(key="hasStatsJG" value="#{false}");
         }
 
     />
@@ -285,6 +289,11 @@
         "<br/>
     </sun:tableRowGroup>
      <sun:tableRowGroup id="webSecurity" rendered="#{hasStatsWSD}" data={"$attribute{webSecurityStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.webSecurityStats}"
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+#include "/common/monitor/monitoringTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup>
+    <sun:tableRowGroup id="jerseyGlobal" rendered="#{hasStatsJG}" data={"$attribute{jerseyGlobalStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jGlobalStatistics}"
             groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
