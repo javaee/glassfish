@@ -51,7 +51,7 @@
     <name>Common Utilities</name>
 
     <properties>
-        <findbugs.exclude>exclude.xml</findbugs.exclude>
+        <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
     </properties>
 
     <developers>

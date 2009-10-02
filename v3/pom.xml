@@ -682,7 +682,7 @@
 	    <plugin>
 		<groupId>org.codehaus.mojo</groupId>
 		<artifactId>findbugs-maven-plugin</artifactId>
-		<version>2.1</version>
+		<version>2.0.1</version>
 		<configuration>
 		    <threshold>High</threshold>
 		    <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
@@ -698,7 +698,7 @@
 	    <plugin>
 		<groupId>org.codehaus.mojo</groupId>
 		<artifactId>findbugs-maven-plugin</artifactId>
-		<version>2.1</version>
+		<version>2.0.1</version>
 		<configuration>
 		    <threshold>High</threshold>
 		    <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
