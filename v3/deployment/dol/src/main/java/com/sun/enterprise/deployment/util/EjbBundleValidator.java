@@ -216,9 +216,9 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
 
             // Perform 2.x style TimedObject processing if the class 
             // hasn't already been identified as a timed object.  
+            AnnotationTypesProvider provider = Globals.getDefaultHabitat().getComponent(AnnotationTypesProvider.class, "EJB");
             if( !ejb.isTimedObject() ) {
 
-                AnnotationTypesProvider provider = Globals.getDefaultHabitat().getComponent(AnnotationTypesProvider.class, "EJB");
                 if (provider!=null) {
                     if( provider.getType("javax.ejb.TimedObject").isAssignableFrom(ejbClass) ) {
                         MethodDescriptor timedObjectMethod =
@@ -240,33 +240,9 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                 // in the bean class hierarchy.
                 if (ejb.getEjbTimeoutMethod() != null) {
                     MethodDescriptor timeoutMethodDescOrig = ejb.getEjbTimeoutMethod();
-
-                    Method m = timeoutMethodDescOrig.getDeclaredMethod(ejb);
-                    if (m == null) {
-                       // In case deployment descriptor didn't specify "javax.ejb.Timer"
-                       // as the method-params, and we were not relying on it before,
-                       // check explicitly for a method with "javax.ejb.Timer" param type.
-                       AnnotationTypesProvider provider = Globals.getDefaultHabitat().
-                               getComponent(AnnotationTypesProvider.class, "EJB");
-                        Class[] params = new Class[1];
-                        if (provider!=null) {
-                            params[0] = provider.getType("javax.ejb.Timer");
-                        } else {
-                            throw new RuntimeException("Cannot find AnnotationTypesProvider named 'EJB'");
-                        }
-
-                        m = timeoutMethodDescOrig.getDeclaredMethod(ejb, params);
-                    }
-
-                    if (m != null) {
-                        MethodDescriptor timeoutMethodDesc = new MethodDescriptor(
-                                m, MethodDescriptor.EJB_BEAN);
-                        ejb.setEjbTimeoutMethod(timeoutMethodDesc);
-                    } else {
-                        throw new RuntimeException("Class " + ejbClass.getName() +
-                                " does not define timeout method " + 
-                                timeoutMethodDescOrig.getFormattedString());        
-                    }
+                    MethodDescriptor timeoutMethodDesc = 
+                            processTimeoutMethod(ejb, timeoutMethodDescOrig, provider, ejbClass);
+                    ejb.setEjbTimeoutMethod(timeoutMethodDesc);
                 }
 
                 ScheduledTimerValidator validator = Globals.getDefaultHabitat().
@@ -283,16 +259,9 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                     }
 
                     MethodDescriptor timeoutMethodDescOrig = sd.getTimeoutMethod();
-                    Method m = timeoutMethodDescOrig.getDeclaredMethod(ejb);
-                    if (m != null) {
-                        MethodDescriptor timeoutMethodDesc = new MethodDescriptor(
-                                m, MethodDescriptor.EJB_BEAN);
-                        sd.setTimeoutMethod(timeoutMethodDesc);
-                    } else {
-                        throw new RuntimeException("Class " + ejbClass.getName() +
-                                " does not define timeout method " + 
-                                timeoutMethodDescOrig.getFormattedString());        
-                    }
+                    MethodDescriptor timeoutMethodDesc = 
+                            processTimeoutMethod(ejb, timeoutMethodDescOrig, provider, ejbClass);
+                    sd.setTimeoutMethod(timeoutMethodDesc);
                 }
 
             }
@@ -1151,4 +1120,30 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
         EjbIntfType intfType;
     }
     
+
+    private MethodDescriptor processTimeoutMethod(EjbDescriptor ejb, 
+            MethodDescriptor timeoutMethodDescOrig, AnnotationTypesProvider provider, 
+            Class ejbClass) throws ClassNotFoundException {
+        Method m = timeoutMethodDescOrig.getDeclaredMethod(ejb);
+        if (m == null) {
+           // In case deployment descriptor didn't specify "javax.ejb.Timer"
+           // as the method-params, and we were not relying on it before,
+           // check explicitly for a method with "javax.ejb.Timer" param type.
+            Class[] params = new Class[1];
+            if (provider!=null) {
+                params[0] = provider.getType("javax.ejb.Timer");
+            } else {
+                throw new RuntimeException("Cannot find AnnotationTypesProvider named 'EJB'");
+            }
+
+            m = timeoutMethodDescOrig.getDeclaredMethod(ejb, params);
+        }
+
+        if (m == null) {
+            throw new RuntimeException("Class " + ejbClass.getName() +
+                    " does not define timeout method " + 
+                    timeoutMethodDescOrig.getFormattedString());        
+        }
+        return new MethodDescriptor(m, MethodDescriptor.EJB_BEAN);
+    }
 }
