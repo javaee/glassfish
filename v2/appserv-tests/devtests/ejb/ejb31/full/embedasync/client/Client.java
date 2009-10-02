@@ -77,6 +77,27 @@ public class Client {
 		lookup("java:global/classes/SingletonBean!com.acme.SingletonBean");
 	    sb.hello();
 
+	    StatefulBean sfTimeout = (StatefulBean) ic.
+		lookup("java:global/classes/StatefulBean");
+	    StatefulBean2 sfNoTimeout = (StatefulBean2) ic.
+		lookup("java:global/classes/StatefulBean2");
+	    sfTimeout.hello();
+	    sfNoTimeout.hello();
+
+	    System.out.println("Sleeping to wait for sf bean to be removed ...");
+	    Thread.sleep(3000);
+	    System.out.println("Waking up , checking sf bean existence");
+
+	    try {
+		sfTimeout.hello();
+		throw new RuntimeException("StatefulTimeout(0) bean should have timed out");
+	    } catch(EJBException e) {
+		System.out.println("Stateful bean successfully timed out");
+	    }
+
+	    sfNoTimeout.hello();
+	    System.out.println("Stateful bean with longer timeout is still around");
+
 	    /**
 	    HelloRemote hr = (HelloRemote) ic.
 		lookup("java:global/classes/SingletonBean!com.acme.HelloRemote");
