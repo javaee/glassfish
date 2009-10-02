@@ -55,6 +55,8 @@ public class MonitorTask extends TimerTask {
     private String[] remoteArgs;
     private String exceptionMessage = null;
     private RemoteCommand cmd;
+    private static final int NUM_ROWS = 25;
+    private int counter = 0;
 
     private final static LocalStringsImpl strings =
                             new LocalStringsImpl(MonitorTask.class);
@@ -71,14 +73,18 @@ public class MonitorTask extends TimerTask {
         this.fileName = fileName;
         this.remoteArgs = remoteArgs;
         cmd = new RemoteCommand(remoteArgs[0], programOpts, env);
+        displayHeader(type);
 
+    }
+
+    void displayHeader(String type) {
         // print title
         String title = "";
         if ("servlet".equals(type)) {
-            title = String.format("%1$-10s %2$-10s %3$-10s", 
+            title = String.format("%1$-10s %2$-10s %3$-10s",
             "ActSess", "SessTtl", "SrvltLdC");
         } else if ("httplistener".equals(type)) {
-            title = String.format("%1$-4s %2$-4s %3$-6s %4$-4s", 
+            title = String.format("%1$-4s %2$-4s %3$-6s %4$-4s",
             "ec", "mt", "pt", "rc");
         } else if ("jvm".equals(type)) {
             title = String.format("%1$45s", "JVM Monitoring");
@@ -88,7 +94,7 @@ public class MonitorTask extends TimerTask {
             if (filter != null) {
                 if (("heapmemory".equals(filter)) ||
                         ("nonheapmemory".equals(filter))) {
-                    title = String.format("%1$-10s %2$-10s %3$-10s %4$-10s", 
+                    title = String.format("%1$-10s %2$-10s %3$-10s %4$-10s",
                         "init", "used", "committed", "max");
                 }
             }
@@ -126,6 +132,11 @@ public class MonitorTask extends TimerTask {
     public void run() {
         try {
             cmd.execute(remoteArgs);
+            if (counter == NUM_ROWS) {
+                    displayHeader(type);
+                    counter = 0;
+                }
+           counter++;
         } catch (Exception e) {
             CLILogger.getInstance().printError(
                     strings.get("monitorCommand.errorRemote", e.getMessage()));
