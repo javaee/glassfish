@@ -45,8 +45,8 @@ import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 import org.glassfish.api.deployment.DeploymentContext;
 
@@ -76,8 +76,9 @@ public class ClientArtifactsManager {
     private final Logger logger = 
             LogDomains.getLogger(ClientArtifactsManager.class, LogDomains.DPL_LOGGER);
     
-    private final Set<DownloadableArtifacts.FullAndPartURIs> artifacts = 
-            new HashSet<DownloadableArtifacts.FullAndPartURIs>();
+    private final Map<URI,DownloadableArtifacts.FullAndPartURIs> artifacts =
+            new HashMap<URI,DownloadableArtifacts.FullAndPartURIs>();
+
     /**
      * Retreives the client artifacts store from the provided deployment 
      * context, creating one and storing it back into the DC if none is 
@@ -121,13 +122,33 @@ public class ClientArtifactsManager {
             absoluteURI = baseURI.resolve(relativeURI);
         }
         if (isArtifactSetConsumed) {
-            final String format = logger.getResourceBundle().
-                    getString("enterprise.deployment.backend.appClientArtifactOutOfOrder");
-            throw new IllegalStateException(MessageFormat.format(
-                    format, absoluteURI.toASCIIString()));
+            throw new IllegalStateException(
+                    formattedString("enterprise.deployment.backend.appClientArtifactOutOfOrder",
+                        absoluteURI.toASCIIString())
+                    );
         } else {
-            artifacts.add(new DownloadableArtifacts.FullAndPartURIs(
-                    absoluteURI, relativeURI));
+            DownloadableArtifacts.FullAndPartURIs existingArtifact =
+                    artifacts.get(relativeURI);
+            if (existingArtifact != null) {
+                throw new IllegalArgumentException(
+                        formattedString("enterprise.deployment.backend.appClientArtifactCollision",
+                            relativeURI.toASCIIString(),
+                            absoluteURI.toASCIIString(),
+                            existingArtifact.getFull().toASCIIString())
+                        );
+            }
+            final File f = new File(absoluteURI);
+            if ( ! f.exists() || ! f.canRead()) {
+                throw new IllegalArgumentException(
+                        formattedString("enterprise.deployment.backend.appClientArtifactMissing",
+                            relativeURI.toASCIIString(),
+                            absoluteURI.toASCIIString())
+                        );
+            }
+            final DownloadableArtifacts.FullAndPartURIs newArtifact =
+                    new DownloadableArtifacts.FullAndPartURIs(
+                    absoluteURI, relativeURI);
+            artifacts.put(relativeURI, newArtifact);
         }
     }
 
@@ -166,8 +187,13 @@ public class ClientArtifactsManager {
      *
      * @return all client artifacts reported by various deployers
      */
-    public Set<DownloadableArtifacts.FullAndPartURIs> artifacts() {
+    public Collection<DownloadableArtifacts.FullAndPartURIs> artifacts() {
         isArtifactSetConsumed = true;
-        return Collections.unmodifiableSet(artifacts);
+        return Collections.unmodifiableCollection(artifacts.values());
+    }
+
+    private String formattedString(final String key, final Object... args) {
+        final String format = logger.getResourceBundle().getString(key);
+        return MessageFormat.format(format, args);
     }
 }
