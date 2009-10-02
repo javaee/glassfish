@@ -5,6 +5,8 @@
 
 package org.glassfish.admingui.plugin.jms;
 
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.enterprise.connectors.jms.system.JmsProviderLifecycle;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
@@ -23,6 +25,8 @@ import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.api.admin.AdminCommand;
+import org.jvnet.hk2.component.ComponentException;
 
 
 
@@ -169,6 +173,8 @@ public class JmsHandlers {
         String type = (String)handlerCtx.getInputValue("type");
         List statsList = new ArrayList();
         try {
+            insureJmsBrokerIsRunning();
+            
             String objectName = getJmsDestinationObjectName(SUBTYPE_MONITOR, name, type);
             AttributeList attributes = (AttributeList)JMXUtil.getMBeanServer().getAttributes(new ObjectName(objectName),ATTRS_MONITOR);
             ResourceBundle bundle = GuiUtil.getBundle("org.glassfish.admingui.plugin.jms.Strings");
@@ -206,16 +212,14 @@ public class JmsHandlers {
             @HandlerOutput(name="result", type=java.util.List.class)}
      )
     public static void getPhysicalDestinations(HandlerContext handlerCtx){
-
         String configName = ((String)handlerCtx.getInputValue("targetName"));
         ObjectName[] objectNames = null;
         List result = new ArrayList();
         try{
+            insureJmsBrokerIsRunning();
+
             //com.sun.messaging.jms.server:type=Destination,subtype=Config,desttype=q,name="mq.sys.dmq"
-            //
-            objectNames = (ObjectName[])JMXUtil.invoke(
-                    //"com.sun.appserv:type=resources,category=config", "listPhysicalDestinations", params, types);
-                    OBJECT_DEST_MGR, OP_LIST_DESTINATIONS);
+            objectNames = (ObjectName[])JMXUtil.invoke(OBJECT_DEST_MGR, OP_LIST_DESTINATIONS);
 
             if (objectNames == null) {
                 handlerCtx.setOutputValue("result", result);
@@ -414,15 +418,9 @@ public class JmsHandlers {
         return false;
     }
 
-    @Handler(id="pingJms")//,input={@HandlerInput(name="dummy", type=String.class)})
-    public static void pingJms(HandlerContext handlerCtx) {
-//        // Get the ServletContext
-//        ServletContext servletCtx = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
-//
-//        // Get the Habitat from the ServletContext
-//        Habitat habitat = (Habitat) servletCtx.getAttribute(
-//                org.glassfish.admingui.common.plugin.ConsoleClassLoader.HABITAT_ATTRIBUTE);
-//        JmsPluginService jmsps = habitat.getComponent(JmsPluginService.class);
-//        jmsps.pingJms();
+    protected static void insureJmsBrokerIsRunning() throws ConnectorRuntimeException {
+        // FIXME: This @Service needs to be wrapped in an MBean so that we can have the console out of process
+        JmsProviderLifecycle jpl = GuiUtil.getHabitat().getComponent(JmsProviderLifecycle.class);
+        jpl.initializeBroker();
     }
 }

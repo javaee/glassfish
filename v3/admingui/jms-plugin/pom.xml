@@ -103,14 +103,20 @@
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-plugin-service</artifactId>
-	    <version>${project.version}</version>
-	    <scope>provided</scope>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jms</groupId>
+            <artifactId>jms-core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-common</artifactId>
-	    <version>${project.version}</version>
-	    <scope>provided</scope>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.messaging.mq</groupId>

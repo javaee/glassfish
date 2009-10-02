@@ -51,8 +51,6 @@
             setPageSessionAttribute(key="viewPage" value="#{request.contextPath}/jms/jmsPhysicalDestinationStats.jsf");
 
             getPhysicalDestinations(targetName="#{param.name}", result=>$attribute{listOfRows});
-
-            pingJms();
         />
     </event>
 #include "/common/shared/restart.inc"
