@@ -149,7 +149,7 @@ public final class AMXStartupService
             final StandardMBean mbean = new StandardMBean(this, AMXStartupServiceMBean.class);
             mMBeanServer.registerMBean(mbean, OBJECT_NAME);
 
-            mMBeanTracker = new MBeanTracker();
+            mMBeanTracker = new MBeanTracker( AMXGlassfish.DEFAULT.amxJMXDomain() );
             //final StandardMBean supportMBean = new StandardMBean(mMBeanTracker, MBeanTrackerMBean.class);
             mMBeanServer.registerMBean(mMBeanTracker, MBeanTrackerMBean.MBEAN_TRACKER_OBJECT_NAME);
         }

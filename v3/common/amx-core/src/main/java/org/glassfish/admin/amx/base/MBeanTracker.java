@@ -17,7 +17,6 @@ import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
 import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 import org.glassfish.external.amx.AMX;
-import org.glassfish.external.amx.AMXGlassfish;
 
 /**
     Tracks the entire MBean parent/child hierarachy so that individual MBeans need not do so.
@@ -41,10 +40,14 @@ public final class MBeanTracker implements NotificationListener, MBeanRegistrati
     private volatile MBeanServer mServer;
     private volatile ObjectName  mObjectName;
     
-    public MBeanTracker()
+    private final String mDomain;
+    
+    public MBeanTracker( final String jmxDomain )
     {
         mParentChildren = new ConcurrentHashMap<ObjectName,Set<ObjectName>>();
         mChildParent    = new ConcurrentHashMap<ObjectName,ObjectName>();
+        
+        mDomain = jmxDomain;
     }
     
     public void handleNotification(final Notification notifIn, final Object handback)
@@ -56,18 +59,22 @@ public final class MBeanTracker implements NotificationListener, MBeanRegistrati
             final String type = notif.getType();
             final ObjectName objectName = notif.getMBeanName();
             
-            // what happens if an MBean is removed before we can add it
-            // eg the MBeanServer uses more than one thread to deliver notifications
-            // to use? Even if we synchronize this method, the remove could still arrive
-            // first and there's nothing we could do about it.
-            if ( type.equals( MBeanServerNotification.REGISTRATION_NOTIFICATION ) )
+            if ( isRelevantMBean(objectName) )
             {
-                addChild(objectName);
-            }
-            else if ( type.equals( MBeanServerNotification.UNREGISTRATION_NOTIFICATION ) )
-            {
-                //debug( "MBeanTracker.handleNotification: MBean unregistered: " + objectName );
-                removeChild(objectName);
+                // what happens if an MBean is removed before we can add it
+                // eg the MBeanServer uses more than one thread to deliver notifications
+                // to use? Even if we synchronize this method, the remove could still arrive
+                // first and there's nothing we could do about it.
+                if ( type.equals( MBeanServerNotification.REGISTRATION_NOTIFICATION ) )
+                {
+                    //debug( "MBeanTracker.handleNotification: MBean registered: " + objectName );
+                    addChild(objectName);
+                }
+                else if ( type.equals( MBeanServerNotification.UNREGISTRATION_NOTIFICATION ) )
+                {
+                    //debug( "MBeanTracker.handleNotification: MBean unregistered: " + objectName );
+                    removeChild(objectName);
+                }
             }
         }
     }
@@ -98,7 +105,7 @@ public final class MBeanTracker implements NotificationListener, MBeanRegistrati
             //debug( "MBeanTracker: registered as " + mObjectName );
 		}
         // populate our list
-		final ObjectName	pattern	= Util.newObjectNamePattern( AMXGlassfish.DEFAULT.amxJMXDomain(), "" );
+		final ObjectName	pattern	= Util.newObjectNamePattern( mDomain, "" );
 		final Set<ObjectName>	names	= JMXUtil.queryNames( mServer, pattern, null );
         //debug( "MBeanTracker: found MBeans: " + names.size() );
         for( final ObjectName o : names )
@@ -115,6 +122,11 @@ public final class MBeanTracker implements NotificationListener, MBeanRegistrati
 	public final void postDeregister() {
     }
     
+    private boolean isRelevantMBean(final ObjectName child)
+    {
+        return child != null && mDomain.equals( child.getDomain() );
+    }
+    
     private void addChild(final ObjectName child)
     {
         ObjectName parent = null;
@@ -124,6 +136,7 @@ public final class MBeanTracker implements NotificationListener, MBeanRegistrati
         catch( final Exception e )
         {
             // nothing to be done, MBean gone missing, badly implemented, etc.
+            System.out.println( "No Parent for: " + child );
         }
         
         if ( parent != null )
