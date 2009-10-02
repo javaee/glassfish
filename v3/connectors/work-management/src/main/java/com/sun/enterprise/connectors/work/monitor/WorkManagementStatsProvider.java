@@ -81,15 +81,15 @@ public class WorkManagementStatsProvider {
     //the correct low water mark the first time around
     //the least number of connections that we can use is always 1
     private RangeStatisticImpl activeWorkCount =
-            new RangeStatisticImpl(0, 0, 1, "ActiveWorkCount", StatisticImpl.UNIT_COUNT,
+            new RangeStatisticImpl(0, 0, 0, "ActiveWorkCount", StatisticImpl.UNIT_COUNT,
                     "Number of active work objects", time, time);
 
     private RangeStatisticImpl waitQueueLength =
-            new RangeStatisticImpl(0, 0, 1, "WaitQueueLength", StatisticImpl.UNIT_COUNT,
+            new RangeStatisticImpl(0, 0, 0, "WaitQueueLength", StatisticImpl.UNIT_COUNT,
                     "Number of work objects waiting in the queue for execution", time, time);
 
     private RangeStatisticImpl workRequestWaitTime =
-            new RangeStatisticImpl(0, 0, 1, "WorkRequestWaitTime", StatisticImpl.UNIT_COUNT,
+            new RangeStatisticImpl(0, 0, 0, "WorkRequestWaitTime", StatisticImpl.UNIT_COUNT,
                     "Wait time of a work object before it gets executed", time, time);
 
 
