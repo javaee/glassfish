@@ -39,7 +39,7 @@ public class AdminConsoleTests extends BaseAdminConsoleTest {
      */
     @Test
     public void testCommonTasks() throws Exception {
-        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "commonTask.jsf",
+        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "commonTask.jsf?bare=true",
                 "id=\"form:commonTasksSection\""),
                 "The Common Task page does not appear to have been rendered.");
     }
@@ -50,7 +50,7 @@ public class AdminConsoleTests extends BaseAdminConsoleTest {
      */
     @Test
     public void testDeployedAppPage() throws Exception {
-        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "applications/applications.jsf",
+        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "applications/applications.jsf?bare=true",
                 "id=\"propertyForm:deployTable\""),
                 "The Deployed Applications table does not appear to have been rendered.");
     }
@@ -61,7 +61,7 @@ public class AdminConsoleTests extends BaseAdminConsoleTest {
      */
     @Test
     public void testRealmsList() throws Exception {
-        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "common/security/realms/realms.jsf",
+        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "common/security/realms/realms.jsf?bare=true",
                 "id=\"propertyForm:realmsTable\""),
                 "The Security realms table does not appear to have been rendered.");
     }
