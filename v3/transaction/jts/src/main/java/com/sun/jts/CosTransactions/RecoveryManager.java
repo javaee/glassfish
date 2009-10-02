@@ -895,7 +895,8 @@ public class RecoveryManager {
                      break;
                  }
              } catch (XAException e) {
-	        _logger.log(Level.WARNING,"jts.xaexception_in_recovery",e);
+	        _logger.log(Level.WARNING,"jts.xaexception_in_recovery", e.errorCode);
+            _logger.log(Level.WARNING,"",e);
                 break;
              }
 

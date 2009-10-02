@@ -115,6 +115,9 @@ public class OracleXAResource extends XAResourceWrapper
             // throw new XAException("oracle XA Resource wrapper : "+sqlexception);
             throw new XAException(sm.getString("transaction.oracle_sqlexception_occurred",sqlexception));
         }
+        catch(XAException e){
+            throw e;
+        }
         catch(Exception e){
             throw new XAException(sm.getString("transaction.oracle_unknownexception_occurred",e));
             // throw new XAException("oracle XA Resource wrapper : "+e);
