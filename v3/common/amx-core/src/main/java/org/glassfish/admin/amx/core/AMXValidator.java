@@ -860,7 +860,8 @@ public final class AMXValidator
             {
                 if ( ! instanceNotFound(e) )
                 {
-                    fail(proxy, "MBean failed validating the MBeanInfo of children");
+                    logWarning( "MBean failed validating the MBeanInfo of children", e );
+                    fail(proxy, "MBean failed validating the MBeanInfo of children with Exception: " + e.getMessage() );
                 }
             }
         }
