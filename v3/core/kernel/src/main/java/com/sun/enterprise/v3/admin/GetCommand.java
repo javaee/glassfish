@@ -166,11 +166,11 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
                         foundMatch = true;
                     }
                 }
-            }
-            if (!foundMatch && !pattern.equals("*")) {
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                report.setMessage("No object found matching " + pattern);
-            }
+            }    
+        }
+        if (!foundMatch) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage("No object found matching " + pattern);
         }
     }
 
