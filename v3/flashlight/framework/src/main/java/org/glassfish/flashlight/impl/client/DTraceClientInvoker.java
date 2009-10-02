@@ -11,6 +11,8 @@ import java.util.logging.*;
 import org.glassfish.flashlight.FlashlightUtils;
 import org.glassfish.flashlight.client.ProbeClientInvoker;
 import org.glassfish.flashlight.provider.FlashlightProbe;
+import com.sun.logging.LogDomains;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
  * bnevins Aug 15, 2009
@@ -31,6 +33,11 @@ import org.glassfish.flashlight.provider.FlashlightProbe;
  */
 
 public class DTraceClientInvoker implements ProbeClientInvoker{
+    private static final Logger logger =
+        LogDomains.getLogger(DTraceClientInvoker.class, LogDomains.MONITORING_LOGGER);
+    public final static LocalStringManagerImpl localStrings =
+                            new LocalStringManagerImpl(DTraceClientInvoker.class);
+
     public DTraceClientInvoker(int ID, FlashlightProbe p) {
         id          = ID;
         method      = p.getDTraceMethod();
@@ -43,7 +50,7 @@ public class DTraceClientInvoker implements ProbeClientInvoker{
                 method.invoke(targetObj, fixArgs(args));
             }
             catch(Exception e) {
-                Logger.getAnonymousLogger().warning(e.getMessage());
+                logger.log(Level.WARNING, null, e.getMessage());
             }
         }
     }

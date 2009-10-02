@@ -54,6 +54,7 @@ import org.glassfish.flashlight.provider.ProbeRegistry;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.lang.instrument.Instrumentation;
 import java.util.*;
@@ -61,6 +62,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.io.PrintWriter;
 import org.glassfish.flashlight.impl.core.FlashlightProbeProvider;
 
@@ -78,8 +80,10 @@ public class FlashlightProbeClientMediator
 
     private static final Logger logger =
         LogDomains.getLogger(FlashlightProbeClientMediator.class, LogDomains.MONITORING_LOGGER);
+    public final static LocalStringManagerImpl localStrings =
+                            new LocalStringManagerImpl(FlashlightProbeClientMediator.class);
 
-    private static final PrintWriter fpw = 
+    private static final PrintWriter fpw =
         new FlashLightBTracePrintWriter(new NullStream(), logger);
 
     private static FlashlightProbeClientMediator _me = new FlashlightProbeClientMediator();
@@ -213,8 +217,11 @@ public class FlashlightProbeClientMediator
 
         byte [] bArr = BtraceClientGenerator.generateBtraceClientClassData(clientID, probes);
 
-        if (bArr == null)
-            throw new RuntimeException("Internal Error: BtraceClientGenerator.generateBtraceClientClassData() returned null");
+        if (bArr == null) {
+            String errStr = localStrings.getLocalString("btraceClientGeneratorError",
+                                "Internal Error: BtraceClientGenerator.generateBtraceClientClassData() returned null");
+            throw new RuntimeException(errStr);
+        }
 
         if(isAgentAttached())
             submit2BTrace(bArr);
@@ -239,8 +246,11 @@ public class FlashlightProbeClientMediator
             String probeString = probeAnn.value();
             FlashlightProbe probe = probeRegistry.getProbe(probeString);
 
-            if (probe == null)
-                throw new RuntimeException("Probe is not registered: " + probeString);
+            if (probe == null) {
+                String errStr = localStrings.getLocalString("probeNotRegistered",
+                                    "Probe is not registered: {0}", probeString);
+                throw new RuntimeException(errStr);
+            }
             
             mp.add(new MethodProbe(method, probe));
         }

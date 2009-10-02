@@ -6,6 +6,8 @@ package org.glassfish.flashlight.impl.core;
  */
 
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
 import org.objectweb.asm.ClassWriter;
@@ -21,8 +23,15 @@ import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.security.PrivilegedActionException;
 import java.security.ProtectionDomain;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class ProviderImplGenerator {
+
+    private static final Logger logger =
+        LogDomains.getLogger(ProviderImplGenerator.class, LogDomains.MONITORING_LOGGER);
+    public final static LocalStringManagerImpl localStrings =
+                            new LocalStringManagerImpl(ProviderImplGenerator.class);
 
     public String defineClass(FlashlightProbeProvider provider, Class providerClazz) {
 
@@ -75,10 +84,10 @@ public class ProviderImplGenerator {
 
 
         Type classType = Type.getType(providerClazz);
-        //System.out.println("** classType: " + classType);
-        //System.out.println("** classDesc: " + Type.getDescriptor(providerClazz));
+        printd("** classType: " + classType);
+        printd("** classDesc: " + Type.getDescriptor(providerClazz));
 
-        //System.out.println("Generating for: " + generatedClassName);
+        printd("Generating for: " + generatedClassName);
 
         generatedClassName = generatedClassName.replace('.', '/');
 
@@ -147,7 +156,7 @@ public class ProviderImplGenerator {
 
 
         if(Boolean.parseBoolean(System.getenv("AS_DEBUG"))) {
-			System.out.println("**** Generated ClassDATA " + clsName);
+			printd("**** Generated ClassDATA " + clsName);
 
             // the path is horribly long.  Let's just write t directly into the
             // lib dir.  It is not for loading as a class but just for us humans
@@ -164,7 +173,7 @@ public class ProviderImplGenerator {
 									File.separator + "lib" + File.separator;
 
 				String fileName = rootPath + clsName + ".class";
-				System.out.println("***ClassFile: " + fileName);
+				printd("***ClassFile: " + fileName);
 				File file = new File(fileName);
 				file.getParentFile().mkdirs();
 				FileOutputStream fos = new FileOutputStream(file);
@@ -213,6 +222,11 @@ public class ProviderImplGenerator {
         mg.push(msg);
         mg.invokeVirtual(Type.getType(PrintStream.class), Method.getMethod("void println (String)"));
         mg.returnValue();
+    }
+
+    private void printd(String pstring) {
+        if (logger.isLoggable(Level.FINEST))
+            logger.log(Level.FINEST, pstring);
     }
 }
 /*************

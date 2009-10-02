@@ -11,11 +11,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.stream.XMLStreamException;
 import static org.glassfish.flashlight.xml.XmlConstants.*;
+import com.sun.logging.LogDomains;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
 /**
  * Read the XML file, parse it and return a list of ProbeProvider objects
  * @author bnevins
  */
 public class ProbeProviderStaxParser extends StaxParser{
+
+    private static final Logger logger =
+        LogDomains.getLogger(ProbeProviderStaxParser.class, LogDomains.MONITORING_LOGGER);
+    public final static LocalStringManagerImpl localStrings =
+                            new LocalStringManagerImpl(ProbeProviderStaxParser.class);
+
     public ProbeProviderStaxParser(File f) throws XMLStreamException {
         super(f);
     }
@@ -36,8 +45,9 @@ public class ProbeProviderStaxParser extends StaxParser{
         }
         if (providers.isEmpty()) {
             // this line snatched from the previous implementation (DOM)
-            Logger.getLogger(ProbeProviderXMLParser.class.getName()).log(Level.SEVERE,
-                    " No providers identified from the xml ");
+            String errStr = localStrings.getLocalString("noProviderIdentifiedFromXML",
+                                "No providers identified from the xml");
+            logger.log(Level.SEVERE, errStr);
         }
 
         return providers;
@@ -55,9 +65,12 @@ public class ProbeProviderStaxParser extends StaxParser{
     }
 
     private Provider parseProbeProvider() throws XMLStreamException {
-        if(!parser.getLocalName().equals(PROBE_PROVIDER))
-            throw new XMLStreamException("START_ELEMENT is supposed to be " + PROBE_PROVIDER +
-                    ", found: " + parser.getLocalName());
+        if(!parser.getLocalName().equals(PROBE_PROVIDER)) {
+            String errStr = localStrings.getLocalString("invalidStartElement",
+                                "START_ELEMENT is supposed to be {0}" +
+                                ", found: {1}", PROBE_PROVIDER, parser.getLocalName());
+            throw new XMLStreamException(errStr);
+        }
         
         Map<String,String> atts = parseAttributes();
         List<Probe> probes = parseProbes();
@@ -92,9 +105,12 @@ public class ProbeProviderStaxParser extends StaxParser{
     }
 
     private Probe parseProbe() throws XMLStreamException {
-        if(!parser.getLocalName().equals(PROBE))
-            throw new XMLStreamException("START_ELEMENT is supposed to be " + PROBE +
-                    ", found: " + parser.getLocalName());
+        if(!parser.getLocalName().equals(PROBE)) {
+            String errStr = localStrings.getLocalString("invalidStartElement",
+                                "START_ELEMENT is supposed to be {0}" +
+                                ", found: {1}", PROBE, parser.getLocalName());
+            throw new XMLStreamException(errStr);
+        }
 
         // for some unknown reason method is an element not an attribute
         // Solution -- use the last item if there are more than one
@@ -128,9 +144,12 @@ public class ProbeProviderStaxParser extends StaxParser{
         return new Probe(name, method, params, self, hidden);
     }
     private ProbeParam parseParam() throws XMLStreamException {
-        if(!parser.getLocalName().equals(PROBE_PARAM))
-            throw new XMLStreamException("START_ELEMENT is supposed to be " + PROBE_PARAM +
-                    ", found: " + parser.getLocalName());
+        if(!parser.getLocalName().equals(PROBE_PARAM)){
+            String errStr = localStrings.getLocalString("invalidStartElement",
+                                "START_ELEMENT is supposed to be {0}" +
+                                ", found: {1}", PROBE_PARAM, parser.getLocalName());
+            throw new XMLStreamException(errStr);
+        }
 
         Map<String,String> atts = parseAttributes();
 

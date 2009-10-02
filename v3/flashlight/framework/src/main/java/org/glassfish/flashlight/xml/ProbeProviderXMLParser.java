@@ -43,6 +43,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;  
 import org.xml.sax.InputSource;
 import com.sun.org.apache.xerces.internal.parsers.DOMParser;
+import com.sun.logging.LogDomains;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -66,13 +68,19 @@ public class ProbeProviderXMLParser
     private Document document;
     
     private boolean debug = false;
-
+    private static final Logger logger =
+        LogDomains.getLogger(ProbeProviderXMLParser.class, LogDomains.MONITORING_LOGGER);
+    public final static LocalStringManagerImpl localStrings =
+                            new LocalStringManagerImpl(ProbeProviderXMLParser.class);
+ 
     /** Creates new ProbeProviderXMLParser */
     public ProbeProviderXMLParser(InputStream is) throws Exception {
         initProperties(is);
         generateProviders();
-        if (providers.size() == 0)
-                Logger.getLogger(ProbeProviderXMLParser.class.getName()).log(Level.SEVERE, " No providers identified from the xml ");
+        if (providers.size() == 0) {
+            String errStr = localStrings.getLocalString("noProviderFromXML", "No providers identified from the xml");
+                logger.log(Level.SEVERE, errStr);
+        }
     }
 
     /**
@@ -225,8 +233,8 @@ public class ProbeProviderXMLParser
         return (new ProbeParam(name, type));
     }
 
-    private void printDebug(String string) {
-        if (debug)
-            System.out.println(string);
+    private void printDebug(String pstring) {
+        if (logger.isLoggable(Level.FINEST))
+            logger.log(Level.FINEST, pstring);
     }
 }

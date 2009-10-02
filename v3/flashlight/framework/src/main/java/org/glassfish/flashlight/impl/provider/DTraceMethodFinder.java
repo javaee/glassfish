@@ -6,7 +6,12 @@
 package org.glassfish.flashlight.impl.provider;
 
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
+
 import java.lang.reflect.Method;
+import java.util.logging.Logger;
+
 import org.glassfish.flashlight.FlashlightUtils;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 
@@ -15,6 +20,11 @@ import org.glassfish.flashlight.provider.FlashlightProbe;
  * @author bnevins
  */
 class DTraceMethodFinder {
+    private static final Logger logger =
+        LogDomains.getLogger(DTraceMethodFinder.class, LogDomains.MONITORING_LOGGER);
+    public final static LocalStringManagerImpl localStrings =
+                            new LocalStringManagerImpl(DTraceMethodFinder.class);
+
     DTraceMethodFinder(FlashlightProbe p, Object t) {
         probe               = p;
         targetObject        = t;
@@ -46,7 +56,9 @@ class DTraceMethodFinder {
             // we have a match!!!
             return  m;
         }
-        throw new RuntimeException(strings.get("dtrace_cantfind", metname));
+        String errStr = localStrings.getLocalString("dtrace_cantfind",
+                            "Can not match the Probe method ({0}) with any method in the DTrace object.", metname);
+        throw new RuntimeException(errStr);
     }
 
     private boolean compareParams(Class[] probep, Class[] dtracep) {
@@ -80,6 +92,4 @@ class DTraceMethodFinder {
     private final   int             numProbeParams;
     private         Method          method;
     private         Class[]         probeParamTypes;
-    //private final static boolean debug = Boolean.parseBoolean(System.getenv("AS_DEBUG"));
-    private static final LocalStringsImpl strings = new LocalStringsImpl(DTraceMethodFinder.class);
 }

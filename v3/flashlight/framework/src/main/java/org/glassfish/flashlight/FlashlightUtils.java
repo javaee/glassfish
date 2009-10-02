@@ -6,8 +6,13 @@
 package org.glassfish.flashlight;
 
 import com.sun.enterprise.config.serverbeans.MonitoringService;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.logging.Logger;
+
 import org.glassfish.api.monitoring.DTraceContract;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.flashlight.provider.FlashlightProbe;
@@ -23,6 +28,11 @@ import org.jvnet.hk2.component.Habitat;
  */
 
 public class FlashlightUtils {
+
+    private static final Logger logger =
+        LogDomains.getLogger(FlashlightUtils.class, LogDomains.MONITORING_LOGGER);
+    public final static LocalStringManagerImpl localStrings =
+                            new LocalStringManagerImpl(FlashlightUtils.class);
 
     private FlashlightUtils() {
         // All static.  No instances allowed.
@@ -172,8 +182,10 @@ public class FlashlightUtils {
 
 
     private static void ok() {
-        if(habitat == null || monConfig == null)
-            throw new RuntimeException("Internal Error: habitat was not set in " + FlashlightUtils.class);
+        if(habitat == null || monConfig == null) {
+            String errStr = localStrings.getLocalString("habitatNotSet", "Internal Error: habitat was not set in {0}", FlashlightUtils.class);
+            throw new RuntimeException(errStr);
+        }
     }
 
     private static              Habitat             habitat;
