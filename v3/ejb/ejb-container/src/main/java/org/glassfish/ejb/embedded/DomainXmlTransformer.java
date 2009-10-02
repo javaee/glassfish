@@ -75,10 +75,12 @@ public class DomainXmlTransformer {
     private Logger _logger = Logger.getAnonymousLogger(
             "com.sun.logging.enterprise.system.container.ejb.LogStrings");
 
+    private static final String NETWORK_LISTENERS = "network-listeners";
     private static final String IIOP_LISTENER = "iiop-listener";
     private static final String LAZY_INIT_ATTR = "lazy-init";
     private static final String PROTOCOLS = "protocols";
     private static final String APPLICATIONS = "applications";
+    private static final String JMS_SERVICE = "jms-service";
 
     private static final StringManager localStrings = 
         StringManager.getManager(DomainXmlTransformer.class);
@@ -119,7 +121,8 @@ public class DomainXmlTransformer {
                 XMLEvent event = parser.nextEvent();
                 if (event.isStartElement()) {
                     String name = event.asStartElement().getName().getLocalPart();
-                    if (name.equals("network-listeners") 
+                    if (name.equals(NETWORK_LISTENERS) 
+                            || name.equals(JMS_SERVICE)
                             || name.equals(PROTOCOLS)
                             || name.equals(IIOP_LISTENER)
                             || name.equals(APPLICATIONS)) {
@@ -128,6 +131,13 @@ public class DomainXmlTransformer {
                             // Make sure lazy init is not enabled by creating a new start element
                             // based on the original but that never includes the lazy init attribute
                             StartElement newStartEvent = getAdjustedStartEvent(event, LAZY_INIT_ATTR);
+                            writer.add(newStartEvent);
+
+                        } else if( name.equals(JMS_SERVICE)) {
+
+                            // Make sure lazy init is not enabled by creating a new start element
+                            // based on the original but that never includes the lazy init attribute
+                            StartElement newStartEvent = getEmptyStartEvent(event);
                             writer.add(newStartEvent);
 
                         } else {
@@ -195,6 +205,15 @@ public class DomainXmlTransformer {
 
         throw new EOFException(localStrings.getString(
                         "ejb.embedded.no_matching_end_element", name));
+    }
+
+    /** Create a new start element based on the original but that does not include 
+     * any attributes.
+     */
+    private StartElement getEmptyStartEvent(XMLEvent event) {
+        StartElement oldStartEvent = event.asStartElement();
+        return xmlEventFactory.createStartElement(oldStartEvent.getName(), 
+                null, oldStartEvent.getNamespaces());
     }
 
     /** Create a new start element based on the original but that does not include 
