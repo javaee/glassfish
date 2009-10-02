@@ -61,7 +61,7 @@
         <record name="allrun.output" action="stop"/>
     </target>
 
-    <target name="all_wd_security" depends="clean">
+    <target name="all_wd_security">
         <record name="allrun.output" action="start"/>
         <antcall target="add-quicklook-policy-grants" />
         <property name="env.security_manager" value="ON"/>
@@ -218,8 +218,7 @@
 	<delete verbose="true" includeemptydirs="true">
 		<fileset dir="${basedir}" includes="**/classes"/>
 	</delete>
-        <!-- delete dir="${basedir}/test-output" includeemptydirs="true"/ -->
-        <delete dir="${basedir}/test-output-glassfish" includeemptydirs="true"/>
+        <delete dir="${basedir}/test-output" includeemptydirs="true"/>
         <delete dir="${basedir}/dist" includeemptydirs="true"/>
 	<delete includeemptydirs="true">
 		<fileset dir="${basedir}">
