@@ -30,6 +30,20 @@
           <info>some info</info>
 	</timer>
 	<timer>
+          <description>Sample timer1</description>
+          <schedule>
+            <second>*/2</second>
+            <minute>*</minute>
+            <hour>*</hour>
+	  </schedule>
+          <timeout-method>
+            <method-name>mytimeout1</method-name>
+	  </timeout-method>
+          <persistent>false</persistent>
+          <timezone>America/New_York</timezone>
+          <info>some info</info>
+	</timer>
+	<timer>
           <description>Sample timer2</description>
           <schedule>
             <second>*/7</second>

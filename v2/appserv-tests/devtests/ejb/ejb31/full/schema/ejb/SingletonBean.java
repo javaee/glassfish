@@ -110,6 +110,10 @@ public class SingletonBean implements RemoteSingleton {
 	System.out.println("In SingletonBean::mytimeout");
     }
 
+    private void mytimeout1(Timer t) {
+	System.out.println("In SingletonBean::mytimeout1");
+    }
+
     public boolean getTestResult() {
 	System.out.println("In SingletonBean::testPassed");
 	return gotTimeout;
