@@ -88,7 +88,7 @@ public class FlashlightProbeProviderFactory
         LogDomains.getLogger(FlashlightProbeProviderFactory.class, LogDomains.MONITORING_LOGGER);
     private final static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(FlashlightProbeProviderFactory.class);
-    private boolean debug = false;
+
     private final HashMap<String, Class> primTypes = new HashMap<String, Class>() {
         {
             put("int",Integer.TYPE);
@@ -179,8 +179,8 @@ public class FlashlightProbeProviderFactory
         try {
             provider = new FlashlightProbeProvider(
             		moduleProviderName, moduleName, probeProviderName, providerClazz);
-            //System.out.println("ModuleProviderName= " + moduleProviderName + " \tModule= " + moduleName
-            //		+ "\tProbeProviderName= " + probeProviderName + "\tProviderClazz= " + providerClazz.toString());
+            printd("ModuleProviderName= " + moduleProviderName + " \tModule= " + moduleName
+            		+ "\tProbeProviderName= " + probeProviderName + "\tProviderClazz= " + providerClazz.toString());
             for (Method m : providerClazz.getDeclaredMethods()) {
                 int sz = m.getParameterTypes().length;
                 Probe pnameAnn = m.getAnnotation(Probe.class);
@@ -259,7 +259,7 @@ public class FlashlightProbeProviderFactory
     }
 
     public void processXMLProbeProviders(ClassLoader cl, String xml, boolean inBundle) {
-        mprint("processProbeProviderXML for " + xml);
+        printd("processProbeProviderXML for " + xml);
         try {
             InputStream is = cl.getResourceAsStream(xml);
             if (inBundle) {
@@ -267,15 +267,18 @@ public class FlashlightProbeProviderFactory
             } else {
                 is = new FileInputStream(xml);
             }
-            mprint("InputStream = " + is);
+            printd("InputStream = " + is);
             ProbeProviderStaxParser providerXMLParser = new ProbeProviderStaxParser(is);
             List<org.glassfish.flashlight.xml.Provider> providers = providerXMLParser.getProviders();
             for (org.glassfish.flashlight.xml.Provider provider : providers) {
-                mprint(provider.toString());
+                printd(provider.toString());
                 registerProvider(cl, provider);
-}
+            }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, null, e);
+            String errStr =
+                    localStrings.getLocalString("cannotProcessXMLProbeProvider",
+                                    "Cannot process XML ProbeProvider, xml = {0}", xml);
+            logger.log(Level.SEVERE, errStr, e);
         }
 
     }
@@ -339,16 +342,16 @@ public class FlashlightProbeProviderFactory
 
         try {
             providerClazz = cl.loadClass(providerClass);
-            mprint("providerClazz = " + providerClazz);
+            printd("providerClazz = " + providerClazz);
         } catch (Exception e) {
-            mprint( " Could not load the class ( " + providerClazz +
+            printd( " Could not load the class ( " + providerClazz +
                         " ) for the provider " + providerClass);
             e.printStackTrace();
         }
-        mprint("moduleProviderName = " + moduleProviderName);
-        mprint("moduleName = " + moduleName);
-        mprint("probeProviderName = " + probeProviderName);
-        mprint("probeProviderClass = " + providerClass);
+        printd("moduleProviderName = " + moduleProviderName);
+        printd("moduleName = " + moduleName);
+        printd("probeProviderName = " + probeProviderName);
+        printd("probeProviderClass = " + providerClass);
 
         FlashlightProbeProvider flProvider = new FlashlightProbeProvider(
             		moduleProviderName, moduleName, probeProviderName, providerClazz);
@@ -366,15 +369,16 @@ public class FlashlightProbeProviderFactory
             int i = 0;
             for (org.glassfish.flashlight.xml.ProbeParam param : probe.getProbeParams()) {
                 probeParams[i] = param.getName();
-                mprint("          probeParam[" + i + "] = " + probeParams[i]);
+                printd("          probeParam[" + i + "] = " + probeParams[i]);
                 paramTypes[i] = getParamType(cl, param.getType());
 
                 if (paramTypes[i] == null) {
                     // Lets not create a probe if we see a problem with the
                     // paramType resolution
                     errorParsingProbe = true;
-                    logger.log(Level.SEVERE,
-                            "Cannot resolve the paramTypes, unable to create this probe - " + probeName);
+                    String errStr = localStrings.getLocalString("cannotResolveProbeParamTypes",
+                                    "Cannot resolve the paramTypes, unable to create this probe - {0}", probeName);
+                    logger.log(Level.SEVERE, errStr);
                     // stop parsing anymore probe params
                     break;
                 }
@@ -391,7 +395,7 @@ public class FlashlightProbeProviderFactory
                     moduleProviderName, moduleName, probeProviderName, probeName,
                     probeParams, paramTypes, hasSelf, isHidden);
             flProbe.setProviderJavaMethodName(probeMethod);
-            mprint(" Constructed probe === " + flProbe.toString());
+            printd(" Constructed probe === " + flProbe.toString());
             flProvider.addProbe(flProbe);
         }
         if (flProvider.getProbes().size() == 0)
@@ -401,7 +405,7 @@ public class FlashlightProbeProviderFactory
         allProbeProviders.add(flProvider);
         ProbeProviderRegistry.getInstance().registerProbeProvider(
                 flProvider, providerClazz);
-        mprint (" Provider registered successfully - " + probeProviderName);
+        printd (" Provider registered successfully - " + probeProviderName);
    }
 
 
@@ -423,22 +427,22 @@ public class FlashlightProbeProviderFactory
                 // try to prepend java.lang. to the given class
                 paramType = cl.loadClass("java.lang." + paramTypeStr);
             } catch (Exception e) {
-                logger.log(Level.SEVERE,
-                        "Cannot resolve the paramTypes of the probe, tried " + paramTypeStr +
-                        " and now the following - Try giving a fully qualified name for the type", e);
+                String errStr = localStrings.getLocalString("cannotResolveProbeParamTypes",
+                                 "Cannot resolve the paramTypes of the probe - {0}, " +
+                                         "Try giving a fully qualified name for the type", paramTypeStr);
+                logger.log(Level.SEVERE, errStr, e);
             }
         }
 
-        mprint("          paramType = " + paramType);
+        printd("          paramType = " + paramType);
 
         return paramType;
 
     }
 
-    private void mprint(String str) {
-        if (debug) {
-            System.out.println("APK: " + str);
-        }
+    private void printd(String pstring) {
+        if (logger.isLoggable(Level.FINEST))
+            logger.log(Level.FINEST, pstring);
     }
 
     private boolean isValidString(String str) {
