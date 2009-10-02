@@ -38,6 +38,7 @@ package org.glassfish.appclient.client.acc;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -65,7 +66,7 @@ interface Launchable {
      */
     Class getMainClass() throws ClassNotFoundException;
 
-    ApplicationClientDescriptor getDescriptor(ClassLoader loader) throws IOException, SAXParseException;
+    ApplicationClientDescriptor getDescriptor(ACCClassLoader loader) throws IOException, SAXParseException;
 
     void validateDescriptor();
 
@@ -128,7 +129,19 @@ interface Launchable {
         static Launchable newLaunchable(final Habitat habitat, final Class mainClass) {
             return new MainClassLaunchable(habitat, mainClass);
         }
-        
+
+        static ApplicationClientDescriptor openWithAnnoProcessingAndTempLoader(
+                final AppClientArchivist archivist, final ACCClassLoader loader,
+                final ReadableArchive ra) throws IOException, SAXParseException {
+            archivist.setAnnotationProcessingRequested(true);
+            final ACCClassLoader tempLoader = new ACCClassLoader(loader.getURLs(), loader.getParent());
+            archivist.setClassLoader(tempLoader);
+
+            final ApplicationClientDescriptor acDesc = archivist.open(ra);
+            archivist.setDescriptor(acDesc);
+            return acDesc;
+
+        }
         static boolean matchesMainClassName(final ReadableArchive archive, final String callerSpecifiedMainClassName) throws IOException {
             return (callerSpecifiedMainClassName != null) &&
                             archive.exists(classNameToArchivePath(callerSpecifiedMainClassName));

@@ -82,17 +82,19 @@ public class MainClassLaunchable implements Launchable {
         return mainClass;
     }
 
-    public ApplicationClientDescriptor getDescriptor(ClassLoader loader) throws IOException, SAXParseException {
+    public ApplicationClientDescriptor getDescriptor(ACCClassLoader loader) throws IOException, SAXParseException {
         /*
          * There is no developer-provided descriptor possible so just
          * use a default one.
          */
         if (acDesc == null) {
             ReadableArchive tempArchive = null;
-            tempArchive = createArchive(loader, mainClass);
-            final AppClientArchivist acArchivist = getArchivist(tempArchive, loader);
-            archivist.setClassLoader(loader);
+            final ACCClassLoader tempLoader = new ACCClassLoader(loader.getURLs(), loader.getParent());
+            tempArchive = createArchive(tempLoader, mainClass);
+            final AppClientArchivist acArchivist = getArchivist(tempArchive, tempLoader);
+            archivist.setClassLoader(tempLoader);
             archivist.setDescriptor(acDesc);
+            archivist.setAnnotationProcessingRequested(true);
             acDesc = acArchivist.open(tempArchive);
             Application.createApplication(habitat, null, acDesc.getModuleDescriptor());
             acDesc.getApplication().setAppName(appNameFromMainClass(mainClass));

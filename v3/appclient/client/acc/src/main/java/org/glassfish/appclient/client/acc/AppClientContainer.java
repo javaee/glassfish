@@ -247,7 +247,7 @@ public class AppClientContainer {
 
     private ClientMainClassSetting clientMainClassSetting = null;
 
-    private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    private ACCClassLoader classLoader = (ACCClassLoader) Thread.currentThread().getContextClassLoader();
 
     private Collection<EntityManagerFactory> emfs = null;
 
@@ -283,7 +283,7 @@ public class AppClientContainer {
             final Properties containerProperties,
             final ClientCredential clientCredential,
             final CallbackHandler callerSuppliedCallbackHandler,
-            final ClassLoader classLoader,
+            final ACCClassLoader classLoader,
             final boolean isTextAuth) throws InstantiationException,
                 IllegalAccessException, InjectionException, ClassNotFoundException,
                 IOException,
@@ -692,7 +692,7 @@ public class AppClientContainer {
             });
     }
 
-    void setClassLoader(ClassLoader classLoader) {
+    void setClassLoader(ACCClassLoader classLoader) {
         this.classLoader = classLoader;
     }
 

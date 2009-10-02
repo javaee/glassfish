@@ -45,13 +45,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  *
@@ -90,31 +90,64 @@ public class ACCClassLoader extends URLClassLoader {
      */
     public ACCClassLoader(ClassLoader parent) {
         /*
-         * Equip this new loader to load all classes and resources on the
-         * current class path, and set its parent so it skips the VM's launcher
-         * class loader.
+         * This constructor is used by the VM to create an ACCClassLoader as
+         * the system class loader (as specified by -Djava.system.class.loader
+         * on the java command created from the appclient script).  
+         * <p>
+         * Actually create two new loaders.  One will handle the GlassFish system JARs
+         * and the second will handle the application classes and anything
+         * from APPCPATH.  The first new ACCClassLoader will be set as the
+         * parent of the second and the second will be the one built by
+         * this constructor.
          */
-        super(classPathToURLs(), parent.getParent());
+        super(userClassPath(),
+                new ACCClassLoader(GFSystemClassPath(), parent.getParent()));
         instance = this;
     }
 
-    private static URL[] classPathToURLs() {
-        List<URL> urls = new ArrayList<URL>();
-        classPathToURLs(urls, System.getProperty("java.class.path"));
-        final String appcpath = System.getenv("APPCPATH");
-        if (appcpath != null && appcpath.length() > 0) {
-            classPathToURLs(urls, appcpath);
+    private static URL[] userClassPath() {
+        final List<URL> result = classPathToURLs(System.getProperty("java.class.path"));
+        for (ListIterator<URL> it = result.listIterator(); it.hasNext();) {
+            final URL url = it.next();
+            if (url.equals(GFSystemURL())) {
+                it.remove();
+            }
         }
-        return urls.toArray(new URL[urls.size()]);
+
+        result.addAll(classPathToURLs(System.getenv("APPCPATH")));
+
+        return result.toArray(new URL[result.size()]);
     }
-    
-    private static void classPathToURLs(final List<URL> urls, final String classpath) {
+
+    private static URL[] GFSystemClassPath() {
         try {
-            for (String s : classpath.split(File.pathSeparator)) {
-                 urls.add(new File(s).toURI().toURL());
-                }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            return new URL[] {GFSystemURL().toURI().normalize().toURL()};
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private static URL GFSystemURL() {
+        try {
+            Class agentClass = Class.forName("org.glassfish.appclient.client.acc.agent.AppClientContainerAgent");
+            return agentClass.getProtectionDomain().getCodeSource().getLocation().toURI().normalize().toURL();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private static List<URL> classPathToURLs(final String classPath) {
+        if (classPath == null) {
+            return Collections.EMPTY_LIST;
+        }
+        final List<URL> result = new ArrayList<URL>();
+        try {
+            for (String classPathElement : classPath.split(File.pathSeparator)) {
+                result.add(new File(classPathElement).toURI().normalize().toURL());
+            }
+            return result;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 

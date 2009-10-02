@@ -81,7 +81,7 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
 
     private AuthRealm authRealm = null;
 
-    private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    private ACCClassLoader classLoader = (ACCClassLoader) Thread.currentThread().getContextClassLoader();
 
     /**
      * The caller can pre-set the client credentials using the

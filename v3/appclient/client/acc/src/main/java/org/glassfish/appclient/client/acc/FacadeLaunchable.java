@@ -252,13 +252,18 @@ public class FacadeLaunchable implements Launchable {
      * @throws java.io.IOException
      * @throws org.xml.sax.SAXParseException
      */
-    public ApplicationClientDescriptor getDescriptor(final ClassLoader loader) throws IOException, SAXParseException {
+    public ApplicationClientDescriptor getDescriptor(final ACCClassLoader loader) throws IOException, SAXParseException {
         if (acDesc == null) {
             /*
-             * Open without passing the class loader to avoid validation.
-             * We need to handle persistence before validating.
+             * To support managed beans, perform anno processing which requires
+             * a class loader.  But we don't want to load the application
+             * classes using the main class loader yet because we need to find
+             * set up transformation of application classes by transformers from
+             * persistence (perhaps).  So create a temporary loader just to
+             * load the descriptor.
              */
-            acDesc = getFacadeArchivist().open(facadeClientRA);
+            final AppClientArchivist arch = getFacadeArchivist();
+            acDesc = LaunchableUtil.openWithAnnoProcessingAndTempLoader(arch, loader, facadeClientRA);
             Application.createApplication(habitat, null, acDesc.getModuleDescriptor());
 
             final Manifest facadeMF = facadeClientRA.getManifest();
@@ -266,9 +271,8 @@ public class FacadeLaunchable implements Launchable {
             final String appName = mainAttrs.getValue(GLASSFISH_APP_NAME);
             acDesc.getApplication().setAppName(appName);
             
-            getFacadeArchivist().setDescriptor(acDesc);
             /*
-             * But save the class loader for later use.
+             * Save the class loader for later use.
              */
             this.classLoader = loader;
         }

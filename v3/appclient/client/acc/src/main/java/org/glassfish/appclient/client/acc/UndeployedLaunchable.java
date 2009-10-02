@@ -233,10 +233,12 @@ public class UndeployedLaunchable implements Launchable {
         return mf.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
     }
 
-    public ApplicationClientDescriptor getDescriptor(ClassLoader loader) throws IOException, SAXParseException {
+    public ApplicationClientDescriptor getDescriptor(ACCClassLoader loader) throws IOException, SAXParseException {
         this.classLoader = loader;
         if (acDesc == null) {
-            final AppClientArchivist _archivist = getArchivist(loader);
+            final AppClientArchivist _archivist = getArchivist(
+                    new ACCClassLoader(loader.getURLs(), loader.getParent()));
+            _archivist.setAnnotationProcessingRequested(true);
             acDesc = _archivist.open(clientRA);
             Application.createApplication(habitat, null, acDesc.getModuleDescriptor());
             acDesc.getApplication().setAppName(getDefaultApplicationName(clientRA));
@@ -265,6 +267,7 @@ public class UndeployedLaunchable implements Launchable {
     private AppClientArchivist getArchivist(final ClassLoader classLoader) throws IOException {
         if (archivist == null) {
             ArchivistFactory af = Util.getArchivistFactory();
+
             archivist = completeInit((AppClientArchivist) af.getArchivist(
                     clientRA, classLoader));
         }
