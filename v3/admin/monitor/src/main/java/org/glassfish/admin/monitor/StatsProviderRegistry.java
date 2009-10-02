@@ -26,7 +26,6 @@ public class StatsProviderRegistry {
     private MonitoringRuntimeDataRegistry mrdr;
     private boolean isAMXReady = false;
     private boolean isMBeanEnabled = true;
-    private boolean ddebug = false;
     
     static final String[] defaultConfigLevels = new String[] {"LOW","HIGH"};
     public static Map<String, Integer> configLevelsMap = new ConcurrentHashMap();
@@ -34,7 +33,6 @@ public class StatsProviderRegistry {
     public StatsProviderRegistry(MonitoringRuntimeDataRegistry mrdr) {
         this.mrdr = mrdr;
         for (int i = 0; i < defaultConfigLevels.length; i++) {
-            printd("       configLevel[" + i + "] = " + defaultConfigLevels[i]);
             configLevelsMap.put(defaultConfigLevels[i].toUpperCase(), i);
         }
     }
@@ -120,11 +118,6 @@ public class StatsProviderRegistry {
         return this.isMBeanEnabled;
     }
 
-    private void printd(String s) {
-        if (ddebug)
-            System.out.println("APK:" + s);
-    }
-
     class StatsProviderRegistryElement {
         String configStr;
         PluginPoint pp;
@@ -138,7 +131,6 @@ public class StatsProviderRegistry {
         Method resetMethod = null;
         boolean isEnabled = false;
         int configLevel;
-        boolean ddebug = false;
 
         public StatsProviderRegistryElement(StatsProviderInfo spInfo) {
 
@@ -149,18 +141,8 @@ public class StatsProviderRegistry {
             this.mbeanName = spInfo.getSubTreeRoot();
             String configLevelStr = spInfo.getConfigLevel();
 
-            printd("  StatsProvider = " + statsProvider.getClass().getName() +
-                        " configLevelstr = " + configLevelStr);
-
             configLevel =
                     StatsProviderRegistry.configLevelsMap.get(configLevelStr.toUpperCase());
-
-            printd("  configLevel = " + configLevel);
-        }
-
-        private void printd(String s) {
-            if (ddebug)
-                System.out.println("APK:" + s);
         }
 
         public String getConfigStr() {

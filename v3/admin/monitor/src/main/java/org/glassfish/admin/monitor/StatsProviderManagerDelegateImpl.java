@@ -32,6 +32,8 @@ import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.external.statistics.impl.StatsImpl;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.StringUtils;
 import java.lang.management.ManagementFactory;
 import java.io.IOException;
@@ -71,6 +73,9 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     private static final String PARENT_PATH = PP + "/" + TYPE + "[" + NAME + "]" ;
     private boolean AMXReady = false;
     private StatsProviderRegistry statsProviderRegistry;
+    private static final Logger logger =
+        LogDomains.getLogger(StatsProviderManagerDelegateImpl.class, LogDomains.MONITORING_LOGGER);
+    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StatsProviderManagerDelegateImpl.class);
 
     boolean ddebug = false;
 
@@ -127,8 +132,13 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         // Unregisters the statsProvider
         try {
             StatsProviderRegistryElement spre = statsProviderRegistry.getStatsProviderRegistryElement(statsProvider);
-            if (spre == null)
-                throw new Exception("Invalid statsProvider, cannot unregister");
+            if (spre == null) {
+                logger.log(Level.INFO,
+                        localStrings.getLocalString("invalidStatsProvider",
+                            "Invalid statsProvider (very likely a duplicate request), cannot unregister : {0}",
+                            statsProvider.getClass().getName()));
+                return;
+            }
 
             // get the Parent node and delete all children nodes (only that we know of)
             String parentNodePath = spre.getParentTreeNodePath();
@@ -375,7 +385,6 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
                 if (childNodeNames.contains(childNode.getName())){
                     //Enabling or Disabling the child node (based on enable flag)
                     if (childNode.isEnabled() != enable) {
-                        printd(((enable)?"En":"Dis") + "abling the child node - " + childNode.getCompletePathName());
                         childNode.setEnabled(enable);
                         hasUpdatedNode = true;
                     }
@@ -407,7 +416,6 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         if (treeNode.isEnabled()) {
             boolean isAnyChildEnabled = false;
             Collection<TreeNode> childNodes = treeNode.getChildNodes();
-            printd("Parent Node = " + treeNode.getName() + "  childNodes.size()=" + childNodes.size());
             if (childNodes != null) {
                 for (TreeNode childNode : childNodes) {
                     if (childNode.isEnabled()) {
@@ -523,7 +531,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         // save the handles also against statsProvider so you can unregister when statsProvider is unregistered
         } catch (Exception e) {
             //e.printStackTrace();
-            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, "flashlight registration failed", e);
+            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE,
+                                "Flashlight listener registration failed", e);
         }
         return handles;
     }
@@ -604,7 +613,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         //To register hierarchy in mom specify parent ManagedObject, and the ManagedObject itself
         //DynamicMBean mbean = (DynamicMBean)mom.register(parent, obj);
         } catch (Exception e) {
-            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, "gmbal registration failed", e);
+            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, "Gmbal registration failed", e);
         }
         return mom;
     }
@@ -617,7 +626,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             try {
                 mom.close();
             } catch (IOException ioe) {
-                Logger.getLogger(StatsProviderRegistry.class.getName()).log(Level.SEVERE, null, ioe);
+                Logger.getLogger(StatsProviderRegistry.class.getName()).log(Level.SEVERE, "Gmbal unregister failed", ioe);
             }
             spre.setManagedObjectManager(null);
         }
@@ -651,6 +660,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             }
         }
         srvrNode = TreeNodeFactory.createTreeNode("server", null, "server");
+        srvrNode.setEnabled(false);
         mrdr.add("server", srvrNode);
         return srvrNode;
     }
@@ -701,9 +711,9 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         return subTreePath;
     }
 
-    private void printd(String str) {
-        if (ddebug)
-            System.out.println("APK : " + str);
+    private void printd(String pstring) {
+        if (logger.isLoggable(Level.FINEST))
+            logger.log(Level.FINEST, pstring);
     }
 
 }
