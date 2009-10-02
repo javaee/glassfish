@@ -47,6 +47,7 @@
         <!beforeCreate
             setSessionAttribute(key="ucTabs" value="addOn");
             setPageSessionAttribute(key="buttonText" value="$resource{i18n.button.Install}");
+            setPageSessionAttribute(key="readOnly" value="#{false}");
             setPageSessionAttribute(key="action" value="install");
             setAttribute(key="pageTitle" value="$resource{i18nUC.updateCenter.addOn.pageTitle}");
             setAttribute(key="pageTitleHelp" value="$resource{i18nUC.updateCenter.addOn.pageTitleHelp}");

@@ -47,6 +47,7 @@
     <!beforeCreate
         setSessionAttribute(key="ucTabs" value="installed");
         setPageSessionAttribute(key="buttonText" value="$resource{i18n.button.UnInstall}");
+        setPageSessionAttribute(key="readOnly" value="#{false}");
         setPageSessionAttribute(key="action" value="remove");
         setAttribute(key="pageTitle" value="$resource{i18nUC.updateCenter.installed.pageTitle}");
         setAttribute(key="pageTitleHelp" value="$resource{i18nUC.updateCenter.installed.pageTitleHelp}");

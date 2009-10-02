@@ -46,7 +46,8 @@
     <event>
     <!beforeCreate
         setSessionAttribute(key="ucTabs" value="update");
-        setPageSessionAttribute(key="buttonText" value="$resource{i18n.button.Install}");
+        //setPageSessionAttribute(key="buttonText" value="$resource{i18n.button.Install}");
+        setPageSessionAttribute(key="readOnly" value="#{true}");
         setPageSessionAttribute(key="action" value="install");
         setAttribute(key="pageTitle" value="$resource{i18nUC.updateCenter.update.pageTitle}");
         setAttribute(key="pageTitleHelp" value="$resource{i18nUC.updateCenter.update.pageTitleHelp}");
