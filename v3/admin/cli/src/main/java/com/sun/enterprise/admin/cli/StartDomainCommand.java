@@ -116,14 +116,8 @@ public class StartDomainCommand extends LocalDomainCommand {
                     GFLauncherFactory.ServerType.domain);
             info = launcher.getInfo();
 
-            if (!operands.isEmpty()) {
-                info.setDomainName(operands.get(0));
-            }
-            
-            String parent = options.get("domaindir");
-            if (parent != null)
-                info.setDomainParentDir(parent);
-
+            info.setDomainName(domainName);
+            info.setDomainParentDir(domainsDir.getPath());
             info.setVerbose(verbose || upgrade);
             info.setDebug(debug);
             info.setUpgrade(upgrade);
@@ -134,13 +128,12 @@ public class StartDomainCommand extends LocalDomainCommand {
 
             launcher.setup();
 
-            if(Boolean.getBoolean(RESTART_FLAG)) {
+            if (Boolean.getBoolean(RESTART_FLAG)) {
                 new DeathWaiter();
-            }
-            else { // plain start-domain
+            } else { // plain start-domain
                 String err = adminPortInUse();
 
-                if(err != null) {
+                if (err != null) {
                     logger.printWarning(err);
                     return ERROR;
                 }
@@ -244,29 +237,11 @@ public class StartDomainCommand extends LocalDomainCommand {
 
     private int runCommandEmbedded() throws CommandException {
         try {
-            // bnevins nov 23 2008
-            // Embedded is a new type of server
-            // For now -- we ONLY start embedded
-
             launcher = GFLauncherFactory.getInstance(
                     GFLauncherFactory.ServerType.embedded);
-
             info = launcher.getInfo();
-
-            if (!operands.isEmpty()) {
-                info.setDomainName(operands.get(0));
-            } else {
-                info.setDomainName("domain1");
-            }
-
-            String parent = options.get("domaindir");
-
-            if (parent != null) {
-                info.setDomainParentDir(parent);
-            } else
-                info.setDomainParentDir(
-                            System.getenv("S1AS_HOME") + "/domains"); // TODO
-
+            info.setDomainName(domainName);
+            info.setDomainParentDir(domainsDir.getPath());
             info.setVerbose(verbose);
             info.setDebug(debug);
             launcher.setup();
