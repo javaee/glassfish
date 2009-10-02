@@ -3,8 +3,6 @@ package numberguess;
 import javax.ejb.*;
 import javax.annotation.*;
 
-import org.omg.CORBA.ORB;
-
 import javax.inject.Inject;
 
 @Singleton
@@ -12,7 +10,7 @@ import javax.inject.Inject;
 public class SingletonBean {
 
     @Resource
-    private ORB orb;
+    private SessionContext sessionCtx;
 
     @Inject
     private StatelessLocal statelessLocal;
@@ -20,8 +18,8 @@ public class SingletonBean {
     @PostConstruct
 	public void init() {
 	System.out.println("In SingletonBean::init()");
-	System.out.println("orb = " + orb);
-	if( orb == null ) {
+	System.out.println("sessionCtx = " + sessionCtx);
+	if( sessionCtx == null ) {
 	    throw new EJBException("EE injection error");
 	}
     }

@@ -3,15 +3,13 @@ package numberguess;
 import javax.ejb.*;
 import javax.annotation.*;
 
-import org.omg.CORBA.ORB;
-
 import javax.inject.Inject;
 
 @Stateful
 public class StatefulBean {
 
     @Resource
-	private ORB orb;
+    private SessionContext sessionCtx;
 
     @EJB
 	private SingletonBean singleton;
@@ -19,8 +17,8 @@ public class StatefulBean {
     @PostConstruct
 	public void init() {
 	System.out.println("In StatefulBean::init()");
-	System.out.println("orb = " + orb);
-	if( orb == null ) {
+	System.out.println("sessionCtx = " + sessionCtx);
+	if( sessionCtx == null ) {
 	    throw new EJBException("EE injection error");
 	}
 	singleton.hello();
