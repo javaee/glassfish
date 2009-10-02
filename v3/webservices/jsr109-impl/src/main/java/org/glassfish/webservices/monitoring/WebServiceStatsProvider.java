@@ -38,7 +38,7 @@ public class WebServiceStatsProvider {
             new ConcurrentHashMap<String, DeployedEndpointData>();
 
     // 109 endpoint deployment
-    @ProbeListener("glassfish:webservices:109:deploy")
+    @ProbeListener("glassfish:webservices:deployment-109:deploy")
     public void eeDeploy(@ProbeParam("app")Application app,
                        @ProbeParam("endpoint")WebServiceEndpoint endpoint) {
         String path = endpoint.getEndpointAddressPath();
@@ -49,7 +49,7 @@ public class WebServiceStatsProvider {
     }
 
     // 109 enpoint undeployment
-    @ProbeListener("glassfish:webservices:109:undeploy")
+    @ProbeListener("glassfish:webservices:deployment-109:undeploy")
     public void eeUndeploy(@ProbeParam("path")String path) {
         endpoints.remove(path);
     }

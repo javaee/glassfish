@@ -12,7 +12,7 @@ import com.sun.enterprise.deployment.Application;
  *
  * @author Jitendra Kotamraju
  */
-@ProbeProvider(moduleProviderName="glassfish", moduleName="webservices", probeProviderName="109")
+@ProbeProvider(moduleProviderName="glassfish", moduleName="webservices", probeProviderName="deployment-109")
 public class Deployment109ProbeProvider {
 
     @Probe(name="deploy")
