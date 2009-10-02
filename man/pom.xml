@@ -44,11 +44,11 @@
    <name>Man Pages for asadmin Utility Subcommnads</name>
    <packaging>pom</packaging>
    <distributionManagement>
-        <repository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>java.net-maven2-repository</id>
-            <url>java-net:/maven2-repository/trunk/repository/</url>
-        </repository>
+       <repository>            
+           <uniqueVersion>false</uniqueVersion>
+           <id>rator.sfbay</id>
+           <url>dav:http://glassfish-maven-repository.sfbay/maven/repositories/glassfish/</url>
+       </repository>
    </distributionManagement>
    <version>3.0-SNAPSHOT</version>
    <modules>
