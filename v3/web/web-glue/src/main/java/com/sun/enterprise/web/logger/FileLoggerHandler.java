@@ -77,7 +77,7 @@ public class FileLoggerHandler extends Handler implements PostConstruct {
     
     public void setLogFile(String logFile) {
         try {
-            fileOutputStream = new FileOutputStream(logFile);
+            fileOutputStream = new FileOutputStream(logFile, true);
             printWriter = new PrintWriter(fileOutputStream);
             if (logManager!=null) {
                 logManager.addHandler(this);
