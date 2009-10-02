@@ -1,5 +1,4 @@
 #!/bin/sh
-rm javax.javaee-api-compact.jar
 $1 -XDprocess.packages -proc:only \
     -cp $2:. \
     -processor DIY \
@@ -14,4 +13,6 @@ do
     echo $i
     jar xvf $2 $i
 done
+# adding license file in the build area so it appears in the jar
+cp ../../../../../packager/CDDL+GPL.txt .
 
