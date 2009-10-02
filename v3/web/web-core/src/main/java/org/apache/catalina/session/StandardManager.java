@@ -429,7 +429,7 @@ public class StandardManager
 
         // Open an input stream to the specified pathname, if any
         File file = file();
-        if (file == null) {
+        if (file == null || !file.exists() || file.length() == 0) {
             return;
         }
         if (log.isLoggable(Level.FINE)) {
