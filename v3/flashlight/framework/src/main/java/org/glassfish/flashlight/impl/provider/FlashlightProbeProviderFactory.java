@@ -41,6 +41,8 @@ import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.flashlight.xml.ProbeProviderStaxParser;
 import com.sun.enterprise.config.serverbeans.MonitoringService;
 import com.sun.enterprise.util.ObjectAnalyzer;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
@@ -82,8 +84,11 @@ public class FlashlightProbeProviderFactory
     Habitat habitat;
 
     private final static Set<FlashlightProbeProvider> allProbeProviders = new HashSet<FlashlightProbeProvider>();
+    private static final Logger logger =
+        LogDomains.getLogger(FlashlightProbeProviderFactory.class, LogDomains.MONITORING_LOGGER);
+    private final static LocalStringManagerImpl localStrings =
+        new LocalStringManagerImpl(FlashlightProbeProviderFactory.class);
     private boolean debug = false;
-    private final static Logger logger = Logger.getLogger(FlashlightProbeProviderFactory.class.getName());
     private final HashMap<String, Class> primTypes = new HashMap<String, Class>() {
         {
             put("int",Integer.TYPE);
@@ -147,9 +152,22 @@ public class FlashlightProbeProviderFactory
         //TODO: check for null and generate default names
         ProbeProvider provAnn = providerClazz.getAnnotation(ProbeProvider.class);
 
-        return getProbeProvider(provAnn.moduleProviderName(), provAnn.moduleName(),
-                                provAnn.probeProviderName(),
+        String moduleProviderName = provAnn.moduleProviderName();
+        String moduleName = provAnn.moduleName();
+        String probeProviderName = provAnn.probeProviderName();
+
+        if (isValidString(moduleProviderName) && 
+            isValidString(moduleName) && 
+            isValidString(probeProviderName)) {
+            return getProbeProvider(moduleProviderName, moduleName,
+                                probeProviderName,
                                 providerClazz);
+        } else {
+            logger.log(Level.WARNING,
+                       localStrings.getLocalString("invalidProbeProvider",
+                       "Invalid parameters for ProbeProvider, ignoring {0}", providerClazz.getName()));
+            return null;
+        }
     }
 
     public <T> T getProbeProvider(String moduleProviderName, String moduleName,
@@ -421,5 +439,12 @@ public class FlashlightProbeProviderFactory
         if (debug) {
             System.out.println("APK: " + str);
         }
+    }
+
+    private boolean isValidString(String str) {
+        if ((str != null) && (str.length() > 0)){
+            return true;
+        }
+        return false;
     }
 }
