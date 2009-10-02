@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="454"/>
+    <property name="TOTAL_EXPECTED" value="455"/>
 
     &commonSetup;
     &commonBuild;
@@ -405,6 +405,7 @@
         <ant dir="overrideImplicitMapping" target="all"/>
         <ant dir="monitorWebRequest" target="all"/>
         <ant dir="monitorHttpService" target="all"/>
+        <ant dir="monitorServletInstance" target="all"/>
     </target>
 
     <target name="security">
