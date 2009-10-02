@@ -42,6 +42,8 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import org.glassfish.admingui.common.handlers.PluginHandlers;
 import org.glassfish.admingui.plugin.ConsolePluginService;
+import org.glassfish.admingui.plugin.Index;
+import org.glassfish.admingui.plugin.IntegrationPoint;
 import org.glassfish.admingui.plugin.TOC;
 
 
@@ -68,4 +70,23 @@ public class HelpHandlers {
 		handlerCtx.getFacesContext());
 	handlerCtx.setOutputValue("toc", cps.getHelpTOC(locale));
     }
+
+
+    /**
+     *	<p> This handler provides access to {@link IntegrationPoint}s for the requested key.</p>
+     *
+     *	@param	handlerCtx	The <code>HandlerContext</code>.
+     */
+    @Handler(id="getHelpIndex",
+    	input={
+            @HandlerInput(name="locale", type=String.class)},
+        output={
+            @HandlerOutput(name="index", type=Index.class)})
+    public static void getHelpIndex(HandlerContext handlerCtx) {
+	String locale = (String) handlerCtx.getInputValue("locale");
+	ConsolePluginService cps = PluginHandlers.getPluginService(
+		handlerCtx.getFacesContext());
+	handlerCtx.setOutputValue("index", cps.getHelpIndex(locale));
+    }
+
 }

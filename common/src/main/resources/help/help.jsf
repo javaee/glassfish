@@ -82,5 +82,31 @@
 	"<h3>GlassFish Help</h3>
 	"</div>
     </sun:body>
+
+<!-- 
+
+--- help_jsf.edburns	2009-10-01 22:49:23.000000000 -0400
++++ help.jsf	2009-10-01 22:51:53.000000000 -0400
+@@ -70,12 +70,12 @@
+ 	    </sun:tabSet>
+ 	    </sun:form>
+ 	    <dynamicTreeNode
+-		treeAdaptorClass="org.glassfish.admingui.common.help.HelpTreeIndexAdaptor"
++		treeAdaptorClass="org.glassfish.admingui.common.help.HelpTreeAdaptor"
+ 		toc="$attribute{toc}">
+-		    <ui:event type="beforeCreate">
++		    <!beforeCreate
+     setPageSessionAttribute(key="newVR" value="set");
+-			getHelpIndex(locale="en", index="#{requestScope.toc}");
+-		    </ui:event>
++			getHelpTOC("en" toc="#{requestScope.toc}");
++		    />
+ 	    </dynamicTreeNode>
+ 	"</div>
+ 	"<div id="helpContent" class="helpContentBox">
+
+
+-->
+
 </sun:html>
 </sun:page>
