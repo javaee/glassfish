@@ -9,6 +9,7 @@ import org.omg.CORBA.ORB;
 @Singleton
 @Startup
     @EJB(name="java:app/env/AS2", beanName="HelloStateless", beanInterface=HelloRemote.class)
+    @DependsOn("Singleton2")
 public class HelloSingleton implements Hello {
 
     @Resource SessionContext sessionCtx;
