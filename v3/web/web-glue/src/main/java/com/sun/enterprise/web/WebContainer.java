@@ -70,6 +70,7 @@ import com.sun.enterprise.config.serverbeans.SessionProperties;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.archivist.WebArchivist;
 import com.sun.enterprise.deployment.runtime.web.ManagerProperties;
 import com.sun.enterprise.deployment.runtime.web.SessionManager;
@@ -379,6 +380,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     
     private SecurityService securityService = null;
 
+    private WebStatsProviderBootstrap webStatsProviderBootstrap = null;
+
     /**
      * Static initialization
      */
@@ -395,6 +398,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         habitat = _serverContext.getDefaultHabitat();
 
         //createMonitoringConfig();
+        createStatsProviders();
 
         setJspFactory();
 
@@ -618,7 +622,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             // configure default web modules for virtual servers after all
             // applications are processed
             loadDefaultWebModulesAfterAllAppsProcessed();
-            createStatsProviders();
         } else if (event.is(EventTypes.PREPARE_SHUTDOWN)) {
             isShutdown = true;
         }
@@ -1823,6 +1826,16 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         ctx.setModuleName(moduleName);
         ctx.setMonitoringNodeName(monitoringNodeName);
 
+        List<String> servletNames = new ArrayList<String>();
+        for (WebComponentDescriptor webCompDesc : wbd.getWebComponentDescriptors()) {
+            if (webCompDesc.isServlet()) {
+                servletNames.add(webCompDesc.getCanonicalName());
+            }
+        }
+
+        webStatsProviderBootstrap.registerApplicationStatsProviders(monitoringNodeName,
+                vs.getName(), servletNames);
+
         vs.addChild(ctx);
 
         ctx.loadSessions(deploymentProperties);
@@ -2036,6 +2049,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 if(context != null) {
                     context.saveSessions(props);
                     host.removeChild(context);
+
+                    webStatsProviderBootstrap.unregisterApplicationStatsProviders(
+                            context.getMonitoringNodeName(), host.getName());
+
                     try {
                         /*
                          * If the webapp is being undeployed as part of a
@@ -3190,9 +3207,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * Request/Response related events.
      */
     private void createStatsProviders() {
-        HttpServiceStatsProviderBootstrap httpStatsBootstrap =
+        HttpServiceStatsProviderBootstrap httpStatsProviderBootstrap =
                 habitat.getByType(HttpServiceStatsProviderBootstrap.class);
-        WebStatsProviderBootstrap webStatsBootstrap =
+        webStatsProviderBootstrap =
                 habitat.getByType(WebStatsProviderBootstrap.class);
     }
 

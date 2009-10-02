@@ -21,6 +21,8 @@ import java.beans.PropertyChangeEvent;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.*;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
@@ -42,7 +44,7 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
  */
 @Service(name = "web")
 @Scoped(Singleton.class)
-public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener {
+public class WebStatsProviderBootstrap implements PostConstruct {
     private static final String NODE_SEPARATOR = "/";
 
     @Inject
@@ -60,11 +62,8 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
     private Server server;
 
     // Map of apps and its StatsProvider list
-    private Map<String, List> statsProviderToAppMap = new HashMap();
-    private ArrayList webContainerStatsProviderList = new ArrayList();
-
-    private Map<String, Set<String>> moduleNamesMap =
-        new HashMap<String, Set<String>>();
+    private Map<String, Queue> nameToStatsProviders = new ConcurrentHashMap();
+    private Queue webContainerStatsProviderQueue = new ConcurrentLinkedQueue();
 
     public WebStatsProviderBootstrap() {
     }
@@ -104,10 +103,6 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
 
         //Register the Web stats providers
         registerWebStatsProviders();
-
-        //Register the Applications stats providers
-        registerApplicationStatsProviders();
-
     }
 
     private void registerWebStatsProviders() {
@@ -126,158 +121,73 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
             "web/servlet", svsp);
         StatsProviderManager.register("web-container", PluginPoint.SERVER,
             "web/session", sssp);
-        webContainerStatsProviderList.add(jsp);
-        webContainerStatsProviderList.add(wsp);
-        webContainerStatsProviderList.add(svsp);
-        webContainerStatsProviderList.add(sssp);
+        webContainerStatsProviderQueue.add(jsp);
+        webContainerStatsProviderQueue.add(wsp);
+        webContainerStatsProviderQueue.add(svsp);
+        webContainerStatsProviderQueue.add(sssp);
     }
 
-    private void registerApplicationStatsProviders() {
-        List<Application> webApps =
-            domain.getApplications().getApplicationsWithSnifferType("web");
-        for (Application webApp : webApps) {
-            String appName = webApp.getName();
-            HashSet<String> moduleNames = getModulesNames(appName);
-            for (String moduleName : moduleNames) {
-                addStatsForVirtualServers(appName, moduleName);
-            }
+    public void registerApplicationStatsProviders(String monitoringName,
+            String vsName, List<String> servletNames) {
+
+        //create stats providers for each virtual server 'vsName'
+        String node = getNodeString(monitoringName, vsName);
+        Queue statspList = nameToStatsProviders.get(monitoringName);
+        if (statspList == null) {
+            statspList = new ConcurrentLinkedQueue();
         }
+        JspStatsProvider jspStatsProvider =
+                new JspStatsProvider(monitoringName, vsName, logger);
+        StatsProviderManager.register(
+                "web-container", PluginPoint.APPLICATIONS, node,
+                jspStatsProvider);
+        statspList.add(jspStatsProvider);
+        ServletStatsProvider servletStatsProvider =
+                new ServletStatsProvider(monitoringName, vsName, logger);
+        StatsProviderManager.register(
+                "web-container", PluginPoint.APPLICATIONS, node,
+                servletStatsProvider);
+        statspList.add(servletStatsProvider);
+        SessionStatsProvider sessionStatsProvider =
+                new SessionStatsProvider(monitoringName, vsName, logger);
+        StatsProviderManager.register(
+                "web-container", PluginPoint.APPLICATIONS, node,
+                sessionStatsProvider);
+        statspList.add(sessionStatsProvider);
+        RequestStatsProvider websp =
+                new RequestStatsProvider(monitoringName, vsName, logger);
+        StatsProviderManager.register(
+                "web-container", PluginPoint.APPLICATIONS, node,
+                websp);
+
+        for (String servletName : servletNames) {
+             ServletInstanceStatsProvider servletInstanceStatsProvider = 
+                     new ServletInstanceStatsProvider(servletName, monitoringName, vsName, logger);
+             StatsProviderManager.register(
+                     "web-container", PluginPoint.APPLICATIONS,
+                     getNodeString(monitoringName, vsName, servletName),
+                     servletInstanceStatsProvider);
+             statspList.add(servletInstanceStatsProvider);
+        }
+
+        statspList.add(websp);
+        nameToStatsProviders.put(monitoringName, statspList);
     }
 
-    private void addStatsForVirtualServers(String appName,
-                                           String moduleName) {
-        // get the applications refs for the server
-        for (ApplicationRef ar : server.getApplicationRef()) {
-            if (!appName.equals(ar.getRef())) {
-                continue;
-            }
-            String vsL = ar.getVirtualServers();
-            if (vsL != null) {
-                for (String host : vsL.split(",")) {
-                    //create stats providers for each virtual server 'host'
-                    String node = getNodeString(moduleName, host);
-                    List statspList = statsProviderToAppMap.get(moduleName);
-                    if (statspList == null) {
-                        statspList = new ArrayList();
-                    }
-                    JspStatsProvider jspStatsProvider =
-                        new JspStatsProvider(moduleName, host, logger);
-                    StatsProviderManager.register(
-                        "web-container", PluginPoint.APPLICATIONS, node,
-                        jspStatsProvider);
-                    statspList.add(jspStatsProvider);
-                    ServletStatsProvider servletStatsProvider =
-                        new ServletStatsProvider(moduleName, host, logger);
-                    StatsProviderManager.register(
-                        "web-container", PluginPoint.APPLICATIONS, node,
-                        servletStatsProvider);
-                    statspList.add(servletStatsProvider);
-                    SessionStatsProvider sessionStatsProvider =
-                        new SessionStatsProvider(moduleName, host, logger);
-                    StatsProviderManager.register(
-                        "web-container", PluginPoint.APPLICATIONS, node,
-                        sessionStatsProvider);
-                    statspList.add(sessionStatsProvider);
-                    RequestStatsProvider websp =
-                        new RequestStatsProvider(moduleName, host, logger);
-                    StatsProviderManager.register(
-                        "web-container", PluginPoint.APPLICATIONS, node,
-                        websp);
+    public void unregisterApplicationStatsProviders(String monitoringName,
+            String vsName) {
 
-                    List<String> servletNames = getServletNames(moduleName);
-                    for (String servletName : servletNames) {
-                        ServletInstanceStatsProvider servletInstanceStatsProvider = 
-                            new ServletInstanceStatsProvider(servletName, moduleName, host, logger);
-                        StatsProviderManager.register(
-                            "web-container", PluginPoint.APPLICATIONS,
-                            getNodeString(moduleName, host, servletName),
-                            servletInstanceStatsProvider);
-                    }
-
-                    statspList.add(websp);
-                    statsProviderToAppMap.put(moduleName, statspList);
-                }
-            }
-            return;
-        }
-    }
-
-    public static String getVirtualServerName(String hostName,
-                                              String listenerPort) {
-        try {
-            if (hostName == null) {
-                return null;
-            }
-            if (hostName.equals("localhost")) {
-                hostName = InetAddress.getLocalHost().getHostName();
-            }
-            NetworkListener listener = null;
-
-            for (NetworkListener hl : networkConfig.getNetworkListeners().getNetworkListener()) {
-                if (hl.getPort().equals(listenerPort)) {
-                    listener = hl;
-                    break;
-                }
-            }
-            VirtualServer virtualServer = null;
-            for (VirtualServer vs : httpService.getVirtualServer()) {
-                if (vs.getHosts().contains(hostName)
-                    && vs.getNetworkListeners().contains(listener.getName())) {
-                    virtualServer = vs;
-                    break;
-                }
-            }
-            return virtualServer.getId();
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(WebStatsProviderBootstrap.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
-
-    // Handle the deploy/undeploy events
-    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-        for (PropertyChangeEvent event : events) {
-            if (event.getPropertyName().equals("application-ref")) {
-                String propName = event.getPropertyName();
-                Set<String> moduleNames = null;
-                String appName = null;
-                if (event.getNewValue() != null) {
-                    // This means its a deployed event
-                    if (webContainerStatsProviderList.isEmpty()) {
-                        registerWebStatsProviders();
-                    }
-                    appName = ((ApplicationRef)(event.getNewValue())).getRef();
-                    moduleNames = getModulesNames(appName);
-                    for (String moduleName : moduleNames) {
-                        addStatsForVirtualServers(appName, moduleName);
-                    }
-                    moduleNamesMap.put(appName, moduleNames);
-                } else if (event.getOldValue() != null) {
-                    // This means its an undeployed event
-                    appName = ((ApplicationRef)(event.getOldValue())).getRef();
-                    moduleNames = moduleNamesMap.remove(appName);
-                    //unregister the StatsProviders for the modules
-                    for (String moduleName : moduleNames) {
-                        List statsProviders = statsProviderToAppMap.remove(
-                            moduleName);
-                        for (Object statsProvider : statsProviders) {
-                            StatsProviderManager.unregister(statsProvider);
-                        }
-                    }
-                    if (statsProviderToAppMap.isEmpty()) {
-                        for (Object statsProvider : webContainerStatsProviderList) {
-                            StatsProviderManager.unregister(statsProvider);
-                        }
-                        webContainerStatsProviderList.clear();
-                    }
-                }
-                if (logger.isLoggable(Level.FINEST)) {
-                    logger.finest("[Monitor] (Un)Deploy event received - name = " + propName + " : Value = " + appName);
-                }
-            }
+        Queue statsProviders = nameToStatsProviders.remove(monitoringName);
+        for (Object statsProvider : statsProviders) {
+            StatsProviderManager.unregister(statsProvider);
         }
 
-        return null;
+        if (nameToStatsProviders.isEmpty()) {
+            for (Object statsProvider : webContainerStatsProviderQueue) {
+                StatsProviderManager.unregister(statsProvider);
+            }
+            webContainerStatsProviderQueue.clear();
+        }
     }
 
     private String getNodeString(String moduleName, String... others) {
@@ -286,66 +196,5 @@ public class WebStatsProviderBootstrap implements PostConstruct, ConfigListener 
             sb.append(NODE_SEPARATOR).append(other);
         }
         return sb.toString();
-    }
-
-    /**
-     * Looks up the Application with the given appName, and returns a set
-     * of the names of its enclosed web modules (if any).
-     *
-     * If the Application with the given appName represents a standalone
-     * WAR file, the returned set will contain a single name. 
-     * 
-     * If the Application with the given appName represents an EAR file,
-     * the returned set will contain the names of all enclosed web modules,
-     * using a format of appName#moduleName. 
-     */    
-    private HashSet<String> getModulesNames(String appName) {
-        HashSet<String> moduleNames = new HashSet<String>();
-        List<Application> webApps =
-            domain.getApplications().getApplicationsWithSnifferType("web");
-        for (Application webApp : webApps) {
-            if (!appName.equals(webApp.getName())) {
-                continue;
-            }
-            List<Module> modules = webApp.getModule();
-            for (Module module : modules) {
-                if (module.getEngine("web") != null) {
-                    // This is a web module
-                    if (webApp.isStandaloneModule()) {
-                        moduleNames.add(module.getName());
-                        break;
-                    } else {
-                        // WAR nested inside EAR
-                        moduleNames.add(getNestedModuleName(appName,
-                            module.getName()));
-                    }
-                }
-            }
-        }
-
-        return moduleNames;
-    }
-
-    private String getNestedModuleName(String appName, String moduleName) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(appName).append(NODE_SEPARATOR).append(moduleName);
-        return sb.toString().replaceAll("\\.", "\\\\.").
-            replaceAll("_war", "\\\\.war");
-    }
-
-    private List<String> getServletNames(String appName) {
-        List<String> servletNames = new ArrayList<String>();
-        ApplicationInfo appInfo = appRegistry.get(appName);
-        com.sun.enterprise.deployment.Application app =
-                appInfo.getMetaData(com.sun.enterprise.deployment.Application.class);
-
-        for (WebBundleDescriptor webBundleDesc : app.getWebBundleDescriptors()) {
-            for (WebComponentDescriptor webCompDesc : webBundleDesc.getWebComponentDescriptors()) {
-                if (webCompDesc.isServlet()) {
-                    servletNames.add(webCompDesc.getCanonicalName());
-                }
-            }
-        }
-        return servletNames;
     }
 }
