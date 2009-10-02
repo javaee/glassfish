@@ -20,41 +20,23 @@ function showAlert(msg){
 
 
 function submitAndDisable(button, msg, target) {
-    button.className="Btn2Dis_sun4"; //'Btn1Dis'; // the LH styleClass for disabled buttons.
+    button.className="Btn2Dis_sun4"; // the LH styleClass for disabled buttons.
     button.disabled=true;
     var sep = (button.form.action.indexOf("?") > -1) ? "&" : "?";
     button.form.action += sep + button.name + "=" + encodeURI(button.value); //bug# 6294035
     button.value=msg;
     if (target) {
 	button.form.target = target;
-    } else {
-        if (typeof iframeName != "undefined") {
-            button.form.target = "buffer";
-            button.form.action = admingui.ajax.modifyUrl(button.form.action);
-        }
     }
-    //button.form.submit();
     admingui.ajax.submitFormAjax(button.form);
     return true; 
 }
 
-/*
-function submitAndDisable1(button, msg) {
-    alert('two');
-    button.className='Btn1Dis'; // the LH styleClass for disabled buttons.
-    button.disabled=true; 
-    var sep = (button.form.action.indexOf("?") > -1) ? "&" : "?";
-    button.form.action += sep + button.name + "=" + encodeURI(button.value); //bug# 6294035
-    button.value=msg;
-    button.form.submit(); 
-    return true; 
-}
-*/
 
-function disableButton(id){
+function disableButton(id) {
     var button = document.getElementById(id);
-    button.className='Btn1Dis'; // the LH styleClass for disabled buttons.
-    button.disabled=true; 
+    button.className='Btn1Dis_sun4'; // the LH styleClass for disabled buttons.
+    button.disabled=true;
 }
 
 //To disable all buttons in the page.
@@ -154,29 +136,29 @@ disableComponent.select = getSelectElement;
 
 
 function disableBtnComponent(componentName) {
-    el = document.getElementById(componentName);
+    var el = document.getElementById(componentName);
     if (el.setProps) {
-        document.getElementById(componentName).setProps({disabled: true, className: 'Btn1Dis'});
+	document.getElementById(componentName).setProps({disabled: true, className: 'Btn1Dis_sun4'});
     } else {
-        //YAHOO.util.Dom.setStyle(el, 'disabled', 'true');
-        el.disabled = true;
-        el.className = 'Btn1Dis';
+	//YAHOO.util.Dom.setStyle(el, 'disabled', 'true');
+	el.disabled = true;
+	el.className = 'Btn1Dis_sun4';
     }
 }
 
 function enableBtnComponent(componentName) {
-    el = document.getElementById(componentName);
+    var el = document.getElementById(componentName);
     if (el.setProps) {
-        document.getElementById(componentName).setProps({disabled: false, className: 'Btn1'});
+        document.getElementById(componentName).setProps({disabled: false, className: 'Btn1_sun4'});
     } else {
         //YAHOO.util.Dom.setStyle(el, 'disabled', 'false');
         el.diabled = false;
-        el.className = 'Btn1';
+        el.className = 'Btn1_sun4';
     }
 }
 
 function enableComponent(componentName, type) {
-    component = null;
+    var component = null;
     if (type != null && type == 'file') {
         component = getFileInputElement(componentName);
     }
@@ -191,7 +173,7 @@ function enableComponent(componentName, type) {
 }
 
 function disableDOMComponent(componentName) {
-    el = document.getElementById(componentName);
+    var el = document.getElementById(componentName);
     if (el.setProps) {
         document.getElementById(componentName).setProps({disabled: true, className: 'TxtFldDis_sun4', value: ' '});
     } else {
@@ -203,7 +185,7 @@ function disableDOMComponent(componentName) {
 }
 
 function enableDOMComponent(componentName) {
-    el = document.getElementById(componentName);
+    var el = document.getElementById(componentName);
     if (el.setProps) {
         document.getElementById(componentName).setProps({disabled: false, className: 'TxtFld_sun4'});
     } else {
@@ -213,14 +195,12 @@ function enableDOMComponent(componentName) {
     }
 }
 
-function isChecked (elementName)
-{
+function isChecked (elementName) {
     var element = document.getElementById (elementName);
     if (element != null) {
         if (element.checked) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -260,7 +240,10 @@ function getCookie(name) {
 
     for (var i = 0; i < cookies.length; i++) {
         var current = cookies[i].split("=");
-        currentName = current[0].trim();
+	var currentName = current[0];
+	if (typeof(current[0].trim) === 'function') {
+	    currentName = currentName.trim();
+	}
         if (name == currentName) {
             if (current.length > 1) {
                 cookieValue = unescape(current[1]);
@@ -393,16 +376,17 @@ function checkExtension(appType, extensionId, msg, reqdMsg){
 
 
 function setTargetSection(value){
-    id = "form:title:ps:targetSectionId";
+    var id = "form:title:ps:targetSectionId";
     component = document.getElementById(id);
     if (component != null)
         webui.suntheme.common.setVisible(id, value);
 }
 
 function setHaProp(id, value){
-    component = document.getElementById(id);
-    if (component != null)
+    var component = document.getElementById(id);
+    if (component != null) {
         webui.suntheme.common.setVisible(id, value);
+    }
 }
 
 function checkRedeployRequired(form, reqdMesg) {
@@ -446,7 +430,7 @@ function getSuffix(fullName){
 }
 
 function setFieldValue(appNameId, value,  typeId, contextRootId, extensionId) {
-    appName = extractName(value);
+    var appName = extractName(value);
     var pfex = getPrefix(appName);
     var sfex = getSuffix(appName);
 
@@ -472,7 +456,6 @@ function setFieldValue(appNameId, value,  typeId, contextRootId, extensionId) {
     }
 }
 
-
 function populateDirAndAppName(fileChooserId, dirPathId, appNameId, typeId, ctxRootId, extensionId){ 
     var fc = document.getElementById(fileChooserId).getSelectionValue();
     window.opener.getTextElement(dirPathId).value = fc;
@@ -484,10 +467,7 @@ function populateDirAndAppName(fileChooserId, dirPathId, appNameId, typeId, ctxR
     if (extensionId.length > 0) {
         window.opener.getTextElement(extensionId).value=getSuffix(appName);
     }
-    
-    
-   
-    
+
 //    if (typeId.length > 0) {
 //        type = window.opener.getSelectElement(typeId).value;
 //        if (type == "webApp") {
@@ -887,7 +867,7 @@ admingui.nav = {
     matchURL: function(node, url) {
         var result = null;
         if ((node.nodeType == 1) && (node.nodeName == "A") && 
-            (node.href == url) & (node.id.indexOf("link") > -1)) { //indexOf(url) > -1)) 
+            (node.href.indexOf(url) > -1) & (node.id.indexOf("link") > -1)) {
             result = node;
         }
         return result;
@@ -918,7 +898,7 @@ admingui.nav = {
     calculateBreadCrumbs: function(commandId, targetId, count) {
         if (count == 8) {
             // This prevents an infinite loop.  Check for the tree frame up to
-            // 5 times, 2 seconds apart.
+            // 8 times, 2 seconds apart.
             return;
         }
         if (window.parent.frames.index) {
@@ -1242,8 +1222,6 @@ function checkForPort(value) {
     if (checkForIntValue(value) == false) return false;
     return checkNumbericRange(value, 1, 65535);
 }
-
-
 
 function checkNumbericRange(value, min, max) {
     var num = 0 + value;
