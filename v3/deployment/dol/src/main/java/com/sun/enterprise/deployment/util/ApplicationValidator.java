@@ -43,6 +43,9 @@ import com.sun.enterprise.deployment.web.LoginConfiguration;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
 
 import org.jvnet.hk2.annotations.Service;
 
@@ -70,6 +73,44 @@ public class ApplicationValidator extends EjbBundleValidator
             throw new IllegalArgumentException("Application [" + 
                 application.getRegistrationName() + 
                 "] contains no valid components");
+        }
+
+        // now resolve any conflicted module names in the application
+
+        // list to store the current conflicted modules
+        List<ModuleDescriptor> conflicted = new ArrayList<ModuleDescriptor>();
+        // make sure all the modules have unique names
+        Set<ModuleDescriptor<BundleDescriptor>> modules = 
+            application.getModules();
+        for (ModuleDescriptor module : modules) {
+            // if this module is already added to the conflicted list
+            // no need to process it again
+            if (conflicted.contains(module)) {
+                continue;
+            }
+            boolean foundConflictedModule = false;
+            for (ModuleDescriptor module2 : modules) {
+                // if this module is already added to the conflicted list
+                // no need to process it again
+                if (conflicted.contains(module2)) {
+                    continue;
+                }
+                if ( !module.equals(module2) && 
+                    module.getModuleName().equals(module2.getModuleName())) {
+                    conflicted.add(module2);
+                    foundConflictedModule = true;
+                }
+            }
+            if (foundConflictedModule) {
+                conflicted.add(module);
+            }
+        }
+
+        // append the conflicted module names with their module type to 
+        // make the names unique
+        for (ModuleDescriptor cModule : conflicted) {
+            cModule.setModuleName(cModule.getModuleName() + 
+                cModule.getModuleType().toString());
         }
     }
             

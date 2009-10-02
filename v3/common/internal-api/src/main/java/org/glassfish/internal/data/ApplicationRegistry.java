@@ -42,6 +42,7 @@ import org.jvnet.hk2.component.Singleton;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collection;
 
 /**
  * Registry for deployed Applications
@@ -68,6 +69,10 @@ public class ApplicationRegistry {
     public synchronized void remove(String name) {
 
         apps.remove(name);
+    }
+
+    public Collection<ApplicationInfo> getAllApplicationInfos() {
+        return apps.values();
     }
 
 }

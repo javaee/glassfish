@@ -11,6 +11,8 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
 import org.xml.sax.SAXParseException;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -26,6 +28,7 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.config.serverbeans.DasConfig;
 
 import java.util.Properties;
+import java.util.Collection;
 import java.io.IOException;
 import java.io.File;
 
@@ -55,6 +58,9 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
 
     @Inject
     DasConfig dasConfig;
+
+    @Inject
+    public ApplicationRegistry appRegistry;
 
     private static String WRITEOUT_XML = System.getProperty(
         "writeout.xml");
@@ -117,6 +123,8 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
             }
         }
 
+        resolveAppNameConflict(application);
+
         application.setRegistrationName(name);
 
         // write out xml files if needed
@@ -138,9 +146,17 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
     }
 
     private void setAppName(Application application, DeploymentContext dc, String name) {
+        // for standalone module, set the application name as the module name
+        if (application.isVirtual()) {
+            ModuleDescriptor md = application.getStandaloneBundleDescriptor(
+                ).getModuleDescriptor();
+            application.setAppName(md.getModuleName());
+            return;
+        }
+
         // if the app-name is not defined in the 
-        // application.xml/sun-application.xml or it's
-        // a standalone module, use the default name
+        // application.xml/sun-application.xml
+        // use the default name
         if (application.getAppName() == null) {
             // This is needed as for the scenario where the user specifies
             // --name option explicitly, the EE6 app name might be different
@@ -156,6 +172,34 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
         }
     }
 
+    // find if the application name is already in use, if yes
+    // assign another name
+    private void resolveAppNameConflict(Application application) {
+        String appName = application.getAppName();
+        Collection<ApplicationInfo> allApplications = 
+            appRegistry.getAllApplicationInfos();    
+        boolean needResolveConflict = true;
+        int appendix = 1;
+        while (needResolveConflict) {
+            needResolveConflict = false;
+            for (ApplicationInfo appInfo : allApplications) {
+                Application app = appInfo.getMetaData(Application.class);
+                if (appName.equals(app.getAppName())) {
+                    // found a conflict 
+                    needResolveConflict = true;
+                    break;
+                }
+            }
+            if (needResolveConflict) {
+                appName = appName + "_" + String.valueOf(appendix); 
+                appendix++;
+                // once we assign a different name, we need re-check
+                // to see if this new cause any conflict
+                needResolveConflict = true;
+            }
+        }
+        application.setAppName(appName);
+    }
 
     protected void handleDeploymentPlan(File deploymentPlan,
         Archivist archivist, ReadableArchive sourceArchive) throws IOException {
