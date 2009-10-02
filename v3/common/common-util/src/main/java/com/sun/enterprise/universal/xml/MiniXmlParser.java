@@ -194,7 +194,7 @@ public class MiniXmlParser {
             getConfig();
             findDomainNameAndEnd();
             Logger.getLogger(MiniXmlParser.class.getName()).log(
-                Level.WARNING, strings.get("secondpass"));
+                Level.FINE, strings.get("secondpass"));
         }
     }
 
