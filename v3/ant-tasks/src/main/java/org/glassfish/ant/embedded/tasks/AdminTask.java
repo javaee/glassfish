@@ -39,6 +39,7 @@ package org.glassfish.ant.embedded.tasks;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.ActionReport;
@@ -73,12 +74,12 @@ public class AdminTask extends Task {
         return property;
     }
 
-    private Properties getCommandProperties() {
-        Properties props = new Properties();
+    private ParameterMap getCommandParameters() {
+        ParameterMap params = new ParameterMap();
         for (CommandProperty property : commandProperties) {
-            props.setProperty(property.getName(), property.getValue());
+            params.set(property.getName(), property.getValue());
         }
-        return props;
+        return params;
     }
 
 
@@ -88,7 +89,8 @@ public class AdminTask extends Task {
         Server server = Server.getServer(serverID);
         CommandRunner runner = server.getHabitat().getComponent(CommandRunner.class);
         ActionReport report = server.getHabitat().getComponent(ActionReport.class);
-        runner.doCommand(command, getCommandProperties(), report);
+	runner.getCommandInvocation(command, report).
+		parameters(getCommandParameters()).execute();
         log("admin task " + command + " executed");
     }
 

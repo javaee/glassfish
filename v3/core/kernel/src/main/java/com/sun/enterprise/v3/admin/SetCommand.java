@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,8 +56,6 @@ import org.glassfish.api.admin.config.LegacyConfigurationUpgrade;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 /**
  * User: Jerome Dochez
@@ -78,36 +76,33 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
     @Inject
     ConfigSupport config;
 
-    @Param(primary = true)
-    String target;
-
-    @Param(optional=true)
-    String value;
+    @Param(primary = true, multiple = true)
+    String[] values;
 
     public void execute(AdminCommandContext context) {
-
-        Pattern p = Pattern.compile("([^=]*)=(.*)");
-        if (value==null) {
-            // we should have something like A=some value
-            Matcher m = p.matcher(target);
-            if (m.matches()) {
-                target=m.group(1);
-                value = m.group(2);
-            }  else {
-                 context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
-                context.getActionReport().setMessage("Invalid target " + target);
+        for (String value : values) {
+            if (!set(context, value))
                 return;
-            }
         }
+    }
+
+    private boolean set(AdminCommandContext context, String nameval) {
+
+        int i = nameval.indexOf('=');
+        if (i < 0) {
+            fail(context, "Invalid attribute " + nameval);
+            return false;
+        }
+        String target = nameval.substring(0, i);
+        String value = nameval.substring(i + 1);
         // so far I assume we always want to change one attribute so I am removing the
         // last element from the target pattern which is supposed to be the
         // attribute name
         int lastDotIndex = trueLastIndexOf(target, '.');
         if (lastDotIndex==-1) {
             // error.
-            context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
-            context.getActionReport().setMessage("Invalid target " + target);
-            return;
+            fail(context, "Invalid attribute name " + target);
+            return false;
         }
         String attrName = target.substring(lastDotIndex+1);
         String pattern =  target.substring(0, lastDotIndex);
@@ -139,9 +134,8 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                 pattern = parentNodes[0].relativeName;
                 matchingNodes = getMatchingNodes(dottedNames, pattern);
                 if (matchingNodes.isEmpty()) {
-                    context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    context.getActionReport().setMessage("No configuration found for " + pattern);
-                    return;
+                    fail(context, "No configuration found for " + pattern);
+                    return false;
                 }
                 // need to find the right parent.
                 Dom parentNode=null;
@@ -151,9 +145,8 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                     }
                 }
                 if (parentNode==null) {
-                    context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    context.getActionReport().setMessage("No configuration found for " + target);
-                    return;
+                    fail(context, "No configuration found for " + target);
+                    return false;
                 }
 
                 // create and set the attribute.
@@ -164,13 +157,11 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                     ConfigSupport.createAndSet((ConfigBean) parentNode, Property.class, attributes );
                     context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
                     runLegacyChecks(context);
-                    return;
+                    return true;
                 } catch (TransactionFailure transactionFailure) {
-                    context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    context.getActionReport().setFailureCause(transactionFailure);
-                    context.getActionReport().setMessage("Could not change the attributes : "
-                            + transactionFailure.getMessage());
-                    return;
+                    fail(context, "Could not change the attributes: " +
+                        transactionFailure.getMessage(), transactionFailure);
+                    return false;
                 }
             }
         }
@@ -219,15 +210,16 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                                     delPropertySuccess = true;
                                 }
                             } catch (IllegalArgumentException ie) {
-                                context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
-                                context.getActionReport().setFailureCause(ie);
-                                context.getActionReport().setMessage("Could not delete the property : "
-                                    + ie.getMessage());
+                                fail(context,
+                                    "Could not delete the property: " +
+                                    ie.getMessage(), ie);
+                                return false;
                             } catch (TransactionFailure transactionFailure) {
-                                context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
-                                context.getActionReport().setFailureCause(transactionFailure);
-                                context.getActionReport().setMessage("Could not change the attributes : "
-                                        + transactionFailure.getMessage());
+                                fail(context,
+                                    "Could not change the attributes: " +
+                                        transactionFailure.getMessage(),
+                                    transactionFailure);
+                                return false;
                             }
                         } else {
                             changes.put((ConfigBean) node.getKey(), attrChanges);
@@ -243,21 +235,20 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                 context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
                 runLegacyChecks(context);
             } catch (TransactionFailure transactionFailure) {
-                context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
-                context.getActionReport().setFailureCause(transactionFailure);
-                context.getActionReport().setMessage("Could not change the attributes : "
-                        + transactionFailure.getMessage());
+                fail(context, "Could not change the attributes: " +
+                        transactionFailure.getMessage(), transactionFailure);
+                return false;
             }
 
         } else {
             if (delPropertySuccess) {
                 context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);                
             } else {
-                context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
-                context.getActionReport().setMessage("No configuration found for " + pattern);
+                fail(context, "No configuration found for " + pattern);
+                return false;
             }
         }
-
+        return true;
     }
 
     private void runLegacyChecks(AdminCommandContext context) {
@@ -288,5 +279,24 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
             }
         }
         return i;
+    }
+
+    /**
+     * Indicate in the action report that the command failed.
+     */
+    private static void fail(AdminCommandContext context, String msg) {
+        fail(context, msg, null);
+    }
+
+    /**
+     * Indicate in the action report that the command failed.
+     */
+    private static void fail(AdminCommandContext context, String msg,
+                                                        Exception ex) {
+        context.getActionReport().setActionExitCode(
+                                        ActionReport.ExitCode.FAILURE);
+        if (ex != null)
+            context.getActionReport().setFailureCause(ex);
+        context.getActionReport().setMessage(msg);
     }
 }

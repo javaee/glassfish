@@ -44,6 +44,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -53,14 +54,13 @@ import org.jvnet.hk2.config.DomDocument;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 
 public class ListIiopListenersTest extends org.glassfish.tests.utils.ConfigApiTest {
 
     private Habitat habitat;
     private int origNum;
-    private Properties parameters;
+    private ParameterMap parameters;
     private CommandRunner cr;
     private AdminCommandContext context;
 
@@ -76,7 +76,7 @@ public class ListIiopListenersTest extends org.glassfish.tests.utils.ConfigApiTe
     public void setUp() {
         habitat = getHabitat();
         IiopService iiopService = habitat.getComponent(IiopService.class);
-        parameters = new Properties();
+        parameters = new ParameterMap();
         cr = habitat.getComponent(CommandRunner.class);
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListIiopListenersTest.class, LogDomains.ADMIN_LOGGER),
@@ -109,7 +109,7 @@ public class ListIiopListenersTest extends org.glassfish.tests.utils.ConfigApiTe
     @Test
     public void testExecuteSuccessValidTargetOperand() {
         ListIiopListeners listCommand = habitat.getComponent(ListIiopListeners.class);
-        parameters.setProperty("DEFAULT", "server");
+        parameters.set("DEFAULT", "server");
         cr.getCommandInvocation("list-iiop-listeners", context.getActionReport()).parameters(parameters).execute(listCommand);               
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
         assertEquals(origNum, list.size());
@@ -124,13 +124,13 @@ public class ListIiopListenersTest extends org.glassfish.tests.utils.ConfigApiTe
      */
     @Test
     public void testExecuteSuccessListListener() {
-        parameters.setProperty("listeneraddress", "localhost");
-        parameters.setProperty("iiopport", "4440");
-        parameters.setProperty("listener_id", "listener");
+        parameters.set("listeneraddress", "localhost");
+        parameters.set("iiopport", "4440");
+        parameters.set("listener_id", "listener");
         CreateIiopListener createCommand = habitat.getComponent(CreateIiopListener.class);
         cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(createCommand);               
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
-        parameters.clear();
+        parameters = new ParameterMap();
         ListIiopListeners listCommand = habitat.getComponent(ListIiopListeners.class);
         cr.getCommandInvocation("list-iiop-listeners", context.getActionReport()).parameters(parameters).execute(listCommand);               
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
@@ -150,11 +150,11 @@ public class ListIiopListenersTest extends org.glassfish.tests.utils.ConfigApiTe
      */
     @Test
     public void testExecuteSuccessListNoListener() {
-        parameters.setProperty("listener_id", "listener");
+        parameters.set("listener_id", "listener");
         DeleteIiopListener deleteCommand = habitat.getComponent(DeleteIiopListener.class);
         cr.getCommandInvocation("delete-iiop-listener", context.getActionReport()).parameters(parameters).execute(deleteCommand);               
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
-        parameters.clear();
+        parameters = new ParameterMap();
         ListIiopListeners listCommand = habitat.getComponent(ListIiopListeners.class);
         cr.getCommandInvocation("list-iiop-listeners", context.getActionReport()).parameters(parameters).execute(listCommand);               
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();

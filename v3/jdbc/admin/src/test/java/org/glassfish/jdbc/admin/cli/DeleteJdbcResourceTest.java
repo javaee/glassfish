@@ -46,10 +46,10 @@ import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 
-import java.util.Properties;
 
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -71,7 +71,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
     Habitat habitat = Utils.instance.getHabitat(this);
     private Resources resources = habitat.getComponent(Resources.class);
     private DeleteJdbcResource deleteCommand = null;
-    private Properties parameters = new Properties();
+    private ParameterMap parameters = new ParameterMap();
     private AdminCommandContext context = null;
     private CommandRunner cr = habitat.getComponent(CommandRunner.class);
     
@@ -98,8 +98,8 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
         CreateJdbcResource createCommand = habitat.getComponent(CreateJdbcResource.class);
         assertTrue(createCommand!=null);
         
-        parameters.setProperty("connectionpoolid", "DerbyPool");
-        parameters.setProperty("DEFAULT", "jdbc/foo");
+        parameters.add("connectionpoolid", "DerbyPool");
+        parameters.add("DEFAULT", "jdbc/foo");
         
         context = new AdminCommandContext(
                 LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER),
@@ -109,7 +109,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         
         // Setup for delete-jdbc-resource
-        parameters.clear();
+        parameters = new ParameterMap();
         deleteCommand = habitat.getComponent(DeleteJdbcResource.class);
         assertTrue(deleteCommand!=null);
     }
@@ -117,8 +117,8 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
     @After
     public void tearDown() {
         // Cleanup any leftover jdbc/foo resource - could be success or failure depending on the test
-        parameters.clear();
-        parameters.setProperty("DEFAULT", "jdbc/foo");
+        parameters = new ParameterMap();
+        parameters.add("DEFAULT", "jdbc/foo");
         cr.getCommandInvocation("delete-jdbc-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
     }
 
@@ -129,7 +129,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
     @Test
     public void testExecuteSuccessDefaultTarget() {
         // Set operand
-        parameters.setProperty("DEFAULT", "jdbc/foo");
+        parameters.add("DEFAULT", "jdbc/foo");
         
         //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.getCommandInvocation("delete-jdbc-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
@@ -178,8 +178,8 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
     @Test
     public void testExecuteSuccessTargetServer() {
         // Set operand
-        parameters.setProperty("target", "server");
-        parameters.setProperty("DEFAULT", "jdbc/foo");
+        parameters.add("target", "server");
+        parameters.add("DEFAULT", "jdbc/foo");
         
         //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.getCommandInvocation("delete-jdbc-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
@@ -228,7 +228,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
     @Test
     public void testExecuteFailDoesNotExist() {
         // Set operand
-        parameters.setProperty("DEFAULT", "doesnotexist");
+        parameters.add("DEFAULT", "doesnotexist");
         
         //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.getCommandInvocation("delete-jdbc-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
@@ -266,8 +266,8 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
     @Test
     public void testExecuteFailInvalidOption() {
         // Set operand
-        parameters.setProperty("invalid", "");
-        parameters.setProperty("DEFAULT", "jdbc/foo");
+        parameters.add("invalid", "");
+        parameters.add("DEFAULT", "jdbc/foo");
         
         //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.getCommandInvocation("delete-jdbc-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
@@ -286,8 +286,8 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
     @Test
     public void testExecuteFailInvalidTarget() {
         // Set operand
-        parameters.setProperty("target", "invalid");
-        parameters.setProperty("DEFAULT", "jdbc/foo");
+        parameters.add("target", "invalid");
+        parameters.add("DEFAULT", "jdbc/foo");
         
         //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.getCommandInvocation("delete-jdbc-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);

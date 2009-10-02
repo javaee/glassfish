@@ -45,6 +45,7 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Map;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -61,6 +62,7 @@ import org.glassfish.admin.rest.provider.ParameterMetaData;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.api.Param;
@@ -133,8 +135,9 @@ public class ResourceUtil extends Util {
             HashMap<String, String> parameters, Habitat habitat) {
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
         ActionReport ar = habitat.getComponent(ActionReport.class);
-        Properties p = new Properties();
-        p.putAll(parameters);
+        ParameterMap p = new ParameterMap();
+        for (Map.Entry<String,String> entry : parameters.entrySet())
+            p.set(entry.getKey(), entry.getValue());
 
         cr.getCommandInvocation(commandName, ar).parameters(p).execute();
         return ar;
@@ -153,8 +156,11 @@ public class ResourceUtil extends Util {
            Properties parameters, Habitat habitat) {
        CommandRunner cr = habitat.getComponent(CommandRunner.class);
        ActionReport ar = habitat.getComponent(ActionReport.class);
+        ParameterMap p = new ParameterMap();
+        for (String prop : parameters.stringPropertyNames())
+            p.set(prop, parameters.getProperty(prop));
 
-       cr.getCommandInvocation(commandName, ar).parameters(parameters).execute();
+       cr.getCommandInvocation(commandName, ar).parameters(p).execute();
        return ar;
     }
 

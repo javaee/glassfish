@@ -43,10 +43,10 @@ import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import com.sun.logging.LogDomains;
 
 import java.util.List;
-import java.util.Properties;
 
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -69,7 +69,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
     private Habitat habitat = Utils.instance.getHabitat(this);
     private Resources resources = habitat.getComponent(Resources.class);
     private int origNum = 0;
-    private Properties parameters = new Properties();
+    private ParameterMap parameters = new ParameterMap();
     CreateJdbcResource createCommand = null;
     DeleteJdbcResource deleteCommand = null;
     ListJdbcResources listCommand = null;
@@ -102,7 +102,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
 
     @After
     public void tearDown() throws TransactionFailure {
-        parameters.clear();
+        parameters = new ParameterMap();
     }
     
     /**
@@ -139,7 +139,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         //Get an instance of the ListJdbcResources command
         listCommand = habitat.getComponent(ListJdbcResources.class);
 
-        parameters.setProperty("DEFAULT", "server");
+        parameters.add("DEFAULT", "server");
         
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
@@ -169,8 +169,8 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         createCommand = habitat.getComponent(CreateJdbcResource.class);
         assertTrue(createCommand!=null);
 
-        parameters.setProperty("connectionpoolid", "DerbyPool");
-        parameters.setProperty("DEFAULT", "bob");
+        parameters.add("connectionpoolid", "DerbyPool");
+        parameters.add("DEFAULT", "bob");
         
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
@@ -183,7 +183,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         // List JDBC Resources and check if bob is in the list
         //Get an instance of the ListJdbcResources command
         listCommand = habitat.getComponent(ListJdbcResources.class);
-        parameters.clear();
+        parameters = new ParameterMap();
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
@@ -219,7 +219,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         deleteCommand = habitat.getComponent(DeleteJdbcResource.class);
         assertTrue(deleteCommand!=null);
 
-        parameters.setProperty("DEFAULT", "bob");
+        parameters.add("DEFAULT", "bob");
         
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
@@ -232,7 +232,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         // List JDBC Resources and check if bob is in the list
         //Get an instance of the ListJdbcResources command
         listCommand = habitat.getComponent(ListJdbcResources.class);
-        parameters.clear();        
+        parameters = new ParameterMap();        
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
@@ -265,7 +265,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         //Get an instance of the ListJdbcResources command
         listCommand = habitat.getComponent(ListJdbcResources.class);
 
-        parameters.setProperty("DEFAULT", "invalid");
+        parameters.add("DEFAULT", "invalid");
         
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
@@ -292,7 +292,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
     @Test
     public void testExecuteFailInvalidOption() {
         listCommand = habitat.getComponent(ListJdbcResources.class);
-        parameters.setProperty("invalid", "invalid");
+        parameters.add("invalid", "invalid");
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());

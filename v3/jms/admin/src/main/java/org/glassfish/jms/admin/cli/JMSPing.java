@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.AdminCommand;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -145,7 +146,7 @@ public class JMSPing implements AdminCommand {
         String host = defaultJmsHost.getHost();
         String port = defaultJmsHost.getPort();
 
-        Properties aoAttrList = new Properties();
+        ParameterMap aoAttrList = new ParameterMap();
 
         Properties properties = new Properties();
         properties.put("imqDefaultUsername",userName);
@@ -158,10 +159,10 @@ public class JMSPing implements AdminCommand {
                 propString += prop.getKey() + "=" + prop.getValue() + ":";
         }
         propString = propString.substring(0, propString.length());
-        aoAttrList.put("property", propString);
+        aoAttrList.set("property", propString);
 
-        aoAttrList.setProperty("restype",  "javax.jms.QueueConnectionFactory");
-        aoAttrList.setProperty("DEFAULT",  tmpJMSResource);
+        aoAttrList.set("restype",  "javax.jms.QueueConnectionFactory");
+        aoAttrList.set("DEFAULT",  tmpJMSResource);
 
         commandRunner.getCommandInvocation("create-jms-resource", subReport).parameters(aoAttrList).execute();
 
@@ -174,8 +175,8 @@ public class JMSPing implements AdminCommand {
     
     void deleteJMSResource(ActionReport subReport, String tmpJMSResource)
     {
-        Properties aoAttrList = new Properties();
-        aoAttrList.setProperty("DEFAULT",  tmpJMSResource);
+        ParameterMap aoAttrList = new ParameterMap();
+        aoAttrList.set("DEFAULT",  tmpJMSResource);
 
         commandRunner.getCommandInvocation("delete-jms-resource", subReport).parameters(aoAttrList).execute();
     }

@@ -38,9 +38,9 @@ package com.sun.enterprise.jbi.serviceengine.util;
 
 
 import java.util.Collection;
-import java.util.Properties;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.deployment.client.*;
 import com.sun.enterprise.admin.cli.CommandException;
 import java.util.Arrays;
@@ -131,32 +131,32 @@ public class LocalDeploymentFacility extends AbstractDeploymentFacility {
 
         public DFDeploymentStatus run() throws CommandException {
             final ActionReport report = commandRunner.getActionReport("xml");
-            final Properties parameters = prepareParameters(commandOptions, operands);
+            final ParameterMap parameters = prepareParameters(commandOptions, operands);
        		commandRunner.getCommandInvocation(commandName, report).parameters(parameters).execute();
             final DFDeploymentStatus status = actionReportToStatus(report);
             return status;
         }
 
         /**
-         * Constructs a Properties object to contain the options as well as the
-         * operands at the end of the command.
+         * Constructs a ParameterMap object to contain the options as well as
+         * the operands at the end of the command.
          *
          * @param commandOptions
          * @param operands
-         * @return Properties object suitable for passing to the command runner
+         * @return ParameterMap object suitable for passing to the command runner
          */
-        private Properties prepareParameters(final Map<String,Object> commandOptions, final String[] operands) {
-            final Properties result = new Properties();
+        private ParameterMap prepareParameters(final Map<String,Object> commandOptions, final String[] operands) {
+            final ParameterMap result = new ParameterMap();
             if (commandOptions != null) {
                 for (Map.Entry<String,Object> entry : commandOptions.entrySet()) {
                     if ( ! ignoredParameters.contains(entry.getKey() )) {
-                        result.put(entry.getKey(), entry.getValue());
+                        result.set(entry.getKey(), entry.getValue().toString());
                     }
                 }
             }
             if (operands != null) {
                 for (String operand : operands) {
-                    result.setProperty("DEFAULT", operand);
+                    result.add("DEFAULT", operand);
                 }
             }
 

@@ -45,6 +45,7 @@ import org.glassfish.api.embedded.BindException;
 import org.glassfish.api.embedded.LifecycleException;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.ActionReport;
 
 import java.util.List;
@@ -83,9 +84,10 @@ public class EmbeddedAdminCtrImpl implements EmbeddedAdminContainer {
     }
 
     public CommandExecution execute(String commandName, CommandParameters params) {
-        Properties props = new Properties(params.getOptions());
-        if (params.getOperand()!=null) {
-            props.put("DEFAULT", params.getOperand());
+        ParameterMap props = params.getOptions();
+        if (params.getOperands().size() > 0) {
+            for (String op : params.getOperands())
+                props.add("DEFAULT", op);
         }
         final ActionReport report = new PlainTextActionReporter();
         CommandExecution ce = new CommandExecution() {

@@ -47,10 +47,10 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 
 import java.beans.PropertyVetoException;
-import java.util.Properties;
 
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -76,7 +76,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
     Habitat habitat = Utils.instance.getHabitat(this);
     private Resources resources = habitat.getComponent(Resources.class);
     private CreateJdbcResource command = null;
-    private Properties parameters = new Properties();
+    private ParameterMap parameters = new ParameterMap();
     private AdminCommandContext context = null;
     private CommandRunner cr = null;
     
@@ -104,10 +104,10 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         assertTrue(command!=null);
         
         // Set the options and operand to pass to the command
-        parameters.setProperty("connectionpoolid", "DerbyPool");
-        parameters.setProperty("enabled", "true");
-        parameters.setProperty("description", "my resource");
-        parameters.setProperty("DEFAULT", "jdbc/foo");
+        parameters.set("connectionpoolid", "DerbyPool");
+        parameters.set("enabled", "true");
+        parameters.set("description", "my resource");
+        parameters.set("DEFAULT", "jdbc/foo");
         
         context = new AdminCommandContext(
                 LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER),
@@ -145,7 +145,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
             }                        
         }, resources);
 
-        parameters.clear();
+        parameters = new ParameterMap();
     }
     
     /**
@@ -156,7 +156,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
     @Test
     public void testExecuteSuccess() {
         // Set operand
-        parameters.setProperty("DEFAULT", "jdbc/foo");
+        parameters.set("DEFAULT", "jdbc/foo");
 
         //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.getCommandInvocation("create-jdbc-resource", context.getActionReport()).parameters(parameters).execute(command);
@@ -207,10 +207,9 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
     @Test
     public void testExecuteSuccessDefaultValues() {
         // Only pass the required option and operand
-        parameters.clear();
-        assertTrue(parameters.isEmpty());
-        parameters.setProperty("connectionpoolid", "DerbyPool");
-        parameters.setProperty("DEFAULT", "jdbc/alldefaults");
+        parameters = new ParameterMap();
+        parameters.set("connectionpoolid", "DerbyPool");
+        parameters.set("DEFAULT", "jdbc/alldefaults");
         
 
         //Call CommandRunnerImpl.doCommand(..) to execute the command
@@ -249,7 +248,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
     @Test
     public void testExecuteFailDuplicateResource() {
         // Set operand
-        parameters.setProperty("DEFAULT", "dupRes");
+        parameters.set("DEFAULT", "dupRes");
 
         //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.getCommandInvocation("create-jdbc-resource", context.getActionReport()).parameters(parameters).execute(command);
@@ -305,8 +304,8 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
     @Test
     public void testExecuteFailInvalidConnPoolId() {
         // Set invalid connectionpoolid
-        parameters.setProperty("connectionpoolid", "xxxxxx");
-        parameters.setProperty("DEFAULT", "jdbc/nopool");
+        parameters.set("connectionpoolid", "xxxxxx");
+        parameters.set("DEFAULT", "jdbc/nopool");
         
         // Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.getCommandInvocation("create-jdbc-resource", context.getActionReport()).parameters(parameters).execute(command);
@@ -341,8 +340,8 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
     @Test
     public void testExecuteFailInvalidOptionEnabled() {
         // Set invalid enabled option value: --enabled junk
-        parameters.setProperty("enabled", "junk");
-        parameters.setProperty("DEFAULT", "jdbc/junk");
+        parameters.set("enabled", "junk");
+        parameters.set("DEFAULT", "jdbc/junk");
         
         // Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.getCommandInvocation("create-jdbc-resource", context.getActionReport()).parameters(parameters).execute(command);
@@ -361,8 +360,8 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
     @Test
     public void testExecuteSuccessNoValueOptionEnabled() {
         // Set enabled without a value:  --enabled
-        parameters.setProperty("enabled", "");
-        parameters.setProperty("DEFAULT", "jdbc/sun");
+        parameters.set("enabled", "");
+        parameters.set("DEFAULT", "jdbc/sun");
         
         // Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.getCommandInvocation("create-jdbc-resource", context.getActionReport()).parameters(parameters).execute(command);

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,75 +34,14 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.admin;
-
-import java.util.*;
-import org.glassfish.api.admin.ParameterMap;
+package org.glassfish.api.admin;
 
 /**
- * Command Parameters, needs to be refined...
- *
- * @author Jerome Dochez
+ * A marker interface to indicate classes that are used to pass
+ * parameters to the parameters method of the CommandRunner.CommandInvocation
+ * API.  Classes marked as CommandParameters should declare public fields
+ * whose name is the parameter name and whose value is the parameter
+ * value.
  */
-public class CommandParameters {
-
-    private ParameterMap params = new ParameterMap();
-    private List<String> operands = new ArrayList<String>();;
-
-    /**
-     * Sets the command primary (operand) parameter.
-     * @param operand the command operand
-     */
-    public void setOperand(String operand) {
-        operands.clear();
-	operands.add(operand);
-    }
-
-    /**
-     * Adds a command primary (operand) parameter.
-     * @param operand the command operand
-     */
-    public void addOperand(String operand) {
-	operands.add(operand);
-    }
-
-    /**
-     * Get the first operand.
-     */
-    public String getOperand() {
-        return operands.get(0);
-    }
-
-    /**
-     * Get the operands.
-     */
-    public List<String> getOperands() {
-	return new ArrayList<String>(operands);
-    }
-
-    /**
-     * Sets a command option as the user would specify it using the
-     * CLI command for instance
-     *
-     * @param optionName option name (without leading -- chars)
-     * @param optionValue option value
-     */
-    public void setOption(String optionName, String optionValue) {
-        params.set(optionName, optionValue);
-    }
-
-    /**
-     * Adds a command option as the user would specify it using the
-     * CLI command for instance
-     *
-     * @param optionName option name (without leading -- chars)
-     * @param optionValue option value
-     */
-    public void addOption(String optionName, String optionValue) {
-        params.add(optionName, optionValue);
-    }
-
-    public ParameterMap getOptions() {
-        return new ParameterMap(params);
-    }
+public interface CommandParameters {
 }

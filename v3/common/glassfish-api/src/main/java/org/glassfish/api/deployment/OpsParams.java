@@ -33,14 +33,17 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package org.glassfish.api.deployment;
 
+import org.glassfish.api.admin.CommandParameters;
+
 /**
- * Support class for all type of deployment operration parameters.
+ * Support class for all types of deployment operation parameters.
  *
  * @author Jerome Dochez
  */
-public abstract class OpsParams {
+public abstract class OpsParams implements CommandParameters {
 
     /**
      * There can be so far 4 types of events that can trigger deployment

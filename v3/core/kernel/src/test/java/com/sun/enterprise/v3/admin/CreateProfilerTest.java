@@ -46,6 +46,7 @@ import java.util.Properties;
 import org.jvnet.hk2.config.types.Property;
 
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ParameterMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +71,7 @@ public class CreateProfilerTest extends ConfigApiTest {
     Habitat habitat = Utils.instance.getHabitat(this);
     private JavaConfig javaConfig = habitat.getComponent(JavaConfig.class);
     private CreateProfiler command = null;
-    private Properties parameters = new Properties();
+    private ParameterMap parameters = new ParameterMap();
     private AdminCommandContext context = null;
     private CommandRunnerImpl cr = habitat.getComponent(CommandRunnerImpl.class);
     
@@ -115,7 +116,7 @@ public class CreateProfilerTest extends ConfigApiTest {
             }                        
         }, javaConfig);
 
-        parameters.clear();
+        parameters = new ParameterMap();
     }
     
     /**
@@ -126,11 +127,11 @@ public class CreateProfilerTest extends ConfigApiTest {
     @Test
     public void testExecuteSuccess() {
         // Set the options and operand to pass to the command
-        parameters.setProperty("classpath", "myProfilerClasspath");
-        parameters.setProperty("enabled", "true");
-        parameters.setProperty("nativelibrarypath", "myNativeLibraryPath");
-        parameters.setProperty("property","a=x:b=y:c=z");
-        parameters.setProperty("DEFAULT", "testProfiler");
+        parameters.set("classpath", "myProfilerClasspath");
+        parameters.set("enabled", "true");
+        parameters.set("nativelibrarypath", "myNativeLibraryPath");
+        parameters.set("property","a=x:b=y:c=z");
+        parameters.set("DEFAULT", "testProfiler");
         
 
         //Call CommandRunnerImpl.doCommand(..) to execute the command
@@ -176,8 +177,8 @@ public class CreateProfilerTest extends ConfigApiTest {
     @Test
     public void testExecuteSuccessDefaultValues() {
         // Only pass the required option and operand
-        assertTrue(parameters.isEmpty());
-        parameters.setProperty("DEFAULT", "myProfilerAllDefaults");
+        assertTrue(parameters.size() == 0);
+        parameters.set("DEFAULT", "myProfilerAllDefaults");
         
 
         //Call CommandRunnerImpl.doCommand(..) to execute the command
@@ -210,8 +211,8 @@ public class CreateProfilerTest extends ConfigApiTest {
      */
     @Test
     public void testExecuteSuccessUpdateExisting() {
-        assertTrue(parameters.isEmpty());
-        parameters.setProperty("DEFAULT", "testProfiler");
+        assertTrue(parameters.size() == 0);
+        parameters.set("DEFAULT", "testProfiler");
         
 
         //Call CommandRunnerImpl.doCommand(..) to execute the command
@@ -220,10 +221,10 @@ public class CreateProfilerTest extends ConfigApiTest {
         // Check the exit code is SUCCESS
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         
-        parameters.clear();
+        parameters = new ParameterMap();
         
         //Create another profiler, see if it overrides the existing one
-        parameters.setProperty("DEFAULT", "testProfilerNew");
+        parameters.set("DEFAULT", "testProfilerNew");
         
 
         //Call CommandRunnerImpl.doCommand(..) to execute the command
@@ -257,10 +258,10 @@ public class CreateProfilerTest extends ConfigApiTest {
     @Test
     public void testExecuteFailInvalidOptionEnabled() {
         // Set invalid enabled option value: --enabled junk
-        //parameters.clear();
-        assertTrue(parameters.isEmpty());
-        parameters.setProperty("enabled", "junk");
-        parameters.setProperty("DEFAULT", "myProfiler");
+        //parameters = new ParameterMap();
+        assertTrue(parameters.size() == 0);
+        parameters.set("enabled", "junk");
+        parameters.set("DEFAULT", "myProfiler");
         
         // Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.getCommandInvocation("create-profiler", context.getActionReport()).parameters(parameters).execute(command);
@@ -281,9 +282,9 @@ public class CreateProfilerTest extends ConfigApiTest {
     @Test
     public void testExecuteSuccessNoValueOptionEnabled() {
         // Set enabled without a value:  --enabled
-        assertTrue(parameters.isEmpty());
-        parameters.setProperty("enabled", "");
-        parameters.setProperty("DEFAULT", "testProfiler");
+        assertTrue(parameters.size() == 0);
+        parameters.set("enabled", "");
+        parameters.set("DEFAULT", "testProfiler");
         
         // Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.getCommandInvocation("create-profiler", context.getActionReport()).parameters(parameters).execute(command);

@@ -119,4 +119,12 @@ public @interface Param {
      * @return the separator character
      */
     public char separator() default ',';
+
+    /**
+     * Returns true if multiple instances of the parameter are allowed.
+     * Currently only implemented for the primary parameter (operand).
+     *
+     * @return true if multiple instances are allowed
+     */
+    public boolean multiple() default false;
 }

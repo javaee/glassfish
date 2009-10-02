@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
- * CommandRunner is a service that allow to run administrative commands.
+ * CommandRunner is a service that allows you to run administrative commands.
  *
  * @author Jerome Dochez
  */
@@ -100,17 +100,17 @@ public interface CommandRunner {
 
         /**
          * Sets the command parameters as a typed inteface
-         * @param opsParams parameters
-         * @return itself
-         */
-        CommandInvocation parameters(OpsParams opsParams);
-
-        /**
-         * Sets the command parameters as a properties bag
          * @param params the parameters
          * @return itself
          */
-        CommandInvocation parameters(Properties params);
+        CommandInvocation parameters(CommandParameters params);
+
+        /**
+         * Sets the command parameters as a ParameterMap.
+         * @param params the parameters
+         * @return itself
+         */
+        CommandInvocation parameters(ParameterMap params);
 
         /**
          * Sets the data carried with the request (could be an attachment) 

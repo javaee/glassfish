@@ -2,7 +2,7 @@
  *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,6 +58,7 @@ import org.glassfish.api.Async;
 import org.glassfish.api.FutureProvider;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.branding.Branding;
@@ -331,9 +332,9 @@ public class AppServerStartup implements ModuleStartup {
 
         CommandRunner runner = habitat.getByContract(CommandRunner.class);
         if (runner!=null) {
-           final Properties params = new Properties();
+           final ParameterMap params = new ParameterMap();
             if (context.getArguments().containsKey("--noforcedshutdown")) {
-                params.put("force", "false");    
+                params.set("force", "false");    
             }
             runner.getCommandInvocation("stop-domain", new PlainTextActionReporter()).parameters(params).execute();
             return;

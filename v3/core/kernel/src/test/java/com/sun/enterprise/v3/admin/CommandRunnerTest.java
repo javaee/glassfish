@@ -41,7 +41,9 @@ import org.junit.Test;
 import org.junit.Before;
 import java.util.Properties;
 import java.util.List;
+import java.util.ArrayList;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.ParameterMap;
 
 import java.lang.reflect.AnnotatedElement;
 import org.glassfish.api.admin.AdminCommand;
@@ -58,31 +60,31 @@ public class CommandRunnerTest {
     private CommandRunnerImpl cr = null;
 
     @Test
-    public void getPropertiesValueTest() {
+    public void getParameterValueTest() {
 
-        Properties props = new Properties();
-        props.put("foo", "bar");
-        props.put("hellO", "world");
-        props.put("one", "two");
-        props.put("thrEE", "Four");
-        props.put("FivE", "six");
-        props.put("sIx", "seVen");
-        props.put("eiGHT", "niNe");
-        String value = cr.getPropertiesValue(props, "foo", false);
+        ParameterMap params = new ParameterMap();
+        params.set("foo", "bar");
+        params.set("hellO", "world");
+        params.set("one", "two");
+        params.set("thrEE", "Four");
+        params.set("FivE", "six");
+        params.set("sIx", "seVen");
+        params.set("eiGHT", "niNe");
+        String value = cr.getParameterValue(params, "foo", false);
         assertEquals("value is bar", "bar", value);
-        value = cr.getPropertiesValue(props, "hello", true);
+        value = cr.getParameterValue(params, "hello", true);
         assertEquals("value is world", "world", value);        
-        value = cr.getPropertiesValue(props, "onE", true);
+        value = cr.getParameterValue(params, "onE", true);
         assertEquals("value is two", "two", value);
-        value = cr.getPropertiesValue(props, "three", true);
+        value = cr.getParameterValue(params, "three", true);
         assertEquals("value is four", "Four", value);                
-        value = cr.getPropertiesValue(props, "five", false);
+        value = cr.getParameterValue(params, "five", false);
         assertEquals("value is null", null, value);
-        value = cr.getPropertiesValue(props, "six", true);
+        value = cr.getParameterValue(params, "six", true);
         assertEquals("value is SeVen", "seVen", value);
-        value = cr.getPropertiesValue(props, "eight", true);
+        value = cr.getParameterValue(params, "eight", true);
         assertEquals("value is niNe", "niNe", value);
-        value = cr.getPropertiesValue(props, "none", true);
+        value = cr.getParameterValue(params, "none", true);
         assertEquals("value is null", null, value);        
     }
 
@@ -174,25 +176,59 @@ public class CommandRunnerTest {
     }
 
     @Test
+    public void convertListToObjectTest() throws Exception {
+        DummyCommand dc = new DummyCommand();
+        Class<?> cl = dc.getClass();
+        AnnotatedElement target = (AnnotatedElement)cl.getDeclaredField("propm");
+        List<String> paramValueList = new ArrayList<String>();
+        paramValueList.add("prop1=valA");
+        paramValueList.add("prop2=valB");
+        paramValueList.add("prop3=valC");
+        Object paramValActual = cr.convertListToObject(target, Properties.class, paramValueList);
+        Object paramValExpected = new Properties();        
+        ((Properties)paramValExpected).put("prop1", "valA");
+        ((Properties)paramValExpected).put("prop2", "valB");
+        ((Properties)paramValExpected).put("prop3", "valC");
+        assertEquals("Properties type", paramValExpected, paramValActual);
+
+        paramValueList.clear();
+        paramValueList.add("server1");
+        paramValueList.add("server2");
+        paramValueList.add("server3");
+        target = (AnnotatedElement)cl.getDeclaredField("lstrm");
+        paramValActual = cr.convertListToObject(target, List.class, paramValueList);
+        assertEquals("List type", paramValueList, paramValActual);
+
+        target = (AnnotatedElement)cl.getDeclaredField("astrm");
+        paramValActual = cr.convertListToObject(target, (new String[]{}).getClass(),
+                                                  paramValueList);
+        String[] strArray = new String[3];
+        strArray[0] = "server1";
+        strArray[1] = "server2";
+        strArray[2] = "server3";
+        assertEquals("String Array type", strArray, (String[])paramValActual);
+    }
+
+    @Test
     public void getParamValueStringTest() {
         try {
             DummyCommand dc = new DummyCommand();
             Class<?> cl = dc.getClass();
             AnnotatedElement ae = (AnnotatedElement)cl.getDeclaredField("foo");
             Param param = ae.getAnnotation(Param.class);
-            Properties props = new Properties();
-            props.put("foo", "true");
-            String val = cr.getParamValueString(props, param, ae);
+            ParameterMap params = new ParameterMap();
+            params.set("foo", "true");
+            String val = cr.getParamValueString(params, param, ae);
             assertEquals("val should be true", "true", val);
 
             ae = (AnnotatedElement)cl.getDeclaredField("bar");
             param = ae.getAnnotation(Param.class);
-            val = cr.getParamValueString(props, param, ae);
+            val = cr.getParamValueString(params, param, ae);
             assertEquals("val should be false", "false", val);
 
             ae = (AnnotatedElement)cl.getDeclaredField("hello");
             param = ae.getAnnotation(Param.class);
-            val = cr.getParamValueString(props, param, ae);
+            val = cr.getParamValueString(params, param, ae);
             assertEquals("val should be null", null, val);
         }
         catch (Exception ex) {
@@ -250,12 +286,12 @@ public class CommandRunnerTest {
 
     @Test
     public void validateParametersTest() {
-        Properties props = new Properties();
-        props.put("foo", "bar");
-        props.put("hello", "world");
-        props.put("one", "two");
+        ParameterMap params = new ParameterMap();
+        params.set("foo", "bar");
+        params.set("hello", "world");
+        params.set("one", "two");
         try {
-            cr.validateParameters(new CommandModelImpl(DummyAdminCommand.class), props);
+            cr.validateParameters(new CommandModelImpl(DummyAdminCommand.class), params);
         }
         catch (ComponentException ce) {
             String expectedMessage = " Invalid option: one";
@@ -290,6 +326,12 @@ public class CommandRunnerTest {
         List<String> lstr;
         @Param(name="astr")
         String[] astr;
+        @Param(name="propm", multiple=true)
+        Properties propm;
+        @Param(name="lstrm", multiple=true)
+        List<String> lstrm;
+        @Param(name="astrm", multiple=true)
+        String[] astrm;
         
         public void execute(AdminCommandContext context) {}
     }

@@ -54,8 +54,9 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 
 import java.net.URLDecoder;
-import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -329,7 +330,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         if (requestURI.length() > getContextRoot().length() + 1)
             command = requestURI.substring(getContextRoot().length() + 1);
 
-        final Properties parameters = extractParameters(req.getQueryString());
+        final ParameterMap parameters = extractParameters(req.getQueryString());
         try {
             Payload.Inbound inboundPayload = PayloadImpl.Inbound.newInstance(
                     req.getContentType(), req.getInputStream());
@@ -396,15 +397,15 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
      
      
     /**
-     *  extract parameters from URI and save it in Properties obj
+     *  extract parameters from URI and save it in ParameterMap obj
      *  
      *  @params requestString string URI to extract
      *
-     *  @returns Properties
+     *  @returns ParameterMap
      */
-    Properties extractParameters(final String requestString) {
+    ParameterMap extractParameters(final String requestString) {
         // extract parameters...
-        final Properties parameters = new Properties();
+        final ParameterMap parameters = new ParameterMap();
         StringTokenizer stoken = new StringTokenizer(requestString == null ? "" : requestString, QUERY_STRING_SEPARATOR);
         while (stoken.hasMoreTokens()) {
             String token = stoken.nextToken();            
@@ -420,13 +421,14 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
                 logger.log(Level.WARNING, adminStrings.getLocalString("adapter.param.decode",
                         "Cannot decode parameter {0} = {1}"));
             }
-            parameters.setProperty(paramName, value);
+            parameters.add(paramName, value);
         }
 
         // Dump parameters...
         if (logger.isLoggable(Level.FINER)) {
-            for (Object key : parameters.keySet()) {
-                logger.finer("Key " + key + " = " + parameters.getProperty((String) key));
+            for (Map.Entry<String, List<String>> entry : parameters.entrySet()) {
+                for (String v : entry.getValue())
+                    logger.finer("Key " + entry.getKey() + " = " + v);
             }
         }
         return parameters;

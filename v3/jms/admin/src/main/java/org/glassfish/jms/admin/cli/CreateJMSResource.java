@@ -38,6 +38,7 @@ package org.glassfish.jms.admin.cli;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -160,7 +161,7 @@ public class CreateJMSResource implements AdminCommand {
            // If pool is already existing, do not try to create it again
           if (cpool == null) {
                 // Add connector-connection-pool.
-              Properties parameters = populateConnectionPoolParameters();
+              ParameterMap parameters = populateConnectionPoolParameters();
 	          commandRunner.getCommandInvocation("create-connector-connection-pool", subReport).parameters(parameters).execute();
               createdPool= true;
               if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
@@ -170,7 +171,7 @@ public class CreateJMSResource implements AdminCommand {
                     return;
               }
           }
-              Properties params = populateConnectionResourceParameters();
+              ParameterMap params = populateConnectionResourceParameters();
 	          commandRunner.getCommandInvocation("create-connector-resource", subReport).parameters(params).execute();
 
               if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
@@ -188,7 +189,7 @@ public class CreateJMSResource implements AdminCommand {
       } else if (resourceType.equals(TOPIC) ||
                     resourceType.equals(QUEUE))
             {
-                Properties aoAttrList = new Properties();
+                ParameterMap aoAttrList = new ParameterMap();
                 try{
                  //validate the provided properties and modify it if required.
                     Properties properties =  validateDestinationResourceProps(props, jndiName);
@@ -198,7 +199,7 @@ public class CreateJMSResource implements AdminCommand {
                             propString += prop.getKey() + "=" + prop.getValue() + ":";
                     }
                     propString = propString.substring(0, propString.length());
-                    aoAttrList.put("property", propString); 
+                    aoAttrList.set("property", propString); 
                 }catch (Exception e)
                 {
                     if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
@@ -209,11 +210,11 @@ public class CreateJMSResource implements AdminCommand {
                  }
                 }
                 // create admin object
-                aoAttrList.setProperty(DEFAULT_OPERAND,  jndiName);
-                aoAttrList.setProperty("restype",  resourceType);
-                aoAttrList.setProperty("raname",  DEFAULT_JMS_ADAPTER);
+                aoAttrList.set(DEFAULT_OPERAND,  jndiName);
+                aoAttrList.set("restype",  resourceType);
+                aoAttrList.set("raname",  DEFAULT_JMS_ADAPTER);
                 if(enabled!=null)
-                    aoAttrList.put("enabled",  enabled);
+                    aoAttrList.set("enabled", Boolean.toString(enabled));
 
 	            commandRunner.getCommandInvocation("create-admin-object", subReport).parameters(aoAttrList).execute();
 
@@ -248,7 +249,7 @@ public class CreateJMSResource implements AdminCommand {
         return (String) mapping.get(key);
     }
 
-    private Properties populateConnectionPoolParameters(){
+    private ParameterMap populateConnectionPoolParameters(){
 
             String steadyPoolSize = null;
             String maxPoolSize = null;
@@ -257,7 +258,7 @@ public class CreateJMSResource implements AdminCommand {
             String maxWaitTimeInMillis = null;
 	        String failAllConnections = null;
 	        String transactionSupport = null;
-            Properties parameters = new Properties();
+            ParameterMap parameters = new ParameterMap();
 
             if(props != null){
             Enumeration keys =  props.keys();
@@ -298,52 +299,52 @@ public class CreateJMSResource implements AdminCommand {
                 }
                 propString = propString.substring(0, propString.length());
 
-                parameters.put("property", propString);
+                parameters.set("property", propString);
 
                }
          }
-        //parameters.setProperty("restype", resourceType);
+        //parameters.set("restype", resourceType);
 
-        parameters.setProperty("poolname", jndiName);
+        parameters.set("poolname", jndiName);
         if(description != null)
-            parameters.setProperty("description", description);
+            parameters.set("description", description);
 
         // Get the default res adapter name from Connector-runtime
         String raName = DEFAULT_JMS_ADAPTER;
-        parameters.setProperty("raname", raName);
+        parameters.set("raname", raName);
 
-        parameters.setProperty("connectiondefinition", resourceType);
-        parameters.setProperty("maxpoolsize",  (maxPoolSize == null) ? "250" : maxPoolSize);
-        parameters.setProperty("steadypoolsize", (steadyPoolSize == null) ? "1" : steadyPoolSize);
+        parameters.set("connectiondefinition", resourceType);
+        parameters.set("maxpoolsize",  (maxPoolSize == null) ? "250" : maxPoolSize);
+        parameters.set("steadypoolsize", (steadyPoolSize == null) ? "1" : steadyPoolSize);
         if (poolResizeQuantity != null) {
-             parameters.setProperty("poolresize", poolResizeQuantity);
+             parameters.set("poolresize", poolResizeQuantity);
         }
          if (idleTimeoutInSecs != null) {
-             parameters.setProperty("idletimeout", idleTimeoutInSecs);
+             parameters.set("idletimeout", idleTimeoutInSecs);
         }
 
         if (maxWaitTimeInMillis != null) {
-             parameters.setProperty("maxwait", maxWaitTimeInMillis);
+             parameters.set("maxwait", maxWaitTimeInMillis);
         }
 
         if (failAllConnections != null) {
-            parameters.setProperty("failconnection",failAllConnections);
+            parameters.set("failconnection",failAllConnections);
         }
         if (transactionSupport != null) {
-            parameters.setProperty("transactionsupport", transactionSupport);
+            parameters.set("transactionsupport", transactionSupport);
         }
 
         return parameters;
     }
 
-    private Properties populateConnectionResourceParameters()
+    private ParameterMap populateConnectionResourceParameters()
     {
-        Properties parameters = new Properties();
-        parameters.setProperty("jndi_name", jndiName);
-        parameters.put("enabled", enabled);
-        parameters.setProperty("poolname", jndiName);
+        ParameterMap parameters = new ParameterMap();
+        parameters.set("jndi_name", jndiName);
+        parameters.set("enabled", Boolean.toString(enabled));
+        parameters.set("poolname", jndiName);
         if(description != null)
-            parameters.setProperty("description", description);
+            parameters.set("description", description);
 
         return parameters;
     }

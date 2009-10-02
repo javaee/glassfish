@@ -1,4 +1,39 @@
-
+/*
+ *
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
 
 package org.glassfish.connectors.admin.cli;
 
@@ -8,6 +43,7 @@ import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.tests.utils.ConfigApiTest;
 import org.junit.After;
@@ -22,12 +58,11 @@ import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
 import java.beans.PropertyVetoException;
-import java.util.Properties;
 
 public class DeleteCustomResourceTest extends ConfigApiTest {
     private Habitat habitat;
     private Resources resources;
-    private Properties parameters;
+    private ParameterMap parameters;
     private AdminCommandContext context;
     private CommandRunner cr;
 
@@ -44,7 +79,7 @@ public class DeleteCustomResourceTest extends ConfigApiTest {
     public void setUp() {
         habitat = getHabitat();
         resources = habitat.getComponent(Resources.class);
-        parameters = new Properties();
+        parameters = new ParameterMap();
         cr = habitat.getComponent(CommandRunner.class);
         context = new AdminCommandContext(
                 LogDomains.getLogger(DeleteCustomResourceTest.class, LogDomains.ADMIN_LOGGER),
@@ -71,7 +106,7 @@ public class DeleteCustomResourceTest extends ConfigApiTest {
                 return null;
             }
         }, resources);
-        parameters.clear();
+        parameters = new ParameterMap();
     }
 
     /**
@@ -82,16 +117,16 @@ public class DeleteCustomResourceTest extends ConfigApiTest {
     public void testExecuteSuccessDefaultTarget() {
         CreateCustomResource createCommand = habitat.getComponent(CreateCustomResource.class);
         assertTrue(createCommand != null);
-        parameters.setProperty("restype", "topic");
-        parameters.setProperty("factoryclass", "javax.naming.spi.ObjectFactory");
-        parameters.setProperty("jndi_name", "sample_custom_resource");
+        parameters.set("restype", "topic");
+        parameters.set("factoryclass", "javax.naming.spi.ObjectFactory");
+        parameters.set("jndi_name", "sample_custom_resource");
         cr.getCommandInvocation("create-custom-resource", context.getActionReport()).parameters(parameters).execute(createCommand);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
 
-        parameters.clear();
+        parameters = new ParameterMap();
         DeleteCustomResource deleteCommand = habitat.getComponent(DeleteCustomResource.class);
         assertTrue(deleteCommand != null);
-        parameters.setProperty("jndi_name", "sample_custom_resource");
+        parameters.set("jndi_name", "sample_custom_resource");
         cr.getCommandInvocation("delete-custom-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isDeleted = true;
@@ -131,7 +166,7 @@ public class DeleteCustomResourceTest extends ConfigApiTest {
     public void testExecuteFailDoesNotExist() {
         DeleteCustomResource deleteCommand = habitat.getComponent(DeleteCustomResource.class);
         assertTrue(deleteCommand != null);
-        parameters.setProperty("jndi_name", "doesnotexist");
+        parameters.set("jndi_name", "doesnotexist");
         cr.getCommandInvocation("delete-custom-resource", context.getActionReport()).parameters(parameters).execute(deleteCommand);
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
         logger.fine("msg: " + context.getActionReport().getMessage());

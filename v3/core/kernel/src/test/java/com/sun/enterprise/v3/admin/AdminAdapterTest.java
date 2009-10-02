@@ -39,6 +39,7 @@ package com.sun.enterprise.v3.admin;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
+import org.glassfish.api.admin.ParameterMap;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import java.util.Properties;
 
@@ -51,7 +52,7 @@ public class AdminAdapterTest {
 
     @Test
     public void extractParametersTest() {
-        Properties props = aa.extractParameters("uniquetablenames=false&createtables=true&target=server&libraries=foo.jar&dbvendorname=test&deploymentplan=test");
+        ParameterMap props = aa.extractParameters("uniquetablenames=false&createtables=true&target=server&libraries=foo.jar&dbvendorname=test&deploymentplan=test");
         Properties correctProps = new Properties();
         correctProps.put("uniquetablenames", "false");
         correctProps.put("createtables", "true");
@@ -59,7 +60,10 @@ public class AdminAdapterTest {
         correctProps.put("libraries", "foo.jar");
         correctProps.put("dbvendorname", "test");
         correctProps.put("deploymentplan", "test");
-        assertEquals("compare Properties", correctProps, props);
+        for (String prop : correctProps.stringPropertyNames()) {
+            assertEquals("compare Properties",
+                correctProps.getProperty(prop), props.getOne(prop));
+        }
     }
 
     @Before

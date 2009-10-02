@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.AdminCommandContext;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
@@ -105,8 +106,8 @@ public class DeleteJMSResource implements AdminCommand {
             }
             if(cresource == null)
             {
-              Properties params = new Properties();
-              params.setProperty("jndi_name", jndiName);
+              ParameterMap params = new ParameterMap();
+              params.set("jndi_name", jndiName);
 	          commandRunner.getCommandInvocation("delete-admin-object", subReport).parameters(params).execute();
 
               if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
@@ -122,8 +123,8 @@ public class DeleteJMSResource implements AdminCommand {
                 String poolName = cresource.getPoolName();
                 if (poolName != null && poolName.equals(defPoolName))
                 {
-                     Properties params = new Properties();
-                     params.setProperty("connector_resource_name", jndiName);
+                     ParameterMap params = new ParameterMap();
+                     params.set("connector_resource_name", jndiName);
 		             commandRunner.getCommandInvocation("delete-connector-resource", subReport).parameters(params).execute();
 
                     if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
@@ -134,8 +135,8 @@ public class DeleteJMSResource implements AdminCommand {
                     }
 
 
-                    params = new Properties();
-                    params.setProperty("poolname", jndiName);
+                    params = new ParameterMap();
+                    params.set("poolname", jndiName);
 		            commandRunner.getCommandInvocation("delete-connector-connection-pool", subReport).parameters(params).execute();
 
                     if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
@@ -157,8 +158,8 @@ public class DeleteJMSResource implements AdminCommand {
                     // ref. might have been deleted while deleting connector-connection-pool
                     // as the ref. is the same.
 
-                     Properties params = new Properties();
-                     params.setProperty("connector_resource_name", jndiName);
+                     ParameterMap params = new ParameterMap();
+                     params.set("connector_resource_name", jndiName);
 		             commandRunner.getCommandInvocation("delete-connector-resource", subReport).parameters(params).execute();
 
                     if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
