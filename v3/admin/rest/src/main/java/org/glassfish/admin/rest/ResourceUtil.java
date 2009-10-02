@@ -302,7 +302,7 @@ public class ResourceUtil extends Util {
         String key;
         while (iterator.hasNext()) {
             key = iterator.next();
-            if (data.get(key).length() < 1) {
+            if ((data.get(key) == null) || (data.get(key).length() < 1)) {
                 data.remove(key);
                 iterator = keys.iterator();
             }
@@ -397,9 +397,11 @@ public class ResourceUtil extends Util {
             }
         }
 
-        if ((media.equals(MediaType.APPLICATION_FORM_URLENCODED_TYPE)) &&
-                (isClientAcceptsHtml)) {
-            return true;
+        if (media != null) {
+            if ((media.equals(MediaType.APPLICATION_FORM_URLENCODED_TYPE)) &&
+                    (isClientAcceptsHtml)) {
+                return true;
+            }
         }
 
         return false;

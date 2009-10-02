@@ -84,7 +84,14 @@ public class JsonInputObject extends InputObject {
 
 
         if (jsonReader.nextNonSpace() != '{') {
-            throw jsonReader.error("A JSON text must begin with '{'");
+            //Fix for Issue: 8967; allowing empty (no representation) as valid json.
+            if (jsonReader.nextNonSpace() == 0) {
+                //we are reading first character and nextNonSpace() is returning 0
+                //nextNonSpace() return 0 if there are no more characters.
+                return new HashMap<String, String>();
+            } else {
+                throw jsonReader.error("A JSON text must begin with '{'");
+            }
         }
         for (;;) {
             c = jsonReader.nextNonSpace();

@@ -798,6 +798,17 @@ public class GeneratorResource {
         out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
         out.write("}\n");
         out.write("}\n");
+
+        out.write("//Handle POST request without any entity(input).\n");
+        out.write("//Do not care what the Content-Type is.\n");
+        out.write("@" + commandMethod + "\n");
+        out.write("public Response executeCommand() {\n");
+        out.write("try {\n");
+        out.write("return executeCommand(new HashMap<String, String>());\n");
+        out.write("} catch (Exception e) {\n");
+        out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
+        out.write("}\n");
+        out.write("}\n");
     }
 
 

@@ -72,6 +72,16 @@ return __resourceUtil.getResponse(400, /*400 - bad request*/
 throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 }
 }
+//Handle POST request without any entity(input).
+//Do not care what the Content-Type is.
+@POST
+public Response executeCommand() {
+try {
+return executeCommand(new HashMap<String, String>());
+} catch (Exception e) {
+throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+}
+}
 @GET
 @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public CommandResourceGetResult get() {
