@@ -37,11 +37,13 @@
 package com.sun.enterprise.v3.admin.commands;
 
 import com.sun.enterprise.config.serverbeans.JavaConfig;
+import com.sun.enterprise.config.serverbeans.JvmOptionBag;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.Iterator;
+import java.util.regex.Pattern;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -71,6 +73,9 @@ public final class CreateJvmOptions implements AdminCommand {
 
     @Param(name="target", optional=true)
     String target;
+
+    @Param(name="profiler", optional=true)
+    Boolean addToProfiler=false;
     
     //Injection of the config beans is not going to work, because it
     //depends what target is being sent on command line -- this is a temporary measure
@@ -83,15 +88,24 @@ public final class CreateJvmOptions implements AdminCommand {
     private static final Logger logger     = Logger.getLogger(CreateJvmOptions.class.getPackage().getName()); // TODO: change later
     public void execute(AdminCommandContext context) {
         //validate the target first
-        logfh("Injected JavaConfig: " + jc);
-        
+
         final ActionReport report = context.getActionReport();
         try {
-            jvmOptions.removeAll(jc.getJvmOptions());
-        
-            addX(jc, jvmOptions);
+            JvmOptionBag bag;
+            if (addToProfiler) { //make sure profiler element exists before creating a JVM option for profiler
+                if (jc.getProfiler() == null) {
+                    report.setMessage(lsm.getString("create.profiler.first"));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+                bag = jc.getProfiler();
+            } else
+                bag = jc;
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            part.setMessage("created " + jvmOptions.size() + " option(s)");
+            List<String> validOptions = new ArrayList<String>(jvmOptions);
+            validate(bag, validOptions, report); //Note: method mutates the given list
+            validateSoft(bag, validOptions, report); //Note: method does not mutate the given list
+            addX(bag, validOptions, part);
         } catch (IllegalArgumentException iae) {
             report.setMessage(iae.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -108,20 +122,98 @@ public final class CreateJvmOptions implements AdminCommand {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);        
     }
 
-    public CreateJvmOptions() {
-        //for debugging purpose, uncomment the line below to see that a new object is constructed every time!
-        logfh(this); //unsafe to generally do this, but I am sending it to a private method in a "final" class
-    }
-
-    private static void logfh(Object o) {
-        if (logger.isLoggable(Level.FINE)) {
-            if (o == null) 
-                logger.fine("null reference passed");
-            else
-                logger.fine("Hashcode of the given object: " + o.hashCode());
+    private void validateSoft(JvmOptionBag bag, List<String> opts, ActionReport report) {
+        //Note: These are only recommendations!
+        Iterator<String> siter = opts.iterator();
+        while (siter.hasNext()) {
+            String opt = siter.next();
+            validateSoftXmx(bag, opt, report);
+            validateSoftXms(bag, opt, report);
         }
     }
-    
+
+    private void validateSoftXmx(JvmOptionBag bag, String opt, ActionReport report) {
+        if (!opt.startsWith("-Xmx"))
+            return;
+        //now, opt is something like -Xmx512m or -Xmx2g, or -Xmx=12 i.e. it may contain illegal characters
+        try {
+            Pattern regex = Pattern.compile("-Xmx((\\d)+[m|g|k|M|G|K]?)+");
+            boolean matches = regex.matcher(opt).matches();
+            if (!matches) {
+                String msg = lsm.getString("soft.invalid.xmx", opt);
+                report.getTopMessagePart().addChild().setMessage(msg);
+            }
+        } catch(Exception e) {
+            //squelch
+            //e.printStackTrace();
+        }
+        String existingXmx = bag.getStartingWith("-Xmx");
+        if (existingXmx != null) {
+            //maybe a different Xmx was given
+            String msg = lsm.getString("soft.xmx.exists", existingXmx);
+            report.getTopMessagePart().addChild().setMessage(msg);
+        }
+        String existingXms = bag.getStartingWith("-Xms");
+        if (existingXms != null) {
+            int xmsInConfig = JvmOptionBag.Duck.toMeg(existingXms, "-Xms");
+            int xmxGiven    = JvmOptionBag.Duck.toMeg(opt, "-Xmx");
+            if (xmsInConfig > xmxGiven) { //i.e. domain.xml contains -Xms1g and you ask -Xmx512m to be set
+                String msg = lsm.getString("soft.xmx.smaller.than.xms", xmxGiven + " MB", xmsInConfig + " MB");
+                report.getTopMessagePart().addChild().setMessage(msg);
+            }
+        }
+    }
+
+    private void validateSoftXms(JvmOptionBag bag, String opt, ActionReport report) {
+        if (!opt.startsWith("-Xms"))
+            return;
+        //now, opt is something like -Xms512m or -Xms2g, or -Xms=12 i.e. it may contain illegal characters
+        try {
+            Pattern regex = Pattern.compile("-Xms((\\d)+[m|g|k|M|G|K]?)+");
+            boolean matches = regex.matcher(opt).matches();
+            if (!matches) {
+                String msg = lsm.getString("soft.invalid.xms", opt);
+                report.getTopMessagePart().addChild().setMessage(msg);
+            }
+        } catch(Exception e) {
+            //squelch
+            //e.printStackTrace();
+        }
+        String existingXms = bag.getStartingWith("-Xms");
+        if (existingXms != null) {
+            //maybe a different Xmx was given
+            String msg = lsm.getString("soft.xms.exists", existingXms);
+            report.getTopMessagePart().addChild().setMessage(msg);
+        }
+        String existingXmx = bag.getStartingWith("-Xmx");
+        if (existingXmx != null) {
+            int xmxInConfig = JvmOptionBag.Duck.toMeg(existingXmx, "-Xmx");
+            int xmsGiven    = JvmOptionBag.Duck.toMeg(opt, "-Xms");
+            if (xmsGiven > xmxInConfig) { //i.e. domain.xml contains -Xms1g and you ask -Xmx512m to be set
+                String msg = lsm.getString("soft.xms.larger.than.xmx", xmsGiven + " MB", xmxInConfig + " MB");
+                report.getTopMessagePart().addChild().setMessage(msg);
+            }
+        }
+    }
+
+    private void validate(JvmOptionBag bag, List<String> opts, ActionReport report) {
+        //Note: mutates the given list and removes options that we definitely know are not valid
+        Iterator<String> siter = opts.iterator();
+        while (siter.hasNext()) {
+            String opt = siter.next();
+            if (!opt.startsWith("-")) {
+                String msg = lsm.getString("joe.invalid.start", opt);
+                report.getTopMessagePart().addChild().setMessage(msg);
+                siter.remove();
+            }
+            if (bag.contains(opt)) { //only to generate a message!
+                String msg = lsm.getString("joe.exists", opt);
+                report.getTopMessagePart().addChild().setMessage(msg);
+                siter.remove();
+            }
+        }
+    }
+
     /** Adds the JVM option transactionally.
      * @throws java.lang.Exception
      */
@@ -139,15 +231,23 @@ public final class CreateJvmOptions implements AdminCommand {
     }
     */
     //@ForTimeBeing :)
-    private static void addX(JavaConfig jc, final List <String> newOpts) throws Exception {
-        SingleConfigCode<JavaConfig> scc = new SingleConfigCode<JavaConfig> () {
-            public Object run(JavaConfig jc) throws PropertyVetoException, TransactionFailure {
-                List<String> jvmopts = new ArrayList<String>(jc.getJvmOptions()); //copy
-                jvmopts.addAll(newOpts);
-                jc.setJvmOptions(jvmopts);
+    private void addX(final JvmOptionBag bag, final List<String> newOpts, final ActionReport.MessagePart part) throws Exception {
+        SingleConfigCode<JvmOptionBag> scc = new SingleConfigCode<JvmOptionBag> () {
+            public Object run(JvmOptionBag bag) throws PropertyVetoException, TransactionFailure {
+                newOpts.removeAll(bag.getJvmOptions());  //"prune" the given list first to avoid duplicates
+                List<String> jvmopts = new ArrayList<String>(bag.getJvmOptions());
+                int orig = jvmopts.size();
+                boolean added = jvmopts.addAll(newOpts);
+                bag.setJvmOptions(jvmopts);
+                int now = jvmopts.size();
+                if (added) {
+                    part.setMessage(lsm.getString("created.message", (now-orig)));
+                } else {
+                    part.setMessage(lsm.getString("no.option.created"));
+                }
                 return true;
             }
         };
-        ConfigSupport.apply(scc, jc);
+        ConfigSupport.apply(scc, bag);
     }
 }

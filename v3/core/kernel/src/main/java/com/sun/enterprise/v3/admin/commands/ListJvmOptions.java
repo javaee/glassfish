@@ -52,19 +52,28 @@ public final class ListJvmOptions implements AdminCommand {
 
     @Param(name="target", optional=true)
     String target;
+
+    @Param(name="profiler", optional=true)
+    Boolean profiler=false;
     
     //Injection of the config beans is not going to work, because it
     //depends what target is being sent on command line -- this is a temporary measure
     @Inject JavaConfig jc;
-    private static final StringManager lsm = StringManager.getManager(ListJvmOptions.class); // change later
+    private static final StringManager lsm = StringManager.getManager(ListJvmOptions.class); 
     private static final Logger logger     = Logger.getLogger(ListJvmOptions.class.getPackage().getName());
     public void execute(AdminCommandContext context) {
-        //validate the target first
-        logfh("Injected JavaConfig: " + jc);
-        List<String> opts = new ArrayList<String>(jc.getJvmOptions());
-        Collections.sort(opts);
         final ActionReport report = context.getActionReport();
-
+        List<String> opts;
+        if (profiler) {
+                if (jc.getProfiler() == null) {
+                    report.setMessage(lsm.getString("create.profiler.first"));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+            opts = jc.getProfiler().getJvmOptions();
+        } else
+            opts = jc.getJvmOptions();
+        //Collections.sort(opts); //sorting is garbled by Reporter anyway, so let's move sorting to the client side
         try {
             for (String option : opts) {
                 ActionReport.MessagePart part = report.getTopMessagePart().addChild();
@@ -78,19 +87,5 @@ public final class ListJvmOptions implements AdminCommand {
             return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);        
-    }
-
-    public ListJvmOptions() {
-        //for debugging purpose, uncomment the line below to see that a new object is constructed every time!
-        logfh(this); //unsafe to generally do this, but I am sending it to a private method in a "final" class
-    }
-
-    private static void logfh(Object o) {
-        if (logger.isLoggable(Level.FINE)) {
-            if (o == null) 
-                logger.fine("null reference passed");
-            else
-                logger.fine("Hashcode of the given object: " + o.hashCode());
-        }
     }
 }

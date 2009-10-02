@@ -37,11 +37,11 @@
 package com.sun.enterprise.v3.admin.commands;
 
 import com.sun.enterprise.config.serverbeans.JavaConfig;
+import com.sun.enterprise.config.serverbeans.JvmOptionBag;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -70,7 +70,10 @@ public final class DeleteJvmOptions implements AdminCommand {
 
     @Param(name="target", optional=true)
     String target;
-    
+
+    @Param(name="profiler", optional=true)
+    Boolean fromProfiler = false;
+        
     //Injection of the config beans is not going to work, because it
     //depends what target is being sent on command line -- this is a temporary measure
     @Inject JavaConfig jc;
@@ -80,15 +83,24 @@ public final class DeleteJvmOptions implements AdminCommand {
     
     private static final StringManager lsm = StringManager.getManager(ListJvmOptions.class); 
     private static final Logger logger     = Logger.getLogger(DeleteJvmOptions.class.getPackage().getName()); // TODO: change later
+
     public void execute(AdminCommandContext context) {
         //validate the target first
-        logfh("Injected JavaConfig: " + jc);
         final ActionReport report = context.getActionReport();
         
         try {
-            deleteX(jc, jvmOptions);
+            JvmOptionBag bag;
+            if (fromProfiler) {
+                if (jc.getProfiler() == null) {
+                    report.setMessage(lsm.getString("create.profiler.first"));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+                bag = jc.getProfiler();
+            } else
+                bag = jc;
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            part.setMessage("deleted " + jvmOptions.size() + " option(s)");
+            deleteX(bag, jvmOptions, part);
         } catch (Exception e) {
             String msg = e.getMessage() != null ? e.getMessage() : 
                 lsm.getStringWithDefault("delete.jvm.options.failed",
@@ -101,20 +113,7 @@ public final class DeleteJvmOptions implements AdminCommand {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);        
     }
 
-    public DeleteJvmOptions() {
-        //for debugging purpose, uncomment the line below to see that a new object is constructed every time!
-        logfh(this); //unsafe to generally do this, but I am sending it to a private method in a "final" class
-    }
 
-    private static void logfh(Object o) {
-        if (logger.isLoggable(Level.FINE)) {
-            if (o == null) 
-                logger.fine("null reference passed");
-            else
-                logger.fine("Hashcode of the given object: " + o.hashCode());
-        }
-    }
-    
     /** Adds the JVM option transactionally.
      * @throws java.lang.Exception
      */
@@ -132,15 +131,22 @@ public final class DeleteJvmOptions implements AdminCommand {
     }
     */
     //@ForTimeBeing :)
-    private static void deleteX(JavaConfig jc, final List <String> newOpts) throws Exception {
-        SingleConfigCode<JavaConfig> scc = new SingleConfigCode<JavaConfig> () {
-            public Object run(JavaConfig jc) throws PropertyVetoException, TransactionFailure {
-                List<String> jvmopts = new ArrayList<String>(jc.getJvmOptions()); //copy
-                jvmopts.removeAll(newOpts);
-                jc.setJvmOptions(jvmopts);
+    private void deleteX(final JvmOptionBag bag, final List<String> toRemove, final ActionReport.MessagePart part) throws Exception {
+        SingleConfigCode<JvmOptionBag> scc = new SingleConfigCode<JvmOptionBag> () {
+            public Object run(JvmOptionBag bag) throws PropertyVetoException, TransactionFailure {
+                List<String> jvmopts = new ArrayList<String>(bag.getJvmOptions());
+                int orig = jvmopts.size();
+                boolean removed = jvmopts.removeAll(toRemove);
+                bag.setJvmOptions(jvmopts);
+                int now = jvmopts.size();
+                if (removed) {
+                    part.setMessage(lsm.getString("deleted.message", (orig-now)));
+                } else {
+                    part.setMessage(lsm.getString("no.option.deleted"));
+                }
                 return true;
             }
         };
-        ConfigSupport.apply(scc, jc);
+        ConfigSupport.apply(scc, bag);
     }
 }

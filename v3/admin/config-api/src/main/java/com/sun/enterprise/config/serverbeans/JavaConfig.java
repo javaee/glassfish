@@ -70,7 +70,7 @@ import org.glassfish.quality.ToDo;
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-profiler"),
  @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-profiler")
 })
-public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
+public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag, JvmOptionBag {
 
     /**
      * Gets the value of the javaHome property.
@@ -355,11 +355,6 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *              {@link Profiler }
      */
     void setProfiler(Profiler value) throws PropertyVetoException;
-
-    @Element
-    List<String> getJvmOptions();
-    
-    void setJvmOptions(List<String> options) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

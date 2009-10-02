@@ -74,7 +74,7 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured
-public interface Profiler extends ConfigBeanProxy, Injectable, PropertyBag {
+public interface Profiler extends ConfigBeanProxy, Injectable, PropertyBag, JvmOptionBag {
 
     /**
      * Gets the value of the name property.
@@ -144,9 +144,6 @@ public interface Profiler extends ConfigBeanProxy, Injectable, PropertyBag {
      *              {@link String }
      */
     public void setEnabled(String value) throws PropertyVetoException;
-
-    @Element
-    public List<String> getJvmOptions();
 
     /**
     	Properties as per {@link org.jvnet.hk2.config.types.PropertyBag}
