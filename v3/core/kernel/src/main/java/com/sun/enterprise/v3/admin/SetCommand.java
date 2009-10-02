@@ -197,8 +197,8 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                     if (matchName(attrName,name)) {
                         ActionReport.MessagePart part = context.getActionReport().getTopMessagePart().addChild();
                         part.setChildrenType("DottedName");
-                        part.setMessage(node.getValue() + "." + name + "=" + value);
-
+                        part.setMessage(target + "=" + value);
+                        
                         if (! isProperty) {
                             if (value!=null && value.length()>0) {
                                 attrChanges.put(name, value);
