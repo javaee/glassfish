@@ -10,7 +10,7 @@
     xmlns:sun="http://www.sun.com/webui/webuijsf"
     template="/templates/baseLayout.xhtml">
 
-    <ui:param name="guiTemplateOnLoad" value="fixTree();" />
+    <ui:param name="guiTemplateOnLoad" value="fixTree('#{treeId}');" />
 
     <!--
     Previously:
@@ -32,15 +32,7 @@
             .guiNavTree {float: left; width: 250px;}
             .TreeSelRow_sun4 {clear:both}
         </style>
-        <script src="#{request.contextPath}/templates/tree.js"></script>
-        <sun:script>
-            function fixTree() {
-                var tree = document.getElementById('#{treeId}');
-                tree.isTreeHandle = fixedIsTreeHandle;
-                tree.expandCollapse = fixedExpandCollapse;
-                tree.findNodeByTypeAndProp = fixedFindNodeByTypeAndProp;
-            }
-        </sun:script>
+        <sun:script url="/resource/templates/tree.js" />
     </ui:define>
 
     <ui:define name="guiLeftNav">

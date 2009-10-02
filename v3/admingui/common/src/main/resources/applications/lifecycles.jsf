@@ -68,6 +68,6 @@
 
 	<sun:hidden id="helpKey" value="$resource{help.lifecycles}" />
             </sun:form>
-#include "/common/shared/changeButtonsJS.inc"
+//#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>

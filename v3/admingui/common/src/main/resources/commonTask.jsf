@@ -62,25 +62,21 @@
                             text="$resource{i18n.tree.registration}"
                             toolTip="registration"
                             infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=registration.html"
-                            onClick="admingui.nav.selectTreeNodeById('form:tree:registration');
-                            parent.location='#{facesContext.externalContext.requestContextPath}/common/sysnet/registration.jsf'; return false;"
-                            onKeyPress="admingui.nav.selectTreeNodeById('form:tree:registration');
-                            parent.location='#{facesContext.externalContext.requestContextPath}/common/sysnet/registration.jsf'; return false;">
+                            onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:registration','#{request.contextPath}/common/sysnet/registration.jsf');"
+                            onKeyPress1="return admingui.woodstock.commonTaskHandler('treeForm:tree:registration','#{request.contextPath}/common/sysnet/registration.jsf');">
             </sun:commonTask>
             <sun:commonTask
                             text="$resource{i18n.tree.support}"
                             toolTip="$resource{i18n.tree.support}"
                             infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=support.html"
-                            onClick="admingui.nav.selectTreeNodeById('form:tree:support');
-                            parent.location='#{facesContext.externalContext.requestContextPath}/common/sysnet/support.jsf'; return false;"
-                            onKeyPress="admingui.nav.selectTreeNodeById('form:tree:support');
-                            parent.location='#{facesContext.externalContext.requestContextPath}/common/sysnet/support.jsf'; return false;">
+                            onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:support','#{request.contextPath}/common/sysnet/support.jsf');"
+                            onKeyPress1="return admingui.woodstock.commonTaskHandler('treeForm:tree:support','#{request.contextPath}/common/sysnet/support.jsf');">
             </sun:commonTask>
             <sun:commonTask
               text="$resource{i18n.commonTasks.task.subscriptions}"
               toolTip="$resource{i18n.commonTasks.task.subscriptions.toolTip}"
               onClick="javascript:var win=window.open('http://www.sun.com/service/applicationserversubscriptions/','_blank');win.focus(); return false;"
-              onKeyPress="javascript:var win=window.open('http://www.sun.com/service/applicationserversubscriptions/','_blank');win.focus(); return false;">
+              onKeyPress1="javascript:var win=window.open('http://www.sun.com/service/applicationserversubscriptions/','_blank');win.focus(); return false;">
             </sun:commonTask>
           </sun:commonTasksGroup>
 
@@ -89,13 +85,13 @@
                 text="$resource{i18n.commonTasks.task.listApp}"
                 toolTip="$resource{i18n.commonTasks.task.listApp.toolTip}"
                 infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=applications.html"
-                onClick="admingui.nav.selectTreeNodeById('form:tree:applications:applications'); parent.location='#{facesContext.externalContext.requestContextPath}/common/applications/applications.jsf'; return false;">
+                onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:applications:applications','#{request.contextPath}/common/applications/applications.jsf');">
             </sun:commonTask>
             <sun:commonTask
                 text="$resource{i18n.commonTasks.task.deployEAR}"
                 toolTip="$resource{i18n.commonTasks.task.deployEAR.toolTip}"
                 infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=upload.html"
-                onClick="admingui.nav.selectTreeNodeById('form:tree:applications:applications'); parent.location='#{facesContext.externalContext.requestContextPath}/common/applications/upload.jsf?appType=webApp&cancelPage=#{request.contextPath}/common/homePage.jsf'; return false;">
+                onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:applications:applications','#{request.contextPath}/common/applications/upload.jsf?appType=webApp&cancelPage=#{request.contextPath}/common/homePage.jsf');">
             </sun:commonTask>
         </sun:commonTasksGroup>
           <sun:commonTasksGroup id="monitoring"  title="$resource{i18n.commonTasks.group.Monitoring}" />
@@ -118,7 +114,7 @@
           <!afterCreate
               getClientId(component="$this{component}" clientId=>$attribute{homeId})
               getUIComponent(clientId="#{homeId}"  component=>$attribute{component})
-              includeFirstIntegrationPoint(type="org.glassfish.admingui:upsellframepe" root="#{component}");
+              //includeFirstIntegrationPoint(type="org.glassfish.admingui:upsellframepe" root="#{component}");
           />
           </event>
 </define>

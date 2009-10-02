@@ -20,26 +20,36 @@ function showAlert(msg){
 
 
 function submitAndDisable(button, msg, target) {
-    button.className='Btn1Dis'; // the LH styleClass for disabled buttons.
-    button.disabled=true; 
-    button.form.action += "?" + button.name + "=" + encodeURI(button.value); //bug# 6294035
+    button.className="Btn2Dis_sun4"; //'Btn1Dis'; // the LH styleClass for disabled buttons.
+    button.disabled=true;
+    var sep = (button.form.action.indexOf("?") > -1) ? "&" : "?";
+    button.form.action += sep + button.name + "=" + encodeURI(button.value); //bug# 6294035
     button.value=msg;
     if (target) {
 	button.form.target = target;
+    } else {
+        if (typeof iframeName != "undefined") {
+            button.form.target = "buffer";
+            button.form.action = admingui.ajax.modifyUrl(button.form.action);
+        }
     }
-    button.form.submit(); 
+    //button.form.submit();
+    admingui.ajax.submitFormAjax(button.form);
     return true; 
 }
 
-
-function submitAndDisable(button, msg) {
+/*
+function submitAndDisable1(button, msg) {
+    alert('two');
     button.className='Btn1Dis'; // the LH styleClass for disabled buttons.
     button.disabled=true; 
-    button.form.action += "?" + button.name + "=" + encodeURI(button.value); //bug# 6294035
+    var sep = (button.form.action.indexOf("?") > -1) ? "&" : "?";
+    button.form.action += sep + button.name + "=" + encodeURI(button.value); //bug# 6294035
     button.value=msg;
     button.form.submit(); 
     return true; 
 }
+*/
 
 function disableButton(id){
     var button = document.getElementById(id);
@@ -49,7 +59,7 @@ function disableButton(id){
 
 //To disable all buttons in the page.
 //TODO: other components maybe of type "submit" even though it is not a button, need to fix this.
-function disableAllButtons(){
+function disableAllButtons() {
     var inputs = document.getElementsByTagName("input");
     for ( i=0; i < inputs.length; i++) {
         component = inputs[i];
@@ -76,7 +86,11 @@ function getField(theForm, fieldName) {
 
 // FIXME: suntheme should not be used -- prevents theme from changing
 function getTextElement(componentName) {
-    return webui.suntheme.field.getInputElement(componentName);
+    var el = webui.suntheme.field.getInputElement(componentName);
+    if (el == null) {
+        el = document.getElementById(componentName); // This may get too deep inside WS, but it should work as a fall back
+    }
+    return el;
 }
 
 function getSelectElement(componentName) {
@@ -84,11 +98,12 @@ function getSelectElement(componentName) {
 }
 
 function getFileInputElement(componentName) {
-    return webui.suntheme.upload.getInputElement(componentName);
-}
+    var el = webui.suntheme.upload.getInputElement(componentName);
+    if (el == null) {
+        el = document.getElementById(componentName+"_com.sun.webui.jsf.upload");
+    }
 
-function disableDOMComponent(componentName) {
-    document.getElementById(componentName).setProps({disabled: true, className: 'TxtFldDis_sun4', value: ' '});
+    return el;
 }
 
 function disableComponent(componentName, type) {
@@ -139,11 +154,25 @@ disableComponent.select = getSelectElement;
 
 
 function disableBtnComponent(componentName) {
-   document.getElementById(componentName).setProps({disabled: true, className: 'Btn1Dis'});
+    el = document.getElementById(componentName);
+    if (el.setProps) {
+        document.getElementById(componentName).setProps({disabled: true, className: 'Btn1Dis'});
+    } else {
+        //YAHOO.util.Dom.setStyle(el, 'disabled', 'true');
+        el.disabled = true;
+        el.className = 'Btn1Dis';
+    }
 }
 
 function enableBtnComponent(componentName) {
-    document.getElementById(componentName).setProps({disabled: false, className: 'Btn1'});
+    el = document.getElementById(componentName);
+    if (el.setProps) {
+        document.getElementById(componentName).setProps({disabled: false, className: 'Btn1'});
+    } else {
+        //YAHOO.util.Dom.setStyle(el, 'disabled', 'false');
+        el.diabled = false;
+        el.className = 'Btn1';
+    }
 }
 
 function enableComponent(componentName, type) {
@@ -161,8 +190,27 @@ function enableComponent(componentName, type) {
     component.disabled=false;
 }
 
+function disableDOMComponent(componentName) {
+    el = document.getElementById(componentName);
+    if (el.setProps) {
+        document.getElementById(componentName).setProps({disabled: true, className: 'TxtFldDis_sun4', value: ' '});
+    } else {
+        //YAHOO.util.Dom.setStyle(el, 'disabled', 'true');
+        el.disabled = true;
+        el.className = 'TxtFldDis_sun4';
+        el.value = ' ';
+    }
+}
+
 function enableDOMComponent(componentName) {
-      document.getElementById(componentName).setProps({disabled: false, className: 'TxtFld_sun4'});
+    el = document.getElementById(componentName);
+    if (el.setProps) {
+        document.getElementById(componentName).setProps({disabled: false, className: 'TxtFld_sun4'});
+    } else {
+        //YAHOO.util.Dom.setStyle(el, 'disabled', 'false');
+        el.disabled = false;
+        el.className = 'TxtFld_sun4';
+    }
 }
 
 function isChecked (elementName)
@@ -176,6 +224,7 @@ function isChecked (elementName)
             return false;
         }
     }
+    return false;
 }
 
 function checkForValue(formField) { 
@@ -516,17 +565,6 @@ function findFrame(frameName) {
 
 //===========================================================================
 
-/*
- *  The following function loads the login page in top window.
- */
-
-function loadInTopWindow() {
-    if (window.parent.frames.index) {
-        window.parent.location="/";
-    }
-}
-
-//===========================================================================
 
 if (typeof(admingui) === "undefined") {
     admingui = {};
@@ -608,6 +646,12 @@ admingui.util = {
 		parameters: "root=" + root + "&key=" + key + "&value=" + value + sessionKey,
 		render: "none"
 	    } );
+    },
+
+    log : function(msg) {
+        if (!(typeof(console) === 'undefined') && (typeof(console.log) === 'function')) {
+            console.log((new Date()).toString() + ":  " + msg);
+        }
     }
 }
 
@@ -811,7 +855,7 @@ admingui.nav = {
                 this.expandNode(treeNode);
                 setCookie('admingui.nav.lastTreeNodeSelected', treeNode.id);
             } catch (err) {
-                console.log(err);
+                //console.log(err);
             }
         }
     },
@@ -1038,7 +1082,7 @@ admingui.help = {
   *   Validation functions
   */
 
-function guiValidate(reqMsg,reqInt, reqPort) {
+function guiValidate(reqMsg, reqInt, reqPort) {
     var inputs = document.getElementsByTagName("input");
     var styleClass = null;
     var component = null;
@@ -1734,3 +1778,568 @@ function showLargeHeaderFrame(showLarge) {
         parent.parent.document.getElementById('outerFrameset').setAttribute('rows', '71,*', 0);
     }
 }
+
+admingui.deploy = {
+    uploadInit: function(dirPathId, restartRequired, dirSelectBtnId, filSelectBtnId, fileuploadId) {
+            //We need to set a timeout to delay the call to getTextElement inside disable component.
+            //otherwise getTextElement will always return null, causing JS error.
+            //disableComponent(dirPathId, 'text');
+            window.setTimeout("disableComponent('" + dirPathId+ "', 'text')", 1);
+            synchronizeRestartRequired(restartRequired, restartRequired);
+            if(getSelectedValueFromForm(document.forms['form'], 'uploadRdBtn')=='serverSide'){
+                enableDOMComponent(dirPathId);
+                enableBtnComponent(dirSelectBtnId);
+                enableBtnComponent(filSelectBtnId);
+                disableComponent(fileuploadId, 'file');
+            }
+    },
+
+    uploadRdBtnAction : function(dirPathId, dirSelectBtnId, filSelectBtnId, fileuploadId, radioChoosenId) {
+        //disableDOMComponent(dirPathId);
+        window.setTimeout("disableComponent('" + dirPathId + "', 'text')", 1);
+        disableBtnComponent(dirSelectBtnId);
+        disableBtnComponent(filSelectBtnId);
+        enableComponent(fileuploadId, 'file');
+        comp = getTextElement(radioChoosenId);
+        comp.value='client';
+    },
+
+    fileChooseAction : function(dirPathId, dirSelectBtnId, filSelectBtnId, fileuploadId, radioChoosenId) {
+        enableDOMComponent(dirPathId);
+        enableBtnComponent(dirSelectBtnId);
+        enableBtnComponent(filSelectBtnId);
+        disableComponent(fileuploadId, 'file');
+        comp = getTextElement(radioChoosenId);
+        comp.value='local';
+    },
+
+    showPropertySheet : function(propSheetId, obj, appNameId, contextRootId, appTypeString, appName){
+        var cc = null;
+        var comp = null;
+
+        var sheets = appTypeString.split(',');
+        if (propSheetId.length <=0){
+            for( ix=0; ix < sheets.length; ix++){
+                comp = document.getElementById('form:' + sheets[ix]);
+                if (comp != null)
+                    comp.style.display='none';
+            }
+        }else{
+            for (i=0; i < sheets.length; i++){
+                cc = document.getElementById('form:'+sheets[i]);
+                if (cc == null){
+                    continue;
+                }
+                if (propSheetId == sheets[i]){
+                     cc.style.display='block';
+                }else{
+                    cc.style.display='none';
+                }
+            }
+        }
+
+        if (appName != undefined ){
+            admingui.deploy.setAppName(appNameId, appName, obj, appTypeString);
+            //may as well set context root if it exist.
+            //component = obj.getTextElement(contextRootId);
+            var component = document.getElementById(contextRootId);
+            if (component != null){
+                component.value = getPrefix(appName);
+            }
+         }
+    },
+
+    setAppName : function (appNameId, appName, obj, appTypeString){
+
+        var pfex = getPrefix(appName);
+        var sfex = getSuffix(appName);
+
+        var sfex2 = sfex.substr(1);   //remove the '.'
+        // Fill in application name
+        if (appNameId==null || appNameId.length <=0){
+            // shouldn't be.
+        }else{
+            var ix = appNameId.indexOf(":");
+            var ix2 = appNameId.substr(ix+1).indexOf(":");
+            var str3 = appNameId.substr(ix+1+ix2);
+            var sheets = appTypeString.split(',');
+            for( idx=0; idx < sheets.length; idx++){
+                //var comp = obj.getTextElement('form:'+sheets[idx]+str3);
+                var comp = document.getElementById('form:'+sheets[idx]+str3);
+                if (comp != null){
+                    comp.value=pfex;
+                }
+            }
+        }
+    },
+
+    setFieldValue : function(appNameId, value, dropDownProp, typeId, contextRootId, extensionId, obj, appTypeString) {
+        var appName = extractName(value);
+        //var pfex = getPrefix(appName);
+        var sfex = getSuffix(appName);
+        var sfex2 = '';
+
+        //obj.getTextElement(extensionId).value=sfex;
+        document.getElementById(extensionId).value = sfex;
+        var appTypes = ','+appTypeString+',';
+
+        //If no extension for file choosen, or no plugin for that extension, show dropDown type and don't fill in anything, then return;
+        if (sfex != null && sfex.length > 0){
+            sfex2 = sfex.substr(1);
+            var tests = ','+sfex2+',';
+            var inx = appTypes.indexOf(tests) ;
+            if (inx == -1){
+                sfex2 = '';
+            }
+        }
+        //obj.getSelectElement(typeId).value = sfex2;
+        document.getElementById(typeId).value = sfex2;
+        document.getElementById(dropDownProp).style.display = 'block';
+        admingui.deploy.showPropertySheet(sfex2, obj, appNameId, contextRootId, appTypeString, appName);
+    },
+
+    populateDirAndAppName : function(fileChooserId, dirPathId, appNameId, typeId, dropDownProp, contextRootId, extensionId){
+        var fc = document.getElementById(fileChooserId).getSelectionValue();
+        window.opener.getTextElement(dirPathId).value = fc;
+        //for redeploy, there is no dropdown for app type, there is no need to fill in any field.
+        if (dropDownProp != ""){
+            admingui.deploy.setFieldValue(appNameId, fc, dropDownProp, typeId, contextRootId, extensionId, window.opener);
+        }
+    },
+
+    checkFileInputRequired : function (componentId, reqMsg){
+        var component = getFileInputElement(componentId);
+        var value = component.value;
+        var result = (value != '') && (isWhitespace(value) == false);
+        if (result == false) {
+            if (reqMsg == '') {
+                showAlert(getLabel(component) + ' is a required field.');
+            } else {
+                showAlert(reqMsg + ' ' + getLabel(component));
+            }
+            component.select();
+            component.focus();
+        }
+        return result;
+    }
+}
+
+admingui.table = {
+    changeOneTableButton : function(topActionGroup, tableId){
+        var buttons = new Array();
+        buttons[0] = topActionGroup.concat(":button1");
+        admingui.table.changeButtons(buttons,tableId);
+    },
+
+    changeThreeTableButtons : function(topActionGroup, tableId){
+        var buttons = new Array();
+        buttons[0] = topActionGroup.concat(":button1");
+        buttons[1] = topActionGroup.concat(":button2");
+        buttons[2] = topActionGroup.concat(":button3");
+        admingui.table.changeButtons(buttons,tableId);
+    },
+
+    changeButtons : function (buttons,tableId){
+        try {
+            var table = document.getElementById(tableId);// + ":_table");
+            var selections =
+                table.getAllSelectedRowsCount();
+                //admingui.table.getAllSelectedRowsCount(table);
+            var disabled = (selections > 0) ? false : true;
+            for (count=0; count < buttons.length; count++) {
+                var element = document.getElementById(buttons[count]);
+                if (element) {
+                   element.disabled = disabled;
+                   element.className = disabled ? "Btn2Dis_sun4" : "Btn1_sun4";
+                }
+            }
+        } catch (err) {
+            alert(err);
+        }
+    },
+
+    getAllSelectedRowsCount : function (table) {
+        inputs = admingui.util.findNodes(table, function (el) {
+            var hit = (el instanceof HTMLInputElement) && (el.type=="checkbox") && (el.id.indexOf(":select") == el.id.length -7) && (el.checked == true) ;
+            return hit;
+        });
+        return (inputs) ? inputs.length : 0;
+    },
+
+    initAllRows : function (tableId) {
+        var table = document.getElementById(tableId);// + ":_table");
+        table.initAllRows();
+    }
+}
+
+admingui.ajax = {
+    lastPageLoaded : '',
+    whitelist : ['onchange','onclick'],
+
+    loadPage : function (args) {
+        //window.frames['buffer'].location = url;
+        var url = admingui.ajax.modifyUrl(args.url);
+//        if (url != admingui.ajax.lastPageLoaded) {
+            admingui.util.log("Loading " + url + " via ajax.");
+            var oldOnClick = args.oldOnClickHandler;
+
+            var callback = {
+                success : admingui.ajax.processPageAjax,
+                failure : function(o) {
+                    alert ("Error (" + o.status + ") loading " + url + ":  " + o.statusText);
+                },
+                argument : args
+            };
+            YAHOO.util.Connect.resetDefaultHeaders();
+            YAHOO.util.Connect.asyncRequest('GET', url, callback, null);
+            if (typeof oldOnClick == 'function') {
+                admingui.util.log(oldOnClick);
+//                oldOnClick();
+            }
+//        }
+        return false;
+    },
+
+    processPageAjax : function (o) {
+        admingui.ajax.updateCurrentPageLink(o.argument.url);
+        var contentNode = o.argument.target;
+        if (contentNode == null) {
+            contentNode = document.getElementById("content");
+        }
+        var oldFunc = o.argument.oldOnClickHandler;
+        contentNode.innerHTML = o.responseText;
+//        admingui.util.log(o.responseText);
+        if (typeof(oldFunc) == 'function') {
+        //    oldFunc();
+        }
+	// FIXME: These 2 functions only need to be replaced after a FPR...
+        webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
+        webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
+        admingui.ajax.processElement(o, contentNode, true);
+        admingui.ajax.processScripts(o);
+    },
+
+    submitFormAjax : function (form) {
+        var url = admingui.ajax.modifyUrl(form.action);
+        admingui.util.log ("***** Submitting form to:  " + url);
+        admingui.ajax.updateCurrentPageLink(url);
+        var callback = {
+            success : admingui.ajax.processPageAjax,
+            failure : function(o) {
+                alert ("Error (" + o.status + ") loading " + url + ":  " + o.statusText);
+            },
+            upload  : admingui.ajax.processPageAjax,
+            argument : {url: url, target: document.getElementById('content'), oldOnClickHandler: null}
+        };
+        YAHOO.util.Connect.setForm(form, admingui.ajax.uploadingFiles(form));
+        YAHOO.util.Connect.asyncRequest('POST', url, callback);
+    },
+
+    updateCurrentPageLink : function (url) {
+        admingui.ajax.lastPageLoaded = url;
+        document.getElementById("currentPageLink").href = url;
+    },
+
+    uploadingFiles : function(form) {
+        var uploading = false;
+        for (var i = 0; i < form.elements.length; i++) {
+            if (form.elements[i] instanceof HTMLInputElement) {
+                if (form.elements[i].type == 'file') {
+                    uploading = true;
+                    break;
+                }
+            }
+        }
+
+        return uploading;
+    },
+
+    processElement : function (context, node, queueScripts) {
+	var recurse = true;
+        if (node instanceof HTMLAnchorElement) {
+            if (!admingui.ajax._isTreeNodeControl(node) && (node.target == '')) { //  && (typeof node.onclick != 'function'))
+                var shouldReplace = true;
+                if ((typeof node.onclick == 'function') && (node.id.indexOf("treeForm:tree") == -1)) {
+                    shouldReplace = false;
+                }
+                if (shouldReplace) {
+                    var url = node.href;
+                    node.href = "#";
+                    var oldOnClick = node.onclick;
+                    node.onclick = function() {
+                        admingui.ajax.loadPage({
+                            url : url,
+                            target: document.getElementById('content'),
+                            oldOnClickHandler: oldOnClick,
+                            sourceNode: node
+                        });
+                        return false;
+                    };
+                }
+            }
+        } else if (node instanceof HTMLFormElement) {
+            admingui.util.log("***** form action:  " + node.action);
+            if (node.target == '') {
+                node.onsubmit = function () {
+                    admingui.ajax.submitFormAjax(node);
+                    return false;
+                };
+            }
+        } else  if (node instanceof HTMLTitleElement) {
+            document.title = node.text;
+        } else if (node instanceof HTMLScriptElement) {
+	    recurse = false;  // don't walk scripts
+	    if (queueScripts) {
+		// Queue it...
+		if (typeof(context.scriptQueue) === "undefined") {
+		    context.scriptQueue = new Array();
+		}
+		context.scriptQueue.push(node);
+	    }
+	}
+
+	// If recurse flag is true... recurse
+	if (recurse) {
+	    for (var i = 0; i < node.childNodes.length; i++) {
+		admingui.ajax.processElement(context, node.childNodes[i], queueScripts);
+	    }
+	}
+    },
+
+    _isTreeNodeControl : function (node) {
+        return isTreeNodeControl = (node.id.indexOf("_turner") > -1); // probably needs some work.  This will do for now.
+    },
+
+    processScripts : function(context) {
+	if (typeof(context.scriptQueue) === "undefined") {
+	    // Nothing to do...
+	    return;
+	}
+	globalEvalNextScript(context.scriptQueue);
+    },
+
+    modifyUrl : function (url) {
+        if (url.indexOf('bare') > -1) {
+            return url;
+        }
+        
+        var insert = '?bare=true';
+        var changed = url;
+
+        if (url.indexOf("?") > -1) {
+            insert = "&bare=true"
+        }
+        var hash = url.indexOf("#");
+        if (hash > 1) {
+            changed = url.substr(0, hash) + insert + url.substr(hash);
+        } else {
+            changed = url + insert;
+        }
+
+        return changed;
+    },
+
+    _copyFunctions : function (node) {
+//        if (node.id == 'javax.faces.ViewState') {
+//            return;
+//        }
+        if ((typeof(node.id) == 'undefined') || (node.id == "")) {
+            return;
+        }
+
+        var source = window.frames['buffer'].document.getElementById(node.id);
+        if (source == null) {
+            return;
+        }
+
+        var props = Array();
+        for (var prop in source) {
+            try {
+                if ((typeof(node[prop]) == 'undefined') && (node[prop] != source[prop])) {
+                    node[prop] = source[prop];
+                }
+            } catch (err) {
+            }
+        }
+
+        for (var i = 0; i < admingui.ajax.whitelist.length; i++) {
+            prop = admingui.ajax.whitelist[i];
+            if (typeof(source[prop]) != 'undefined') {
+                node[prop] = source[prop];
+            }
+        }
+    },
+
+    submitForm : function (node) {
+        var form = node;
+        if (typeof(el) == 'string') {
+            form = document.getElementById(form);
+        } else if (node instanceof HTMLSelectElement) {
+            form = node.form;
+            var sep = (form.action.indexOf("?") > -1) ? "&" : "?";
+            form.action += sep + node.name + "=" + encodeURI(node.value); //bug# 6294035
+        }
+        form.target = "buffer";
+        form.action = admingui.ajax.modifyUrl(form.action);
+        form.submit();
+        return false;
+    },
+
+    /**
+     *	handler - The name of the handler to invoke.
+     *	args - An object containing properties / values for the parameters.
+     *	callback - A JS function that should be notified.
+     *	depth - the max depth of all return variables to be encoded in json
+     *	async - false if a syncronous request is desired, default: true
+     */
+    invoke: function(handler, args, callback, depth, async) {
+	if ((typeof(handler) === 'undefined') || (handler == '')) {
+	    return;
+	}
+	if (typeof(callback) === 'undefined') {
+	    callback = function() {};
+	}
+	var params = '';
+	for (var param in args) {
+	    // Create a String to represent all the parameters
+	    // Double escape, this will prevent the server-side from fully
+	    // urldecoding it.  Allowing me to first parse the commas, then
+	    // decode the content.
+	    params += param + ':' + escape(args[param]) + ',';
+	}
+	if (typeof(async) === 'undefined') {
+	    async = true;
+	}
+	if (!(typeof(jsf) === 'undefined') && !(typeof(jsf.ajax) === 'undefined')) {
+	    // Warp user's function to make easier to use
+	    var func = function(data) {
+		if (data.status === 'success') {
+		    var result = '(' + document.getElementById('execResp').value + ')';
+		    callback(eval(result).content, data);
+		}
+	    }
+	    if (typeof(depth) === 'undefined') {
+		depth = 3;
+	    }
+	    jsf.ajax.request(document.getElementById('execButton'), null,
+		{
+		    execute: 'execButton',
+		    render: 'execResp',
+		    execButton: 'execButton',
+		    h: handler,
+		    d: depth,
+		    a: params,
+		    onevent: func,
+		    asynchronous: async
+		});
+	} else {
+	    alert('JSF2+ Ajax Missing!');
+	}
+    },
+
+    getResource: function(path, callback) {
+	admingui.ajax.invoke("gf.serveResource", {path:path, content:content}, callback, 1, true);
+    }
+}
+
+admingui.woodstock = {
+    hyperLinkSubmit: function(hyperlink, formId, params) {
+        //params are name value pairs but all one big string array
+        //so params[0] and params[1] form the name and value of the first param
+        var form = document.getElementById(formId);
+        //var oldTarget = theForm.target;
+        //var oldAction = theForm.action;
+        //theForm.action += "&" + hyperlink.id + "_submittedField="+hyperlink.id;
+        form.action = //admingui.ajax.lastPageLoaded +
+            admingui.ajax.modifyUrl(form.action) + "&" + hyperlink.id + "_submittedField="+hyperlink.id;
+        if (params != null) {
+            for (var i = 0; i < params.length; i++) {
+                form.action +="&" + params[i] + "=" + params[i+1];
+                i++;
+            }
+        }
+        if (hyperlink.target != "") {
+            form.target = hyperlink.target;
+        }
+        admingui.ajax.submitFormAjax(form);
+
+        return false;
+    },
+
+    dropDownChanged: function(elementId) {
+        var jumpDropdown = webui.suntheme.dropDown.getSelectElement(elementId);
+        var form = jumpDropdown;
+        while(form != null) {
+            form = form.parentNode;
+            if(form.tagName == "FORM") {
+                break;
+            }
+        }
+        if(form != null) {
+            var submitterFieldId = elementId + "_submitter";
+            document.getElementById(submitterFieldId).value = "true";
+
+            var listItem = jumpDropdown.options;
+            for (var cntr=0; cntr < listItem.length; ++cntr) {
+                if (listItem[cntr].className ==
+                            webui.suntheme.props.jumpDropDown.optionSeparatorClassName
+                        || listItem[cntr].className ==
+                            webui.suntheme.props.jumpDropDown.optionGroupClassName) {
+                    continue;
+                } else if (listItem[cntr].disabled) {
+                    // Regardless if the option is currently selected or not,
+                    // the disabled option style should be used when the option
+                    // is disabled. So, check for the disabled item first.
+                    // See CR 6317842.
+                    listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionDisabledClassName;
+                } else if (listItem[cntr].selected) {
+                    listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionSelectedClassName;
+                } else {
+                    listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionClassName;
+                }
+            }
+            form.target = "buffer";
+            form.action = //admingui.ajax.lastPageLoaded;
+                admingui.ajax.modifyUrl(form.action);
+            admingui.ajax.submitFormAjax(form);
+        }
+        return true;
+    },
+
+    commonTaskHandler : function(treeNode, targetUrl) {
+        admingui.ajax.loadPage({url: targetUrl});
+        admingui.nav.selectTreeNodeById(treeNode);
+        return false;
+    }
+}
+
+    var globalEvalNextScript = function(scriptQueue) {
+	if (typeof(scriptQueue) === "undefined") {
+	    // Nothing to do...
+	    return;
+	}
+	var node = scriptQueue.shift();
+	if (typeof(node) == 'undefined') {
+	    // Nothing to do...
+	    return;
+	}
+	if (node.src === "") {
+	    // use text...
+	    globalEval(node.text);
+	    globalEvalNextScript(scriptQueue);
+	} else {
+	    // Get via Ajax
+	    admingui.ajax.getResource(node.src, function(result) { globalEval(result); globalEvalNextScript(scriptQueue);} );
+	}
+    }
+
+var globalEval = function(src) {
+    if (window.execScript) {
+        window.execScript(src);
+        return;
+    }
+    var fn = function() {
+        window.eval.call(window, src);
+    };
+    fn();
+};

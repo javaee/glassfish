@@ -414,7 +414,7 @@ public class ProxyHandlers {
                 }
 
                 //Ensure the resource itself is enabled.
-                if (status.equals("true")){
+                if ("true".equals(status)){
                     String resObjectName = V3AMX.getInstance().getResources().childrenMap(resType).get(name).objectName().toString();
                     if (V3AMX.getAttrsMap(resObjectName).containsKey("Enabled")) {
                         if (! V3AMX.getAttribute(resObjectName, "Enabled").equals("true")){

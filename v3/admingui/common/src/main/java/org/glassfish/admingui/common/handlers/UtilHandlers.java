@@ -47,17 +47,23 @@ package org.glassfish.admingui.common.handlers;
 
 import org.glassfish.admingui.common.util.GuiUtil;
 
+import javax.faces.component.UIViewRoot;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.LayoutDefinitionManager;
+//import com.sun.jsftemplating.layout.LayoutViewHandler;
+import com.sun.jsftemplating.layout.ViewRootUtil;
 import com.sun.jsftemplating.layout.descriptors.LayoutElement;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerDefinition;
+import com.sun.jsftemplating.util.FileUtil;
 
 import java.io.File;
 import java.util.GregorianCalendar;
 import java.util.Map;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.util.Iterator;
@@ -123,6 +129,59 @@ public class UtilHandlers {
     public static void getFile(HandlerContext handlerCtx) {
         String pathname = (String) handlerCtx.getInputValue("Pathname");
         handlerCtx.setOutputValue("File", pathname != null ? new File(pathname) : null);        
+    }
+
+    /**
+     *	<p> This handler serves a resource via JSFTemplating's FileStreamer.</p>
+     */
+    @Handler(id="gf.serveResource",
+    	input={
+	    @HandlerInput(name="path", type=String.class, required=true)},
+	output={
+	    @HandlerOutput(name="content", type=String.class)})
+    public static void serveResource(HandlerContext ctx) throws java.io.IOException {
+	/*
+	  JSF 2.0 impl sets the writer before the render response phase (in
+	  apply request values).  So we can't control the output of an Ajax
+	  request. :(  Therefor the following is commented out.
+	 
+	    LayoutViewHandler.serveResource(
+		ctx.getFacesContext(), (String) ctx.getInputValue("path"));
+	 */
+	String path = (String) ctx.getInputValue("path");
+	int idx = path.lastIndexOf("://");
+	String port = null;
+	if (idx != -1) {
+	    // Strip off protocol
+	    path = path.substring(idx + 3);
+
+	    // Now looks like: host.domain:port/resource
+// FIXME: port 80 may be omitted (or 443 for https)
+	    if ((idx = path.indexOf(':')) != -1) {
+		path = path.substring(idx + 1);
+		if ((idx = path.indexOf('/')) != -1) {
+		    port = path.substring(0, idx);
+		    path = path.substring(idx);
+		}
+	    }
+	}
+	URL url = FileUtil.searchForFile(path, null);
+	if ((url == null) && (port != null)) {
+	    // Attempt to read from localhost
+	    path = "http://localhost:" + port + path;
+	    try {
+		url = new URL(path);
+	    } catch (MalformedURLException ex) {
+		url = null;
+	    }
+	}
+	String content = "";
+	if (url != null) {
+	    content = new String(FileUtil.readFromURL(url));
+	}
+
+	// Set the output
+	ctx.setOutputValue("content", content);
     }
     
     /**
@@ -532,8 +591,7 @@ public class UtilHandlers {
         return false;
     }
 
-
-     @Handler(id = "convertStrToBoolean",
+    @Handler(id = "convertStrToBoolean",
     input = {
         @HandlerInput(name = "str", type = String.class, required = true)},
     output = {
@@ -542,11 +600,28 @@ public class UtilHandlers {
 
         String str = (String) handlerCtx.getInputValue("str");
         handlerCtx.setOutputValue("out", "true".equals(str));
-     }
+    }
 
-
-
-
+    /**
+     *	<p> This method returns a new UIViewRoot with the basic JSFT settings
+     *	    from the current ViewRoot.  If you intend to set this before the
+     *	    current view is created (in an effort to swap out the UIViewRoot),
+     *	    you should do so during the initPage event (take care to only do
+     *	    this during the first request, or you might lose all child
+     *	    components).</p>
+     */
+    @Handler(id = "createDefaultViewRoot",
+	output = {
+	    @HandlerOutput(name="viewRoot", type=UIViewRoot.class)})
+    public static void createDefaultViewRoot(HandlerContext handlerCtx) {
+	UIViewRoot oldVR = handlerCtx.getFacesContext().getViewRoot();
+	UIViewRoot newVR = new UIViewRoot();
+	newVR.setViewId(oldVR.getViewId());
+	ViewRootUtil.setLayoutDefinitionKey(newVR, ViewRootUtil.getLayoutDefinitionKey(oldVR));
+	newVR.setLocale(oldVR.getLocale());
+	newVR.setRenderKitId(oldVR.getRenderKitId());
+        handlerCtx.setOutputValue("viewRoot", newVR);
+    }
 
     private static final String PATH_SEPARATOR = "${path.separator}";
 }

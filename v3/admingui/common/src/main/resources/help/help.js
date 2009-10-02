@@ -52,11 +52,35 @@ admingui.help = {
 		req.onreadystatechange =
 		    function() {
 			if (req.readyState == 4) {
-			    targetNode.innerHTML = req.responseText;
+			    // Make a tempoary elemnt to contain the help content
+			    var tmpDiv = document.createElement("div");
+			    tmpDiv.innerHTML = req.responseText;
+
+			    // Fix URLs in the help content...
+			    admingui.help.fixHelpURLs(url, tmpDiv);
+
+			    // Show the help content...
+			    targetNode.innerHTML = tmpDiv.innerHTML;
 			}
 		    };
 		req.open("GET", url, true);
 		req.send("");
+	    }
+	}
+    },
+
+    fixHelpURLs: function(baseURL, node) {
+	// Walk the DOM looking for "A" nodes, repair their URLs
+	if ((node.nodeType == 1) && (node.nodeName == "A")) {
+	    var relPath = node.getAttribute("href");
+	    if (relPath) {
+		node.href = "javascript:admingui.help.showHelpPage('"
+		    + baseURL + "/../" + relPath + "', 'helpContent');";
+	    }
+	} else {
+	    // Not a href, so walk its children
+	    for (var idx=node.childNodes.length-1; idx>-1; idx--) {
+		admingui.help.fixHelpURLs(baseURL, node.childNodes[idx]);
 	    }
 	}
     },

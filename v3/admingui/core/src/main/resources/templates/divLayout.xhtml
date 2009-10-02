@@ -90,8 +90,16 @@
                     <div id="gfLayout" fullPage="true">
                         <div id="gfLayoutTop" position="top" height="115" scroll="false" gutter="5px" resize="false" collapse="false">
                             <div class="header_main">
-                                <sun:form id="headerForm">
-                                    <h:commandButton id="setPref" style="display: none;">
+				<sun:form id="af" prependId="false">
+				    <h:commandButton id="execButton" text="na" style="display:none;">
+					<ui:event type="command">
+					    gf.invokeHandler(handler="#{param.h}" args="#{param.a}" values="#{requestScope.execResp}");
+					</ui:event>
+				    </h:commandButton>
+				    <h:outputText id="execResp" value="#{requestScope.execResp}" style="display:none;" />
+
+				    <!-- The following button is used in a couple places, should be replaced by the above button... -->
+                                    <h:commandButton id="setPref" style="display:none;">
                                         <ui:event type="afterCreate">
                                             setPageSessionAttribute(key="setPrefId" value="$this{clientId}");
                                         </ui:event>
@@ -103,13 +111,13 @@
                                             }
                                         </ui:event>
                                     </h:commandButton>
-                                    <!-- Customizing the masthead -->
+                                    <!-- Masthead Integration Point -->
                                     <ui:event type="afterCreate">
-                                        getClientId(component="$this{component}" clientId=>$attribute{formId})
-                                        getUIComponent(clientId="#{formId}"  component=>$attribute{component})
-                                        includeFirstIntegrationPoint(type="org.glassfish.admingui:masthead" root="#{requestScope.component}");
+                                        includeFirstIntegrationPoint(type="org.glassfish.admingui:masthead" root="$this{component}");
                                     </ui:event>
                                 </sun:form>
+				<!-- FIXME: Remove or fix this link up: -->
+                                <sun:hyperlink id="currentPageLink" text="Current Page" url="#{iframeUrl}" />
                             </div>
                         </div>
 

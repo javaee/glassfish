@@ -103,7 +103,7 @@
 	<f:verbatim>
 	    function initReminderBox() {
 		// Call the old onLoad (1 time)
-		window.oldRegOnload();
+//		window.oldRegOnload();
 		window.oldRegOnload = function() {};
 
 		// Center it
@@ -116,7 +116,8 @@
 	    }
 	    window.onresize = initReminderBox;
 	    window.oldRegOnload = window.onload;
-	    window.onload = initReminderBox;
+	    //window.onload = initReminderBox;
+	    initReminderBox();
 	</f:verbatim>
     </sun:script>
 </sun:markup>

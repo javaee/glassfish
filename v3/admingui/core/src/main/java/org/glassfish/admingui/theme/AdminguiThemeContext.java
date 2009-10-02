@@ -74,6 +74,7 @@ public class AdminguiThemeContext extends ServletThemeContext {
 	// The following ThemeContext is created to allow us to delegate our
 	// logic to it.
 	jsfThemeCtx = JSFThemeContext.getInstance(FacesContext.getCurrentInstance());
+        jsfThemeCtx.setThemeServletContext("/theme");
     }
 
     

@@ -214,12 +214,94 @@ public class ConsolePluginService {
     }
 
     /**
+     *	<p> This method returns a merged Table Of Contents for all found help
+     *	    sets for the given locale.</p>
+     */
+    public synchronized Index getHelpIndex(String locale) {
+	if (locale == null) {
+	    locale = "en"; // Use this as the default...
+	}
+	Index mergedIndex = helpSetIndexMap.get(locale);
+	if (mergedIndex != null) {
+	    // Already calculated...
+	    return mergedIndex;
+	}
+
+	// TOC
+	Map<String, List<URL>> mapUrls = getResources(locale + "/help/index.xml");
+
+	// Get our parser...
+	ConfigParser parser = new ConfigParser(habitat);
+
+	// Setup a new "merged" TOC...
+	mergedIndex = new Index();
+	mergedIndex.setIndexItems(new ArrayList<IndexItem>());
+	mergedIndex.setVersion("2.0");
+
+	// Loop through the urls and add them all
+	String id = null; // module id
+	String prefix = "/" + locale + "/help/";  // prefix (minus module id)
+	List<URL> urls = null; // URLs to TOC files w/i each plugin module
+	for (Map.Entry<String, List<URL>> entry : mapUrls.entrySet()) {
+	    id = entry.getKey();
+	    urls = entry.getValue();
+	    for (URL url : urls) {
+		DomDocument doc = parser.parse(url);
+
+		// Merge all the TOC's...
+		Index index = (Index) doc.getRoot().get();
+		for (IndexItem item : index.getIndexItems()) {
+		    insertIndexItem(mergedIndex.getIndexItems(), item, id + prefix);
+		}
+	    }
+	}
+
+// FIXME: Sort?
+	return mergedIndex;
+    }
+
+    /**
+     *	<p> This method inserts the given <code>item</code> into the
+     *	    <code>dest</code> list.</p>
+     */
+    private void insertIndexItem(List<IndexItem> dest, IndexItem item, String prefix) {
+	int idx = dest.indexOf(item);
+	if (idx == -1) {
+	    // Fix target path...
+	    fixHtmlFileForIndexItem(item, prefix);
+
+	    // Not there yet, just add it...
+	    dest.add(item);
+	} else {
+	    // Already there, insert children of item...
+	    IndexItem parent = dest.get(idx);
+	    for (IndexItem child : item.getIndexItems()) {
+		insertIndexItem(parent.getIndexItems(), child, prefix);
+	    }
+	}
+    }
+
+
+    /**
      *
      */
     private void fixTargetPath(TOCItem parent, String prefix) {
 	parent.setTargetPath(prefix + parent.getTarget() + ".html");
 	for (TOCItem item : parent.getTOCItems()) {
 	    fixTargetPath(item, prefix);
+	}
+    }
+
+    /**
+     *
+     */
+    private void fixHtmlFileForIndexItem(IndexItem parent, String prefix) {
+        String target = null;
+        if (null != (target = parent.getTarget())) {
+            parent.setHtmlFileForTarget(prefix + target + ".html");
+        }
+	for (IndexItem item : parent.getIndexItems()) {
+	    fixHtmlFileForIndexItem(item, prefix);
 	}
     }
 
@@ -390,4 +472,7 @@ public class ConsolePluginService {
      *
      */
     private Map<String, TOC> helpSetMap = new HashMap<String, TOC>();
+
+    private Map<String, Index> helpSetIndexMap = new HashMap<String, Index>();
+
 }

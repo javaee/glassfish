@@ -25,7 +25,7 @@ Title: #{pageSession.gadget.gadgetModulePrefs.title}
 </f:verbatim>
 
 <sun:form id="af" prependId="false" visible="false">
-    <h:commandButton id="setPref" text="none">
+    <h:commandButton id="execHandler" text="none">
 	<!command
 	    gf.invokeHandler(handler="#{param.h}" args="#{param.a}" values="#{requestScope.gadgetResponse}");
 	/>

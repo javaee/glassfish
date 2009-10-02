@@ -59,6 +59,6 @@
 
 	<sun:hidden id="helpKey" value="$resource{help.serverJvmOptions}" />
          </sun:form>
-#include "/common/shared/changeButtonsJS.inc"
+//#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>

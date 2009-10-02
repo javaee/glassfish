@@ -35,7 +35,11 @@
 -->
 <!-- configuration/configsTable.jsf -->
 
-<sun:table id="configs" title="#{tableTitle}">
+<sun:table id="configs" title="#{tableTitle}"
+    deselectMultipleButton="$boolean{true}"
+    deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
+    selectMultipleButton="$boolean{true}"
+    selectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
     <!facet actionsTop>
          <sun:panelGroup id="topActionsGroup1">
             <sun:button id="newButton" text="$resource{i18n.button.New}" >
@@ -65,7 +69,8 @@
         />
 
         <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
-                <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
+                <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}"
+                      onClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"/>
         </sun:tableColumn>
 
         <sun:tableColumn headerText="$resource{i18n.common.PropertyName}"  rowHeader="$boolean{true}" id="colName">

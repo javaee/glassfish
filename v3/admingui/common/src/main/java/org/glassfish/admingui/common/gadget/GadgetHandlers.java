@@ -143,7 +143,7 @@ public class GadgetHandlers {
      *		<li><b>args</b> - (required) This specifies all of the
      *		    arguments to be passed to the handler (both input and
      *		    output arguments).  The value of this should be a String
-     *		    formatted as a comma separated list of name-value paires
+     *		    formatted as a comma separated list of name-value pairs
      *		    (which are themselves separated by colons (:).  The value
      *		    of the name-value pairs should be URL encoded (so that
      *		    commas are escaped).</li>
@@ -280,8 +280,60 @@ public class GadgetHandlers {
 		    new StringBuilder(((String) obj).length() << 2);
 	    builder.append("\"");
 	    while (ch != StringCharacterIterator.DONE) {
+		switch (ch) {
+		    case '\t':
+			builder.append("\\t");
+			break;
+		    case '\n':
+			builder.append("\\n");
+			break;
+		    case '\r':
+			builder.append("\\r");
+			break;
+		    case '\b':
+			builder.append("\\b");
+			break;
+		    case '\f':
+			builder.append("\\f");
+			break;
+		    case '&':
+		    case '<':
+		    case '>':
+		    case '(':
+		    case ')':
+		    case '{':
+		    case '}':
+		    case ':':
+		    case '/':
+		    case '\\':
+		    case '\'':
+		    case '"':
+			builder.append("\\");
+			builder.append(ch);
+			break;
+		    default:
+			// Check if we should unicode escape this...
+			if ((ch > 0x7e) || (ch < 0x20)) {
+			    builder.append("\\u");
+			    chStr = Integer.toHexString(ch);
+			    len = chStr.length();
+			    for (int idx=4; idx > len; idx--) {
+				// Add leading 0's
+				builder.append('0');
+			    }
+			    builder.append(chStr);
+			} else {
+			    builder.append(ch);
+			}
+			break;
+		}
+		/*
 		if (ch == '\t') {
 		    builder.append("\\t");
+		} else if (ch == '/') {
+		    builder.append("\\/");
+		} else if (ch == '\\') {
+		    builder.append("\\\\");
 		} else if (ch == '\n') {
 		    builder.append("\\n");
 		} else if (ch == '\r') {
@@ -290,6 +342,8 @@ public class GadgetHandlers {
 		    builder.append("\\b");
 		} else if (ch == '\f') {
 		    builder.append("\\f");
+		} else if (ch == '\'') {
+		    builder.append("\\'");
 		} else if (ch == '"') {
 		    builder.append("\\\"");
 		} else {
@@ -307,6 +361,7 @@ public class GadgetHandlers {
 			builder.append(ch);
 		    }
 		}
+		*/
 		ch = it.next();
 	    }
 	    builder.append("\"");

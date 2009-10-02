@@ -5,7 +5,6 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:sc="http://java.sun.com/mojarra/scales"
       xmlns:sun="http://www.sun.com/webui/webuijsf"
       xmlns:jsfExt="http://java.sun.com/jsf/extensions/dynafaces">
 
@@ -51,14 +50,26 @@
                     if ("#{sessionScope.hideRight}=#{null}") {
                         getPreference(default="#{false}", root="glassfish/layout", key="hideRight", value="#{sessionScope.hideRight}");
                     }
+
+                    setPageSessionAttribute(key="iframeUrl", value="#{request.requestURL}?#{request.queryString}&amp;bare=true");
                 </ui:event>
-                <sun:head title="#{guiTitle}" debug="false" parseOnLoad="false">
-                    <sc:links/>
+                <sun:head title="#{guiTitle}" javaScript="true" debug="false" parseOnLoad="false">
+                    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/yui/reset-fonts-grids.css"/>
+                    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/yui/assets/skins/sam/resize.css"/>
+                    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/yui/assets/skins/sam/layout.css"/>
+		    <h:outputScript name="jsf.js" library="javax.faces" target="head" />
+                    <script src="#{request.contextPath}/resources/yui/yahoo-dom-event.js"></script>
+                    <script src="#{request.contextPath}/resources/yui/dragdrop-min.js"></script>
+                    <script src="#{request.contextPath}/resources/yui/element-min.js"></script>
+                    <script src="#{request.contextPath}/resources/yui/connection-min.js"></script>
+                    <script src="#{request.contextPath}/resources/yui/resize-min.js"></script>
+                    <script src="#{request.contextPath}/resources/yui/layout-min.js"></script>
+
                     <!-- comment out for now since the file style.css doesn't exist.
                      <link rel="stylesheet" type="text/css" href="#{request.contextPath}/style.css" />
                     -->
                     <sun:script url="/resource/common/js/adminjsf.js" />
-                    <sun:script url="/resource/templates/tree.js" />
+                    <sun:script url="/resource/dw_loader.js" />
                     <jsfExt:scripts/>
                     <ui:insert name="guiTemplateExtraHead" />
                     <ui:insert name="guiExtraHead" />
@@ -66,7 +77,10 @@
                         .yui-skin-sam .yui-layout .yui-layout-unit-center div.yui-layout-bd {background-color: #FFF;}
                         .yui-layout-unit-top .yui-layout-bd { background-color: #5b87a4; }
                         .yui-skin-sam .yui-layout .yui-layout-unit-top div.yui-layout-bd { background-color: #5b87a4; }
-                        .yui-layout-hd h2 {background: #7595AB url(#{request.contextPath}/theme/woodstock4_3/suntheme/images/masthead/masthead_button.gif) repeat-x scroll center bottom;}
+                        .yui-layout-hd h2 {background: #7595AB url(/theme/com/sun/webui/jsf/suntheme/images/masthead/masthead_button.gif) repeat-x scroll center bottom;}
+                        .yui-skin-sam .yui-layout { background-color: #ffffff;}
+
+
                         .tagDiv {padding: 10px;}
                         .tagDiv .tagList {padding: 10px;}
                         .tagDiv .tagList li {padding: 3px;}
@@ -85,15 +99,23 @@
                         .why {color: #b9d2e9; font-size: 1.3em; font-weight: bold; font-style: italic; padding-bottom: 8px;}
                         .why a:link, .why a:visited {color: #b9d2e9;}
                     </style>
-
                 </sun:head>
 
-                <sun:body onLoad="#{guiOnLoad}#{guiTemplateOnLoad}">
-                    <sc:layout id="gfLayout" fullPage="true">
-                        <sc:layoutUnit id="gfLayoutTop" position="top" height="115" scroll="false" gutter="5px" resize="false" collapse="false">
+                <sun:body styleClass="yui-skin-sam" 
+                          onLoad="#{guiOnLoad}#{guiTemplateOnLoad};admingui.ajax.processElement(window, document.getElementById('leftNav'), false); admingui.ajax.loadPage({url:'$pageSession{iframeUrl}', target:document.getElementById('content')});">
+                    <div class="yui-skin-sam">
+                        <div id="gfLayoutTop">
                             <div class="header_main">
-                                <sun:form id="headerForm">
-                                    <h:commandButton id="setPref" style="display: none;">
+				<sun:form id="af" prependId="false">
+				    <h:commandButton id="execButton" text="na" style="display:none;">
+					<ui:event type="command">
+					    gf.invokeHandler(handler="#{param.h}" args="#{param.a}" depth="#{param.d}" values="#{requestScope.execResp}");
+					</ui:event>
+				    </h:commandButton>
+				    <h:inputText id="execResp" value="#{requestScope.execResp}" style="display:none;" />
+
+				    <!-- The following button is used in a couple places, should be replaced by the above button... -->
+                                    <h:commandButton id="setPref" style="display:none;">
                                         <ui:event type="afterCreate">
                                             setPageSessionAttribute(key="setPrefId" value="$this{clientId}");
                                         </ui:event>
@@ -105,41 +127,44 @@
                                             }
                                         </ui:event>
                                     </h:commandButton>
-                                    <!-- Customizing the masthead -->
+                                    <!-- Masthead Integration Point -->
                                     <ui:event type="afterCreate">
-                                        getClientId(component="$this{component}" clientId=>$attribute{formId})
-                                        getUIComponent(clientId="#{formId}"  component=>$attribute{component})
-                                        includeFirstIntegrationPoint(type="org.glassfish.admingui:masthead" root="#{requestScope.component}");
+                                        includeFirstIntegrationPoint(type="org.glassfish.admingui:masthead" root="$this{component}");
                                     </ui:event>
                                 </sun:form>
+				<!-- FIXME: Remove or fix this link up: -->
+                                <sun:hyperlink id="currentPageLink" text="Current Page" visible="false" url="#{iframeUrl}" />
                             </div>
-                        </sc:layoutUnit>
+                        </div>
 
-                        <sc:layoutUnit id="gfLayoutLeft" position="left" width="250" gutter="5px" resize="true" header="Tree" collapse="true">
-                            <ui:insert name="guiLeftNav" />
-                        </sc:layoutUnit>
+                        <div id="gfLayoutLeft">
+                            <div id="leftNav">
+                                <ui:insert name="guiLeftNav" />
+                            </div>
+                        </div>
 
-                        <sc:layoutUnit id="gfLayoutCenter" position="center" scroll="true" gutter="5px">
-                            <ui:insert name="guiTopNav" />
+                        <div id="gfLayoutCenter">
+
                             <!-- Content -->
                             <div id="content" style="padding-left: 5px; padding-right: 5px;">
                                 <h:messages />
-                                <ui:insert name="guiTemplateContent">
-                                    <ui:insert name="content">
+                                <ui:insert name="guiTemplateContent1">
+
+                                    <ui:insert name="content1">
                                         Content Missing!
                                     </ui:insert>
                                 </ui:insert>
                             </div>
+                        </div>
 
-
-                        </sc:layoutUnit>
+                        <ui:remove>
                         <!--
 
                           I am commenting out the tags panel for now... this functionality should go back into the UI at some point...
                         //<ui:include src="/templates/tagsPanel.jsf" />
                         -->
 
-                        <sc:layoutUnit rendered="#{pageSession.rightContent[0] != null}" id="gfLayoutRight" position="right" width="250" gutter="5px" resize="true" header="#{pageSession.rightContent[0].content}" collapse="true">
+                        <div rendered="#{pageSession.rightContent[0] != null}" id="gfLayoutRight" position="right" width="250" gutter="5px" resize="true" header="#{pageSession.rightContent[0].content}" collapse="true">
                             <event>
                                 <ui:event type="afterCreate">
                                     // FIXME: Consider using a widget which allows multiple content types to share the right panel (i.e. accordian)
@@ -147,8 +172,11 @@
                                     getIntegrationPoints(type="org.glassfish.admingui:rightPanelTitle" points="#{pageSession.rightContent}");
                                 </ui:event>
                             </event>
-                        </sc:layoutUnit>
-                    </sc:layout>
+                        </div>
+                        </ui:remove>
+                    </div>
+
+                    <ui:remove>
                     <!--
                         Add Tag Panel
                             <sc:panel id="addTagPanel" visible="false" modal="true" closable="true" fixedCenter="true">
@@ -189,11 +217,13 @@
                                 </div>
                         </sc:panel>
                     -->
+                    </ui:remove>
                 </sun:body>
             </sun:html>
 
             <!-- FIXME: this should be in adminjsf.js -->
             <script type="text/javascript">
+	<ui:remove>
                 function submitTagForm(el) {
                     YAHOO.util.Dom.get('tagForm:url').value = window.location;
                     DynaFaces.fireAjaxTransaction(el,
@@ -238,6 +268,7 @@
                 YAHOO.util.Event.addListener(document, "keypress", showSearchPanel);
                 -->
                 */
+	</ui:remove>
 
                 // Save the prefs button so it is accessible via our JS
                 if (typeof(admingui) === "undefined") {
@@ -245,7 +276,18 @@
                 }
                 admingui.setPrefButton = document.getElementById("#{pageSession.setPrefId}");
 
+                var layout = new YAHOO.widget.Layout({
+                   units: [
+                       { position : 'top', body : 'gfLayoutTop', height : 115, scroll : false, gutter1 : '5px', resize : false, collapse : false},
+                       { position : 'left', body : 'gfLayoutLeft', width : 250, scroll : true, gutter1 : '5px', resize : true, header : 'Tree', collapse : true},
+                       { position : 'center', body : 'gfLayoutCenter', gutter1 : '5px', scroll : true}
+                   ]
+                });
+                layout.render();
+
+	<ui:remove>
                 // Collapse panels if necessary
+                /*
                 YAHOO.util.Event.onDOMReady(function (ev) {
                     var layout = scales.getLayout('gfLayout');
                     var lu = layout.getUnitByPosition('left');
@@ -271,6 +313,8 @@
                         lu.collapse();
                     }
                 });
+                */
+	</ui:remove>
             </script>
         </sun:page>
     </ui:composition>

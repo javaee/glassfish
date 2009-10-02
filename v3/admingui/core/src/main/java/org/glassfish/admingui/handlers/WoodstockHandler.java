@@ -42,9 +42,7 @@
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
  */
-
 package org.glassfish.admingui.handlers;
-
 
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
@@ -80,10 +78,8 @@ import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.handlers.MonitoringHandlers;
 import org.glassfish.admingui.util.SunOptionUtil;
 
-
-
 public class WoodstockHandler {
-    
+
     /** Creates a new instance of CommonHandlers */
     public WoodstockHandler() {
     }
@@ -95,12 +91,12 @@ public class WoodstockHandler {
      *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "uploadFileToTempDir",
-    input = {
-        @HandlerInput(name = "file", type = UploadedFile.class)},
-    output = {
-        @HandlerOutput(name = "origPath", type = String.class),
-        @HandlerOutput(name = "uploadedTempFile", type = String.class)
-    })
+        input = {
+            @HandlerInput(name = "file", type = UploadedFile.class)},
+        output = {
+            @HandlerOutput(name = "origPath", type = String.class),
+            @HandlerOutput(name = "uploadedTempFile", type = String.class)
+        })
     public static void uploadFileToTempDir(HandlerContext handlerCtx) {
         UploadedFile uploadedFile = (UploadedFile) handlerCtx.getInputValue("file");
         File tmpFile = null;
@@ -135,7 +131,7 @@ public class WoodstockHandler {
                 try {
                     uploadTmpFile = tmpFile.getAbsolutePath();
                 } catch (Exception ex) {
-                //Handle AbsolutePathException here
+                    //Handle AbsolutePathException here
                 }
             } catch (Exception ex) {
                 GuiUtil.handleException(handlerCtx, ex);
@@ -144,16 +140,14 @@ public class WoodstockHandler {
         handlerCtx.setOutputValue("uploadedTempFile", uploadTmpFile);
     }
 
-
     /**
      *	<p> This handler enable or disable the table text field according to the method value.
      */
-    @Handler(id="setDisableConnectionPoolTableField",
-        input={
-            @HandlerInput(name="tableDD", type=com.sun.webui.jsf.component.DropDown.class),
-            @HandlerInput(name="validationField", type=com.sun.webui.jsf.component.Field.class),
-            @HandlerInput(name="methodValue", type=String.class)}
-        )
+    @Handler(id = "setDisableConnectionPoolTableField",
+        input = {
+            @HandlerInput(name = "tableDD", type = com.sun.webui.jsf.component.DropDown.class),
+            @HandlerInput(name = "validationField", type = com.sun.webui.jsf.component.Field.class),
+            @HandlerInput(name = "methodValue", type = String.class)})
     public static void setDisableConnectionPoolTableField(HandlerContext handlerCtx) {
         String methodValue = (String) handlerCtx.getInputValue("methodValue");
         DropDown tableDD = (DropDown) handlerCtx.getInputValue("tableDD");
@@ -170,12 +164,11 @@ public class WoodstockHandler {
             validationField.setDisabled(true);
         }
     }
-    
 
-    @Handler(id="createHyperlinkArray",
-    output={
-		@HandlerOutput(name="links", type=Hyperlink[].class)
-    })
+    @Handler(id = "createHyperlinkArray",
+        output = {
+            @HandlerOutput(name = "links", type = Hyperlink[].class)
+        })
     public static void createHyperlinkArray(HandlerContext handlerCtx) {
         FacesContext ctx = handlerCtx.getFacesContext();
         ExternalContext extCtx = ctx.getExternalContext();
@@ -192,7 +185,7 @@ public class WoodstockHandler {
         String url = null;
         String ctxPath = extCtx.getRequestContextPath();
         int ctxPathSize = ctxPath.length();
-        for (int idx=0; idx < len; idx++) {
+        for (int idx = 0; idx < len; idx++) {
             // FIXME: Set parent
             arr[idx] = new Hyperlink();
             arr[idx].setId("bcLnk" + idx);
@@ -201,84 +194,94 @@ public class WoodstockHandler {
             arr[idx].setText(linkText[idx]);
             url = linkUrl[idx];
             if (url.startsWith(ctxPath)) {
-            url = url.substring(ctxPathSize);
+                url = url.substring(ctxPathSize);
             }
             arr[idx].setUrl(url);
         }
         handlerCtx.setOutputValue("links", arr);
     }
 
-
-
-    @Handler(id="dummyHyperlinkArray",
-    output={
-		@HandlerOutput(name="links", type=Hyperlink[].class)
-    })
+    @Handler(id = "dummyHyperlinkArray",
+        output = {
+            @HandlerOutput(name = "links", type = Hyperlink[].class)
+        })
     public static void dummyHyperlinkArray(HandlerContext handlerCtx) {
         Hyperlink arr[] = new Hyperlink[1];
-        arr[0]=new Hyperlink();
+        arr[0] = new Hyperlink();
         arr[0].setText(">");
         handlerCtx.setOutputValue("links", arr);
     }
 
-
-
-
-     @Handler(id = "StringArrayToSelectItemArray",
-    input = {
-        @HandlerInput(name = "stringArray", type = String[].class, required = true)},
-    output = {
-        @HandlerOutput(name = "item", type = SelectItem[].class)})
+    @Handler(id = "StringArrayToSelectItemArray",
+        input = {
+            @HandlerInput(name = "stringArray", type = String[].class, required = true)},
+        output = {
+            @HandlerOutput(name = "item", type = SelectItem[].class)})
     public static void StringArrayToSelectItemArray(HandlerContext handlerCtx) {
 
         String[] stringArray = (String[]) handlerCtx.getInputValue("stringArray");
         handlerCtx.setOutputValue("item", SunOptionUtil.getOptions(stringArray));
 
-     }
+    }
 
-     @Handler(id = "selectItemArrayToStrArray",
-    input = {
-        @HandlerInput(name = "item", type = SelectItem[].class, required = true)},
-    output = {
-        @HandlerOutput(name = "strAry", type = String[].class)})
+    @Handler(id = "StringToSelectItemArray",
+        input = {
+            @HandlerInput(name = "string", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "item", type = SelectItem[].class)})
+    public static void StringToSelectItemArray(HandlerContext handlerCtx) {
+
+        String string = (String) handlerCtx.getInputValue("string");
+        if (string.startsWith("[")) {
+            string = string.substring(1);
+        }
+        if (string.endsWith("]")) {
+            string = string.substring(0, string.length()-1);
+        }
+        String[] stringArray = string.split(",");
+        handlerCtx.setOutputValue("item", SunOptionUtil.getOptions(stringArray));
+
+    }
+
+    @Handler(id = "selectItemArrayToStrArray",
+        input = {
+            @HandlerInput(name = "item", type = SelectItem[].class, required = true)},
+        output = {
+            @HandlerOutput(name = "strAry", type = String[].class)})
     public static void selectItemArrayToStrArray(HandlerContext handlerCtx) {
 
         SelectItem[] item = (SelectItem[]) handlerCtx.getInputValue("item");
-        if (item == null || item.length == 0){
+        if (item == null || item.length == 0) {
             handlerCtx.setOutputValue("strAry", new String[0]);
             return;
         }
         String[] strAry = new String[item.length];
-        for(int i=0; i<item.length; i++){
-            strAry[i] = (String)item[i].getValue();
+        for (int i = 0; i < item.length; i++) {
+            strAry[i] = (String) item[i].getValue();
         }
         handlerCtx.setOutputValue("strAry", strAry);
-     }
-
-
-
+    }
 
     /**
      *  <p> Returns the date pattern for this calendar component.
      *
      */
-    @Handler(id="getDatePattern",
-    input={
-           @HandlerInput(name="calendarComponent", type=com.sun.webui.jsf.component.Calendar.class, required=true)},
-    output={
-        @HandlerOutput(name="pattern", type=String.class)}
-    )
+    @Handler(id = "getDatePattern",
+        input = {
+            @HandlerInput(name = "calendarComponent", type = com.sun.webui.jsf.component.Calendar.class, required = true)},
+        output = {
+            @HandlerOutput(name = "pattern", type = String.class)})
     public static void getDatePattern(HandlerContext handlerCtx) {
         Calendar calendar = (Calendar) handlerCtx.getInputValue("calendarComponent");
-		String pattern = calendar.getDateFormatPattern();
+        String pattern = calendar.getDateFormatPattern();
 
-		if(pattern == null || pattern.length() == 0) {
-			pattern = calendar.getDatePicker().getDateFormatPattern();
+        if (pattern == null || pattern.length() == 0) {
+            pattern = calendar.getDatePicker().getDateFormatPattern();
 
-			if(pattern == null || pattern.length() == 0) {
-				pattern="MM/dd/yyyy"; //default pattern
-			}
-		}
+            if (pattern == null || pattern.length() == 0) {
+                pattern = "MM/dd/yyyy"; //default pattern
+            }
+        }
         handlerCtx.setOutputValue("pattern", pattern);
     }
 

@@ -97,7 +97,13 @@ public class ConnectorsHandlers {
             //since the dropdown is immediate, the wizardPoolExtra map is not updated yet, we need
             //to update it manually and also set the connection definition map according to this resource adapter.
             String resAdapter = (String) handlerCtx.getInputValue("resAdapter");
+            if (resAdapter != null) {
+                resAdapter = resAdapter.trim();
+            }
             String poolName = (String) handlerCtx.getInputValue("poolName");
+            if (poolName != null) {
+                poolName = poolName.trim();
+            }
             if (resAdapter == null || resAdapter.equals("")) {
                 handlerCtx.setOutputValue("connectionDefinitions", new ArrayList());
             } else {

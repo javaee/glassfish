@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,42 +33,54 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admingui.util;
+package org.glassfish.admingui.plugin;
 
-import com.sun.webui.jsf.component.ImageComponent;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Element;
 
-import javax.faces.component.UIComponent;
+import java.util.List;
 
 
 /**
- *  <p>	This class was created to work around Woodstock bugs.  Namely the
- *	inability to alter their embedded Image component because it is
- *	created every time their <code>getImageFacet()</code> method is
- *	called.  Also the name is very misleading as it does not use a
- *	Facet.</p>
+ *  <p>	This class is configured via XML (i.e. a console-config.xml file).
+ *  	This is done via the HK2 <code>ConfigParser</code>.</p>
+ *
+ *  @author Ken Paulsen	(ken.paulsen@sun.com)
  */
-public class IconHyperlink extends com.sun.webui.jsf.component.IconHyperlink {
-
+@Configured(name="index")
+public class Index {
     /**
-     *	Default constructor.
+     *	<p> Accessor for child {@link TOCItem}s.</p>
      */
-    public IconHyperlink() {
-	// This sets the widget renderer, for now we'll allow that...
+    public List<IndexItem> getIndexItems() {
+	return this.indexItems;
     }
 
     /**
-     *	This is the method we have to override to avoid creating the Icon
-     *	multiple times, which resets its rendererType (among other properties).
+     *	<p> {@link IntegrationPoint}s setter.</p>
      */
-    public ImageComponent getImageFacet() {
-	UIComponent image = getFacets().get(ImageHyperlink.IMAGE_FACET_KEY);
-	if (image == null) {
-	    image = super.getImageFacet();
-	    if (image != null) {
-		image.setParent(null);
-		getFacets().put(ImageHyperlink.IMAGE_FACET_KEY, image);
-	    }
-	}
-	return (ImageComponent) image;
+    @Element("indexitem")
+    void setIndexItems(List<IndexItem> indexItems) {
+	this.indexItems = indexItems;
     }
+
+    /**
+     *
+     */
+    public String getVersion() {
+	return this.version;
+    }
+
+    /**
+     *
+     */
+    @Attribute(required=true)
+    void setVersion(String version) {
+	this.version = version;
+    }
+
+
+    private String version;
+    private List<IndexItem> indexItems;
 }

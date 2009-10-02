@@ -1,8 +1,8 @@
 
 <f:verbatim>
-    <script type="text/javascript">
+<script type="text/javascript">
 
- function uploadInit() {
+function uploadInit() {
         //We need to set a timeout to delay the call to getTextElement inside disable component.
         //otherwise getTextElement will always return null, causing JS error.
         //disableComponent('#{dirPathId}', 'text');
@@ -142,6 +142,7 @@ function checkFileInputRequired(componentId, reqMsg){
     }
     return result;
 }
+
 
 </script>
 </f:verbatim>

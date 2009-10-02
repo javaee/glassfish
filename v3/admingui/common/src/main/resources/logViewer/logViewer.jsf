@@ -308,9 +308,9 @@
 <!-- Table .... -->
 <sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18nc.logViewer.title}" sortPanelToggleButton="#{true}"
             deselectMultipleButton="$boolean{false}"
-            deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
+            deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)', 0)"
             selectMultipleButton="$boolean{false}"
-            selectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"  > 
+            selectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)', 0)"  >
            <!facet actionsTop>
          <sun:panelGroup id="topActionsGroup1">
             <!afterCreate

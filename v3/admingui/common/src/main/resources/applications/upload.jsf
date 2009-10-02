@@ -37,7 +37,8 @@
 <!initPage
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
 />
-<!composition template="/templates/default.layout" guiTitle="$resource{i18n.enterpriseApplications.deployPageTitle}"  guiTemplateOnLoad="uploadInit();"  >
+<!composition template="/templates/default.layout" guiTitle="$resource{i18n.enterpriseApplications.deployPageTitle}"  
+    guiTemplateOnLoad="admingui.deploy.uploadInit('#{dirPathId}','#{requestScope.restartRequired}','#{dirPathId}','#{dirSelectBtnId}','#{filSelectBtnId}','#{fileuploadId}');"  >
 <!define name="content">
     <event>
     <!beforeCreate
@@ -53,28 +54,31 @@
     />
     </event>
 #include "/common/shared/restart.inc"  
-	    	<sun:form id="form">
+    <sun:form id="form">
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$attribute{formId})
+            />
 #include "/common/shared/alertMsg.inc"
-    <sun:title id="title" title="$resource{i18n.enterpriseApplications.deployPageTitle}" helpText="$resource{i18n.enterpriseApplications.deployPageTitleHelp}">
-         <!facet pageButtonsTop>
+        <sun:title id="title" title="$resource{i18n.enterpriseApplications.deployPageTitle}" helpText="$resource{i18n.enterpriseApplications.deployPageTitleHelp}">
+            <!facet pageButtonsTop>
                 <sun:panelGroup id="topButtons">
 #include "/common/applications/uploadButtons.inc"
-            </sun:panelGroup>
-        </facet>
-    </sun:title>
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
 #include "/common/applications/uploadComponent.jsf"
-"<br/>
+        "<br/>
 //#include "/common/shared/propertyDescTable.inc"
 	<sun:hidden id="helpKey" value="uploadDev" />
-    "<br/>
-    <sun:title id="title2">
-         <!facet pageButtonsTop>
+        "<br/>
+        <sun:title id="title2">
+            <!facet pageButtonsTop>
                 <sun:panelGroup id="bottomButtons">
 #include "/common/applications/uploadButtons.inc"
-            </sun:panelGroup>
-        </facet>
-    </sun:title>
-		</sun:form>
-#include "/common/applications/uploadJS.inc"
- </define>
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
+    </sun:form>
+//#include "/common/applications/uploadJS.inc"
+</define>
 </composition>

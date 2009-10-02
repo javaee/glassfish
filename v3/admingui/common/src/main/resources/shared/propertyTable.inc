@@ -38,9 +38,9 @@
 <!-- Table .... -->
 <sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18n.common.AdditionalProperties}" 
             deselectMultipleButton="$boolean{true}"
-            deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
+            deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
             selectMultipleButton="$boolean{true}"
-            selectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)" >
+            selectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
@@ -74,7 +74,7 @@
             <sun:checkbox id="select" 
                 selected="#{td.value.selected}" 
                 selectedValue="$boolean{true}" 
-                onClick="setTimeout('initAllRows(); changeOneTableButton()', 0)" 
+                onClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
             />
         </sun:tableColumn>                    
         <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="name" rowHeader="$boolean{false}" id="col2">

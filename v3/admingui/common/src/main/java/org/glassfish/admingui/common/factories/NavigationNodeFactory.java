@@ -140,7 +140,9 @@ public class NavigationNodeFactory extends ComponentFactoryBase {
                 setOption(context, imageHyperlink, descriptor, "imageURL", icon);
                 setOption(context, imageHyperlink, descriptor, "url", url);
                 setOption(context, imageHyperlink, descriptor, "border", 0);
-                setOption(context, imageHyperlink, descriptor, "immediate", true);
+		if (target != null) {
+		    setOption(context, imageHyperlink, descriptor, "target", target);
+		}
                 comp.getFacets().put("image", imageHyperlink);
             }
         }

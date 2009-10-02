@@ -39,9 +39,9 @@
 
 <sun:table id="deployTable" title="$resource{i18n.deployTable.applications}" sortPanelToggleButton="#{false}"
        deselectMultipleButton="$boolean{true}"
-        deselectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)"
+        deselectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
         selectMultipleButton="$boolean{true}"
-        selectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)" >
+        selectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
@@ -57,13 +57,12 @@
             <sun:checkbox id="select" 
                 selected="#{td.value.selected}" 
                 selectedValue="$boolean{true}" 
-                onClick="setTimeout('initAllRows(); changeThreeTableButtons()', 0)" 
+                onClick="admingui.table.changeThreeTableButtons('#{pageSession.topActionGroup}', '#{pageSession.tableId}'); admingui.table.initAllRows('#{pageSession.tableId}');"
             />
     </sun:tableColumn>    
         
     <sun:tableColumn headerText="$resource{i18n.deployTable.colName}" sort="name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.name}" 
-            url="#{editLink}?appName=#{td.value.name}" />
+        <sun:hyperlink id="link" text="#{td.value.name}" url="#{editLink}?appName=#{td.value.name}" />
     </sun:tableColumn>
 
     <!-- sun:tableColumn rendered="$session{supportCluster}" headerText="$resource{i18n.deployTable.colStatus}" sort="enabled" rowHeader="$boolean{true}" id="col2">

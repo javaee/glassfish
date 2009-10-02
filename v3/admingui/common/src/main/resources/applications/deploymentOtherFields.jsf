@@ -37,7 +37,7 @@
 
 <sun:property id="nameProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.ApplicationName}" visible="#{true}">
     <sun:textField id="appName" columns="$int{40}" text="#{pageSession.other['name']}" styleClass="required" required="#{true}"
-        onChange="javascript: setAppName('#{appNameId}', this.value, window)">
+        onChange="javascript: setAppName('#{appNameId}', this.value, window, '#{sessionScope.appTypeString}')">
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{appNameId});
         />
@@ -45,9 +45,7 @@
 </sun:property>
 
 <sun:property id="vsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}">
-    <sun:listbox id="vs" immediate="#{true}" multiple="#{true}"  rows="$int{4}"
-        labels="$pageSession{availableVS}"
-        selected="#{pageSession.other['virtualservers']}" >
+    <sun:listbox id="vs" immediate="#{true}" multiple="#{true}"  rows="$int{4}" labels="$pageSession{availableVS}" selected="#{pageSession.other['virtualservers']}" >
         <!beforeCreate
             getVsForDeployment(result="#{pageSession.vsList}");
             getListBoxOptions(
