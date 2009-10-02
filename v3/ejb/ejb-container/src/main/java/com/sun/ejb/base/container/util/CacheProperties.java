@@ -154,7 +154,18 @@ public class CacheProperties {
                 long value = sessionDesc.getStatefulTimeoutValue();
                 TimeUnit unit = sessionDesc.getStatefulTimeoutUnit();
 
-                this.removalTimeoutInSeconds = (int) TimeUnit.SECONDS.convert(value, unit);
+                value = TimeUnit.SECONDS.convert(value, unit);
+		if (value < 0) {
+                    this.removalTimeoutInSeconds = -1;
+                    this.cacheIdleTimeoutInSeconds = -1;
+		} else if (value == 0) {
+                    this.removalTimeoutInSeconds = 1;
+                    this.cacheIdleTimeoutInSeconds = 2;
+		} else {
+                    this.removalTimeoutInSeconds = (int) value;
+                    this.cacheIdleTimeoutInSeconds = (int) (value + 1);
+		}
+
             }
         }
 
@@ -177,6 +188,7 @@ public class CacheProperties {
                         beanCacheDes.getVictimSelectionPolicy();
             }
         }
+
     }
 
 }
