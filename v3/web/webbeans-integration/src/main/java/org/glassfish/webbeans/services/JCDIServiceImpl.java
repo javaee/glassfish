@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.webbeans;
+package org.glassfish.webbeans.services;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -63,6 +63,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import org.jboss.webbeans.manager.api.WebBeansManager;
 
+import org.glassfish.webbeans.WebBeansDeployer;
 
 
 @Service

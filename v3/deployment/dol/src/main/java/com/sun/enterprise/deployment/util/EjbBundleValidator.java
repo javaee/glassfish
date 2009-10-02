@@ -325,13 +325,44 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                         ejb.getName() + ". DependsOn is only supported for Singleton beans");
                 }
                 String[] dependsOn = sessionDesc.getDependsOn();
-                for(String ejbName : dependsOn) {
-                    // Make sure each ejb referred to by dependsOn exists
-                    // TODO support cross-jar syntax and new EJB 3.1 syntax
-                    EjbBundleDescriptor bundle = ejb.getEjbBundleDescriptor();
-                    if( !bundle.hasEjbByName(ejbName) ) {
-                        throw new RuntimeException("Invalid DependsOn dependency '" +
-                           ejbName + "' for EJB " + ejb.getName());
+                for(String next : dependsOn) {
+
+                    // TODO support new EJB 3.1 syntax
+
+                    boolean fullyQualified = next.contains("#");
+
+                    Application app = sessionDesc.getEjbBundleDescriptor().getApplication();
+
+                    if( fullyQualified ) {
+
+                        int indexOfHash = next.indexOf("#");
+                        String ejbName = next.substring(indexOfHash+1);
+                        String relativeJarPath = next.substring(0, indexOfHash);
+
+                        BundleDescriptor bundle = app.getRelativeBundle(sessionDesc.getEjbBundleDescriptor(),
+                            relativeJarPath);
+
+                        if( bundle == null ) {
+                            throw new IllegalStateException("Invalid @DependOn value = " + next +
+                                    " for Singleton " + sessionDesc.getName());
+                        }
+
+                        EjbBundleDescriptor ejbBundle = (bundle instanceof WebBundleDescriptor) ?
+                                ((WebBundleDescriptor) bundle).getExtensionsDescriptors(EjbBundleDescriptor.class).iterator().next()
+                                :  (EjbBundleDescriptor) bundle;
+
+                        if( !ejbBundle.hasEjbByName(ejbName) ) {
+                            throw new RuntimeException("Invalid DependsOn dependency '" +
+                               next + "' for EJB " + ejb.getName());
+                        }
+
+                    } else {
+
+                        EjbBundleDescriptor bundle = ejb.getEjbBundleDescriptor();
+                        if( !bundle.hasEjbByName(next) ) {
+                            throw new RuntimeException("Invalid DependsOn dependency '" +
+                               next + "' for EJB " + ejb.getName());
+                        }
                     }
                 }
             }

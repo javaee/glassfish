@@ -39,11 +39,19 @@ package org.glassfish.webbeans.services;
 import org.jboss.webbeans.injection.spi.InjectionServices;
 import org.jboss.webbeans.injection.spi.InjectionContext;
 
+import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.component.Habitat;
 
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import com.sun.enterprise.deployment.JndiNameEnvironment;
 
+import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.ManagedBeanDescriptor;
 
 
 public class InjectionServicesImpl implements InjectionServices {
@@ -59,9 +67,58 @@ public class InjectionServicesImpl implements InjectionServices {
 
         try {
 
+
+            Habitat h = Globals.getDefaultHabitat();
+            ComponentEnvManager compEnvManager = (ComponentEnvManager) h.getByContract(ComponentEnvManager.class);
+
+            JndiNameEnvironment componentEnv = compEnvManager.getCurrentJndiNameEnvironment();
+
+            ManagedBeanDescriptor mbDesc = null;
+
+            JndiNameEnvironment injectionEnv = componentEnv;
+            Object target = injectionContext.getTarget();
+            String targetClass = target.getClass().getName();
+
+
+            if( componentEnv == null ) {
+                throw new IllegalStateException("No valid EE environment for injection of " + targetClass);
+            }
+
             // Perform EE-style injection on the target.  Skip PostConstruct since
             // in this case 299 impl is responsible for calling it.
-            injectionManager.injectInstance(injectionContext.getTarget(), false);
+
+            if( componentEnv instanceof EjbDescriptor ) {
+
+                EjbDescriptor ejbDesc = (EjbDescriptor) componentEnv;
+                // If it's an ejb bean class or interceptor, no special treatment needed.
+                if( !ejbDesc.getInterceptorClassNames().contains(targetClass) &&
+                    !ejbDesc.getEjbClassName().equals(targetClass) ) {
+
+                    BundleDescriptor topLevelBundle = (BundleDescriptor)
+                            ejbDesc.getEjbBundleDescriptor().getModuleDescriptor().getDescriptor();
+
+                    if( topLevelBundle instanceof WebBundleDescriptor ) {
+
+                        injectionEnv = (WebBundleDescriptor) topLevelBundle;
+
+                    } else {
+
+                        mbDesc = ejbDesc.getEjbBundleDescriptor().getManagedBeanByBeanClass(targetClass);
+
+                        if( mbDesc == null ) {
+                            injectionEnv = ejbDesc.getEjbBundleDescriptor();
+                        }
+
+                    }
+                }
+
+            }
+
+            if( mbDesc != null ) {
+                injectionManager.injectInstance(target, mbDesc.getGlobalJndiName(), false);
+            } else {
+                injectionManager.injectInstance(target, injectionEnv, false);
+            }
 
             injectionContext.proceed();
 

@@ -2,6 +2,9 @@ package org.glassfish.ejb.startup;
 
 import com.sun.ejb.containers.AbstractSingletonContainer;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.BundleDescriptor;
 
 import java.util.*;
 
@@ -43,12 +46,52 @@ public class SingletonLifeCycleManager {
         EjbSessionDescriptor sdesc = (EjbSessionDescriptor) c.getEjbDescriptor();
         String modName = sdesc.getEjbBundleDescriptor().getName();
         //System.out.println("BundleName: " + modName);
-        String src = sdesc.getName();
+        String src = normalizeSingletonName(sdesc.getName(), sdesc);
+        
         String[] depends = sdesc.getDependsOn();
-        this.addDependency(src, depends);
+        String[] newDepends = new String[depends.length];
 
-        //TODO: names can be of the form jarName#beanName
+        for(int i=0; i < depends.length; i++) {
+            newDepends[0] = normalizeSingletonName(depends[i], sdesc);
+        }
+        this.addDependency(src, newDepends);
+
         name2Container.put(src, (AbstractSingletonContainer) c);
+    }
+
+    private String normalizeSingletonName(String origName, EjbSessionDescriptor sessionDesc) {
+
+        String normalizedName = origName;
+
+        boolean fullyQualified = origName.contains("#");
+
+        Application app = sessionDesc.getEjbBundleDescriptor().getApplication();
+
+        if( fullyQualified ) {
+
+            int indexOfHash = origName.indexOf("#");
+            String ejbName = origName.substring(indexOfHash+1);
+            String relativeJarPath = origName.substring(0, indexOfHash);
+
+            BundleDescriptor bundle = app.getRelativeBundle(sessionDesc.getEjbBundleDescriptor(),
+                        relativeJarPath);
+
+            if( bundle == null ) {
+                throw new IllegalStateException("Invalid @DependOn value = " + origName +
+                        " for Singleton " + sessionDesc.getName());
+            }
+
+            normalizedName = bundle.getModuleDescriptor().getArchiveUri() + "#" + ejbName;
+
+        } else {
+
+            normalizedName = sessionDesc.getEjbBundleDescriptor().getModuleDescriptor().getArchiveUri() +
+                    "#" + origName;
+
+        }
+
+        return normalizedName;
+
     }
 
     public void doStartup() {
@@ -57,9 +100,11 @@ public class SingletonLifeCycleManager {
 
         for (int i = 0; i < orderSz; i++) {
             EjbSessionDescriptor sdesc = (EjbSessionDescriptor) partialOrder[i].getEjbDescriptor();
-            String s = sdesc.getName();
+
+            String normalizedSingletonName = normalizeSingletonName(sdesc.getName(), sdesc);
+
             if (sdesc.getInitOnStartup()) {
-                initializeSingleton(name2Container.get(s));
+                initializeSingleton(name2Container.get(normalizedSingletonName));
             }
         }
     }
@@ -80,7 +125,9 @@ public class SingletonLifeCycleManager {
 
     public synchronized void initializeSingleton(AbstractSingletonContainer c) {
         if (! initializedSingletons.contains(c)) {
-            List<String> computedDeps = computeDependencies(c.getEjbDescriptor().getName());
+            String normalizedSingletonName = normalizeSingletonName(c.getEjbDescriptor().getName(),
+                    (EjbSessionDescriptor) c.getEjbDescriptor());
+            List<String> computedDeps = computeDependencies(normalizedSingletonName);
             int sz = computedDeps.size();
             AbstractSingletonContainer[] deps = new AbstractSingletonContainer[sz];
             for (int i = 0; i < sz; i++) {

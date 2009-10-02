@@ -51,6 +51,8 @@ public class JmsDestinationReferenceDescriptor extends EnvironmentProperty imple
     private static final String EJB_TIMER_SERVICE_TYPE
         = "javax.ejb.TimerService";
 
+    private static final String CDI_BEAN_MANAGER_TYPE = "javax.enterprise.inject.spi.BeanManager";
+
     public JmsDestinationReferenceDescriptor() {
     }
     
@@ -102,6 +104,10 @@ public class JmsDestinationReferenceDescriptor extends EnvironmentProperty imple
                 getRefType().equals(MDB_CTX_TYPE) ||
                 getRefType().equals(EJB_CTX_TYPE) ||
                 getRefType().equals(EJB_TIMER_SERVICE_TYPE));
+    }
+
+    public boolean isCDIBeanManager() {
+        return (getRefType().equals(CDI_BEAN_MANAGER_TYPE));
     }
 
     /* Equality on name. */

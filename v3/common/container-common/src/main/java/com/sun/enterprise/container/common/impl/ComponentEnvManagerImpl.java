@@ -552,6 +552,8 @@ public class ComponentEnvManagerImpl
             Object value = null;
             if (next.isEJBContext()) {
                 value = new EjbContextProxy(next.getRefType());
+            } else if( next.isCDIBeanManager() ) {
+                value = namingUtils.createLazyNamingObjectFactory(name, "java:comp/BeanManager", false);
             } else {
                 // we lookup first in the InitialContext, if not found we look up in the habitat.
                 value = new NamingObjectFactory() {
