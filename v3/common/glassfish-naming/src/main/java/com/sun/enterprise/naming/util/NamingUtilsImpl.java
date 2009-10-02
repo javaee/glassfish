@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedExceptionAction;
+import javax.naming.Context;
 
 /**
  * This is a utils class for refactoring the following method.
@@ -73,7 +74,7 @@ public class NamingUtilsImpl
     }
     
     public Object makeCopyOfObject(Object obj) {
-        if (obj instanceof Serializable) {
+        if ( !(obj instanceof Context) && (obj instanceof Serializable) ) {
             if(_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "** makeCopyOfObject:: " + obj);
             }

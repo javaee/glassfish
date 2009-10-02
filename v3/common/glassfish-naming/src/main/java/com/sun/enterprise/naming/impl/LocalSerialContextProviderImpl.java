@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 import java.util.Hashtable;
 import org.omg.CORBA.ORB;
 import org.glassfish.internal.api.Globals;
+import javax.naming.Context;
 
 
 /**
