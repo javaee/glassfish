@@ -50,6 +50,7 @@ import javax.management.Notification;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
 import javax.management.MBeanInfo;
+import javax.management.InstanceNotFoundException;
 import javax.management.relation.MBeanServerNotificationFilter;
 import javax.management.remote.JMXConnectionNotification;
 import javax.management.remote.JMXConnector;
@@ -469,6 +470,7 @@ public final class ProxyFactory implements NotificationListener
     
 	/**
 		Get any existing proxy, returning null if none exists and 'create' is false.
+        If an MBean is no longer registered, the proxy returned will be null.
 		
 		@param objectName	ObjectName for which a proxy should be created
 		@param intf         class of returned proxy, avoids casts and compiler warnings
@@ -527,7 +529,7 @@ public final class ProxyFactory implements NotificationListener
     }
 
 
-
+    /** NOTE: a null proxy may be returned if the MBean is no longer registered */
         <T extends AMXProxy> T
 	getProxy(
         final ObjectName objectName,
@@ -537,21 +539,21 @@ public final class ProxyFactory implements NotificationListener
         //debug( "ProxyFactory.createProxy: " + objectName + " of class " + expected.getName() + " with interface " + JMXUtil.interfaceName(mbeanInfo) + ", descriptor = " + mbeanInfo.getDescriptor() );
 		AMXProxy proxy = null;
         
-        MBeanInfo mbeanInfo = mbeanInfoIn;
-        if ( mbeanInfo == null )
-        {
-            mbeanInfo = getMBeanInfo(objectName);
-        }
-        
-        // if it's a plain AMXProxy, it might have a more generic sub-interface we should use.
-        Class<? extends AMXProxy>  intf = intfIn; 
-        if ( AMXProxy.class == intf )
-        {
-            intf = genericInterface(mbeanInfoIn);
-        }
-        
         try
         {
+            MBeanInfo mbeanInfo = mbeanInfoIn;
+            if ( mbeanInfo == null )
+            {
+                mbeanInfo = getMBeanInfo(objectName);
+            }
+            
+            // if it's a plain AMXProxy, it might have a more generic sub-interface we should use.
+            Class<? extends AMXProxy>  intf = intfIn; 
+            if ( AMXProxy.class == intf )
+            {
+                intf = genericInterface(mbeanInfoIn);
+            }
+        
             final AMXProxyHandler handler	= new AMXProxyHandler( getMBeanServerConnection(), objectName, mbeanInfo);
             proxy	= (AMXProxy)Proxy.newProxyInstance( intf.getClassLoader(), new Class[] { intf }, handler);
             //debug( "CREATED proxy of type " + intf.getName() + ", metadata specifies " + AMXProxyHandler.interfaceName(mbeanInfo) );
@@ -563,11 +565,16 @@ public final class ProxyFactory implements NotificationListener
         }
         catch( Exception e )
         {
-            //debug( "createProxy", e );
-            throw new RuntimeException( e );
+            final Throwable rootCause = ExceptionUtil.getRootCause(e);
+            if ( ! ( rootCause instanceof InstanceNotFoundException) )
+            {
+                //debug( "createProxy", e );
+                throw new RuntimeException( e );
+            }
+            proxy = null;
         }
 				
-		return intfIn.cast( proxy );
+		return proxy == null ? null : intfIn.cast( proxy );
 	}
 
 	
@@ -578,7 +585,9 @@ public final class ProxyFactory implements NotificationListener
         return "" + o;
 	}
     
-    
+    /**
+        Array entries for MBeans that are no longer registered will contain null values.
+     */
         public AMXProxy[]
     toProxy( final ObjectName[] objectNames )
     {
@@ -592,8 +601,8 @@ public final class ProxyFactory implements NotificationListener
     
 	/**
 		Convert a Set of ObjectName to a Set of AMX.
-		
-		@return a Set of AMX from a Set of ObjectName.
+		The resulting Set may be smaller than the original if, for example, some MBeans
+        are no longer registered.
 	 */
 		public Set<AMXProxy>
 	toProxySet( final Set<ObjectName> objectNames )
@@ -605,8 +614,10 @@ public final class ProxyFactory implements NotificationListener
 			try
 			{
 				final AMXProxy	proxy	= getProxy( objectName );
-				assert( ! s.contains( proxy ) );
-				s.add( proxy );
+                if ( proxy != null )
+                {
+                    s.add( proxy );
+                }
 			}
 			catch( final Exception e )
 			{
@@ -618,19 +629,29 @@ public final class ProxyFactory implements NotificationListener
 		return( s );
 	}
     
+	/**
+		Convert a Set of ObjectName to a Set of AMX.
+		The resulting Set may be smaller than the original if, for example, some MBeans
+        are no longer registered.
+	 */
         public Set<AMXProxy>
 	toProxySet( final ObjectName[] objectNames, final Class<? extends AMXProxy> intf)
 	{
 		final Set<AMXProxy> result = new HashSet<AMXProxy>();
 		for( final ObjectName objectName : objectNames )
 		{
-            result.add( getProxy( objectName, intf) );
+            final AMXProxy  proxy = getProxy( objectName, intf);
+            if ( proxy != null )
+            {
+                result.add( proxy );
+            }
 		}
 		return( result );
     }
 	
 	/**
 		Convert a Collection of ObjectName to a List of AMX.
+        Resulting Map could differ in size if some MBeans are no longer registered.
 		
 		@return a List of AMX from a List of ObjectName.
 	 */
@@ -644,7 +665,10 @@ public final class ProxyFactory implements NotificationListener
 			try
 			{
 				final AMXProxy	proxy	= getProxy( objectName );
-				list.add( proxy );
+                if ( proxy != null )
+                {
+                    list.add( proxy );
+                }
 			}
 			catch( final Exception e )
 			{
@@ -659,6 +683,7 @@ public final class ProxyFactory implements NotificationListener
 	/**
 		Convert a Map of ObjectName, and convert it to a Map
 		of AMX, with the same keys.
+        Resulting Map could differ in size if some MBeans are no longer registered.
 		
 		@return a Map of AMX from a Map of ObjectName.
 	 */
@@ -677,7 +702,10 @@ public final class ProxyFactory implements NotificationListener
 			try
 			{
 				final AMXProxy	proxy	= getProxy( objectName );
-				resultMap.put( key, proxy );
+                if ( proxy != null )
+                {
+                    resultMap.put( key, proxy );
+                }
 			}
 			catch( final Exception e )
 			{
@@ -689,6 +717,7 @@ public final class ProxyFactory implements NotificationListener
 		return( resultMap );
 	}
 	
+    /** Resulting Map could differ in size if some MBeans are no longer registered */
         public Map<String,AMXProxy>
 	toProxyMap( final ObjectName[] objectNames, final Class<? extends AMXProxy> intf)
 	{
@@ -698,19 +727,27 @@ public final class ProxyFactory implements NotificationListener
 		{
             final String key = objectName.getKeyProperty(NAME_KEY);
             final AMXProxy	proxy	= getProxy( objectName, intf);
-            resultMap.put( key, proxy );
+            if ( proxy != null )
+            {
+                resultMap.put( key, proxy );
+            }
 		}
 		
 		return( resultMap );
     }
     
+    /** Resulting list could differ in size if some MBeans are no longer registered */
         public List<AMXProxy>
 	toProxyList( final ObjectName[] objectNames, final Class<? extends AMXProxy> intf)
 	{
 		final List<AMXProxy> result = new ArrayList<AMXProxy>();
 		for( final ObjectName objectName : objectNames )
 		{
-            result.add( getProxy( objectName, intf) );
+            final AMXProxy proxy = getProxy( objectName, intf);
+            if ( proxy != null )
+            {
+                result.add( proxy );
+            }
 		}
 		return( result );
     }
