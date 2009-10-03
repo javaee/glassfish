@@ -317,7 +317,7 @@ public class HttpServiceStatsProvider implements PostConstruct {
     
     public long getProcessTime() {
         long count = requestProcessTime.getCount();
-        long processTime = -1L;
+        long processTime = 0L;
         if (count != 0) {
             processTime = requestProcessTime.getTotalTime()/count;
         }
