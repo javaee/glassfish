@@ -58,7 +58,12 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.Changed;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.NotProcessed;
+import org.jvnet.hk2.config.ObservableBean;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import org.jvnet.hk2.config.types.Property;
 
@@ -75,17 +80,17 @@ import org.jvnet.hk2.config.types.Property;
 @Service
 @Scoped(Singleton.class)
 public class WebContainerStarter
-        implements Startup, PostConstruct {
+        implements Startup, PostConstruct, ConfigListener {
 
     private static final Logger logger = LogDomains.getLogger(
         WebContainerStarter.class, LogDomains.WEB_LOGGER);
 
-    private static final String AUTH_PASSTHROUGH_ENABLED =
+    private static final String AUTH_PASSTHROUGH_ENABLED_PROP =
         "authPassthroughEnabled";
 
-    private static final String PROXY_HANDLER = "proxyHandler";
+    private static final String PROXY_HANDLER_PROP = "proxyHandler";
 
-    private static final String ALTERNATE_DOCROOT = "alternatedocroot_";
+    private static final String TRACE_ENABLED_PROP = "traceEnabled";
 
     @Inject
     Domain domain;
@@ -99,81 +104,46 @@ public class WebContainerStarter
     @Inject
     ModulesRegistry modulesRegistry;
 
+    @Inject
+    public HttpService httpService;
+
+    private WebSniffer sniffer = new WebSniffer();
+
     /**
      * Scans the domain.xml to see if it specifies any configuration
      * that can be handled only by the web container, and if so, starts
      * the web container
      */ 
     public void postConstruct() {
-        boolean startNeeded = false;
+        boolean isStartNeeded = false;
         List<Config> configs = domain.getConfigs().getConfig();
         for (Config config : configs) {
             HttpService httpService = config.getHttpService();
-            if (ConfigBeansUtilities.toBoolean(
-                        httpService.getAccessLoggingEnabled()) ||
-                    ConfigBeansUtilities.toBoolean(
-                        httpService.getSsoEnabled())) {
-                startNeeded = true;
+            if (isStartNeeded(httpService)) {
+                isStartNeeded = true;
                 break;
-            }
-
-            List<Property> props = httpService.getProperty();
-            if (props != null) {
-                for (Property prop : props) {
-                    String propName = prop.getName();
-                    String propValue = prop.getValue();
-                    if (AUTH_PASSTHROUGH_ENABLED.equals(propName)) {
-                        startNeeded = ConfigBeansUtilities.toBoolean(propValue);
-                        if (startNeeded) break;
-                    } else if (PROXY_HANDLER.equals(propName)) {
-                        startNeeded = true;
-                        break;
-                    }
-                }
-                // break from the outer for loop
-                if (startNeeded) {
-                    break;
-                }
             }
             
             List<VirtualServer> hosts = httpService.getVirtualServer();
             if (hosts != null) {
                 for (VirtualServer host : hosts) {
-                    if (ConfigBeansUtilities.toBoolean(
-                                host.getAccessLoggingEnabled()) ||
-                            ConfigBeansUtilities.toBoolean(
-                                host.getSsoEnabled())) {
-                        startNeeded = true;
+                    if (isStartNeeded(host)) {
+                        isStartNeeded = true;
                         break;
                     }
-     
-                    /*
-                     * Iterate over the virtual server properties.
-                     * alternatedocroot is the only property that's
-                     * supported by Grizzly's static resource handler.
-                     * Any other properties can be handled only by the
-                     * web container.
-                     */
-                    props = host.getProperty();
-                    if (props != null) {
-                        for (Property prop : props) {
-                            if (!prop.getName().startsWith(
-                                    ALTERNATE_DOCROOT)) {
-                                startNeeded = true;
-                                break;                
-                            }
-                        }
-                    }
                 }
-                // break from the outer for loop
-                if (startNeeded) {
+                if (isStartNeeded) {
                     break;
                 }
             }
         }
 
-        if (startNeeded) {
+        if (isStartNeeded) {
             startWebContainer();
+        } else {
+            ObservableBean httpServiceBean = (ObservableBean)
+                ConfigSupport.getImpl(httpService);
+            httpServiceBean.addListener(this);
         }
     }
 
@@ -184,15 +154,32 @@ public class WebContainerStarter
     }
 
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-        // TODO
-        return null;
+        return ConfigSupport.sortAndDispatch(events, new Changed() {
+            public <T extends ConfigBeanProxy> NotProcessed changed(
+                    TYPE type, Class<T> tClass, T t) {
+                if (t instanceof HttpService) {
+                    if (type == TYPE.CHANGE) {
+                        if (isStartNeeded((HttpService) t)) {
+                            startWebContainer();
+                        }
+                    }
+                } else if (t instanceof VirtualServer) {
+                    if (type == TYPE.ADD || type == TYPE.CHANGE) {
+                        if (isStartNeeded((VirtualServer) t)) {
+                            startWebContainer();
+                        }
+                    }
+                }
+                return null;
+            }
+        }
+        , logger);
     }
 
     /**
      * Starts the web container
      */
     private void startWebContainer() {
-        WebSniffer sniffer = new WebSniffer();
         if (containerRegistry.getContainer(
                     sniffer.getContainersNames()[0]) != null) {
             containerRegistry.getContainer(
@@ -220,5 +207,66 @@ public class WebContainerStarter
                     sniffer.getContainersNames()[0], e);
             }
         }
+    }
+
+    /*
+     * @return true if the given HttpService contains any configuration
+     * that can be handled only by the web container and therefore requires
+     * the web container to be started, false otherwise
+     */
+    private boolean isStartNeeded(HttpService httpService) {
+        if (ConfigBeansUtilities.toBoolean(
+                    httpService.getAccessLoggingEnabled()) ||
+                ConfigBeansUtilities.toBoolean(
+                    httpService.getSsoEnabled())) {
+            return true;
+        }
+
+        List<Property> props = httpService.getProperty();
+        if (props != null) {
+            for (Property prop : props) {
+                String propName = prop.getName();
+                String propValue = prop.getValue();
+                if (AUTH_PASSTHROUGH_ENABLED_PROP.equals(propName)) {
+                    if (ConfigBeansUtilities.toBoolean(propValue)) {
+                        return true;
+                    }
+                } else if (PROXY_HANDLER_PROP.equals(propName)) {
+                    return true;
+                } else if (TRACE_ENABLED_PROP.equals(propName)) {
+                    if (!ConfigBeansUtilities.toBoolean(propValue)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /*
+     * @return true if the given VirtualServer contains any configuration
+     * that can be handled only by the web container and therefore requires
+     * the web container to be started, false otherwise
+     */
+    private boolean isStartNeeded(VirtualServer host) {
+        if (ConfigBeansUtilities.toBoolean(host.getAccessLoggingEnabled()) ||
+                ConfigBeansUtilities.toBoolean(host.getSsoEnabled())) {
+            return true;
+        }
+
+        String state = host.getState();
+        if (state != null &&
+                ("disabled".equals(state) ||
+                    !ConfigBeansUtilities.toBoolean(state))) {
+            return true;
+        }
+     
+        List<Property> props = host.getProperty();
+        if (props != null && !props.isEmpty()) {
+            return true;
+        }
+
+        return false;
     }
 }
