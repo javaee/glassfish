@@ -123,9 +123,16 @@ public class LocalPassword implements PostConstruct, Init {
     }
 
     /**
+     * Get the local password.
+     */
+    public String getLocalPassword() {
+        return password;
+    }
+
+    /**
      * Convert the byte array to a hex string.
      */
-    private String toHex(byte[] b) {
+    private static String toHex(byte[] b) {
         char[] bc = new char[b.length * 2];
         for (int i = 0, j = 0; i < b.length; i++) {
             byte bb = b[i];
