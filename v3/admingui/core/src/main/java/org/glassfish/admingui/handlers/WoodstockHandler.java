@@ -405,9 +405,11 @@ public class WoodstockHandler {
             ListIterator al = aList.listIterator();
             while (al.hasNext()) {
                 String name = (String) al.next();
-                appsList.add(new Option(name, name));
-                if (firstItem == null) {
-                    firstItem = name;
+                if (!doesAppProxyExit(name, "bean-pool-mon")) {
+                    appsList.add(new Option(name, name));
+                    if (firstItem == null) {
+                        firstItem = name;
+                    }
                 }
             }
         }
@@ -417,36 +419,36 @@ public class WoodstockHandler {
         jumpGroup1.setOptions(groupedOptions1);
         menuList.add(jumpGroup1);
 
-          // Menu for ejb app info
+        // Menu for ejb app info
         OptionGroup ejbAppOptions = setEjbGroupOptions("ejb-application-mon", "ejb-application-info");
-        if(ejbAppOptions !=null){
+        if (ejbAppOptions != null) {
             menuList.add(ejbAppOptions);
         }
 
-           // Menu for ejb app info
+        // Menu for ejb app info
         OptionGroup ejbTimerOptions = setEjbGroupOptions("ejb-timed-object-mon", "ejb-timer");
-        if(ejbTimerOptions !=null){
+        if (ejbTimerOptions != null) {
             menuList.add(ejbTimerOptions);
         }
-        
-         // Menu for bean-cache
+
+        // Menu for bean-cache
         OptionGroup bcOptions = setEjbGroupOptions("bean-cache-mon", "bean-cache");
-        if(bcOptions !=null){
+        if (bcOptions != null) {
             menuList.add(bcOptions);
         }
-        
-          // Menu for bean-pool
+
+        // Menu for bean-pool
         OptionGroup bpOptions = setEjbGroupOptions("bean-pool-mon", "bean-pool");
-        if(bpOptions !=null){
+        if (bpOptions != null) {
             menuList.add(bpOptions);
         }
 
         // Menu for bean-methods
         OptionGroup bmOptions = setEjbGroupOptions("bean-method-mon", "bean-methods");
-        if(bmOptions !=null){
+        if (bmOptions != null) {
             menuList.add(bmOptions);
         }
-        
+
         // Add Menu Options.
         jumpMenuOptions = (Option[]) menuList.toArray(new Option[menuList.size()]);
 
@@ -472,6 +474,22 @@ public class WoodstockHandler {
         } else {
             return null;
         }
+    }
+
+    public static Boolean doesAppProxyExit(String name, String type) {
+        List proxyList = V3AMX.getProxyListByType(type);
+        boolean proxyexist = false;
+        if (proxyList != null && proxyList.size() != 0) {
+            ListIterator li = proxyList.listIterator();
+            while (li.hasNext()) {
+                String pname = (String) li.next();
+                if (pname.startsWith(name)) {
+                    proxyexist = true;
+                }
+
+            }
+        }
+        return proxyexist;
     }
 
     private Option[] jumpMenuOptions = null;

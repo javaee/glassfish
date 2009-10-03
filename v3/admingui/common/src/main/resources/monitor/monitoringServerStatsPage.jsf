@@ -298,6 +298,11 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
+    <sun:tableRowGroup id="webServices" rendered="#{hasStatsWS}" data={"$attribute{webServicesStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.webServicesStats}"
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+#include "/common/monitor/monitoringTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup>
 </sun:table>
 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help_web.monitorRuntime}" />

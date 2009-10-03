@@ -111,7 +111,7 @@
     <sun:tableRowGroup id="ejbTimerStats" rendered="#{hasStatsEJBTimer}" data={"$attribute{EJBTimerStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.EJBTimer} : #{viewVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="ejb-application-mon" name="#{viewVal}", result=>$attribute{EJBTimerStatsList}  hasStats=>$attribute{hasStatsEJBTimer});
+            getStatsbyTypeName(type="ejb-timed-object-mon" name="#{viewVal}", result=>$attribute{EJBTimerStatsList}  hasStats=>$attribute{hasStatsEJBTimer});
          />
 
 #include "/common/monitor/monitoringTableRows.inc"
@@ -234,7 +234,7 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-
+    
 </sun:table>
 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help_web.monitorApps}" />

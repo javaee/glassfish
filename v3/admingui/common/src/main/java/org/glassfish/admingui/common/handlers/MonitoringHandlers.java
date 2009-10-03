@@ -177,6 +177,7 @@ public class MonitoringHandlers {
                         String last = "--";
                         String unit = "";
                         String current = "";
+                        String mname = null;
                         Object runtimes = null;
                         Object queuesize = null;
                         String thresholds = "--";
@@ -185,35 +186,45 @@ public class MonitoringHandlers {
                             CompositeDataSupport cds = ((CompositeDataSupport) val);
                             CompositeType ctype = cds.getCompositeType();
                             if (cds.containsKey("statistics")) {
-                                nostatskey = false;
-                                for (CompositeData cd : (CompositeData[]) cds.get("statistics")) {
-                                    Map statsMap = new HashMap();
-                                    if (cd.containsKey("name")) {
-                                        val = cd.get("name");
+                                Object statistics = cds.get("statistics");
+                                if (statistics instanceof CompositeData[]) {
+                                    CompositeData[] mycd = (CompositeData[])cds.get("statistics");
+                                    if(((CompositeData[])cds.get("statistics")).length == 0){
+                                        val = "--";
                                     }
-                                    if (cd.containsKey("description")) {
-                                        desc = (String) cd.get("description");
+                                    for (CompositeData cd : (CompositeData[]) cds.get("statistics")) {
+                                        nostatskey = false;
+                                        Map statsMap = new HashMap();
+                                        if (cd.containsKey("name")&& type.equals("web-service-mon")) {
+                                            val = cd.get("name");
+                                        }
+                                        if (cd.containsKey("name")) {
+                                            val = cd.get("name");
+                                        }
+                                        if (cd.containsKey("description")) {
+                                            desc = (String) cd.get("description");
+                                        }
+                                        if (cd.containsKey("lastSampleTime")) {
+                                            last = df.format(new Date((Long) cd.get("lastSampleTime")));
+                                        }
+                                        if (cd.containsKey("startTime")) {
+                                            start = df.format(new Date((Long) cd.get("startTime")));
+                                        }
+                                        statsMap.put("Name", monName);
+                                        statsMap.put("StartTime", start);
+                                        statsMap.put("LastTime", last);
+                                        statsMap.put("Description", desc);
+                                        statsMap.put("Value", (val == null) ? "" : val);
+                                        statsMap.put("Details", details);
+                                        result.add(statsMap);
                                     }
-                                    if (cd.containsKey("lastSampleTime")) {
-                                        last = df.format(new Date((Long) cd.get("lastSampleTime")));
-                                    }
-                                    if (cd.containsKey("startTime")) {
-                                        start = df.format(new Date((Long) cd.get("startTime")));
-                                    }
-                                    statsMap.put("Name", monName);
-                                    statsMap.put("StartTime", start);
-                                    statsMap.put("LastTime", last);
-                                    statsMap.put("Description", desc);
-                                    statsMap.put("Value", (val == null) ? "" : val);
-                                    statsMap.put("Details", "--");
-                                    result.add(statsMap);
                                 }
-
+                                
                             } else {
                                 if (cds.containsKey("name")) {
-                                    statMap.put("Name", cds.get("name"));
+                                    mname = (String)cds.get("name");
                                 } else {
-                                    statMap.put("Name", monName);
+                                    mname = (String)monName;
                                 }
                                 if (cds.containsKey("unit")) {
                                     unit = (String) cds.get("unit");
@@ -257,7 +268,7 @@ public class MonitoringHandlers {
                                 }
                             }
                         } else if (val instanceof String[]) {
-                            statMap.put("Name", monName);
+                            mname = (String)monName;
                             String values = "";
                             for (String s : (String[]) val) {
                                 values = values + s + "<br/>";
@@ -268,7 +279,7 @@ public class MonitoringHandlers {
                             String apptype = "";
                             for (CompositeData cd : (CompositeData[]) val) {
                                 if(cd.containsKey("appName")) {
-                                    statMap.put("Name", cd.get("appName"));
+                                    mname = (String)cd.get("appName");
                                 }
                                 if(cd.containsKey("applicationType")) {
                                     apptype = (String)cd.get("applicationType");
@@ -278,10 +289,9 @@ public class MonitoringHandlers {
                                 }
                             }
                             val = apptype;
-                        } else {
-                            statMap.put("Name", monName);
                         }
                         if (nostatskey) {
+                            statMap.put("Name", (mname != null) ? mname : monName);
                             statMap.put("Thresholds", (thresholds == null) ? "--" : thresholds);
                             statMap.put("QueueSize", (queuesize == null) ? "--" : queuesize);
                             statMap.put("Runtimes", (runtimes == null) ? "--" : runtimes);
