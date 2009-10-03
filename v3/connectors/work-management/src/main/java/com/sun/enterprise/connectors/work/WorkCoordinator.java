@@ -168,12 +168,6 @@ public final class WorkCoordinator {
             }
         }
 
-        // Change the status to started.
-        setState(STARTED);
-
-        if (waitMode == WAIT_UNTIL_START) {
-            unLock();
-        }
 
         // If the work is timed out then return.
         if (!proceed()) {
@@ -181,6 +175,18 @@ public final class WorkCoordinator {
                 probeProvider.workDequeued(raName);
             }
             return;
+        }else{
+            if (probeProvider != null) {
+                probeProvider.workProcessingStarted(raName);
+                probeProvider.workDequeued(raName);
+            }
+        }
+
+        // Change the status to started.
+        setState(STARTED);
+
+        if (waitMode == WAIT_UNTIL_START) {
+            unLock();
         }
 
         // All set to do start the work. So send the event.
@@ -196,10 +202,6 @@ public final class WorkCoordinator {
 
     public void setupContext(OneWork oneWork) throws WorkException {
         contextHandler.setupContext(getExecutionContext(ec, work), this, oneWork);
-        if (probeProvider != null) {
-            probeProvider.workProcessingStarted(raName);
-            probeProvider.workDequeued(raName);
-        }
     }
 
     /**
@@ -221,17 +223,19 @@ public final class WorkCoordinator {
             setException(ex);
         } finally {
             try {
-                if (probeProvider != null) {
-                    probeProvider.workProcessingCompleted(raName);
-                    probeProvider.workProcessed(raName);
-                }
+                if(!isTimedOut()){
+                    if (probeProvider != null) {
+                        probeProvider.workProcessingCompleted(raName);
+                        probeProvider.workProcessed(raName);
+                    }
 
-                //If exception is not null, the work has already been rejected.
-                if (listener != null) {
-                    if (!isTimedOut()) {
-                        listener.workCompleted(
-                                new WorkEvent(this, WorkEvent.WORK_COMPLETED, work,
-                                        getException()));
+                    //If exception is not null, the work has already been rejected.
+                    if (listener != null) {
+                        if (!isTimedOut()) {
+                            listener.workCompleted(
+                                    new WorkEvent(this, WorkEvent.WORK_COMPLETED, work,
+                                            getException()));
+                        }
                     }
                 }
 
@@ -268,7 +272,6 @@ public final class WorkCoordinator {
         }
         if (probeProvider != null) {
             probeProvider.workTimedOut(raName);
-            probeProvider.workProcessingCompleted(raName);
         }
     }
 
@@ -281,7 +284,7 @@ public final class WorkCoordinator {
         return !isTimedOut() && exception == null;
     }
 
-    private boolean isTimedOut() {
+    public boolean isTimedOut() {
         return getState() == TIMEDOUT;
     }
 

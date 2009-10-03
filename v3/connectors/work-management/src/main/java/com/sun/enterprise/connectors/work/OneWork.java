@@ -74,6 +74,7 @@ public final class OneWork implements com.sun.corba.se.spi.orbutil.threadpool.Wo
      */
     public void doWork() {
         coordinator.preInvoke(); // pre-invoke will set work state to "started",
+        boolean timedOut = coordinator.isTimedOut();
 
         // validation of work context should be after this
         //so as to throw WorkCompletedException in case of error.
@@ -93,7 +94,10 @@ public final class OneWork implements com.sun.corba.se.spi.orbutil.threadpool.Wo
                 coordinator.setException(t);
             }
         }
-        coordinator.postInvoke();
+
+        if(!timedOut){
+            coordinator.postInvoke();
+        }
     }
 
     /**
