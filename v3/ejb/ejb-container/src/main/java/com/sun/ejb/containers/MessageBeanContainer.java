@@ -904,18 +904,18 @@ public final class MessageBeanContainer extends BaseContainer implements
 				previousClassLoader = Utility.setContextClassLoader(clsLoader);
 				// Cleanup the message bean client resources.
 				mdbClient.close();
-				synchronized (this) {
-					this.done = true;
-					this.notify();
-					_logger
-							.log(Level.FINE,
-									"[MDBContainer] ASync thread done with mdbClient.close()");
-				}
+                _logger
+                        .log(Level.FINE,
+                                "[MDBContainer] ASync thread done with mdbClient.close()");
 			} catch (Exception e) {
 				_logger.log(Level.SEVERE, "containers.mdb.cleanup_exception",
 						new Object[] { appName, e.toString() });
 				_logger.log(Level.SEVERE, e.getClass().getName(), e);
 			} finally {
+                synchronized (this) {
+                    this.done = true;
+                    this.notify();
+                }
 				try {
 					mdbPool.close();
 				} catch (Exception ex) {
