@@ -204,11 +204,11 @@ public abstract class AppClientDeployerHelper {
      */
     protected abstract String facadeClassPath();
 
-    protected final DeploymentContext dc() {
+    public final DeploymentContext dc() {
         return dc;
     }
 
-    protected ApplicationClientDescriptor appClientDesc() {
+    public ApplicationClientDescriptor appClientDesc() {
         return appClientDesc;
     }
 

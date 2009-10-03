@@ -39,6 +39,8 @@
 
 package org.glassfish.appclient.server.core.jws.servedcontent;
 
+import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.util.Properties;
 import org.glassfish.appclient.server.core.AppClientDeployerHelper;
 import org.glassfish.appclient.server.core.StandaloneAppClientDeployerHelper;
@@ -56,6 +58,10 @@ public abstract class TokenHelper {
     private Properties tokens;
     protected final AppClientDeployerHelper dHelper;
 
+    private final LocalStringsImpl localStrings = new LocalStringsImpl(TokenHelper.class);
+
+    private VendorInfo vendorInfo = null;
+
     public static TokenHelper newInstance(final AppClientDeployerHelper dHelper) {
         TokenHelper tHelper;
         if (dHelper instanceof StandaloneAppClientDeployerHelper) {
@@ -63,6 +69,11 @@ public abstract class TokenHelper {
         } else {
             tHelper = new NestedClientTokenHelper(dHelper);
         }
+        tHelper.vendorInfo =
+                new VendorInfo(
+                        tHelper.localStrings,
+                        dHelper.appClientDesc().getJavaWebStartAccessDescriptor().getVendor());
+
         tHelper.tokens = tHelper.buildTokens();
         return tHelper;
     }
@@ -73,6 +84,14 @@ public abstract class TokenHelper {
 
     public Object setProperty(final String propName, final String propValue) {
         return tokens.setProperty(propName, propValue);
+    }
+
+    public String imageURIFromDescriptor() {
+        return vendorInfo.getImageURI();
+    }
+
+    public String splashScreenURIFromDescriptor() {
+        return vendorInfo.getSplashImageURI();
     }
 
     protected TokenHelper(final AppClientDeployerHelper dHelper) {
@@ -150,7 +169,117 @@ public abstract class TokenHelper {
 
         t.setProperty("client.security", "<all-permissions/>");
 
+        final ApplicationClientDescriptor acDesc = dHelper.appClientDesc();
+        /*
+         * Set the JNLP information title to the app client module's display name,
+         * if one is present.
+         */
+        String displayName = acDesc.getDisplayName();
+        String jnlpInformationTitle =
+                (displayName != null && displayName.length() > 0) ?
+                    displayName : localStrings.get("jws.information.title.prefix") + " " + dHelper.appName();
+        t.setProperty("appclient.main.information.title", jnlpInformationTitle);
+        t.setProperty("appclient.client.information.title", jnlpInformationTitle);
+
+        /*
+         * Set the one-line description the same as the title for now.
+         */
+        t.setProperty("appclient.main.information.description.one-line", jnlpInformationTitle);
+        t.setProperty("appclient.client.information.description.one-line", jnlpInformationTitle);
+
+        /*
+         *Set the short description to the description from the descriptor, if any.
+         */
+        String description = acDesc.getDescription();
+        String jnlpInformationShortDescription =
+                (description != null && description.length() > 0) ?
+                    description : jnlpInformationTitle;
+        t.setProperty("appclient.main.information.description.short", jnlpInformationShortDescription);
+        t.setProperty("appclient.client.information.description.short", jnlpInformationShortDescription);
+
+        t.setProperty("appclient.vendor", vendorInfo.getVendor());
+
+        /*
+         * Construct the icon elements, if the user specified any in the
+         * optional descriptor element.
+         */
+        t.setProperty("appclient.main.information.images", iconElements(vendorInfo));
+
+        setSystemJNLPTokens(t);
         return t;
 
     }
+
+    private String iconElements(final VendorInfo vendorInfo) {
+
+        StringBuilder result = new StringBuilder();
+        String imageURI = vendorInfo.getImageURI();
+        if (imageURI.length() > 0) {
+            result.append("<icon href=\"" + imageURI + "\"/>");
+//            addImageContent(origin, location, imageURI);
+        }
+        String splashImageURI = vendorInfo.getSplashImageURI();
+        if (splashImageURI.length() > 0) {
+            result.append("<icon kind=\"splash\" href=\"" + splashImageURI + "\"/>");
+//            addImageContent(origin, location, splashImageURI);
+        }
+        return result.toString();
+    }
+
+    private void setSystemJNLPTokens(final Properties props) {
+        final String[] tokenNames = new String[] {
+            "jws.appserver.information.title",
+            "jws.appserver.information.vendor",
+            "jws.appserver.information.description.one-line",
+            "jws.appserver.information.description.short"
+        };
+
+        for (String tokenName : tokenNames) {
+            final String value = localStrings.get(tokenName);
+            props.setProperty(tokenName, value);
+        }
+    }
+
+    /**
+     * Vendor and image information from the vendor subelement in the
+     * java-web-start-access part of sun-application-client.xml.
+     */
+    private static class VendorInfo {
+        private String vendorStringFromDescriptor;
+        private String vendor = "";
+        private String imageURIString = "";
+        private String splashImageURIString = "";
+
+        private VendorInfo(final LocalStringsImpl localStrings, final String vendorStringFromDescriptor) {
+            this.vendorStringFromDescriptor = vendorStringFromDescriptor != null ?
+                vendorStringFromDescriptor : "";
+            String [] parts = this.vendorStringFromDescriptor.split("::");
+            if (parts.length == 1) {
+                vendor = parts[0];
+            } else if (parts.length == 2) {
+                imageURIString = parts[0];
+                vendor = parts[0];
+            } else if (parts.length == 3) {
+                imageURIString = parts[0];
+                splashImageURIString = parts[1];
+                vendor = parts[2];
+            }
+            if (vendor.length() == 0) {
+                vendor = localStrings.get("jws.defaultVendorName");
+            }
+        }
+
+        private String getVendor() {
+            return vendor;
+        }
+
+        private String getImageURI() {
+            return imageURIString;
+        }
+
+        private String getSplashImageURI() {
+            return splashImageURIString;
+        }
+    }
+
 }

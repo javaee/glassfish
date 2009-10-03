@@ -44,12 +44,11 @@
     codebase="${request.scheme}://${request.host}:${request.port}${request.adapter.context.root}"
     href="___dyn/___system.jnlp">
     <information>
-        <title>GlassFish v3 System Libraries</title>
-        <vendor>GlassFish</vendor>
-        <description kind="one-line">System JARs used during Java Web Start launches of app clients</description>
-        <description kind="short">This extension lists the JAR files on which the app client container depends
-        as it runs.  These files are the same for all app clients launched from the same domain.</description>
-    <offline-allowed/>
+        <title>${jws.appserver.information.title}</title>
+        <vendor>${jws.appserver.information.vendor}</vendor>
+        <description kind="one-line">${jws.appserver.information.description.one-line}</description>
+        <description kind="short">${jws.appserver.information.description.short}</description>
+        <offline-allowed/>
     </information>
 
     <resources>
