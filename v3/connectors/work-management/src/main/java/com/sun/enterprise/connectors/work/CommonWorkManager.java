@@ -43,7 +43,6 @@ import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
-import com.sun.enterprise.connectors.work.monitor.MonitorableWorkManager;
 import com.sun.enterprise.connectors.work.monitor.WorkManagementProbeProvider;
 import com.sun.enterprise.connectors.work.monitor.WorkManagementStatsProvider;
 import com.sun.enterprise.connectors.work.context.WorkContextHandler;
@@ -219,7 +218,6 @@ public final class CommonWorkManager implements WorkManager {
 
         if (logger.isLoggable(Level.FINEST)) {
             String msg = "doWork for [" + work.toString() + "] END";
-            msg = "doWork for [" + work.toString() + "] END";
             logger.log(Level.FINEST, debugMsg(msg));
         }
     }
