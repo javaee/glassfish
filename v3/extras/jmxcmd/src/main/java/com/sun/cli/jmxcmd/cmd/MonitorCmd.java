@@ -904,7 +904,7 @@ class MonitorThread extends Thread implements CmdEventListener
     {
         try
         {
-            sleep(mInfo.mIntervalSeconds * 1000);
+            sleep(mInfo.mIntervalSeconds * 1000L);
         }
         catch (InterruptedException e)
         {

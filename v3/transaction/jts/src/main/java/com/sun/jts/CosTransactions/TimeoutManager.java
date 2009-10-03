@@ -193,7 +193,7 @@ class TimeoutManager {
                  }
                  timeoutInfo = new TimeoutInfo();
                  timeoutInfo.expireTime  =
-                    new Date().getTime() + seconds * 1000;
+                    new Date().getTime() + seconds * 1000L;
                  timeoutInfo.localTID    = localTID;
                  timeoutInfo.timeoutType = timeoutType;
                  pendingTimeouts.put(localTID,timeoutInfo);
@@ -205,7 +205,7 @@ class TimeoutManager {
                  }
                 timeoutInfo = new TimeoutInfo();
                 timeoutInfo.expireTime  =
-                    new Date().getTime() + seconds * 1000;
+                    new Date().getTime() + seconds * 1000L;
                 timeoutInfo.localTID    = localTID;
                 timeoutInfo.timeoutType = timeoutType;
                 indoubtTimeouts.put(localTID,timeoutInfo);

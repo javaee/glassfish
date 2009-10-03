@@ -401,7 +401,7 @@ public class AutodeployRetryManager implements PostConstruct {
          * Delays the time when retries for this file will expire.
          */
         protected void postponeRetryExpiration() {
-            retryExpiration = System.currentTimeMillis() + timeout * 1000;
+            retryExpiration = System.currentTimeMillis() + timeout * 1000L;
         }
 
     }

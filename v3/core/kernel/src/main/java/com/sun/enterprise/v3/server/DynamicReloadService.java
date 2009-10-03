@@ -146,7 +146,7 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
     }
     
     private void start(int pollIntervalInSeconds) {
-        long pollIntervalInMS = pollIntervalInSeconds * 1000;
+        long pollIntervalInMS = pollIntervalInSeconds * 1000L;
         timer.schedule(
                 timerTask = new TimerTask() {
                     @Override

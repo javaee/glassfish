@@ -2624,7 +2624,7 @@ public class EntityContainer
         int cacheSize = cacheProp.maxCacheSize;
         int numberOfVictimsToSelect = cacheProp.numberOfVictimsToSelect;
         float loadFactor = DEFAULT_LOAD_FACTOR;
-        idleTimeout = cacheProp.cacheIdleTimeoutInSeconds * 1000;
+        idleTimeout = cacheProp.cacheIdleTimeoutInSeconds * 1000L;
         
         createReadyStore(cacheSize, numberOfVictimsToSelect, loadFactor, 
                          idleTimeout);

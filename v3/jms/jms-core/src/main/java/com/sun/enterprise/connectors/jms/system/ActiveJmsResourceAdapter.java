@@ -860,7 +860,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
 
         String specifiedTimeOut = jmsService.getInitTimeoutInSeconds();
         if (specifiedTimeOut != null)
-            timeout = Integer.parseInt(specifiedTimeOut) * 1000;
+            timeout = Integer.parseInt(specifiedTimeOut) * 1000L;
         return timeout;
     }
 

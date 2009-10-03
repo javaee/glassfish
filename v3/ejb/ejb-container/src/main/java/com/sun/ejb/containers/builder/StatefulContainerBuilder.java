@@ -240,7 +240,7 @@ public class StatefulContainerBuilder
         String ejbName = ejbDescriptor.getEjbClassName();
 
         if (cacheProps.getCacheIdleTimeoutInSeconds() > 0) {
-            long timeout = cacheProps.getCacheIdleTimeoutInSeconds() * 1000;
+            long timeout = cacheProps.getCacheIdleTimeoutInSeconds() * 1000L;
             try {
                 sfsbContainer.invokePeriodically(timeout, timeout,
                         new CachePassivatorTask(ejbName, sessionCache, _logger));
@@ -258,7 +258,7 @@ public class StatefulContainerBuilder
         }
 
         if (cacheProps.getRemovalTimeoutInSeconds() > 0) {
-            long timeout = cacheProps.getRemovalTimeoutInSeconds() * 1000;
+            long timeout = cacheProps.getRemovalTimeoutInSeconds() * 1000L;
             try {
                 sfsbContainer.invokePeriodically(timeout, timeout,
                         new ExpiredSessionsRemovalTask(ejbName,

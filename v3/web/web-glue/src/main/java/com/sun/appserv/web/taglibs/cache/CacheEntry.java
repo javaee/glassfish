@@ -81,7 +81,7 @@ public class CacheEntry
     public void computeExpireTime(int timeout) {
         // timeout is relative to current time
         this.expireTime = (timeout == NO_TIMEOUT) ? timeout :
-                          System.currentTimeMillis() + (timeout * 1000);
+                          System.currentTimeMillis() + (timeout * 1000L);
     }
 
     /**

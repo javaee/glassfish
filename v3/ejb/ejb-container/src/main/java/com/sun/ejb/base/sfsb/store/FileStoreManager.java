@@ -295,8 +295,8 @@ public class FileStoreManager
 	    return 0;
 	}
 	long threshold = System.currentTimeMillis()
-	    - (passivationTimeoutInSeconds * 1000)
-	    - (gracePeriodInSeconds * 1000);
+	    - (passivationTimeoutInSeconds * 1000L)
+	    - (gracePeriodInSeconds * 1000L);
 	int expiredSessions = 0;
         try {
 	    String[] fileNames = baseDir.list();

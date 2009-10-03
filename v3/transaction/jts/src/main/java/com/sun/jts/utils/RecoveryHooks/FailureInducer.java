@@ -260,7 +260,7 @@ public class FailureInducer {
 
             // wait for the stipulated duration
             try {
-                Thread.sleep(waitDuration.intValue() * 1000);
+                Thread.sleep(waitDuration.intValue() * 1000L);
             } catch (Exception e) {}
         }
     }

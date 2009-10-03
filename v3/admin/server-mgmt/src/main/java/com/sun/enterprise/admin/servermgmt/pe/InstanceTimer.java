@@ -59,12 +59,12 @@ public final class InstanceTimer implements Runnable
         startTime = System.currentTimeMillis();
         try
         {
-            Thread.currentThread().sleep(startAfterSeconds * 1000);
+            Thread.sleep(startAfterSeconds * 1000L);
             while (!timeOutReached() && !callBack.check())
             {
                 try
                 {
-                    Thread.currentThread().sleep(1000);
+                    Thread.sleep(1000);
                     computeTimeOut();
                 }
                 catch (InterruptedException ie)

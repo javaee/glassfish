@@ -126,7 +126,7 @@ public class LruSessionCache
             (removalTime <= 0) ? 0 : removalTime;
         
         if (cacheIdleTimeoutInSeconds > 0) {
-            super.timeout = cacheIdleTimeoutInSeconds*1000;
+            super.timeout = cacheIdleTimeoutInSeconds*1000L;
         }
 
         removeIfIdle = (removalTimeoutInSeconds > 0)
@@ -155,7 +155,7 @@ public class LruSessionCache
             StatefulEJBContext ctx = (StatefulEJBContext) item.value;
             
             long idleThreshold = 
-                System.currentTimeMillis() - removalTimeoutInSeconds*1000;
+                System.currentTimeMillis() - removalTimeoutInSeconds*1000L;
             if (ctx.getLastAccessTime() <= idleThreshold) {
                 container.passivateEJB(ctx);
                 return;
@@ -395,7 +395,7 @@ public class LruSessionCache
 
                 if (removeIfIdle) {
                     long idleThreshold = System.currentTimeMillis() - 
-                        removalTimeoutInSeconds*1000;
+                        removalTimeoutInSeconds*1000L;
                     //XXX: Avoid currentTimeMillis
                     if (ctx.getLastAccessTime() <= idleThreshold) {
                         if(_logger.isLoggable(Level.FINE)) {
@@ -615,7 +615,7 @@ public class LruSessionCache
         int count = 0;
         LruCacheItem item;
         long currentTime = System.currentTimeMillis();
-        long idleThresholdTime = currentTime - cacheIdleTimeoutInSeconds*1000;
+        long idleThresholdTime = currentTime - cacheIdleTimeoutInSeconds*1000L;
         ArrayList victimList = new ArrayList();
 
         synchronized (this) {

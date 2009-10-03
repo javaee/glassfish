@@ -246,7 +246,7 @@ public class TransactionServiceProperties {
             int prevSize = 0;
             try {
                 while(true) {
-                    Thread.sleep(interval*1000);
+                    Thread.sleep(interval*1000L);
                     if (!RecoveryManager.isIncompleteTxRecoveryRequired()) {
                         if (_logger.isLoggable(Level.FINE))
                             _logger.log(Level.FINE, "Incomplete transaction recovery is "

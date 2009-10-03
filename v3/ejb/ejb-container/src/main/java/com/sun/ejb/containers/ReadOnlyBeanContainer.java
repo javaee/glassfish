@@ -113,7 +113,7 @@ public class ReadOnlyBeanContainer
         
         EjbEntityDescriptor ed = (EjbEntityDescriptor)desc;
         refreshPeriodInMillis =
-            ed.getIASEjbExtraDescriptors().getRefreshPeriodInSeconds() * 1000;
+            ed.getIASEjbExtraDescriptors().getRefreshPeriodInSeconds() * 1000L;
 
         if( refreshPeriodInMillis > 0 ) {
             long timerFrequency = 1;
@@ -139,7 +139,7 @@ public class ReadOnlyBeanContainer
             Timer timer = ejbContainerUtilImpl.getTimer();
             if (RELATIVE_TIME_CHECK_MODE) {
                 refreshTask = new CurrentTimeRefreshTask ();
-                timer.scheduleAtFixedRate(refreshTask, timerFrequency*1000, timerFrequency*1000);
+                timer.scheduleAtFixedRate(refreshTask, timerFrequency*1000L, timerFrequency*1000L);
             } else {
                 refreshTask = new RefreshTask();
                 timer.scheduleAtFixedRate(refreshTask, refreshPeriodInMillis, 
@@ -155,7 +155,7 @@ public class ReadOnlyBeanContainer
 
         // Create read-only bean cache
         long idleTimeoutInMillis = (cacheProp.cacheIdleTimeoutInSeconds <= 0) ?
-            -1 : (cacheProp.cacheIdleTimeoutInSeconds * 1000);
+            -1 : (cacheProp.cacheIdleTimeoutInSeconds * 1000L);
 
         if( (cacheProp.maxCacheSize <= 0) && (idleTimeoutInMillis <= 0) ) {
             robCache = new UnboundedEJBObjectCache(ejbDescriptor.getName());

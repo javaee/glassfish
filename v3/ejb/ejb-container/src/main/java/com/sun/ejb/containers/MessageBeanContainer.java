@@ -851,7 +851,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 						_logger.log(Level.FINE, "[MDBContainer] "
 								+ "Going to wait for a maximum of " + timeout
 								+ " seconds.");
-						task.wait(timeout * 1000);
+						task.wait(timeout * 1000L);
 					}
 
 					if (!task.isDone()) {

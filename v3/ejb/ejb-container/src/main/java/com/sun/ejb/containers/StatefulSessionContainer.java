@@ -1495,7 +1495,7 @@ public final class StatefulSessionContainer
 
             if ((context.existsInStore()) && (removalGracePeriodInSeconds > 0)) {
                 long now = System.currentTimeMillis();
-                long threshold = now - (removalGracePeriodInSeconds * 1000);
+                long threshold = now - (removalGracePeriodInSeconds * 1000L);
                 if (context.getLastPersistedAt() <= threshold) {
                     try {
                         sfsbStoreManager.updateLastAccessTime(sessionKey, now);

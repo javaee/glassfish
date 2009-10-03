@@ -603,7 +603,7 @@ public class GlassFishSingleSignOn
             return;
         }
 
-        long tooOld = System.currentTimeMillis() - ssoMaxInactive * 1000;
+        long tooOld = System.currentTimeMillis() - ssoMaxInactive * 1000L;
         //S1AS8 6155481 START
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("SSO expiration started. Current entries: "

@@ -134,8 +134,8 @@ public abstract class AbstractPool
             try {
                 this.poolTimerTask =  new AbstractPoolTimerTask();
                 EjbContainerUtilImpl.getInstance().getTimer().scheduleAtFixedRate
-                    (poolTimerTask, idleTimeoutInSeconds*1000, 
-                     idleTimeoutInSeconds*1000);
+                    (poolTimerTask, idleTimeoutInSeconds*1000L, 
+                     idleTimeoutInSeconds*1000L);
             } catch (Throwable th) {
                 _logger.log(Level.WARNING,
                     "[AbstractPool]: Could not add AbstractPoolTimerTask" + 

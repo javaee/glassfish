@@ -122,8 +122,8 @@ public class NonBlockingPool
             try {
                 this.poolTimerTask =  new PoolResizeTimerTask();
                 EjbContainerUtilImpl.getInstance().getTimer().scheduleAtFixedRate
-                    (poolTimerTask, idleTimeoutInSeconds*1000, 
-                     idleTimeoutInSeconds*1000);
+                    (poolTimerTask, idleTimeoutInSeconds*1000L, 
+                     idleTimeoutInSeconds*1000L);
                 if(_logger.isLoggable(Level.FINE)) {
                     _logger.log(Level.FINE,
                       "[Pool-" + poolName + "]: Added PoolResizeTimerTask...");
@@ -456,7 +456,7 @@ public class NonBlockingPool
                         (curSize > (steadyPoolSize + resizeQuantity) )
                         ? resizeQuantity : (curSize - steadyPoolSize);
                     long allowedIdleTime = System.currentTimeMillis() -
-                        idleTimeoutInSeconds*1000;
+                        idleTimeoutInSeconds*1000L;
                     if(_logger.isLoggable(Level.FINE)) {
                         _logger.log(Level.FINE, 
                                     "[Pool-"+poolName+"]: Resize:: reducing "

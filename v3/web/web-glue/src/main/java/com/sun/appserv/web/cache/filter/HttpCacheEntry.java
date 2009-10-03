@@ -87,7 +87,7 @@ public class HttpCacheEntry {
 
         // timeout is relative to current time
         this.expireTime = (timeout == -1) ? timeout :
-                          System.currentTimeMillis() + (timeout * 1000);
+                          System.currentTimeMillis() + (timeout * 1000L);
     }
 
     /**

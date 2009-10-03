@@ -163,7 +163,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     private void setPoolConfiguration() throws PoolingException {
 
         ConnectorConnectionPool poolResource = getPoolConfigurationFromJndi();
-        idletime = Integer.parseInt(poolResource.getIdleTimeoutInSeconds()) * 1000;
+        idletime = Integer.parseInt(poolResource.getIdleTimeoutInSeconds()) * 1000L;
         maxPoolSize = Integer.parseInt(poolResource.getMaxPoolSize());
         steadyPoolSize = Integer.parseInt(poolResource.getSteadyPoolSize());
 
@@ -1304,14 +1304,14 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                 (poolResource.getConCreationRetryAttempts());
         //Converting seconds to milliseconds as TimerTask will take input in milliseconds
         conCreationRetryInterval_ =
-                Integer.parseInt(poolResource.getConCreationRetryInterval()) * 1000;
+                Integer.parseInt(poolResource.getConCreationRetryInterval()) * 1000L;
         connectionCreationRetry_ = connectionCreationRetryAttempts_ > 0;
 
         validateAtmostPeriodInMilliSeconds_ =
-                Integer.parseInt(poolResource.getValidateAtmostOncePeriod()) * 1000;
+                Integer.parseInt(poolResource.getValidateAtmostOncePeriod()) * 1000L;
         boolean connectionLeakReclaim_ = poolResource.isConnectionReclaim();
         long connectionLeakTimeoutInMilliSeconds_ = Integer.parseInt(
-                poolResource.getConnectionLeakTracingTimeout()) * 1000;
+                poolResource.getConnectionLeakTracingTimeout()) * 1000L;
 
         boolean connectionLeakTracing_ = connectionLeakTimeoutInMilliSeconds_ > 0;
         if (leakDetector == null) {
