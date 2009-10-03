@@ -66,29 +66,25 @@ public class WorkManagementStatsProvider {
 
     long time = System.currentTimeMillis();
 
-    private CountStatisticImpl submittedWorkCount =
+    private final CountStatisticImpl submittedWorkCount =
             new CountStatisticImpl("SubmittedWorkCount", StatisticImpl.UNIT_COUNT,
                     "Number of work objects submitted by a connector module for execution");
-    private CountStatisticImpl rejectedWorkCount =
+    private final CountStatisticImpl rejectedWorkCount =
             new CountStatisticImpl("RejectedWorkCount", StatisticImpl.UNIT_COUNT,
                     "Number of work objects rejected by the application server");
-    private CountStatisticImpl completedWorkCount =
+    private final CountStatisticImpl completedWorkCount =
             new CountStatisticImpl("CompletedWorkCount", StatisticImpl.UNIT_COUNT,
                     "Number of work objects completed execution");
 
-    //the low water mark is set with a seed value of 1 to
-    //ensure that the comparison with currentVal returns
-    //the correct low water mark the first time around
-    //the least number of connections that we can use is always 1
-    private RangeStatisticImpl activeWorkCount =
+    private final RangeStatisticImpl activeWorkCount =
             new RangeStatisticImpl(0, 0, 0, "ActiveWorkCount", StatisticImpl.UNIT_COUNT,
                     "Number of active work objects", time, time);
 
-    private RangeStatisticImpl waitQueueLength =
+    private final RangeStatisticImpl waitQueueLength =
             new RangeStatisticImpl(0, 0, 0, "WaitQueueLength", StatisticImpl.UNIT_COUNT,
                     "Number of work objects waiting in the queue for execution", time, time);
 
-    private RangeStatisticImpl workRequestWaitTime =
+    private final RangeStatisticImpl workRequestWaitTime =
             new RangeStatisticImpl(0, 0, 0, "WorkRequestWaitTime", StatisticImpl.UNIT_COUNT,
                     "Wait time of a work object before it gets executed", time, time);
 
