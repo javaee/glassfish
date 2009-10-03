@@ -39,6 +39,7 @@ import javax.persistence.spi.PersistenceProvider;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -82,6 +83,7 @@ public class PersistenceUnitLoader {
     /** Name of property used to specify validator factory */
     private static final String VALIDATOR_FACTORY = "javax.persistence.validation.factory";
 
+    private static final String DISABLE_UPGRADE_FROM_TOPLINK_ESSENTIALS = "org.glassfish.persistence.jpa.disable.upgrade.from.toplink.essentials";
 
     public PersistenceUnitLoader(PersistenceUnitDescriptor puToInstatntiate, ProviderContainerContractInfo providerContainerContractInfo) {
        this.providerContainerContractInfo = providerContainerContractInfo;
@@ -119,6 +121,8 @@ public class PersistenceUnitLoader {
      */
     private EntityManagerFactory loadPU(PersistenceUnitDescriptor pud) {
 
+
+        checkForUpgradeFromTopLinkEssentials(pud);
 
         PersistenceUnitInfo pInfo = new PersistenceUnitInfoImpl(pud, providerContainerContractInfo);
 
@@ -187,6 +191,47 @@ public class PersistenceUnitLoader {
                     applicationLocation);
         }
         return emf;
+    }
+
+    /**
+     * If the app is using Toplink Essentials as the provider and Toplink Essentials is not available in classpath
+     * We try to upgrade the app to use EclipseLink.
+     * Change the provider to EclipseLink and translate "toplink.*" properties to "eclipselink.*" properties
+     * @param pud
+     */
+    private void checkForUpgradeFromTopLinkEssentials(PersistenceUnitDescriptor pud) {
+        if(Boolean.getBoolean(DISABLE_UPGRADE_FROM_TOPLINK_ESSENTIALS) ) {
+            //Return if instructed by System property
+            return;
+        }
+        String providerClassName = pud.getProvider();
+        if( "oracle.toplink.essentials.PersistenceProvider".equals(providerClassName) ||
+                "oracle.toplink.essentials.ejb.cmp3.EntityManagerFactoryProvider".equals(providerClassName) ) {
+            try {
+                providerContainerContractInfo.getClassLoader().loadClass(providerClassName);
+            } catch (ClassNotFoundException e) {
+                // Toplink Essentials classes are not available to an application using it as the provider
+                // Migrate the application to use EclipseLink
+
+                String defaultProvider = PersistenceUnitInfoImpl.getDefaultprovider();
+                logger.info("Switching Persistence Unit '" + pud.getName() + "' to use " + defaultProvider + " as JPA provider");
+
+                // Change the provider name
+                pud.setProvider(defaultProvider);
+
+                // For each "toplink*" property, add a "eclipselink* property
+                final String TOPLINK = "toplink";
+                final String ECLIPSELINK = "eclipselink";
+                Properties properties = pud.getProperties();
+                for (Map.Entry entry : properties.entrySet()) {
+                    String key = (String) entry.getKey();
+                    if(key.startsWith(TOPLINK) ) {
+                        String translatedKey = ECLIPSELINK + key.substring(TOPLINK.length());
+                        pud.addProperty(translatedKey, entry.getValue());
+                    }
+                }
+            }
+        }
     }
 
     /**

@@ -417,7 +417,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
      *
      * @return
      */
-    private static String getDefaultprovider() {
+    public static String getDefaultprovider() {
         final String DEFAULT_PERSISTENCE_PROVIDER_PROPERTY =
                 "com.sun.persistence.defaultProvider"; // NOI18N
         if(defaultProvider == null) {
