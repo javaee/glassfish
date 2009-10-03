@@ -1,1 +1,2 @@
--exportcontents: org.glassfish.persistence.common; version=${project.osgi.version}
+-exportcontents: org.glassfish.persistence.common; \
+                 org.glassfish.persistence.common.database; version=${project.osgi.version}

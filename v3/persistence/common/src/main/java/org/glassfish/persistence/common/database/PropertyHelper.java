@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,13 +35,14 @@
  */
 
 
-package com.sun.jdo.spi.persistence.utility;
+package org.glassfish.persistence.common.database;
 
-import com.sun.jdo.spi.persistence.utility.logging.Logger;
 import org.glassfish.persistence.common.I18NHelper;
 
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -54,7 +55,7 @@ import java.security.PrivilegedAction;
 import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedActionException;
 
-
+import com.sun.logging.LogDomains;
 
 /** 
  * @author Mitesh Meswani
@@ -63,18 +64,14 @@ import java.security.PrivilegedActionException;
  */
 public class PropertyHelper {
 
-    /**
-     * The logger.
-     */
-    private static final Logger logger = LogHelperUtility.getLogger();
-    
-    /**
-     * I18N message handler.
-     */
+    /** The logger */
+    private final static Logger logger = LogDomains.getLogger(
+            PropertyHelper.class, LogDomains.JDO_LOGGER);
+
+    /** I18N message handler */
     private final static ResourceBundle messages = I18NHelper.loadBundle(
-            "com.sun.jdo.spi.persistence.utility.Bundle", // NOI18N
-            PropertyHelper.class.getClassLoader());
-    
+        "org.glassfish.persistence.common.LogStrings", //NOI18N
+         PropertyHelper.class.getClassLoader());
 
     /**
      * Loads properties list from the specified resource into specified Properties object.
@@ -117,18 +114,19 @@ public class PropertyHelper {
 
         InputStream bin = null;
         InputStream in = null;
-        boolean debug = logger.isLoggable();
+        boolean debug = logger.isLoggable(Level.FINE);
 
         if (debug) {
             Object[] items = new Object[] {resourceName,Boolean.valueOf(loadFromFile)};
-            logger.fine("utility.PropertyHelper.load",items); // NOI18N
+            logger.log(Level.FINE, I18NHelper.getMessage(
+                    messages, "database.PropertyHelper.load",items)); // NOI18N
         }
 
         in =  loadFromFile ? openFileInputStream(resourceName) : 
                                 openResourceInputStream(resourceName,classLoader);
         if (in == null) {
             throw new IOException(I18NHelper.getMessage(messages,
-                    "utility.PropertyHelper.failedToLoadResource", resourceName));// NOI18N
+                    "database.PropertyHelper.failedToLoadResource", resourceName));// NOI18N
         }
         bin = new BufferedInputStream(in);
         try {

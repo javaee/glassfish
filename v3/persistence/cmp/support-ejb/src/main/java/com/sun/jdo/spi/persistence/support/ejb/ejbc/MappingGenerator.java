@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -95,8 +95,8 @@ import org.glassfish.persistence.common.I18NHelper;
 
 import com.sun.jdo.spi.persistence.utility.StringHelper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
-import com.sun.jdo.spi.persistence.utility.database.DBVendorTypeHelper;
 
+import org.glassfish.persistence.common.database.DBVendorTypeHelper;
 import org.glassfish.persistence.common.DatabaseConstants;
 
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.DeploymentHelper;

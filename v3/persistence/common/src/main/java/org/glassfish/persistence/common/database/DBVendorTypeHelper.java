@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,11 +35,7 @@
  */
 
 
-package com.sun.jdo.spi.persistence.utility.database;
-
-import com.sun.jdo.spi.persistence.utility.LogHelperUtility;
-import com.sun.jdo.spi.persistence.utility.PropertyHelper;
-import com.sun.jdo.spi.persistence.utility.logging.Logger;
+package org.glassfish.persistence.common.database;
 
 import java.io.IOException;
 import java.sql.DatabaseMetaData;
@@ -47,8 +43,14 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import org.glassfish.persistence.common.I18NHelper;
+import com.sun.logging.LogDomains;
 
 /**
  * @author Mitesh Meswani
@@ -93,25 +95,31 @@ public class DBVendorTypeHelper {
     public final static String INGRES      = enumToStringMapping[INGRES_ENUM];
     public final static String DERBY       = enumToStringMapping[DERBY_ENUM];
 
-    private final static String PROPERTY_PATH = "com/sun/jdo/spi/persistence/utility/database/"; // NOI18N
+    private final static String PROPERTY_PATH = "org/glassfish/persistence/common/"; // NOI18N
 
+    private final static String VENDOR_NAME_TO_TYPE_RESOURCE_DEFAULT_NAME =
+        PROPERTY_PATH + "VendorNameToTypeMapping.properties";  //NOI18N
+
+    // Preserve old names even though this class is now in a different package
     private final static String VENDOR_NAME_TO_TYPE_PROPERTY =
         "com.sun.jdo.spi.persistence.utility.database.VENDOR_NAME_TO_TYPE"; //NOI18N
     private final static String VENDOR_NAME_TO_TYPE_RESOURCE_PROPERTY =
         "com.sun.jdo.spi.persistence.utility.database.VENDOR_NAME_TO_TYPE_RESOURCE";  //NOI18N
-    private final static String VENDOR_NAME_TO_TYPE_RESOURCE_DEFAULT_NAME =
-        PROPERTY_PATH + "VendorNameToTypeMapping.properties";  //NOI18N
 
-    /**
-     * The logger.
-     */
-    private static final Logger logger = LogHelperUtility.getLogger();
+    /** The logger */
+    private final static Logger logger = LogDomains.getLogger(
+            DBVendorTypeHelper.class, LogDomains.JDO_LOGGER);
+
+    /** I18N message handler */
+    private final static ResourceBundle messages = I18NHelper.loadBundle(
+        "org.glassfish.persistence.common.LogStrings", //NOI18N
+         DBVendorTypeHelper.class.getClassLoader());
 
     /**
      * Holds mapping between possible vendor names to internal types defined above.
      * vendor names are treated as regular expressions.
      */
-    private static Properties _nameToVendorType = initializeNameToVendorType();;
+    private static Properties _nameToVendorType = initializeNameToVendorType();
 
     /** Get Database Vendor Type from vendor name.
      * @param vendorName Input vendor name. Typically this is obtained by querying
@@ -129,10 +137,11 @@ public class DBVendorTypeHelper {
      * If vendorName is null, <code>DEFAULT_DB</code> is returned.
      */
     public static String getDBType(String vendorName) {
-        boolean debug = logger.isLoggable();
+        boolean debug = logger.isLoggable(Level.FINE);
         if(debug) {
-            logger.fine("utility.database.DBVendorTypeHelper.inputVendorName", //NOI18N
-            vendorName);
+            logger.log(Level.FINE, I18NHelper.getMessage(messages,
+                    "database.DBVendorTypeHelper.inputVendorName", //NOI18N
+                    vendorName));
         }
         String detectedDbType = DEFAULT_DB;
         if(vendorName != null) {
@@ -148,7 +157,8 @@ public class DBVendorTypeHelper {
             }
         }
         if(debug)
-            logger.fine("utility.database.DBVendorTypeHelper.detectedVendorType",detectedDbType);  //NOI18N
+            logger.log(Level.FINE, I18NHelper.getMessage(messages,
+                    "database.DBVendorTypeHelper.detectedVendorType",detectedDbType));  //NOI18N
         return detectedDbType;
     }
 
@@ -205,9 +215,10 @@ public class DBVendorTypeHelper {
                     PropertyHelper.loadFromResource(_nameToVendorType,resourceName,
                                             DBVendorTypeHelper.class.getClassLoader() );
                 } catch (IOException e) {
-                    if(logger.isLoggable() ) {
-                        logger.fine("utility.database.DBVendorTypeHelper.couldNotLoadResource",  // NOI18N
-                            resourceName,e);
+                    if(logger.isLoggable(Level.FINE) ) {
+                        logger.log(Level.FINE, I18NHelper.getMessage(messages,
+                            "database.DBVendorTypeHelper.couldNotLoadResource",  // NOI18N
+                            resourceName),e);
                     }
                 }
                 overrideWithSystemProperties(_nameToVendorType);
@@ -228,8 +239,9 @@ public class DBVendorTypeHelper {
             Map.Entry entry = (Map.Entry) iterator.next();
             String regExpr = (String) entry.getKey();
             String value = (String) entry.getValue();
-            if(logger.isLoggable(Logger.FINEST) )
-                logger.finest("utility.database.DBVendorTypeHelper.regExprDbType",regExpr,value); // NOI18N
+            if(logger.isLoggable(Level.FINEST) )
+                logger.finest(I18NHelper.getMessage(messages,
+                        "database.DBVendorTypeHelper.regExprDbType",regExpr,value)); // NOI18N
             if( matchPattern(regExpr,vendorName) ) {
                 dbType = value;
             }
@@ -249,7 +261,8 @@ public class DBVendorTypeHelper {
         try {
             matches = Pattern.matches(regExp,target);
         } catch (PatternSyntaxException e){
-            logger.fine("utility.database.DBVendorTypeHelper.patternSyntaxException",e); // NOI18N
+            logger.log(Level.FINE, I18NHelper.getMessage(messages,
+                    "database.DBVendorTypeHelper.patternSyntaxException"),e); // NOI18N
         }
         return matches;
     }
@@ -259,7 +272,7 @@ public class DBVendorTypeHelper {
      */
     private static void overrideWithSystemProperties(Properties nameToVendorType) {
         String vendorNameToType = null;
-        boolean debug = logger.isLoggable();
+        boolean debug = logger.isLoggable(Level.FINE);
 
         int counter = 1;
         do {
@@ -272,15 +285,17 @@ public class DBVendorTypeHelper {
                     String suggestedDbType = parsedProperty[0];
                     String regExp = parsedProperty[1];
                     if(debug) {
-                        logger.fine("utility.database.DBVendorTypeHelper.traceVendorNameToTypeProperty", //NOI18N
-                        vendorNameToTypeProperty,regExp,suggestedDbType);
+                        logger.log(Level.FINE, I18NHelper.getMessage(messages,
+                        "database.DBVendorTypeHelper.traceVendorNameToTypeProperty", //NOI18N
+                        vendorNameToTypeProperty,regExp,suggestedDbType));
                     }
                     nameToVendorType.put(regExp,suggestedDbType);
                 }
                 else {
                     if(debug)
-                        logger.fine("utility.database.DBVendorTypeHelper.errorParsingVendorNameToTypeProperty", //NOI18N
-                            vendorNameToTypeProperty,vendorNameToType);
+                        logger.log(Level.FINE, I18NHelper.getMessage(messages,
+                            "database.DBVendorTypeHelper.errorParsingVendorNameToTypeProperty", //NOI18N
+                            vendorNameToTypeProperty,vendorNameToType));
                 }
             }
         } while (vendorNameToType != null);

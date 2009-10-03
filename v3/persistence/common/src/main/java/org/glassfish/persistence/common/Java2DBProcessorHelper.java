@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,6 +36,8 @@
 
 package org.glassfish.persistence.common;
 
+import org.glassfish.persistence.common.database.DBVendorTypeHelper;
+
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import org.glassfish.api.deployment.DeployCommandParameters;
@@ -54,6 +56,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.Statement;
 import java.sql.SQLException;
 import javax.sql.DataSource;
@@ -127,6 +130,15 @@ public class Java2DBProcessorHelper {
     
     private String appDeployedLocation;
     private String appGeneratedLocation;
+
+    /**
+     * Creates a new instance of Java2DBProcessorHelper to be used to execute SQL 
+     * statements only.
+     * @param appName the name used for reporting purposes
+     */
+    public Java2DBProcessorHelper(String appName) {
+        appRegisteredName = appName;
+    }
 
     /**
      * Creates a new instance of Java2DBProcessorHelper.
@@ -575,6 +587,35 @@ public class Java2DBProcessorHelper {
         return result;
     }
 
+    /**
+     * Get the DDL file and execute the statements.
+     * @param fileNamePrefix the common prefix for the DDL file name
+     * @param resourceName the jdbc resource name that would be used
+     * to get a connection to the database.
+     * @return true if the statements were successfully in the database.
+     */
+    public boolean executeDDLStatement(String fileNamePrefix, String resourceName) {
+        File file = null;
+        Connection conn = null;
+        try {
+            conn = getConnection(resourceName);
+            DatabaseMetaData dbMetaData = conn.getMetaData();
+            String vendorName = DBVendorTypeHelper.getDBType(
+                    dbMetaData.getDatabaseProductName()).toLowerCase();
+            file = new File(fileNamePrefix + vendorName + DatabaseConstants.SQL_FILE_EXTENSION);
+System.err.println("===> File to use: " + file);
+        } catch (IOException e) {
+            fileIOError(appRegisteredName, e);
+        } catch (Exception ex) {
+            cannotConnect(resourceName, ex);
+        } finally {
+            closeConn(conn);
+        }
+
+        return true; //executeDDLStatement(file, resourceName);
+    }
+
+
     /** Get a Connection from the resource specified by the JNDI name
      * of a resource.
      * This connection is aquired from a non-transactional resource which does not
@@ -686,14 +727,16 @@ public class Java2DBProcessorHelper {
      * @param msg Message for user.
      */
     public static void warnUser(ActionReport report, String msg) {
-        StringBuffer sb = new StringBuffer();
-        String s = report.getMessage();
-        if (s != null) {
-            sb.append(s);
+        if (report != null) {
+            StringBuffer sb = new StringBuffer();
+            String s = report.getMessage();
+            if (s != null) {
+                sb.append(s);
+            }
+            sb.append("\n").append(msg); // NOI18N
+            report.setMessage(sb.toString());
+            report.setActionExitCode(ActionReport.ExitCode.WARNING);
         }
-        sb.append("\n").append(msg); // NOI18N
-        report.setMessage(sb.toString());
-        report.setActionExitCode(ActionReport.ExitCode.WARNING);
     }
 
 }
