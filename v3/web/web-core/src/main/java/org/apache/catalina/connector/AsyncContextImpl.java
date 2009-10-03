@@ -38,6 +38,7 @@ package org.apache.catalina.connector;
 
 import java.io.IOException;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 import java.util.logging.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -67,6 +68,9 @@ public class AsyncContextImpl implements AsyncContext {
 
     // The target of zero-argument async dispatches
     private String zeroArgDispatchTarget = null;
+
+    // defaults to false
+    private AtomicBoolean isDispatchInProgress = new AtomicBoolean(); 
 
     /**
      * Constructor
@@ -120,21 +124,23 @@ public class AsyncContextImpl implements AsyncContext {
     public void dispatch() {
         if (zeroArgDispatchTarget == null) {
             log.severe("Unable to determine target of zero-arg dispatch");
-        } else {
-            origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
-                                     DispatcherType.ASYNC);
-            ApplicationDispatcher dispatcher = (ApplicationDispatcher)
-                servletRequest.getRequestDispatcher(zeroArgDispatchTarget);
-            if (dispatcher != null) {
+            return;
+        }
+        ApplicationDispatcher dispatcher = (ApplicationDispatcher)
+            servletRequest.getRequestDispatcher(zeroArgDispatchTarget);
+        if (dispatcher != null) {
+            if (isDispatchInProgress.compareAndSet(false, true)) {
+                origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
+                                         DispatcherType.ASYNC);
                 origRequest.setOkToReinitializeAsync(true);
                 origRequest.setAsyncStarted(false);
                 pool.execute(new Handler(this, dispatcher));
-            } else {
-                // Should never happen, because any unmapped paths will be 
-                // mapped to the DefaultServlet
-                log.warning("Unable to acquire RequestDispatcher for " +
-                            zeroArgDispatchTarget);
             }
+        } else {
+            // Should never happen, because any unmapped paths will be 
+            // mapped to the DefaultServlet
+            log.warning("Unable to acquire RequestDispatcher for " +
+                        zeroArgDispatchTarget);
         }
     } 
 
@@ -143,18 +149,21 @@ public class AsyncContextImpl implements AsyncContext {
         if (path == null) {
             throw new IllegalArgumentException("Null path");
         }
-        origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
-                                 DispatcherType.ASYNC);
         ApplicationDispatcher dispatcher = (ApplicationDispatcher)
             servletRequest.getRequestDispatcher(path);
         if (dispatcher != null) {
-            origRequest.setOkToReinitializeAsync(true);
-            origRequest.setAsyncStarted(false);
-            pool.execute(new Handler(this, dispatcher));
+            if (isDispatchInProgress.compareAndSet(false, true)) {
+                origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
+                                         DispatcherType.ASYNC);
+                origRequest.setOkToReinitializeAsync(true);
+                origRequest.setAsyncStarted(false);
+                pool.execute(new Handler(this, dispatcher));
+            }
         } else {
             // Should never happen, because any unmapped paths will be 
             // mapped to the DefaultServlet
-            log.warning("Unable to acquire RequestDispatcher for " + path);
+            log.warning("Unable to acquire RequestDispatcher for " +
+                        path);
         }
     }
 
@@ -163,14 +172,16 @@ public class AsyncContextImpl implements AsyncContext {
         if (path == null || context == null) {
             throw new IllegalArgumentException("Null context or path");
         }
-        origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
-                                 DispatcherType.ASYNC);
         ApplicationDispatcher dispatcher = (ApplicationDispatcher)
             context.getRequestDispatcher(path);
         if (dispatcher != null) {
-            origRequest.setOkToReinitializeAsync(true);
-            origRequest.setAsyncStarted(false);
-            pool.execute(new Handler(this, dispatcher));
+            if (isDispatchInProgress.compareAndSet(false, true)) {
+                origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
+                                         DispatcherType.ASYNC);
+                origRequest.setOkToReinitializeAsync(true);
+                origRequest.setAsyncStarted(false);
+                pool.execute(new Handler(this, dispatcher));
+            }
         } else {
             // Should never happen, because any unmapped paths will be 
             // mapped to the DefaultServlet
@@ -214,6 +225,10 @@ public class AsyncContextImpl implements AsyncContext {
             log.warning("Unable to determine target of " +
                         "zero-argument dispatch");
         }
+    }
+
+    AtomicBoolean getIsDispatchInProgress() {
+        return isDispatchInProgress;
     }
 
     /**

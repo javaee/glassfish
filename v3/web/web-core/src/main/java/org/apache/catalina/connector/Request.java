@@ -3655,6 +3655,7 @@ public class Request
             // Reinitialize existing AsyncContext
             asyncContext.reinitialize(servletRequest, servletResponse,
                 isOriginalRequestAndResponse);
+            asyncContext.getIsDispatchInProgress().set(false);
         } else {
             asyncContext = new AsyncContextImpl(this, servletRequest,
                 (Response) getResponse(), servletResponse,
