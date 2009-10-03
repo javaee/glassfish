@@ -48,7 +48,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="build,deploy,setup,run,undeploy,restore"/>
+    <target name="all" depends="restart-server-instance-common,build,setup,run,restore"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -71,10 +71,6 @@
                includes="WebTest.java"/>
     </target> 
     
-    <target name="deploy" depends="init-common">
-        <antcall target="deploy-war-common"/>
-    </target>
-
     <target name="setup" depends="init-common">
         <antcall target="create-alternate-resources"/>
         <antcall target="asadmin-common-ignore-fail">
@@ -87,7 +83,6 @@
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.virtual-server.server.property.alternatedocroot_2=&quot;from=/mytest/* dir=/tmp&quot;"/>
         </antcall> 
-        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="create-alternate-resources" depends="init-common">
@@ -108,10 +103,6 @@
         </java>
     </target>
 
-    <target name="undeploy" depends="init-common">
-        <antcall target="undeploy-war-common"/>
-    </target>
- 
     <target name="restore" depends="setup">
         <antcall target="delete-alternate-resources"/>
         <antcall target="asadmin-common-ignore-fail">
@@ -124,7 +115,6 @@
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.virtual-server.server.property.alternatedocroot_2="/>
         </antcall>
-        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="delete-alternate-resources" depends="init-common">
