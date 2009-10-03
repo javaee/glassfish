@@ -299,7 +299,8 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
             if(!matchFound){
                 Object args[] = new Object[]{className, messageListenerType};
                 String msg = localStrings.getLocalString("enterprise.deployment.mdb_validation_invalid_msg_listener",
-                        "Class " + className + " does not implement messageListener type [ "+messageListenerType+" ] ");
+                        "Class " + className + " does not implement messageListener type [ "+messageListenerType+" ] ",
+                        args);
                 throw new RuntimeException(msg);
             }
         }
