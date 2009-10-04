@@ -142,6 +142,20 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
             return;
         }
 
+        File sourceFile = new File(source.getURI());
+        if (!source.exists()) {
+            logger.log(Level.WARNING, "Cannot find application bits at " + 
+                sourceFile.getPath());
+            // remove the application from the domain.xml so at least server is 
+            // in a consistent state
+            try {
+                deployment.unregisterAppFromDomainXML(name);
+            } catch(TransactionFailure e) {
+                logger.warning("Module " + name + " not found in configuration");
+            }
+            return;
+        }
+
         ExtendedDeploymentContext deploymentContext = null;
         try {
             deploymentContext = deployment.getBuilder(logger, this, report).source(source).build();
