@@ -55,5 +55,6 @@
         <module>inplanted</module>      
     	<module>static</module>
     	<module>web-api</module>
+        <module>web-all</module>
     </modules>
 </project>
