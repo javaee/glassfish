@@ -58,7 +58,9 @@ import com.sun.grizzly.util.http.HttpRequestURIDecoder;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.grizzly.util.http.mapper.MappingData;
 import com.sun.grizzly.util.http.MimeType;
+import com.sun.grizzly.util.http.mapper.AlternateDocBase;
 import java.io.IOException;
+import java.util.List;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.internal.grizzly.V3Mapper;
@@ -100,7 +102,6 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
         this.grizzlyService = grizzlyService;
         this.habitat = grizzlyService.habitat;
         logger = GrizzlyEmbeddedHttp.logger();
-        setRootFolder(grizzlyEmbeddedHttp.getWebAppRootPath());
     }
 
     /**
@@ -352,7 +353,7 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
     }
 
     public void register(String contextRoot, Collection<String> vs, Adapter adapter
-            ,ApplicationContainer container) {
+            ,ApplicationContainer container, List<AlternateDocBase> alternateDocBases) {
 
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("MAPPER(" + this + ") REGISTER contextRoot: " + contextRoot +
@@ -369,10 +370,61 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
         }
 
         mapMultipleAdapter = true;
+        String ctx = getContextPath(contextRoot);
+        String wrapper = getWrapperPath(ctx, contextRoot);
+        ContextRootInfo c = new ContextRootInfo(adapter, container);
         for (String host : vs) {
             mapper.addContext(host, contextRoot,
-                new ContextRootInfo(adapter, container), new String[0], null);
+                c, new String[0], null, alternateDocBases);
+            if (adapter instanceof StaticResourcesAdapter){
+                mapper.addWrapper(host,ctx,wrapper,c);
+            }
         }
+    }
+
+    private String getWrapperPath(String ctx, String mapping) {
+        if (mapping.indexOf("*.") > 0) {
+            return mapping.substring(mapping.lastIndexOf("/") + 1);
+        } else if (!ctx.equals("")) {
+            return mapping.substring(ctx.length());
+        } else {
+            return mapping;
+        }
+    }
+
+    private String getContextPath(String mapping) {
+        String ctx = "";
+        int slash = mapping.indexOf("/", 1);
+        if (slash != -1) {
+            ctx = mapping.substring(0, slash);
+        } else {
+            ctx = mapping;
+        }
+
+        if (ctx.startsWith("/*.") ||ctx.startsWith("*.") ) {
+            if (ctx.indexOf("/") == ctx.lastIndexOf("/")){
+                ctx = "";
+            } else {
+                ctx = ctx.substring(1);
+            }
+        }
+
+
+        if (ctx.startsWith("/*") || ctx.startsWith("*")) {
+            ctx = "";
+        }
+
+        // Special case for the root context
+        if (ctx.equals("/")) {
+            ctx = "";
+        }
+
+        return ctx;
+    }
+
+    public void register(String contextRoot, Collection<String> vs, Adapter adapter
+            ,ApplicationContainer container) {
+        register(contextRoot, vs, adapter, container,null);
     }
 
     public void unregister(String contextRoot) {
