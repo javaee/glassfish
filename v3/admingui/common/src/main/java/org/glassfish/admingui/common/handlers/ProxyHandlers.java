@@ -155,14 +155,77 @@ public class ProxyHandlers {
             @HandlerInput(name = "selectedRows", type = List.class, required = true)})
     public static void deleteChildren(HandlerContext handlerCtx) {
         String type = (String) handlerCtx.getInputValue("type");
-        String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-        AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
+        if (type.equals(CONNECTOR_CONNECTION_POOL) || type.equals(JDBC_CONNECTION_POOL)) {
+            deleteCascade(handlerCtx);
+        } else {
+            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+            AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
 
-        List<Map> selectedRows = (List) handlerCtx.getInputValue("selectedRows");
+            List<Map> selectedRows = (List) handlerCtx.getInputValue("selectedRows");
+            try {
+                for (Map oneRow : selectedRows) {
+                    String Name = (String) oneRow.get("Name");
+                    amx.removeChild(type, Name);
+                }
+            } catch (Exception ex) {
+                GuiUtil.handleException(handlerCtx, ex);
+            }
+        }
+    }
+
+/*  deleteCascade handles delete for jdbc connection pool and connector connection pool
+ *  The dependent resources jdbc resource and connector resource are deleted on deleting
+ *  the pools
+ *  Currently is called only from deleteChildren handler and not directly from jsf
+ */
+//  @Handler(id = "deleteCascade",
+//      input = {
+//          @HandlerInput(name = "objectNameStr", type = String.class, required = true),
+//          @HandlerInput(name = "type", type = String.class, required = true),
+//          @HandlerInput(name = "dependentType", type = String.class, required = true),
+//          @HandlerInput(name = "selectedRows", type = List.class, required = true)})
+    private static void deleteCascade(HandlerContext handlerCtx) {
         try {
-            for (Map oneRow : selectedRows) {
-                String Name = (String) oneRow.get("Name");
-                amx.removeChild(type, Name);
+            String type = (String) handlerCtx.getInputValue("type");
+            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+            String dependentType = null;
+            String dependentNameKey = "Name";
+            if (type.equals(CONNECTOR_CONNECTION_POOL)) {
+                dependentType = CONNECTOR_RESOURCE;
+            } else if (type.equals(JDBC_CONNECTION_POOL)) {
+                dependentType = JDBC_RESOURCE;
+                dependentNameKey = "JndiName";
+            }
+            
+            if (dependentType != null) {
+                AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
+                List<Map> selectedRows = (List) handlerCtx.getInputValue("selectedRows");
+                //List dependencies = new ArrayList();
+                
+                for (Map oneRow : selectedRows) {
+                    String name = (String) oneRow.get("Name");
+                    Map<String, AMXProxy> childrenMap = amx.childrenMap(dependentType);
+                    Iterator itr = childrenMap.values().iterator();
+                    
+                    List dependencies = new ArrayList();
+                    while (itr.hasNext()) {
+                        AMXProxy obj = (AMXProxy) itr.next();
+                        String resourceName = (String) obj.attributesMap().get(dependentNameKey);
+                        String poolName = (String) obj.attributesMap().get("PoolName");
+                        if (poolName.trim().equals(name.trim())) {
+                            dependencies.add(resourceName);
+                        }
+                    }
+                    //Remove dependent resources
+                    for (int i = 0; i < dependencies.size(); i++) {
+                        AMXConfigProxy refAmx = (AMXConfigProxy) V3AMX.objectNameToProxy("amx:pp=/domain/servers,type=server,name=server");
+                        String refType = "resource-ref";
+                        String dependentName = (String) dependencies.get(i);
+                        amx.removeChild(dependentType, dependentName);
+                        refAmx.removeChild(refType, dependentName);
+                    } //for - dependency
+                    amx.removeChild(type, name);
+                } //for - pool
             }
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
@@ -912,4 +975,11 @@ public class ProxyHandlers {
     public static final String PROPERTY_NAME = "Name";
     public static final String PROPERTY_VALUE = "Value";
     public static final String PROPERTY_DESC = "Description";
+
+    //TODO
+    //Resources - can this obtained from AMX?
+    public static final String JDBC_RESOURCE = "jdbc-resource";
+    public static final String JDBC_CONNECTION_POOL = "jdbc-connection-pool";
+    public static final String CONNECTOR_RESOURCE = "connector-resource";
+    public static final String CONNECTOR_CONNECTION_POOL = "connector-connection-pool";
 }

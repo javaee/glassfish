@@ -50,7 +50,7 @@
         setPageSessionAttribute(key="resHeader" value="$resource{i18njca.resourcesTable.colResAdapter}");
         setPageSessionAttribute(key="extraInfoHeader" value="$resource{i18njca.resourcesTable.colDefinition}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
-        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njca.msg.JS.confirmDeleteCP}");
+        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeletePools}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jca/connectorConnectionPoolNew1.jsf");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jca/connectorConnectionPoolEdit.jsf");
@@ -58,7 +58,7 @@
         setPageSessionAttribute(key="resHeader" value="$resource{i18njca.resourcesTable.colResAdapter}");
         setPageSessionAttribute(key="extraInfoHeader" value="$resource{i18njca.resourcesTable.colDefinition}");
         setPageSessionAttribute(key="jcapool" value="#{false}" );
-  
+        
     />
     </event>
 #include "/common/shared/restart.inc"    
