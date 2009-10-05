@@ -19,6 +19,7 @@
   <executable>%%%AS_ADMIN_PATH%%%</executable>
   <logpath>%%%LOCATION%%%/%%%ENTITY_NAME%%%/logs</logpath>
   <logmode>reset</logmode>
+  <depend>tcpip</depend>
   <startargument>start-domain</startargument>
   <startargument>--verbose</startargument>
   <startargument>--domaindir</startargument>
