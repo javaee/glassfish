@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.connectors.util;
 
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.logging.LogDomains;
 import java.util.Date;
 import java.util.Timer;
@@ -58,7 +59,15 @@ public class ConnectorTimerProxy extends Timer {
     private Timer getTimer() {
         synchronized (getTimerLock) {
             if (timer == null) {
-                timer = new Timer("connector-timer-proxy", true);
+                ClassLoader loader = null;
+                try {
+                    loader = Thread.currentThread().getContextClassLoader();
+                    Thread.currentThread().setContextClassLoader(
+                            ConnectorRuntime.getRuntime().getConnectorClassLoader());
+                    timer = new Timer("connector-timer-proxy", true);
+                } finally {
+                    Thread.currentThread().setContextClassLoader(loader);
+                }
             }
         }
         return timer;        
