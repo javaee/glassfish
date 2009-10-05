@@ -141,7 +141,7 @@ public class FlashlightProbeClientMediator
         return btraceAgentAttached;
     }
 
-    public synchronized Collection<ProbeClientMethodHandle> registerListener(Object listener) {
+    public Collection<ProbeClientMethodHandle> registerListener(Object listener) {
         List<ProbeClientMethodHandle>   pcms                                = new ArrayList<ProbeClientMethodHandle>();
         List<FlashlightProbe>           probesRequiringClassTransformation  = new ArrayList<FlashlightProbe>();
 
@@ -151,7 +151,7 @@ public class FlashlightProbeClientMediator
         return pcms;
     }
 
-    public synchronized Collection<ProbeClientMethodHandle> registerDTraceListener(FlashlightProbeProvider propro) {
+    public Collection<ProbeClientMethodHandle> registerDTraceListener(FlashlightProbeProvider propro) {
 
         List<ProbeClientMethodHandle>   pcms                                = new ArrayList<ProbeClientMethodHandle>();
         List<FlashlightProbe>           probesRequiringClassTransformation  = new ArrayList<FlashlightProbe>();
