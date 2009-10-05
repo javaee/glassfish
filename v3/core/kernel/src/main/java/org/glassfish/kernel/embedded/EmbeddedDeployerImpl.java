@@ -188,7 +188,8 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
         if (appInfo!=null) {
-            EmbeddedDeployedInfo info = new EmbeddedDeployedInfo(appInfo, context.getModulePropsMap());
+            boolean isDirectory = new File(archive.getURI().getPath()).isDirectory();
+            EmbeddedDeployedInfo info = new EmbeddedDeployedInfo(appInfo, context.getModulePropsMap(), isDirectory);
             deployedApps.put(appInfo.getName(), info);
             return appInfo.getName();
         }
@@ -245,7 +246,11 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
 
 
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
-
+            if (params.keepreposdir == null)
+                params.keepreposdir = false;
+            if ( !params.keepreposdir && !info.isDirectory && source.exists()) {
+                FileUtils.whack(new File(source.getURI()));
+            }
             //remove context from generated
             deploymentContext.clean();
 
@@ -263,10 +268,12 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
     private final static class EmbeddedDeployedInfo {
         final ApplicationInfo appInfo;
         final Map<String, Properties> map;
+        final boolean isDirectory;
 
-        public EmbeddedDeployedInfo(ApplicationInfo appInfo, Map<String, Properties> map) {
+        public EmbeddedDeployedInfo(ApplicationInfo appInfo, Map<String, Properties> map, boolean isDirectory) {
             this.appInfo = appInfo;
             this.map = map;
+            this.isDirectory = isDirectory;
         }
     }
 }
