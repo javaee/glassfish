@@ -55,7 +55,7 @@ public class MDBTests {
     public void createJMSRscTest(String batchFile1) throws Exception {
         cmd = ASADMIN + " multimode --file " + batchFile1;
         execReturn = RtExec.execute(cmd);
-        Assert.assertEquals(execReturn, true, "Create jdbc connection pool failed ...");
+        Assert.assertEquals(execReturn, true, "Create JMS resource failed ...");
     }
     
     @Parameters({ "MDB_APP_DIR" })
@@ -82,7 +82,7 @@ public class MDBTests {
         cmd = ASADMIN + " undeploy " + mdbApp;
         //System.out.println("CMD = "+cmd);
         execReturn = RtExec.execute(cmd);
-        Assert.assertEquals(execReturn, true, "Deploy the mdb app failed ... ");
+        Assert.assertEquals(execReturn, true, "UnDeploy the mdb app failed ... ");
     }
 
     @Parameters({ "BATCH_FILE2" })
@@ -90,7 +90,7 @@ public class MDBTests {
     public void deleteJMSRscTest(String batchFile2) throws Exception {
         cmd = ASADMIN + " multimode --file " + batchFile2;
         execReturn = RtExec.execute(cmd);
-        Assert.assertEquals(execReturn, true, "Create jdbc connection pool failed ...");
+        Assert.assertEquals(execReturn, true, "Delete JMD Resource failed ...");
     }
     
 }
