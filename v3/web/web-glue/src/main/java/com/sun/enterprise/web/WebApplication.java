@@ -63,17 +63,15 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
     private final WebContainer container;
     private final WebModuleConfig wmInfo;
-    private final Module moduleConfig;
     Properties props = null;
     private Set<WebModule> webModules = new HashSet<WebModule>();
     private final org.glassfish.web.plugin.common.WebModuleConfig appConfigCustomizations;
 
     public WebApplication(WebContainer container, WebModuleConfig config, 
-            Module moduleConfig, Properties props, final ApplicationConfigInfo appConfigInfo) {
+            Properties props, final ApplicationConfigInfo appConfigInfo) {
         this.container = container;
         this.wmInfo = config;
         this.props = props;
-        this.moduleConfig = moduleConfig;
         this.appConfigCustomizations = extractCustomizations(appConfigInfo);
     }
 
