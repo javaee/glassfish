@@ -83,7 +83,7 @@ public class RequestStatsProvider {
     private CountStatisticImpl maxTime = new CountStatisticImpl("MaxTime",
             StatisticImpl.UNIT_COUNT, MAX_TIME_DESCRIPTION);
     private CountStatisticImpl processingTime = new CountStatisticImpl("ProcessingTime",
-            StatisticImpl.UNIT_COUNT, PROCESSING_TIME_DESCRIPTION);
+            StatisticImpl.UNIT_MILLISECOND, PROCESSING_TIME_DESCRIPTION);
 
     private TimeStatisticImpl requestProcessTime = new TimeStatisticImpl(0L, 0L, 0L, 0L,
             "", "", "", System.currentTimeMillis(), -1L);
