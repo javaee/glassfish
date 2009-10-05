@@ -66,6 +66,7 @@ public class WebTest {
     private String host;
     private String port;
     private String contextRoot;
+    private String appName;
 
     public WebTest(String[] args) {
         adminHost = args[0];
@@ -75,6 +76,7 @@ public class WebTest {
         host = args[4];
         port = args[5];
         contextRoot = args[6];
+        appName = args[7];
     }
     
     public static void main(String[] args) {
@@ -169,8 +171,8 @@ public class WebTest {
 
     private long getValue(String monitorPath, String countName, String attrName) throws Exception {
         String result = invokeURL("http://" + adminHost + ":" + adminPort +
-                "/monitoring/domain/server/applications" + 
-                contextRoot + "-web/server/" + monitorPath);
+                "/monitoring/domain/server/applications/" + 
+                appName + "-web/server/" + monitorPath);
         
         return parseValue(result, countName, attrName);
     }

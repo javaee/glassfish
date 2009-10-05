@@ -81,12 +81,10 @@
 
     <target name="build-publish-war" depends="build, publish-war-common" />
     
-    <target name="re-deploy" depends="init-common">
-        <antcall target="deploy-war-common"/>
-    </target>
-
     <target name="deploy" depends="init-common">
-        <antcall target="deploy-war-common"/>
+        <antcall target="deploy-war-common">
+            <param name="as.props" value="${as.props} --name ${appname}-web"/>
+        </antcall>
     </target>
     
     <target name="run" depends="init-common">
@@ -98,6 +96,7 @@
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
           <arg value="${contextroot}"/>
+          <arg value="${appname}"/>
         </java>
     </target>
  
