@@ -14,5 +14,5 @@ do
     jar xvf $2 $i
 done
 # adding license file in the build area so it appears in the jar
-cp ../../../../../packager/CDDL+GPL.txt .
+cp ../../../../../packager/CDDL+GPL.txt META-INF/LICENSE.txt
 
