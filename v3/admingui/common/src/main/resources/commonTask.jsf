@@ -114,7 +114,7 @@
           <!afterCreate
               getClientId(component="$this{component}" clientId=>$attribute{homeId})
               getUIComponent(clientId="#{homeId}"  component=>$attribute{component})
-              //includeFirstIntegrationPoint(type="org.glassfish.admingui:upsellframepe" root="#{component}");
+              includeFirstIntegrationPoint(type="org.glassfish.admingui:upsellframepe" root="#{component}");
           />
           </event>
 </define>
