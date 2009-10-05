@@ -57,9 +57,11 @@ public class WebBuilder implements ContainerBuilder<EmbeddedWebContainer> {
     Habitat habitat;
     
     URL     defaultWebXml;
-    String  listenerName;
     File    docRoot;
+    String  listenerName;
     boolean listings;
+    String virtualServerId = "server";
+    String[] hostNames = new String[] {"localhost"};
 
     private EmbeddedWebContainer container=null;
 
@@ -89,11 +91,52 @@ public class WebBuilder implements ContainerBuilder<EmbeddedWebContainer> {
         return docRoot;
     }
 
+    
     public WebBuilder setListings(boolean b) {
         this.listings = b;
         return this;        
     }
+ 
+    /**
+     * Sets the id of the default <tt>VirtualServer</tt>
+     * (default: <i>server</i>).
+     *
+     * @param virtualServerId the id of the default <tt>VirtualServer</tt>
+     */
+    public void setVirtualServerId(String virtualServerId) {
+        this.virtualServerId = virtualServerId;
+    }
 
+    /**
+     * Gets the id of the default <tt>VirtualServer</tt>
+     * (default: <i>server</i>).
+     *
+     * @return the id of the default <tt>VirtualServer</tt>
+     */
+    public String getVirtualServerId() {
+        return virtualServerId;
+    }
+
+    /**
+     * Sets the host names of the default <tt>VirtualServer</tt>
+     * (default: <i>localhost</i>).
+     *
+     * @param hostNames the host names of the default <tt>VirtualServer</tt>
+     */
+    public void setHostNames(String... hostNames) {
+        this.hostNames = hostNames;
+    }
+
+    /**
+     * Gets the host names of the default <tt>VirtualServer</tt>
+     * (default: <i>localhost</i>).
+     *
+     * @return the host names of the default <tt>VirtualServer</tt>
+     */
+    public String[] getHostNames() {
+        return hostNames;
+    }
+    
     public synchronized EmbeddedWebContainer create(Server server) {
         if (container==null) {
             container=habitat.getByContract(EmbeddedWebContainer.class);
