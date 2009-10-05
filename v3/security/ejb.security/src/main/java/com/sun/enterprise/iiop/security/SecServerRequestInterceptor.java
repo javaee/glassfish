@@ -54,6 +54,8 @@ import java.security.cert.X509Certificate;
 
 /* Import classes generated from CSIV2 idl files */
 import com.sun.corba.ee.org.omg.CSI.*;
+import com.sun.corba.ee.spi.legacy.connection.Connection;
+import com.sun.corba.ee.spi.legacy.interceptor.RequestInfoExt;
 import com.sun.enterprise.common.iiop.security.AnonCredential;
 import com.sun.enterprise.common.iiop.security.GSSUPName;
 import sun.security.util.DerInputStream;
@@ -69,6 +71,7 @@ import com.sun.enterprise.security.auth.login.common.X509CertificateCredential;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import com.sun.logging.LogDomains;
+import java.net.Socket;
 import java.util.logging.*;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.jvnet.hk2.component.Habitat;
@@ -110,6 +113,7 @@ public class SecServerRequestInterceptor
     //private ORB orb;
     private SecurityContextUtil secContextUtil = null;
     private GlassFishORBHelper orbHelper;
+    private SecurityMechanismSelector smSelector = null;
     //Not required
     //  SecurityService secsvc = null;       // Security Service
     public SecServerRequestInterceptor(String name, Codec codec, Habitat habitat) {
@@ -118,6 +122,7 @@ public class SecServerRequestInterceptor
         this.prname  = name + "::";
         secContextUtil = habitat.getComponent(SecurityContextUtil.class);
         orbHelper = habitat.getComponent(GlassFishORBHelper.class);
+        smSelector = habitat.getComponent(SecurityMechanismSelector.class);
     }
 
     public String name() {
@@ -612,6 +617,22 @@ public class SecServerRequestInterceptor
             SecurityContextUtil.unsetSecurityContext();
         }
         cntr.increment();
+
+        Socket s = null;
+        Connection c = ((RequestInfoExt)ri).connection();
+        
+        ServerConnectionContext scc = null;
+        if (c != null) {
+            s = c.getSocket();
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE,"RECEIVED request on connection: " + c);
+                _logger.log(Level.FINE,"Socket =" + s);
+            }
+            scc = new ServerConnectionContext(s);
+        } else {
+            scc = new ServerConnectionContext();
+        }
+        smSelector.setServerConnectionContext(scc);
     }
 
     public void send_reply(ServerRequestInfo ri)
