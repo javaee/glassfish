@@ -48,7 +48,9 @@ pkg = {
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 
-	                "pkg:/javadb" : {"type" : "require" },
+	                "pkg:/javadb-common" : {"type" : "require" },
+			"pkg:/javadb-core" : {"type" : "require" },
+			"pkg:/javadb-client" : {"type" : "require" },
 	    		"pkg:/glassfish-gui" : {"type" : "require" },
 			"pkg:/glassfish-jdbc" : {"type" : "require" },
 			"pkg:/glassfish-jcdi" : {"type" : "require" },
