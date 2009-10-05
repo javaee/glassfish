@@ -64,9 +64,11 @@ arg="$1"
 	;;
   	-h)
         CHECK_FOR_DISPLAY=0
+	ARGS=`echo ${ARGS} -h  `
         ;;
         -help)
         CHECK_FOR_DISPLAY=0
+	ARGS=`echo ${ARGS} -h  `
         ;;
  	-j)
         shift
