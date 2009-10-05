@@ -34,7 +34,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- jca/connectorResource.inc -->
+<!-- jca/connectorResourceAttr.inc -->
 <!-- used by connectorResourceEdit.jsf and connectorResourceNew.jsf -->
    
 
@@ -58,13 +58,8 @@
             />
            </sun:dropDown>
         </sun:property>   
-        <sun:property id="objectTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.ObjectType}" >
-            <sun:dropDown id="ObjectType" selected="#{pageSession.valueMap['ObjectType']}" labels={ "$resource{i18njca.connectors.User}"  "$resource{i18njca.connectors.systemAdmin}" } values={ "user" "system-admin" } >
-           
-           </sun:dropDown>
-        </sun:property>   
 
-        <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}"> 
+        <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
             <sun:textField id="desc" columns="$int{55}" text="#{pageSession.valueMap['Description']}" />      
         </sun:property>
 

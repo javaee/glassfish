@@ -100,12 +100,7 @@
                     getClientId(component="$this{component}" clientId=>$page{pPropId});
                 />
         </sun:property>
-    <sun:property id="objectTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.ObjectType}" >
-            <sun:dropDown id="ObjectType" selected="#{pageSession.valueMap['ObjectType']}" labels={ "$resource{i18njca.connectors.User}"  "$resource{i18njca.connectors.systemAdmin}" } values={ "user" "system-admin" } >
-
-           </sun:dropDown>
-        </sun:property>
-    <sun:property id="resAdaptorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njca.adminObjectResource.resourceAdapterHelp}">
+        <sun:property id="resAdaptorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njca.adminObjectResource.resourceAdapterHelp}">
             <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['ResourceAdapterName']}" labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" >
                 <!beforeCreate
                      getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{requestScope.connList}")
