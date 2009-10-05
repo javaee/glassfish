@@ -206,24 +206,36 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
      * @return Hashtable
      */
     public Hashtable parseDriverProperties(String values, String escape, 
-            String delimiter, boolean returnUpperCase){
+                String delimiter, boolean returnUpperCase){
         Hashtable result = new Hashtable();
         String parsedValue = "";
-        String name = "";
+        String name = "";                
         String value = "";
         char escapeChar = escape.charAt(0);
-        char delimiterChar  = delimiter.charAt(0);
-        while(values.length() >0){
-            if(values.charAt(0)==delimiterChar){
-                if(values.charAt(1)==delimiterChar){
+        char delimiterChar = delimiter.charAt(0);
+        while (values.length() > 0) {
+            if (values.charAt(0) == delimiterChar) {
+                if (values.length() > 1 && values.charAt(1) == delimiterChar) {
+                    if (values.length() > 2 && values.charAt(2) == delimiterChar) {
+                        //Check for first property that does not have a value
+                        //There is no value specified for this property.
+                        //Store the name or it will be lost
+                        if (returnUpperCase) {
+                            name = parsedValue.toUpperCase();
+                        } else {
+                            name = parsedValue;
+                        }
+                        //no value specified for value
+                        parsedValue = "";
+                    }
                     value = parsedValue;
                     Vector v = new Vector();
                     v.add(value);
-                    result.put(name,v);
+                    result.put(name, v);
                     parsedValue = "";
                     values = values.substring(2);
-                }else{
-                    if(returnUpperCase) {
+                } else {
+                    if (returnUpperCase) {
                         name = parsedValue.toUpperCase();
                     } else {
                         name = parsedValue;
@@ -231,14 +243,14 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
                     parsedValue = "";
                     values = values.substring(1);
                 }
-            }else if(values.charAt(0) == escapeChar) {
-                if(values.charAt(1)==escapeChar){
-                    parsedValue+=values.charAt(1);
-                }else if (values.charAt(1)==delimiterChar){
-                    parsedValue+=values.charAt(1);
+            } else if (values.charAt(0) == escapeChar) {
+                if (values.charAt(1) == escapeChar) {
+                    parsedValue += values.charAt(1);
+                } else if (values.charAt(1) == delimiterChar) {
+                    parsedValue += values.charAt(1);
                 }
                 values = values.substring(2);
-            }else if(values.charAt(0)!=escapeChar){
+            } else if (values.charAt(0) != escapeChar) {
                 parsedValue += values.charAt(0);
                 values = values.substring(1);
             }
