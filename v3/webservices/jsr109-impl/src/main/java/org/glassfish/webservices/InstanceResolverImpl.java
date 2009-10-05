@@ -71,6 +71,9 @@ public final class InstanceResolverImpl<T> extends InstanceResolver<T> {
     private WSWebServiceContext wsc;
     private WSEndpoint endpoint;
 
+    private final InjectionManager injManager = WebServiceContractImpl.getInstance()
+                .getHabitat().getByContract(InjectionManager.class);
+
     public  InstanceResolverImpl(@NotNull Class<T> clasz) {
         this.classtobeResolved = clasz;
 
@@ -79,8 +82,7 @@ public final class InstanceResolverImpl<T> extends InstanceResolver<T> {
     public @NotNull T resolve(Packet request) {
         //See iss 9721
         //Injection and instantiation is now done lazily
-         InjectionManager injManager = WebServiceContractImpl.getInstance()
-                .getHabitat().getByContract(InjectionManager.class);
+
        try {
             instance = (T)injManager.createManagedObject(classtobeResolved);
         } catch (InjectionException e) {
@@ -99,7 +101,11 @@ public final class InstanceResolverImpl<T> extends InstanceResolver<T> {
     }
 
     public void dispose() {
-        //resolver.dispose();
+        try {
+            injManager.destroyManagedObject(classtobeResolved);
+        } catch (InjectionException e) {
+            throw new WebServiceException(e);
+        }
     }
     
     private ResourceInjector getResourceInjector(WSEndpoint endpoint) {
