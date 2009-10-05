@@ -143,7 +143,7 @@ public final class SSLUtils implements PostConstruct {
             // Creating a default SSLContext and HttpsURLConnection for clients
             // that use Https
             SSLContext ctx = SSLContext.getInstance("TLS");
-            String keyAlias = System.getProperty(HTTPS_OUTBOUND_KEY_ALIAS,DEFAULT_OUTBOUND_KEY_ALIAS);
+            String keyAlias = System.getProperty(HTTPS_OUTBOUND_KEY_ALIAS);
             KeyManager[] kMgrs = getKeyManagers();
             if (keyAlias != null && keyAlias.length() > 0 && kMgrs != null) {
                 for (int i = 0; i < kMgrs.length; i++) {
