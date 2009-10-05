@@ -35,13 +35,12 @@
 -->
 <!-- updateCenter/update.jsf -->
 
-//<sun:page id="page1">
 <!initPage
     setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
     setResourceBundle(key="help_uc" bundle="org.glassfish.updatecenter.admingui.Helplinks");
     setAttribute(key="helpKey" value="$resource{help_uc.uc.update}");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.updateCenter.update.pageTitle}">>
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.updateCenter.update.pageTitle}">
 <!define name="content">
     <event>
     <!beforeCreate

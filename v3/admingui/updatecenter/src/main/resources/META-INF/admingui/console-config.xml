@@ -15,12 +15,10 @@
                 parentId="commonTasksSection"
                 content="ucCommonTask.jsf"
         />
-    <!--   commented out due to issue# 8705
        <integration-point
                 id="ucUpdatesAvailable"
                 type="org.glassfish.admingui:mastheadStatusArea"
                 priority="200"
                 content="updatesAvailable.inc"
         />
-    -->
 </console-config>
