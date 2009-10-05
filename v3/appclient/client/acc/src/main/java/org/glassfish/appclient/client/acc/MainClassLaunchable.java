@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLClassLoader;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -82,7 +83,7 @@ public class MainClassLaunchable implements Launchable {
         return mainClass;
     }
 
-    public ApplicationClientDescriptor getDescriptor(ACCClassLoader loader) throws IOException, SAXParseException {
+    public ApplicationClientDescriptor getDescriptor(URLClassLoader loader) throws IOException, SAXParseException {
         /*
          * There is no developer-provided descriptor possible so just
          * use a default one.

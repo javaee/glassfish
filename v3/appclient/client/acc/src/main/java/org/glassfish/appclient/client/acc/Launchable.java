@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import javax.xml.stream.XMLStreamException;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.component.Habitat;
@@ -66,7 +67,7 @@ interface Launchable {
      */
     Class getMainClass() throws ClassNotFoundException;
 
-    ApplicationClientDescriptor getDescriptor(ACCClassLoader loader) throws IOException, SAXParseException;
+    ApplicationClientDescriptor getDescriptor(URLClassLoader loader) throws IOException, SAXParseException;
 
     void validateDescriptor();
 
@@ -131,13 +132,14 @@ interface Launchable {
         }
 
         static ApplicationClientDescriptor openWithAnnoProcessingAndTempLoader(
-                final AppClientArchivist archivist, final ACCClassLoader loader,
-                final ReadableArchive ra) throws IOException, SAXParseException {
+                final AppClientArchivist archivist, final URLClassLoader loader,
+                final ReadableArchive facadeRA,
+                final ReadableArchive clientRA) throws IOException, SAXParseException {
             archivist.setAnnotationProcessingRequested(true);
             final ACCClassLoader tempLoader = new ACCClassLoader(loader.getURLs(), loader.getParent());
             archivist.setClassLoader(tempLoader);
 
-            final ApplicationClientDescriptor acDesc = archivist.open(ra);
+            final ApplicationClientDescriptor acDesc = archivist.open(facadeRA, clientRA);
             archivist.setDescriptor(acDesc);
             return acDesc;
 

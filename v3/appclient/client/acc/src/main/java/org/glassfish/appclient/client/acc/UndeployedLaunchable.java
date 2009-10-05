@@ -52,6 +52,7 @@ import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLClassLoader;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -233,7 +234,7 @@ public class UndeployedLaunchable implements Launchable {
         return mf.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
     }
 
-    public ApplicationClientDescriptor getDescriptor(ACCClassLoader loader) throws IOException, SAXParseException {
+    public ApplicationClientDescriptor getDescriptor(URLClassLoader loader) throws IOException, SAXParseException {
         this.classLoader = loader;
         if (acDesc == null) {
             final AppClientArchivist _archivist = getArchivist(

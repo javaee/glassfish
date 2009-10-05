@@ -36,6 +36,8 @@
 package com.sun.enterprise.deployment.annotation.impl;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import java.net.URISyntaxException;
+import java.util.logging.Logger;
 import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Scoped;
@@ -47,8 +49,8 @@ import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.logging.Level;
-import java.util.jar.JarFile;
 
 /**
  * Implementation of the Scanner interface for AppClient
@@ -121,7 +123,15 @@ public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor>
             if (archive instanceof FileArchive) {
                 addScanDirectory(new File(archive.getURI()));
             } else if (archive instanceof InputJarArchive) {
-                addScanJar(new File(archive.getURI()));
+                URI uriToAdd = archive.getURI();
+                if (uriToAdd.getScheme().equals("jar")) {
+                    try {
+                        uriToAdd = new URI("file", uriToAdd.getSchemeSpecificPart(), null);
+                    } catch (URISyntaxException ex) {
+                        throw new IOException(ex);
+                    }
+                }
+                addScanJar(new File(uriToAdd));
             }
         }
 

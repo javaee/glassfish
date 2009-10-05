@@ -49,6 +49,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLClassLoader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -252,7 +253,7 @@ public class FacadeLaunchable implements Launchable {
      * @throws java.io.IOException
      * @throws org.xml.sax.SAXParseException
      */
-    public ApplicationClientDescriptor getDescriptor(final ACCClassLoader loader) throws IOException, SAXParseException {
+    public ApplicationClientDescriptor getDescriptor(final URLClassLoader loader) throws IOException, SAXParseException {
         if (acDesc == null) {
             /*
              * To support managed beans, perform anno processing which requires
@@ -263,7 +264,8 @@ public class FacadeLaunchable implements Launchable {
              * load the descriptor.
              */
             final AppClientArchivist arch = getFacadeArchivist();
-            acDesc = LaunchableUtil.openWithAnnoProcessingAndTempLoader(arch, loader, facadeClientRA);
+            acDesc = LaunchableUtil.openWithAnnoProcessingAndTempLoader(
+                    arch, loader, facadeClientRA, clientRA);
             Application.createApplication(habitat, null, acDesc.getModuleDescriptor());
 
             final Manifest facadeMF = facadeClientRA.getManifest();

@@ -205,18 +205,46 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      */
     public T open(ReadableArchive archive)
             throws IOException, SAXParseException {
-        return open(archive, null);
+        return open(archive, (Application) null);
     }
 
-    public T open(ReadableArchive archive, Application app)
+    public T open(final ReadableArchive descriptorArchive,
+            final ReadableArchive contentArchive) throws IOException, SAXParseException {
+        return open(descriptorArchive, contentArchive, null);
+    }
+    /**
+     * Creates the DOL object graph for an app for which the descriptor(s)
+     * reside in one archive and the content resides in another.
+     * <p>
+     * This allows the app client container to use both the generated JAR
+     * which contains the descriptors that are filled in during deployment and
+     * also the developer's original JAR which contains the classes that
+     * might be subject to annotation processing.
+     *
+     * @param descriptorArchive archive containing the descriptor(s)
+     * @param contentArchive archive containing the classes, etc.
+     * @param app owning DOL application (if any)
+     * @return DOL object graph for the application
+     * 
+     * @throws IOException
+     * @throws SAXParseException
+     */
+    public T open(final ReadableArchive descriptorArchive,
+            final ReadableArchive contentArchive,
+            final Application app)
             throws IOException, SAXParseException {
-        setManifest(archive.getManifest());
+        setManifest(contentArchive.getManifest());
 
-        T descriptor = readDeploymentDescriptors(archive, app);
+        T descriptor = readDeploymentDescriptors(descriptorArchive, contentArchive, app);
         if (descriptor != null) {
-            postOpen(descriptor, archive);
+            postOpen(descriptor, contentArchive);
         }
         return descriptor;
+    }
+
+    public T open(ReadableArchive archive,
+            Application app) throws IOException, SAXParseException {
+        return open(archive, archive, app);
     }
 
     /**
@@ -306,26 +334,27 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      */
     private T readDeploymentDescriptors(ReadableArchive archive)
             throws IOException, SAXParseException {
-        return readDeploymentDescriptors(archive, null);
+        return readDeploymentDescriptors(archive, archive, null);
     }
 
-    private T readDeploymentDescriptors(ReadableArchive archive, 
-        Application app) throws IOException, SAXParseException {
+    private T readDeploymentDescriptors(ReadableArchive descriptorArchive,
+            ReadableArchive contentArchive,
+            Application app) throws IOException, SAXParseException {
 
         // read the standard deployment descriptors
-        T descriptor = readStandardDeploymentDescriptor(archive);
+        T descriptor = readStandardDeploymentDescriptor(descriptorArchive);
         if (descriptor instanceof BundleDescriptor) {
             ((BundleDescriptor)descriptor).setApplication(app);
         }
 
         ModuleDescriptor newModule = createModuleDescriptor(descriptor);
-        newModule.setArchiveUri(archive.getURI().getSchemeSpecificPart());
+        newModule.setArchiveUri(contentArchive.getURI().getSchemeSpecificPart());
 
         Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions = new HashMap<ExtensionsArchivist, RootDeploymentDescriptor>();
         if (extensionsArchivists!=null) {
             for (ExtensionsArchivist extension : extensionsArchivists) {
                 if (extension.supportsModuleType(getModuleType())) {
-                    Object o = extension.open(this, archive, descriptor);
+                    Object o = extension.open(this, descriptorArchive, descriptor);
                     if (o instanceof RootDeploymentDescriptor) {
                         extension.addExtension(descriptor, (RootDeploymentDescriptor) o);
                         extensions.put(extension, (RootDeploymentDescriptor) o);
@@ -336,24 +365,24 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             }
         }
 
-        postStandardDDsRead(descriptor, archive);
+        postStandardDDsRead(descriptor, contentArchive);
 
-        readAnnotations(archive, descriptor, extensions);
-        postAnnotationProcess(descriptor, archive);
+        readAnnotations(contentArchive, descriptor, extensions);
+        postAnnotationProcess(descriptor, contentArchive);
 
         // now read the runtime deployment descriptors
-        readRuntimeDeploymentDescriptor(archive, descriptor);
+        readRuntimeDeploymentDescriptor(descriptorArchive, descriptor);
 
         // read extensions runtime deployment descriptors if any
         for (Map.Entry<ExtensionsArchivist, RootDeploymentDescriptor> extension : extensions.entrySet()) {
             // after standard DD and annotations are processed, we should
             // an extension descriptor now
             if (extension.getValue() != null) {
-                extension.getKey().readRuntimeDeploymentDescriptor(this, archive, extension.getValue());
+                extension.getKey().readRuntimeDeploymentDescriptor(this, descriptorArchive, extension.getValue());
             }
         }
 
-        postRuntimeDDsRead(descriptor, archive);
+        postRuntimeDDsRead(descriptor, contentArchive);
 
         return descriptor;
     }

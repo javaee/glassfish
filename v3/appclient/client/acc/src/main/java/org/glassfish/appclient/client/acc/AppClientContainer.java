@@ -52,6 +52,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
@@ -247,7 +248,7 @@ public class AppClientContainer {
 
     private ClientMainClassSetting clientMainClassSetting = null;
 
-    private ACCClassLoader classLoader = (ACCClassLoader) Thread.currentThread().getContextClassLoader();
+    private URLClassLoader classLoader = (URLClassLoader) Thread.currentThread().getContextClassLoader();
 
     private Collection<EntityManagerFactory> emfs = null;
 
@@ -283,7 +284,7 @@ public class AppClientContainer {
             final Properties containerProperties,
             final ClientCredential clientCredential,
             final CallbackHandler callerSuppliedCallbackHandler,
-            final ACCClassLoader classLoader,
+            final URLClassLoader classLoader,
             final boolean isTextAuth) throws InstantiationException,
                 IllegalAccessException, InjectionException, ClassNotFoundException,
                 IOException,
