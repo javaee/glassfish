@@ -1803,7 +1803,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             if (app.isVirtual()) {
                 // Standalone web module
                 moduleName = app.getRegistrationName();
-                monitoringNodeName = moduleName;
+                monitoringNodeName = wbd.getModuleID();
             } else {
                 // Nested (inside EAR) web module
                 moduleName = wbd.getModuleDescriptor().getArchiveUri();
