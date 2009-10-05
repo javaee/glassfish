@@ -59,7 +59,7 @@ public class WebtierTests extends BaseAsadminTest {
         }
     }
 
-    @Test(groups = {"pulse"})
+    @Test(groups = {"pulse"}, dependsOnMethods = {"ensureDeletedListenerDoesNotExist"})
     public void createListenerWithOldParam() {
         String operand = LISTENER_NAME + "2";
         if (!getListeners().contains(operand)) {
@@ -94,6 +94,18 @@ public class WebtierTests extends BaseAsadminTest {
         String CMD = "delete-http-listener";
         Map<String, String> options = Collections.EMPTY_MAP;
         String operand = LISTENER_NAME;
+        String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
+//        Reporter.log("url: " + up);
+        Manifest man = super.invokeURLAndGetManifest(up);
+        String ec = GeneralUtils.getValueForTypeFromManifest(man, GeneralUtils.AsadminManifestKeyType.EXIT_CODE);
+        GeneralUtils.handleManifestFailure(man);
+    }
+
+    @Test(groups = {"pulse"}, dependsOnMethods = {"createListenerWithOldParam"})
+    public void deleteListener2() {
+        String CMD = "delete-http-listener";
+        Map<String, String> options = Collections.EMPTY_MAP;
+        String operand = LISTENER_NAME + "2";
         String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
 //        Reporter.log("url: " + up);
         Manifest man = super.invokeURLAndGetManifest(up);
