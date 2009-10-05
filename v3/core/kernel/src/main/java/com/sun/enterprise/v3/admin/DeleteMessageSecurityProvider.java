@@ -78,9 +78,12 @@ public class DeleteMessageSecurityProvider implements AdminCommand {
     String providerId;
  
     // auth-layer can only be SOAP | HttpServlet
-    @Param(name="layer")
+    @Param(name="layer",defaultValue="SOAP")
     String authLayer;
     
+    @Param(optional=true)
+    String target;
+
     @Inject
     SecurityService securityService;   
 

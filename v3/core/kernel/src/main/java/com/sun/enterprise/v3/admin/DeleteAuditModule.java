@@ -75,7 +75,10 @@ public class DeleteAuditModule implements AdminCommand {
 
     @Param(name="auditmodulename", primary=true)
     String auditModuleName;
- 
+
+    @Param(optional=true)
+    String target;
+
     @Inject
     SecurityService securityService;
 
