@@ -245,18 +245,18 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 				if(LoggingXMLNames.xmltoPropsMap.get(key) != null) {
 					key = LoggingXMLNames.xmltoPropsMap.get(key);
 				}
-/*
+
                 if (key.equals("com.sun.enterprise.server.logging.GFFileHandler.file")) {
                     String s = props.getProperty(key);
-                    if (s.contains("{com.sun.aas.instanceRoot}")){
+                    if (s.contains("${com.sun.aas.instanceRoot}")){
                         String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
-                        String f = s.replace("{com.sun.aas.instanceRoot}",instanceRoot );
+                        String f = s.replace("${com.sun.aas.instanceRoot}",instanceRoot );
                         s = f;
                         m.put(key, s);
                         break;
                     }
                 }
- */
+
                 //System.out.println("Debug "+key+ " " + props.getProperty(key));
         	    m.put(key, props.getProperty(key));
                 
