@@ -346,6 +346,16 @@ public interface ConnectorRuntime extends ConnectorConstants{
                throws ConnectorRuntimeException ;
 
     /**
+     * Obtains all the Admin object implementation class names of the admin-object-interface for a rar
+     * @param rarName rar moduleName
+     * @param intfName admin-object-interface-name
+     * @return Array of admin object interface names.
+     * @throws ConnectorRuntimeException when unable to obtain admin object interface names
+     */
+    public String[] getAdminObjectClassNames(String rarName, String intfName)
+        throws ConnectorRuntimeException;
+
+    /**
      * checks whether the specified intfName, className has presence in
      * admin objects of the RAR
      * @param rarName resource-adapter name

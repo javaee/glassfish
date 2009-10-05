@@ -104,7 +104,10 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
     
     /**Value of type String[] for Map from {@link #getAdminObjectInterfaceNames}*/
     public static final String ADMIN_OBJECT_INTERFACES_KEY = "AdminObjectInterfacesKey";
-    
+
+    /**Value of type String[] for Map from {@link #getAdminObjectClassNames}*/
+    public static final String ADMIN_OBJECT_CLASSES_KEY = "AdminObjectClassesKey";
+
     /**Value of type Map for Map from {@link #getResourceAdapterConfigProps}*/
     public static final String RESOURCE_ADAPTER_CONFIG_PROPS_KEY = "ResourceAdapterConfigPropsKey";
     
@@ -158,6 +161,10 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("List of administered object interfaces for the given resource-adapter")
     public Map<String, Object> getAdminObjectInterfaceNames(@Param(name = "rarName") String rarName);
+
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("List of administered object class names for the given resource-adapter and administered object interface name")
+    public Map<String, Object> getAdminObjectClassNames(@Param(name = "rarName") String rarName, @Param(name="intfName") String intfName);
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("List of resource adapter configuration properties of a resource-adapter")

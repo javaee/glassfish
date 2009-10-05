@@ -521,6 +521,14 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     /**
      * {@inheritDoc}
      */
+    public String[] getAdminObjectClassNames(String rarName, String intfName)
+            throws ConnectorRuntimeException {
+        return configParserAdmService.getAdminObjectClassNames(rarName, intfName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasAdminObject(String rarName, String intfName, String className)
                 throws ConnectorRuntimeException{
         return configParserAdmService.hasAdminObject(rarName, intfName, className);

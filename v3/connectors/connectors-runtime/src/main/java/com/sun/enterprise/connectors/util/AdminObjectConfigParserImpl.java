@@ -173,6 +173,41 @@ public class AdminObjectConfigParserImpl implements AdminObjectConfigParser {
     }
 
     /**
+     * gets the adminObjectClassNames pertaining to a rar & a specific
+     * adminObjectInterfaceName
+     *
+     * @param desc ConnectorDescriptor pertaining to rar.
+     * @param intfName admin-object-interface name
+     * @return Array of AdminObjectInterface names as Strings
+     * @throws ConnectorRuntimeException if parsing fails
+     */
+    public String[] getAdminObjectClassNames(ConnectorDescriptor desc, String intfName)
+            throws ConnectorRuntimeException {
+
+        if (desc == null) {
+            throw new ConnectorRuntimeException("Invalid arguments");
+        }
+
+        Set adminObjectSet = desc.getAdminObjects();
+        if (adminObjectSet == null || adminObjectSet.size() == 0) {
+            return null;
+        }
+        String[] adminObjectClassNames = new String[adminObjectSet.size()];
+        Iterator it = adminObjectSet.iterator();
+        AdminObject aor = null;
+        Set<String> adminObjectClasses = new HashSet<String>();
+        for (int i = 0; it.hasNext(); ++i) {
+            aor = (AdminObject) it.next();
+            String adminObjectIntfName = aor.getAdminObjectInterface();
+            if(adminObjectIntfName.equals(intfName)){
+                adminObjectClasses.add(aor.getAdminObjectClass());
+            }
+        }
+        adminObjectClassNames = adminObjectClasses.toArray(adminObjectClassNames);
+        return adminObjectClassNames;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public boolean hasAdminObject(ConnectorDescriptor desc, String intfName, String className)
