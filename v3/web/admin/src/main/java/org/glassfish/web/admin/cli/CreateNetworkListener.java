@@ -35,106 +35,86 @@
  */
 package org.glassfish.web.admin.cli;
 
+import java.beans.PropertyVetoException;
 import java.util.List;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
+import com.sun.grizzly.config.dom.Protocol;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
-import com.sun.enterprise.config.serverbeans.Configs;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListeners;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.Transports;
-import com.sun.grizzly.config.dom.Transport;
-
-import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import java.beans.PropertyVetoException;
-
 /**
  * Command to create Network Listener
- * 
  */
-@Service(name="create-network-listener")
+@Service(name = "create-network-listener")
 @Scoped(PerLookup.class)
 @I18n("create.network.listener")
 public class CreateNetworkListener implements AdminCommand {
-    
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CreateNetworkListener.class);
-
-    @Param(name="address", optional=true)
+    @Param(name = "address", optional = true)
     String address;
-
-    @Param(name="listenerport", optional=false)
+    @Param(name = "listenerport", optional = false)
     String port;
-             
-    @Param(name="threadpool", optional=true, defaultValue = "http-thread-pool")
+    @Param(name = "threadpool", optional = true, defaultValue = "http-thread-pool")
     String threadPool;
-
-    @Param(name="protocol", optional=false)
+    @Param(name = "protocol", optional = false)
     String protocol;
-
-    @Param(name="name", primary=true)
+    @Param(name = "name", primary = true)
     String listenerName;
-
-    @Param(name="transport", optional=true, defaultValue = "tcp")
+    @Param(name = "transport", optional = true, defaultValue = "tcp")
     String transport;
-
-    @Param(name="enabled", optional=true)
+    @Param(name = "enabled", optional = true)
     String enabled;
-
     @Inject
     Configs configs;
+    @Inject
+    Habitat habitat;
 
     /**
-     * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
+     * the values the parameter values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-
-        List <Config> configList = configs.getConfig();
+        List<Config> configList = configs.getConfig();
         Config config = configList.get(0);
         NetworkConfig networkConfig = config.getNetworkConfig();
-        
         NetworkListeners nls = networkConfig.getNetworkListeners();
-        
-        // ensure we don't have one of this name already 
-        for (NetworkListener networkListener: nls.getNetworkListener()) {
+        // ensure we don't have one of this name already
+        for (NetworkListener networkListener : nls.getNetworkListener()) {
             if (networkListener.getName().equals(listenerName)) {
                 report.setMessage(localStrings.getLocalString(
                     "create.network.listener.fail.duplicate",
                     "Network Listener named {0} already exists.",
                     listenerName));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;                    
+                return;
             }
         }
-        
         try {
             ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
-
-                public Object run(NetworkListeners param)
-                throws PropertyVetoException, TransactionFailure {
-
-                    NetworkListener newNetworkListener =
-                        param.createChild(NetworkListener.class);
-                    
+                public Object run(NetworkListeners param) throws TransactionFailure {
+                    NetworkListener newNetworkListener = param.createChild(NetworkListener.class);
                     newNetworkListener.setProtocol(protocol);
                     newNetworkListener.setTransport(transport);
                     newNetworkListener.setEnabled(enabled);
@@ -142,20 +122,30 @@ public class CreateNetworkListener implements AdminCommand {
                     newNetworkListener.setThreadPool(threadPool);
                     newNetworkListener.setName(listenerName);
                     newNetworkListener.setAddress(address);
-                                        
                     param.getNetworkListener().add(newNetworkListener);
+                    updateVirtualServer(newNetworkListener);
                     return newNetworkListener;
                 }
             }, nls);
-
-        } catch(TransactionFailure e) {
-            report.setMessage(localStrings.getLocalString(
-                "create.network.listener.fail", 
-                "{0} create failed ", listenerName));
+        } catch (TransactionFailure e) {
+            report.setMessage(
+                localStrings.getLocalString("create.network.listener.fail", "{0} create failed ", listenerName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+    }
+
+    private void updateVirtualServer(final NetworkListener listener) throws TransactionFailure {
+        final Protocol prot = listener.findHttpProtocol();
+        if(prot != null) {
+            ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
+                public Object run(final VirtualServer param) throws PropertyVetoException {
+                    param.addNetworkListener(listener.getName());
+                    return null;
+                }
+            }, habitat.getComponent(VirtualServer.class, prot.getHttp().getDefaultVirtualServer()));
+        }
     }
 }

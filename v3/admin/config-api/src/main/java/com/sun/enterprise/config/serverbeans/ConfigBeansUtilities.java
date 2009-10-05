@@ -371,6 +371,14 @@ public final class ConfigBeansUtilities {
         }
     }
 
+    public static String join(Iterable<String> list, String delimiter) {
+        StringBuilder builder = new StringBuilder();
+        for (String string : list) {
+            if (builder.length() != 0) {
+                builder.append(delimiter);
+            }
+            builder.append(string);
+        }
+        return builder.toString();
+    }
 }
-
-
