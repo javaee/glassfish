@@ -65,13 +65,13 @@ public class EmbeddedInhabitantsParser implements InhabitantsParserDecorator {
     public void decorate(InhabitantsParser parser) {
 
         // we don't want to reconfigure the loggers.
-        parser.drop(LogManagerService.class);
 
         parser.drop(AdminConsoleAdapter.class);
 
         String enableCLI = System.getenv("GF_EMBEDDED_ENABLE_CLI");
         if (enableCLI == null || !enableCLI.equalsIgnoreCase("true")) {
             parser.drop(PublicAdminAdapter.class);
+            parser.drop(LogManagerService.class);
             parser.drop(PrivateAdminAdapter.class);
         }
         parser.replace(GFDomainXml.class, EmbeddedDomainXml.class);
