@@ -79,9 +79,7 @@
                 </sun:hyperlink>
             "</span>
             <!afterCreate
-            getClientId(component="$this{component}" clientId=>$attribute{panelGroupId})
-            getUIComponent(clientId="#{panelGroupId}"  component=>$attribute{pg})
-            includeIntegrations(type="org.glassfish.admingui:mastheadStatusArea" root="#{pg}");
+                includeIntegrations(type="org.glassfish.admingui:mastheadStatusArea" root="$this{component}");
             />
         </sun:panelGroup>
     </facet>
