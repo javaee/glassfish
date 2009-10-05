@@ -260,7 +260,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.webbeans</groupId>
-            <artifactId>jsr299-api</artifactId>
+            <artifactId>webbeans-osgi-bundle</artifactId>
             <version>${webbeans.version}</version>
             <optional>true</optional>
         </dependency>

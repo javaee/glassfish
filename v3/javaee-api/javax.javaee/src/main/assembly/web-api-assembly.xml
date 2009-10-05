@@ -60,6 +60,7 @@
                 <include>org.glassfish:javax.xml.soap</include>
                 <include>org.glassfish:bean-validator</include>
                 <include>org.jboss.webbeans:jsr299-api</include>
+                <include>javax.inject:inject-api</include>
                 <include>org.glassfish.web:jstl-impl</include>
             </includes>
         </dependencySet>

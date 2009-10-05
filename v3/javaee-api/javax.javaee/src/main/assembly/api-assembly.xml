@@ -61,6 +61,7 @@
                 <include>org.glassfish:javax.jms</include>
                 <include>org.glassfish:bean-validator</include>
                 <include>org.jboss.webbeans:jsr299-api</include>
+                <include>javax.inject:inject-api</include>
                 <include>com.sun.messaging.mq:jaxm-api</include>
                 <include>org.glassfish.web:jstl-impl</include>
                 <include>javax.xml:webservices-api-osgi</include>
