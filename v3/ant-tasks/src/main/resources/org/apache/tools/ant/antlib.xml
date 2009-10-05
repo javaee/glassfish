@@ -43,6 +43,7 @@
     <taskdef name="glassfish-embedded-web-start"   classname="org.glassfish.ant.embedded.tasks.StartWebTask"/>
     <taskdef name="glassfish-embedded-start"  classname="org.glassfish.ant.embedded.tasks.StartServerTask"/>
     <taskdef name="glassfish-embedded-admin"  classname="org.glassfish.ant.embedded.tasks.AdminTask"/>
+    <taskdef name="glassfish-embedded-undeploy"  classname="org.glassfish.ant.embedded.tasks.UndeployTask"/>
 
     <taskdef name="glassfish-admin"    classname="org.glassfish.ant.tasks.AdminTask"/>
     <taskdef name="glassfish-start"    classname="org.glassfish.ant.tasks.StartServerTask"/>
