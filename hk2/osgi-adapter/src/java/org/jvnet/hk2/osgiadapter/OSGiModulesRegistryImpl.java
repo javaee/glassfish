@@ -127,6 +127,13 @@ public class OSGiModulesRegistryImpl
         try {
             final Bundle bundle = event.getBundle();
             switch (event.getType()) {
+                case BundleEvent.RESOLVED : {
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.fine("[" + bundle.getBundleId() + "] " + bundle.getSymbolicName() +  " resolved");
+                    }
+                    break;
+                } 
+
                 case BundleEvent.INSTALLED :
                 {
                     // call add as it processes provider names

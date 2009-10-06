@@ -521,8 +521,8 @@ public final class OSGiModuleImpl implements Module {
 
     public String toString() {
         return "Bundle Id [" + bundle.getBundleId()
-                + "], Module Definition [" + md.toString()
-                + "], State [" + toString(bundle.getState()) + "]";
+                + "]\t State [" + toString(bundle.getState())
+                + "]\t [" + md.toString() + "]";
     }
 
     @Override
