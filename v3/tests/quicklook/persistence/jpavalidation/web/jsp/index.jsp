@@ -35,10 +35,23 @@
 -->
 <html>
 <body>
-<h2>Jpa in JavaEE environment (InjectEMF and UserTransaction)</h2>
-<h3>Relationship and Lazy Loading!</h3>
-<a href="jpa?testcase=llinit">Step 1. Persisting Entities with Mx1 Relationship</a> <br>
-<a href="jpa?testcase=llfind">Step 2. Checking Lazy Loading by Find</a> <br>
-<a href="jpa?testcase=llquery">Step 3. Checking Lazy Loading by Query</a> <br>
+<h2>JPA Validation Tests</h2>
+<br>
+The entity Employee has a validation constraint of size 5.
+The tests check ConstraintViolationException and expected resuls to persist, update, remove an employee with the name longer than 5.
+<br>
+<ul>
+<li>
+<a href="test?tc=initialize">Step 1. Persist a project with a few employees with short name</a> </li>
+<ul><li>Expected Result: The project and employees are in database.</li></ul>
+<li><a href="test?tc=validatePersist">Step 2. Persist an employee with a long name</a> </li>
+<ul><li>Expected Result: That employee will not be in databse.</li></ul>
+<li><a href="test?tc=validateUpdate">Step 3. Update an employee with a long name</a> </li>
+<ul><li>Expected Result: The name change will not be in database.</li></ul>
+<li><a href="test?tc=validateRemove">Step 4. Remove an employee with a long name</a></li>
+<ul><li>Expected Result: That employee will be removed from database.</li></ul>
+<li><a href="test?tc=verify">Step 5. Verify the validation</a> </li>
+<ul><li>Expected Result: No employee in database has long name.</li></ul>
+</ul>
 </body>
 </html>
