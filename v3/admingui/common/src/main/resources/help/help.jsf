@@ -72,10 +72,10 @@
 	    <dynamicTreeNode
 		treeAdaptorClass="org.glassfish.admingui.common.help.HelpTreeAdaptor"
 		toc="$attribute{toc}">
-		    <!beforeCreate
-    setPageSessionAttribute(key="newVR" value="set");
+		    <ui:event type="beforeCreate">
+                        setPageSessionAttribute(key="newVR" value="set");
 			getHelpTOC("en" toc="#{requestScope.toc}");
-		    />
+		    </ui:event>
 	    </dynamicTreeNode>
 	"</div>
 	"<div id="helpContent" class="helpContentBox">
