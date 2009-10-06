@@ -41,7 +41,6 @@ import com.sun.enterprise.deployment.Application;
 
 import com.sun.logging.LogDomains;
 
-import org.apache.catalina.Globals;
 import org.apache.catalina.util.Base64;
 
 import javax.servlet.ServletException;
@@ -52,12 +51,12 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.security.auth.login.LoginException;
 import org.glassfish.webservices.monitoring.Endpoint;
 import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
 import org.glassfish.webservices.monitoring.WebServiceTesterServlet;
 import org.glassfish.ejb.api.EjbEndpointFacade;
 import org.glassfish.ejb.spi.WSEjbEndpointRegistry;
-import org.glassfish.webservices.EjbMessageDispatcher;
 
 /**
  * Servlet responsible for invoking EJB webservice endpoint.
@@ -165,14 +164,18 @@ public class EjbWebServiceServlet extends HttpServlet {
                 // use the same logic as BasicAuthenticator
                 realmName = hreq.getServerName() + ":" + hreq.getServerPort();
             }
-
+            boolean loginFailure = false;
             try {
                 if (secServ != null) {
                     WebServiceContextImpl context = (WebServiceContextImpl) ((EjbRuntimeEndpointInfo) ejbEndpoint).getWebServiceContext();
                     authenticated = secServ.doSecurity(hreq, ejbEndpoint, realmName, context);
                 }
-
-            } catch(Exception e) {
+            } catch (LoginException e) {
+                logger.log(Level.WARNING, "authentication failed for " +
+                        ejbEndpoint.getEndpoint().getEndpointName(),
+                        e);
+                loginFailure = true;
+            } catch (Exception e) {
                 //sendAuthenticationEvents(false, hreq.getRequestURI(), null);
                 logger.log(Level.WARNING, "authentication failed for " +
                         ejbEndpoint.getEndpoint().getEndpointName(),
@@ -180,8 +183,10 @@ public class EjbWebServiceServlet extends HttpServlet {
             }
 
             if (!authenticated) {
-                hresp.setHeader("WWW-Authenticate",
-                        "Basic realm=\"" + realmName + "\"");
+                if (!loginFailure) {
+                    hresp.setHeader("WWW-Authenticate",
+                            "Basic realm=\"" + realmName + "\"");
+                }
                 hresp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
