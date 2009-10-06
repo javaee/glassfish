@@ -225,10 +225,10 @@ public class SystemPropertyConstants
 
     /** A method that returns the passed String as a property that can
      * be replaced at run time.
-     * @param a String that represents a property, e.g INSTANCE_ROOT_PROPERTY
+     * @param name String that represents a property, e.g INSTANCE_ROOT_PROPERTY
      * in this class. The String may not be null.
      * @return a String that represents the replaceable value of passed String. Generally
-     * speaking it will be decorated with a pair of braces.
+     * speaking it will be decorated with a pair of braces with $ in the front (e.g. "a" will be returned as "${a}").
      * @throws IllegalArgumentException if the passed String is null
      */
 	public static final String getPropertyAsValue(final String name) {

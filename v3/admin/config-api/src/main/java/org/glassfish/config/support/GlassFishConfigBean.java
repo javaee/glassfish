@@ -60,7 +60,7 @@ public final class GlassFishConfigBean extends ConfigBean {
 
     /**
      * Returns the translated view of a configuration object
-     * @param s the config-apu interface implementation
+     * @param s the config-api interface implementation
      * @return the new interface implementation providing the raw view
      */
     public static <T  extends ConfigBeanProxy> T getRawView(T s) {

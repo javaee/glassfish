@@ -51,8 +51,12 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.Dom;
 
 import java.beans.PropertyVetoException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Delete System Property Command
@@ -108,6 +112,20 @@ public class DeleteSystemProperty implements AdminCommand {
             report.setMessage(msg);
             return;
         }
+        if (definitions(propName) == 1) { //implying user is deleting the "last" definition of this property
+            List<String> refs = new ArrayList<String>();
+            Dom root = Dom.unwrap(domain);
+            String sysPropName = SystemPropertyConstants.getPropertyAsValue(propName);
+            listRefs(root, sysPropName, refs);
+            if (!refs.isEmpty()) {
+                //there are some references
+                String msg = localStrings.getLocalString("cant.delete.referenced.property",
+                        "System Property {0} is referenced by {1} in the configuration. Please remove the references first.", propName, Arrays.toString(refs.toArray()));
+                report.setMessage(msg);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+        }
         //now we are sure that the target exits in the config, just remove the given property
         try {
             ConfigSupport.apply(new SingleConfigCode<SystemPropertyBag>() {
@@ -118,11 +136,47 @@ public class DeleteSystemProperty implements AdminCommand {
             }, spb);
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             String msg = localStrings.getLocalString("delete.sysprops.ok",
-                    "System Property named {0} deleted from given target {1}. Make sure that you remove any references to this property from configuration", propName, target);
+                    "System Property named {0} deleted from given target {1}. Make sure you check its references.", propName, target);
             report.setMessage(msg);
         } catch (TransactionFailure tf) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(tf);
+        }
+    }
+
+    private int definitions(String propName) {
+        //are there multiple <system-property> definitions for the given name?
+        int defs = 0;
+        SystemPropertyBag bag = domain;
+        if (bag.containsProperty(propName))
+            defs++;
+        bag = domain.getServerNamed(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME); //this is deliberate, as V3 has single server
+        if (bag != null && bag.containsProperty(propName))
+            defs++;
+        return defs;
+    }
+
+    private static void listRefs(Dom dom, String value, List<String> refs) {
+        //this method is rather ugly, but it works. See 9340 which presents a compatibility issue
+        //frankly, it makes no sense to do an extensive search of all references of <system-property> being deleted,
+        //but that's what resolution of this issue demands. --- Kedar 10/5/2009
+        for (String aname : dom.getAttributeNames()) {
+            String raw = dom.rawAttribute(aname);
+            if (raw != null && raw.equals(value)) {
+                refs.add(dom.model.getTagName() + ":" + aname);
+            }
+        }
+        for (String ename : dom.getElementNames()) {
+            List<Dom> nodes = null;
+            try {
+                nodes = dom.nodeElements(ename);
+            } catch(Exception e) {
+                //ignore, in some situations, HK2 might throw ClassCastException here
+            }
+            if (nodes != null) {
+                for (Dom node : nodes)
+                    listRefs(node, value, refs);  //beware: recursive call ...
+            }
         }
     }
 }

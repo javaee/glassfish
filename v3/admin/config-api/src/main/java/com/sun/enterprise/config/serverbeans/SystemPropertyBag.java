@@ -46,7 +46,7 @@ import java.util.List;
 /**
  * Base interface for those configuration objects that has nested &lt;system-property> elements.
  * <p>
- * <b>Important: document legal properties using {@link PropertiesDesc}, one {@link PropertyDesc}
+ * <b>Important: document legal properties using PropertiesDesc, one PropertyDesc
  * for each legal system-property</b>.
  */
 public interface SystemPropertyBag extends ConfigBeanProxy {
