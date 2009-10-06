@@ -39,7 +39,7 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.types.PropertyBag;
-import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ApplicationName;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.quality.ToDo;
@@ -56,7 +56,7 @@ import javax.validation.constraints.NotNull;
 
 
 @Configured
-public interface AppclientModule extends ConfigBeanProxy, Injectable, Named, PropertyBag {
+public interface AppclientModule extends Injectable, ApplicationName, PropertyBag {
     
     /**
      * Gets the value of the location property.

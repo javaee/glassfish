@@ -65,7 +65,7 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured(name="j2ee-application") // name is necessary as hk2 name mangling will create j2-ee-application
-public interface J2eeApplication extends ConfigBeanProxy, Injectable, Named, PropertyBag {
+public interface J2eeApplication extends ConfigBeanProxy, Injectable, ApplicationName, PropertyBag {
 
     /**
      * Gets the value of the location property.

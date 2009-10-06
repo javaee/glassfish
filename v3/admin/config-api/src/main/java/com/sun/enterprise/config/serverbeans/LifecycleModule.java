@@ -64,7 +64,7 @@ import javax.validation.constraints.Min;
 }) */
 
 @Configured
-public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, PropertyBag {
+public interface LifecycleModule extends ConfigBeanProxy, Injectable, ApplicationName, PropertyBag {
 
     /**
      * Gets the value of the className property.

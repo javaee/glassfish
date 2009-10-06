@@ -64,7 +64,7 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured
-public interface ConnectorModule extends ConfigBeanProxy, Injectable, Named, PropertyBag {
+public interface ConnectorModule extends ConfigBeanProxy, Injectable, ApplicationName, PropertyBag {
 
     /**
      * Gets the value of the location property.

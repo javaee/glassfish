@@ -65,7 +65,7 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured
-public interface EjbModule extends ConfigBeanProxy, Injectable, Named, PropertyBag {
+public interface EjbModule extends ConfigBeanProxy, Injectable, ApplicationName, PropertyBag {
 
     /**
      * Gets the value of the location property.

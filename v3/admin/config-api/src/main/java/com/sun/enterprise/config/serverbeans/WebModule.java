@@ -62,7 +62,7 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured
-public interface WebModule extends ConfigBeanProxy, Injectable, Named, PropertyBag {
+public interface WebModule extends ConfigBeanProxy, Injectable, ApplicationName, PropertyBag {
 
     /**
      * Gets the value of the contextRoot property.
