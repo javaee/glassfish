@@ -61,7 +61,6 @@
         if(#{resChosen}) {
             getFactoryClass(resType="$attribute{resChosen}", result="#{pageSession.factoryClass}");
             mapPut(map="#{pageSession.valueMap}" key="Name" value="#{Name}")
-            mapPut(map="#{pageSession.valueMap}" key="ObjectType" value="#{objectType}")   
             mapPut(map="#{pageSession.valueMap}" key="Description" value="#{desc}") 
             mapPut(map="#{pageSession.valueMap}" key="Enabled" value="true")
             mapPut(map="#{pageSession.valueMap2}" key="Enabled" value="#{status}")

@@ -33,7 +33,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- full/jndiResource.inc -->
+<!-- full/jndiResourceAttr.inc -->
 
 
 <!-- PropertySheet .... -->
@@ -112,13 +112,6 @@
                     />
              </sun:textField>
         </sun:property>
-        <sun:property id="objectTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.ObjectType}" >
-            <sun:dropDown id="ObjectType" selected="#{pageSession.valueMap['ObjectType']}" labels={ "$resource{i18njmail.connectors.User}"  "$resource{i18njmail.connectors.systemAdmin}" } values={ "user" "system-admin" } >
-                <!afterCreate
-                    getClientId(component="$this{component}" clientId=>$page{objectTypeId});
-                />
-           </sun:dropDown>
-        </sun:property>   
         <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}" >helpText="$resource{i18n.full.descHelp}">
             <sun:textField id="desc" columns="$int{70}" text="#{pageSession.valueMap['Description']}" >
             <!afterCreate
