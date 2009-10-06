@@ -166,6 +166,10 @@ public class HelpTreeAdaptor extends TreeAdaptorBase {
 	    // This case deals with the top node.
 	    // Do (almost) nothing so that the root node does not show up...
 	    props.put("clientSide", true);
+	    Object value = getLayoutComponent().getOption("style");
+	    if (value != null) {
+		props.put("style", value);
+	    }
 	    return props;
 	} else if (!(nodeObject instanceof TOCItem)) {
 	    throw new IllegalArgumentException("Invalid node type for TOC: "
