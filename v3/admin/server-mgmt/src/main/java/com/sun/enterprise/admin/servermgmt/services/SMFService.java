@@ -75,11 +75,6 @@ public final class SMFService implements Service {
     public static final String AS_ADMIN_PATH_TN             = "AS_ADMIN_PATH";
     public static final String CREDENTIALS_TN               = "CREDENTIALS";
     public static final String SERVICE_NAME_TN              = "NAME";
-
-
-
-
-
     public static final String SERVICE_TYPE_TN              = "TYPE";
     public static final String CFG_LOCATION_TN              = "LOCATION";
     public static final String ENTITY_NAME_TN               = "ENTITY_NAME";
@@ -117,7 +112,7 @@ public final class SMFService implements Service {
     private final Map<String, String> pairs;
     private boolean trace = true;
     private boolean dryRun;
-    
+    private String  shortName;
     /**
      * Creates SMFService instance. All the tokens are initialized to default values. 
      * Callers must verify that the tokens are properly token-replaced before
@@ -164,6 +159,7 @@ public final class SMFService implements Service {
     public void setName(final String name) {
         if (name == null)
             throw new IllegalArgumentException(nullArgMsg);
+        shortName = name;
         final String fullName = SERVICE_NAME_PREFIX + name;
         if (serviceNameExists(fullName)) {
             final String msg = sm.getString("serviceNameExists", fullName);
@@ -511,7 +507,14 @@ public final class SMFService implements Service {
 }
 
     public String getSuccessMessage() {
-        return strings.get("SMFServiceCreated", getName(), getType().toString(), getLocation(), getManifestFilePath());
+        String msg = strings.get("SMFServiceCreated", getName(), getType().toString(),
+                getLocation(), getManifestFilePath(), shortName);
+
+        if(dryRun) {
+            msg += strings.get("dryrun");
+        }
+
+        return msg;
     }
 
     ////////////////////// PRIVATE METHODS ////////////////////
