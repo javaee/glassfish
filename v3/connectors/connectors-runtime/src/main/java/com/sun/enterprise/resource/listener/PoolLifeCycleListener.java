@@ -127,4 +127,15 @@ public interface PoolLifeCycleListener {
      * @param steadyPoolSize
      */
     void incrementNumConnFree(boolean beingDestroyed, int steadyPoolSize);
+    
+    /**
+     * indicates that the wait queue length has increased.
+     */
+    void connectionRequestQueued();
+    
+    /**
+     * indicates that the wait queue length has decreased.
+     */
+    void connectionRequestDequeued();
+
 }

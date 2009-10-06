@@ -99,16 +99,14 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
                             //potentially usable
                             localResource.remove();
                             ar.setAssociated(false);
-                            //TODO V3 : enabled matched/unmatched.
-                            /*if(poolLifeCycleListener != null){
+                            if(poolLifeCycleListener != null){
                                 poolLifeCycleListener.connectionNotMatched();
-                            }*/
+                            }
                             return null;
                         }
-                        //TODO V3 : enable matched/unmatched
-                        /*if(poolLifeCycleListener != null){
+                        if(poolLifeCycleListener != null){
                             poolLifeCycleListener.connectionMatched();
-                        }*/
+                        }
                     }
 
                     setResourceStateToBusy(ar);

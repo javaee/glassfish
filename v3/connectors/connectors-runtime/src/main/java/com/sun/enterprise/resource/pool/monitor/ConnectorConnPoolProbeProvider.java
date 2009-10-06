@@ -188,4 +188,41 @@ public class ConnectorConnPoolProbeProvider {
     @Probe(name="toString")
     public void toString(@ProbeParam("poolName") String poolName,
             @ProbeParam("stackTrace") StringBuffer stackTrace) { }
+
+    /**
+     * Emits probe event/notification that a connection under test matches the 
+     * current request for the given connector connection pool <code>poolName</code>
+     * 
+     * @param poolName
+     */
+    @Probe(name="connectionMatchedEvent")
+    public void connectionMatchedEvent(@ProbeParam("poolName") String poolName) { }
+
+    /**
+     * Emits probe event/notification that a connection under test does not 
+     * match the current request for the given connector connection pool 
+     * <code>poolName</code>
+     * 
+     * @param poolName
+     */
+    @Probe(name="connectionNotMatchedEvent")
+    public void connectionNotMatchedEvent(@ProbeParam("poolName") String poolName) { }
+    
+    /**
+     * Emits probe event/notification that the wait queue length has increased 
+     * for the given connector connection pool <code>poolName</code>
+     * 
+     * @param poolName
+     */
+    @Probe(name="connectionRequestQueuedEvent")
+    public void connectionRequestQueuedEvent(@ProbeParam("poolName") String poolName) { }
+
+    /**
+     * Emits probe event/notification that the wait queue length has decreased 
+     * for the given connector connection pool <code>poolName</code>
+     * 
+     * @param poolName
+     */
+    @Probe(name="connectionRequestDequeuedEvent")
+    public void connectionRequestDequeuedEvent(@ProbeParam("poolName") String poolName) { }
 }

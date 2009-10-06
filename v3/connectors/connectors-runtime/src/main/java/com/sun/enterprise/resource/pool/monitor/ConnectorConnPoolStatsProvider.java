@@ -38,6 +38,7 @@ package com.sun.enterprise.resource.pool.monitor;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.pool.PoolLifeCycleListenerRegistry;
 import com.sun.enterprise.resource.pool.PoolStatus;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.external.statistics.CountStatistic;
 import org.glassfish.external.statistics.RangeStatistic;
@@ -110,6 +111,21 @@ public class ConnectorConnPoolStatsProvider {
     private CountStatisticImpl numPotentialConnLeak = new CountStatisticImpl(
             "numpotentialconnleak", StatisticImpl.UNIT_COUNT, 
             "Number of potential connection leaks");
+    private CountStatisticImpl numConnSuccessfullyMatched = new CountStatisticImpl(
+            "numconnsuccessfullymatched", StatisticImpl.UNIT_COUNT,
+            "Number of connections succesfully matched");
+    private CountStatisticImpl numConnNotSuccessfullyMatched = new CountStatisticImpl(
+            "numconnnotsuccessfullymatched", StatisticImpl.UNIT_COUNT,
+            "Number of connections rejected during matching");    
+    private CountStatisticImpl totalConnRequestWaitTime = new CountStatisticImpl(
+            "totalconnrequestwaittime", StatisticImpl.UNIT_COUNT,
+            "Total wait time per successful connection request");
+    private CountStatisticImpl averageConnWaitTime = new CountStatisticImpl(
+            "averageconnwaittime", StatisticImpl.UNIT_COUNT,
+            "Average wait-time-duration per successful connection request");    
+    private CountStatisticImpl waitQueueLength = new CountStatisticImpl(
+            "waitqueuelength", StatisticImpl.UNIT_COUNT, 
+            "Number of connection requests in the queue waiting to be serviced.");    
     private final String JCA_PROBE_LISTENER = "glassfish:jca:connection-pool:";
 
     public ConnectorConnPoolStatsProvider(String poolName, Logger logger) {    
@@ -125,8 +141,10 @@ public class ConnectorConnPoolStatsProvider {
     public void potentialConnLeakEvent(@ProbeParam("poolName") String poolName) {
 	// handle the conn leak probe event
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            logger.finest("Connection Leak event received - poolName = " + 
+            if(logger.isLoggable(Level.FINEST)) {
+                logger.finest("Connection Leak event received - poolName = " + 
                              poolName);
+            }
             //TODO V3: Checking if this is a valid event
             //Increment counter
             numPotentialConnLeak.increment();
@@ -141,8 +159,10 @@ public class ConnectorConnPoolStatsProvider {
     public void connectionTimedOutEvent(@ProbeParam("poolName") String poolName) {
 	// handle the conn timed out probe event
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            logger.finest("Connection Timed-out event received - poolName = " + 
+            if(logger.isLoggable(Level.FINEST)) {            
+                logger.finest("Connection Timed-out event received - poolName = " + 
                              poolName);
+            }
             //Increment counter
             numConnTimedOut.increment();
         }        
@@ -157,8 +177,10 @@ public class ConnectorConnPoolStatsProvider {
             @ProbeParam("poolName") String poolName) {
 	// handle the num conn free decrement event
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            logger.finest("Decrement Num Connections Free event received - poolName = " + 
-                             poolName);
+            if(logger.isLoggable(Level.FINEST)) {
+                logger.finest("Decrement Num Connections Free event received - poolName = " + 
+                        poolName);
+            } 
             //Decrement counter
             numConnFree.decrement();
         }
@@ -177,8 +199,10 @@ public class ConnectorConnPoolStatsProvider {
             @ProbeParam("steadyPoolSize") int steadyPoolSize) {            
 	// handle the num conn free increment event
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            logger.finest("Increment Num Connections Free event received - poolName = " + 
+            if(logger.isLoggable(Level.FINEST)) {            
+                logger.finest("Increment Num Connections Free event received - poolName = " + 
                              poolName);
+            }
             if(beingDestroyed) {
                 //if pruned by resizer thread
                 if(numConnFree.getCount() + numConnUsed.getCount() < steadyPoolSize) {
@@ -186,7 +210,7 @@ public class ConnectorConnPoolStatsProvider {
                 }                    
             } else {
                 numConnFree.increment();
-            }                        
+            }
         }
     }
     
@@ -199,8 +223,10 @@ public class ConnectorConnPoolStatsProvider {
             @ProbeParam("poolName") String poolName) {
 	// handle the num conn used decrement event
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            logger.finest("Decrement Num Connections Used event received - poolName = " + 
+            if(logger.isLoggable(Level.FINEST)) {
+                logger.finest("Decrement Num Connections Used event received - poolName = " + 
                              poolName);
+            }
             //Decrement numConnUsed counter
             numConnUsed.decrement();
         }
@@ -217,11 +243,13 @@ public class ConnectorConnPoolStatsProvider {
             @ProbeParam("count") int count) {
 	// handle the connections freed event
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            logger.finest("Connections Freed event received - poolName = " + 
-                             poolName);
-            logger.finest("numConnUsed =" + numConnUsed.getCount() + 
+            if(logger.isLoggable(Level.FINEST)) {
+                logger.finest("Connections Freed event received - poolName = " +
+                        poolName);
+                logger.finest("numConnUsed =" + numConnUsed.getCount() + 
                     " numConnFree=" + numConnFree.getCount() + 
                     " Number of connections freed =" + count);
+            }
             //set numConnFree to the count value
             numConnFree.setCount(count);
         }
@@ -236,8 +264,10 @@ public class ConnectorConnPoolStatsProvider {
             @ProbeParam("poolName") String poolName) {
 	// handle the connection used event
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            logger.finest("Connection Used event received - poolName = " + 
+            if(logger.isLoggable(Level.FINEST)) {
+                logger.finest("Connection Used event received - poolName = " + 
                              poolName);
+            }
             //increment numConnUsed
             numConnUsed.increment();
         }
@@ -251,8 +281,10 @@ public class ConnectorConnPoolStatsProvider {
     public void connectionValidationFailedEvent(
             @ProbeParam("poolName") String poolName, @ProbeParam("increment") int increment) {
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            logger.finest("Connection Validation Failed event received - " +
+            if(logger.isLoggable(Level.FINEST)) {
+                logger.finest("Connection Validation Failed event received - " +
                     "poolName = " + poolName);
+            }
             //TODO V3 : add support in CounterImpl for addAndGet(increment)
             numConnFailedValidation.increment(increment);
         }
@@ -270,9 +302,12 @@ public class ConnectorConnPoolStatsProvider {
             @ProbeParam("poolName") String poolName, 
             @ProbeParam("timeTakenInMillis") long timeTakenInMillis) {
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            logger.finest("Connection request served event received - " +
+            if(logger.isLoggable(Level.FINEST)) {            
+                logger.finest("Connection request served event received - " +
                     "poolName = " + poolName);
+            }
             connRequestWaitTime.setCurrent(timeTakenInMillis);
+            totalConnRequestWaitTime.increment(timeTakenInMillis);
         }        
     }  
     
@@ -283,8 +318,10 @@ public class ConnectorConnPoolStatsProvider {
     public void connectionDestroyedEvent(
             @ProbeParam("poolName") String poolName) {
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            logger.finest("Connection destroyed event received - " +
+            if(logger.isLoggable(Level.FINEST)) {            
+                logger.finest("Connection destroyed event received - " +
                     "poolName = " + poolName);
+            }
             numConnDestroyed.increment();
         }                
     }
@@ -296,8 +333,10 @@ public class ConnectorConnPoolStatsProvider {
     public void connectionAcquiredEvent(
             @ProbeParam("poolName") String poolName) {
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            logger.finest("Connection acquired event received - " +
+            if(logger.isLoggable(Level.FINEST)) {            
+                logger.finest("Connection acquired event received - " +
                     "poolName = " + poolName);
+            }
             numConnAcquired.increment();
         }                        
     }
@@ -309,8 +348,10 @@ public class ConnectorConnPoolStatsProvider {
     public void connectionReleasedEvent(
             @ProbeParam("poolName") String poolName) {
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            logger.finest("Connection released event received - " +
+            if(logger.isLoggable(Level.FINEST)) {            
+                logger.finest("Connection released event received - " +
                     "poolName = " + poolName);
+            }
             numConnReleased.increment();
         }                                
     }
@@ -322,8 +363,10 @@ public class ConnectorConnPoolStatsProvider {
     public void connectionCreatedEvent(
             @ProbeParam("poolName") String poolName) {
         if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            logger.finest("Connection created event received - " +
+            if(logger.isLoggable(Level.FINEST)) {            
+                logger.finest("Connection created event received - " +
                     "poolName = " + poolName);
+            }
             numConnCreated.increment();
         }                                        
     }
@@ -336,12 +379,76 @@ public class ConnectorConnPoolStatsProvider {
      */
     @Reset
     public void reset() {
-        logger.finest("Reset event received - poolName = " + ccPoolName);
+        if(logger.isLoggable(Level.FINEST)) {        
+            logger.finest("Reset event received - poolName = " + ccPoolName);
+        }
         PoolStatus status = ConnectorRuntime.getRuntime().getPoolManager().getPoolStatus(ccPoolName);
         numConnUsed.setCount(status.getNumConnUsed());
         numConnFree.setCount(status.getNumConnFree());        
     }
     
+    /**
+     * When connection under test matches the current request ,
+     * increment numConnSuccessfullyMatched.
+     */
+    @ProbeListener(JCA_PROBE_LISTENER + "connectionMatchedEvent")
+    public void connectionMatchedEvent(
+            @ProbeParam("poolName") String poolName) {
+        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
+            if(logger.isLoggable(Level.FINEST)) {
+                logger.finest("Connection matched event received - " +
+                    "poolName = " + poolName);
+            }
+            numConnSuccessfullyMatched.increment();
+        }                
+    }
+
+    /**
+     * When a connection under test does not match the current request,
+     * increment numConnNotSuccessfullyMatched.
+     */
+    @ProbeListener(JCA_PROBE_LISTENER + "connectionNotMatchedEvent")
+    public void connectionNotMatchedEvent(
+            @ProbeParam("poolName") String poolName) {
+        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
+            if(logger.isLoggable(Level.FINEST)) {
+                logger.finest("Connection not matched event received - " +
+                    "poolName = " + poolName);
+            }
+            numConnNotSuccessfullyMatched.increment();
+        }                
+    }
+    
+    /**
+     * When an object is added to wait queue, increment the waitQueueLength.
+     */
+    @ProbeListener(JCA_PROBE_LISTENER + "connectionRequestQueuedEvent")
+    public void connectionRequestQueuedEvent(
+            @ProbeParam("poolName") String poolName) {
+        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
+            if(logger.isLoggable(Level.FINEST)) {            
+                logger.finest("Wait Queue length modified event received - " +
+                    "poolName = " + poolName);
+            }
+            waitQueueLength.increment();
+        }                        
+    }
+    
+    /**
+     * When an object is removed from the wait queue, decrement the waitQueueLength.
+     */
+    @ProbeListener(JCA_PROBE_LISTENER + "connectionRequestDequeuedEvent")
+    public void connectionRequestDequeuedEvent(
+            @ProbeParam("poolName") String poolName) {
+        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
+            if(logger.isLoggable(Level.FINEST)) {            
+                logger.finest("Wait Queue length modified event received - " +
+                    "poolName = " + poolName);
+            }
+            waitQueueLength.decrement();
+        }                        
+    }
+
     protected String getCcPoolName() {
         return ccPoolName;
     }
@@ -455,4 +562,34 @@ public class ConnectorConnPoolStatsProvider {
     public CountStatistic getNumConnReleased() {
         return numConnReleased.getStatistic();
     }
+    
+    @ManagedAttribute(id="numconnsuccessfullymatched")
+    public CountStatistic getNumConnSuccessfullyMatched() {
+        return numConnSuccessfullyMatched;
+    }
+    
+    @ManagedAttribute(id="numconnnotsuccessfullymatched")
+    public CountStatistic getNumConnNotSuccessfullyMatched() {
+        return numConnNotSuccessfullyMatched;
+    }
+    @ManagedAttribute(id="averageconnwaittime")
+    public CountStatistic getAverageConnWaitTime() {
+       //Time taken by all connection requests divided by total number of 
+       //connections acquired in the sampling period.
+       long averageWaitTime = 0;        
+       if (numConnAcquired.getCount() != 0) {
+           averageWaitTime = totalConnRequestWaitTime.getCount()/ 
+                   numConnAcquired.getCount();
+       } else {
+           averageWaitTime = 0;
+       }
+
+       averageConnWaitTime.setCount(averageWaitTime);
+       return averageConnWaitTime;
+    }
+
+    @ManagedAttribute(id="waitqueuelength") 
+    public CountStatistic getWaitQueueLength() {
+        return waitQueueLength;
+    }    
 }

@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 //import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.jvnet.hk2.annotations.Inject;
@@ -119,7 +120,9 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
     }
     
     public void postConstruct() {
-        logger.finest("[Monitor]In the JDBCPoolStatsProviderBootstrap");
+        if(logger.isLoggable(Level.FINEST)) {
+            logger.finest("[Monitor]In the JDBCPoolStatsProviderBootstrap");
+        }
 
        //createMonitoringConfig();
     }
@@ -258,7 +261,9 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
      * @param poolName
      */
     public void poolCreated(String poolName) {
-        logger.finest("Pool created : " + poolName);
+        if(logger.isLoggable(Level.FINEST)) {
+            logger.finest("Pool created : " + poolName);
+        }
         if(ConnectorRuntime.getRuntime().isServer()) {
             ResourcePool pool = ConnectorRuntime.getRuntime().getConnectionPoolConfig(poolName);
             if(pool instanceof JdbcConnectionPool) {
@@ -276,7 +281,9 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
      * @param poolName
      */
     public void poolDestroyed(String poolName) {
-        logger.finest("Pool Destroyed : " + poolName);
+        if(logger.isLoggable(Level.FINEST)) {
+            logger.finest("Pool Destroyed : " + poolName);
+        }
         if (ConnectorRuntime.getRuntime().isServer()) {
             unregisterPool(poolName);
         }

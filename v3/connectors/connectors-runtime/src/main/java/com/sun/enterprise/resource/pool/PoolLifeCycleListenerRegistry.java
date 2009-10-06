@@ -191,5 +191,17 @@ public class PoolLifeCycleListenerRegistry implements PoolLifeCycleListener {
         for (PoolLifeCycleListener listener : poolListenersList) {
             listener.incrementNumConnFree(beingDestroyed, steadyPoolSize);
         }
-    }    
+    }
+
+    public void connectionRequestQueued() {
+        for (PoolLifeCycleListener listener : poolListenersList) {
+            listener.connectionRequestQueued();
+        }        
+    }
+
+    public void connectionRequestDequeued() {
+        for (PoolLifeCycleListener listener : poolListenersList) {
+            listener.connectionRequestDequeued();
+        }
+    }
 }

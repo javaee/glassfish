@@ -59,7 +59,7 @@ public interface PoolWaitQueue {
     /**
      * removes the specified object (resource request) from the queue
      */
-    void removeFromQueue(Object o);
+    boolean removeFromQueue(Object o);
 
     /**
      * removes the first object (resource request) from the queue

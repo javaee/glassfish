@@ -389,6 +389,9 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                     }
                 }
                 Object waitMonitor = waitQueue.addToQueue();
+                if(poolLifeCycleListener != null) {
+                    poolLifeCycleListener.connectionRequestQueued();
+                }
                 synchronized (waitMonitor) {
 
                     try {
@@ -406,7 +409,11 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                     if (_logger.isLoggable(Level.FINE)) {
                         _logger.log(Level.FINE, "removing wait monitor from queue: " + waitMonitor);
                     }
-                    waitQueue.removeFromQueue(waitMonitor);
+                    if(waitQueue.removeFromQueue(waitMonitor)) {
+                        if(poolLifeCycleListener != null) {
+                            poolLifeCycleListener.connectionRequestDequeued();
+                        }
+                    }
                 }
             }
         }
@@ -605,14 +612,13 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         boolean matched = true;
         if (matchConnections) {
             matched = alloc.matchConnection(resource);
-            //TODO V3 : enabled matched/unmatched
-            /*if (poolLifeCycleListener != null) {
+            if (poolLifeCycleListener != null) {
                 if (matched) {
                     poolLifeCycleListener.connectionMatched();
                 } else {
                     poolLifeCycleListener.connectionNotMatched();
                 }
-            }*/
+            }
         }
         return matched;
     }
@@ -1119,6 +1125,9 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         synchronized (waitQueue) {
             if (waitQueue.getQueueLength() > 0) {
                 waitMonitor = waitQueue.remove();
+                if(poolLifeCycleListener != null) {
+                    poolLifeCycleListener.connectionRequestDequeued();
+                }
             }
         }
         if (waitMonitor != null) {
@@ -1284,11 +1293,11 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                     if (oldSteadyPoolSize < steadyPoolSize)
                         increaseSteadyPoolSize(_steadyPoolSize);
                 } else if (poolLifeCycleListener != null) {
-                    poolLifeCycleListener.connectionsFreed(steadyPoolSize);
+                        poolLifeCycleListener.connectionsFreed(steadyPoolSize);
+                    }
                 }
             }
         }
-    }
 
     /**
      * sets advanced pool properties<br>

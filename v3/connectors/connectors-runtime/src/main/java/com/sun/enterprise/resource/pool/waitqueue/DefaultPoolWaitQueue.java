@@ -71,8 +71,8 @@ public class DefaultPoolWaitQueue implements PoolWaitQueue {
         return waitMonitor;
     }
 
-    public synchronized void removeFromQueue(Object o) {
-        list.remove(o);
+    public synchronized boolean removeFromQueue(Object o) {
+        return list.remove(o);
     }
 
 /*

@@ -104,12 +104,22 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
         jdbcProbeProvider.connectionTimedOutEvent(poolName);
     }
 
+    /**
+     * Fires probe event that a connection under test does not match the 
+     * current request for the given jdbc connection pool.
+     */
     public void connectionNotMatched() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        connectorConnProbeProvider.connectionNotMatchedEvent(poolName);
+        jdbcProbeProvider.connectionNotMatchedEvent(poolName);        
     }
 
+    /**
+     * Fires probe event that a connection under test matches the current
+     * request for the given jdbc connection pool.
+     */
     public void connectionMatched() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        connectorConnProbeProvider.connectionMatchedEvent(poolName);
+        jdbcProbeProvider.connectionMatchedEvent(poolName);        
     }
 
     /**
@@ -210,5 +220,25 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
     public void incrementNumConnFree(boolean beingDestroyed, int steadyPoolSize) {
         connectorConnProbeProvider.incrementNumConnFreeEvent(poolName, beingDestroyed, steadyPoolSize);
         jdbcProbeProvider.incrementNumConnFreeEvent(poolName, beingDestroyed, steadyPoolSize);
+    }
+
+    /**
+     * Fires probe event related to the fact the given jdbc connection pool's 
+     * wait queue length has been incremented
+     * 
+     */
+    public void connectionRequestQueued() {
+        connectorConnProbeProvider.connectionRequestQueuedEvent(poolName);
+        jdbcProbeProvider.connectionRequestQueuedEvent(poolName);
+    }
+
+    /**
+     * Fires probe event related to the fact the given jdbc connection pool's 
+     * wait queue length has been decremented.
+     * 
+     */
+    public void connectionRequestDequeued() {
+        connectorConnProbeProvider.connectionRequestDequeuedEvent(poolName);
+        jdbcProbeProvider.connectionRequestDequeuedEvent(poolName);
     }
 }
