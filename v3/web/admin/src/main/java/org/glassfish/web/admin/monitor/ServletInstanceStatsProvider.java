@@ -59,7 +59,7 @@ import org.glassfish.gmbal.ManagedObject;
 @Description("Web Container Servlet Instance Statistics")
 public class ServletInstanceStatsProvider {
     private static final String ERROR_COUNT_DESCRIPTION = "Cumulative value of the error count, with error count representing the number of cases where the response code was greater than or equal to 400";
-    private static final String MAX_TIME_DESCRIPTION = "Provides the longest response time for a response - not a cumulative value, but the largest response time from among response times.";
+    private static final String MAX_TIME_DESCRIPTION = "The longest response time of the Servlet";
     private static final String PROCESSING_TIME_DESCRIPTION = "Average request processing time";
     private static final String REQUEST_COUNT_DESCRIPTION = "Number of requests processed by the Servlet";
 
@@ -68,7 +68,7 @@ public class ServletInstanceStatsProvider {
     private CountStatisticImpl requestCount = new CountStatisticImpl("RequestCount",
             StatisticImpl.UNIT_COUNT, REQUEST_COUNT_DESCRIPTION);
     private CountStatisticImpl maxTime = new CountStatisticImpl("MaxTime", 
-            StatisticImpl.UNIT_COUNT, MAX_TIME_DESCRIPTION);
+            StatisticImpl.UNIT_MILLISECOND, MAX_TIME_DESCRIPTION);
     private CountStatisticImpl processingTime = new CountStatisticImpl("ProcessingTime",
             StatisticImpl.UNIT_MILLISECOND, PROCESSING_TIME_DESCRIPTION);
 
