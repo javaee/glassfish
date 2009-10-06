@@ -226,6 +226,7 @@ public final class StartDatabaseCommand extends DatabaseCommand {
             throws CommandException, CommandValidationException {
         final CLIProcessExecutor cpe = new CLIProcessExecutor();
         String dbLog = "";
+        int exitCode = 0;
         try {
             prepareProcessExecutor();
             dbHome = getDatabaseHomeDir();
@@ -256,41 +257,57 @@ public final class StartDatabaseCommand extends DatabaseCommand {
             // process has not yet teminated and is still running.
             // see http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Process.html#exitValue()
             // This is good since that means the database is up and running.
-
+            CLIProcessExecutor cpePing = new CLIProcessExecutor();
+            CLIProcessExecutor cpeSysInfo = new CLIProcessExecutor();
             if (!(programOpts.isTerse() || getBooleanOption("terse"))) {
                 try {
+                    
+                    // try getting sysinfo
                     logger.printDetailMessage(
                             strings.get("database.info.msg", dbHost, dbPort));
-                    // try getting sysinfo
-                    CLIProcessExecutor cpePing = new CLIProcessExecutor();
                     cpePing.execute("pingDatabaseCmd",
                         pingDatabaseCmd(true), true);
                     int counter = 0;
-                    while (cpePing.exitValue() != 0 && counter < 5) {
+                    //give time for the database to be started
+                    while (cpePing.exitValue() != 0 && counter < 10) {
                         cpePing.execute("pingDatabaseCmd",
                             pingDatabaseCmd(true), true);
                         Thread.sleep(500);
                         counter++;
+                        //break out if start-database failed
+                       try {
+                            cpe.exitValue();
+                            break;
+                        } catch (IllegalThreadStateException itse) {
+                            continue;
+                        }
                     }
+                    
                     logger.printDebugMessage("Database SysInfo");
-                    CLIProcessExecutor cpeSysInfo = new CLIProcessExecutor();
-                    cpeSysInfo.execute("sysinfoCmd", sysinfoCmd(), true);
-                    if (cpeSysInfo.exitValue() != 0) {
-                        logger.printMessage(strings.get("CouldNotGetSysInfo"));
+                    if (cpePing.exitValue() == 0) {
+                        cpeSysInfo.execute("sysinfoCmd", sysinfoCmd(), true);
+                        if (cpeSysInfo.exitValue() != 0) {
+                            logger.printMessage(strings.get("CouldNotGetSysInfo"));
+                        }
                     }
                 } catch (Exception e) {
                     throw new CommandException(
                                 strings.get("CommandUnSuccessful", name), e);
                 }
             }
-            logger.printMessage(strings.get("DatabaseStartMsg"));
-            if ((new File(dbLog)).canWrite()) {
-                logger.printMessage(strings.get("LogRedirectedTo", dbLog));
+            if (cpePing.exitValue() == 0) {
+                logger.printMessage(strings.get("DatabaseStartMsg"));
+                if ((new File(dbLog)).canWrite()) {
+                    logger.printMessage(strings.get("LogRedirectedTo", dbLog));
+                }
+            } else {
+                throw new CommandException(strings.get("DatabaseNotStarted"));
             }
+            
         } catch (Exception e) {
             throw new CommandException(
                                 strings.get("CommandUnSuccessful", name), e);
         }
-        return 0;
+        return exitCode;
     }
 }
