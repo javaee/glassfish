@@ -11,7 +11,7 @@ Use is subject to License Terms
 <head>
 <style type="text/css">  body{margin-top:0}   body,td,p,div,span,a,ul,ul li, ol, ol li, ol li b, dl,h1,h2,h3,h4,h5,h6,li {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:10pt   }   h1 {font-size:18pt}   h2 {font-size:14pt}   h3 {font-size:12pt}   code,kbd,tt,pre {     font-family:monaco,courier,"courier new";     font-size:10pt;   }   li {padding-bottom: 8px;}   p.copy, p.copy a {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:8pt     }   p.copy {text-align: center}      table.grey1,tr.grey1,td.grey1{background:#f1f1f1}   th {     color:#ffffff;     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:12pt   }   td.insidehead {     font-weight:bold;     background:white;     text-align: left;   }   a {text-decoration:none; color:#3E6B8A}   a:visited{color:#917E9C}   a:hover {text-decoration:underline}      p.feature, li.feature  {margin-left: 0.3in}   
 </style>
-<title>Sun GlassFish Enterprise Server v3 Prelude - Features and Resources</title>
+<title>Sun GlassFish Enterprise Server v3 - Features and Resources</title>
 </head>
 <body bgcolor="#ffffff" text="#000000" link="#594fbf" vlink="#1005fb"
 alink="#333366"> <table width="100%" border="0" cellspacing="4" cellpadding="2">
@@ -22,11 +22,11 @@ src="graphics/logo_sun.gif" border="0"></a>       </td>
 </tr>
 <tr>
 <td align="left" valign="top" bgcolor="#587993">       <font color="#ffffff"><b>Sun
-GlassFish Enterprise Server v3 Preview</b></font>&nbsp;       </td>
+GlassFish Enterprise Server v3</b></font>&nbsp;       </td>
 </tr>
 </tbody>
 </table>  <h1>Features and Resources </h1><p>Sun GlassFish&trade; Enterprise
-Server v3 Preview (GlassFish server) provides a server for
+Server v3 (GlassFish server) provides a server for
 the development  and deployment of Java&trade; Platform Enterprise Edition (Java EE) applications and Java Web Services.
 Key features include scalable transaction management, container-managed persistence
 runtime, high performance web  services, <!--clustering, high availability, -->security,
@@ -48,10 +48,10 @@ scripting languages:</p><ul>
 <li>Ruby by providing native support for JRuby</li>
 <li>Groovy on Grails</li>
 </ul><p>This support enables the GlassFish server to be applied beyond developments
-that are centred on Java technology.</p><h3>Java EE Support</h3>  <p><!--GlassFish
+that are centred on Java technology.</p><h3>Java EE Support</h3>  <p>GlassFish
 server complies fully with the latest Java EE specification to deliver one
 of the best application runtimes for next-generation enterprise applications
-and web services.-->The v3 Preview release of GlassFish server implements work-in-progress versions, based on published drafts, of the following Java EE standards:</p><ul>
+and web services. The v3 release of GlassFish server implements the following Java EE standards:</p><ul>
 <li>Enterprise Java Beans 3.1</li>
 <li>Java Architecture for XML Binding (JAXB) 2.2</li>
 <li>Java Persistence API 2.0</li>
@@ -83,9 +83,9 @@ existing features and  adds new support for interoperable web services, includin
 <li>Security Technology</li>
 </ul>  <!--Java Business Integration (JBI) Support JBI extends Java EE with business integration Service Provider  Interfaces (SPI). These SPI enable developers to create or implement  a Java business integration environment for specifications such as  WSCI, BPEL4WS and the W3C Choreography Working Group. A JBI  implementation is installed directly by the Application Server  installer, mostly in the as-install/jbi directory.  This directory contains all common JAR files and system components  for the JBI including a lifecycle module that starts the JBI framework in the Application Server JVM.--
 >  <!--In-Memory Replication Support In-memory replication on other servers provides lightweight  storage of session state data without the need to obtain a  separate database, such as HADB. This type of replication  uses memory on other servers for high availability storage  of HTTP session and stateful session bean data. Clustered  server instances replicate session state in a ring of  topology. Each backup instance stores the replicated data  in memory. Replication of session state data in memory on  other servers enables sessions to be distributed. The use of in-memory replication requires the Group Management  Service (GMS) to be enabled.--
-><!--Usage Profiles Support Every administrative domain is associated with a usage profile  which identifies the capabilities of that domain. Application  Server 9.1 Update 2 provides the following profiles:Developer Use this profile if you are running your  domain in a development environment and if your applications  do not need the NSS keystore or clustering features, such as  load balancing, high availability, and session replication.Cluster Use this profile if you need to create  clusters but do not require the high-availability database (HADB)  or the NSS keystore.Enterprise Use this profile if you need HADB and NSS. This profile is not usable unless you install HADB and NSS  separately or install the Application Server as part of the  Java Enterprise System (Java ES).--
-><!--Load Balancing Enhancements Several enhancements have been added to the load balancing  plugin including:Weighted Round Robin An optional attribute called  weight has been added to the instance Loadbalancer.xml file. This option enables the load balancer plugin to route requests according  to the weight. For example, for every 500 requests, 100 will go to instance1 and 400 would go to instance2. The default weight is 100. The weight is assigned to each instance from the Administration Console or command-line. In addition, the  server domain.xml file identifies an attribute for every instance  indicating the weight. User-Defined Load Balancer Decision Enables users to define custom logic for load balancing; for example, user identity-based redirects and mime-based load balancing. This feature is implemented by means of user-defined shared library  that gets loaded by the load balancer. This custom shared library implements the  interface as defined in loadbalancer.h, which is placed in  as-install/lib/install/templates/. Administration Enhancements Previous versions of Application Server  required that the loadbalancer.xml file be manually copied to the  particular server's config directory. GlassFish v3 Application Server includes  push automations for performing such copies between the Web Server and the  Application Server. The load balancer itself is configured in the server's  domain.xml file.--
->  <h3>Open Source and GlassFish Community</h3><p> In June 2005, Sun launched
+><!--Usage Profiles Support Every administrative domain is associated with a usage profile  which identifies the capabilities of that domain. Application  Server 9.1 Update 2 provides the following profiles:Developer Use this profile if you are running your  domain in a development environment and if your applications  do not need the NSS keystore or clustering features, such as  load balancing, high availability, and session replication.Cluster Use this profile if you need to create  clusters but do not require the high-availability database (HADB)  or the NSS keystore.Enterprise Use this profile if you need HADB and NSS. This profile is not usable unless you install HADB and NSS  separately or install the Application Server as part of the  Java Enterprise System (Java ES).-->
+<!--Load Balancing Enhancements Several enhancements have been added to the load balancing  plugin including:Weighted Round Robin An optional attribute called  weight has been added to the instance Loadbalancer.xml file. This option enables the load balancer plugin to route requests according  to the weight. For example, for every 500 requests, 100 will go to instance1 and 400 would go to instance2. The default weight is 100. The weight is assigned to each instance from the Administration Console or command-line. In addition, the  server domain.xml file identifies an attribute for every instance  indicating the weight. User-Defined Load Balancer Decision Enables users to define custom logic for load balancing; for example, user identity-based redirects and mime-based load balancing. This feature is implemented by means of user-defined shared library  that gets loaded by the load balancer. This custom shared library implements the  interface as defined in loadbalancer.h, which is placed in  as-install/lib/install/templates/. Administration Enhancements Previous versions of Application Server  required that the loadbalancer.xml file be manually copied to the  particular server's config directory. GlassFish v3 Application Server includes  push automations for performing such copies between the Web Server and the  Application Server. The load balancer itself is configured in the server's  domain.xml file.-->
+<h3>Open Source and GlassFish Community</h3><p> In June 2005, Sun launched
 the <a href="http://java.sun.com/javaee/glassfish/">GlassFish</a>  community
 with the goal of developing a free, open source, commercial-grade application
 server that implements the newest features of the Java EE platform and related
@@ -96,10 +96,12 @@ community is conducted through the following channels:</p><ul>
 target="blank">Forums for the GlassFish community</a></li>
 <li><a href="https://glassfish.dev.java.net/servlets/ProjectMailingListList"
 target="balnk">Mailing lists for GlassFish community</a></li>
-</ul>  <h2><a name="resources"></a>Resources</h2>  <h3>Feedback Submittal
+</ul>  <h2><a name="resources"></a>Resources</h2>
+<!--h3>Feedback Submittal
 Form</h3><p> Use the <a
 href="http://java.sun.com/docs/forms/javaeesubmittalform.html">Java EE SDK
-Feedback Submittal Form</a> to submit feedback on this product.</p>    <h3>GlassFish
+Feedback Submittal Form</a> to submit feedback on this product.</p-->
+<h3>GlassFish
 Community</h3><p class="resources">GlassFish server is based on the source
 code that is developed through the <a href="http://java.sun.com/javaee/glassfish">
 GlassFish</a> open source project and community. The GlassFish community is
@@ -130,8 +132,7 @@ Application Server Platform Suite</a> which includes the GlassFish server.
 href="http://docs.sun.com/doc/820-7688"><cite>Release Notes</cite></a>, <a
 href="http://docs.sun.com/doc/820-7690"><cite>Installation Guide</cite></a>,
 and other product documentation are available in the <a
-href="http://docs.sun.com/coll/1343.9">Sun GlassFish Enterprise Server v3
-Preview</a> collection on the docs.sun.com<sup>SM</sup> site.</p> <!-- Data sheets, press information, news, and other information are available at the Sun Java System Application Server home page. --
+href="http://docs.sun.com/coll/1343.9">Sun GlassFish Enterprise Server v3</a> collection on the docs.sun.com<sup>SM</sup> site.</p> <!-- Data sheets, press information, news, and other information are available at the Sun Java System Application Server home page. --
 > <hr style="width: 80%; height: 2px;"> <p class="copy"><a
 href="http://wwws.sun.com/company/">Company Info</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a
 href="http://wwws.sun.com/contact/">Contact</a> &nbsp;&nbsp;|&nbsp;&nbsp;
