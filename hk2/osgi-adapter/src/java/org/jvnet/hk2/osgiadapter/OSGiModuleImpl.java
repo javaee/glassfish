@@ -150,8 +150,10 @@ public final class OSGiModuleImpl implements Module {
         try {
             bundle.start(Bundle.START_TRANSIENT);
             isTransientlyActive = true;
-            logger.logp(Level.INFO, "OSGiModuleImpl",
-                    "start", "Started bundle {0}", bundle);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.logp(Level.FINE, "OSGiModuleImpl",
+                        "start", "Started bundle {0}", bundle);
+            }
         } catch (BundleException e) {
             throw new ResolveError("Failed to start "+this,e);
         }
@@ -224,7 +226,10 @@ public final class OSGiModuleImpl implements Module {
 
         try {
             bundle.stop();
-            logger.logp(Level.INFO, "OSGiModuleImpl", "detach", "Stopped bundle = {0}", new Object[]{bundle});
+            if (logger.isLoggable(Level.FINE))
+            {
+                logger.logp(Level.FINE, "OSGiModuleImpl", "detach", "Stopped bundle = {0}", new Object[]{bundle});
+            }
 //            bundle.uninstall();
         } catch (BundleException e) {
             throw new RuntimeException(e);
