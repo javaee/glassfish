@@ -195,65 +195,6 @@ public class EmbeddedWebContainer implements
     }
 
     /**
-     * Starts this <tt>EmbeddedWebContainer</tt> and any of the
-     * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
-     * registered with it.
-     *
-     * <p>This method also creates and starts a default
-     * <tt>VirtualServer</tt> and <tt>WebListener</tt> with the
-     * configuration specified in the given <tt>config</tt> object.
-     *
-     * @param config the configuration for the default
-     * <tt>VirtualServer</tt> and <tt>WebListener</tt>
-     *
-     * @throws Exception if an error occurs during the start up of this
-     * <tt>EmbeddedWebContainer</tt> or any of its registered
-     * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
-     */
-    public void start(WebContainerConfig config) throws LifecycleException {
-                        
-        String defaultDomain = "com.sun.appserv";
-        
-        try { 
-            if (createDefaultConfig()) {
-                engine.setName(defaultDomain);
-                ((StandardEngine)engine).setDomain(defaultDomain);
-                engine.setDefaultHost(config.getVirtualServerId());
-                engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
-            
-                WebListener webListener = 
-                    createWebListener(config.getWebListenerId(), WebListener.class);
-                webListener.setPort(config.getPort());
-                webListener.setDefaultHost(config.getVirtualServerId());
-                webListener.setDomain(defaultDomain);
-                WebListener[] webListeners = new WebListener[1];
-                webListeners[0] = webListener;
-            
-                File docRoot = getPath();
-                defaultVirtualServer = (VirtualServer)createVirtualServer(
-                    config.getVirtualServerId(), docRoot, webListeners);
-                for (String alias : config.getHostNames()) {
-                    defaultVirtualServer.addAlias(alias);
-                }
-                engine.addChild(defaultVirtualServer);
-            
-                Context context = (Context) createContext(docRoot, null);
-                defaultVirtualServer.addChild(context);
-            
-                embedded.addEngine(engine);
-            
-                //addWebListener(webListener);
-            }
-            
-            embedded.start();
-            
-        } catch (Exception e) {
-            throw new LifecycleException(e);
-        }
-        
-    }
-
-    /**
      * Stops this <tt>EmbeddedWebContainer</tt> and any of the
      * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
      * registered with it.

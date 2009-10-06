@@ -11,7 +11,6 @@ import org.apache.catalina.Deployer;
 import org.apache.catalina.logger.SystemOutLogger;
 import org.glassfish.api.embedded.*;
 import org.glassfish.api.embedded.web.WebBuilder;
-import org.glassfish.api.embedded.web.config.WebContainerConfig;
 import org.glassfish.web.embed.impl.Context;
 import org.glassfish.web.embed.impl.EmbeddedWebContainer;
 import org.glassfish.web.embed.impl.VirtualServer;

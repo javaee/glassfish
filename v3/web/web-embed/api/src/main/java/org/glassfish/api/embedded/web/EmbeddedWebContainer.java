@@ -83,24 +83,6 @@ public interface EmbeddedWebContainer extends EmbeddedContainer {
     public void start() throws LifecycleException;
 
     /**
-     * Starts this <tt>EmbeddedWebContainer</tt> and any of the
-     * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
-     * registered with it.
-     *
-     * <p>This method also creates and starts a default
-     * <tt>VirtualServer</tt> and <tt>WebListener</tt> with the
-     * configuration specified in the given <tt>config</tt> object.
-     *
-     * @param config the configuration for the default
-     * <tt>VirtualServer</tt> and <tt>WebListener</tt>
-     *
-     * @throws Exception if an error occurs during the start up of this
-     * <tt>EmbeddedWebContainer</tt> or any of its registered
-     * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
-     */
-    public void start(WebContainerConfig config) throws LifecycleException;
-
-    /**
      * Stops this <tt>EmbeddedWebContainer</tt> and any of the
      * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
      * registered with it.
