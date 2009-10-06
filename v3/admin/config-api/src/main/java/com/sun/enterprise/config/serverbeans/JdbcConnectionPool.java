@@ -360,7 +360,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="auto-commit")
+    @Attribute (defaultValue="table")
     @Pattern(regexp="(auto-commit|meta-data|custom-validation|table)")
     String getConnectionValidationMethod();
 
