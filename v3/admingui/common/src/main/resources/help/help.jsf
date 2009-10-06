@@ -46,6 +46,37 @@
     <sun:head title="Help!" debug="false" parseOnLoad="false"> <!-- FIXME: I18N -->
 	<sun:link url="/resource/common/help/help.css" />
 	<sun:script url="/resource/common/help/help.js" />
+<f:verbatim>
+<script type="text/javascript">
+admingui.tab = {
+switchTab: function(tabElement, toShow, toHide) {
+  // 
+  // Perform an ajax request on the tab panel element
+  // 
+
+  // set up the parameters to the ajax request
+  var props = {}; 
+  var tabsetId = document.getElementById('tabForm:helpTabs').id;
+  props.render = tabsetId;
+  props.execute = tabElement.id + ', ' + tabsetId;
+  props[tabElement.id + '_submittedField'] = tabElement.id;
+
+  // launch the request
+  jsf.ajax.request(tabElement, null, props);
+
+  // 
+  // Use DOM to show/hide the proper tree
+  // 
+
+  var tree = document.getElementById(toHide);
+  tree.style.display = "none";
+  tree = document.getElementById(toShow);
+  tree.style.display = "block";
+}
+
+}
+</script>
+</f:verbatim>
 	<h:outputScript name="jsf.js" library="javax.faces" target="head" />
 	<f:verbatim>
 	    <style type="text/css">
@@ -57,19 +88,19 @@
 	    <sun:form id="tabForm">
 
 	    <sun:tabSet id="helpTabs">
-		<sun:tab text="Table of Contents" onClick="jsf.ajax.request(this); return false;"> // FIXME: I18N
+		<sun:tab id="tableOfContents" text="Table of Contents" onClick="admingui.tab.switchTab(this, 'tocTree', 'indexTree'); return false;" url="#{null}"> // FIXME: I18N
 		    <ui:event type="command">
 			println("toc");
 		    </ui:event>
 		</sun:tab>
-		<sun:tab id="idx" text="Index" onClick="var props = {}; var tabset = document.getElementById('tabForm:helpTabs').id; props.render = tabset; props.execute = this.id + ', ' + tabset; props[this.id + '_submittedField'] = this.id; jsf.ajax.request(this, null, props); return false;" url="#{null}"> // FIXME: I18N
+		<sun:tab id="idx" text="Index" onClick="admingui.tab.switchTab(this, 'indexTree', 'tocTree'); return false;" url="#{null}"> // FIXME: I18N
 		    <ui:event type="command">
 			println("Index");
 		    </ui:event>
 		</sun:tab>
 	    </sun:tabSet>
 	    </sun:form>
-	    <dynamicTreeNode
+	    <dynamicTreeNode id="tocTree" 
 		treeAdaptorClass="org.glassfish.admingui.common.help.HelpTreeAdaptor"
 		toc="$attribute{toc}">
 		    <ui:event type="beforeCreate">
@@ -77,6 +108,16 @@
 			getHelpTOC("en" toc="#{requestScope.toc}");
 		    </ui:event>
 	    </dynamicTreeNode>
+
+	    <dynamicTreeNode id="indexTree" style="display: none"
+		treeAdaptorClass="org.glassfish.admingui.common.help.HelpTreeIndexAdaptor"
+		index="$attribute{index}">
+		    <ui:event type="beforeCreate">
+                        setPageSessionAttribute(key="newVR" value="set");
+			getHelpIndex("en" index="#{requestScope.index}");
+		    </ui:event>
+	    </dynamicTreeNode>
+
 	"</div>
 	"<div id="helpContent" class="helpContentBox">
 	"<h3>GlassFish Help</h3>

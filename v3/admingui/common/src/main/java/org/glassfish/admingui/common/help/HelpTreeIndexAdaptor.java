@@ -102,14 +102,14 @@ public class HelpTreeIndexAdaptor extends TreeAdaptorBase {
 	UIComponent parent = getParentUIComponent();
 
 	// Get the Index
-        Index toc = (Index) desc.getEvaluatedOption(ctx, "toc", parent);
+        Index index = (Index) desc.getEvaluatedOption(ctx, "index", parent);
 
 	// The following method should set the "key" to the node containing all
 	// the children... the children will also have keys which must be
 	// retrievable by the next method (getChildTreeNodeObjects)... these
 	// "keys" will be used by the rest of the methods in this file for
 	// getting information about the TreeNode that should be built.
-	setTreeNodeObject(toc);
+	setTreeNodeObject(index);
     }
 
     /**
