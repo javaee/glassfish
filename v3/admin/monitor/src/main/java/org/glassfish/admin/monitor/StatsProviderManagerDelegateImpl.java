@@ -452,11 +452,13 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         TreeNode rootNode = mrdr.get("server");
         if (rootNode != null) {
             List<TreeNode> nodeList = rootNode.getNodes(parentNodePath, false, true);
-            TreeNode parentNode = nodeList.get(0);
-            Collection<TreeNode> childNodes = parentNode.getChildNodes();
-            for (TreeNode childNode : childNodes) {
-                if (childNodeNames.contains(childNode.getName())) {
-                    invokeStatisticResetMethod(childNode.getValue());
+            if (nodeList.size() > 0) {
+                TreeNode parentNode = nodeList.get(0);
+                Collection<TreeNode> childNodes = parentNode.getChildNodes();
+                for (TreeNode childNode : childNodes) {
+                    if (childNodeNames.contains(childNode.getName())) {
+                        invokeStatisticResetMethod(childNode.getValue());
+                    }
                 }
             }
         }
