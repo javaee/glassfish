@@ -44,6 +44,7 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.servermgmt.services.ServiceFactory;
 import com.sun.enterprise.admin.servermgmt.services.Service;
 import com.sun.enterprise.admin.servermgmt.services.AppserverServiceType;
+import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -146,7 +147,19 @@ public final class CreateServiceCommand extends CLICommand {
             service.createService(service.tokensAndValues());
             logger.printMessage(service.getSuccessMessage());
         } catch (Exception e) {
-            throw new CommandValidationException(e);
+            // We only want to wrap the string -- not the Exception.
+            // Otherwise the message that is printed out to the user will be like this:
+            // java.lang.IllegalArgumentException: The passwordfile blah blah blah
+            // What we want is:
+            // The passwordfile blah blah blah
+            // IT 8882
+
+            String msg = e.getMessage();
+            
+            if(StringUtils.ok(msg))
+                throw new CommandValidationException(msg);
+            else
+                throw new CommandValidationException(e);
         }
         return 0;
     }
