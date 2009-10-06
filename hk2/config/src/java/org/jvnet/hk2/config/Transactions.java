@@ -50,6 +50,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.PostConstruct;
+import com.sun.hk2.component.*;
 
 /**
  * Transactions is a singleton service that receives transaction notifications and dispatch these
@@ -63,27 +64,41 @@ import org.jvnet.hk2.component.PostConstruct;
 public final class Transactions implements PostConstruct, PreDestroy {
 
     // each transaction listener has a notification pump.
-    private final List<ListenerNotifier<TransactionListener, ?, Void>> listeners =
-            new ArrayList<ListenerNotifier<TransactionListener, ?, Void>>();
+    private final List<Holder<ListenerNotifier<TransactionListener, ?, Void>>> listeners =
+            new ArrayList<Holder<ListenerNotifier<TransactionListener, ?, Void>>>();
 
     @Inject(name="transactions-executor", optional=true)
     private ExecutorService executor;
 
     // all configuration listeners are notified though one notifier.
-    private final ConfigListenerNotifier configListenerNotifier = new ConfigListenerNotifier();
+    private final Holder<ConfigListenerNotifier> configListenerNotifier = new Holder<ConfigListenerNotifier>() {
+
+            private final ConfigListenerNotifier configListenerNotifier = new ConfigListenerNotifier();
+            private final CountDownLatch initialized = new CountDownLatch(1);
+
+            public ConfigListenerNotifier get() {
+                synchronized(initialized) {
+                    if (initialized.getCount()>0) {
+                        configListenerNotifier.start();
+                        initialized.countDown();
+                    }
+
+                return configListenerNotifier;
+            }
+        }
+    };
 
     public void postConstruct() {
         if (executor==null) {
             executor = Executors.newCachedThreadPool();
         }
-        configListenerNotifier.start();
     }
 
     public void preDestroy() {
-       for (ListenerNotifier<TransactionListener,  ?, Void> listener : listeners) {
-           listener.stop();
+       for (Holder<ListenerNotifier<TransactionListener,  ?, Void>> listener : listeners) {
+           listener.get().stop();
        }
-       configListenerNotifier.stop();
+       configListenerNotifier.get().stop();
        executor.shutdown();
     }
 
@@ -177,7 +192,6 @@ public final class Transactions implements PostConstruct, PreDestroy {
 
         public ListenerNotifier(T listener) {
             this.listener = listener;
-            start();
         }
 
         protected FutureTask<V> prepare(final Job<T, U, V> job) {
@@ -258,8 +272,8 @@ public final class Transactions implements PostConstruct, PreDestroy {
                     // note these events are always synchronous so far.
                     if (!unprocessed.isEmpty()) {
                         Job unprocessedJob = new UnprocessedEventsJob(unprocessed, null);
-                        for (ListenerNotifier<TransactionListener, ?, Void> listener : Transactions.this.listeners) {
-                            listener.add(unprocessedJob);
+                        for (Holder<ListenerNotifier<TransactionListener, ?, Void>> listener : Transactions.this.listeners) {
+                            listener.get().add(unprocessedJob);
                         }
                     }
                 } finally {
@@ -357,9 +371,23 @@ public final class Transactions implements PostConstruct, PreDestroy {
      *
      * @param listener to be added.
      */
-    public void addTransactionsListener(TransactionListener listener) {
+    public void addTransactionsListener(final TransactionListener listener) {
         synchronized(listeners) {
-            listeners.add(new ListenerNotifier<TransactionListener, PropertyChangeEvent, Void>(listener));
+            listeners.add(new Holder<ListenerNotifier<TransactionListener, ?, Void>>() {
+
+                final ListenerNotifier tsListener = new ListenerNotifier<TransactionListener, PropertyChangeEvent, Void>(listener);
+                final CountDownLatch initialized = new CountDownLatch(1);
+
+                public ListenerNotifier<TransactionListener, PropertyChangeEvent, Void> get() {
+                    synchronized(initialized) {
+                        if (initialized.getCount()>0) {
+                            tsListener.start();
+                            initialized.countDown();
+                        }
+                    }
+                    return tsListener;
+                }
+            });
         }
     }
 
@@ -370,10 +398,11 @@ public final class Transactions implements PostConstruct, PreDestroy {
      */
     public boolean removeTransactionsListener(TransactionListener listener) {
         synchronized(listeners) {
-            for (ListenerNotifier info : listeners) {
+            for (Holder<ListenerNotifier<TransactionListener, ?, Void>> holder : listeners) {
+                ListenerNotifier info = holder.get();
                 if (info.listener==listener) {
                     info.stop();
-                    return listeners.remove(info);
+                    return listeners.remove(holder);
                 }
             }
         }
@@ -383,7 +412,8 @@ public final class Transactions implements PostConstruct, PreDestroy {
     public List<TransactionListener> currentListeners() {
         synchronized(listeners) {            
             List<TransactionListener> l = new ArrayList<TransactionListener>();
-            for (ListenerNotifier<TransactionListener, ?, Void> info : listeners) {
+            for (Holder<ListenerNotifier<TransactionListener, ?, Void>> holder : listeners) {
+                ListenerNotifier<TransactionListener, ?, Void> info = holder.get();
                 l.add(info.listener);
             }
             return l;
@@ -411,8 +441,11 @@ public final class Transactions implements PostConstruct, PreDestroy {
         final List<PropertyChangeEvent> events,
         final boolean waitTillCleared ) {
         
-        final List<ListenerNotifier> listInfos = new ArrayList<ListenerNotifier>();
-        listInfos.addAll(listeners);
+        final List<ListenerNotifier<TransactionListener, ?, Void>> listInfos = new ArrayList<ListenerNotifier<TransactionListener, ?, Void>>();
+        for (Holder<ListenerNotifier<TransactionListener, ?, Void>> holder : listeners) {
+            ListenerNotifier<TransactionListener, ?, Void> info = holder.get();
+            listInfos.add(info);
+        }
         
         // create a CountDownLatch to implement waiting for events to actually be sent
         final Job<TransactionListener, ?, Void> job = new TransactionListenerJob( events,
@@ -428,7 +461,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
                 listener.add(job);
             }
 
-            configListenerNotifier.add(configJob);
+            configListenerNotifier.get().add(configJob);
 
             job.waitForLatch();
             configJob.waitForLatch();
