@@ -603,7 +603,7 @@ public class Java2DBProcessorHelper {
             String vendorName = DBVendorTypeHelper.getDBType(
                     dbMetaData.getDatabaseProductName()).toLowerCase();
             file = new File(fileNamePrefix + vendorName + DatabaseConstants.SQL_FILE_EXTENSION);
-System.err.println("===> File to use: " + file);
+            logger.fine("===> File to use: " + file);
         } catch (IOException e) {
             fileIOError(appRegisteredName, e);
         } catch (Exception ex) {
@@ -612,7 +612,7 @@ System.err.println("===> File to use: " + file);
             closeConn(conn);
         }
 
-        return true; //executeDDLStatement(file, resourceName);
+        return executeDDLStatement(file, resourceName);
     }
 
 
