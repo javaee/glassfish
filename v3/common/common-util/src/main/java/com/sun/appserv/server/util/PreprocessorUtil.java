@@ -34,20 +34,6 @@
  * holder.
  */
 
-/*  
- * @(#) PreprocessorUtil.java
- *
- * Copyright 2001-2002 by iPlanet/Sun Microsystems, Inc.,
- * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of iPlanet/Sun Microsystems, Inc. ("Confidential Information").
- * You shall not disclose such Confidential Information and shall
- * use it only in accordance with the terms of the license
- * agreement you entered into with iPlanet/Sun Microsystems.
- */
-
 package com.sun.appserv.server.util;
 
 import java.util.Hashtable;
