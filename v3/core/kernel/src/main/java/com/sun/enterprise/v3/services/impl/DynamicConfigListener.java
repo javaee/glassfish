@@ -54,6 +54,9 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.NotProcessed;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import java.util.ArrayList;
+
 /**
  * Grizzly dynamic configuration handler
  *
@@ -64,12 +67,16 @@ public class DynamicConfigListener implements ConfigListener {
 
     private Logger logger;
 
+
     public DynamicConfigListener() {
     }
 
+    @Override
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+
         final UnprocessedChangeEvents unp = ConfigSupport.sortAndDispatch(
             events, new Changed() {
+                @Override
                 public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type,
                     Class<T> tClass, T t) {
                     if (logger.isLoggable(Level.FINE)) {
@@ -98,10 +105,13 @@ public class DynamicConfigListener implements ConfigListener {
                             notProcessed = processNetworkListener(type, listener);
                         }
                         return notProcessed;
+                    } else if (t instanceof VirtualServer){
+                        return processVirtualServer(type, (VirtualServer)t);
                     }
                     return null;
                 }
             }, logger);
+
         return unp;
     }
 
@@ -140,6 +150,23 @@ public class DynamicConfigListener implements ConfigListener {
         }
         return notProcessed;
     }
+
+    private NotProcessed processVirtualServer(Changed.TYPE type, VirtualServer vs) {
+        NotProcessed notProcessed = null;
+        String list = vs.getNetworkListeners();
+        Collection<NetworkListener> nls = grizzlyService.getHabitat().getAllByType(NetworkListener.class);
+        ArrayList<String> as = GrizzlyProxy.toArray(list,",");
+
+        for (String s: as){
+            for(NetworkListener n: nls){
+                if (n.getName().equals(s)){
+                    notProcessed = processNetworkListener(type, n);
+                }
+            }
+        }
+        return notProcessed;
+    }
+
 
     public void setGrizzlyService(GrizzlyService grizzlyService) {
         this.grizzlyService = grizzlyService;

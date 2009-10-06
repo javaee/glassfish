@@ -170,7 +170,7 @@ public class GrizzlyProxy implements NetworkProxy {
                                     try {
                                         StaticResourcesAdapter a = new StaticResourcesAdapter();
                                         a.setRootFolder(docBase);
-                                        ArrayList<String> al = toArray(vs.getHosts());
+                                        ArrayList<String> al = toArray(vs.getHosts(),";");
                                         al.add(grizzlyListener.getDefaultVirtualServer());
 
                                         AlternateDocBase alternateDocBase = new AlternateDocBase();
@@ -214,8 +214,8 @@ public class GrizzlyProxy implements NetworkProxy {
     }
 
 
-    ArrayList<String> toArray(String list){
-        String[] s = list.split(";");
+    static ArrayList<String> toArray(String list, String token){
+        String[] s = list.split(token);
         ArrayList<String> a = new ArrayList<String>();
         for(String h:s){
             a.add(h);

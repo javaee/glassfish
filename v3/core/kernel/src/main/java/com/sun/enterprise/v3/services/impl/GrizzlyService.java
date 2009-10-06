@@ -261,12 +261,16 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * The component has been injected with any dependency and
      * will be placed into commission by the subsystem.
      */
+    @Override
     public void postConstruct() {
         NetworkConfig networkConfig = config.getNetworkConfig();
 
         configListener = new DynamicConfigListener();
         
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(networkConfig.getNetworkListeners());
+        bean.addListener(configListener);
+
+        bean = (ObservableBean) ConfigSupport.getImpl(config.getHttpService());
         bean.addListener(configListener);
 
         configListener.setGrizzlyService(this);
