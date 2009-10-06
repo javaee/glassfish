@@ -39,7 +39,8 @@ mvn -e -B release:perform
 
 # when other people get the new workspace, they'll fail to resolve maven-hk2-plugin,
 # so we need some seed version to be out there.
-# mvn deploy
+mvn -Prelease-phase1 install
+mvn install
 
 # Once the bits are pushed and made visible, you just need to change v3/pom.xml <hk2.version> property
 # and GFv3 will pick up the new version of HK2.
