@@ -44,11 +44,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-/**
- * Simple TestNG client for basic WAR containing one JSP,one Servlet and one static
- *HTML resource.Each resources (HTML,JSP,Servlet) is invoked as a separate test.
- *
- */
+
 public class JpaInjectEMFTestNG {
 
     private String strContextRoot="/jpainjectemf";
@@ -59,7 +55,7 @@ public class JpaInjectEMFTestNG {
            
 
     @Test(groups = { "init" })
-    public void testJpaPersistWithInjectEMF() throws Exception{
+    public void persistWithInjectEMF() throws Exception{
         boolean result=false;       
 
         try{
@@ -76,7 +72,7 @@ public class JpaInjectEMFTestNG {
     }
 
     @Test(dependsOnGroups = { "init.*" })
-    public void testJpaLazyLoadingByQuery() throws Exception{
+    public void lazyLoadingByQuery() throws Exception{
         boolean result=false;        
 
         try{
