@@ -275,7 +275,8 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
             re.initCause(e);
             throw re;
         }
-        //make sure that the MDB class in question implements the message-listener-type specified in DD
+        /* It is possible to have an MDB class not implementing message-listener-type. 
+        
         if(ejb instanceof EjbMessageBeanDescriptor){
             EjbMessageBeanDescriptor msgBeanDescriptor = (EjbMessageBeanDescriptor)ejb;
             String messageListenerType = msgBeanDescriptor.getMessageListenerType();
@@ -303,7 +304,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                         args);
                 throw new RuntimeException(msg);
             }
-        }
+        }*/
     }    
         
     public void accept(WebService webService) {
