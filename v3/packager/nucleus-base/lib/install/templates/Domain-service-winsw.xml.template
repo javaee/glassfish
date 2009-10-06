@@ -17,7 +17,7 @@
   <name>%%%ENTITY_NAME%%% GlassFish Server</name>
   <description>GlassFish Server</description>
   <executable>%%%AS_ADMIN_PATH%%%</executable>
-  <logpath>%%%LOCATION%%%/%%%ENTITY_NAME%%%/logs</logpath>
+  <logpath>%%%LOCATION%%%/%%%ENTITY_NAME%%%/bin</logpath>
   <logmode>reset</logmode>
   <depend>tcpip</depend>
   <startargument>start-domain</startargument>
