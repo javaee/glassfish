@@ -135,7 +135,6 @@ public class EJBTimerService
 
     // Defaults for configurable timer service properties.
 
-    private static final long MINIMUM_DELIVERY_INTERVAL = 1000;
     private static final int MAX_REDELIVERIES = 1;
     private static final long REDELIVERY_INTERVAL = 5000;
 
@@ -143,7 +142,7 @@ public class EJBTimerService
 
     // minimum amount of time between either a timer creation and its first 
     // expiration or between subsequent timer expirations.  
-    private long minimumDeliveryInterval_ = MINIMUM_DELIVERY_INTERVAL;
+    private long minimumDeliveryInterval_ = EjbContainerUtil.MINIMUM_TIMER_DELIVERY_INTERVAL;
 
     // maximum number of times the container will attempt to retry a 
     // timer delivery before giving up.

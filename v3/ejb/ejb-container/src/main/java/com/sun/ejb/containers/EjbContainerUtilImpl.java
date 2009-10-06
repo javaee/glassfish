@@ -41,6 +41,7 @@ import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
+import com.sun.enterprise.config.serverbeans.EjbTimerService;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.Globals;
@@ -57,6 +58,10 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.types.Property;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.glassfish.ejb.spi.CMPDeployer;
 import org.glassfish.api.ActionReport;
@@ -64,11 +69,14 @@ import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.persistence.common.Java2DBProcessorHelper;
 
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.Synchronization;
+import java.beans.PropertyVetoException;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.Vector;
@@ -408,7 +416,7 @@ public class EjbContainerUtilImpl
     private void deployEJBTimerService() {
         synchronized (lock) {
             Deployment deployment = habitat.getByContract(Deployment.class);
-            boolean isRegistered = deployment.isRegistered("ejb-timer-service-app");
+            boolean isRegistered = deployment.isRegistered(EjbContainerUtil.TIMER_SERVICE_APP_NAME);
 
             if (isRegistered) {
                 _logger.log (Level.WARNING, "EJBTimerService had been explicitly deployed.");
@@ -418,21 +426,23 @@ public class EjbContainerUtilImpl
                 ServerContext sc = habitat.getByContract(ServerContext.class);
                 File root = sc.getInstallRoot();
                 File app = new File(root,
-                        "lib/install/applications/ejb-timer-service-app.war");
+                        "lib/install/applications/" + 
+                        EjbContainerUtil.TIMER_SERVICE_APP_NAME + ".war");
 
                 if (!app.exists()) {
                     _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: " +
-                            "required WAR file (ejb-timer-service-app.war) is not installed");
+                            "required WAR file (" + 
+                            EjbContainerUtil.TIMER_SERVICE_APP_NAME + ".war) is not installed");
                 } else {
                     ActionReport report = habitat.getComponent(ActionReport.class, "plain");
                     DeployCommandParameters params = new DeployCommandParameters(app);
-                    String appName = "ejb-timer-service-app";
+                    String appName = EjbContainerUtil.TIMER_SERVICE_APP_NAME;
                     params.name = appName;
 
                     try {
                         File rootScratchDir = env.getApplicationStubPath();
                         File appScratchDir = new File(rootScratchDir, appName);
-                        if (appScratchDir.createNewFile()) {
+                        if (appScratchDir.createNewFile() && !isUpgrade()) {
                             params.origin = OpsParams.Origin.deploy;
                         } else {
                             params.origin = OpsParams.Origin.load;
@@ -453,5 +463,63 @@ public class EjbContainerUtilImpl
         }
 
         _ejbTimerServiceVerified = true;
+    }
+
+    private boolean isUpgrade() {
+        boolean upgrade = false;
+
+        EjbTimerService ejbt = getEjbContainer().getEjbTimerService();
+        Property prop = null;
+        if (ejbt != null) {
+            List<Property> properties = ejbt.getProperty();
+            if (properties != null) {
+                for (Property p : properties) {
+                    if (p.getName().equals(EjbContainerUtil.TIMER_SERVICE_UPGRADED)) {
+                        String value = p.getValue();
+                        if (value != null && "false".equals(value)) {
+                            upgrade = true;
+                            prop = p;
+                            break;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        _logger.fine("===> Upgrade? <==");
+        if (upgrade) {
+            _logger.fine("===> Upgrade! <==");
+            boolean success = false;
+            try {
+                File root = serverContext.getInstallRoot();
+                File dir = new File(root, "lib/install/databases/upgrade");
+
+                if (!dir.exists()) {
+                    _logger.log (Level.WARNING, "Cannot upgrade load EJBTimerService: " +
+                            "required directory is not available");
+                } else {
+                    Java2DBProcessorHelper h = new Java2DBProcessorHelper(
+                            EjbContainerUtil.TIMER_SERVICE_APP_NAME);
+                    success = h.executeDDLStatement(
+                            dir.getCanonicalPath() + "/ejbtimer_upgrade_",
+                            EjbContainerUtil.TIMER_RESOURCE_JNDI);
+                    ConfigSupport.apply(new SingleConfigCode<Property>() {
+                        public Object run(Property p) throws PropertyVetoException, TransactionFailure {
+                            p.setValue("true");
+                            return null;
+                        }
+                    }, prop);
+                }
+            } catch (Exception e) {
+                _logger.log (Level.WARNING, "", e);
+            }
+            if (!success) {
+                _logger.log (Level.SEVERE, "Failed to upgrade load EJBTimerService: " +
+                            "see log for details");
+            }
+        }
+
+        return upgrade;
     }
 }

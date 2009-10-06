@@ -68,6 +68,14 @@ import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 @Contract
 public interface EjbContainerUtil {
 
+    public String TIMER_SERVICE_APP_NAME = "ejb-timer-service-app";
+
+    public String TIMER_SERVICE_UPGRADED = "ejb-timer-service-upgraded";
+
+    public String TIMER_RESOURCE_JNDI = "jdbc/__TimerPool";
+
+    public long MINIMUM_TIMER_DELIVERY_INTERVAL = 1000;
+
     public GlassFishORBHelper getORBHelper();
     
     public Habitat getDefaultHabitat();

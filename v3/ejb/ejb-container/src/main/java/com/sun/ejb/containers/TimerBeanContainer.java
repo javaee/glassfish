@@ -40,6 +40,7 @@ import java.util.logging.*;
 
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.ejb.containers.EjbContainerUtil;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.logging.LogDomains;
 
@@ -93,7 +94,7 @@ public class TimerBeanContainer
             TimerLocal timerLocal = (TimerLocal) createEJBLocalBusinessObjectImpl(timerLocalIntf).
                     getClientObject(timerLocalIntf);
 
-            String timerResourceJndiName = "jdbc/__TimerPool";
+            String timerResourceJndiName = EjbContainerUtil.TIMER_RESOURCE_JNDI;
 // XXX It's NOT possible to replace the datasource in PU XXX
 // XXX We would need to move this logic to PU creation XXXX
 /** XXX
