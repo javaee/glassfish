@@ -134,7 +134,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                 pattern = parentNodes[0].relativeName;
                 matchingNodes = getMatchingNodes(dottedNames, pattern);
                 if (matchingNodes.isEmpty()) {
-                    fail(context, "No configuration found for " + pattern);
+                    fail(context, "No configuration found for " + target);
                     return false;
                 }
                 // need to find the right parent.
@@ -155,7 +155,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                 attributes.put("name", attrName);
                 try {
                     ConfigSupport.createAndSet((ConfigBean) parentNode, Property.class, attributes );
-                    context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                    success(context, target, value);
                     runLegacyChecks(context);
                     return true;
                 } catch (TransactionFailure transactionFailure) {
@@ -186,9 +186,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                 String finalDottedName = node.getValue()+"."  + name;
                 if (matches(finalDottedName, pattern)) {
                     if (matchName(attrName,name)) {
-                        ActionReport.MessagePart part = context.getActionReport().getTopMessagePart().addChild();
-                        part.setChildrenType("DottedName");
-                        part.setMessage(target + "=" + value);
+                        success(context, target, value);
                         
                         if (! isProperty) {
                             if (value!=null && value.length()>0) {
@@ -244,7 +242,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
             if (delPropertySuccess) {
                 context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);                
             } else {
-                fail(context, "No configuration found for " + pattern);
+                fail(context, "No configuration found for " + target);
                 return false;
             }
         }
@@ -298,5 +296,16 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
         if (ex != null)
             context.getActionReport().setFailureCause(ex);
         context.getActionReport().setMessage(msg);
+    }
+
+     /**
+     * Indicate in the action report that the command succeeded and 
+     * include the target property and it's value in the report
+     */
+    private void success(AdminCommandContext context, String target, String value) {
+        context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        ActionReport.MessagePart part = context.getActionReport().getTopMessagePart().addChild();
+        part.setChildrenType("DottedName");
+        part.setMessage(target + "=" + value);
     }
 }
