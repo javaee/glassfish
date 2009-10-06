@@ -134,6 +134,11 @@ public class JDBCConnectionPoolManager implements ResourceManager{
                             "No pool name defined for JDBC Connection pool.");
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
+        if (datasourceclassname == null) {
+            String msg = localStrings.getLocalString("add.resources.noDataSourceClassname",
+                            "No datasourceclassname defined for JDBC Connection pool.");
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+        }
         // ensure we don't already have one of this name
         for (Resource resource : resources.getResources()) {
             /*if (resource instanceof BindableResource) {
@@ -151,11 +156,13 @@ public class JDBCConnectionPoolManager implements ResourceManager{
             }
         }
 
-        /* --validationtable is optional unless is-connection-validation-required is set to true. */
-        if (this.isconnectvalidatereq.equals(Boolean.TRUE.toString()) && this.validationtable == null) {
+        if (this.validationmethod.equals("table") 
+                && this.isconnectvalidatereq.equals(Boolean.TRUE.toString())
+                && this.validationtable == null) {
             String msg = localStrings.getLocalString("create.jdbc.connection.pool.validationtable_required",
-                            "--validationtable is required if --isconnectvalidatereq is set to true.");
-                    return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
+                    "--validationtable is required if --validationmethod=table " +
+                    "and --isconnectvalidatereq=true.");
+            return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
         }
 
             
