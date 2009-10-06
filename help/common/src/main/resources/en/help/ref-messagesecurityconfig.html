@@ -1,0 +1,29 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ 
+Use is subject to License Terms  -->
+<a name="ref-messagesecurityconfig"></a><h4>Message Security Configurations</h4>
+<a name="indexterm-203"></a><p>Use the Message Security Configurations page to view and modify the available configurations
+for message security providers.</p><p>To configure message security, you need a basic understanding of security and web
+services concepts. For more information, see <a href="http://docs.sun.com/doc/820-7692/ablrk?a=view">Chapter 13, Administering Message Security, in <i>Sun GlassFish Enterprise Server v3 Administration Guide</i></a> and <a href="http://docs.sun.com/doc/820-7692/gbbjk?a=view">Chapter 6, Administering Web Applications, in <i>Sun GlassFish Enterprise Server v3 Administration Guide</i></a>.</p><p>Enterprise Server implements message security using message security providers integrated in its SOAP
+processing layer. The message security providers depend on other security facilities of Enterprise
+Server.</p><p>For each configuration, the Message Security Configurations page contains the following information.</p><dl><dt>Authentication Layer</dt>
+<dd><p>The message layer at which authentication is performed. By default, a SOAP configuration is provided. It is also possible to provide an HttpServlet configuration.</p></dd>
+<dt>Default Provider</dt>
+<dd><p>The default server provider for this configuration. By default, no default server provider is configured.</p></dd>
+<dt>Default Client Provider</dt>
+<dd><p>The default client provider for this configuration. By default, no default client provider is configured.</p></dd>
+</dl>
+<h5>Related Tasks</h5>
+
+<ul><li><p><a href="task-configmsgsecproviders.html">To Configure Enterprise Server Facilities for Use by Message Security Providers</a></p></li>
+<li><p><a href="task-messagesecurityconfignew.html">To Create a Message Security Configuration</a></p></li>
+<li><p><a href="task-messagesecurityconfigedit.html">To Edit a Message Security Configuration</a></p></li>
+<li><p><a href="task-messagesecurityconfigdelete.html">To Delete a Message Security Configuration</a></p></li>
+<li><p><a href="task-messagesecurityproviderconfignew.html">To Create a Message Security Provider Configuration</a></p></li>
+<li><p><a href="task-messagesecurityproviderconfigedit.html">To Edit a Message Security Provider Configuration</a></p></li>
+<li><p><a href="task-messagesecurityproviderconfigdelete.html">To Delete a Message Security Provider Configuration</a></p></li>
+<li><p><a href="task-enablemesec4appclients.html">To Enable Message Security for Application Clients</a></p></li></ul>
+<h5>Related <tt>asadmin</tt> Commands</h5>
+<p>None.</p>

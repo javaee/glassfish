@@ -1,0 +1,31 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ 
+Use is subject to License Terms  -->
+
+
+<a name="task-createcustomrealm"></a><h4>To Create a Custom Realm</h4><a name="indexterm-77"></a><a name="indexterm-78"></a><p>In addition to the three built-in realms, you can also create custom realms
+that store user data in some other way, such as in a
+relational database. Development of a custom realm is outside the scope of this
+document. For more information, see <a href="http://docs.sun.com/doc/820-7695/beabg?a=view">Chapter 5, Securing Applications, in <i>Sun GlassFish Enterprise Server v3 Preview Application Development Guide</i></a>.</p><p>For administration purposes, custom realms are implemented by a class (called the <tt>LoginModule</tt>)
+derived from the Java Authentication and Authorization Service (JAAS) package.</p><ol>
+<li><b>Follow the procedure in <a href="task-realmnew.html">To Create a Realm</a>, typing the name of the custom realm
+and the name of the <tt>LoginModule</tt> class. </b><p>Use any unique name for the custom realm, for example <tt>myCustomRealm</tt>.</p></li>
+<li><b>Click OK.</b></li>
+<li><b>Edit the domain's login configuration file, <tt></tt><i>domain-dir</i><tt>/config/login.conf</tt>, and add the fully qualified
+class name of the JAAS <tt>LoginModule</tt> at the end of the file,
+as follows:</b><pre><i>realmName</i> {
+    <i>fully-qualified-LoginModule-classname</i> required;
+};</pre><p>For example,</p><pre>myCustomRealm {
+    com.foo.bar.security.customrealm.simpleCustomLoginModule required;
+};</pre></li>
+<li><b>Copy the <tt>LoginModule</tt> class and all dependent classes into the directory <tt></tt><i>domain-dir</i><tt>/lib/classes</tt>.</b></li>
+<li><b>Restart the server if Restart Required appears in the Administration Console.</b></li>
+<li><b>Ensure that the realm is properly loaded.</b><p>Check <tt></tt><i>domain-dir</i><tt>/logs/server.log</tt> to ensure that the server loaded the realm. The server
+should invoke the realm&#8217;s <tt>init</tt> method.</p></li></ol><h6>See Also</h6>
+<ul><li><p><a href="task-realmnew.html">To Create a Realm</a></p></li>
+<li><p><a href="task-realmedit.html">To Edit a Realm</a></p></li>
+<li><p><a href="task-todeleterealm.html">To Delete a Realm</a></p></li>
+<li><p><a href="task-tosetdefault.html">To Set the Default Realm</a></p></li></ul>
+

@@ -1,0 +1,62 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ 
+Use is subject to License Terms  -->
+
+
+<a name="task-jdbcconnectionpooledit"></a><h4>To Edit JDBC Connection Pool General Settings</h4><a name="indexterm-10"></a><ol>
+<li><b>In the navigation tree, expand the Resources node.</b></li>
+<li><b>Under the Resources node, expand the JDBC node.</b></li>
+<li><b>Under the JDBC node, select the Connection Pools node.</b><p>The Connection Pools page opens.</p></li>
+<li><b>Click the name of the connection pool that you are editing.</b><p>The Edit Connection Pool page opens.</p></li>
+<li><b>From the Resource Type drop-down list, select a resource type.</b><p>Choices include <tt>javax.sql.DataSource</tt> (local transactions only), <tt>javax.sql.XADataSource</tt> (global transactions), and <tt>java.sql.ConnectionPoolDataSource</tt> (local transactions,
+possible performance improvements).</p></li>
+<li><b>In the Datasource Classname field, type the name of the vendor-specific class that
+implements the <tt>DataSource</tt> and/or <tt>XADataSource</tt> APIs.</b><p>This class is in the JDBC driver.</p></li>
+<li><b>Select the Ping Enabled checkbox to automatically ping the pool during pool creation
+or reconfiguration to identify and warn of any erroneous attribute values.</b><p>This option is disabled by default.</p></li>
+<li><b>In the Description field, type a short description for the connection pool.</b></li>
+<li><b>In the Initial and Minimum Pool Size field, type the minimum number of
+connections in this pool.</b><p>This value also determines the number of connections placed in the pool when
+the pool is first created or when the Enterprise Server starts. The default
+value is 8.</p></li>
+<li><b>In the Maximum Pool Size field, type the maximum number of connections in
+this pool.</b><p>The default value is 32.</p></li>
+<li><b>In the Pool Resize Quantity field, type the number of connections per pool
+resizing batch.</b><p>When the pool scales up and scales down toward the maximum and minimum
+pool size respectively, it is resized in batches. This value determines the number
+of connections in the batch. Making this value too large delays connection creation
+and recycling; making it too small will be less efficient. The default value
+is 2.</p></li>
+<li><b>In the Idle Timeout field, type the maximum time, in seconds, that a
+connection can remain idle in the pool.</b><p>After this time expires, the connection is removed from the pool. The default
+value is 300.</p></li>
+<li><b>In the Max Wait Time field, type the maximum time, in milliseconds, that
+an application requesting a connection will wait before getting a connection timeout.</b><p>The default value is 60,000.</p></li>
+<li><b>Select the Non Transactional Connections Enabled checkbox to return non-transactional connections.</b><p>This option is disabled by default.</p></li>
+<li><b>Select a Transaction Isolation level for the connection pool from the drop-down list.
+</b><p>If not specified, the connections operate with default isolation levels provided by the
+JDBC driver. By default, this option is not specified.</p></li>
+<li><b>Select the Isolation Level Guaranteed checkbox so that all connections taken from the
+pool have the same isolation level.</b><p>For example, if the isolation level for the connection is changed programmatically (with
+<tt>con.setTransactionIsolation</tt>) when last used, this mechanism changes the status back to the specified
+isolation level.</p><p>This setting is only applicable if a transaction isolation level has been specified.</p></li>
+<li><b>Click the Ping button to verify the database connection.</b><p>The Administration Console attempts to connect to the database. If an error message
+appears, check to see if the database server has been started.</p></li>
+<li><b>Click Save.</b>
+<hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
+Save.</p>
+<hr>
+</li></ol><h6>See Also</h6>
+<ul><li><p><a href="task-setdbaccess.html">To Set Up Database Access</a></p></li>
+<li><p><a href="task-integratejdbcdriver.html">To Integrate a JDBC Driver</a></p></li>
+<li><p><a href="task-jdbcresourcenew.html">To Create a JDBC Resource</a></p></li>
+<li><p><a href="task-jdbcresourcesedit.html">To Edit a JDBC Resource</a></p></li>
+<li><p><a href="task-jdbcresourcesdelete.html">To Delete a JDBC Resource</a></p></li>
+<li><p><a href="task-jdbcconnectionpoolnew.html">To Create a JDBC Connection Pool</a></p></li>
+<li><p><a href="task-jdbcconnectionpooladvance.html">To Edit JDBC Connection Pool Advanced Attributes</a></p></li>
+<li><p><a href="task-verifyconnpoolsettings.html">To Verify Connection Pool Settings</a></p></li>
+<li><p><a href="task-jdbcconnectionpoolproperty.html">To Edit JDBC Connection Pool Properties</a></p></li>
+<li><p><a href="task-jdbcconnectionpooldelete.html">To Delete a JDBC Connection Pool</a></p></li></ul>
+

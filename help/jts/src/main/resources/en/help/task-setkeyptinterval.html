@@ -1,0 +1,22 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ 
+Use is subject to License Terms  -->
+
+
+<a name="task-setkeyptinterval"></a><h4>To Set the Keypoint Interval</h4><a name="indexterm-6"></a><a name="indexterm-7"></a><p>Keypoint operations compress the transaction log file. The keypoint interval is the number
+of transactions between keypoint operations on the log. Keypoint operations can reduce the
+size of the transaction log files. A larger number of keypoint intervals results
+in larger transaction log files, but fewer keypoint operations, and potentially better performance.
+A smaller keypoint interval (for example, 256) results in smaller log files but
+slightly reduced performance due to the greater frequency of keypoint operations.</p><ol>
+<li><b>In the navigation tree, expand the Configuration node.</b></li>
+<li><b>Select the Transaction Service node.</b><p>The Transaction Service page opens.</p></li>
+<li><b>In the Keypoint Interval field, type the number of transactions between keypoint operations.</b><p>The default value is 65,536.</p></li>
+<li><b>Click Save.</b></li></ol><h6>See Also</h6>
+<ul><li><p><a href="task-configtransservice.html">To Configure the Transaction Service</a></p></li>
+<li><p><a href="task-configtransrecovery.html">To Configure How the Enterprise Server Recovers Transactions</a></p></li>
+<li><p><a href="task-settranstimeout.html">To Set a Transaction Timeout Value</a></p></li>
+<li><p><a href="task-settranslog.html">To Set the Location of the Transaction Logs</a></p></li></ul>
+

@@ -1,0 +1,37 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ 
+Use is subject to License Terms  -->
+<a name="ref-serverinstjvmpathsettings"></a><h4>JVM Classpath Settings</h4>
+<a name="indexterm-169"></a><p>The classpath is the list of JAR files that the Java runtime
+environment searches for classes and other resources.</p><p>The JVM Classpath Settings page contains the following options.</p><dl><dt>Environment Classpath</dt>
+<dd><p>If the Ignore checkbox is selected, the <tt>CLASSPATH</tt> environment variable is ignored. The <tt>CLASSPATH</tt> environment variable is convenient for basic tutorials in programming, but is not recommended for enterprise environments.</p></dd>
+<dt>Server Classpath</dt>
+<dd><p>The Enterprise Server classpath. This is a read-only field.</p></dd>
+<dt>System Classpath</dt>
+<dd><p>The path to the classes on your system.</p></dd>
+<dt>Classpath Prefix</dt>
+<dd><p>Full paths to the JAR files to be prepended to the server's classpath, one per line.</p></dd>
+<dt>Classpath Suffix</dt>
+<dd><p>Full paths to the JAR files to be appended to the server's classpath, one per line.</p></dd>
+<dt>Native Library Path Prefix</dt>
+<dd><p>Full paths to the JAR files to be prepended to the native library path, one per line.</p></dd>
+<dt>Native Library Path Suffix</dt>
+<dd><p>Full paths to the JAR files to be appended to the native library path, one per line.</p><p>The native library path is a concatenation of the server&#8217;s relative path for its native shared libraries, the standard runtime environment native library path, the shell environment setting (<tt>LD_LIBRARY_PATH</tt> on UNIX<sup>&#174;</sup> systems), and any path specified on the <a href="ref-serverinstjvmprofiler.html">JVM Profiler Settings</a> page.</p></dd>
+</dl>
+<h5>Related Tasks</h5>
+
+<ul><li><p><a href="task-jvmsettings.html">To Configure the JVM General Settings</a></p></li>
+<li><p><a href="task-jvmpathsettings.html">To Configure the JVM Path Settings</a></p></li>
+<li><p><a href="task-jvmoptions.html">To Configure the JVM Options</a></p></li>
+<li><p><a href="task-securitymanagerdisable.html">To Disable the Security Manager</a></p></li>
+<li><p><a href="task-jvmprofilersettings.html">To Configure the JVM Profiler Settings</a></p></li></ul>
+<h5>Related <tt>asadmin</tt> Commands</h5>
+
+<ul><li><p><a href="http://docs.sun.com/doc/820-7701/create-jvm-options-1?a=view"><tt>create-jvm-options</tt>(1)</a></p></li>
+<li><p><a href="http://docs.sun.com/doc/820-7701/delete-jvm-options-1?a=view"><tt>delete-jvm-options</tt>(1)</a></p></li>
+<li><p><a href="http://docs.sun.com/doc/820-7701/list-jvm-options-1?a=view"><tt>list-jvm-options</tt>(1)</a></p></li>
+<li><p><a href="http://docs.sun.com/doc/820-7701/create-profiler-1?a=view"><tt>create-profiler</tt>(1)</a></p></li>
+<li><p><a href="http://docs.sun.com/doc/820-7701/delete-profiler-1?a=view"><tt>delete-profiler</tt>(1)</a></p></li></ul>
+

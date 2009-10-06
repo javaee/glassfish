@@ -1,0 +1,36 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ 
+Use is subject to License Terms  -->
+
+
+<a name="task-threadpooledit"></a><h4>To Edit a Thread Pool</h4><a name="indexterm-31"></a><ol>
+<li><b>In the navigation tree, expand the Configuration node.</b></li>
+<li><b>Under the Configuration node, select the Thread Pools node.</b><p>The Thread Pools page opens.</p></li>
+<li><b>On the Thread Pools page, click the name of the thread pool
+to be edited.</b><p>The Edit Thread Pool page opens.</p></li>
+<li><b>On the Edit Thread Pool page, in the Class Name field, type
+the fully qualified name of the class that implements the thread pool.</b><p>The default value is <tt>com.sun.grizzly.http.StatsThreadPool</tt>.</p></li>
+<li><b>In the Max Queue Size field, type the maximum number of messages that
+can be queued until threads are available to process them.</b><p>A value less than or equal to 0 indicates that there is no
+limit to the queue size. The default value is &#8211;1. This is the
+recommended value for a thread pool used by the ORB. A network listener
+thread pool commonly uses a value of 4096.</p></li>
+<li><b>In the Max Thread Pool Size field, type the largest number of threads
+that can exist in the thread pool.</b><p>The default value is 5. This is the recommended value for network listener
+thread pools.</p></li>
+<li><b>In the Min Thread Pool Size field, type the smallest number of threads
+that can exist in the thread pool.</b><p>These threads are created when the thread pool is instantiated. The default value
+is 2.</p></li>
+<li><b>In the Idle Thread Timeout field, type the maximum amount of time, in
+seconds, that a thread can remain idle in the pool.</b><p>After this time expires, the thread is removed from the pool. The default
+value is 900.</p></li>
+<li><b>Click Save.</b>
+<hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
+Save.</p>
+<hr>
+</li></ol><h6>See Also</h6>
+<ul><li><p><a href="task-threadpoolnew.html">To Create a Thread Pool</a></p></li>
+<li><p><a href="task-threadpooldelete.html">To Delete a Thread Pool</a></p></li></ul>
+

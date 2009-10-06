@@ -1,0 +1,54 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ 
+Use is subject to License Terms  -->
+
+
+<a name="task-networklisteneredit"></a><h4>To Edit a Network Listener</h4><a name="indexterm-16"></a><ol>
+<li><b>In the navigation tree, expand the Configuration node.</b></li>
+<li><b>Under the Configuration node, expand the Network Config node.</b></li>
+<li><b>Under the Network Config node, select the Network Listeners node.</b><p>The Network Listeners page opens.</p></li>
+<li><b>On the Network Listeners page, click the name of the network listener that
+you are editing.</b><p>The Edit Network Listener page opens.</p></li>
+<li><b>Select or deselect the Status Enabled checkbox to change the status of the
+network listener.</b><p>The listener can be enabled or disabled. This option is enabled by default.
+If the listener is disabled, any attempts to connect to the listener result
+in a socket exception (<tt>java.net.ConnectException</tt>).</p></li>
+<li><b>Select the Security Enabled checkbox to enable security for the protocol used by
+the network listener.</b><p>This option is disabled by default.</p></li>
+<li><b>Select the JK Listener Enabled checkbox to specify that the listener supports Apache's
+<tt>mod-jk</tt> protocol.</b><p>The <tt>mod-jk</tt> protocol is a proprietary communication/network protocol between Apache's <tt>httpd</tt> (web server)
+and an Enterprise Server back-end instance. If the listener supports this protocol, <tt>httpd</tt>
+is supposed to handle all static content, whereas any requests for dynamic resources (i.e.,
+Servlets and JSPs) are routed to the <tt>mod-jk</tt> enabled network listener of the
+Enterprise Server, using the <tt>mod-jk</tt> protocol. This option is disabled by default.</p></li>
+<li><b>In the Port field, type the port number on which the network
+listener will listen.</b><p>Legal values are 1 through 65535. On a UNIX system, creating sockets
+that listen on ports 1 through 1024 requires superuser privileges.</p></li>
+<li><b>In the Address field, type the IP address on which the network listener
+will listen.</b><p>The address can be in dotted-pair or IPv6 notation. It can be <tt>any</tt>
+(for <tt>INADDR_ANY</tt>) to listen on all IP addresses. It can be a hostname.</p></li>
+<li><b>From the Thread Pool drop-down list, select the thread pool to be associated
+with the network listener.</b></li>
+<li><b>From the Transport drop-down list, select the transport type to be used by
+the network listener.</b><p>By default, the only choice is <tt>tcp</tt>.</p></li>
+<li><b>Click Save.</b>
+<hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
+Save.</p>
+<hr>
+</li></ol><h6>Next Steps</h6><p>You can use the SSL, HTTP, and File Cache tabs to edit
+the settings for the protocol associated with the network listener. The SSL tab
+is meaningful only if you enabled security for the network listener.</p><h6>See Also</h6>
+<ul><li><p><a href="task-networklistenernew.html">To Create a Network Listener</a></p></li>
+<li><p><a href="task-networklistenerdelete.html">To Delete a Network Listener</a></p></li>
+<li><p><a href="task-protocolnew.html">To Create a Protocol</a></p></li>
+<li><p><a href="task-protocoledit.html">To Edit a Protocol</a></p></li>
+<li><p><a href="task-protocolssledit.html">To Edit SSL Settings for a Protocol</a></p></li>
+<li><p><a href="task-protocolhttpedit.html">To Edit HTTP Settings for a Protocol</a></p></li>
+<li><p><a href="task-protocolfilecacheedit.html">To Edit File Cache Settings for a Protocol</a></p></li>
+<li><p><a href="task-protocoldelete.html">To Delete a Protocol</a></p></li>
+<li><p><a href="task-transportnew.html">To Create a Transport</a></p></li>
+<li><p><a href="task-transportedit.html">To Edit a Transport</a></p></li>
+<li><p><a href="task-transportdelete.html">To Delete a Transport</a></p></li></ul>
+

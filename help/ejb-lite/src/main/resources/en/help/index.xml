@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- ident   "%Z%%M% %I%   %E% SMI" -->
+<!DOCTYPE index PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Index Version 2.0//EN" "index_1_0.dtd">
+<index version="2.0">
+
+ <indexitem text="EJB container">
+    <indexitem target="task-ejbgeneral" text="configuring EJB settings"></indexitem><indexitem target="ref-ejbgeneral" text="configuring EJB settings"></indexitem></indexitem>
+ <indexitem text="EJB settings">
+    <indexitem target="task-ejbgeneral" text="configuring"></indexitem><indexitem target="ref-ejbgeneral" text="configuring"></indexitem>
+</indexitem>
+</index>

@@ -1,0 +1,14 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ 
+Use is subject to License Terms  -->
+<a name="ref-websessionproperties"></a><h4>Properties Specific to Web Container Sessions</h4>
+<a name="indexterm-38"></a><a name="indexterm-39"></a><p>The following properties are available for a web container session.</p><dl><dt><tt>enableCookies</tt></dt>
+<dd><p>If set to <tt>true</tt>, uses cookies for session tracking. The default value is <tt>true</tt>.</p></dd>
+<dt><tt>enableURLRewriting</tt></dt>
+<dd><p>Enables URL rewriting. This provides session tracking by means of URL rewriting when the browser does not accept cookies. You must also use an <tt>encodeURL</tt> or <tt>encodeRedirectURL</tt> call in the servlet or JavaServer Pages (JSP) page. The default value is <tt>true</tt>.</p></dd>
+<dt><tt>idLengthBytes</tt></dt>
+<dd><p>Specifies the number of bytes in this web module's session ID. The default value is 128.</p></dd>
+</dl>
+

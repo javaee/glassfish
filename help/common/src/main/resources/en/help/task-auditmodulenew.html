@@ -1,0 +1,30 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ 
+Use is subject to License Terms  -->
+
+
+<a name="task-auditmodulenew"></a><h4>To Create an Audit Module</h4><a name="indexterm-82"></a><p>Auditing is how Enterprise Server records significant events, such as errors or security
+breaches. Enterprise Server records all authentication events in log files. A complete access
+log provides a sequential trail of Enterprise Server access events.</p><p>The Enterprise Server provides a simple default audit module; for more information, see
+<a href="task-usedefaultauditmod.html">To Use the Default Audit Module</a> .</p><ol>
+<li><b>In the navigation tree, expand the Configuration node.</b></li>
+<li><b>Under the Configuration node, expand the Security node.</b></li>
+<li><b>Under the Security node, select the Audit Modules node.</b><p>The Audit Modules page opens.</p></li>
+<li><b>On the Audit Modules page, click New.</b><p>The New Audit Module page opens.</p></li>
+<li><b>On the New Audit Module page, in the Name field, type the
+name of the audit module.</b></li>
+<li><b>In the Class Name field, type the fully qualified name of the class
+that implements this module.</b><p>The class name for the default audit module is <tt>com.sun.enterprise.security.Audit</tt>.</p></li>
+<li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>To add a property, click the Add Property button. In the blank row
+that appears, type the property name in the Name field, and type the
+property value in the Value field.</p><p>For a description of the additional property that is available for audit modules,
+see <a href="ref-auditmoduleprop.html">Properties Specific to Audit Modules</a>.</p></li>
+<li><b>Click OK.</b></li></ol><h6>See Also</h6>
+<ul><li><p><a href="task-auditmoduleedit.html">To Edit an Audit Module</a></p></li>
+<li><p><a href="task-auditmoduledelete.html">To Delete an Audit Module</a></p></li>
+<li><p><a href="task-enabledisableauditmod.html">To Enable or Disable Audit Logging</a></p></li>
+<li><p><a href="task-setactiveauditmod.html">To Set the Active Audit Module</a></p></li>
+<li><p><a href="task-usedefaultauditmod.html">To Use the Default Audit Module</a></p></li></ul>
+

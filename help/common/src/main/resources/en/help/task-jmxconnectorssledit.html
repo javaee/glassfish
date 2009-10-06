@@ -1,0 +1,37 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ 
+Use is subject to License Terms  -->
+
+
+<a name="task-jmxconnectorssledit"></a><h4>To Edit SSL Settings for the JMX Connector</h4><a name="indexterm-104"></a><a name="indexterm-105"></a><a name="indexterm-106"></a><h6>Before You Begin</h6><p>This task is meaningful only if security is enabled for the JMX
+connector.</p><ol>
+<li><b>In the navigation tree, expand the Configuration node.</b></li>
+<li><b>Under the Configuration node, select the Admin Service node.</b><p>The Edit JMX Connector page opens.</p></li>
+<li><b>Select the Security Enabled checkbox to cause JMX communication to be encrypted.</b><p>This option is disabled by default.</p></li>
+<li><b>Click the SSL tab.</b><p>The SSL page opens.</p></li>
+<li><b>On the SSL page, select the SSL3 Enabled checkbox to enable SSL3.</b><p>This option is enabled by default.</p></li>
+<li><b>Select the TLS Enabled checkbox to enable Transport Layer Security (TLS).</b><p>This option is enabled by default.</p></li>
+<li><b>Select the Client Authentication Enabled checkbox to require clients to identify themselves to
+the server on every request.</b><p>This option is disabled by default.</p></li>
+<li><b>In the Certificate Nickname field, type the nickname of the server certificate in
+the certificate database or the PKCS#11 token.</b><p>In the certificate, the name format is <tt><i>tokenname</i>:<i>nickname</i></tt>. Including the <tt><i>tokenname</i>:</tt> part of
+the name in this attribute is optional. The default value is <tt>s1as</tt>.</p></li>
+<li><b>In the Key Store field, type the name of the keystore file
+(for example, <tt>keystore.jks</tt>).</b></li>
+<li><b>In the Trust Algorithm field, type the name of the trust management algorithm
+(for example, PKIX) to use for certification path validation.</b></li>
+<li><b>In the Max Certificate Length field, type the maximum number of non-self-issued intermediate
+certificates that can exist in a certification path.</b><p>This field is used only if the Trust Algorithm field is set to
+PKIX. A value of 0 implies that the path can only contain
+a single certificate. A value of -1 implies that the path length is
+unconstrained (there is no maximum). Setting a value less than -1 causes an
+exception to be thrown. The default value is 5.</p></li>
+<li><b>In the Trust Store field, type the name of the truststore file (for
+example, <tt>cacerts.jks</tt>).</b></li>
+<li><b>In the Cipher Suites area, specify the cipher suites to be used.</b><p>If you do not add any cipher suites, all cipher suites will
+be used.</p></li>
+<li><b>Click OK.</b></li></ol><h6>See Also</h6>
+<ul><li><p><a href="task-jmxconnectoredit.html">To Edit the JMX Connector</a></p></li></ul>
+

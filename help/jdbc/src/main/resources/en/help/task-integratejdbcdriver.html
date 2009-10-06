@@ -1,0 +1,34 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ 
+Use is subject to License Terms  -->
+
+
+<a name="task-integratejdbcdriver"></a><h4>To Integrate a JDBC Driver</h4><a name="indexterm-3"></a><p>A driver supporting the JDBC API (JDBC driver) translates the JDBC calls of
+an application into the protocol of the database server.</p><ul>
+<li><b>To integrate the JDBC driver into an administrative domain, do either of the
+following:</b><ul>
+<li><b>Make the driver accessible to the common class loader.</b><ol style="list-style-type: lower-alpha">
+<li><b>Copy the JAR and ZIP files of the driver into the <i>domain-dir</i><tt>/lib</tt>
+directory; or copy the class files into the <i>domain-dir</i><tt>/lib/ext</tt> directory.</b></li>
+<li><b>Restart the domain.</b></li></ol></li>
+<li><b>Make the driver accessible to the system class loader.</b><ol style="list-style-type: lower-alpha">
+<li><b>In the navigation tree, expand the Configuration node.</b></li>
+<li><b>Under the Configuration node, select the JVM Settings node.</b><p>The JVM General Settings page opens.</p></li>
+<li><b>On the JVM General Settings page, click the Path Settings tab.</b></li>
+<li><b>In the Classpath Suffix field, type the fully qualified path name for the
+JAR file of the driver.</b></li>
+<li><b>Click Save.</b></li>
+<li><b>Restart the server.</b></li></ol></li></ul></li></ul><h6>See Also</h6>
+<ul><li><p><a href="task-setdbaccess.html">To Set Up Database Access</a></p></li>
+<li><p><a href="task-jdbcresourcenew.html">To Create a JDBC Resource</a></p></li>
+<li><p><a href="task-jdbcresourcesedit.html">To Edit a JDBC Resource</a></p></li>
+<li><p><a href="task-jdbcresourcesdelete.html">To Delete a JDBC Resource</a></p></li>
+<li><p><a href="task-jdbcconnectionpoolnew.html">To Create a JDBC Connection Pool</a></p></li>
+<li><p><a href="task-jdbcconnectionpooledit.html">To Edit JDBC Connection Pool General Settings</a></p></li>
+<li><p><a href="task-jdbcconnectionpooladvance.html">To Edit JDBC Connection Pool Advanced Attributes</a></p></li>
+<li><p><a href="task-verifyconnpoolsettings.html">To Verify Connection Pool Settings</a></p></li>
+<li><p><a href="task-jdbcconnectionpoolproperty.html">To Edit JDBC Connection Pool Properties</a></p></li>
+<li><p><a href="task-jdbcconnectionpooldelete.html">To Delete a JDBC Connection Pool</a></p></li></ul>
+

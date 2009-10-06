@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- ident   "%Z%%M% %I%   %E% SMI" -->
+<!DOCTYPE toc PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 2.0//EN" "toc_1_0.dtd">
+<toc version="2.0">
+
+ <tocitem target="tasks-topic-group" text="Enterprise Server Administration Console Tasks" expand="false">
+    <tocitem target="task-group-configejbcontainer" text="Configuring the EJB Container" expand="false">
+        <tocitem target="task-ejbgeneral" text="To Configure EJB Settings" expand="false"></tocitem></tocitem></tocitem>
+ <tocitem target="ref-topic-group" text="Enterprise Server Administration Console Reference" expand="false">
+    <tocitem target="ref-group-configuration" text="Configuration" expand="false">
+        <tocitem target="ref-group-ejbcontainer" text="EJB Container" expand="false">
+            <tocitem target="ref-ejbgeneral" text="Enterprise Java Beans (EJB)" expand="false"></tocitem>
+</tocitem>
+</tocitem>
+</tocitem>
+</toc>
