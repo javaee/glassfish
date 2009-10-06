@@ -81,8 +81,8 @@ public class CreateConnectorSecurityMap extends ConnectorSecurityMap implements 
     @Param(name = "mappedusername")
     String mappedusername;
 
-    @Param(name="mappedpassword", optional=true)
-    String mappedpassword; //TODO get this from local command thru REST?
+    @Param(name="mappedpassword", password = true, optional = true)
+    String mappedpassword; 
 
     @Param(name = "mapname", primary = true)
     String securityMapName;
