@@ -39,11 +39,16 @@
 
 package org.glassfish.appclient.client;
 
+import com.sun.enterprise.glassfish.bootstrap.ASMainStatic;
+import com.sun.enterprise.glassfish.bootstrap.MaskingClassLoader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.lang.reflect.Field;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import org.glassfish.appclient.client.acc.UserError;
 import org.glassfish.appclient.client.jws.boot.ErrorDisplayDialog;
-import org.glassfish.appclient.client.jws.boot.JWSACCMain;
 import org.glassfish.appclient.client.jws.boot.LaunchSecurityHelper;
 
 /**
@@ -73,6 +78,7 @@ public class JWSAppClientContainerMain {
 
             final String agentArgsText = System.getProperty("agent.args");
             LaunchSecurityHelper.setPermissions();
+            insertMaskingLoader();
 
             AppClientFacade.prepareACC(agentArgsText, null);
             AppClientFacade.launch(args);
@@ -94,4 +100,20 @@ public class JWSAppClientContainerMain {
         }
 
     }
+
+    private static void insertMaskingLoader() throws IOException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        final String loaderConfig = System.getProperty("loader.config");
+        StringReader sr = new StringReader(loaderConfig);
+        final Properties props = new Properties();
+        props.load(sr);
+
+        final ClassLoader jwsLoader = Thread.currentThread().getContextClassLoader();
+        final ClassLoader mcl = ASMainStatic.getMaskingClassLoader(
+                jwsLoader.getParent(), props);
+
+        final Field jwsLoaderParentField = ClassLoader.class.getDeclaredField("parent");
+        jwsLoaderParentField.setAccessible(true);
+        jwsLoaderParentField.set(jwsLoader, mcl);
+    }
+
 }

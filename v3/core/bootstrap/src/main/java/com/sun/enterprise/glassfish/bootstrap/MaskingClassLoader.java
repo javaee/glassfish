@@ -36,6 +36,8 @@
  */
 package com.sun.enterprise.glassfish.bootstrap;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -76,18 +78,63 @@ public class MaskingClassLoader extends ClassLoader {
         } catch(ClassNotFoundException e) {
             
         }
-        if (!(name.startsWith("javax.") || name.startsWith("org."))) {
+        if (isDottedNameLoadableByParent(name)) {
             return super.loadClass(name, resolve);
-        }
-        final String packageName = name.substring(0, name.lastIndexOf("."));
-        if (punchins.contains(packageName)) {
-            return super.loadClass(name, resolve);
-        }
-        for (String multiple : multiples) {
-            if (name.startsWith(multiple)) {
-                return super.loadClass(name, resolve);
-            }
         }
         throw new ClassNotFoundException(name);
      }
+
+    @Override
+    public URL getResource(String name) {
+        if (isDottedNameLoadableByParent(resourceToDotted(name))) {
+            return super.getResource(name);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Enumeration<URL> getResources(String name) throws IOException {
+        if (isDottedNameLoadableByParent(resourceToDotted(name))) {
+            return super.getResources(name);
+        } else {
+            return new Enumeration<URL>() {
+
+                @Override
+                public boolean hasMoreElements() {
+                    return false;
+                }
+
+                @Override
+                public URL nextElement() {
+                    throw new NoSuchElementException();
+                }
+            };
+        }
+    }
+    
+    private String resourceToDotted(String name) {
+        if (name.startsWith("/")) {
+            name = name.substring(1);
+        }
+        return name.replace("/", ".");
+    }
+    
+    private boolean isDottedNameLoadableByParent(final String name) {
+        if (!(name.startsWith("javax.") || name.startsWith("org."))) {
+            return true;
+        }
+        final String packageName = name.substring(0, name.lastIndexOf("."));
+        if (punchins.contains(packageName)) {
+            return true;
+        }
+        for (String multiple : multiples) {
+            if (name.startsWith(multiple)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    
 }

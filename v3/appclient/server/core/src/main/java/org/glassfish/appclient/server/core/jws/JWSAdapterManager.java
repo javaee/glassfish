@@ -43,6 +43,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.logging.LogDomains;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -220,9 +221,10 @@ public class JWSAdapterManager implements PostConstruct {
          * files.  Instead those are handled by the AppClientServerApplication
          * logic.
          */
+        final File modulesDir = new File(installRootURI.getRawPath(), "modules");
         Map<String,StaticContent> result = new HashMap<String,StaticContent>();
         File gfClientJAR = new File(
-            new File(installRootURI.getRawPath(), "modules"),
+            modulesDir,
             "gf-client.jar");
 
         final String classPathExpr = getGFClientModuleClassPath(gfClientJAR);
@@ -254,6 +256,21 @@ public class JWSAdapterManager implements PostConstruct {
             final String extPath = publicExtensionHref(e.getValue());
             result.put(extPath, new FixedContent(extFile));
             systemJARRelativeURIs.add(relativeSystemPath(uri));
+        }
+
+        /*
+         * Add the endorsed JARs to the system content.
+         */
+        final File endorsedDir = new File(modulesDir, "endorsed");
+        for (File endorsedJar : endorsedDir.listFiles(new FileFilter(){
+
+                    @Override
+                    public boolean accept(File pathname) {
+                        return (pathname.isFile() && pathname.getName().endsWith(".jar"));
+                    }
+            })) {
+            result.put(systemPath(endorsedJar.toURI()), new FixedContent(endorsedJar));
+            systemJARRelativeURIs.add(relativeSystemPath(endorsedJar.toURI()));
         }
         return result;
     }

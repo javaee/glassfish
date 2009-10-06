@@ -255,6 +255,27 @@ public class ASMainStatic extends ASMainNonOSGi {
                 // ignore.
             }
         }
+
+        return getMaskingClassLoader(parent, props);
+    }
+
+    /**
+     * Returns a masking class loader with the specified parent and
+     * configured using the indicated properties.
+     * <p>
+     * Used both from the instance getMaskingClassLoader method and also from
+     * the Java Web Start-aware ACC so it can property support the endorsed
+     * JARs provided with GlassFish.
+     * 
+     * @param parent parent class loader for the new MaskingClassLoader
+     * @param props configuration specifying what packages to let the
+     * parent class loader attempt to load
+     * @return
+     */
+    public static ClassLoader getMaskingClassLoader(final ClassLoader parent,
+            final Properties props) {
+    
+    
         String punchins = props.getProperty("jre-1.6");
         StringTokenizer st = new StringTokenizer(punchins, ",");
         List<String> p = new ArrayList<String>();

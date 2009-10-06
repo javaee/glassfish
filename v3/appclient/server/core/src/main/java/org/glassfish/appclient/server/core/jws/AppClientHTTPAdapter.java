@@ -88,6 +88,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
 
     private final IiopService iiopService;
     private final ACCConfigContent accConfigContent;
+    private final LoaderConfigContent loaderConfigContent;
 
     public AppClientHTTPAdapter(
             final String contextRoot,
@@ -104,6 +105,8 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         this.accConfigContent = new ACCConfigContent(
                 new File(domainDir, "config"),
                 new File(new File(installDir, "lib"), "appclient"));
+        this.loaderConfigContent = new LoaderConfigContent(installDir);
+
         if (logger.isLoggable(Level.FINE)) {
             logger.fine(dumpContent());
         }
@@ -242,6 +245,8 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
                 Util.toXMLEscaped(accConfigContent.appClientLogin()));
         answer.setProperty("request.message.security.config.provider.security.config",
                 Util.toXMLEscaped(accConfigContent.securityConfig()));
+        answer.setProperty("loader.config",
+                Util.toXMLEscaped(loaderConfigContent.content()));
 
         answer.setProperty("request.iiop.properties", buildIIOPProperties());
         /*

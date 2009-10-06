@@ -111,6 +111,7 @@
         <property name="message.security.config.provider.security.config"
             value="${request.message.security.config.provider.security.config}"/>
 
+        <property name="loader.config" value="${loader.config}"/>
 
 <!-- from the command line -->
 <!--
