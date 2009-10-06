@@ -171,6 +171,7 @@
         <ant dir="web/jsfinjection" target="build-deploy"/>
         <ant dir="jdbc/jdbcusertx" target="build-deploy"/>
         <ant dir="persistence/jpainjectemf" target="build-deploy"/>
+        <ant dir="persistence/jpavalidation" target="build-deploy"/>
         <ant dir="security/helloworld" target="build-deploy"/>
         <ant dir="security/basicauth" target="build-deploy"/>
         <ant dir="ejb/slsbnicmt" target="build-deploy"/>
@@ -196,6 +197,7 @@
         <ant dir="web/jsfinjection" target="undeploy"/>
         <ant dir="jdbc/jdbcusertx" target="undeploy"/>
         <ant dir="persistence/jpainjectemf" target="undeploy"/>
+        <ant dir="persistence/jpavalidation" target="undeploy"/>
         <ant dir="security/helloworld" target="undeploy"/>
         <ant dir="security/basicauth" target="undeploy"/>
         <ant dir="ejb/slsbnicmt" target="undeploy"/>

@@ -69,25 +69,10 @@
         </classes>
   </test>
   <test name="web_jspservlet_war">
-  <!--<groups>
-      <run>
-	<include name="pulse"/>
-	</run>
-  </groups>-->
     <classes>
        <class name="test.web.jsp.hello.HelloJSPTestNG" />
     </classes>
   </test>
-  <!--test name="jpa_jspservlet_war">
-   <classes>
-       <class name="test.PersistenceTestNG" />
-    </classes>
-  </test -->
-  <!-- test name="web_struts_basic">
-    <classes>
-       <class name="test.web.strutsbasic.StrutsWebTestNG" />
-    </classes>
-  </test -->
   <test name="jsf_hello_world">
     <classes>
        <class name="test.jsf.astrologer.JSFWebTestNG" />
@@ -106,6 +91,11 @@
   <test name="jpa_inject_emf">
     <classes>
        <class name="test.jpa.jpainjectemf.JpaInjectEMFTestNG" />
+    </classes>
+  </test>
+  <test name="jpa_validation">
+    <classes>
+       <class name="test.jpa.jpavalidation.JpaValidationTestNG" />
     </classes>
   </test>
   <test name="security_hello_jsp">
