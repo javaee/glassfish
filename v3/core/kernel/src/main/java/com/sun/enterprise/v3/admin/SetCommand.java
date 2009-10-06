@@ -298,14 +298,14 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
         context.getActionReport().setMessage(msg);
     }
 
-     /**
-     * Indicate in the action report that the command succeeded and 
+    /**
+     * Indicate in the action report that the command succeeded and
      * include the target property and it's value in the report
      */
     private void success(AdminCommandContext context, String target, String value) {
         context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
         ActionReport.MessagePart part = context.getActionReport().getTopMessagePart().addChild();
         part.setChildrenType("DottedName");
-        part.setMessage(target + "=" + value);
+        part.setMessage(target.replace('_', '-') + "=" + value);
     }
 }
