@@ -91,7 +91,8 @@ public class WebTest {
             System.out.println("Connecting to: " + url.toString());
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(20 * 1000);
+            // Default async timeout is 30000
+            conn.setReadTimeout(40000);
             conn.connect();
 
             int responseCode = conn.getResponseCode();

@@ -48,14 +48,11 @@ public class TestServlet extends HttpServlet implements AsyncListener {
         if (!req.isAsyncSupported()) {
             throw new ServletException("Async not supported when it should");
         }
-
-        req.addAsyncListener(this);
  
-        if (!"MYVALUE".equals(req.getAttribute("MYNAME"))) {
-            // First dispatch
+        if (!req.getDispatcherType().equals(DispatcherType.ASYNC)) {
+            // Container-initiated dispatch
             final AsyncContext ac = req.startAsync();
-            req.setAttribute("MYNAME", "MYVALUE");
-
+            ac.addListener(this);
             Timer asyncTimer = new Timer("TestTimer", true);
             asyncTimer.schedule(
                 new TimerTask() {
@@ -66,16 +63,14 @@ public class TestServlet extends HttpServlet implements AsyncListener {
                 },
                 5000);
         } else {
-            // Async re-dispatched request
+            // Async dispatch
             throw new ServletException("Error during dispatch");
         }
     }
 
-
     public void onComplete(AsyncEvent event) throws IOException {
         // do nothing
     }
-
 
     public void onTimeout(AsyncEvent event) throws IOException {
         // do nothing
@@ -84,9 +79,14 @@ public class TestServlet extends HttpServlet implements AsyncListener {
     public void onError(AsyncEvent event) throws IOException {
         if (event.getThrowable() != null) {
             AsyncContext ac = event.getAsyncContext();
-            ac.getResponse().getWriter().println("Hello world");
+            ServletResponse sr = ac.getResponse();
+            ((HttpServletResponse)sr).setStatus(HttpServletResponse.SC_OK);
+            sr.getWriter().println("Hello world");
             ac.complete();
         }
     }
 
+    public void onStartAsync(AsyncEvent event) throws IOException {
+        // do nothing
+    }
 }

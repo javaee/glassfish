@@ -48,7 +48,6 @@ public class TestServlet extends HttpServlet {
             throw new ServletException(
                 "Async not supported when it should");
         }
-        req.setAsyncTimeout(10);
         req.startAsync();
     }
 }

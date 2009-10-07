@@ -48,8 +48,6 @@ public class TestServlet extends HttpServlet implements AsyncListener {
             throw new ServletException("Async not supported when it should");
         }
 
-        req.addAsyncListener(this);
-
         AsyncContext ac = null;
         boolean isWrap = Boolean.parseBoolean(req.getParameter("wrap"));
         if (isWrap) {
@@ -57,20 +55,26 @@ public class TestServlet extends HttpServlet implements AsyncListener {
         } else {
             ac = req.startAsync();
         }
+
+        ac.addListener(this);
+
         ac.complete();
     }
 
-
     public void onComplete(AsyncEvent event) throws IOException {
-        event.getAsyncContext().getResponse().getWriter().println("Hello world");
+        event.getAsyncContext().getResponse().getWriter().println(
+            "Hello world");
     }
-
 
     public void onTimeout(AsyncEvent event) throws IOException {
         // do nothing
     }
 
     public void onError(AsyncEvent event) throws IOException {
+        // do nothing
+    }
+
+    public void onStartAsync(AsyncEvent event) throws IOException {
         // do nothing
     }
 }
