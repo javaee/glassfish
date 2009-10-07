@@ -193,8 +193,8 @@ public final class AMXConfigProxyTests extends AMXTestBase
         final ConfigTools ct = getDomainRootProxy().getExt().child(ConfigTools.class);
         
         final String[] namedTypes = ct.getConfigNamedTypes();
-        assert namedTypes.length >= 13 :
-            "Expecting at least 13 named types, got " + namedTypes.length + " = " + CollectionUtil.toString(SetUtil.newStringSet(namedTypes), ", ");
+        assert namedTypes.length >= 11 :
+            "Expecting at least 11 named types, got " + namedTypes.length + " = " + CollectionUtil.toString(SetUtil.newStringSet(namedTypes), ", ");
         
         final String[] resourceTypes = ct.getConfigResourceTypes();
         assert resourceTypes.length >= 10 :
