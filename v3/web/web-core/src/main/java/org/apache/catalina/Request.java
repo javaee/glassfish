@@ -402,26 +402,6 @@ public interface Request {
 
 
     /**
-     * Sets the timeout (in milliseconds) for any asynchronous operations
-     * initiated on this request.
-     *
-     * @param timeout the timeout for any asynchronous operations initiated
-     * on this request.
-     */
-    public void setAsyncTimeout(long timeout);
-
-
-    /**
-     * Gets the timeout (in milliseconds) for any asynchronous operations
-     * initiated on this request.
-     *
-     * @return the timeout for any asynchronous operations initiated on this
-     * request.
-     */
-    public long getAsyncTimeout();
-
-
-    /**
      * Sets the requested session cookie path, see IT 7426
      */
     public void setRequestedSessionCookiePath(String cookiePath);

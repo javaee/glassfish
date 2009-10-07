@@ -333,27 +333,4 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
         httpRequest.disableAsyncSupport();
     }
 
-
-    /**
-     * Sets the timeout (in milliseconds) for any asynchronous operations
-     * initiated on this request.
-     *
-     * @param timeout the timeout
-     */
-    public void setAsyncTimeout(long timeout) {
-        httpRequest.setAsyncTimeout(timeout);
-    }
-
-
-    /**
-     * Gets the timeout (in milliseconds) for any asynchronous operations
-     * initiated on the wrapped request.
-     *
-     * @return the timeout in milliseconds for any asynchronous
-     * operations initiated on the wrapped request
-     */
-    public long getAsyncTimeout() {
-        return httpRequest.getAsyncTimeout();
-    }
-
 }

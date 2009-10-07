@@ -1099,59 +1099,6 @@ public class RequestFacade
     }
 
 
-    /**
-     * Registers the given AsyncListener with this request.
-     */
-    public void addAsyncListener(AsyncListener listener) {
-        if (request == null) {
-            throw new IllegalStateException(
-                            sm.getString("requestFacade.nullRequest"));
-        }
-        request.addAsyncListener(listener);
-    }
-
-
-    /**
-     * Registers the given AsyncListener, ServletRequest, and 
-     * ServletResponse with this request.
-     */
-    public void addAsyncListener(AsyncListener listener,
-                                 ServletRequest request,
-                                 ServletResponse response) {
-        if (request == null) {
-            throw new IllegalStateException(
-                            sm.getString("requestFacade.nullRequest"));
-        }
-        request.addAsyncListener(listener, request, response);
-    }
-
-
-    /**
-     * Sets the timeout (in milliseconds) for any asynchronous operations
-     * initiated on this request.
-     */
-    public void setAsyncTimeout(long timeout) {
-        if (request == null) {
-            throw new IllegalStateException(
-                            sm.getString("requestFacade.nullRequest"));
-        }
-        request.setAsyncTimeout(timeout);
-    }
-
-
-    /**
-     * Gets the timeout (in milliseconds) for any asynchronous operations
-     * initiated on this request.
-     */
-    public long getAsyncTimeout() {
-        if (request == null) {
-            throw new IllegalStateException(
-                            sm.getString("requestFacade.nullRequest"));
-        }
-        return request.getAsyncTimeout();
-    }
-
-
     @Override
     public Collection<Part> getParts() throws IOException, ServletException {
         if (request == null) {
