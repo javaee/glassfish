@@ -67,40 +67,36 @@ public class WebTest {
     }
 
     public void doTest() {
-
-        runTest(TEST_NAME + "_urlPatternFromWeb", "/mytest", 200, EXPECTED_RESPONSE);
-
-        runTest(TEST_NAME + "_urlPatternFromWebFragment", "/wftest", 404, null);
-
-        runTest(TEST_NAME + "_envEntryFromWebFragment", "/wftest2", 200, EXPECTED_RESPONSE_2);
-
-        runTest(TEST_NAME + "_envEntryFromWeb", "/mytest2", 200, EXPECTED_RESPONSE_3);
-    }
-
-    private void runTest(String testName, String urlPattern, int statusCode, String expectedResponse) {
         try {
-            invoke(urlPattern, statusCode, expectedResponse);
-            stat.addStatus(testName, stat.PASS);
+            boolean testStatus = runTest("urlPatternFromWeb", "/mytest", 200, EXPECTED_RESPONSE);
+            testStatus = testStatus && runTest("urlPatternFromWebFragment", "/wftest", 404, null);
+            testStatus = testStatus && runTest("envEntryFromWebFragment", "/wftest2", 200, EXPECTED_RESPONSE_2);
+            testStatus = testStatus && runTest("envEntryFromWeb", "/mytest2", 200, EXPECTED_RESPONSE_3);
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
-            stat.addStatus(testName, stat.FAIL);
+            stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
         }
     }
 
-    private void invoke(String urlPattern, int statusCode, String expectedResponse) throws Exception {
-        
+    private boolean runTest(String info, String urlPattern, int statusCode,
+            String expectedResponse) throws Exception {
+
+        System.out.println("test: " + info);
         String url = "http://" + host + ":" + port + contextRoot + urlPattern;
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();
         conn.connect();
 
         int code = conn.getResponseCode();
-        if (code != statusCode) {
-            throw new Exception("Unexpected return code: " + code);
+        boolean testStatus = (code == statusCode);
+
+        if (!testStatus) {
+            System.out.println("Unexpected return code: " + code);
         }
 
-        if (expectedResponse == null) {
-            return;
+        if (!testStatus || expectedResponse == null) {
+            return testStatus;
         }
 
         InputStream is = null;
@@ -127,8 +123,11 @@ public class WebTest {
             }
         }
         if (!expectedResponse.equals(line)) {
-            throw new Exception("Wrong response. Expected: " + 
+            System.out.println("Wrong response. Expected: " + 
                 expectedResponse + ", received: " + line);
+            testStatus = false;
         }
+
+        return testStatus;
     }
 }
