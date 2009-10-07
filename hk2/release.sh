@@ -10,6 +10,7 @@
 
 # Voodoo to avoid "invalid LOC header (bad signature)" error.
 #export MAVEN_OPTS="-Xmx256m"
+uname -a
 
 # First, get to the base line. This is probably not a requirement.
 mvn clean install
