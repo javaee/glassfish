@@ -50,23 +50,6 @@ import java.util.Set;
  * @author Shing Wai Chan
  */
 public class WebComponentContext extends ResourceContainerContextImpl {
-    /*
-     * The type level security constraint from annotation.
-     * Note that if there is a need for keeping other info.
-     * Then we can have a Map later.
-     */
-    private SecurityConstraint typeSecConstraint = null;
-
-    private Map<String, SecurityConstraint> method2SecurityConstraint
-            = new HashMap<String, SecurityConstraint>();
-
-    /*
-     * This is for keeping the non-overrided url patterns shared
-     * with other annotations as the info will be lost after the
-     * procesisng of the first security annotations.
-     */
-    private Set<String> nonOverridedUrlPatterns = null;
-
     private WebComponentDescriptor webComp = null;
 
     public WebComponentContext(WebComponentDescriptor wComp) {
@@ -92,29 +75,4 @@ public class WebComponentContext extends ResourceContainerContextImpl {
             getProcessingContext().popHandler();
         }
     }
-
-    public SecurityConstraint getTypeSecurityConstraint() {
-        return typeSecConstraint;
-    }
-
-    public void setTypeSecurityConstraint(SecurityConstraint typeSecConstraint) {
-        this.typeSecConstraint = typeSecConstraint;
-    }
-
-    public Set<String> getNonOverridedUrlPatterns() {
-        return nonOverridedUrlPatterns;
-    }
-
-    public void setNonOverridedUrlPatterns(Set<String> noup) {
-        nonOverridedUrlPatterns = noup;
-    }
-
-    public void putMethodSecurityConstraint(String methodName, SecurityConstraint secConstr) {
-        method2SecurityConstraint.put(methodName, secConstr);
-    }
-
-    public SecurityConstraint getMethodSecurityConstraint(String methodName) {
-        return method2SecurityConstraint.get(methodName);
-    }
-
 }

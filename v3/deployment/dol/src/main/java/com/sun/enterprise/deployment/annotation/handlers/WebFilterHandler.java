@@ -72,10 +72,12 @@ public class WebFilterHandler extends AbstractWebHandler {
     /**
      * @return the annotation type this annotation handler is handling
      */
+    @Override
     public Class<? extends Annotation> getAnnotationType() {
         return WebFilter.class;
     }
 
+    @Override
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             WebComponentContext[] webCompContexts)
             throws AnnotationProcessorException {
@@ -84,6 +86,7 @@ public class WebFilterHandler extends AbstractWebHandler {
                 webCompContexts[0].getDescriptor().getWebBundleDescriptor());
     }
 
+    @Override
     protected HandlerProcessingResult processAnnotation(
             AnnotationInfo ainfo, WebBundleContext webBundleContext)
             throws AnnotationProcessorException {

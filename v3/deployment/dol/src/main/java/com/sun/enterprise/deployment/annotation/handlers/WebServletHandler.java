@@ -68,10 +68,12 @@ public class WebServletHandler extends AbstractWebHandler {
     /**
      * @return the annotation type this annotation handler is handling
      */
+    @Override
     public Class<? extends Annotation> getAnnotationType() {
         return WebServlet.class;
     }
 
+    @Override
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             WebComponentContext[] webCompContexts)
             throws AnnotationProcessorException {
@@ -87,6 +89,7 @@ public class WebServletHandler extends AbstractWebHandler {
         return result;
     }
 
+    @Override
     protected HandlerProcessingResult processAnnotation(
             AnnotationInfo ainfo, WebBundleContext webBundleContext)
             throws AnnotationProcessorException {
