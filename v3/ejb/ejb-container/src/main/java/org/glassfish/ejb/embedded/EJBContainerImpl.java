@@ -118,11 +118,20 @@ public class EJBContainerImpl extends EJBContainer {
                 _logger.fine("[EJBContainerImpl] Deploying app: " + app);
             }
             DeployCommandParameters dp = new DeployCommandParameters(app);
+            String name = null;
             if (properties != null) {
-                dp.name = (String)properties.get(EJBContainer.APP_NAME);
+                name = (String)properties.get(EJBContainer.APP_NAME);
+                if (name == null) {
+                    Object o = properties.get(EJBContainer.MODULES);
+                    if (o != null && (o instanceof String)) {
+                        name = (String)o;
+                    }
+                }
             }
 
-            if (dp.name == null) {
+            if (name != null) {
+                dp.name = name;
+            } else {
                 dp.name = app.getName();
             }
             deployedAppName = deployer.deploy(app, dp);
