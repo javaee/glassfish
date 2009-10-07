@@ -148,7 +148,7 @@
     </antcall>
 
     <antcall target="create-connector-work-security-principals-map-common">
-      <param name="principalsmap" value="--principalsmap eis-jagadish=jagadish:eis-prasath=prasath"/>
+      <param name="principalsmap" value="--principalsmap eis-jagadish=jagadish,eis-prasath=prasath"/>
       <param name="raname" value="generic-ra"/>
       <param name="map.name" value="generic-ra-principals-map"/>
     </antcall>
@@ -262,7 +262,7 @@
         <exec executable="${env.S1AS_HOME}/bin/asadmin">
             <arg value="stop-domain"/>
         </exec>
-        <sleep seconds="5"/>
+        <sleep seconds="10"/>
     </target>
 
     <target name="stop-server-windows" if="isWindows">
@@ -293,7 +293,7 @@
             <env key="GlassFish_Platform" value="Felix"/>
             <arg value="start-domain"/>
         </exec>
-        <sleep seconds="5"/>
+        <sleep seconds="10"/>
     </target>
 
     <target name="start-server-windows" if="isWindows">
