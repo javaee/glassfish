@@ -13,7 +13,7 @@ function getConfirm(theButton, msg){
     return val;
 }
 
-function showAlert(msg){
+function showAlert(msg) {
     setTimeout("alert('" + msg + "')", 100);
     return false;
 }
@@ -101,8 +101,12 @@ function disableComponent(componentName, type) {
 	}
     }
     if (component != null) {
-	component.disabled=true;
-	component.className='TxtFldDis_sun4';
+	if (typeof(component.setDisabled) === 'function') {
+	    component.setDisabled(true);
+	} else {
+	    component.disabled=true;
+	    component.className='TxtFldDis_sun4';
+	}
     }
 }
 
@@ -137,23 +141,25 @@ disableComponent.select = getSelectElement;
 
 function disableBtnComponent(componentName) {
     var el = document.getElementById(componentName);
-    if (el.setProps) {
+    if (typeof(el.setDisabled) === 'function') {
+	el.setDisabled(true);
+    } else if (el.setProps) {
 	document.getElementById(componentName).setProps({disabled: true, className: 'Btn1Dis_sun4'});
     } else {
-	//YAHOO.util.Dom.setStyle(el, 'disabled', 'true');
 	el.disabled = true;
-	el.className = 'Btn1Dis_sun4';
+	el.className = 'Btn1Dis_sun4'; // Primary style
     }
 }
 
 function enableBtnComponent(componentName) {
     var el = document.getElementById(componentName);
-    if (el.setProps) {
+    if (typeof(el.setDisabled) === 'function') {
+	el.setDisabled(false);
+    } else if (el.setProps) {
         document.getElementById(componentName).setProps({disabled: false, className: 'Btn1_sun4'});
     } else {
-        //YAHOO.util.Dom.setStyle(el, 'disabled', 'false');
-        el.diabled = false;
-        el.className = 'Btn1_sun4';
+        el.disabled = false;
+        el.className = 'Btn1_sun4';  // Primary style
     }
 }
 
@@ -161,20 +167,24 @@ function enableComponent(componentName, type) {
     var component = null;
     if (type != null && type == 'file') {
         component = getFileInputElement(componentName);
-    }
-    else if(type != null && type == 'select') {
+    } else if(type != null && type == 'select') {
         component = getSelectElement(componentName);
-    }
-    else {
+    } else {
         component = getTextElement(componentName);
     }
-    component.className='TxtFld_sun4';
-    component.disabled=false;
+    if (typeof(component.setDisabled) === 'function') {
+	component.setDisabled(false);
+    } else {
+	component.className='TxtFld_sun4';
+	component.disabled=false;
+    }
 }
 
 function disableDOMComponent(componentName) {
     var el = document.getElementById(componentName);
-    if (el.setProps) {
+    if (typeof(el.setDisabled) === 'function') {
+	component.setDisabled(true);
+    } else if (el.setProps) {
         document.getElementById(componentName).setProps({disabled: true, className: 'TxtFldDis_sun4', value: ' '});
     } else {
         //YAHOO.util.Dom.setStyle(el, 'disabled', 'true');
@@ -2308,6 +2318,11 @@ admingui.woodstock = {
 	} else {
 	    // Get via Ajax
 	    admingui.ajax.getResource(node.src, function(result) { globalEval(result); globalEvalNextScript(scriptQueue);} );
+	    // This gets a relative URL vs. a full URL with http://... needed
+	    // when we properly serve resources w/ rlubke's recent fix that
+	    // will be integrated soon.  We need to handle the response
+	    // differently also.
+	    //admingui.ajax.getResource(node.attributes['src'].value, function(result) { globalEval(result); globalEvalNextScript(scriptQueue);} );
 	}
     }
 

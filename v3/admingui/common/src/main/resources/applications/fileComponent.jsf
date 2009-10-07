@@ -41,7 +41,7 @@
         getClientId(component="$this{component}" clientId=>$page{locationPropId});
     />
     <sun:radioButton id="uploadRdBtn" name="uploadRdBtn" label="$resource{i18n.deploy.chooseJarLabel}" selected="#{uploadRdBtn}" selectedValue="client"
-        onClick="admingui.deploy.uploadRdBtnAction('#{dirPathId}','#{requestScope.restartRequired}','#{dirPathId}','#{dirSelectBtnId}','#{filSelectBtnId}','#{fileuploadId}');"
+        onClick="admingui.deploy.uploadRdBtnAction('#{dirPathId}','#{dirSelectBtnId}','#{filSelectBtnId}','#{fileuploadId}','#{pageSession.radioChoosenId}');"
     >
         <!beforeCreate
             setPageSessionAttribute(key="uploadRdBtn", value="client");
@@ -69,15 +69,15 @@
         />
     </sun:textField>
 
-    <sun:button id="filSelectBtn" text="$resource{i18n.button.BrowseFile}" disabled="#{true}" primary="#{false}"
-        onClick="javascript: var win = window.open('../applications/fileChooser.jsf?dirPathId=#{dirPathId}&appNameId=#{appNameId}&ctxRootId=#{contextRootId}&typeId=#{typeId}&extensionId=#{extensionId}&dropDownProp=#{dropDownProp}', 'fileChooserPopup', 'height=580, width=650, top='+((screen.height - (screen.height/1.618))-(500/2))+',left='+((screen.width-650)/2)+', scrollbars, resizable');win.focus(); return false" >
+    <sun:button id="filSelectBtn" text="$resource{i18n.button.BrowseFile}" disabled="true" primary="false"
+        onClick="javascript: var win = window.open('#{request.contextPath}/common/applications/fileChooser.jsf?dirPathId=#{dirPathId}&appNameId=#{appNameId}&ctxRootId=#{contextRootId}&typeId=#{typeId}&extensionId=#{extensionId}&dropDownProp=#{dropDownProp}', 'fileChooserPopup', 'height=580, width=650, top='+((screen.height - (screen.height/1.618))-(500/2))+',left='+((screen.width-650)/2)+', scrollbars, resizable');win.focus(); return false" >
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{filSelectBtnId});
         />
     </sun:button>
     "&nbsp;
     <sun:button id="dirSelectBtn" text="$resource{i18n.button.BrowseFolder}" disabled="#{true}" primary="#{false}"
-         onClick="javascript: var win = window.open('../applications/fileChooser.jsf?folderOnly=true&dirPathId=#{dirPathId}&appNameId=#{appNameId}&ctxRootId=#{contextRootId}&typeId=#{typeId}&extensionId=#{extensionId}&dropDownProp=#{dropDownProp}', 'fileChooserPopup', 'height=580, width=650, top='+((screen.height - (screen.height/1.618))-(500/2))+',left='+((screen.width-650)/2)+', scrollbars, resizable');win.focus(); return false" >
+         onClick="javascript: var win = window.open('#{request.contextPath}/common/applications/fileChooser.jsf?folderOnly=true&dirPathId=#{dirPathId}&appNameId=#{appNameId}&ctxRootId=#{contextRootId}&typeId=#{typeId}&extensionId=#{extensionId}&dropDownProp=#{dropDownProp}', 'fileChooserPopup', 'height=580, width=650, top='+((screen.height - (screen.height/1.618))-(500/2))+',left='+((screen.width-650)/2)+', scrollbars, resizable');win.focus(); return false" >
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{dirSelectBtnId});
         />
