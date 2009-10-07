@@ -211,7 +211,18 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         }
         PropertyChangeEvent evt = new PropertyChangeEvent(
             defaultView,property.xmlName(), oldValue, newValue);
+        try {
+            for (ConfigBeanInterceptor interceptor : bean.getOptionalFeatures()) {
+                interceptor.beforeChange(evt);
+            }
+        } catch(PropertyVetoException e) {
+            throw new RuntimeException(e);
+        }
+
         changedAttributes.put(property.xmlName(), evt);
+        for (ConfigBeanInterceptor interceptor : bean.getOptionalFeatures()) {
+            interceptor.afterChange(evt, System.currentTimeMillis());
+        }
     }
 
     public ConfigModel.Property getProperty(String xmlName) {
