@@ -74,7 +74,7 @@ public class EjbSecurityComponentInvocationHandler implements  RegisteredCompone
                         ((EjbInvocation) newInv).getEjbSecurityManager().preInvoke(newInv);
                     }
                 } catch (Exception ex) {
-                    _logger.log(Level.SEVERE, "ejb.preinvoke_exception", ex);
+                    _logger.log(Level.SEVERE, "ejb.security_preinvoke_exception",ex);
                     throw new InvocationException(ex);
                 }
             }
@@ -94,7 +94,7 @@ public class EjbSecurityComponentInvocationHandler implements  RegisteredCompone
                 try {
                     ((EjbInvocation) curInv).getEjbSecurityManager().postInvoke(curInv);
                 } catch (Exception ex) {
-                    _logger.log(Level.FINE, "ejb.postinvoketx_exception", ex);
+                    _logger.log(Level.FINE, "ejb.security_postinvoke_exception", ex);
 
                     ((EjbInvocation) curInv).exception = ex;
                 }

@@ -80,6 +80,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.logging.*;
 import com.sun.logging.*;
+import java.io.IOException;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -1170,7 +1171,8 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
     */
     private boolean evaluate_client_conformance_ascontext(
                         SecurityContext ctx,
-                        EjbIORConfigurationDescriptor iordesc)
+                        EjbIORConfigurationDescriptor iordesc,
+                        String realmName)
     {
 
         boolean client_authenticated = false;
@@ -1178,7 +1180,7 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
         // get requirements and supports at the client authentication layer
         AS_ContextSec ascontext = null;
         try {
-            ascontext = this.getCtc().createASContextSec(iordesc);
+            ascontext = this.getCtc().createASContextSec(iordesc, realmName);
         } catch (Exception e) {
             _logger.log(Level.SEVERE, "iiop.createcontextsec_exception",e);
 
@@ -1371,7 +1373,14 @@ as_context_mech
                 checkSkipped = false;
                 continue;
             }
-            if ( ! evaluate_client_conformance_ascontext(ctx, iorDesc)){
+            String realmName = "default";
+            if(ejbDesc != null && ejbDesc.getApplication() != null) {
+                realmName = ejbDesc.getApplication().getRealm();
+            }
+            if (realmName == null) {
+                realmName = "default";
+            }
+            if ( ! evaluate_client_conformance_ascontext(ctx, iorDesc ,realmName)){
 		if(_logger.isLoggable(Level.FINE)) {
 		    _logger.log(Level.FINE,
 				"SecurityMechanismSelector.evaluate_client_conformance: evaluate_client_conformance_ascontext");

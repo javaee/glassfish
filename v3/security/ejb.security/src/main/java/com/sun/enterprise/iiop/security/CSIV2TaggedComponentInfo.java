@@ -120,8 +120,8 @@ public final class CSIV2TaggedComponentInfo
     // If the realm is unpopulated here, then we query it from
     // the IORDescriptor(as in for a standalone ejb case).
     // The fallback is "default"
-    private String _realm_name = null;
-    private byte[] _realm_name_bytes = null;
+  //  private String _realm_name = null;
+ //   private byte[] _realm_name_bytes = null;
     private ORB orb;
     private int sslMutualAuthPort;
     private GlassFishORBHelper orbHelper;
@@ -177,7 +177,7 @@ public final class CSIV2TaggedComponentInfo
             }
 	    
             // get the realm from the application object.
-            _realm_name = desc.getApplication().getRealm();
+            //_realm_name = desc.getApplication().getRealm();
             CompoundSecMech[] mechList = createCompoundSecMechs(sslPort, desc);
             tc = createCompoundSecMechListComponent(mechList);
         } catch(Exception e) {
@@ -199,7 +199,7 @@ public final class CSIV2TaggedComponentInfo
             }
 	    
             // get the realm from the application object.
-            _realm_name = desc.getApplication().getRealm();
+          //  _realm_name = desc.getApplication().getRealm();
 	    CompoundSecMech[] mechList = createCompoundSecMechs( socketInfos, desc ) ;
 	    tc =  createCompoundSecMechListComponent(mechList);
         } catch(Exception e) {
@@ -235,7 +235,7 @@ public final class CSIV2TaggedComponentInfo
 		sslPort, null, sslRequired);
 	    
 	    // Create AS_Context
-	    AS_ContextSec asContext = createASContextSec(null);
+	    AS_ContextSec asContext = createASContextSec(null, DEFAULT_REALM);
 
 	    // Create SAS_Context
 	    SAS_ContextSec sasContext = createSASContextSec(null);
@@ -300,10 +300,16 @@ public final class CSIV2TaggedComponentInfo
                 }
 
 	        eDesc.setAuthMethodRequired(true);
+                String realmName = DEFAULT_REALM;
 
-                if (_realm_name != null) {
-                    eDesc.setRealmName(_realm_name);
+
+                if (desc.getApplication() != null) {
+                    realmName = desc.getApplication().getRealm();
                 }
+                if (realmName == null) {
+                    realmName = DEFAULT_REALM;
+                }
+                eDesc.setRealmName(realmName);
 	    }
 	}
 
@@ -335,14 +341,22 @@ public final class CSIV2TaggedComponentInfo
         if(_logger.isLoggable(Level.FINE)){
 	    	_logger.log(Level.FINE,"IORDescSet SIZE:" + iorDescSet.size());
 	}
+        String realmName = DEFAULT_REALM;
 
 	for(int i = 0; i < iorDescSet.size(); i++) {
 	    EjbIORConfigurationDescriptor iorDesc = itr.next();
             int target_requires = getTargetRequires(iorDesc);
 	    org.omg.IOP.TaggedComponent comp = maker.evaluate( iorDesc ) ;
 	    
-	    // Create AS_Context
-            AS_ContextSec asContext = createASContextSec(iorDesc);
+            if(desc != null && desc.getApplication() != null)  {
+                realmName = desc.getApplication().getRealm();
+            }
+
+            if(realmName == null) {
+                realmName = DEFAULT_REALM;
+            }
+            // Create AS_Context
+            AS_ContextSec asContext = createASContextSec(iorDesc, realmName);
 	    
             // Create SAS_Context
             SAS_ContextSec sasContext = createSASContextSec(iorDesc);
@@ -388,7 +402,7 @@ public final class CSIV2TaggedComponentInfo
      * Create the AS layer context within a compound mechanism definition.
      */
     public AS_ContextSec createASContextSec(
-			EjbIORConfigurationDescriptor iorDesc)
+			EjbIORConfigurationDescriptor iorDesc, String realmName)
         		throws IOException
     {
         AS_ContextSec asContext = null;
@@ -425,7 +439,7 @@ public final class CSIV2TaggedComponentInfo
         /** Functionality for Realm Per App
          * Try to get the realm from the descriptor, else fill in default
          */
-        if(_realm_name == null){// realm name should be populated at this point
+  /*      if(_realm_name == null){// realm name should be populated at this point
             if(iorDesc != null){
                 _realm_name = iorDesc.getRealmName();
             }
@@ -437,13 +451,16 @@ public final class CSIV2TaggedComponentInfo
                                 + " setting default realm for logging in");
                 }
             }
-        }
+        }*/
 
         if(_logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE, "IIOP:AS_Context: Realm Name for login = "+
-                        _realm_name);
+                        realmName);
         }
-        _realm_name_bytes = _realm_name.getBytes();
+        if (realmName == null) {
+            realmName = DEFAULT_REALM;
+        }
+        byte[] _realm_name_bytes = realmName.getBytes();
         
         target_name = GSSUtils.createExportedName(
                                GSSUtils.GSSUP_MECH_OID,
