@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.ejb.mejb;
+package org.glassfish.kernel.javaee;
 
 import org.glassfish.api.naming.NamingObjectProxy;
 import org.glassfish.api.naming.GlassfishNamingManager;

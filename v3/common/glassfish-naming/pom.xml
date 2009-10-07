@@ -75,11 +75,6 @@
             <version>${project.parent.version}</version>
         </dependency>        
         <dependency>
-            <groupId>org.glassfish.orb</groupId>
-            <artifactId>orb-connector</artifactId>
-            <version>${project.version}</version>
-        </dependency>       
-        <dependency>
             <!-- Needed to have a bundle activator to set up a different serialization policy-->
             <groupId>org.osgi</groupId>
             <artifactId>osgi_R4_core</artifactId>

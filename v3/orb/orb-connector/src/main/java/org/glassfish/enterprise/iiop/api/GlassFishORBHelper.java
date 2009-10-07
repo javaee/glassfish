@@ -13,6 +13,7 @@ import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.internal.grizzly.LazyServiceInitializer;
+import org.glassfish.internal.api.ORBLocator;
 
 
 import java.util.Properties;
@@ -28,30 +29,7 @@ import org.jvnet.hk2.component.PostConstruct;
  *         Date: Jan 17, 2009
  */
 @Service
-public class GlassFishORBHelper implements PostConstruct {
-
-    public static final String JNDI_CORBA_ORB_PROPERTY = "java.naming.corba.orb";
-    public static final String OMG_ORB_INIT_HOST_PROPERTY = "org.omg.CORBA.ORBInitialHost";
-    public static final String OMG_ORB_INIT_PORT_PROPERTY = "org.omg.CORBA.ORBInitialPort";
-
-    public static final String DEFAULT_ORB_INIT_HOST = "localhost";
-    public static final String DEFAULT_ORB_INIT_PORT = "3700";
-
- 
-    // This property is true if SSL is required to be used by
-    // non-EJB CORBA objects in the server.
-    public static final String ORB_SSL_SERVER_REQUIRED =
-            "com.sun.CSIV2.ssl.server.required";
-    //
-    // This property is true if client authentication is required by
-    // non-EJB CORBA objects in the server.
-    public static final String ORB_CLIENT_AUTH_REQUIRED =
-            "com.sun.CSIV2.client.auth.required";
-
-     // This property is true (in appclient Main)
-    // if SSL is required to be used by clients.
-    public static final String ORB_SSL_CLIENT_REQUIRED =
-            "com.sun.CSIV2.ssl.client.required";
+public class GlassFishORBHelper implements PostConstruct, ORBLocator {
 
     @Inject
     private Habitat habitat;

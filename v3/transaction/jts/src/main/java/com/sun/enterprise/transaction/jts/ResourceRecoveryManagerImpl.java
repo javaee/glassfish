@@ -41,14 +41,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.transaction.xa.XAResource;
 
-import org.glassfish.api.Async;
-import org.glassfish.api.Startup;
 import com.sun.enterprise.config.serverbeans.TransactionService;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
-import com.sun.enterprise.transaction.api.ResourceRecoveryManager;
+import org.glassfish.transaction.api.ResourceRecoveryManager;
 import com.sun.enterprise.transaction.api.RecoveryResourceRegistry;
 import com.sun.enterprise.transaction.spi.RecoveryResourceListener;
 import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
@@ -57,8 +55,7 @@ import com.sun.enterprise.transaction.JavaEETransactionManagerSimplified;
 import com.sun.jts.CosTransactions.DelegatedRecoveryManager;
 import com.sun.jts.CosTransactions.RecoveryManager;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 
@@ -68,8 +65,7 @@ import org.jvnet.hk2.component.PostConstruct;
  * @author Jagadish Ramu
  */
 @Service
-@Async
-public class ResourceRecoveryManagerImpl implements Startup, PostConstruct, ResourceRecoveryManager {
+public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecoveryManager {
 
     @Inject
     private TransactionService txnService;
@@ -92,11 +88,6 @@ public class ResourceRecoveryManagerImpl implements Startup, PostConstruct, Reso
     private volatile boolean lazyRecovery = false;
     private volatile boolean configured = false;
 
-
-    public Lifecycle getLifecycle() {
-        // This service stays running for the life of the app server, hence SERVER.
-        return Lifecycle.SERVER;
-    }
 
     public void postConstruct() {
         // Recover XA resources if the auto-recovery flag in tx service is set to true

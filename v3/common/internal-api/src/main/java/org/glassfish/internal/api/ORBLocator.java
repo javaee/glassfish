@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,49 +33,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.internal.api;
 
-package org.glassfish.ejb.mejb;
-
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Habitat;
-import org.glassfish.internal.api.Init;
-import org.glassfish.internal.api.Globals;
-import org.glassfish.api.naming.GlassfishNamingManager;
-
-import com.sun.logging.LogDomains;
-
-import java.util.logging.Logger;
+import org.omg.CORBA.*;
+import org.jvnet.hk2.annotations.*;
 
 /**
- * MEJB service to register mejb with a temporary NamingObjectProxy at server 
- * start up time
+ * Contract for ORB provider.
+ *
+ * @author Jerome Dochez
  */
-@Service
-public class MEJBService implements Init, PostConstruct {
+@Contract
+public interface ORBLocator {
+    public static final String JNDI_CORBA_ORB_PROPERTY = "java.naming.corba.orb";
+    public static final String OMG_ORB_INIT_HOST_PROPERTY = "org.omg.CORBA.ORBInitialHost";
+    public static final String OMG_ORB_INIT_PORT_PROPERTY = "org.omg.CORBA.ORBInitialPort";
 
-    // we need to inject Globals as it used by the naming manager and
-    // therefore needs to be allocated.
-    @Inject
-    Globals globals;
+    public static final String DEFAULT_ORB_INIT_HOST = "localhost";
+    public static final String DEFAULT_ORB_INIT_PORT = "3700";
 
-    @Inject
-    Habitat habitat;
 
-    private static final Logger _logger = LogDomains.getLogger(
-        MEJBService.class, LogDomains.EJB_LOGGER);
-  
-    public void postConstruct() {
-        GlassfishNamingManager gfNamingManager =
-            habitat.getComponent(GlassfishNamingManager.class);
-        MEJBNamingObjectProxy mejbProxy = 
-            new MEJBNamingObjectProxy(habitat);
-        try {
-            gfNamingManager.publishObject(mejbProxy.MEJB_JNDI_NAME, mejbProxy, true);
-        } catch (Exception e) {
-            _logger.warning("Problem in publishing temp proxy for MEJB: " + 
-                e.getMessage());
-        }
-    }
+    // This property is true if SSL is required to be used by
+    // non-EJB CORBA objects in the server.
+    public static final String ORB_SSL_SERVER_REQUIRED =
+            "com.sun.CSIV2.ssl.server.required";
+    //
+    // This property is true if client authentication is required by
+    // non-EJB CORBA objects in the server.
+    public static final String ORB_CLIENT_AUTH_REQUIRED =
+            "com.sun.CSIV2.client.auth.required";
+
+     // This property is true (in appclient Main)
+    // if SSL is required to be used by clients.
+    public static final String ORB_SSL_CLIENT_REQUIRED =
+            "com.sun.CSIV2.ssl.client.required";
+
+    /**
+     * Get or create the default orb.  This can be called for any process type.  However,
+     * protocol manager and CosNaming initialization only take place for the Server.
+     * @return an initialized ORB instance
+     */
+    public ORB getORB();
+
+    public int getORBPort(ORB orb);
+
+    public String getORBHost(ORB orb);    
 }

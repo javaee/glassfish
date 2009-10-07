@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,44 +33,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.transaction.api;
 
-import org.jvnet.hk2.annotations.Contract;
+package org.glassfish.kernel.javaee;
+
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Habitat;
+import org.glassfish.internal.api.Init;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.api.naming.GlassfishNamingManager;
+
+import com.sun.logging.LogDomains;
+
+import java.util.logging.Logger;
 
 /**
- * ResourceRecoveryManager interface to be implemented by the resource manager
- * that supports XA recovery.
- *
- * @author Marina Vatkina
+ * MEJB service to register mejb with a temporary NamingObjectProxy at server 
+ * start up time
  */
+@Service
+public class MEJBService implements Init, PostConstruct {
 
-@Contract
-public interface ResourceRecoveryManager {
+    // we need to inject Globals as it used by the naming manager and
+    // therefore needs to be allocated.
+    @Inject
+    Globals globals;
 
-    /**
-     * recover incomplete transactions
-     * @param delegated indicates whether delegated recovery is needed
-     * @param logPath transaction log directory path
-     * @return boolean indicating the status of transaction recovery
-     * @throws Exception when unable to recover
-     */
-    public boolean recoverIncompleteTx(boolean delegated, String logPath) throws Exception;
+    @Inject
+    Habitat habitat;
 
-    /**
-     * recover the xa-resources
-     * @param force boolean to indicate if it has to be forced.
-     */
-    public void recoverXAResources(boolean force);
-
-    /**
-     * to recover xa resources
-     */
-    public void recoverXAResources();
-
-    /**
-     * to enable lazy recovery, setting lazy to "true" will
-     *
-     * @param lazy boolean
-     */
-    public void setLazyRecovery(boolean lazy);
+    private static final Logger _logger = LogDomains.getLogger(
+        MEJBService.class, LogDomains.EJB_LOGGER);
+  
+    public void postConstruct() {
+        GlassfishNamingManager gfNamingManager =
+            habitat.getComponent(GlassfishNamingManager.class);
+        MEJBNamingObjectProxy mejbProxy = 
+            new MEJBNamingObjectProxy(habitat);
+        try {
+            gfNamingManager.publishObject(mejbProxy.MEJB_JNDI_NAME, mejbProxy, true);
+        } catch (Exception e) {
+            _logger.warning("Problem in publishing temp proxy for MEJB: " + 
+                e.getMessage());
+        }
+    }
 }

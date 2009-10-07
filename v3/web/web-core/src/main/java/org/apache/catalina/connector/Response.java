@@ -73,19 +73,18 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Session;
 import org.apache.catalina.HttpResponse;
-import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.util.*;
 import org.apache.catalina.security.SecurityUtil;
 import com.sun.grizzly.util.buf.CharChunk;
 import com.sun.grizzly.util.buf.UEncoder;
 import com.sun.grizzly.util.http.FastHttpDateFormat;
-import com.sun.grizzly.util.http.MimeHeaders;
 import com.sun.grizzly.util.http.ServerCookie;
 import com.sun.grizzly.util.net.URL;
+import com.sun.enterprise.glassfish.web.*;
 
 // START S1AS 6170450
-import com.sun.appserv.ProxyHandler;
+
 // END S1AS 6170450
 
 /**

@@ -109,8 +109,6 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
     @Inject
     ServerEnvironmentImpl env;
 
-    @Inject(optional=true)
-    volatile AdminAccessController authenticator = null;
 
     @Inject
     Events events;
@@ -233,6 +231,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         String[] up = getUserPassword(req);
         String user = up[0];
         String password = up.length > 1 ? up[1] : "";
+        AdminAccessController authenticator = habitat.getByContract(AdminAccessController.class);
         if (authenticator != null) {
             return authenticator.loginAsAdmin(user, password, as.getAuthRealmName());
         }

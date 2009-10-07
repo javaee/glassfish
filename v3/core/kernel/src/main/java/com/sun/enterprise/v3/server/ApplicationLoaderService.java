@@ -54,10 +54,10 @@ import org.glassfish.internal.data.EngineInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.SnifferManager;
+import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.component.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -109,18 +109,8 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
     @Inject
     ServerEnvironment env;
 
-    // ApplicationLoaderService needs to be initialized after
-    // ResourceManager. By injecting ResourceManager, we guarantee the
-    // initialization order.
-    // See https://glassfish.dev.java.net/issues/show_bug.cgi?id=7179
-    @Inject(name="ResourceManager", optional = true)
-    Startup resourceManager;
-
-    // ApplicationLoaderService needs to be initialized after 
-    // ManagedBeanManagerImpl. By injecting ManagedBeanManagerImpl, 
-    // we guarantee the initialization order.
-    @Inject(name="ManagedBeanManagerImpl", optional=true)
-    Startup managedBeanManagerImpl;
+    @Inject
+    Habitat habitat;
 
     /**
      * Retuns the lifecyle of the service.
@@ -177,6 +167,9 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
         // does the user want us to run a particular application
         String defaultParam = env.getStartupContext().getArguments().getProperty("default");
         if (defaultParam!=null) {
+
+            initializeRuntimeDependencies();
+            
             File sourceFile;
             if (defaultParam.equals(".")) {
                 sourceFile = new File(System.getProperty("user.dir"));
@@ -256,11 +249,27 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
     }
 
+    private void initializeRuntimeDependencies() {
+        // ApplicationLoaderService needs to be initialized after
+        // ManagedBeanManagerImpl. By injecting ManagedBeanManagerImpl,
+        // we guarantee the initialization order.
+        habitat.getComponent(PostStartup.class, "ManagedBeanManagerImpl");
+
+        // ApplicationLoaderService needs to be initialized after
+        // ResourceManager. By injecting ResourceManager, we guarantee the
+        // initialization order.
+        // See https://glassfish.dev.java.net/issues/show_bug.cgi?id=7179
+        habitat.getComponent(Startup.class, "ResourceManager");
+
+    }
+
 
     public void processApplication(Application app, ApplicationRef appRef, 
         final Logger logger) {
 
         long operationStartTime = Calendar.getInstance().getTimeInMillis();
+
+        initializeRuntimeDependencies();        
 
         String source = app.getLocation();
         final String appName = app.getName();

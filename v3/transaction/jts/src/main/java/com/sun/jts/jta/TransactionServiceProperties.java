@@ -47,7 +47,7 @@ import com.sun.jts.CosTransactions.RecoveryManager;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
-import com.sun.enterprise.transaction.api.ResourceRecoveryManager;
+import org.glassfish.transaction.api.ResourceRecoveryManager;
 import com.sun.enterprise.config.serverbeans.TransactionService;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.i18n.StringManager;

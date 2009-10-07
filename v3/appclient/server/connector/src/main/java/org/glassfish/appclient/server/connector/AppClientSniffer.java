@@ -22,8 +22,6 @@
  */
 package org.glassfish.appclient.server.connector;
 
-import com.sun.enterprise.deploy.shared.FileArchive;
-import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
 import java.util.jar.Manifest;
 import org.glassfish.internal.deployment.GenericSniffer;
 

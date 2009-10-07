@@ -1,5 +1,7 @@
 package org.glassfish.internal.api;
 
+import org.jvnet.hk2.annotations.*;
+
 /**
  * Such service implementations are invoked when the domain directory
  * is upgraded following a upgrade event.
@@ -10,6 +12,7 @@ package org.glassfish.internal.api;
  *
  * @author Jerome Dochez
  */
+@Contract
 public interface DomainUpgrade {
     // tag interface, implementations should rely on postConstruct
     // for behaviour.

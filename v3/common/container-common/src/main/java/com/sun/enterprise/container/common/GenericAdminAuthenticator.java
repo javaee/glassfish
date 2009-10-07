@@ -39,20 +39,17 @@ import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.file.FileRealmUser;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
-import com.sun.enterprise.security.SecurityLifecycle;
-import com.sun.enterprise.security.SecuritySniffer;
-import com.sun.enterprise.security.SecurityContext;
+import com.sun.enterprise.security.*;
+import org.glassfish.internal.api.LocalPassword;
 import com.sun.enterprise.admin.util.AdminConstants;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.AdminService;
-import org.glassfish.internal.api.AdminAccessController;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.*;
 import org.glassfish.security.common.Group;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.Habitat;
 
@@ -60,7 +57,6 @@ import javax.security.auth.login.LoginException;
 import javax.security.auth.Subject;
 import javax.management.remote.JMXAuthenticator;
 import java.util.logging.Logger;
-import java.util.List;
 import java.util.Enumeration;
 import java.util.Set;
 import java.io.File;
@@ -80,6 +76,7 @@ import java.io.File;
  *  @since GlassFish v3
  */
 @Service
+@ContractProvided(JMXAuthenticator.class)
 public class GenericAdminAuthenticator implements AdminAccessController, JMXAuthenticator {
     @Inject
     Habitat habitat;
@@ -97,7 +94,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     LocalPassword localPassword;
 
     @Inject
-    ClassLoaderHierarchy clh;
+    ServerContext sc;
 
     private static LocalStringManagerImpl lsm = new LocalStringManagerImpl(GenericAdminAuthenticator.class);
     
@@ -121,8 +118,8 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             boolean authenticated = false;
             try {
                 pc = Thread.currentThread().getContextClassLoader();
-                if (!clh.getCommonClassLoader().equals(pc)) { //this is per Sahoo
-                    Thread.currentThread().setContextClassLoader(clh.getCommonClassLoader());
+                if (!sc.getCommonClassLoader().equals(pc)) { //this is per Sahoo
+                    Thread.currentThread().setContextClassLoader(sc.getCommonClassLoader());
                     hack = true;
                 }
                 Inhabitant<SecurityLifecycle> sl = habitat.getInhabitantByType(SecurityLifecycle.class);

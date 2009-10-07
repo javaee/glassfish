@@ -46,7 +46,7 @@ import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.logging.LogDomains;
 import com.sun.hk2.component.*;
-import org.glassfish.api.ActionReport;
+import org.glassfish.api.*;
 import org.glassfish.api.event.*;
 import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -59,7 +59,7 @@ import org.glassfish.api.deployment.archive.CompositeHandler;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.data.*;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.*;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.jvnet.hk2.annotations.Inject;
@@ -125,9 +125,6 @@ public class ApplicationLifecycle implements Deployment {
 
     @Inject
     ServerEnvironmentImpl env;
-
-    @Inject
-    protected ClassLoaderHierarchy clh;
 
     @Inject
     Events events;
@@ -218,6 +215,7 @@ public class ApplicationLifecycle implements Deployment {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return null;                
             }
+            ClassLoaderHierarchy clh = habitat.getByContract(ClassLoaderHierarchy.class);
             context.createDeploymentClassLoader(clh, handler);
 
             final ClassLoader cloader = context.getClassLoader();

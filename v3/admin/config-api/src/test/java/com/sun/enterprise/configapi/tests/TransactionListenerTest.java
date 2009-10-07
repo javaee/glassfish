@@ -67,7 +67,7 @@ public class TransactionListenerTest extends ConfigApiTest {
     List<PropertyChangeEvent> events = null;
 
     @Test
-    public void transactionEvents() throws TransactionFailure {
+    public void transactionEvents() throws Exception, TransactionFailure {
         httpService = getHabitat().getComponent(HttpService.class);
         NetworkConfig networkConfig = getHabitat().getComponent(NetworkConfig.class);
         final NetworkListener netListener = networkConfig.getNetworkListeners()
@@ -106,7 +106,10 @@ public class TransactionListenerTest extends ConfigApiTest {
             assertTrue("max-connections".equals(event.getPropertyName()));
             assertTrue("500".equals(event.getNewValue().toString()));
             assertTrue("250".equals(event.getOldValue().toString()));
-        } finally {
+        } catch(Exception t) {
+            t.printStackTrace();
+            throw t;
+        }finally {
             transactions.removeTransactionsListener(listener);
         }
 

@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.container.common;
+package com.sun.enterprise.v3.admin;
 
 import java.io.*;
 import java.util.logging.*;
@@ -45,9 +45,8 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
-import org.glassfish.internal.api.Init;
+import org.glassfish.internal.api.*;
 import org.glassfish.api.admin.ServerEnvironment;
-import com.sun.enterprise.util.SystemPropertyConstants;
 
 /**
  * Manage a local password, which is a cryptographically secure random number
@@ -60,7 +59,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
  */
 @Service
 @Scoped(Singleton.class)        // only want one local password
-public class LocalPassword implements PostConstruct, Init {
+public class LocalPasswordImpl implements PostConstruct, Init, LocalPassword {
 
     @Inject
     ServerEnvironment env;

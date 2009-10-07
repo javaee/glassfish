@@ -52,6 +52,7 @@
     <modules>
         <module>bootstrap</module>
 	<module>kernel</module>
+	<module>javaee-kernel</module>
         <module>branding</module>
         <module>api-exporter</module>
         <module>extra-jre-packages</module>

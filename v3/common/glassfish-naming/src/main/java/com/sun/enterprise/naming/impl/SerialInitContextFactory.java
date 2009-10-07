@@ -39,7 +39,7 @@ package com.sun.enterprise.naming.impl;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.naming.NamedNamingObjectProxy;
 import org.glassfish.api.naming.NamingObjectsProvider;
-import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.api.*;
 import org.jvnet.hk2.component.Habitat;
 
 import javax.naming.Context;
@@ -51,9 +51,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
-
 /**
  * Implements the JNDI SPI InitialContextFactory interface used to create
  * the InitialContext objects. It creates an instance of the serial context.
@@ -82,13 +79,13 @@ public class SerialInitContextFactory implements InitialContextFactory {
      */
     public Context getInitialContext(Hashtable env) throws NamingException {
         if( (defaultHost != null) &&
-            (env.get(GlassFishORBHelper.OMG_ORB_INIT_HOST_PROPERTY) == null)) {
-            env.put(GlassFishORBHelper.OMG_ORB_INIT_HOST_PROPERTY, defaultHost);
+            (env.get(ORBLocator.OMG_ORB_INIT_HOST_PROPERTY) == null)) {
+            env.put(ORBLocator.OMG_ORB_INIT_HOST_PROPERTY, defaultHost);
         }
 
         if( (defaultPort != null) &&
-            (env.get(GlassFishORBHelper.OMG_ORB_INIT_PORT_PROPERTY) == null)) {
-            env.put(GlassFishORBHelper.OMG_ORB_INIT_PORT_PROPERTY, defaultPort);    
+            (env.get(ORBLocator.OMG_ORB_INIT_PORT_PROPERTY) == null)) {
+            env.put(ORBLocator.OMG_ORB_INIT_PORT_PROPERTY, defaultPort);    
         }
 
 

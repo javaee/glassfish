@@ -25,8 +25,6 @@ package com.sun.enterprise.registration.glassfish;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
-import org.glassfish.api.Startup;
-import org.glassfish.api.Async;
 import java.util.logging.Logger;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -40,11 +38,11 @@ import java.lang.StringBuffer;
 import com.sun.pkg.client.Image;
 import com.sun.pkg.client.Fmri;
 import com.sun.pkg.client.SystemInfo;
+import org.glassfish.internal.api.PostStartup;
 
 
 @Service(name = "PingService")
-@Async
-public class PingService implements Startup, PostConstruct {
+public class PingService implements PostStartup, PostConstruct {
 
     @Inject
     Logger logger;
@@ -55,16 +53,7 @@ public class PingService implements Startup, PostConstruct {
     private static final long TIMER_INTERVAL = 
             Long.getLong(JVM_OPTION, 7 * 24 * 60) * 60 * 1000; 
     private static final String UC_PING_TIME_STAMP_FILE = ".ping";
-    
 
-    /**
-     * Returns the life expectency of the service
-     *
-     * @return the life expectency.
-     */
-    public Lifecycle getLifecycle() {
-        return Lifecycle.SERVER;
-    }
 
     public void postConstruct() {
         if (TIMER_INTERVAL <=0) {

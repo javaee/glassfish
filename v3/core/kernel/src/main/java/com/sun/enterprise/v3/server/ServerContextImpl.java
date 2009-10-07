@@ -59,9 +59,6 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
     @Inject
     Habitat habitat;
 
-    @Inject
-    ClassLoaderHierarchy clh;
-
     File instanceRoot;
     String instanceName = "server"; // weird
     String[] args;
@@ -110,19 +107,19 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
     }
 
     public ClassLoader getCommonClassLoader() {
-        return clh.getCommonClassLoader();
+        return habitat.getByType(CommonClassLoaderServiceImpl.class).getCommonClassLoader();
     }
 
     public ClassLoader getSharedClassLoader() {
-        return clh.getConnectorClassLoader(null);
+        return habitat.getByContract(ClassLoaderHierarchy.class).getConnectorClassLoader(null);
     }
 
     public ClassLoader getLifecycleParentClassLoader() {
-        return clh.getConnectorClassLoader(null);
+        return habitat.getByContract(ClassLoaderHierarchy.class).getConnectorClassLoader(null);
     }
 
     public InvocationManager getInvocationManager() {
-        return habitat.getComponent(InvocationManager.class);
+        return habitat.getComponent(InvocationManager.class);          
     }
 
     public String getDefaultDomainName() {

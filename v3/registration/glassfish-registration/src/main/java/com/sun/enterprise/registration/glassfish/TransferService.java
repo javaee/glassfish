@@ -25,8 +25,7 @@ package com.sun.enterprise.registration.glassfish;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
-import org.glassfish.api.Startup;
-import org.glassfish.api.Async;
+import org.glassfish.internal.api.PostStartup;
 import java.util.logging.Logger;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -40,23 +39,13 @@ import com.sun.enterprise.registration.impl.SysnetRegistrationService;
  * 
  */
 @Service(name = "SysnetTransferService")
-@Async
-public class TransferService implements Startup, PostConstruct {
+public class TransferService implements PostStartup, PostConstruct {
 
     @Inject
     Logger logger;
 
     private static final long TIMER_INTERVAL = 
             Long.getLong("com.sun.enterprise.registration.TRANSFER_TIMER_INTERVAL", 7 * 24  * 60) * 60 * 1000;
-
-    /**
-     * Returns the life expectency of the service
-     *
-     * @return the life expectency.
-     */
-    public Lifecycle getLifecycle() {
-        return Lifecycle.SERVER;
-    }
 
     public int priority() {
         return Thread.MIN_PRIORITY;

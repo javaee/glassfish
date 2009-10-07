@@ -33,13 +33,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.enterprise.iiop.api;
+package org.glassfish.enterprise.api.enabler;
 
 import org.glassfish.api.Startup;
 import org.jvnet.hk2.component.PostConstruct;
 
-
-import javax.naming.NamingException;
 import org.jvnet.hk2.annotations.Service;
 
 

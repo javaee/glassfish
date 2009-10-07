@@ -77,9 +77,6 @@ public class TransactionNamingProxy
     @Inject
     private ProcessEnvironment processEnv;
 
-    @Inject(optional=true)
-    private transient InvocationManager invocationManager;
-
     private static Logger logger = LogDomains.getLogger(TransactionNamingProxy.class, LogDomains.JTA_LOGGER);
 
     private static final String USER_TX = "java:comp/UserTransaction";
@@ -129,8 +126,9 @@ public class TransactionNamingProxy
     }
 
     private void checkUserTransactionLookupAllowed() throws NamingException {
-        if (invocationManager != null) {
-            ComponentInvocation inv = invocationManager.getCurrentInvocation();
+        InvocationManager iv = habitat.getByContract(InvocationManager.class);
+        if (iv != null) {
+            ComponentInvocation inv = iv.getCurrentInvocation();
             if (inv != null) {
                 TransactionOperationsManager toMgr =
                         (TransactionOperationsManager)inv.getTransactionOperationsManager();

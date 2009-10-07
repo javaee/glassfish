@@ -141,9 +141,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     @Inject
     Habitat habitat;
 
-    @Inject(optional=true)
-    volatile AdminAccessController authenticator = null;
-
     @Inject
     volatile AdminService as = null;
 
@@ -407,6 +404,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      */
     private void handleAuth(GrizzlyRequest greq, GrizzlyResponse gres) {
         try {
+            AdminAccessController authenticator = habitat.getByContract(AdminAccessController.class);
+
             if (authenticator != null) {
                 Request req = greq.getRequest();
                 String[] userPass = AdminAdapter.getUserPassword(req);

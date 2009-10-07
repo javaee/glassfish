@@ -37,16 +37,12 @@
 
 package com.sun.enterprise.v3.server;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Properties;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.util.Result;
@@ -67,14 +63,13 @@ import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.Init;
-import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.api.PostStartup;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.Inhabitants;
 
 /**
  * Main class for Glassfish v3 startup
@@ -113,9 +108,12 @@ public class AppServerStartup implements ModuleStartup {
 
     @Inject
     Version version;
-    
+
     @Inject
-    ClassLoaderHierarchy cch;
+    CommonClassLoaderServiceImpl commonCLS;
+
+    //@Inject
+    //ClassLoaderHierarchy cch;
 
     /**
      * A keep alive thread that keeps the server JVM from going down
@@ -127,7 +125,7 @@ public class AppServerStartup implements ModuleStartup {
 
         // See issue #5596 to know why we set context CL as common CL.
         Thread.currentThread().setContextClassLoader(
-                cch.getCommonClassLoader());
+                commonCLS.getCommonClassLoader());
         run();
 
         final CountDownLatch latch = new CountDownLatch(1);
@@ -200,24 +198,19 @@ public class AppServerStartup implements ModuleStartup {
 
         habitat.add(new ExistingSingletonInhabitant<ProcessEnvironment>(ProcessEnvironment.class, new ProcessEnvironment(ProcessEnvironment.ProcessType.Server)));
 
+        Map<Class, Long> servicesTiming = new HashMap<Class, Long>();
+
         // run the init services
         for (Inhabitant<? extends Init> init : habitat.getInhabitants(Init.class)) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine(init.type() + " Init started in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
-            }
-            //logger.info(init.type() + " Init started in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
-            //long start = System.currentTimeMillis();
+            long start = System.currentTimeMillis();
             init.get();
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine(init.type() + " Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
             }
-            //logger.info(init.type() + " Init done in \t\t" + (System.currentTimeMillis() - start) + " ms");
+            if (logger.isLoggable(Level.FINE)) {
+                servicesTiming.put(init.type(), (System.currentTimeMillis() - start));
+            }
         }
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
-        }
-        //logger.info("Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
-
         // run the startup services
         final Collection<Inhabitant<? extends Startup>> startups = habitat.getInhabitants(Startup.class);
         Future<?> result = executor.submit(new Runnable() {
@@ -235,25 +228,20 @@ public class AppServerStartup implements ModuleStartup {
         ArrayList<Future<Result<Thread>>> futures = new ArrayList<Future<Result<Thread>>>();
         for (final Inhabitant<? extends Startup> i : startups) {
             if (i.type().getAnnotation(Async.class)==null) {
-                //long start = System.currentTimeMillis();
+                long start = System.currentTimeMillis();
                 try {
-                    if (logger.isLoggable(Level.FINE)) {
-                        logger.fine(i.type() + " startup started at " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
-                    }
-                    //logger.info(i.type() + " startup started at " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
                     Startup startup = i.get();
                     // the synchronous service was started successfully, let's check that it's not in fact a FutureProvider
                     if (startup instanceof FutureProvider) {
                         futures.addAll(((FutureProvider) startup).getFutures());
                     }
                 } catch(RuntimeException e) {
-                    e.printStackTrace();
+                        e.printStackTrace();
                         logger.info("Startup service failed to start : " + e.getMessage());
                 }
                 if (logger.isLoggable(Level.FINE)) {
-                    logger.fine(i.type() + " startup done at " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+                    servicesTiming.put(i.type(), (System.currentTimeMillis() - start));
                 }
-                //logger.info(i.type() + " startup done in \t\t" + (System.currentTimeMillis() - start) + " ms");
             }
         }
 
@@ -268,9 +256,7 @@ public class AppServerStartup implements ModuleStartup {
                 " startup services(" + (System.currentTimeMillis() - platformInitTime)  + "ms)" +
                 " total(" + (System.currentTimeMillis() - context.getCreationTime()) + "ms)");
 
-        if (logger.isLoggable(Level.FINE)) {
-            printModuleStatus();
-        }
+        printModuleStatus(Level.FINE);
 
         try {
 			// it will only be set when called from AsadminMain and the env. variable AS_DEBUG is set to true
@@ -284,6 +270,11 @@ public class AppServerStartup implements ModuleStartup {
             result.get(1000, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             // do nothing, we are probably shutting down
+        }
+        if (logger.isLoggable(Level.FINE)) {
+            for (Map.Entry<Class, Long> service : servicesTiming.entrySet()) {
+                logger.info("Service : " + service.getKey() + " took " + service.getValue() + " ms");
+            }
         }
 
         // all the synchronous and asynchronous services have started correctly, time to check
@@ -315,20 +306,47 @@ public class AppServerStartup implements ModuleStartup {
         env.setStatus(ServerEnvironment.Status.started);
         events.send(new Event(EventTypes.SERVER_READY), false);
 
+        // now run the post Startup service
+        for (Inhabitant<? extends PostStartup> postStartup : habitat.getInhabitants(PostStartup.class)) {
+            postStartup.get();
+        }
+
     }
 
-    private void printModuleStatus()
+    private void printModuleStatus(Level level)
     {
+        if (!logger.isLoggable(level)) {
+            return;
+        }
+        
         StringBuilder sb = new StringBuilder("Module Status Report Begins\n");
+        // first started :
+
         for (Module m : systemRegistry.getModules()) {
-            sb.append(m).append("\n");
+            if (m.getState()== ModuleState.READY) {
+                sb.append(m).append("\n");
+            }
+        }
+        sb.append("\n");
+        // then resolved
+        for (Module m : systemRegistry.getModules()) {
+            if (m.getState()== ModuleState.RESOLVED) {
+                sb.append(m).append("\n");
+            }
+        }
+        sb.append("\n");
+        // finally installed
+        for (Module m : systemRegistry.getModules()) {
+            if (m.getState()!= ModuleState.READY && m.getState()!=ModuleState.RESOLVED) {
+                sb.append(m).append("\n");
+            }
         }
         sb.append("Module Status Report Ends");
-        logger.fine(sb.toString());
+        logger.log(level, sb.toString());
     }
 
     // TODO(Sahoo): Revisit this method after discussing with Jerome.
-    private final void shutdown() {
+    private void shutdown() {
 
         CommandRunner runner = habitat.getByContract(CommandRunner.class);
         if (runner!=null) {
@@ -337,7 +355,6 @@ public class AppServerStartup implements ModuleStartup {
                 params.set("force", "false");    
             }
             runner.getCommandInvocation("stop-domain", new PlainTextActionReporter()).parameters(params).execute();
-            return;
         }
     }
 

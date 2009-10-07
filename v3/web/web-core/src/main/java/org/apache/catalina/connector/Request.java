@@ -115,24 +115,21 @@ import org.apache.catalina.Session;
 import org.apache.catalina.Wrapper;
 
 import org.apache.catalina.authenticator.SingleSignOn;
-import org.apache.catalina.core.ApplicationDispatcher;
 import org.apache.catalina.core.ApplicationHttpRequest;
 import org.apache.catalina.core.ApplicationHttpResponse;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
-import org.apache.catalina.session.StandardSession;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.ParameterMap;
-import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.StringParser;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.fileupload.Multipart;
 
 // START S1AS 6170450
-import com.sun.appserv.ProxyHandler;
 // END S1AS 6170450
 import com.sun.enterprise.security.integration.RealmInitializer;
+import com.sun.enterprise.glassfish.web.*;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.deploy.LoginConfig;
 

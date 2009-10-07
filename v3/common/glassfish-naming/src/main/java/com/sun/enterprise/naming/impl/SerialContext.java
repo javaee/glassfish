@@ -49,8 +49,7 @@ import org.omg.CosNaming.NameComponent;
 import org.omg.CosNaming.NamingContextHelper;
 import javax.rmi.PortableRemoteObject;
 
-import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.*;
 
 
 import org.omg.CORBA.ORB;
@@ -217,9 +216,9 @@ public class SerialContext implements Context {
         javaUrlContext = urlContextTemp;
 
 
-        orbFromEnv  = (ORB) myEnv.get(GlassFishORBHelper.JNDI_CORBA_ORB_PROPERTY);
-        targetHostFromEnv = (String)myEnv.get(GlassFishORBHelper.OMG_ORB_INIT_HOST_PROPERTY);
-        targetPortFromEnv = (String)myEnv.get(GlassFishORBHelper.OMG_ORB_INIT_PORT_PROPERTY);
+        orbFromEnv  = (ORB) myEnv.get(ORBLocator.JNDI_CORBA_ORB_PROPERTY);
+        targetHostFromEnv = (String)myEnv.get(ORBLocator.OMG_ORB_INIT_HOST_PROPERTY);
+        targetPortFromEnv = (String)myEnv.get(ORBLocator.OMG_ORB_INIT_PORT_PROPERTY);
 
         intraServerLookups = (processType == ProcessType.Server) && (orbFromEnv == null) &&
                         (targetHostFromEnv == null) && (targetPortFromEnv == null);
@@ -229,21 +228,21 @@ public class SerialContext implements Context {
         if( targetHostFromEnv != null ) {
             targetHost = targetHostFromEnv;
             if( targetPortFromEnv == null ) {
-                targetPort = GlassFishORBHelper.DEFAULT_ORB_INIT_PORT;
+                targetPort = ORBLocator.DEFAULT_ORB_INIT_PORT;
             }
         }
 
         if( targetPortFromEnv != null ) {
             targetPort = targetPortFromEnv;
             if( targetHostFromEnv == null ) {
-                targetHost = GlassFishORBHelper.DEFAULT_ORB_INIT_HOST;
+                targetHost = ORBLocator.DEFAULT_ORB_INIT_HOST;
             }
         }
 
         orb = orbFromEnv;
         if (habitat != null) { // can happen in test mode
-            ClassLoaderHierarchy clh = habitat.getByContract(ClassLoaderHierarchy.class);
-            if (clh != null) commonCL = clh.getCommonClassLoader();
+            ServerContext sc = habitat.getByContract(ServerContext.class);
+            if (sc != null) commonCL = sc.getCommonClassLoader();
         }
     }
 
@@ -274,6 +273,7 @@ public class SerialContext implements Context {
                 }
 
             } catch(Exception e) {
+                e.printStackTrace();
                 NamingException ne =
                         new NamingException("Unable to acquire SerialContextProvider for " + this);
                 ne.initCause(e);
@@ -289,7 +289,7 @@ public class SerialContext implements Context {
 
         if( provider == null ) {
 
-            GlassFishORBHelper orbHelper = habitat.getComponent(GlassFishORBHelper.class);
+            ORBLocator orbHelper = habitat.getComponent(ORBLocator.class);
 
             ProviderCacheKey key;
             if( orb != null) {

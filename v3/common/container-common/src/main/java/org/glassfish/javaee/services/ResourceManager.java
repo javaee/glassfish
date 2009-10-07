@@ -44,6 +44,7 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.Startup;
+import org.glassfish.internal.api.*;
 
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Logger;
@@ -64,7 +65,7 @@ import org.jvnet.hk2.config.ObservableBean;
  * Resource manager to bind various resources during startup, create/update/delete of resource/pool
  * @author Jagadish Ramu
  */
-public class ResourceManager implements Startup, PostConstruct, PreDestroy, ConfigListener {
+public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, ConfigListener {
 
     private static final Logger logger = LogDomains.getLogger(ResourceManager.class,LogDomains.RESOURCE_BUNDLE);
 
@@ -483,10 +484,4 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public Lifecycle getLifecycle() {
-        return Startup.Lifecycle.SERVER;
-    }
 }

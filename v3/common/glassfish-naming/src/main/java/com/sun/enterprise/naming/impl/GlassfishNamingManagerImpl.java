@@ -40,7 +40,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 
-import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.*;
 
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -51,6 +51,7 @@ import org.glassfish.api.naming.NamingObjectProxy;
 import javax.naming.InitialContext;
 
 import com.sun.enterprise.naming.util.LogFacade;
+import com.sun.hk2.component.*;
 
 import org.omg.CORBA.ORB;
 import java.rmi.RemoteException;
@@ -83,7 +84,10 @@ public final class  GlassfishNamingManagerImpl
     private static final int JAVA_MODULE_LENGTH = "java:module".length();
 
     @Inject
-    InvocationManager invMgr;
+    Habitat habitat;
+
+    //@Inject
+    volatile InvocationManager invMgr=null;
 
     private InitialContext initialContext;
     private Context cosContext;
@@ -101,7 +105,7 @@ public final class  GlassfishNamingManagerImpl
     }
 
     //Used only for Junit Testing
-    void setInvocationManager(InvocationManager invMgr) {
+    void setInvocationManager(final InvocationManager invMgr) {
         this.invMgr = invMgr;
     }
 
@@ -758,7 +762,13 @@ public final class  GlassfishNamingManagerImpl
     private String getComponentId() throws NamingException {
         String id = null;
 
-        ComponentInvocation ci = invMgr.getCurrentInvocation();
+        ComponentInvocation ci;
+        if (invMgr==null) {
+            ci= habitat.getByContract(InvocationManager.class).getCurrentInvocation();
+        } else {
+            ci= invMgr.getCurrentInvocation();
+        }
+        
         if (ci == null) {
             throw new NamingException("Invocation exception: Got null ComponentInvocation ");
         }

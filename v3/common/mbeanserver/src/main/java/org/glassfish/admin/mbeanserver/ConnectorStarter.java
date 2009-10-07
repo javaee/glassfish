@@ -24,12 +24,13 @@ package org.glassfish.admin.mbeanserver;
 
 import javax.management.MBeanServer;
 
-import javax.management.remote.JMXConnectorServer;
-import javax.management.remote.JMXServiceURL;
+import javax.management.remote.*;
+import javax.security.auth.*;
 
 import java.io.IOException;
 
 import org.glassfish.internal.api.AdminAccessController;
+import org.jvnet.hk2.component.*;
 
 /**
 Start and stop JMX connectors, base class.
@@ -45,7 +46,7 @@ abstract class ConnectorStarter
     protected final int mPort;
     protected final String mAuthRealmName;
     protected final boolean mSecurityEnabled;
-    protected final AdminAccessController mAuthenticator;
+    private   final Habitat mHabitat;
     protected final BootAMXListener mBootListener;
     protected volatile JMXServiceURL mJMXServiceURL = null;
     protected volatile JMXConnectorServer mConnectorServer = null;
@@ -63,7 +64,7 @@ abstract class ConnectorStarter
         final int port,
         final String authRealmName,
         final boolean securityEnabled,
-        final AdminAccessController authenticator,
+        final Habitat habitat,
         final BootAMXListener bootListener)
     {
         mMBeanServer = mbeanServer;
@@ -71,7 +72,7 @@ abstract class ConnectorStarter
         mPort = port;
         mAuthRealmName = authRealmName;
         mSecurityEnabled = securityEnabled;
-        mAuthenticator = authenticator;
+        mHabitat = habitat;
         mBootListener = bootListener;
 
 
@@ -84,6 +85,28 @@ abstract class ConnectorStarter
 
 
     abstract JMXConnectorServer start() throws Exception;
+
+    public JMXAuthenticator getAccessController() {
+
+        // we return a proxy to avoid instantiating the jmx authenticator until it is actually
+        // needed by the system.
+        return new JMXAuthenticator() {
+
+            /**
+             * We actually wait for the first authentication request to delegate/
+             * @param credentials
+             * @return
+             */
+            public Subject authenticate(Object credentials) {
+                // lazy init...
+                // todo : lloyd, if this becomes a performance bottleneck, we should cache
+                // on first access.
+                JMXAuthenticator controller = mHabitat.getByContract(JMXAuthenticator.class);
+                return controller.authenticate(credentials);
+            }
+        };
+    }
+
 
 
     public synchronized void stop()

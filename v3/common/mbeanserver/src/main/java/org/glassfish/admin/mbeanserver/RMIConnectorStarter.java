@@ -43,14 +43,12 @@ import javax.management.MBeanServer;
 import java.util.Map;
 import java.util.HashMap;
 
-import javax.management.remote.JMXConnectorServer;
-import javax.management.remote.JMXServiceURL;
-import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.*;
 
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 
-import org.glassfish.internal.api.AdminAccessController;
+import org.jvnet.hk2.component.*;
 
 /**
 Start the JMX RMI connector server using rmi_jrmp protocol.
@@ -66,10 +64,10 @@ final class RMIConnectorStarter extends ConnectorStarter
         final String protocol,
         final String authRealmName,
         final boolean securityEnabled,
-        final AdminAccessController authenticator,
+        final Habitat habitat,
         final BootAMXListener bootListener)
     {
-        super(mbeanServer, address, port, authRealmName, securityEnabled, authenticator, bootListener);
+        super(mbeanServer, address, port, authRealmName, securityEnabled, habitat, bootListener);
 
         if (!"rmi_jrmp".equals(protocol))
         {
@@ -109,9 +107,10 @@ final class RMIConnectorStarter extends ConnectorStarter
 
         //env.put( "jmx.remote.jndi.rebind", "true" );
         //env.put( "jmx.remote.credentials", null );
-        if (mAuthenticator != null)
+        JMXAuthenticator authenticator = getAccessController();
+        if (authenticator != null)        
         {
-            env.put("jmx.remote.authenticator", mAuthenticator);
+            env.put("jmx.remote.authenticator", authenticator);
         }
         // env.put("jmx.remote.protocol.provider.pkgs", "com.sun.jmx.remote.protocol");
         //env.put("jmx.remote.protocol.provider.class.loader", this.getClass().getClassLoader());

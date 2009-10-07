@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -61,8 +62,7 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
  */
 @Service
 @Scoped(Singleton.class)
-@Async
-public class AutoDeployService implements Startup, PostConstruct, PreDestroy, ConfigListener {
+public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy, ConfigListener {
 
     @Inject
     DasConfig activeDasConfig;
@@ -91,11 +91,6 @@ public class AutoDeployService implements Startup, PostConstruct, PreDestroy, Co
     
     private static final String DEFAULT_POLLING_INTERVAL_IN_SECONDS = "2";
     private static final String DEFAULT_AUTO_DEPLOY_ENABLED = "true";
-
-    public Lifecycle getLifecycle() {
-        // This service stays running for the life of the app server, hence SERVER.
-        return Lifecycle.SERVER;
-    }
 
     public void postConstruct() {
         logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);

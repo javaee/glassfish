@@ -2,7 +2,7 @@ package com.sun.enterprise.v3.server;
 
 import org.glassfish.config.support.GlassFishDocument;
 import org.glassfish.config.support.DomainXml;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.DomDocument;
 
@@ -31,7 +31,7 @@ public class GFDomainXml extends DomainXml {
                         public Thread newThread(Runnable r) {
                             Thread t = Executors.defaultThreadFactory().newThread(r);
                             t.setDaemon(true);
-                            t.setContextClassLoader(habitat.getComponent(ClassLoaderHierarchy.class).getCommonClassLoader());
+                            t.setContextClassLoader(habitat.getComponent(ServerContext.class).getCommonClassLoader());
                             return t;
                         }
 

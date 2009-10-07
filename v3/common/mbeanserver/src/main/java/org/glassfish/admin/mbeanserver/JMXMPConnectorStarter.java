@@ -27,10 +27,7 @@ import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
 import javax.management.NotCompliantMBeanException;
 
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorServer;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
+import javax.management.remote.*;
 import javax.management.remote.jmxmp.JMXMPConnectorServer;
 
 import java.io.IOException;
@@ -38,7 +35,7 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.glassfish.internal.api.AdminAccessController;
+import org.jvnet.hk2.component.*;
 
 /**
 Start and stop JMX connectors.
@@ -51,10 +48,10 @@ final class JMXMPConnectorStarter extends ConnectorStarter
         final int port,
         final String authRealmName,
         final boolean securityEnabled,
-        final AdminAccessController authenticator,
+        final Habitat habitat,
         final BootAMXListener bootListener)
     {
-        super(mbeanServer, address, port, authRealmName, securityEnabled, authenticator, bootListener);
+        super(mbeanServer, address, port, authRealmName, securityEnabled, habitat, bootListener);
     }
 
 
@@ -105,9 +102,10 @@ final class JMXMPConnectorStarter extends ConnectorStarter
         final Map<String, Object> env = new HashMap<String, Object>();
         env.put("jmx.remote.protocol.provider.pkgs", "com.sun.jmx.remote.protocol");
         env.put("jmx.remote.protocol.provider.class.loader", this.getClass().getClassLoader());
-        if (mAuthenticator != null)
+        JMXAuthenticator authenticator = getAccessController();
+        if (authenticator != null)
         {
-            env.put("jmx.remote.authenticator", mAuthenticator);
+            env.put("jmx.remote.authenticator", authenticator);
         }
 
         final JMXServiceURL serviceURL = new JMXServiceURL("service:jmx:" + JMXMP + "://" + Util.localhost() + ":" + port);

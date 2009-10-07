@@ -71,6 +71,7 @@ import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.api.*;
 
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
@@ -82,7 +83,7 @@ import com.sun.enterprise.container.common.spi.*;
 /**
  */
 @Service(name="ManagedBeanManagerImpl")
-public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, PostConstruct, EventListener {
+public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, PostConstruct, EventListener {
 
      private static Logger _logger = LogDomains.getLogger(ManagedBeanManagerImpl.class,
             LogDomains.CORE_LOGGER);

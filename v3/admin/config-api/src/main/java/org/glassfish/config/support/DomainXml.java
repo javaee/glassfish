@@ -45,7 +45,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.DomDocument;
@@ -104,7 +104,9 @@ public abstract class DomainXml implements Populator {
         }
 
         // run the upgrades...
-        upgrade();
+        if ("upgrade".equals(context.getPlatformMainServiceName())) {
+            upgrade();
+        }
 
         decorate();
     }

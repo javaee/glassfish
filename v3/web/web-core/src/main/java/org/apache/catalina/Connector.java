@@ -63,10 +63,10 @@ import org.apache.catalina.net.ServerSocketFactory;
 import java.security.cert.X509Certificate;
 // END OF SJSAS 8.1 PE 6191830
 // START S1AS 6188932
-import com.sun.appserv.ProxyHandler;
 // END S1AS 6188932
 // START SJSAS 6363251
 import com.sun.grizzly.tcp.Adapter;
+import com.sun.enterprise.glassfish.web.*;
 // END SJSAS 6363251
 
 /**

@@ -84,6 +84,11 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.orb</groupId>
+            <artifactId>orb-enabler</artifactId>
+            <version>${project.version}</version>
+        </dependency>        
+        <dependency>
+            <groupId>org.glassfish.orb</groupId>
             <artifactId>orb-iiop</artifactId>
             <version>${project.version}</version>
         </dependency>

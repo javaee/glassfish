@@ -38,7 +38,7 @@
 package com.sun.enterprise.naming;
 
 import org.glassfish.api.Startup;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 
@@ -74,7 +74,7 @@ import com.sun.enterprise.naming.util.LogFacade;
 public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, Startup
 {
     @Inject
-    private ClassLoaderHierarchy clh;
+    private ServerContext sc;
 
     private static Logger _logger = LogFacade.getLogger();
 
@@ -158,7 +158,7 @@ public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, Sta
             _logger.logp(Level.FINE, "GlassFishNamingBuilder", "loadClass",
                     "Failed to load {0} using thread context class loader {1}", new Object[]{className, tccl});
             // Try using CommonClassLoader.
-            ClassLoader ccl = clh.getCommonClassLoader();
+            ClassLoader ccl = sc.getCommonClassLoader();
             if (tccl != ccl) {
                 try {
                     return Class.forName(className, true, ccl);

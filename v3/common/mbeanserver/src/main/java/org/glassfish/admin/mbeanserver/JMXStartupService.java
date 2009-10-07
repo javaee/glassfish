@@ -93,7 +93,8 @@ public final class JMXStartupService implements Startup, PostConstruct
     @Inject
     Events mEvents;
     @Inject
-    volatile static AdminAccessController sAuthenticator;
+    volatile static Habitat habitat;
+    
     private volatile BootAMX mBootAMX;
     private volatile JMXConnectorsStarterThread mConnectorsStarterThread;
 
@@ -229,12 +230,12 @@ public final class JMXStartupService implements Startup, PostConstruct
             final BootAMXListener listener = mNeedBootListeners ? new BootAMXListener(server, mAMXBooterNew) : null;
             if (protocol.equals("rmi_jrmp"))
             {
-                final RMIConnectorStarter starter = new RMIConnectorStarter(mMBeanServer, address, port, protocol, authRealmName, securityEnabled, sAuthenticator, listener);
+                final RMIConnectorStarter starter = new RMIConnectorStarter(mMBeanServer, address, port, protocol, authRealmName, securityEnabled, habitat, listener);
                 server = starter.start();
             }
             else if (protocol.equals("jmxmp"))
             {
-                final JMXMPConnectorStarter starter = new JMXMPConnectorStarter(mMBeanServer, address, port, authRealmName, securityEnabled, sAuthenticator, listener);
+                final JMXMPConnectorStarter starter = new JMXMPConnectorStarter(mMBeanServer, address, port, authRealmName, securityEnabled, habitat, listener);
                 server = starter.start();
             }
             else
@@ -269,9 +270,7 @@ public final class JMXStartupService implements Startup, PostConstruct
 
 
         public void run()
-        {
-            Util.getLogger().info("JMXStartupService: JMX authenticator is " + sAuthenticator );
-            
+        {            
             for (final JmxConnector c : mConfiguredConnectors)
             {
                 if (!Boolean.parseBoolean(c.getEnabled()))

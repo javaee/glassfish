@@ -53,7 +53,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.deployment.*;
 import org.glassfish.config.support.CommandModelImpl;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.*;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -90,7 +90,7 @@ public class CommandRunnerImpl implements CommandRunner {
     private Habitat habitat;
 
     @Inject
-    private ClassLoaderHierarchy clh;
+    private ServerContext sc;
 
     private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
 
@@ -111,7 +111,7 @@ public class CommandRunnerImpl implements CommandRunner {
     /**
      * Retuns the command model for a command name.
      *
-     * @param name command name
+     * @param commandName command name
      * @param logger logger to log any error messages
      * @return model for this command (list of parameters,etc...),
      *          or null if command is not found
@@ -298,7 +298,7 @@ public class CommandRunnerImpl implements CommandRunner {
             public void execute(AdminCommandContext context) {
                 Thread thread = Thread.currentThread();
                 ClassLoader origCL = thread.getContextClassLoader();
-                ClassLoader ccl = clh.getCommonClassLoader();
+                ClassLoader ccl = sc.getCommonClassLoader();
                 if (origCL != ccl) {
                     try {
                         thread.setContextClassLoader(ccl);
