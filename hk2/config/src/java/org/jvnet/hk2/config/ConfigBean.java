@@ -81,7 +81,7 @@ public class ConfigBean extends Dom implements ConfigView {
         super(habitat, document, parent, model, in);
         // by default all ConfigBean support the ConstrainedBeanListener interface
         // allowing clients to register interest in attributes changing.
-        addInterceptor(new ConfigBeanInterceptor<ConstrainedBeanListener>() {
+        addInterceptor(ConstrainedBeanListener.class ,new ConfigBeanInterceptor<ConstrainedBeanListener>() {
 
             List<VetoableChangeListener> listeners = new ArrayList<VetoableChangeListener>();
 
@@ -123,9 +123,13 @@ public class ConfigBean extends Dom implements ConfigView {
     @SuppressWarnings("unchecked")    
     public <T> T getOptionalFeature(Class<T> featureType) {
         if (optionalFeatures.containsKey(featureType)) {
-            return (T) optionalFeatures.get(featureType);
+            return (T) optionalFeatures.get(featureType).getConfiguration();
         }
         return null;
+    }
+
+    Collection<ConfigBeanInterceptor> getOptionalFeatures() {
+        return optionalFeatures.values();
     }
 
     protected void setter(ConfigModel.Property target, Object value) throws Exception  {
@@ -192,10 +196,11 @@ public class ConfigBean extends Dom implements ConfigView {
      * Add a new ConfigBeanInterceptor to this ConfigBean instance. The inteceptor will
      * be called each time a attribute of this bean is accessed.
      *
+     * @param interceptorType type of the type interceptor.
      * @param interceptor the new interceptor
      */
-    public void addInterceptor(ConfigBeanInterceptor interceptor) {
-        optionalFeatures.put(interceptor.getConfiguration().getClass(), interceptor);
+    public void addInterceptor(Class<?> interceptorType, ConfigBeanInterceptor interceptor) {
+        optionalFeatures.put(interceptorType, interceptor);
     }
 
     /**
