@@ -47,6 +47,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.URLClassLoader;
 
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Module;
@@ -139,6 +140,16 @@ public class ModuleInfo {
             // add the class file transformers to the new class loader
             try {
                 InstrumentableClassLoader icl = InstrumentableClassLoader.class.cast(context.getFinalClassLoader());
+                String isComposite = context.getAppProps().getProperty(
+                    ServerTags.IS_COMPOSITE);
+
+                if (Boolean.valueOf(isComposite) && 
+                    this instanceof ApplicationInfo &&
+                    icl instanceof URLClassLoader) {
+                    // for ear lib tranformers, let's install
+                    // them with the EarLibClassLoader
+                    icl = InstrumentableClassLoader.class.cast(((URLClassLoader)icl).getParent().getParent());
+                }
                 for (ClassFileTransformer transformer : context.getTransformers()) {
                     icl.addTransformer(transformer);
                 }
