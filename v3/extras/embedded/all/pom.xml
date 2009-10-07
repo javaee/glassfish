@@ -106,13 +106,6 @@
    <dependencies>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-appclient</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-cmp</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
