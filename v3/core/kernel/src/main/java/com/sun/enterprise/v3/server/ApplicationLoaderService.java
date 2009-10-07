@@ -259,7 +259,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
         // ResourceManager. By injecting ResourceManager, we guarantee the
         // initialization order.
         // See https://glassfish.dev.java.net/issues/show_bug.cgi?id=7179
-        habitat.getComponent(Startup.class, "ResourceManager");
+        habitat.getComponent(PostStartup.class, "ResourceManager");
 
     }
 

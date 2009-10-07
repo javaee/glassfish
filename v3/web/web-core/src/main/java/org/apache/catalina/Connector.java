@@ -66,7 +66,8 @@ import java.security.cert.X509Certificate;
 // END S1AS 6188932
 // START SJSAS 6363251
 import com.sun.grizzly.tcp.Adapter;
-import com.sun.enterprise.glassfish.web.*;
+import com.sun.appserv.ProxyHandler;
+
 // END SJSAS 6363251
 
 /**

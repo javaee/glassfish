@@ -39,8 +39,8 @@ package com.sun.appserv.server.util;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger; 
-import com.sun.appserv.BytecodePreprocessor;
 import com.sun.logging.LogDomains;
+import org.glassfish.api.*;
 
 /**
  * PreprocessorUtil is a utility class for managing the bytecode 
@@ -51,7 +51,7 @@ import com.sun.logging.LogDomains;
 public class PreprocessorUtil {
     
     private static boolean _preprocessorEnabled = false;
-    private static BytecodePreprocessor[] _preprocessor;             
+    private static BytecodePreprocessor[] _preprocessor;
     
     /**
      * Initializes the preprocessor utility with the associated class names 

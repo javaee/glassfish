@@ -35,7 +35,7 @@
  * holder.
  */
 
-package org.glassfish.web.starter;
+package com.sun.enterprise.v3.services.impl;
 
 import java.beans.PropertyChangeEvent;
 import java.util.*;
@@ -49,15 +49,15 @@ import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.v3.server.ContainerStarter;
 import com.sun.logging.LogDomains;
+import com.sun.hk2.component.*;
 import org.glassfish.api.Startup;
+import org.glassfish.api.container.*;
 import org.glassfish.internal.data.ContainerRegistry;
 import org.glassfish.internal.data.EngineInfo;
-import org.glassfish.web.sniffer.WebSniffer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.Changed;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigListener;
@@ -107,7 +107,9 @@ public class WebContainerStarter
     @Inject
     public HttpService httpService;
 
-    private WebSniffer sniffer = new WebSniffer();
+    @Inject
+    private Habitat habitat;
+
 
     /**
      * Scans the domain.xml to see if it specifies any configuration
@@ -180,22 +182,27 @@ public class WebContainerStarter
      * Starts the web container
      */
     private void startWebContainer() {
+        Sniffer webSniffer = habitat.getComponent(Sniffer.class,"web");
+        if (webSniffer==null) {
+            logger.info("Web container not installed");
+            return;
+        }
         if (containerRegistry.getContainer(
-                    sniffer.getContainersNames()[0]) != null) {
+                    webSniffer.getContainersNames()[0]) != null) {
             containerRegistry.getContainer(
-                    sniffer.getContainersNames()[0]).getContainer();
+                    webSniffer.getContainersNames()[0]).getContainer();
         } else {
-            Module snifferModule = modulesRegistry.find(sniffer.getClass());
+            Module snifferModule = modulesRegistry.find(webSniffer.getClass());
             try {
                 Collection<EngineInfo> containersInfo =
-                    containerStarter.startContainer(sniffer, snifferModule);
+                    containerStarter.startContainer(webSniffer, snifferModule);
                 if (containersInfo != null && !containersInfo.isEmpty()) {
                     // Start each container
                     for (EngineInfo info : containersInfo) {
                         info.getContainer();
                         if (logger.isLoggable(Level.INFO)) {
                             logger.info("Done with starting " +
-                                sniffer.getModuleType() + " container");
+                                webSniffer.getModuleType() + " container");
                         }
                     }
                 } else {
@@ -204,7 +211,7 @@ public class WebContainerStarter
                 }
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Unable to start container " +
-                    sniffer.getContainersNames()[0], e);
+                    webSniffer.getContainersNames()[0], e);
             }
         }
     }

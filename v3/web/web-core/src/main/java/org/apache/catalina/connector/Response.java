@@ -81,7 +81,7 @@ import com.sun.grizzly.util.buf.UEncoder;
 import com.sun.grizzly.util.http.FastHttpDateFormat;
 import com.sun.grizzly.util.http.ServerCookie;
 import com.sun.grizzly.util.net.URL;
-import com.sun.enterprise.glassfish.web.*;
+import com.sun.appserv.ProxyHandler;
 
 // START S1AS 6170450
 

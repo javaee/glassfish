@@ -364,6 +364,16 @@ public class AppServerStartup implements ModuleStartup {
         events.send(new Event(EventTypes.PREPARE_SHUTDOWN), false);
 
         try {
+            for (Inhabitant<? extends PostStartup> svc : habitat.getInhabitants(PostStartup.class)) {
+                if (svc.isInstantiated()) {
+                    try {
+                        svc.release();
+                    } catch(Throwable e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
             for (Inhabitant<? extends Startup> svc : habitat.getInhabitants(Startup.class)) {
                 if (svc.isInstantiated()) {
                     try {

@@ -42,11 +42,9 @@ import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Oct 29, 2007
- * Time: 11:25:55 AM
- * To change this template use File | Settings | File Templates.
+ * Support class for sending vetoable events.
+ * 
+ * @author Jerome Dochez
  */
 public class TypedVetoableChangeSupport extends VetoableChangeSupport {
 

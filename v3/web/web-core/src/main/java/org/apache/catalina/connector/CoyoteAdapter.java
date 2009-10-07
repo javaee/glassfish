@@ -78,7 +78,7 @@ import com.sun.grizzly.util.buf.CharChunk;
 import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.buf.UEncoder;
 import com.sun.grizzly.util.http.mapper.MappingData;
-import com.sun.enterprise.glassfish.web.*;
+import com.sun.appserv.ProxyHandler;
 
 /**
  * Implementation of a request processor which delegates the processing to a

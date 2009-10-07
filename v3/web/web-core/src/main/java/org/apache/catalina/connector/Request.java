@@ -126,11 +126,11 @@ import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.StringParser;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.fileupload.Multipart;
+import com.sun.appserv.ProxyHandler;
 
 // START S1AS 6170450
 // END S1AS 6170450
 import com.sun.enterprise.security.integration.RealmInitializer;
-import com.sun.enterprise.glassfish.web.*;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.deploy.LoginConfig;
 

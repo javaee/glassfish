@@ -75,7 +75,6 @@ import com.sun.grizzly.util.http.mapper.Mapper;
 
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.ProtocolHandler;
-import com.sun.enterprise.glassfish.web.*;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
@@ -91,6 +90,7 @@ import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.net.ServerSocketFactory;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
+import com.sun.appserv.ProxyHandler;
 // START S1AS 6188932
 // END S1AS 6188932
 import java.util.logging.Level;

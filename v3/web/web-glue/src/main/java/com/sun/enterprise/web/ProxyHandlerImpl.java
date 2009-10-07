@@ -36,13 +36,12 @@
 
 package com.sun.enterprise.web;
 
-import com.sun.enterprise.glassfish.web.*;
-
 import java.io.ByteArrayInputStream;
 import java.security.cert.X509Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import javax.servlet.http.HttpServletRequest;
+import com.sun.appserv.ProxyHandler;
 
 /**
  * Default ProxyHandler implementation.

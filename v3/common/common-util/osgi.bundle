@@ -1,6 +1,5 @@
 
 -exportcontents: \
-                        com.sun.appserv; \
                         com.sun.appserv.ha.spi; \
                         com.sun.appserv.ha.util; \
                         com.sun.appserv.management.client.prefs; \
