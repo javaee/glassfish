@@ -325,7 +325,7 @@ public class StaticRmiStubGenerator {
             return;
         }
 
-        if( toolsJarPath == null ) {
+        if( toolsJarPath == null && !OS.isDarwin()) {
             _logger.log(Level.INFO,  "[RMIC] tools.jar location was not found");
             return;
         }
@@ -337,12 +337,16 @@ public class StaticRmiStubGenerator {
         List<String> cmds = new ArrayList<String>();
         cmds.add(javaExePath);
         cmds.add("-classpath");
-        String bigClasspath = System.getProperty("java.class.path")
-                            + File.pathSeparator + toolsJarPath
-                            + File.pathSeparator + classPath
-                            + File.pathSeparator + explodedDir
-                            + File.pathSeparator + repository;
 
+        StringBuilder sb = new StringBuilder().append(System.getProperty("java.class.path"));
+        if (toolsJarPath != null) {
+             sb.append(File.pathSeparator).append(toolsJarPath);
+        }
+        sb.append(File.pathSeparator).append(classPath)
+          .append(File.pathSeparator).append(explodedDir)
+          .append(File.pathSeparator).append(repository);
+
+        String bigClasspath = sb.toString();
         cmds.add(bigClasspath);
         if (OS.isDarwin()) {
             // add lib/endorsed so it finds the right rmic
@@ -360,7 +364,7 @@ public class StaticRmiStubGenerator {
         cmds.addAll(stubClasses);
 
         if (_logger.isLoggable(Level.INFO)){
-            StringBuffer sbuf = new StringBuffer();
+            StringBuilder sbuf = new StringBuilder();
             for(String o : cmds) {
                 sbuf.append("\n\t").append(o);
             }
@@ -520,7 +524,7 @@ public class StaticRmiStubGenerator {
      */
     private String getClassPath(String[] paths, File other) {
 
-        StringBuffer sb  = new StringBuffer();
+        StringBuilder sb  = new StringBuilder();
 
         for (int i=0; i<paths.length; i++) {
             sb.append(paths[i]+File.pathSeparator);
