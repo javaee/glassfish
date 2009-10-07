@@ -8,7 +8,6 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -38,14 +37,6 @@ public class HttpServiceStatsProviderBootstrap implements PostConstruct {
     @Inject
     private static Domain domain;
     
-    private boolean httpServiceMonitoringEnabled = false;
-    
-    private static HttpService httpService = null;
-    private static NetworkConfig networkConfig = null;
-
-    public HttpServiceStatsProviderBootstrap() {
-    }
-
     public void postConstruct() {
         // to set log level, uncomment the following 
         // remember to comment it before checkin
@@ -67,9 +58,8 @@ public class HttpServiceStatsProviderBootstrap implements PostConstruct {
                 break;
             }
         }
-        httpService = config.getHttpService();
-        networkConfig = config.getNetworkConfig();
 
+        HttpService httpService = config.getHttpService();
         for (VirtualServer vs : httpService.getVirtualServer()) {
             if (logger.isLoggable(Level.FINEST)) {
                 logger.finest("**** Registering a new StatsProvider");
@@ -80,15 +70,6 @@ public class HttpServiceStatsProviderBootstrap implements PostConstruct {
                     "http-service/" + vs.getId() + "/request",
                     new HttpServiceStatsProvider(vs.getId()));
         }
-
-        /*for (ThreadPool tp : config.getThreadPools().getThreadPool()) {
-            StatsProviderManager.register(
-                    "http-service",
-                    PluginPoint.SERVER,
-                    "http-service/thread-pool" + tp.getName()),
-                    new ThreadPoolStatsProvider());
-        }*/
-
     }
 
     private boolean getEnabledValue(String enabledStr) {
@@ -96,35 +77,5 @@ public class HttpServiceStatsProviderBootstrap implements PostConstruct {
             return false;
         }
         return true;
-    }
-
-    public static String getVirtualServer(String hostName, String listenerPort) {
-        try {
-            //
-            if (hostName == null) {
-                return null;
-            }
-            if (hostName.equals("localhost")) {
-                hostName = InetAddress.getLocalHost().getHostName();
-            }
-            NetworkListener listener = null;
-
-            for (NetworkListener hl : networkConfig.getNetworkListeners().getNetworkListener()) {
-                if (hl.getPort().equals(listenerPort)) {
-                    listener = hl;
-                    break;
-                }
-            }
-            VirtualServer virtualServer = null;
-            for (VirtualServer vs : httpService.getVirtualServer()) {
-                if (vs.getHosts().contains(hostName) && vs.getNetworkListeners().contains(listener.getName())) {
-                    virtualServer = vs;
-                }
-            }
-            return virtualServer.getId();
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(HttpServiceStatsProviderBootstrap.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
     }
 }
