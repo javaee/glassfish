@@ -151,7 +151,7 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
                 if (matches(node.getValue(), pattern)) {
                     ActionReport.MessagePart part = report.getTopMessagePart().addChild();
                     part.setChildrenType("DottedName");
-                    part.setMessage(prefix + node.getValue() + "=" + encode(node.getKey().attribute("value")));
+                    part.setMessage(prefix + node.getValue() + "=" + node.getKey().attribute("value"));
                     foundMatch = true;
                 }
             }   else {
