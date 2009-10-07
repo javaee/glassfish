@@ -201,8 +201,7 @@ public class AppSpecificConnectorClassLoaderUtil {
     }
 
     public boolean useGlobalConnectorClassLoader() {
-        //set the flag true for now. Till CTS fixes it
-        boolean flag = true;
+        boolean flag = false;
         ConnectorService connectorService = habitat.getComponent(ConnectorService.class);
         //it is possible that connector-service is not yet defined in domain.xml
         if(connectorService != null){
