@@ -53,7 +53,9 @@
     </target>
 
     <target name="undeploy" depends="init-common">
-        <antcall target="undeploy-jar-common"/>
+        <antcall target="undeploy-jar-common">
+            <param name="deployedjar.name" value="ejbmodulename"/>
+        </antcall>
     </target>   
 
     <target name="usage">
