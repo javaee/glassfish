@@ -64,7 +64,7 @@
                     getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
                     updateCenterProcess(selectedRows="${selectedRows}" action="#{action}" );
                     prepareAlertMsg(summary="#{successMsg}" type="success");
-                    setPageSessionAttribute(key="restartNeeded" value="#{true}");
+                    setApplicationAttribute(key="restartNeeded" value="#{true}");
                     redirect(page="#{fromPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 }
                 if ("$pageSession{forInstall}"){
@@ -78,7 +78,7 @@
                 }
             />
             </sun:button>
-            <h:panelGroup rendered="#{pageSession.restartNeeded}">
+            <h:panelGroup rendered="#{applicationScope.restartNeeded == true}">
 <f:verbatim>
             <input type="button" class="Btn1_sun4" id="restartButton" value="$resource{i18n.button.Restart}" title="$resource{i18n.restart.tooltip}"
                         onclick="if (getConfirm(this, '$resource{i18n.msg.JS.confirmRestartInstance}')) { window.location = '#{request.contextPath}/common/appServer/restart-2.jsf';}; return false;"/>

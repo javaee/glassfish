@@ -67,7 +67,7 @@
                 if (! #{requestScope.hasLicense}){
                     updateCenterProcess(selectedRows="$pageSession{selectedRows}" action="#{action}" );
                     prepareAlertMsg(summary="#{successMsg}" type="success");
-                    setPageSessionAttribute(key="restartNeeded" value="#{true}");
+                    setApplicationAttribute(key="restartNeeded" value="#{true}");
                     redirect(page="#{fromPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 }
             />
