@@ -5,6 +5,7 @@
  <indexitem text="containers, See Ruby container"></indexitem>
  <indexitem target="task-installjruby" text="JRuby component, installing"></indexitem>
  <indexitem text="Ruby container">
-    <indexitem target="task-configrubycontainer" text="configuring"></indexitem><indexitem target="ref-configrubycontainer" text="configuring"></indexitem>
+    <indexitem target="ref-configrubycontainer" text="configuring (reference)"></indexitem>
+    <indexitem target="task-configrubycontainer" text="configuring (task)"></indexitem>
 </indexitem>
 </index>

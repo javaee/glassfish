@@ -4,7 +4,7 @@ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-security"></a><h4>Security</h4>
-<a name="indexterm-175"></a><a name="indexterm-176"></a><p>Use the Security page to set security properties for the Enterprise Server.</p><p>The Security page contains the following options.</p><dl><dt>Security Manager</dt>
+<a name="indexterm-173"></a><a name="indexterm-174"></a><p>Use the Security page to set security properties for the Enterprise Server.</p><p>The Security page contains the following options.</p><dl><dt>Security Manager</dt>
 <dd><p>If this option is selected, the security manager for the domain is enabled. This option is disabled by default.</p><p>When this option is enabled, a JVM option, <tt>-Djava.security.manager</tt>, will be added to the JVM setting of the Enterprise Server. See <a href="task-jvmoptions.html">To Configure the JVM Options</a>. You must restart the server to enable this change. </p><p>Ensure that you have granted correct permissions for all applications. You can turn off the security manager to enhance performance.</p></dd>
 <dt>Audit Logging</dt>
 <dd><p>If this option is enabled, the server will load and run all the audit modules specified in the Audit Modules setting. If the option is disabled, the server will not access audit modules. This option is disabled by default.</p></dd>

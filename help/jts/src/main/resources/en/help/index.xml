@@ -6,7 +6,8 @@
  <indexitem target="task-settranslog" text="logging, transactions"></indexitem>
  <indexitem target="ref-transactionsvcproperties" text="properties, transaction service"></indexitem>
  <indexitem text="transaction service">
-    <indexitem target="task-configtransservice" text="configuring"></indexitem><indexitem target="ref-transactionservice" text="configuring"></indexitem>
+    <indexitem target="ref-transactionservice" text="configuring (reference)"></indexitem>
+    <indexitem target="task-configtransservice" text="configuring (task)"></indexitem>
     <indexitem target="ref-transactionsvcproperties" text="properties"></indexitem></indexitem>
  <indexitem text="transactions">
     <indexitem target="task-configtransrecovery" text="configuring recovery"></indexitem>

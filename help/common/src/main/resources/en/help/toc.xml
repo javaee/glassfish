@@ -4,7 +4,7 @@
 
  <tocitem target="tasks-topic-group" text="Enterprise Server Administration Console Tasks" expand="false">
     <tocitem target="task-group-registration" text="Registering the Sun GlassFish Enterprise Server" expand="false">
-        <tocitem target="task-register" text="To Register the Sun GlassFish Enterprise Server With Sun Connection" expand="false"></tocitem>
+        <tocitem target="task-register" text="To Register the Sun GlassFish Enterprise Server" expand="false"></tocitem>
         <tocitem target="task-support" text="To View the GlassFish News Page for the Sun GlassFish Enterprise Server" expand="false"></tocitem>
         <tocitem target="task-subscriptions" text="To View the Subscriptions Page for Sun GlassFish Enterprise Server" expand="false"></tocitem></tocitem>
     <tocitem target="task-group-appservsettings" text="Configuring and Managing the Enterprise Server" expand="false">
@@ -84,7 +84,7 @@
         <tocitem target="task-confmonitor" text="To Configure the Monitoring Service" expand="false"></tocitem></tocitem>
     <tocitem target="task-group-uc" text="Updating and Extending Enterprise Server" expand="false">
         <tocitem target="task-uc-addon" text="To Install Add-On Components" expand="false"></tocitem>
-        <tocitem target="task-uc-update" text="To Install Updates for Components" expand="false"></tocitem>
+        <tocitem target="task-uc-update" text="To View Available Updates for Components" expand="false"></tocitem>
         <tocitem target="task-uc-installed-remove" text="To Uninstall Components" expand="false"></tocitem>
         <tocitem target="task-uc-pkgdetails" text="To View Detailed Information About a Component" expand="false"></tocitem>
         <tocitem target="task-uc-set-proxy" text="To Configure Network Proxy Settings for Accessing Network Repositories" expand="false"></tocitem></tocitem></tocitem>

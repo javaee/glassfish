@@ -3,44 +3,59 @@
 <index version="2.0">
 
  <indexitem text="connection factories">
-    <indexitem target="task-jmsconnectionnew" text="creating"></indexitem><indexitem target="ref-jmsconnectionnew" text="creating"></indexitem>
+    <indexitem target="ref-jmsconnectionnew" text="creating (reference)"></indexitem>
+    <indexitem target="task-jmsconnectionnew" text="creating (task)"></indexitem>
     <indexitem target="task-jmsconnectiondelete" text="deleting"></indexitem>
-    <indexitem target="task-jmsconnectionedit" text="editing"></indexitem><indexitem target="ref-jmsconnectionedit" text="editing"></indexitem>
+    <indexitem target="ref-jmsconnectionedit" text="editing (reference)"></indexitem>
+    <indexitem target="task-jmsconnectionedit" text="editing (task)"></indexitem>
     <indexitem target="ref-jmsconnectionfactories" text="viewing and configuring"></indexitem></indexitem>
  <indexitem text="destination resources">
-    <indexitem target="task-jmsdestinationnew" text="creating"></indexitem><indexitem target="ref-jmsdestinationnew" text="creating"></indexitem>
+    <indexitem target="ref-jmsdestinationnew" text="creating (reference)"></indexitem>
+    <indexitem target="task-jmsdestinationnew" text="creating (task)"></indexitem>
     <indexitem target="task-jmsdestinationdelete" text="deleting"></indexitem>
-    <indexitem target="task-jmsdestinationedit" text="editing"></indexitem><indexitem target="ref-jmsdestinationedit" text="editing"></indexitem>
+    <indexitem target="ref-jmsdestinationedit" text="editing (reference)"></indexitem>
+    <indexitem target="task-jmsdestinationedit" text="editing (task)"></indexitem>
     <indexitem target="ref-jmsdestinationresources" text="viewing and configuring"></indexitem></indexitem>
  <indexitem text="JMS connection factory resources">
-    <indexitem target="task-jmsconnectionnew" text="creating"></indexitem><indexitem target="ref-jmsconnectionnew" text="creating"></indexitem>
+    <indexitem target="ref-jmsconnectionnew" text="creating (reference)"></indexitem>
+    <indexitem target="task-jmsconnectionnew" text="creating (task)"></indexitem>
     <indexitem target="task-jmsconnectiondelete" text="deleting"></indexitem>
-    <indexitem target="task-jmsconnectionedit" text="editing"></indexitem><indexitem target="ref-jmsconnectionedit" text="editing"></indexitem>
+    <indexitem target="ref-jmsconnectionedit" text="editing (reference)"></indexitem>
+    <indexitem target="task-jmsconnectionedit" text="editing (task)"></indexitem>
     <indexitem target="ref-jmsconnectionproperties" text="properties"></indexitem>
     <indexitem target="ref-jmsconnectionfactories" text="viewing and configuring"></indexitem></indexitem>
  <indexitem text="JMS destination resources">
-    <indexitem target="task-jmsdestinationnew" text="creating"></indexitem><indexitem target="ref-jmsdestinationnew" text="creating"></indexitem>
+    <indexitem target="ref-jmsdestinationnew" text="creating (reference)"></indexitem>
+    <indexitem target="task-jmsdestinationnew" text="creating (task)"></indexitem>
     <indexitem target="task-jmsdestinationdelete" text="deleting"></indexitem>
-    <indexitem target="task-jmsdestinationedit" text="editing"></indexitem><indexitem target="ref-jmsdestinationedit" text="editing"></indexitem>
+    <indexitem target="ref-jmsdestinationedit" text="editing (reference)"></indexitem>
+    <indexitem target="task-jmsdestinationedit" text="editing (task)"></indexitem>
     <indexitem target="ref-jmsdestinationresources" text="viewing and configuring"></indexitem></indexitem>
  <indexitem text="JMS hosts">
-    <indexitem target="task-jmshostnew" text="creating"></indexitem><indexitem target="ref-jmshostnew" text="creating"></indexitem>
+    <indexitem target="ref-jmshostnew" text="creating (reference)"></indexitem>
+    <indexitem target="task-jmshostnew" text="creating (task)"></indexitem>
     <indexitem target="task-jmshostdelete" text="deleting"></indexitem>
-    <indexitem target="task-jmshostedit" text="editing"></indexitem><indexitem target="ref-jmshostedit" text="editing"></indexitem>
+    <indexitem target="ref-jmshostedit" text="editing (reference)"></indexitem>
+    <indexitem target="task-jmshostedit" text="editing (task)"></indexitem>
     <indexitem target="ref-jmshosts" text="viewing and configuring"></indexitem></indexitem>
  <indexitem text="JMS physical destinations">
-    <indexitem target="task-jmsphysicaldestnew" text="creating"></indexitem><indexitem target="ref-jmsphysicaldestnew" text="creating"></indexitem>
+    <indexitem target="ref-jmsphysicaldestnew" text="creating (reference)"></indexitem>
+    <indexitem target="task-jmsphysicaldestnew" text="creating (task)"></indexitem>
     <indexitem target="task-jmsphysicaldestdelete" text="deleting"></indexitem>
-    <indexitem target="task-jmsphysicaldestedit" text="editing"></indexitem><indexitem target="ref-jmsphysicaldestedit" text="editing"></indexitem>
+    <indexitem target="ref-jmsphysicaldestedit" text="editing (reference)"></indexitem>
+    <indexitem target="task-jmsphysicaldestedit" text="editing (task)"></indexitem>
     <indexitem target="task-jmsflushmessages" text="removing messages from"></indexitem>
     <indexitem target="ref-jmsphysicaldest" text="viewing and configuring"></indexitem></indexitem>
  <indexitem text="JMS service">
-    <indexitem target="task-jmsservice" text="configuring"></indexitem><indexitem target="ref-jmsservice" text="configuring"></indexitem>
+    <indexitem target="ref-jmsservice" text="configuring (reference)"></indexitem>
+    <indexitem target="task-jmsservice" text="configuring (task)"></indexitem>
     <indexitem target="ref-jmsservice-additional-props" text="properties"></indexitem></indexitem>
  <indexitem text="physical destinations">
-    <indexitem target="task-jmsphysicaldestnew" text="creating"></indexitem><indexitem target="ref-jmsphysicaldestnew" text="creating"></indexitem>
+    <indexitem target="ref-jmsphysicaldestnew" text="creating (reference)"></indexitem>
+    <indexitem target="task-jmsphysicaldestnew" text="creating (task)"></indexitem>
     <indexitem target="task-jmsphysicaldestdelete" text="deleting"></indexitem>
-    <indexitem target="task-jmsphysicaldestedit" text="editing"></indexitem><indexitem target="ref-jmsphysicaldestedit" text="editing"></indexitem>
+    <indexitem target="ref-jmsphysicaldestedit" text="editing (reference)"></indexitem>
+    <indexitem target="task-jmsphysicaldestedit" text="editing (task)"></indexitem>
     <indexitem target="task-jmsflushmessages" text="removing messages from"></indexitem>
     <indexitem target="ref-jmsphysicaldest" text="viewing and configuring"></indexitem></indexitem>
  <indexitem text="properties">

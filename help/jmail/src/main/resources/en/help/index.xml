@@ -3,36 +3,48 @@
 <index version="2.0">
 
  <indexitem text="custom resources">
-    <indexitem target="task-jndicustomresourcenew" text="creating"></indexitem><indexitem target="ref-jndicustomresourcenew" text="creating"></indexitem>
+    <indexitem target="ref-jndicustomresourcenew" text="creating (reference)"></indexitem>
+    <indexitem target="task-jndicustomresourcenew" text="creating (task)"></indexitem>
     <indexitem target="task-jndicustomresourcedelete" text="deleting"></indexitem>
-    <indexitem target="task-jndicustomresourceedit" text="editing"></indexitem><indexitem target="ref-jndicustomresourceedit" text="editing"></indexitem>
+    <indexitem target="ref-jndicustomresourceedit" text="editing (reference)"></indexitem>
+    <indexitem target="task-jndicustomresourceedit" text="editing (task)"></indexitem>
     <indexitem target="ref-jndicustomresources" text="viewing and configuring"></indexitem></indexitem>
  <indexitem text="external JNDI resources">
-    <indexitem target="task-jndiexternalresourcecreate" text="creating"></indexitem><indexitem target="ref-jndiexternalresourcenew" text="creating"></indexitem>
+    <indexitem target="ref-jndiexternalresourcenew" text="creating (reference)"></indexitem>
+    <indexitem target="task-jndiexternalresourcecreate" text="creating (task)"></indexitem>
     <indexitem target="task-jndiexternalresourcedelete" text="deleting"></indexitem>
-    <indexitem target="task-jndiexternalresourceedit" text="editing"></indexitem><indexitem target="ref-jndiexternalresourceedit" text="editing"></indexitem>
+    <indexitem target="ref-jndiexternalresourceedit" text="editing (reference)"></indexitem>
+    <indexitem target="task-jndiexternalresourceedit" text="editing (task)"></indexitem>
     <indexitem target="ref-jndiexternalresources" text="viewing and configuring"></indexitem></indexitem>
  <indexitem text="external resources, See external JNDI resources"></indexitem>
  <indexitem text="Java Naming and Directory Interface, See JNDI"></indexitem>
  <indexitem text="JavaMail sessions">
-    <indexitem target="task-javamailsessioncreate" text="creating"></indexitem><indexitem target="ref-javamailsessioncreate" text="creating"></indexitem>
+    <indexitem target="ref-javamailsessioncreate" text="creating (reference)"></indexitem>
+    <indexitem target="task-javamailsessioncreate" text="creating (task)"></indexitem>
     <indexitem target="task-javamailsessionsdelete" text="deleting"></indexitem>
-    <indexitem target="task-javamailsessionsedit" text="editing"></indexitem><indexitem target="ref-javamailsessionsedit" text="editing"></indexitem>
+    <indexitem target="ref-javamailsessionsedit" text="editing (reference)"></indexitem>
+    <indexitem target="task-javamailsessionsedit" text="editing (task)"></indexitem>
     <indexitem target="ref-javamailsessions" text="viewing and configuring"></indexitem></indexitem>
  <indexitem text="JNDI custom resources">
-    <indexitem target="task-jndicustomresourcenew" text="creating"></indexitem><indexitem target="ref-jndicustomresourcenew" text="creating"></indexitem>
+    <indexitem target="ref-jndicustomresourcenew" text="creating (reference)"></indexitem>
+    <indexitem target="task-jndicustomresourcenew" text="creating (task)"></indexitem>
     <indexitem target="task-jndicustomresourcedelete" text="deleting"></indexitem>
-    <indexitem target="task-jndicustomresourceedit" text="editing"></indexitem><indexitem target="ref-jndicustomresourceedit" text="editing"></indexitem>
+    <indexitem target="ref-jndicustomresourceedit" text="editing (reference)"></indexitem>
+    <indexitem target="task-jndicustomresourceedit" text="editing (task)"></indexitem>
     <indexitem target="ref-jndicustomresources" text="viewing and configuring"></indexitem></indexitem>
  <indexitem text="JNDI external resources">
-    <indexitem target="task-jndiexternalresourcecreate" text="creating"></indexitem><indexitem target="ref-jndiexternalresourcenew" text="creating"></indexitem>
+    <indexitem target="ref-jndiexternalresourcenew" text="creating (reference)"></indexitem>
+    <indexitem target="task-jndiexternalresourcecreate" text="creating (task)"></indexitem>
     <indexitem target="task-jndiexternalresourcedelete" text="deleting"></indexitem>
-    <indexitem target="task-jndiexternalresourceedit" text="editing"></indexitem><indexitem target="ref-jndiexternalresourceedit" text="editing"></indexitem>
+    <indexitem target="ref-jndiexternalresourceedit" text="editing (reference)"></indexitem>
+    <indexitem target="task-jndiexternalresourceedit" text="editing (task)"></indexitem>
     <indexitem target="ref-jndiexternalresources" text="viewing and configuring"></indexitem></indexitem>
  <indexitem text="resource object factories">
-    <indexitem target="task-jndicustomresourcenew" text="creating"></indexitem><indexitem target="ref-jndicustomresourcenew" text="creating"></indexitem>
+    <indexitem target="ref-jndicustomresourcenew" text="creating (reference)"></indexitem>
+    <indexitem target="task-jndicustomresourcenew" text="creating (task)"></indexitem>
     <indexitem target="task-jndicustomresourcedelete" text="deleting"></indexitem>
-    <indexitem target="task-jndicustomresourceedit" text="editing"></indexitem><indexitem target="ref-jndicustomresourceedit" text="editing"></indexitem>
+    <indexitem target="ref-jndicustomresourceedit" text="editing (reference)"></indexitem>
+    <indexitem target="task-jndicustomresourceedit" text="editing (task)"></indexitem>
     <indexitem target="ref-jndicustomresources" text="viewing and configuring"></indexitem>
 </indexitem>
 </index>

@@ -4,7 +4,7 @@ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-virtualserverprops"></a><h4>Properties Specific to Virtual Servers</h4>
-<a name="indexterm-50"></a><a name="indexterm-51"></a><p>The following additional properties are available for a virtual server.</p><dl><dt><tt>sso-max-inactive-seconds</tt></dt>
+<a name="indexterm-55"></a><a name="indexterm-56"></a><p>The following additional properties are available for a virtual server.</p><dl><dt><tt>sso-max-inactive-seconds</tt></dt>
 <dd><p>Specifies the number of seconds after which a user&#8217;s single sign-on record becomes eligible for purging if no client activity is received. Since single sign-on applies across several applications on the same virtual server, access to any of the applications keeps the single sign-on record active.</p><p>The default value is 300 seconds (5 minutes). Higher values provide longer single sign-on persistence for users at the expense of more memory use on the server.</p></dd>
 <dt><tt>sso-reap-interval-seconds</tt></dt>
 <dd><p>Specifies the number of seconds between purges of expired single sign-on records.</p><p>The default value is 60.</p></dd>
