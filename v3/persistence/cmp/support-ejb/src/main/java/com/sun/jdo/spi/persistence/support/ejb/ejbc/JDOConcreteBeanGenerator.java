@@ -130,6 +130,18 @@ abstract class JDOConcreteBeanGenerator {
     final static ResourceBundle messages = I18NHelper.loadBundle(
         JDOConcreteBeanGenerator.class);
 
+    /** Name of the SUPPORT_TRAILING_SPACES_IN_VARCHAR_PK_COLUMNS property. */
+    public static final String SUPPORT_TRAILING_SPACES_IN_STRING_PK_COLUMNS_PROPERTY =
+        "com.sun.jdo.spi.persistence.support.ejb.ejbc.SUPPORT_TRAILING_SPACES_IN_STRING_PK_COLUMNS"; // NOI18N
+
+    /**
+     * Property to swich on/off support for trailing spaces for pk of String types. Note, the default is false, meaning
+     * we trip trailing spaces in pk columns
+     */
+    private static final boolean SUPPORT_TRAILING_SPACES_IN_STRING_PK_COLUMNS = Boolean.valueOf(
+        System.getProperty(SUPPORT_TRAILING_SPACES_IN_STRING_PK_COLUMNS_PROPERTY, "false")).booleanValue(); // NOI18N
+
+
     /**
      * Signature of the input files. 
      */
@@ -1614,7 +1626,11 @@ abstract class JDOConcreteBeanGenerator {
      * @return <code>true</code> if field type is java.lang.String.
      */
     boolean requireTrimOnSet(String fieldType) {
-        return CMPTemplateFormatter.String_.equals(fieldType);
+         // Strings require trim on set
+         boolean requireTrimOnSet = CMPTemplateFormatter.String_.equals(fieldType);
+         // do not trim if user has overriden it by specifying to support trailing spaces in pk columns
+         // See https://glassfish.dev.java.net/issues/show_bug.cgi?id=7491 for more details
+         return requireTrimOnSet && !SUPPORT_TRAILING_SPACES_IN_STRING_PK_COLUMNS;
     }
 
     /** Generates code that preloads non-DFG fields for read-only beans.
