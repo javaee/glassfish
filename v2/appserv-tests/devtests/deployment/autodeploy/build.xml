@@ -2,8 +2,8 @@
 
 <!DOCTYPE project [
 <!ENTITY autodeployUtil SYSTEM "./util/util.xml">
-]>
 <!ENTITY commonBuild SYSTEM "./../config/common.xml">
+]>
 
 <project name="autodeploy" default="all" basedir=".">
 

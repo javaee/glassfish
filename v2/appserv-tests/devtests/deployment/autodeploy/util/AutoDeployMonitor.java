@@ -13,7 +13,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 
-import com.sun.enterprise.deployment.autodeploy.AutoDeployConstants;
+import org.glassfish.deployment.autodeploy.AutoDeployConstants;
 
 /**
   *Autodeploys an archive to the specified autodeploy directory.

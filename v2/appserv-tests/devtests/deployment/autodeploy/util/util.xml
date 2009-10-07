@@ -9,9 +9,9 @@
     <property name="autodeploy.util.build" value="${testsRoot}/build/autodeploy/util"/>
     
     <path id="autodeploy.compile.classpath">
-        <pathelement location="${inst}/lib/j2ee.jar"/>
+        <pathelement location="${inst}/lib/javaee.jar"/>
         <pathelement location="${java.home}/lib/tools.jar"/>
-        <pathelement location="${env.S1AS_HOME}/lib/appserv-rt.jar"/>
+        <pathelement location="${env.S1AS_HOME}/modules/deployment-autodeploy.jar"/>
         <pathelement location="${autodeploy.util.build}"/>
     </path>    
 

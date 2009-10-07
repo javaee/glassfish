@@ -2,9 +2,8 @@
 
 <!DOCTYPE project [
 <!ENTITY autodeployUtil SYSTEM "./../util/util.xml">
-]>
 <!ENTITY commonBuild SYSTEM "./../../config/common.xml">
-
+]>
 <!--
     This makes sure that redeployment of an autodeployed app works.  Specifically, 
     it tests that the validations (governing app refcs in particular) pass as
