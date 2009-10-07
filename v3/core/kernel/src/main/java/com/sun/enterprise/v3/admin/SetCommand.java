@@ -122,7 +122,12 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
         }
 
         // reset the pattern.
+        String prefix="";
+        if (!pattern.startsWith(parentNodes[0].relativeName)) {
+            prefix= pattern.substring(0, pattern.indexOf(parentNodes[0].relativeName));
+        }
         pattern = parentNodes[0].relativeName;
+        String targetName = prefix + pattern;
         Map<Dom, String> matchingNodes = getMatchingNodes(dottedNames,pattern );
         if (matchingNodes.isEmpty()) {
             // it's possible they are trying to create a property object.. lets check this.
@@ -134,7 +139,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                 pattern = parentNodes[0].relativeName;
                 matchingNodes = getMatchingNodes(dottedNames, pattern);
                 if (matchingNodes.isEmpty()) {
-                    fail(context, "No configuration found for " + target);
+                    fail(context, "No configuration found for " + targetName);
                     return false;
                 }
                 // need to find the right parent.
@@ -145,7 +150,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                     }
                 }
                 if (parentNode==null) {
-                    fail(context, "No configuration found for " + target);
+                    fail(context, "No configuration found for " + targetName);
                     return false;
                 }
 
@@ -155,7 +160,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                 attributes.put("name", attrName);
                 try {
                     ConfigSupport.createAndSet((ConfigBean) parentNode, Property.class, attributes );
-                    success(context, target, value);
+                    success(context, targetName, value);
                     runLegacyChecks(context);
                     return true;
                 } catch (TransactionFailure transactionFailure) {
@@ -186,7 +191,8 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                 String finalDottedName = node.getValue()+"."  + name;
                 if (matches(finalDottedName, pattern)) {
                     if (matchName(attrName,name)) {
-                        success(context, target, value);
+                        targetName = prefix + finalDottedName;
+                        success(context, targetName, value);
                         
                         if (! isProperty) {
                             if (value!=null && value.length()>0) {
@@ -242,7 +248,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
             if (delPropertySuccess) {
                 context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);                
             } else {
-                fail(context, "No configuration found for " + target);
+                fail(context, "No configuration found for " + targetName);
                 return false;
             }
         }
@@ -306,6 +312,6 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
         context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
         ActionReport.MessagePart part = context.getActionReport().getTopMessagePart().addChild();
         part.setChildrenType("DottedName");
-        part.setMessage(target.replace('_', '-') + "=" + value);
+        part.setMessage(target + "=" + value);
     }
 }
