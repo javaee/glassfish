@@ -165,13 +165,19 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
      */
     @Override
     public boolean moveDirectory(File dir) {
+        final String no = sm.getString("enterprise.tools.upgrade.cli.no_option");
+        final String yes = sm.getString("enterprise.tools.upgrade.cli.yes_option");
         System.out.print(sm.getString(
             "enterprise.tools.upgrade.cli.move_dir",
-            dir.getName()));
+            dir.getName(), yes, no));
         String response = console.readLine();
-        String yesOption =
-            sm.getString("enterprise.tools.upgrade.cli.yes_option");
-        boolean move = yesOption.equalsIgnoreCase(response);
+        while (!yes.equals(response) && !no.equals(response)) {
+            System.err.print(sm.getString(
+                "enterprise.tools.upgrade.cli.move_dir_responses",
+                yes, no));
+            response = console.readLine();
+        }
+        boolean move = yes.equalsIgnoreCase(response);
         if (move) {
             UpgradeUtils.getUpgradeUtils(commonInfoModel).rename(dir);
         }
