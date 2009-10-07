@@ -52,6 +52,7 @@ import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.deployment.common.DeploymentException;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
@@ -197,9 +198,11 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             // create an initial  context
             ExtendedDeploymentContext initialContext = new DeploymentContextImpl(report, logger, archive, this, env);
 
-            // get an application name
             if (name==null) {
                 name = archiveHandler.getDefaultApplicationName(archive, initialContext);
+                if (!force) {
+                    name = DeploymentUtils.resolveAppNameConflict(name, habitat);
+                }
             }
 
             ActionReport.MessagePart part = report.getTopMessagePart();
@@ -374,7 +377,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         if (isRegistered && !force) {
             String msg = localStrings.getLocalString(
                 "application.alreadyreg.redeploy",
-                "Application {0} already registered; either specify that redeployment must be forced, or redeploy the application.", name);
+                "Application with name {0} is already registered. Either specify that redeployment must be forced, or redeploy the application. Or if this is a new deployment, pick a different name.", name);
             throw new Exception(msg);
         }
         else if (isRegistered && force) 
@@ -474,7 +477,18 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 virtualservers = ConfigBeansUtilities.getVirtualServers(
                     target, name);
             }
-
+            String compatProp = app.getDeployProperties().getProperty(
+                DeploymentProperties.COMPATIBILITY);
+            if (compatProp != null) {
+                if (properties == null) {
+                    properties = new Properties();
+                }
+                // if user does not specify the compatibility flag 
+                // explictly in this deployment, set it to the old value
+                if (properties.getProperty(DeploymentProperties.COMPATIBILITY) == null) {
+                    properties.setProperty(DeploymentProperties.COMPATIBILITY, compatProp);
+                }
+            }
         }
     }
 

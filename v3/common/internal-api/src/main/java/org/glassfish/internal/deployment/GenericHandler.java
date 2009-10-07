@@ -4,6 +4,8 @@ import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.annotations.Inject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +23,10 @@ import com.sun.enterprise.util.io.FileUtils;
  * @author Jerome Dochez
  */
 public abstract class GenericHandler implements ArchiveHandler {
+
+    @Inject
+    protected Habitat habitat;
+
     /**
      * Prepares the jar file to a format the ApplicationContainer is
      * expecting. This could be just a pure unzipping of the jar or
@@ -70,10 +76,25 @@ public abstract class GenericHandler implements ArchiveHandler {
      * way of deriving the default application name.
      *
      * @param archive the archive for which the default name is needed
+     * @param context deployment context
      * @return the default application name for the specified archive
      */
-    public String getDefaultApplicationName(ReadableArchive archive) {
-        String appName = archive.getName();
+    public String getDefaultApplicationName(ReadableArchive archive, 
+        DeploymentContext context) {
+        // first try to get the name from ApplicationNameProvider if 
+        // we can find an implementation of this service
+        ApplicationNameProvider nameProvider = habitat.getComponent(ApplicationNameProvider.class);
+
+        String appName = null;
+        if (nameProvider != null) {
+            appName = nameProvider.getNameFor(archive, context);
+            if (appName != null) {
+                return appName;
+            }
+        }
+
+        // now try to get the default
+        appName = archive.getName();
         int lastDot = appName.lastIndexOf('.');
         if (lastDot != -1) {
             if (appName.substring(lastDot).equalsIgnoreCase("." + getArchiveType())) {
@@ -83,8 +104,8 @@ public abstract class GenericHandler implements ArchiveHandler {
         return appName;
     }
 
-    public String getDefaultApplicationName(ReadableArchive archive, DeploymentContext context) {
-        return getDefaultApplicationName(archive);
+    public String getDefaultApplicationName(ReadableArchive archive) {
+        return getDefaultApplicationName(archive, null);
     }
 
     /**

@@ -1,9 +1,8 @@
 /*
- * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -20,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,45 +33,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.internal.data;
+package org.glassfish.internal.deployment;
 
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.DeploymentContext;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+@Contract
+public interface ApplicationNameProvider {
 
-/**
- * Registry for deployed Applications
- *
- * TODO : dochez
- * this class needs to go, I think we should use the configured tree (applications)
- * to store this list. This could be achieve once hk2 configured support Transient
- * objects attachment.
- */
-@Service
-@Scoped(Singleton.class)
-public class ApplicationRegistry {
-
-    private Map<String, ApplicationInfo> apps = new HashMap<String, ApplicationInfo>();
-
-    public synchronized void add(String name, ApplicationInfo info) {
-        apps.put(name, info);
-    }
-
-    public ApplicationInfo get(String name) {
-        return apps.get(name);
-    }
-
-    public synchronized void remove(String name) {
-
-        apps.remove(name);
-    }
-
-    public Set<String> getAllApplicationNames() {
-        return apps.keySet();
-    }
-
+    /**
+     * return the name for the given application
+     */
+    public String getNameFor(ReadableArchive archive, 
+        DeploymentContext context);
 }

@@ -32,6 +32,7 @@ import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.config.serverbeans.DasConfig;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.ContractProvider;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -64,6 +65,9 @@ public class ApplicationFactory implements ContractProvider {
 
     @Inject
     ArchivistFactory archivistFactory;
+
+    @Inject
+    DasConfig dasConfig;
 
     protected static final Logger logger =
             DOLUtils.getDefaultLogger();
@@ -176,9 +180,55 @@ public class ApplicationFactory implements ContractProvider {
         return application;
 
     }
+
+    /**
+     * This method creates an Application object from reading the 
+     * standard deployment descriptor.
+     * @param archive the archive for the application
+     */
+    public Application createApplicationFromStandardDD(
+        ReadableArchive archive) throws IOException, SAXParseException {
+        Archivist archivist = archivistFactory.getArchivist(archive, 
+            null);
+        String xmlValidationLevel = dasConfig.getDeployXmlValidation();
+        archivist.setXMLValidationLevel(xmlValidationLevel);
+        if (xmlValidationLevel.equals("none")) {
+            archivist.setXMLValidation(false);
+        }
+        RootDeploymentDescriptor desc = archivist.readStandardDeploymentDescriptor(archive);
+        Application application = null;
+        if (desc instanceof Application) {
+            application = (Application)desc;
+        } else if (desc instanceof BundleDescriptor) {
+            BundleDescriptor aBundle = (BundleDescriptor)desc;
+            ModuleDescriptor newModule = archivist.createModuleDescriptor(aBundle);
+            newModule.setArchiveUri(archive.getURI().getSchemeSpecificPart());
+            String moduleName = newModule.getModuleName();
+            application = Application.createApplication(habitat, moduleName, 
+                newModule);
+        }
+        return application;
+    }
+
+     
+    /**
+     * This method populates the rest of the Application object from the
+     * previous standard deployment descriptor reading 
+     * @param archive the archive for the application
+     */
+    public Application openWith(Application application, 
+        ReadableArchive archive, Archivist archivist)
+        throws IOException, SAXParseException {
+        archivist.openWith(application, archive);
+        // validate
+        if (application.isVirtual()) {
+            application.setClassLoader(archivist.getClassLoader());
+            application.visit((ApplicationVisitor) new ApplicationValidator());
+        }
+        return application;
+    }
+
     
-
-
     /**
      * Open a jar file with the default Archivists and return an application
      * object for the modules contained in the archive.

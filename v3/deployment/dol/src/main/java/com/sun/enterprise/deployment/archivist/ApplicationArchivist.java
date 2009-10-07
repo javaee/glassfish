@@ -224,6 +224,7 @@ public class ApplicationArchivist extends Archivist<Application>
 
     public Application openWith(Application application, ReadableArchive archive)
         throws IOException, SAXParseException {         
+        setManifest(archive.getManifest());
 
         setDescriptor(application);
 

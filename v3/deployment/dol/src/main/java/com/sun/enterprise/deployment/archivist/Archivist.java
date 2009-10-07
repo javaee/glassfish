@@ -247,6 +247,27 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         return open(archive, archive, app);
     }
 
+    // fill in the rest of the application with an application object
+    // populated from previus reading of the standard deployment descriptor
+    public Application openWith(Application app, ReadableArchive archive)
+            throws IOException, SAXParseException {
+
+        setManifest(archive.getManifest());
+
+        // application archivist will override this method
+        if (app.isVirtual()) {
+            T descriptor = readRestDeploymentDescriptors((T)app.getStandaloneBundleDescriptor(), archive, archive, app);
+            if (descriptor != null) {
+                postOpen(descriptor, archive);
+            }
+            if (descriptor instanceof BundleDescriptor) {
+                ((BundleDescriptor)descriptor).setApplication(app);
+            }
+        }
+        return app;
+    }
+
+
     /**
      * Open a new archive file, read the XML descriptor and set the  constructed
      * DOL descriptor instance
@@ -349,7 +370,12 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
 
         ModuleDescriptor newModule = createModuleDescriptor(descriptor);
         newModule.setArchiveUri(contentArchive.getURI().getSchemeSpecificPart());
+        return readRestDeploymentDescriptors(descriptor, descriptorArchive, contentArchive, app);
+    }
 
+    private T readRestDeploymentDescriptors (T descriptor, 
+        ReadableArchive descriptorArchive, ReadableArchive contentArchive, 
+        Application app) throws IOException, SAXParseException {
         Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions = new HashMap<ExtensionsArchivist, RootDeploymentDescriptor>();
         if (extensionsArchivists!=null) {
             for (ExtensionsArchivist extension : extensionsArchivists) {

@@ -239,6 +239,7 @@ public class Application extends BundleDescriptor
         if (name != null) {
             application.setDisplayName(name);
             application.setName(name);
+            application.setAppName(name);
         }
 
         // add the module to it

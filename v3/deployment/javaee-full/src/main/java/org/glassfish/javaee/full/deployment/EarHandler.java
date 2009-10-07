@@ -324,31 +324,4 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         return holder;
     }
 
-    /**
-     * Returns the default application name usable for identifying the archive.
-     * For ear case, it will first use the EE6 app-name defined in 
-     * application.xml if it exists.
-     *
-     * @param archive the archive for which the default name is needed
-     * @context deployment context
-     * @return the default application name for the specified archive
-     */
-    public String getDefaultApplicationName(ReadableArchive archive, 
-        DeploymentContext context) {
-        try {
-            if (archive.exists("META-INF/application.xml")) {
-                ApplicationHolder holder = 
-                    getApplicationHolder(archive, context, false);
-        
-                if (holder.app.getAppName() != null) {
-                    return holder.app.getAppName();
-                }
-            }
-        } catch (IOException ioe) {
-            _logger.log(Level.FINE, "Exception while getting default app name",
-                        ioe);
-            return super.getDefaultApplicationName(archive);
-        }
-        return super.getDefaultApplicationName(archive);
-    }
 } 

@@ -39,10 +39,17 @@ package org.glassfish.deployment.common;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import com.sun.enterprise.deployment.deploy.shared.Util;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.internal.data.ApplicationRegistry;
+import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Set;
+
 
 /** 
  * Utility methods for deployment. 
@@ -94,6 +101,13 @@ public class DeploymentUtils {
     public static String getDefaultEEName(String pathName) {
         if (pathName == null) {
             return null;
+        }
+        if (pathName.endsWith(File.separator)) {
+            pathName = pathName.substring(0, pathName.length() - 1);
+        }
+        if (pathName.lastIndexOf(File.separator) != -1) {
+            pathName = pathName.substring(pathName.lastIndexOf(
+                File.separator) + 1);
         }
         if (pathName.endsWith(".jar") || pathName.endsWith(".war")
             || pathName.endsWith(".rar") || pathName.endsWith(".ear")) {
@@ -202,5 +216,36 @@ public class DeploymentUtils {
     public static String getEmbeddedModulePath(String appRootPath,
         String moduleUri) {
         return appRootPath + File.separator + getRelativeEmbeddedModulePath(appRootPath, moduleUri) ;
+    }
+
+    // find if the application name is already in use, if yes
+    // assign another name
+    public static String resolveAppNameConflict(String appName, 
+        Habitat habitat) {
+        String originalAppName = appName;
+        ApplicationRegistry appRegistry = habitat.getComponent(
+            ApplicationRegistry.class);
+        Set<String> allAppNames = appRegistry.getAllApplicationNames();
+        boolean needResolveConflict = true;
+        int appendix = 1;
+        while (needResolveConflict) {
+            needResolveConflict = false;
+            for (String name : allAppNames) {
+                if (appName.equals(name)) {
+                    // found a conflict
+                    needResolveConflict = true;
+                    break;
+                }
+            }
+            if (needResolveConflict) {
+                appName = originalAppName + "_" + String.valueOf(appendix);
+                appendix++;
+                // once we assign a different name, we need re-check
+                // to see if this new cause any conflict
+                needResolveConflict = true;
+            }
+        }
+
+        return appName;
     }
 }

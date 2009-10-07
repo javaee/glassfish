@@ -174,14 +174,17 @@ public class ApplicationLifecycle implements Deployment {
 
     public ApplicationInfo deploy(Collection<Sniffer> sniffers, final ExtendedDeploymentContext context) {
 
+        events.send(new Event<DeploymentContext>(Deployment.DEPLOYMENT_START, context));
         final ActionReport report = context.getActionReport();
 
-        events.send(new Event<DeploymentContext>(Deployment.DEPLOYMENT_START, context));
-        
         final DeployCommandParameters commandParams = context.getCommandParameters(DeployCommandParameters.class);
 
+        final String appName = commandParams.name();
+        
         ProgressTracker tracker = new ProgressTracker() {
             public void actOn(Logger logger) {
+                appRegistry.remove(appName);
+
                 for (EngineRef module : get("started", EngineRef.class)) {
                     module.stop(context);
                 }
@@ -243,7 +246,6 @@ public class ApplicationLifecycle implements Deployment {
                     return null;
                 }
 
-                final String appName = commandParams.name();
 
                 // create a temporary application info to hold metadata
                 // so the metadata could be accessed at classloader 
@@ -1012,14 +1014,10 @@ public class ApplicationLifecycle implements Deployment {
 
 
 
-        // add the default EE6 name to the property list to store this 
-        // info in domain.xml
-        // this is needed as for the scenario where the user specifies 
-        // --name option explicitly, the EE6 app name will be different
-        // from the application's registration name and we need a way
-        // to retrieve the EE6 app name for server restart code path
+        // this is needed for autoundeploy to find the application 
+        // with the archive name
         File sourceFile = new File(archive.getURI().getSchemeSpecificPart());
-        initial.getAppProps().put("default-EE6-app-name", 
+        initial.getAppProps().put(ServerTags.DEFAULT_APP_NAME, 
             DeploymentUtils.getDefaultEEName(sourceFile.getName()));   
 
         if (!(sourceFile.isDirectory())) {

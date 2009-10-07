@@ -12,7 +12,7 @@ import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.deployment.ApplicationNameProvider;
 import org.xml.sax.SAXParseException;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -31,12 +31,16 @@ import java.util.Properties;
 import java.util.Collection;
 import java.io.IOException;
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  * ApplicationMetada
  */
 @Service
-public class DolProvider implements ApplicationMetaDataProvider<Application> {
+public class DolProvider implements ApplicationMetaDataProvider<Application>, 
+        ApplicationNameProvider {
 
     @Inject
     ArchivistFactory archivistFactory;
@@ -58,9 +62,6 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
 
     @Inject
     DasConfig dasConfig;
-
-    @Inject
-    public ApplicationRegistry appRegistry;
 
     private static String WRITEOUT_XML = System.getProperty(
         "writeout.xml");
@@ -94,38 +95,34 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
         ApplicationHolder holder = dc.getModuleMetaData(ApplicationHolder.class);
         Application application=null;
         if (holder!=null) {
-            // this is the ear case
-
             application = holder.app;
 
-            // finish the job
-            ApplicationArchivist appArchivist = 
-                ApplicationArchivist.class.cast(archivist);
-            appArchivist.setClassLoader(cl);
+            application.setAppName(name);
 
-            appArchivist.setManifest(sourceArchive.getManifest());
-
-            setAppName(application, dc, name);
-            
             try {
-                appArchivist.openWith(application, sourceArchive);
+                applicationFactory.openWith(application, sourceArchive, 
+                    archivist);
             } catch(SAXParseException e) {
                 throw new IOException(e);
             }
         }
-        if (application==null) {
+        else {
+            // for case where user specified --name
+            // and it's a standalone module
             try {
                 application = applicationFactory.openArchive(
-                        name, archivist, sourceArchive, true);
-                setAppName(application, dc, name);
+                    name, archivist, sourceArchive, true);
+
+                application.setAppName(name);
+
+                ModuleDescriptor md = application.getStandaloneBundleDescriptor().getModuleDescriptor();
+                md.setModuleName(name);
             } catch(SAXParseException e) {
                 throw new IOException(e);
             }
         }
 
-        resolveAppNameConflict(application);
-
-        application.setRegistrationName(name);
+        application.setRegistrationName(application.getAppName());
 
         // write out xml files if needed
         if (Boolean.valueOf(WRITEOUT_XML)) {
@@ -145,60 +142,31 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
 
     }
 
-    private void setAppName(Application application, DeploymentContext dc, String name) {
-        // for standalone module, set the application name as the module name
-        if (application.isVirtual()) {
-            ModuleDescriptor md = application.getStandaloneBundleDescriptor(
-                ).getModuleDescriptor();
-            application.setAppName(md.getModuleName());
-            return;
-        }
-
-        // if the app-name is not defined in the 
-        // application.xml/sun-application.xml
-        // use the default name
-        if (application.getAppName() == null) {
-            // This is needed as for the scenario where the user specifies
-            // --name option explicitly, the EE6 app name might be different
-            // from the application's registration name and we need a way
-            // to retrieve the EE6 app name for server restart code path
-            String defaultEE6AppName =
-                dc.getAppProps().getProperty("default-EE6-app-name");
-            if (defaultEE6AppName != null) {
-                application.setAppName(defaultEE6AppName);
-            }  else {
-                application.setAppName(name);
-            }
-        }
-    }
-
-    // find if the application name is already in use, if yes
-    // assign another name
-    private void resolveAppNameConflict(Application application) {
-        String appName = application.getAppName();
-        Collection<ApplicationInfo> allApplications = 
-            appRegistry.getAllApplicationInfos();    
-        boolean needResolveConflict = true;
-        int appendix = 1;
-        while (needResolveConflict) {
-            needResolveConflict = false;
-            for (ApplicationInfo appInfo : allApplications) {
-                Application app = appInfo.getMetaData(Application.class);
-                if (appName.equals(app.getAppName())) {
-                    // found a conflict 
-                    needResolveConflict = true;
-                    break;
+    /**
+     * return the name for the given application
+     */
+    public String getNameFor(ReadableArchive archive, 
+        DeploymentContext context) {
+        Application application = null;
+        try {
+            // for these cases, the standard DD could contain the application
+            // name for ear and module name for standalone module
+            if (archive.exists("META-INF/application.xml") || 
+                archive.exists("WEB-INF/web.xml") ||
+                archive.exists("META-INF/ejb-jar.xml") || 
+                archive.exists("META-INF/ejb-jar.xml")) {
+                application = applicationFactory.createApplicationFromStandardDD(archive);
+                ApplicationHolder holder = new ApplicationHolder(application);
+                if (context != null) {
+                    context.addModuleMetaData(holder);
                 }
+                
+                return application.getAppName();
             }
-            if (needResolveConflict) {
-                appName = appName + "_" + String.valueOf(appendix); 
-                appendix++;
-                // once we assign a different name, we need re-check
-                // to see if this new cause any conflict
-                needResolveConflict = true;
-            }
+        } catch (Exception e) {
+            Logger.getAnonymousLogger().log(Level.WARNING, "Error occurred", e);
         }
-        application.setAppName(appName);
+        return null;
     }
 
     protected void handleDeploymentPlan(File deploymentPlan,

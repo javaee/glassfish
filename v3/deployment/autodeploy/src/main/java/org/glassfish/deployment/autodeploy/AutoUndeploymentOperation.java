@@ -111,13 +111,11 @@ public class AutoUndeploymentOperation extends AutoOperation {
 
         // we need to find the application registration name
         // which is not always the same as archive name
-        // we do this by matching up the archive name with the 
-        // default-EE6-app-name property in domain.xml
         String appName = archiveName;
         List<Application> applications = apps.getApplications();
         for (Application app : applications) {
             if (app.getDeployProperties().getProperty
-                ("default-EE6-app-name").equals(archiveName)) {
+                (DeploymentProperties.DEFAULT_APP_NAME).equals(archiveName)) {
                 appName = app.getName();
             }
         }

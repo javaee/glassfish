@@ -676,6 +676,7 @@ public class ServerTags  {
     //static public final String ENABLED = "enabled";
     public static final String IS_LIFECYCLE = "isLifecycle";
     // Tags for Element j2ee-application
+    public static final String DEFAULT_APP_NAME = "defaultAppName";
     public static final String IS_COMPOSITE = "isComposite";
     public static final String APP_CONFIG = "appConfig";
     static public final String J2EE_APPLICATION = "j2ee-application";
