@@ -442,13 +442,16 @@ public class EjbContainerUtilImpl
                     try {
                         File rootScratchDir = env.getApplicationStubPath();
                         File appScratchDir = new File(rootScratchDir, appName);
-                        if (appScratchDir.createNewFile() && !isUpgrade()) {
+                        String resourceName = getTimerResource();
+                        if (appScratchDir.createNewFile() && !isUpgrade(resourceName)) {
                             params.origin = OpsParams.Origin.deploy;
                         } else {
                             params.origin = OpsParams.Origin.load;
                         }
 
-                        ExtendedDeploymentContext dc = deployment.getBuilder(_logger, params, report).source(app).build();
+                        ExtendedDeploymentContext dc = deployment.getBuilder(
+                                _logger, params, report).source(app).build();
+                        dc.addTransientAppMetaData("org.glassfish.datasource.jndi.name", resourceName);
                         deployment.deploy(dc);
 
                         if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
@@ -465,7 +468,7 @@ public class EjbContainerUtilImpl
         _ejbTimerServiceVerified = true;
     }
 
-    private boolean isUpgrade() {
+    private boolean isUpgrade(String resource) {
         boolean upgrade = false;
 
         EjbTimerService ejbt = getEjbContainer().getEjbTimerService();
@@ -496,14 +499,13 @@ public class EjbContainerUtilImpl
                 File dir = new File(root, "lib/install/databases/upgrade");
 
                 if (!dir.exists()) {
-                    _logger.log (Level.WARNING, "Cannot upgrade load EJBTimerService: " +
+                    _logger.log (Level.WARNING, "Cannot upgrade EJBTimerService: " +
                             "required directory is not available");
                 } else {
                     Java2DBProcessorHelper h = new Java2DBProcessorHelper(
                             EjbContainerUtil.TIMER_SERVICE_APP_NAME);
                     success = h.executeDDLStatement(
-                            dir.getCanonicalPath() + "/ejbtimer_upgrade_",
-                            EjbContainerUtil.TIMER_RESOURCE_JNDI);
+                            dir.getCanonicalPath() + "/ejbtimer_upgrade_", resource);
                     ConfigSupport.apply(new SingleConfigCode<Property>() {
                         public Object run(Property p) throws PropertyVetoException, TransactionFailure {
                             p.setValue("true");
@@ -521,5 +523,16 @@ public class EjbContainerUtilImpl
         }
 
         return upgrade;
+    }
+
+    private String getTimerResource() {
+        String resource = EjbContainerUtil.TIMER_RESOURCE_JNDI;
+        EjbTimerService ejbt = getEjbContainer().getEjbTimerService();
+        if (ejbt != null) {
+            if (ejbt.getTimerDatasource() != null) {
+                resource = ejbt.getTimerDatasource();
+            }
+        }
+        return resource;
     }
 }
