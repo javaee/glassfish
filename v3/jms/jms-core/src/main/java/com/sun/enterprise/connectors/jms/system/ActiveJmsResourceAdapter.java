@@ -1678,10 +1678,10 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
 
         //handling of MDB 1.3 runtime deployment descriptor
         //if no RA-mid is specified, assume it is a 1.3 DD
-        if (jndiName == null) { //something's wrong in DD
-            logger.log (Level.SEVERE, "Missing Destination JNDI Name");
+        if (jndiName == null || "".equals(jndiName)) { //something's wrong in DD
+            logger.log(Level.SEVERE, "Missing Destination JNDI Name");
         String msg = sm.getString("ajra.error_in_dd");
-            throw new RuntimeException(msg);
+            throw new ConnectorRuntimeException(msg);
         }
 
         String resourceAdapterMid = ConnectorRuntime.DEFAULT_JMS_ADAPTER;
