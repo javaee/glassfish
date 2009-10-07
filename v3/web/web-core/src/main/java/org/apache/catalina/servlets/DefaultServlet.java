@@ -1726,16 +1726,16 @@ public class DefaultServlet
      * processing is stopped
      */
     protected boolean checkIfModifiedSince(HttpServletRequest request,
-                                         HttpServletResponse response,
-                                         ResourceAttributes resourceAttributes)
+                                           HttpServletResponse response,
+                                           ResourceAttributes resourceAttributes)
         throws IOException {
         try {
             long headerValue = request.getDateHeader("If-Modified-Since");
             long lastModified = resourceAttributes.getLastModified();
             if (headerValue != -1) {
 
-                // If an If-None-Match header has been specified, if modified since
-                // is ignored.
+                // If an If-None-Match header has been specified,
+                // If-Modified-Since is ignored.
                 if ((request.getHeader("If-None-Match") == null)
                     && (lastModified < headerValue + 1000)) {
                     // The entity has not been modified since the date
@@ -1764,8 +1764,8 @@ public class DefaultServlet
      * processing is stopped
      */
     protected boolean checkIfNoneMatch(HttpServletRequest request,
-                                     HttpServletResponse response,
-                                     ResourceAttributes resourceAttributes)
+                                       HttpServletResponse response,
+                                       ResourceAttributes resourceAttributes)
         throws IOException {
 
         String eTag = resourceAttributes.getETag();
