@@ -255,7 +255,7 @@ public class WebBundleDescriptor extends BundleDescriptor
      */
     // if you add any references in the following method, 
     // then you may like to add them to setInjectionReferences method
-    protected void combineInjectionReferences(WebBundleDescriptor webBundleDescriptor) {
+    private void combineInjectionReferences(WebBundleDescriptor webBundleDescriptor) {
 
         for (EjbReference ejbRef: webBundleDescriptor.getEjbReferenceDescriptors()) {
             addEjbReferenceDescriptor((EjbReferenceDescriptor)ejbRef);
@@ -277,38 +277,10 @@ public class WebBundleDescriptor extends BundleDescriptor
                 webBundleDescriptor.getEntityManagerReferenceDescriptors()) {
             addEntityManagerReferenceDescriptor(emRef);
         }
-        // ok as EnvironmentProperty.equals() only compare name
-        getEnvironmentProperties().addAll(webBundleDescriptor.getEnvironmentProperties());
-    }
-
-    /**
-     * Note that this private API set the injection references to that of the
-     * given webBundleDescriptor. Note that it does not reset the references
-     * inside the reference descriptor.
-     * 
-     * @param webBundleDescriptor
-     */
-    protected void setInjectionReferences(WebBundleDescriptor webBundleDescriptor) {
-        getEjbReferenceDescriptors().clear();
-        getEjbReferenceDescriptors().addAll(webBundleDescriptor.getEjbReferenceDescriptors());
-
-        getResourceReferenceDescriptors().clear();
-        getResourceReferenceDescriptors().addAll(webBundleDescriptor.getResourceReferenceDescriptors());
-
-        getMessageDestinationReferenceDescriptors().clear();
-        getMessageDestinationReferenceDescriptors().addAll(webBundleDescriptor.getMessageDestinationReferenceDescriptors());
-
-        getServiceReferenceDescriptors().clear();
-        getServiceReferenceDescriptors().addAll(webBundleDescriptor.getServiceReferenceDescriptors());
-
-        getEntityManagerFactoryReferenceDescriptors().clear();
-        getEntityManagerFactoryReferenceDescriptors().addAll(webBundleDescriptor.getEntityManagerFactoryReferenceDescriptors());
-
-        getEntityManagerReferenceDescriptors().clear();
-        getEntityManagerReferenceDescriptors().addAll(webBundleDescriptor.getEntityManagerReferenceDescriptors());
-
-        getEnvironmentProperties().clear();
-        getEnvironmentProperties().addAll(webBundleDescriptor.getEnvironmentProperties());
+        
+        for (EnvironmentEntry envProp : webBundleDescriptor.getEnvironmentProperties()) {
+            addEnvironmentEntry(envProp);
+        }
     }
 
     public boolean isEmpty() {
@@ -1249,7 +1221,7 @@ public class WebBundleDescriptor extends BundleDescriptor
      * Adds this given environment property to my list.
      */
     public void addEnvironmentEntry(EnvironmentEntry environmentEntry) {
-        getEnvironmentEntrySet().add(environmentEntry);
+        addEnvironmentProperty((EnvironmentProperty)environmentEntry);
     }
 
     /**
@@ -1279,7 +1251,19 @@ public class WebBundleDescriptor extends BundleDescriptor
      * Adds this given environment property to my list.
      */
     public void addEnvironmentProperty(EnvironmentProperty environmentProperty) {
-        getEnvironmentEntrySet().add(environmentProperty);
+        String name= environmentProperty.getName();
+        EnvironmentEntry envEntry = null;
+        for (EnvironmentEntry envE : getEnvironmentEntrySet()) {
+            if (name.equals(envE.getName())) {
+                envEntry = envE;
+                break;
+            }
+        }
+        if (envEntry != null && envEntry instanceof EnvironmentProperty) {
+            ((EnvironmentProperty)envEntry).merge(environmentProperty);
+        } else {
+            getEnvironmentEntrySet().add(environmentProperty);
+        }
     }
 
     /**

@@ -129,6 +129,39 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
     ** Returns the String value of this environment property 
     */
     
+    void merge(EnvironmentProperty otherEnv) {
+        if (!getName().equals(otherEnv.getName())) {
+            throw new IllegalArgumentException(localStrings.getLocalString(
+                    "enterprise.deployment.exceptionmergewithdifferentname",
+                    "Cannot merge property with different names: [{0}], [{1}]",
+                    new Object[] {getName(), otherEnv.getName()}));
+        }
+        if (value == null && otherEnv.value != null) {
+            setValue(otherEnv.value);
+        }
+        if (valueObject == null && otherEnv.valueObject != null) {
+            valueObject = otherEnv.valueObject;
+        }
+        if (type == null && otherEnv.type != null) {
+            setType(otherEnv.type);
+        }
+        if (mappedName == null && otherEnv.mappedName != null) {
+            setMappedName(otherEnv.mappedName);
+        }
+        if (lookupName == null && otherEnv.lookupName != null) {
+            setLookupName(otherEnv.lookupName);
+        }
+        if (getDescription() == null || getDescription().length() == 0) {
+            setDescription(otherEnv.getDescription());
+        }
+
+        if (otherEnv.isInjectable()) {
+            for (InjectionTarget injTarget: otherEnv.getInjectionTargets()) {
+                addInjectionTarget(injTarget);
+            }
+        }
+    }
+
     public String getValue() {
 	if (this.value == null) {
 	    this.value = "";
@@ -170,7 +203,7 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
 	    } catch (Throwable t) {
 		if (this.isBoundsChecking()) {
 		    throw new IllegalArgumentException(localStrings.getLocalString(
-										   "enterprise.deployment..exceptiontypenotallowedpropertytype",
+										   "enterprise.deployment.exceptiontypenotallowedpropertytype",
 										   "{0} is not an allowed property value type", new Object[] {type}));
 		} else {
 		    return;
@@ -289,7 +322,7 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
     }
 
     public boolean hasLookupName() {
-        return (lookupName != null);
+        return (lookupName != null && lookupName.length() > 0);
     }
     
      /** 

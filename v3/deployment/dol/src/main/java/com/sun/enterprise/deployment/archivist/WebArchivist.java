@@ -291,16 +291,12 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
     }
 
     @Override
-    protected void postStandardDDsRead(WebBundleDescriptor descriptor,
+    protected void postAnnotationProcess(WebBundleDescriptor descriptor,
             ReadableArchive archive) throws IOException {
-        super.postStandardDDsRead(descriptor, archive);
+        super.postAnnotationProcess(descriptor, archive);
 
         // read web-fragment.xml
         List<WebFragmentDescriptor> wfList = readStandardFragments(descriptor, archive);
-
-        // combine naming environment into each WebFragmentDescriptor
-        // this is need for annotation processing of @Resource
-        WebFragmentDescriptor.repopulateAllInjectionReferences(descriptor, wfList);
 
         // process annotations in web-fragment
         // extension annotation processing will be done in top level
@@ -324,12 +320,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
         if (mergedWebFragment != null) {
             descriptor.addWebBundleDescriptor(mergedWebFragment);
         }
-    }
 
-    @Override
-    protected void postAnnotationProcess(WebBundleDescriptor descriptor,
-            ReadableArchive archive) throws IOException {
-        super.postAnnotationProcess(descriptor, archive);
         // apply default from default-web.xml to web.xml
         WebBundleDescriptor defaultWebBundleDescriptor = getPlainDefaultWebXmlBundleDescriptor();
         if (defaultWebBundleDescriptor != null) {

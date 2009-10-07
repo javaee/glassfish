@@ -426,9 +426,9 @@ public class ResourceHandler extends AbstractResourceHandler {
             // value and no lookup(), it's treated as if the declaration doesn't exist.
             // A common case is that the @Resource is applied to a field
             // with a default value which was not overridden by the deployer.
-            if ((envEntry != null) && (envEntry.hasAValue()) ) {
+            if (envEntry != null) {
                 envEntries.add(envEntry);
-            } else if( (envEntry == null) && (annotation.lookup().length() > 0) ) {
+            } else {
                 envEntry = new EnvironmentProperty();
                 envEntries.add(envEntry);
                 rcContexts[i].addEnvEntryDescriptor(envEntry);
