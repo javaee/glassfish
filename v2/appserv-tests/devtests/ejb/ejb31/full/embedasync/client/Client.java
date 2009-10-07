@@ -85,7 +85,7 @@ public class Client {
 	    sfNoTimeout.hello();
 
 	    System.out.println("Sleeping to wait for sf bean to be removed ...");
-	    Thread.sleep(3000);
+	    Thread.sleep(7000);
 	    System.out.println("Waking up , checking sf bean existence");
 
 	    try {
