@@ -64,7 +64,7 @@ public class EJBTimerServiceUpgrade implements PostConstruct, ConfigurationUpgra
     private EjbTimerService ts;
 
     public void postConstruct() {
-        if (ts != null && System.getProperty("EJBTimerServiceUpgrade") != null) {
+        if (ts != null) {
             String value = ts.getMinimumDeliveryIntervalInMillis();
             if (value == null || "7000".equals(value)) {
                 value = "" + EjbContainerUtil.MINIMUM_TIMER_DELIVERY_INTERVAL;
