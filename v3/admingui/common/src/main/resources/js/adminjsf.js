@@ -2044,7 +2044,7 @@ admingui.ajax = {
 
     processElement : function (context, node, queueScripts) {
 	var recurse = true;
-        if (node instanceof HTMLAnchorElement) {
+        if (node.nodeName == 'A') {
             if (!admingui.ajax._isTreeNodeControl(node) && (node.target == '')) { //  && (typeof node.onclick != 'function'))
                 var shouldReplace = true;
                 if ((typeof node.onclick == 'function') && (node.id.indexOf("treeForm:tree") == -1)) {
@@ -2065,7 +2065,7 @@ admingui.ajax = {
                     };
                 }
             }
-        } else if (node instanceof HTMLFormElement) {
+        } else if (node.nodeName == 'FORM') {
             admingui.util.log("***** form action:  " + node.action);
             if (node.target == '') {
                 node.onsubmit = function () {
@@ -2073,9 +2073,9 @@ admingui.ajax = {
                     return false;
                 };
             }
-        } else  if (node instanceof HTMLTitleElement) {
+        } else  if (node.nodeName == 'TITLE') {
             document.title = node.text;
-        } else if (node instanceof HTMLScriptElement) {
+        } else if (node.nodeName == 'SCRIPT') {
 	    recurse = false;  // don't walk scripts
 	    if (queueScripts) {
 		// Queue it...
