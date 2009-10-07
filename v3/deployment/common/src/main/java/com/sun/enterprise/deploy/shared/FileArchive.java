@@ -173,7 +173,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
         List massagedNames = new ArrayList();
 	while (embeddedArchives.hasMoreElements()) {
 		String subArchiveName  = (String) embeddedArchives.nextElement();
-		massagedNames.add(FileUtils.makeFriendlyFilename(subArchiveName));
+		massagedNames.add(FileUtils.makeFriendlyFilenameExtension(subArchiveName));
 	}        
      	getListOfFiles(archive, nameList, massagedNames);
      	return nameList.elements();
@@ -248,14 +248,14 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
        } else {
            // first we try to see if a sub directory with the right file
            // name exist
-           subDir = new File(archive, FileUtils.makeFriendlyFilename(name));
+           subDir = new File(archive, FileUtils.makeFriendlyFilenameExtension(name));
        	   if (!subDir.exists()) {       	  
                // now we try to open a sub jar file...
                subDir = new File(archive, name);
                if (!subDir.exists()) {
                    // ok, nothing worked, reassing the name to the 
                    // sub directory one
-                  subDir = new File(archive, FileUtils.makeFriendlyFilename(name));
+                  subDir = new File(archive, FileUtils.makeFriendlyFilenameExtension(name));
               }                  
        	   }
        }

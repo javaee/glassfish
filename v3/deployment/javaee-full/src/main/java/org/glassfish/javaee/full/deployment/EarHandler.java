@@ -141,7 +141,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                         moduleUri, subHandler);
                     if (subHandler!=null) {
                         subTarget = target.createSubArchive(
-                            FileUtils.makeFriendlyFilename(moduleUri));
+                            FileUtils.makeFriendlyFilenameExtension(moduleUri));
                         subHandler.expand(subArchive, subTarget, context);
 // Keep the original submodule file because the app client deployer needs it.
 /*

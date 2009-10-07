@@ -240,6 +240,30 @@ public class FileUtils {
 
     ///////////////////////////////////////////////////////////////////////////
 
+    public static String makeFriendlyFilenameExtension(String filename) {
+        if (filename == null) {
+            return null;
+        }
+
+        filename = makeLegalNoBlankFileName(filename);
+
+        String extension = "";
+        if (filename.endsWith(".ear")) {
+            filename = filename.substring(0, filename.indexOf(".ear"));
+            extension = "_ear";
+        } else if (filename.endsWith(".war")) {
+            filename = filename.substring(0, filename.indexOf(".war"));
+            extension = "_war";
+        } else if (filename.endsWith(".jar")) {
+            filename = filename.substring(0, filename.indexOf(".jar"));
+            extension = "_jar";
+        } else if (filename.endsWith(".rar")) {
+            filename = filename.substring(0, filename.indexOf(".rar"));
+            extension = "_rar";
+        }
+        return filename + extension;
+    }
+
     public static String revertFriendlyFilenameExtension(String filename) {
         if (filename == null ||
                 !(filename.endsWith("_ear") || filename.endsWith("_war") ||
