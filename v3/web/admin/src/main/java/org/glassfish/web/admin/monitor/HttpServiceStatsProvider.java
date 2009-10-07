@@ -58,6 +58,10 @@ import org.jvnet.hk2.component.PostConstruct;
 @ManagedObject
 @Description( "Web Container HTTP Service Statistics" )
 public class HttpServiceStatsProvider implements PostConstruct {
+
+    private static final Logger logger = Logger.getLogger(
+        HttpServiceStatsProvider.class.getName());
+
     //Provides the longest response time for a request - not a cumulative value, 
     //but the largest response time from among the response times.
     //private Counter maxTime = CounterFactory.createCount();
@@ -140,7 +144,7 @@ public class HttpServiceStatsProvider implements PostConstruct {
 
     private TimeStatisticImpl requestProcessTime = new TimeStatisticImpl(0L, 0L, 0L, 0L,
             "", "", "", System.currentTimeMillis(), -1L);
-    private Logger logger = Logger.getLogger(HttpServiceStatsProvider.class.getName());
+
     private String virtualServerName = null;
 
     private ThreadLocal<TimeStatData> individualData = new ThreadLocal<TimeStatData> (){
