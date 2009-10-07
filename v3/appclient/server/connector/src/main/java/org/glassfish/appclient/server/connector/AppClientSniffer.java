@@ -107,7 +107,7 @@ public class AppClientSniffer extends GenericSniffer implements Sniffer {
      *
      */
     public String[] getIncompatibleSnifferTypes() {
-        return new String[] {"connector", "ejb"};
+        return new String[] {"ejb"};
     }
 
     private static final List<String> deploymentConfigurationPaths =

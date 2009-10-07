@@ -142,7 +142,7 @@ public class ConnectorSniffer extends GenericSniffer implements Sniffer {
      *
      */
     public String[] getIncompatibleSnifferTypes() {
-        return new String[] {"ejb", "appclient", "web"};
+        return new String[] {"ejb", "web"};
     }
 
     private static final List<String> deploymentConfigurationPaths =
