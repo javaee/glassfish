@@ -120,28 +120,36 @@ public class Util {
     
     public static File writeConfigFileToTempDir(String fileName) throws IOException {
         File filePath = new File(fileName);
+
         if (filePath.exists()) {
             //the string provided is a filepath, so return
             return filePath;
         }
-        String userHome = System.getProperty("user.home");
-  
-        String embeddedServerName = getCurrentEmbeddedServerName();
-        File tempDir = new File(userHome + File.separator + ".glassfishv3-"+embeddedServerName+File.separator + "config");
-        boolean mkDirSuccess = true;
-        if (!tempDir.exists()) {
-            mkDirSuccess = tempDir.mkdirs();
-        }
-        
-        File localFile = new File(tempDir.getAbsoluteFile()+File.separator + fileName);
-        
-        if(localFile.exists()) {
-            //file already written to tmp dir, so return
-            return localFile;
-        }
-     
-        if (mkDirSuccess && !localFile.exists()) {
+        File localFile = null;
+        //Parent directories until the fileName exist, so create the file that has been provided
+        if (filePath.getParentFile() != null && filePath.getParentFile().exists()) {
+            localFile = filePath;
             localFile.createNewFile();
+
+        } else {
+            /*
+             * File parent directory does not exist - so create parent directory as user.home/.glassfish-{embedded}/config
+             * */
+            String userHome = System.getProperty("user.home");
+
+            String embeddedServerName = getCurrentEmbeddedServerName();
+            File tempDir = new File(userHome + File.separator + ".glassfishv3-"+embeddedServerName+File.separator + "config");
+            boolean mkDirSuccess = true;
+            if (!tempDir.exists()) {
+                mkDirSuccess = tempDir.mkdirs();
+            }
+
+            localFile = new File(tempDir.getAbsolutePath()+File.separator + fileName);
+
+
+            if (mkDirSuccess && !localFile.exists()) {
+                localFile.createNewFile();
+            }
         }
         FileOutputStream oStream = new FileOutputStream(localFile);
         InputStream iStream = Util.class.getResourceAsStream("/config/" + fileName);
