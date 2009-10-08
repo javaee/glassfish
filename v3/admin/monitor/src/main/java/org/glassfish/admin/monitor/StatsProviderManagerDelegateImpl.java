@@ -19,6 +19,7 @@ import javax.management.ObjectName;
 import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
+import org.glassfish.gmbal.ManagedObject;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import org.glassfish.gmbal.ManagedAttribute;
@@ -441,14 +442,15 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         if (spre.getResetMethod() == null) {
             String parentNodePath = spre.getParentTreeNodePath();
             List<String> childNodeNames = spre.getChildTreeNodeNames();
-            resetChildNodeStatistics(parentNodePath, childNodeNames);
+            String statsProviderName = spre.getStatsProvider().getClass().getName();
+            resetChildNodeStatistics(parentNodePath, childNodeNames, statsProviderName);
         } else {
             invokeStatsProviderResetMethod(spre.getResetMethod(), spre.getStatsProvider());
         }
 
     }
 
-    private void resetChildNodeStatistics(String parentNodePath, List<String> childNodeNames) {
+    private void resetChildNodeStatistics(String parentNodePath, List<String> childNodeNames, String statsProviderName) {
         TreeNode rootNode = mrdr.get("server");
         if (rootNode != null) {
             List<TreeNode> nodeList = rootNode.getNodes(parentNodePath, false, true);
@@ -460,6 +462,11 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
                         invokeStatisticResetMethod(childNode.getValue());
                     }
                 }
+            } else {
+                logger.log(Level.WARNING,
+                        localStrings.getLocalString("nodeNotFound",
+                        "Cannot find node " + parentNodePath + " for statsProvider " + statsProviderName,
+                        parentNodePath, statsProviderName));
             }
         }
     }
@@ -598,26 +605,44 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
 
     private ManagedObjectManager registerGmbal(Object statsProvider, String mbeanName) {
         ManagedObjectManager mom = null;
-        try {
-            // 1 mom per statsProvider
-            mom = ManagedObjectManagerFactory.createFederated(MONITORING_SERVER);
-            if (mom != null) {
-                mom.stripPackagePrefix();
-                if (mbeanName != null && !mbeanName.isEmpty()) {
-                    if (mbeanName.indexOf('\\') > 0) {
-                        mbeanName = StringUtils.removeChar(mbeanName, '\\');
+        if (isManagedObject(statsProvider)) {
+            try {
+                // 1 mom per statsProvider
+                mom = ManagedObjectManagerFactory.createFederated(MONITORING_SERVER);
+                if (mom != null) {
+                    mom.stripPackagePrefix();
+                    if (mbeanName != null && !mbeanName.isEmpty()) {
+                        if (mbeanName.indexOf('\\') > 0) {
+                            mbeanName = StringUtils.removeChar(mbeanName, '\\');
+                        }
+                        mom.createRoot(statsProvider, mbeanName);
+                    } else {
+                        mom.createRoot(statsProvider);
                     }
-                    mom.createRoot(statsProvider, mbeanName);
-                } else {
-                    mom.createRoot(statsProvider);
                 }
+            //To register hierarchy in mom specify parent ManagedObject, and the ManagedObject itself
+            //DynamicMBean mbean = (DynamicMBean)mom.register(parent, obj);
+            } catch (Exception e) {
+                //createRoot failed - need to return a null mom so we know not to unregister an mbean that does not exist
+                mom = null;
+                Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, "Gmbal registration failed", e);
             }
-        //To register hierarchy in mom specify parent ManagedObject, and the ManagedObject itself
-        //DynamicMBean mbean = (DynamicMBean)mom.register(parent, obj);
-        } catch (Exception e) {
-            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, "Gmbal registration failed", e);
+        } else {
+            String spName = statsProvider.getClass().getName();
+            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.INFO, 
+                    localStrings.getLocalString("notaManagedObject", spName +
+                    " is not a ManagedObject and will not be registered with Gmbal to create an MBean", spName));
         }
         return mom;
+    }
+
+    private boolean isManagedObject(Object statsProvider) {
+        boolean isManagedObject = true;
+        ManagedObject mo = statsProvider.getClass().getAnnotation(ManagedObject.class);
+        if (mo == null) {
+            isManagedObject = false;
+        }
+        return isManagedObject;
     }
 
     private void unregisterGmbal(StatsProviderRegistryElement spre) {
