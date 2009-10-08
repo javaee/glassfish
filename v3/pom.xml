@@ -145,7 +145,7 @@
         <!-- osgi version string must start with a number. Manually mapping above schema2beans.version to osgi.version here -->
         <schema2beans.osgi.version>5.5</schema2beans.osgi.version>
         <antlr.version>2.7.6</antlr.version>
-        <mq.version>4.4.1-002</mq.version>
+        <mq.version>4.4.1-003</mq.version>
         <javadb.version>10.5.3.0</javadb.version>
         <jaxr.version>JAXR_RA_AS90_20060317</jaxr.version>
         <webbeans.version>1.0.0.PREVIEW4.SP1</webbeans.version>
@@ -560,10 +560,6 @@
                     </goals>
                     <configuration>
                         <rules>
-                            <requireMavenVersion>
-                                <version>[2.0.9,)</version>
-                                <message>You need maven 2.0.9!</message>
-                            </requireMavenVersion>
                             <requireJavaVersion>
                                 <version>[1.6.0-4,)</version>
                                 <message>You need JDK 1.6.0_04 and above!</message>
