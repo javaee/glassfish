@@ -410,6 +410,38 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
 	if (ejbRef.getEjbDescriptor()!=null) 
             return;
 
+        // let's try to derive the ejb-ref-type first it is not defined
+        if (ejbRef.getType() == null) {
+            // if it's EJB30 (no home/local home), it must be session
+            if (ejbRef.isEJB30ClientView()) {
+                ejbRef.setType("Session");
+            } else {
+                // if home interface has findByPrimaryKey method, 
+                // it's entity, otherwise it's session
+                String homeIntf = ejbRef.getEjbHomeInterface();
+                BundleDescriptor referringJar = ejbRef.getReferringBundleDescriptor();
+                if (referringJar == null) {
+                    referringJar = getBundleDescriptor();
+                }           
+                ClassLoader classLoader = referringJar.getClassLoader();
+
+                Class clazz = null;
+                try {
+                    clazz = classLoader.loadClass(homeIntf);
+                    try {
+                        if (clazz.getMethod("findByPrimaryKey", 
+                            java.lang.String.class) != null) {
+                            ejbRef.setType("Entity");
+                        }
+                    } catch (NoSuchMethodException nme) {
+                        ejbRef.setType("Session");
+                    }
+                } catch(Exception e) {
+                    _logger.log(Level.FINE, "Could not load " + homeIntf, e);
+                }
+            }
+        }
+  
         //
         // NOTE : In the 3.0 local/remote business view, the local vs.
         // remote designation is not always detectable from the interface 
@@ -810,14 +842,8 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
             ejbRef.setJndiName(ejbReferee.getJndiName());
         }
 
-        if (type == null) { 
-            // ejb-ref type is now optional
-            // in that case, set the type
-            // note: the ejbRef.getType gets the type from
-            // its referencing ejb bundle descriptor
-            ejbRef.setType(ejbRef.getType());
-        } else if (!type.equals(ejbRef.getType())) {
-            // or if they don't match 
+        if (!type.equals(ejbRef.getType())) {
+            // if they don't match 
             // print a warning and reset the type in ejb ref
             DOLUtils.getDefaultLogger().log(Level.WARNING, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
             new Object[] {ejbRef.getName() , type});
