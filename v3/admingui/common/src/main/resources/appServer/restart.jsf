@@ -44,7 +44,6 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.common.restartRequired}" >
 <!define name="content">
 <sun:script url="/resource/common/js/adminjsf.js" />
-<sun:script url="/resource/common/js/restart.js" />
     <event>    
         <!beforeCreate setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");/>
     </event>

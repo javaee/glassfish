@@ -27,9 +27,14 @@ function submitAndDisable(button, msg, target) {
     button.value=msg;
     if (target) {
 	button.form.target = target;
+	if (target === "_top") {
+	    // In this case we want the non-ajax behavior
+	    button.form.submit();
+	    return false;
+	}
     }
     admingui.ajax.submitFormAjax(button.form);
-    return true; 
+    return false; 
 }
 
 
@@ -1772,10 +1777,12 @@ function synchronizeRestartRequired(currentRestartStatus, oldRestartStatus) {
 }
 
 function reloadHeaderFrame() {
+// FIXME: We no longer use frames
        parent.parent.frames["header"].location.reload();
 }
 
 function showLargeHeaderFrame(showLarge) {
+// FIXME: We no longer use frames
     if (showLarge == true) {
         parent.parent.document.getElementById('outerFrameset').setAttribute('rows', '94,*', 0);
     } else {
