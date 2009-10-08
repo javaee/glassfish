@@ -46,13 +46,16 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/virtualServerEdit.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/configuration/virtualServers.jsf");
+        
+        setPageSessionAttribute(key="selfPage"             value="#{request.contextPath}/web/configuration/virtualServerEdit.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="parentPage"           value="#{request.contextPath}/web/configuration/virtualServers.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
-        setPageSessionAttribute(key="childType" value="virtual-server");
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config]/http-service,type=virtual-server,name=#{pageSession.Name}");
+        setPageSessionAttribute(key="childType"            value="virtual-server");
+        setPageSessionAttribute(key="objectNameStr",       value="amx:pp=/domain/configs/config[server-config]/http-service,type=virtual-server,name=#{pageSession.Name}");
+
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
