@@ -114,6 +114,9 @@ final class InstallerThread extends Thread {
      * application.</p>
      */
     private void download() throws Exception {
+	if (AdminConsoleAdapter.isDirectoryDeploy()) {
+	    return;
+	}
         File warFile = getWarFile();
         if (warFile.exists()) {
             // Already downloaded
@@ -153,6 +156,9 @@ final class InstallerThread extends Thread {
      *
      */
     private void expand() throws Exception {
+	if (AdminConsoleAdapter.isDirectoryDeploy()) {
+	    return;
+	}
         File warFile = getWarFile();
         if (log.isLoggable(Level.FINE)) {
             log.log(Level.FINE, "Expanding the archive: "
@@ -281,6 +287,7 @@ final class InstallerThread extends Thread {
 
         // Load the Admin Console Application
         String sn = env.getInstanceName();
+// FIXME: An exception may not be thrown... check for errors!
         ApplicationRef ref = domain.getApplicationRefInServer(sn, AdminConsoleAdapter.ADMIN_APP_NAME);
         habitat.getComponent(ApplicationLoaderService.class).processApplication(config, ref, log);
 

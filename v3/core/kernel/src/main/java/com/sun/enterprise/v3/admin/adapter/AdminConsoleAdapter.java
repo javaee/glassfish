@@ -172,6 +172,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private static final String INSTALL_ROOT = "com.sun.aas.installRoot";
     static final String ADMIN_APP_NAME = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME;
 
+    // Flag set to true for directory deploy, false for war
+    private static final boolean directoryDeploy = true;
+
     /**
      * Constructor.
      */
@@ -760,6 +763,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
 
     private boolean redeployNeeded() {
+	if (isDirectoryDeploy()) {
+	    return false;
+	}
         //for first access after installation, deployedVersion will be "",  we don't want to do redeployment.
         //it will just go through install and loading.
         if (currentDeployedVersion == null || currentDeployedVersion.equals("")) {
@@ -774,12 +780,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         Version deployed = new Version(currentDeployedVersion);
         Version downloaded = new Version(downloadedVersion);
         int compare = deployed.compareTo(downloaded);
+
         //-1 if this version is less than downloaded, 0 if they are equal, 1 if this version is greater than downloaded
-        if (compare == -1) {
-            return true;
-        } else {
-            return false;
-	}
+	return (compare == -1);
     }
 
     private void writeAdminServiceProp(final String propName, final String propValue){
@@ -883,4 +886,14 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         }
         return true;
     }
+
+    /**
+     *	<p> This method returns true if the server only supports directory
+     *	    deployment of the admin console application.  false means that a
+     *	    .war file will be supplied which must be expanded.</p>
+     */
+    public static boolean isDirectoryDeploy() {
+	return directoryDeploy;
+    }
 }
+
