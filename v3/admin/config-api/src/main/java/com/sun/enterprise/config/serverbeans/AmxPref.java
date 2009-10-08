@@ -63,7 +63,7 @@ public interface AmxPref extends ConfigBeanProxy, Injectable, PropertyBag, Syste
     public void setValidationLevel(String level);
     
     /** Whether to unregister AMX MBeans not compliant to the AMX specification */
-    @Attribute(defaultValue="true", dataType=Boolean.class)
+    @Attribute(defaultValue="false", dataType=Boolean.class)
     public String getUnregisterNonCompliant();
     public void setUnregisterNonCompliant(String unregister);
     
