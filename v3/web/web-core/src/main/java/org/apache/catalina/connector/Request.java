@@ -3760,6 +3760,17 @@ public class Request
         errorDispatchAndComplete(null);
     }
 
+    /**
+     * Notifies this Request that the container-initiated dispatch
+     * during which ServletRequest#startAsync was called is about to
+     * return to the container
+     */
+    void onAfterService() {
+        if (asyncContext != null) {
+            asyncContext.setOkToConfigure(false);
+        }        
+    }
+
     void errorDispatchAndComplete(Throwable t) {
         /*
          * If no listeners, or none of the listeners called

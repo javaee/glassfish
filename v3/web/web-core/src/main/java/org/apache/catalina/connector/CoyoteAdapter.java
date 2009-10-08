@@ -141,7 +141,6 @@ public class CoyoteAdapter
      * @param connector CoyoteConnector that owns this processor
      */
     public CoyoteAdapter(Connector connector) {
-
         super();
         this.connector = connector;
         this.debug = connector.getDebug();
@@ -372,6 +371,10 @@ public class CoyoteAdapter
             if (!res.isSuspended()){
                 response.finishResponse();
                 req.action( ActionCode.ACTION_POST_REQUEST , null);
+            } else {
+                if (request != null) {
+                    request.onAfterService();
+                }
             }
         } catch (Throwable t) {
             log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
