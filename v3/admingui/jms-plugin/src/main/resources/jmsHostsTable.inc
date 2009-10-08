@@ -58,6 +58,7 @@
                 getUIComponent(clientId="$pageSession{configsTableRowGroupId}", component=>$attribute{tableRowGroup});      
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 //deleteConfig(ConfigName="#{configName}", Type="#{type}", selectedRows="${selectedRows}");
+                deleteChildren(objectNameStr="#{pageSession.parentObjectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
                 setAttribute(key="selectedRows" value="${selectedRows}");
                 redirect(page="#{listPageLink}?configName=#{configName}");
             />            
