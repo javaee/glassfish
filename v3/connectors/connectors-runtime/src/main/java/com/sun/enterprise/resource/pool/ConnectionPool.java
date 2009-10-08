@@ -342,14 +342,9 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         */
         ResourceHandle result = null;
 
-        long startTime = 0;
+        long startTime = System.currentTimeMillis();
         long elapsedWaitTime;
         long remainingWaitTime = 0;
-
-        if (maxWaitTime > 0) {
-            startTime = System.currentTimeMillis();
-        }
-
 
         while (true) {
             if (gateway.allowed()) {
@@ -1290,14 +1285,16 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
             if (oldSteadyPoolSize != steadyPoolSize) {
                 if (poolInitialized) {
-                    if (oldSteadyPoolSize < steadyPoolSize)
+                    if (oldSteadyPoolSize < steadyPoolSize) {
                         increaseSteadyPoolSize(_steadyPoolSize);
-                } else if (poolLifeCycleListener != null) {
-                        poolLifeCycleListener.connectionsFreed(steadyPoolSize);
+                        if(poolLifeCycleListener != null) {
+                            poolLifeCycleListener.connectionsFreed(steadyPoolSize);
+                        }
                     }
-                }
+		}
             }
         }
+    }
 
     /**
      * sets advanced pool properties<br>
