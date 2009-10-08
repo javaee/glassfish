@@ -144,7 +144,6 @@ public class GrizzlyProxy implements NetworkProxy {
             embeddedHttp.setAdapter(adapter);
 
             final Protocol httpProtocol = networkListener.findHttpProtocol();
-            ArrayList<AlternateDocBase> alternateDocBases = new ArrayList<AlternateDocBase>();
             if (httpProtocol != null) {
                 final Collection<VirtualServer> list = grizzlyService.getHabitat().getAllByContract(VirtualServer.class);
                 final String vsName = httpProtocol.getHttp().getDefaultVirtualServer();
@@ -172,14 +171,7 @@ public class GrizzlyProxy implements NetworkProxy {
                                         a.setRootFolder(docBase);
                                         ArrayList<String> al = toArray(vs.getHosts(),";");
                                         al.add(grizzlyListener.getDefaultVirtualServer());
-
-                                        AlternateDocBase alternateDocBase = new AlternateDocBase();
-                                        alternateDocBase.setUrlPattern(urlPattern);
-                                        alternateDocBase.setDocBase(docBase);
-                                        alternateDocBase.setBasePath(docBase);
-
-                                        alternateDocBases.add(alternateDocBase);
-                                        registerEndpoint(urlPattern,al , a, null, alternateDocBases);
+                                        registerEndpoint(urlPattern,al , a, null);
                                     } catch (EndpointRegistrationException ex) {
                                         logger.log(Level.SEVERE, "Unable to set alternate_docroot", ex);
                                     }
@@ -257,18 +249,6 @@ public class GrizzlyProxy implements NetworkProxy {
     public void registerEndpoint(String contextRoot, Collection<String> vsServers, Adapter endpointAdapter,
         ApplicationContainer container) throws EndpointRegistrationException {
         
-        registerEndpoint(contextRoot,vsServers,endpointAdapter,container,null);
-    }
-
-   /*
-    * Registers a new endpoint (adapter implementation) for a particular
-    * context-root. All request coming with the context root will be dispatched
-    * to the adapter instance passed in.
-    * @param contextRoot for the adapter
-    * @param endpointAdapter servicing requests.
-    */
-    public void registerEndpoint(String contextRoot, Collection<String> vsServers, Adapter endpointAdapter,
-        ApplicationContainer container, List<AlternateDocBase> alternatesDocBases) throws EndpointRegistrationException {
         if(grizzlyListener.isGenericListener()) {
             return;
         }
@@ -277,7 +257,7 @@ public class GrizzlyProxy implements NetworkProxy {
                 "The endpoint adapter is null");
         }
         ((ContainerMapper)grizzlyListener.getEmbeddedHttp().getAdapter())
-            .register(contextRoot, vsServers, endpointAdapter, container, alternatesDocBases);
+            .register(contextRoot, vsServers, endpointAdapter, container);
     }
 
     /**

@@ -353,7 +353,7 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
     }
 
     public void register(String contextRoot, Collection<String> vs, Adapter adapter
-            ,ApplicationContainer container, List<AlternateDocBase> alternateDocBases) {
+            ,ApplicationContainer container) {
 
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("MAPPER(" + this + ") REGISTER contextRoot: " + contextRoot +
@@ -375,7 +375,7 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
         ContextRootInfo c = new ContextRootInfo(adapter, container);
         for (String host : vs) {
             mapper.addContext(host, contextRoot,
-                c, new String[0], null, alternateDocBases);
+                c, new String[0], null);
             if (adapter instanceof StaticResourcesAdapter){
                 mapper.addWrapper(host,ctx,wrapper,c);
             }
@@ -420,11 +420,6 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
         }
 
         return ctx;
-    }
-
-    public void register(String contextRoot, Collection<String> vs, Adapter adapter
-            ,ApplicationContainer container) {
-        register(contextRoot, vs, adapter, container,null);
     }
 
     public void unregister(String contextRoot) {
