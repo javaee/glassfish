@@ -667,7 +667,8 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             // If yes, https will be used.  Otherwise, http will be used.
             WebServerInfo wsi = new WsUtil().getWebServerInfoForDAS();
             URL rootURL = wsi.getWebServerRootURL(nextEndpoint.isSecure());
-            URL actualAddress = nextEndpoint.composeEndpointAddress(rootURL);
+            String contextRoot = web.getContextRoot();
+            URL actualAddress = nextEndpoint.composeEndpointAddress(rootURL, contextRoot);
             //Ommitting the part of generating the wsdl for now
             //I think we need that to set the endpointAddressURL of WebServiceEndpoint
             logger.info(format(rb.getString("enterprise.deployment.endpoint.registration"),
