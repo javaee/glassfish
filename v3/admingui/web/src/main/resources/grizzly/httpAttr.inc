@@ -51,7 +51,7 @@
             <sun:dropDown id="vs" selected="#{pageSession.httpMap['DefaultVirtualServer']}" labels="$pageSession{vsList}"  values="$pageSession{vsList}" >
             <!beforeCreate
                 getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service" type="virtual-server" result="#{pageSession.vsList}");
-                mapPut(map="#{pageSession.valueMap}" key="DefaultVirtualServer"  value="server")
+                mapPut(map="#{pageSession.httpMap}" key="DefaultVirtualServer"  value="server")
             />
            </sun:dropDown>
         </sun:property>
