@@ -177,7 +177,7 @@ public class JmsHandlers {
             
             String objectName = getJmsDestinationObjectName(SUBTYPE_MONITOR, name, type);
             AttributeList attributes = (AttributeList)JMXUtil.getMBeanServer().getAttributes(new ObjectName(objectName),ATTRS_MONITOR);
-            ResourceBundle bundle = GuiUtil.getBundle("org.glassfish.admingui.plugin.jms.Strings");
+            ResourceBundle bundle = GuiUtil.getBundle("org.glassfish.jms.admingui.Strings");
             statsList.add(createRow("Name", name, ""));
             statsList.add(createRow("Type", type.substring(0,1).toUpperCase() + type.substring(1), ""));
             for (Attribute attribute: attributes.asList()) {
