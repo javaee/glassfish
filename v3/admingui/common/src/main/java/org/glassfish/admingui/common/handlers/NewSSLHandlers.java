@@ -80,13 +80,14 @@ public class NewSSLHandlers {
 
         Vector ciphersVector = null;
         Object ciphers = (Object)handlerCtx.getInputValue("ciphers");
-        if (ciphers instanceof String){
-            String[] ary  = getSelectedCiphersList( (String) ciphers);
-            ciphersVector = getCiphersVector(ary);
-        }else{
-            ciphersVector = getCiphersVector( (String[])ciphers);
+        if (ciphers != null) {
+            if (ciphers instanceof String) {
+                String[] ary = getSelectedCiphersList((String) ciphers);
+                ciphersVector = getCiphersVector(ary);
+            } else {
+                ciphersVector = getCiphersVector((String[]) ciphers);
+            }
         }
-
         handlerCtx.setOutputValue("CommonCiphersList", getCommonCiphers(ciphersVector));
         handlerCtx.setOutputValue("EphemeralCiphersList", getEphemeralCiphers(ciphersVector));
         handlerCtx.setOutputValue("OtherCiphersList", getOtherCiphers(ciphersVector));

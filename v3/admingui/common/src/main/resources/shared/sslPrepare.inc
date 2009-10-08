@@ -49,6 +49,11 @@ if (#{requestScope.exist}){
 if (! #{requestScope.exist}){
     setPageSessionAttribute(key="edit" value="#{false}" )
     getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+    convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['Ssl3TlsCiphers']}"
+        CommonCiphersList="#{pageSession.selectedCommon}"
+        EphemeralCiphersList="#{pageSession.selectedEphemeral}"
+        OtherCiphersList="#{pageSession.selectedOther}"
+        EccCiphersList="#{pageSession.selectedEcc}")
 }
 //set the following for including buttons.inc
 
