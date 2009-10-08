@@ -142,9 +142,10 @@ public class WebTest {
         Socket sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET " + contextRoot + "/ResumeSession" + " HTTP/1.0\n";
-        System.out.println(get);
+        System.out.print(get);
         os.write(get.getBytes());
         String cookie = "Cookie: " + jsessionId + "\n";
+        System.out.println(cookie);
         os.write(cookie.getBytes());
         os.write("\r\n".getBytes());
         
