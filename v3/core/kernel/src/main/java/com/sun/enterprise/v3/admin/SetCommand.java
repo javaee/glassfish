@@ -190,16 +190,19 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
             for (String name : targetNode.model.getAttributeNames()) {
                 String finalDottedName = node.getValue()+"."  + name;
                 if (matches(finalDottedName, pattern)) {
-                    if (attrName.equals(name)) {
-                        targetName = prefix + finalDottedName;
-                        success(context, targetName, value);
+                    if (attrName.equals(name) ||
+                            attrName.replace('_', '-').equals(name.replace('_', '-'))) {
                         
                         if (! isProperty) {
+                           targetName = prefix + finalDottedName;
+
                             if (value!=null && value.length()>0) {
                                 attrChanges.put(name, value);
                             } else {
                                 attrChanges.put(name, null);
                             }
+                        } else {
+                            targetName = prefix + node.getValue();
                         }
 
                         if (delProperty) {
@@ -236,7 +239,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
         if (!changes.isEmpty()) {
             try {
                 config.apply(changes);
-                context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                success(context, targetName, value);
                 runLegacyChecks(context);
             } catch (TransactionFailure transactionFailure) {
                 fail(context, "Could not change the attributes: " +
@@ -246,7 +249,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
 
         } else {
             if (delPropertySuccess) {
-                context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);                
+                success(context, targetName, value);
             } else {
                 fail(context, "No configuration found for " + targetName);
                 return false;
