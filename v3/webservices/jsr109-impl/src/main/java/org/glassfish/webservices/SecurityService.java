@@ -42,7 +42,6 @@ import com.sun.xml.rpc.spi.runtime.SystemHandlerDelegate;
 import javax.servlet.http.HttpServletRequest;
 import com.sun.xml.rpc.spi.runtime.SOAPMessageContext;
 import com.sun.xml.rpc.spi.runtime.StreamingHandler;
-import javax.security.auth.login.LoginException;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.handler.HandlerInfo;
 import org.jvnet.hk2.annotations.Contract;
@@ -55,7 +54,7 @@ import org.jvnet.hk2.annotations.Contract;
 public interface SecurityService {
     
     public Object mergeSOAPMessageSecurityPolicies(MessageSecurityBindingDescriptor desc);
-    public boolean doSecurity(HttpServletRequest hreq, EjbRuntimeEndpointInfo ejbEndpoint, String realmName, WebServiceContextImpl context) throws LoginException;
+    public boolean doSecurity(HttpServletRequest hreq, EjbRuntimeEndpointInfo ejbEndpoint, String realmName, WebServiceContextImpl context);
     public void resetSecurityContext();
     public SystemHandlerDelegate getSecurityHandler(WebServiceEndpoint endpoint);
     public boolean validateRequest(Object serverAuthConfig, StreamingHandler implementor, SOAPMessageContext context);

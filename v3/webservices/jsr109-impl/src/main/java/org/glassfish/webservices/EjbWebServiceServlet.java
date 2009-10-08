@@ -51,7 +51,6 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.security.auth.login.LoginException;
 import org.glassfish.webservices.monitoring.Endpoint;
 import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
 import org.glassfish.webservices.monitoring.WebServiceTesterServlet;
@@ -164,18 +163,14 @@ public class EjbWebServiceServlet extends HttpServlet {
                 // use the same logic as BasicAuthenticator
                 realmName = hreq.getServerName() + ":" + hreq.getServerPort();
             }
-            boolean loginFailure = false;
+
             try {
                 if (secServ != null) {
                     WebServiceContextImpl context = (WebServiceContextImpl) ((EjbRuntimeEndpointInfo) ejbEndpoint).getWebServiceContext();
                     authenticated = secServ.doSecurity(hreq, ejbEndpoint, realmName, context);
                 }
-            } catch (LoginException e) {
-                logger.log(Level.WARNING, "authentication failed for " +
-                        ejbEndpoint.getEndpoint().getEndpointName(),
-                        e);
-                loginFailure = true;
-            } catch (Exception e) {
+
+            } catch(Exception e) {
                 //sendAuthenticationEvents(false, hreq.getRequestURI(), null);
                 logger.log(Level.WARNING, "authentication failed for " +
                         ejbEndpoint.getEndpoint().getEndpointName(),
@@ -183,10 +178,8 @@ public class EjbWebServiceServlet extends HttpServlet {
             }
 
             if (!authenticated) {
-                if (!loginFailure) {
-                    hresp.setHeader("WWW-Authenticate",
-                            "Basic realm=\"" + realmName + "\"");
-                }
+                hresp.setHeader("WWW-Authenticate",
+                        "Basic realm=\"" + realmName + "\"");
                 hresp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
