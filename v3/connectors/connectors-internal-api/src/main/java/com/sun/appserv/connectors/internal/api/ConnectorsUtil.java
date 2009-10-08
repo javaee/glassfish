@@ -841,4 +841,10 @@ public class ConnectorsUtil {
 
         return libURIs;
     }
+
+    public static String getReservePrefixedJNDINameForDescriptor(String moduleName) {
+        return getReservePrefixedJNDIName(ConnectorConstants.DD_PREFIX, moduleName);
+    }
+
+
 }

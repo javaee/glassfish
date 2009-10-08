@@ -43,7 +43,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
-import org.glassfish.api.Startup;
+import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.internal.api.*;
 
 import java.beans.PropertyChangeEvent;
@@ -54,10 +54,12 @@ import java.util.*;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.config.ObservableBean;
 
+import javax.naming.NamingException;
 
 
 @Service(name="ResourceManager") // this name is used in ApplicationLoaderService
@@ -80,16 +82,43 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
 
     @Inject
     private Habitat deployerHabitat;
-    
+
+    @Inject
+    private Habitat habitat;
+
     private ConnectorRuntime runtime;
+
+    @Inject
+    private GlassfishNamingManager namingMgr;
     
     //Listen to config changes of resource refs.
     @Inject
     private ResourceRef[] resourceRefs;
     
     public void postConstruct() {
+        bindConnectorDescriptors();
         deployResources(allResources.getResources());
         addListenerToResourceRefs();
+    }
+
+    private void bindConnectorDescriptors() {
+        for(String rarName : ConnectorConstants.systemRarNames){
+            bindConnectorDescriptorProxies(rarName);
+        }
+    }
+
+    private void bindConnectorDescriptorProxies(String rarName) {
+        //these proxies are needed as appclient container may lookup descriptors
+        String jndiName = ConnectorsUtil.getReservePrefixedJNDINameForDescriptor(rarName);
+        ConnectorDescriptorProxy proxy = habitat.getComponent(ConnectorDescriptorProxy.class);
+        proxy.setJndiName(jndiName);
+        proxy.setRarName(rarName);
+        try {
+            namingMgr.publishObject(jndiName, proxy, true);
+        } catch (NamingException e) {
+            Object[] params = new Object[]{rarName, e};
+            logger.log(Level.WARNING, "resources.resource-manager.connector-descriptor.bind.failure", params);
+        }
     }
 
     /**
@@ -151,7 +180,6 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
 
 
     private ConnectorRuntime getConnectorRuntime() {
-        //TODO V3 not synchronized
         if(runtime == null){
             runtime = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class, null);
         }

@@ -48,6 +48,7 @@ import java.util.*;
 import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.enterprise.config.serverbeans.WorkSecurityMap;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.appserv.connectors.internal.spi.ConnectorNamingEventListener;
@@ -568,5 +569,8 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @return true if ping is on
      */
     public boolean getPingDuringPoolCreation(String poolName);
-        
+
+    public ConnectorDescriptor getConnectorDescriptor(String rarName)
+            throws ConnectorRuntimeException ;
+
 }
