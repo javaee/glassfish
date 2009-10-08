@@ -229,6 +229,16 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
         // no-op
     }
 
+    @Override
+    public URI URIWithinAppDir(DeploymentContext dc, URI absoluteURI) {
+        return dc.getSource().getURI().relativize(absoluteURI);
+    }
+
+    @Override
+    public String pathToAppclientWithinApp(DeploymentContext dc) {
+        return "";
+    }
+
 
 
     @Override

@@ -196,6 +196,25 @@ public abstract class AppClientDeployerHelper {
     public abstract URI appClientURIWithinApp(DeploymentContext dc);
 
     /**
+     * Returns the relative path to the app client within the enclosing app.
+     * The result will be an empty string for a stand-alone app clients because
+     * it has no such path, in reality.  The result will be the relative URI
+     * within the EAR for a nested app client.
+     * @param dc
+     * @return
+     */
+    public abstract String pathToAppclientWithinApp(DeploymentContext dc);
+
+    /**
+     * Returns a relative URI within the app directory for the specified
+     * absolute URI.
+     * @param dc
+     * @param absoluteURI
+     * @return
+     */
+    public abstract URI URIWithinAppDir(DeploymentContext dc,
+            URI absoluteURI);
+    /**
      *
      * Returns the class path to be stored in the manifest for the
      * generated facade JAR file.

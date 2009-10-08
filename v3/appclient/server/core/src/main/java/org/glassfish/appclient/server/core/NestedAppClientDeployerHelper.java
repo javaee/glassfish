@@ -627,6 +627,18 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         return URI.create(appClientDesc().getModuleDescriptor().getArchiveUri());
     }
 
+    @Override
+    public URI URIWithinAppDir(DeploymentContext dc, URI absoluteURI) {
+        return earURI.relativize(absoluteURI);
+    }
+
+    @Override
+    public String pathToAppclientWithinApp(DeploymentContext dc) {
+        return appClientDesc().getModuleDescriptor().getArchiveUri();
+    }
+
+
+
     private URI moduleURI() {
         return URI.create(appClientDesc().getModuleDescriptor().getArchiveUri());
     }

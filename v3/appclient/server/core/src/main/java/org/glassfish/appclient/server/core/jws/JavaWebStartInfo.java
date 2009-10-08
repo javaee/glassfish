@@ -40,13 +40,17 @@
 package org.glassfish.appclient.server.core.jws;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.logging.LogDomains;
 import java.beans.PropertyChangeEvent;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +60,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.container.EndpointRegistrationException;
@@ -118,6 +124,8 @@ public class JavaWebStartInfo implements ConfigListener {
 
     private Logger logger;
 
+    private VendorInfo vendorInfo;
+
     final private Map<String,StaticContent> staticContent = new HashMap<String,StaticContent>();
     final private Map<String,DynamicContent> dynamicContent = new HashMap<String,DynamicContent>();
 
@@ -170,6 +178,8 @@ public class JavaWebStartInfo implements ConfigListener {
 
     private String jnlpDoc;
 
+    private static LocalStringsImpl localStrings = new LocalStringsImpl(JavaWebStartInfo.class);
+
     private static class SignedSystemContentFromApp {
         private final String tokenName;
         private final String relativePath;
@@ -217,7 +227,7 @@ public class JavaWebStartInfo implements ConfigListener {
         isJWSEligible = acDesc.getJavaWebStartAccessDescriptor().isEligible();
         isJWSEnabledAtApp = isJWSEnabled(dc.getAppProps());
         isJWSEnabledAtModule = isJWSEnabled(dc.getModuleProps());
-        tHelper = TokenHelper.newInstance(helper);
+        tHelper = TokenHelper.newInstance(helper, vendorInfo());
         final String devJNLPDoc = acDesc.getJavaWebStartAccessDescriptor().getJnlpDocument();
         final File sourceDir = acDesc.getApplication().isVirtual() ?
             dc.getSourceDir() : new File(dc.getSource().getParentArchive().getURI());
@@ -297,7 +307,7 @@ public class JavaWebStartInfo implements ConfigListener {
             });
         }
     }
-    
+
     private void startJWSServices() throws EndpointRegistrationException, IOException {
         if (myContent == null) {
             processExtensionReferences();
@@ -461,7 +471,7 @@ public class JavaWebStartInfo implements ConfigListener {
          * java-web-start-support/vendor setting to communicate icon and/or
          * splash screen images URIs.
          */
-        prepareImageInfo(staticContent, tHelper.tokens());
+        prepareImageInfo(staticContent);
 
         /*
          * Make sure that all the EAR-level JARs that this client refers to
@@ -628,58 +638,69 @@ public class JavaWebStartInfo implements ConfigListener {
     }
 
     /**
-     * Returns XML which specifies the icon image, the splash screen image, neither, or
-     * both, depending on the contents of the <vendor> text in the descriptor.
-     *
-     * @return XML specifying one or both images; empty if the developer encoded
-     * no image information in the <vendor> element of the sun-application-client.xml
-     * descriptor
+     * Prepares XML (for the generated JNLP) and the static content
+     * for the icon image, the splash screen image, neither, or
+     * both, depending on the contents (if any) of the <vendor> text in the
+     * developer-provided sun-application-client.xml descriptor.
      */
-    private void prepareImageInfo(final Map<String,StaticContent> staticContent,
-            final Properties tokens) {
+    private void prepareImageInfo(final Map<String,StaticContent> staticContent) throws IOException {
         StringBuilder result = new StringBuilder();
-        final VendorInfo vendorInfo = getVendorInfo();
-        String imageURI = vendorInfo.getImageURI();
-        if (imageURI.length() > 0) {
-            result.append("<icon href=\"" + imageURI + "\"/>");
-            addImageContent(imageURI, staticContent);
-        }
-        String splashImageURI = vendorInfo.getSplashImageURI();
-        if (splashImageURI.length() > 0) {
-            result.append("<icon kind=\"splash\" href=\"" + splashImageURI + "\"/>");
-            addImageContent(splashImageURI, staticContent);
-        }
-        if (result.length() == 0) {
-            result.append("<!-- No image information specified in sun-application-client.xml -->");
-        }
-        tokens.setProperty(MAIN_IMAGE_XML_PROPERTY_NAME, result.toString());
-    }
 
-    private void addImageContent(final String imageURI,
-            final Map<String,StaticContent> staticContent) {
-        StaticContent sc = helper.fixedContentWithinEAR(imageURI);
         /*
-         * The user might specify an image within a stand-alone client's
-         * vendor setting in the sun-application-client.xml, which we cannot
-         * support.  Add the content only if it's not null.
+         * Deployment has already expanded the app client module into a
+         * directory, so each image entry of the JAR which the developer
+         * specified in the descriptor should already reside as a
+         * file on the disk within the DeploymentContext.getSource() directory.
          */
-        if (sc != null) {
-            staticContent.put(imageURI, sc);
+        addImageContentIfSpecified(vendorInfo().getImageURI(),
+                vendorInfo().JNLPImageURI(), staticContent);
+        addImageContentIfSpecified(vendorInfo().getSplashImageURI(),
+                vendorInfo().JNLPSplashImageURI(), staticContent);
+
+//        if (result.length() == 0) {
+//            result.append("<!-- No image information specified in sun-application-client.xml -->");
+//        }
+//        tokens.setProperty(MAIN_IMAGE_XML_PROPERTY_NAME, result.toString());
+    }
+
+    private void addImageContentIfSpecified(
+            final String imageURIStringWithinAppClient,
+            final String imageURIStringForJNLP,
+            final Map<String,StaticContent> staticContent) {
+
+        if (imageURIStringWithinAppClient == null ||
+                imageURIStringWithinAppClient.length() == 0) {
+            return;
         }
+
+        final URI absoluteImageURI = dc.getSource().getURI().resolve(imageURIStringWithinAppClient);
+        final File imageFile = new File(absoluteImageURI);
+        if ( ! imageFile.exists()) {
+            return;
+        }
+
+        staticContent.put(imageURIStringForJNLP,
+                new FixedContent(imageFile));
+    }
+    
+
+    private VendorInfo vendorInfo() {
+        VendorInfo vi = new VendorInfo(
+                acDesc.getJavaWebStartAccessDescriptor().getVendor(),
+                helper.pathToAppclientWithinApp(dc));
+        return vi;
     }
 
-    private VendorInfo getVendorInfo() {
-        VendorInfo vendorInfo = new VendorInfo(acDesc.getJavaWebStartAccessDescriptor().getVendor());
-        return vendorInfo;
-    }
-
-    private static class VendorInfo {
+    public static class VendorInfo {
         private String vendorStringFromDescriptor;
         private String vendor = "";
         private String imageURIString = "";
         private String splashImageURIString = "";
+        private final String JNLPPathFullPrefix;
 
-        private VendorInfo(String vendorStringFromDescriptor) {
+        public VendorInfo(String vendorStringFromDescriptor,
+                final String JNLPPathPrefix) {
+            this.JNLPPathFullPrefix = "__content/" + JNLPPathPrefix;
             this.vendorStringFromDescriptor = vendorStringFromDescriptor != null ?
                 vendorStringFromDescriptor : "";
             String [] parts = this.vendorStringFromDescriptor.split("::");
@@ -693,18 +714,29 @@ public class JavaWebStartInfo implements ConfigListener {
                 splashImageURIString = parts[1];
                 vendor = parts[2];
             }
+            if (vendor.length() == 0) {
+                vendor = localStrings.get("jws.defaultVendorName");
+            }
         }
 
-        private String getVendor() {
+        public String getVendor() {
             return vendor;
         }
 
-        private String getImageURI() {
+        public String getImageURI() {
             return imageURIString;
         }
 
-        private String getSplashImageURI() {
+        public String getSplashImageURI() {
             return splashImageURIString;
+        }
+
+        public String JNLPImageURI() {
+            return JNLPPathFullPrefix + imageURIString;
+        }
+
+        public String JNLPSplashImageURI() {
+            return JNLPPathFullPrefix + splashImageURIString;
         }
     }
 

@@ -44,6 +44,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.util.Properties;
 import org.glassfish.appclient.server.core.AppClientDeployerHelper;
 import org.glassfish.appclient.server.core.StandaloneAppClientDeployerHelper;
+import org.glassfish.appclient.server.core.jws.JavaWebStartInfo.VendorInfo;
 import org.glassfish.appclient.server.core.jws.NamingConventions;
 
 /**
@@ -62,17 +63,15 @@ public abstract class TokenHelper {
 
     private VendorInfo vendorInfo = null;
 
-    public static TokenHelper newInstance(final AppClientDeployerHelper dHelper) {
+    public static TokenHelper newInstance(final AppClientDeployerHelper dHelper,
+            final VendorInfo vendorInfo) {
         TokenHelper tHelper;
         if (dHelper instanceof StandaloneAppClientDeployerHelper) {
             tHelper = new StandAloneClientTokenHelper(dHelper);
         } else {
             tHelper = new NestedClientTokenHelper(dHelper);
         }
-        tHelper.vendorInfo =
-                new VendorInfo(
-                        tHelper.localStrings,
-                        dHelper.appClientDesc().getJavaWebStartAccessDescriptor().getVendor());
+        tHelper.vendorInfo = vendorInfo;
 
         tHelper.tokens = tHelper.buildTokens();
         return tHelper;
@@ -213,12 +212,12 @@ public abstract class TokenHelper {
     private String iconElements(final VendorInfo vendorInfo) {
 
         StringBuilder result = new StringBuilder();
-        String imageURI = vendorInfo.getImageURI();
+        String imageURI = vendorInfo.JNLPImageURI();
         if (imageURI.length() > 0) {
             result.append("<icon href=\"" + imageURI + "\"/>");
 //            addImageContent(origin, location, imageURI);
         }
-        String splashImageURI = vendorInfo.getSplashImageURI();
+        String splashImageURI = vendorInfo.JNLPSplashImageURI();
         if (splashImageURI.length() > 0) {
             result.append("<icon kind=\"splash\" href=\"" + splashImageURI + "\"/>");
 //            addImageContent(origin, location, splashImageURI);
@@ -239,47 +238,4 @@ public abstract class TokenHelper {
             props.setProperty(tokenName, value);
         }
     }
-
-    /**
-     * Vendor and image information from the vendor subelement in the
-     * java-web-start-access part of sun-application-client.xml.
-     */
-    private static class VendorInfo {
-        private String vendorStringFromDescriptor;
-        private String vendor = "";
-        private String imageURIString = "";
-        private String splashImageURIString = "";
-
-        private VendorInfo(final LocalStringsImpl localStrings, final String vendorStringFromDescriptor) {
-            this.vendorStringFromDescriptor = vendorStringFromDescriptor != null ?
-                vendorStringFromDescriptor : "";
-            String [] parts = this.vendorStringFromDescriptor.split("::");
-            if (parts.length == 1) {
-                vendor = parts[0];
-            } else if (parts.length == 2) {
-                imageURIString = parts[0];
-                vendor = parts[0];
-            } else if (parts.length == 3) {
-                imageURIString = parts[0];
-                splashImageURIString = parts[1];
-                vendor = parts[2];
-            }
-            if (vendor.length() == 0) {
-                vendor = localStrings.get("jws.defaultVendorName");
-            }
-        }
-
-        private String getVendor() {
-            return vendor;
-        }
-
-        private String getImageURI() {
-            return imageURIString;
-        }
-
-        private String getSplashImageURI() {
-            return splashImageURIString;
-        }
-    }
-
 }
