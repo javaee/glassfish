@@ -69,8 +69,8 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
 
     @Inject
     Habitat habitat;
-    
-    private AutoDeployer autoDeployer;
+
+    private AutoDeployer autoDeployer = null;
     
     private Timer autoDeployerTimer;
     
@@ -100,6 +100,9 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
          * in the log rather than later if and when the auto-deployer is 
          * enabled.
          */
+        if (isEmbedded()) {
+            return;
+        }
         String directory = activeDasConfig.getAutodeployDir();
         target = getTarget();
         try {
@@ -151,7 +154,11 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
     static String getValue(String value, String defaultValue) {
         return (value == null || value.equals("")) ? defaultValue : value;
     }
-    
+
+    private boolean isEmbedded() {
+        return ! org.glassfish.api.embedded.Server.getServerNames().isEmpty();
+    }
+
     private void logConfig(String title, 
             boolean isEnabled,
             int pollingIntervalInSeconds,
@@ -240,6 +247,10 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
          * different frequency.  Those change are handled here, by this
          * class.
          */
+
+        if (autoDeployer == null) {
+            return null;
+        }
         
        /* Record any events we tried to process but could not. */
         List<UnprocessedChangeEvent> unprocessedEvents = new ArrayList<UnprocessedChangeEvent>();
