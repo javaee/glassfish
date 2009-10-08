@@ -64,8 +64,8 @@ public class BaseAdminConsoleTest {
     private volatile MBeanServerConnection mMBeanServerConnection;
     private volatile DomainRoot mDomainRoot;
     private static final String FILE_SEP = System.getProperty("file.separator");
-    private static final String CONSOLE_ARCHIVE_PATH = FILE_SEP + "lib" + FILE_SEP + 
-            "install" + FILE_SEP + "applications" + FILE_SEP + "admingui.war";
+    private static final String CONSOLE_DIR_PATH = FILE_SEP + "lib" + FILE_SEP + 
+            "install" + FILE_SEP + "applications" + FILE_SEP + "__admingui";
     private static final String GLASSFISH_DIR = FILE_SEP + ".." + FILE_SEP +"glassfish";
 
     // Copied from Lloyd's AMX tests
@@ -100,9 +100,9 @@ public class BaseAdminConsoleTest {
 
         boolean formFound = false;
         int iteration = 0;
-        if (!checkForAdminConsoleArchive()) {
-            Assert.fail("The admin console archive was not found at " +
-                this.getDomainRoot().getInstallDir() + GLASSFISH_DIR + CONSOLE_ARCHIVE_PATH +
+        if (!checkForAdminConsoleDirectory()) {
+            Assert.fail("The admin console directory was not found at " +
+                this.getDomainRoot().getInstallDir() + GLASSFISH_DIR + CONSOLE_DIR_PATH +
                 ".  Please check your installation.");
         }
 
@@ -143,13 +143,13 @@ public class BaseAdminConsoleTest {
 
     /**
      * This method uses the AMX API to get the install directory, then checks to
-     * see if the admin console archive is present.
+     * see if the admin console directory is present.
      * @return
      */
-    protected boolean checkForAdminConsoleArchive() {
+    protected boolean checkForAdminConsoleDirectory() {
         // Hard-coding "../glassfish" to help cover a deficiency in IPS
-        File archive = new File(this.getDomainRoot().getInstallDir() + GLASSFISH_DIR + CONSOLE_ARCHIVE_PATH);
-        return archive.exists();
+        File directory = new File(this.getDomainRoot().getInstallDir() + GLASSFISH_DIR + CONSOLE_DIR_PATH);
+        return directory.exists();
     }
 
     @AfterTest
