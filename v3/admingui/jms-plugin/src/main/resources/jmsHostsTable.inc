@@ -40,6 +40,9 @@
     deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
     selectMultipleButton="$boolean{true}"
     selectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
+    <!afterCreate
+         getClientId(component="$this{component}" clientId=>$page{tableId});
+    />
     <!facet actionsTop>
          <sun:panelGroup id="topActionsGroup1">
             <sun:button id="newButton" text="$resource{i18n.button.New}" >
