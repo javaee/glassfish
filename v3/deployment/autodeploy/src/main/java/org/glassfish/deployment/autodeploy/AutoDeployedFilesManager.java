@@ -148,7 +148,18 @@ public class AutoDeployedFilesManager {
             statDir = new File(statDir, dir.getName()); 
             dir = dir.getParentFile();
         }
-        statDir.mkdirs();
+        /*
+         * Do not create all the required directories if the ancestor
+         * autoDeployDir does not already exist.  This helps with a race condition
+         * in which a user has stopped the domain (which returns before the
+         * domain has really stopped) and then deleted the domain.  In some
+         * cases the delete-domain processing deletes files only for the
+         * autodeployer - still running - to create the autodeploy directory
+         * and all intervening ones again.
+         */
+        if (autoDeployDir.exists()) {
+            statDir.mkdirs();
+        }
         return statDir;
     }
    

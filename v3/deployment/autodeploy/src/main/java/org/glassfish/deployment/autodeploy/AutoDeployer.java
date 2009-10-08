@@ -47,11 +47,13 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 import java.io.File;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.deployment.common.DeploymentUtils;
 
@@ -83,6 +85,8 @@ public class AutoDeployer {
     private AtomicBoolean inProgress = new AtomicBoolean(false);
     
     private Habitat habitat;
+
+    private File domainRoot = null;
     
     /*
      *Represent the result of attempting autodeployment of a single file.
@@ -220,16 +224,56 @@ public class AutoDeployer {
         this.verify = verify;
     }
     
+    /**
+     * Creates the directories for the specified target, except that if the
+     * target is/would be a descendant of the base and the base does not exist
+     * don't create anything.
+     * <p>
+     * This helps avoid a race condition in which the user stops the domain
+     * (which apparently reports success long before it actually finishes) then
+     * deletes the domain.  The delete can run before the server has finished
+     * stopping.  In some cases, the autodeployer has run in the meantime and
+     * 
+     * @param baseDir
+     * @param dir
+     * @return true if the directory and all intervening ones were created; false otherwise
+     */
+    boolean mkdirs(final File baseDir, final File targetDir) {
+        final URI baseURI = baseDir.toURI().normalize();
+        final URI targetURI = targetDir.toURI().normalize();
+
+        /*
+         * Go ahead and create all directories if the target falls outside the
+         * base OR if the target falls inside the base and the base exists.
+         */
+        if (baseURI.relativize(targetURI).equals(targetURI) || baseDir.exists()) {
+            return targetDir.mkdirs();
+        } else {
+            /*
+             * The target would fall inside the base but the base does not exist.
+             */
+            return false;
+        }
+    }
+
     private void validateAutodeployDirectory(String autodeployDirPath) throws AutoDeploymentException {
         File autodeployDir = new File(autodeployDirPath);
         validateDirectory(autodeployDir);
         File statusDir = new File(autodeployDir, STATUS_SUBDIR_PATH);
         validateDirectory(statusDir);
     }
+
+    private synchronized File domainRoot() {
+        if (domainRoot == null) {
+            ServerEnvironment serverEnv = habitat.getComponent(ServerEnvironment.class);
+            domainRoot = serverEnv.getDomainRoot();
+        }
+        return domainRoot;
+    }
     
     private void validateDirectory(File dirFile) throws AutoDeploymentException {
         if ( ! dirFile.exists()) {
-            dirFile.mkdirs();
+            mkdirs(domainRoot(), dirFile);
         } else {
             if ( ! dirFile.isDirectory()) {
                 throw new AutoDeploymentException(
