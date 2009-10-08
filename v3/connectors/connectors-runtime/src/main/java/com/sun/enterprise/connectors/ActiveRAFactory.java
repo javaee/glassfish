@@ -126,10 +126,7 @@ public class ActiveRAFactory {
                                                                     String moduleName, ClassLoader loader,
                                                                     ResourceAdapter ra) throws ConnectorRuntimeException {
         ActiveResourceAdapter activeResourceAdapter = getActiveRA(cd, moduleName);
-
-        if(activeResourceAdapter != null){
-            activeResourceAdapter.init(ra, cd, moduleName, loader);            
-        }
+        activeResourceAdapter.init(ra, cd, moduleName, loader);            
         return activeResourceAdapter;
     }
 
