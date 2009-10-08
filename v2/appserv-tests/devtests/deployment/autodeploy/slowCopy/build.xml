@@ -2,9 +2,8 @@
 
 <!DOCTYPE project [
 <!ENTITY autodeployUtil SYSTEM "./../util/util.xml">
-]>
 <!ENTITY commonBuild SYSTEM "./../../config/common.xml">
-
+]>
 <!--
     Note that this currently assumes that the ear/earwithejb and ejb/statelesshello projects have run to build 
     the ear used for this test.
