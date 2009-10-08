@@ -156,6 +156,7 @@ public class AutoDeployer {
             boolean enabled,
             Habitat habitat) throws AutoDeploymentException {
         
+        setHabitat(habitat);
         setTarget(target);
         setDirectory(directoryPath);
         setJspPrecompilationEnabled(jspPrecompilationEnabled);
@@ -164,7 +165,6 @@ public class AutoDeployer {
         setForceDeploy(forceDeploy);
         setVirtualServer(virtualServer);
         setEnabled(enabled);
-        setHabitat(habitat);
         setRetryManager(habitat);
     }
     
