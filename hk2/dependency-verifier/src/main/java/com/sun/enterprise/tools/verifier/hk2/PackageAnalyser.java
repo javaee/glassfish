@@ -435,6 +435,30 @@ public class PackageAnalyser {
         return bundles;
     }
 
+    public Collection<String> findUnusedExports() {
+        List<String> unusedPackages = new ArrayList<String>();
+        for (Bundle exporter : bundles) {
+            for (String p : exporter.exportedPkgs) {
+                boolean used = false;
+                for (Bundle importer : bundles) {
+                    if (importer != exporter && importer.requiredPkgs.contains(p)) {
+                        used = true;
+                        break;
+                    }
+                }
+                if (!used) unusedPackages.add(p);
+            } 
+        }
+        Collections.sort(unusedPackages, new Comparator<String>() {
+            Collator collator = Collator.getInstance();
+
+            public int compare(String o1, String o2) {
+                return collator.compare(o1, o2);
+            }
+        });
+        return unusedPackages;
+    }
+
     public void generateWiringReport(Collection<String> exportedPkgs, Collection<PackageAnalyser.Wire> wires, PrintStream out) {
         out.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
         out.println("<?xml-stylesheet type=\"text/xsl\" href=\"wires.xsl\"?>");
@@ -498,21 +522,22 @@ public class PackageAnalyser {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 4) {
+        if (args.length != 5) {
             System.out.println("Usage: java " + PackageAnalyser.class.getName() +
                     " <Repository Dir Path> <output file name for bundle details>" +
-                    " <output file name for wiring details> <output file name for split-packages>");
+                    " <output file name for wiring details> <output file name for split-packages> <output file name for unused packages>");
 
             System.out.println("Example(s):\n" +
                     "Following command analyses all modules in the specified repository:\n" +
                     " java " + PackageAnalyser.class.getName() +
-                    " /tmp/glassfish/modules/ bundles.xml wires.xml sp.txt\n\n");
+                    " /tmp/glassfish/modules/ bundles.xml wires.xml sp.txt unused.txt\n\n");
             return;
         }
         String repoPath = args[0];
         PrintStream bundleOut = new PrintStream(new FileOutputStream(args[1]));
         PrintStream wireOut = new PrintStream(new FileOutputStream(args[2]));
         PrintStream spOut = new PrintStream(new FileOutputStream(args[3]));
+        PrintStream unusedPkgOut = new PrintStream(new FileOutputStream(args[4]));
         File f = new File(repoPath) {
             @Override
             public File[] listFiles() {
@@ -545,11 +570,16 @@ public class PackageAnalyser {
         for (SplitPackage p : splitPkgs) spOut.println(p + "\n");
         spOut.println("Total number of Split Packages = " + splitPkgs.size());
 
+        Collection<String> unusedPackages = analyser.findUnusedExports();
+        for (String p : unusedPackages) unusedPkgOut.println(p + "\n");
+        spOut.println("Total number of Unused Packages = " + unusedPackages.size());
+
         System.out.println("******** GROSS STATISTICS *********");
         System.out.println("Total number of bundles in this repository: " + analyser.findAllBundles().size());
         System.out.println("Total number of wires = " + wires.size());
         System.out.println("Total number of exported packages = " + exportedPkgs.size());
         System.out.println("Total number of split-packages = " + splitPkgs.size());
+        System.out.println("Total number of unused-packages = " + unusedPackages.size());
     }
 
 }

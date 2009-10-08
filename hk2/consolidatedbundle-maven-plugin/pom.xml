@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.sun.enterprise</groupId>
+		<artifactId>hk2-parent</artifactId>
+		<version>0.3.94-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>consolidatedbundle-maven-plugin</artifactId>
+	<packaging>maven-plugin</packaging>
+
+	<name>consolidated bundle Maven plugin</name>
+	<!--
+		NOTE: This was called as uber bundle plugin in earlier
+		discussions.
+	-->
+
+	<developers>
+		<developer>
+			<id>sivakumart</id>
+			<name>Sivakumar Thyagarajan</name>
+			<url>http://blogs.sun.com/sivakumart</url>
+			<organization>Sun Microsystems, Inc.</organization>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>src/assemble/distribution.xml</descriptor>
+					</descriptors>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-plugin-api</artifactId>
+			<version>2.0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.enterprise</groupId>
+			<artifactId>hk2-core</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>2.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.shared</groupId>
+			<artifactId>maven-osgi</artifactId>
+			<version>0.2.0</version>
+		</dependency>
+	</dependencies>
+</project>
