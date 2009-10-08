@@ -84,7 +84,7 @@ public final class ComplianceMonitor implements NotificationListener
         
         final AmxPref amxPrefs = InjectedValues.getInstance().getAMXPrefs();
         mValidationLevel = amxPrefs == null ? AmxPref.VALIDATION_LEVEL_FULL : amxPrefs.getValidationLevel();
-        mUnregisterNonCompliant = amxPrefs == null ?  true : Boolean.valueOf(amxPrefs.getUnregisterNonCompliant());
+        mUnregisterNonCompliant = amxPrefs == null ?  false : Boolean.valueOf(amxPrefs.getUnregisterNonCompliant());
 
         mValidatorThread = new ValidatorThread(mServer, mValidationLevel, mUnregisterNonCompliant);
         

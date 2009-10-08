@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.HashSet;
 import javax.management.MBeanInfo;
 import javax.management.ObjectName;
+import javax.management.InstanceNotFoundException;
 import org.glassfish.admin.amx.base.Pathnames;
 import org.glassfish.admin.amx.base.Tools;
 import org.glassfish.admin.amx.core.AMXValidator;
@@ -107,6 +108,7 @@ public class ToolsImpl extends AMXImplBase // implements Tools
     public String java(final ObjectName objectName)
     {
         final MBeanInfo mbeanInfo = getProxyFactory().getMBeanInfo(objectName);
+        if ( mbeanInfo == null ) return null;
 
         final MBeanInterfaceGenerator gen = new MBeanInterfaceGenerator();
         final String out = gen.generate(mbeanInfo, true);
@@ -126,6 +128,10 @@ public class ToolsImpl extends AMXImplBase // implements Tools
             for (final ObjectName objectName : objectNames)
             {
                 final MBeanInfo mbeanInfo = getProxyFactory().getMBeanInfo(objectName);
+                if ( mbeanInfo == null )
+                {
+                    continue;
+                }
 
                 // Don't generate info if we've seen that type/class combination already
                 final String type = Util.getTypeProp(objectName);

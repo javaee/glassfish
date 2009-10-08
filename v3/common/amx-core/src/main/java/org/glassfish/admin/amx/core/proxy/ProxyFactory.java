@@ -425,7 +425,8 @@ public final class ProxyFactory implements NotificationListener
 	}
 	
     /**
-        Return (possibly cached) MBeanInfo.
+        Return (possibly cached) MBeanInfo.  If the MBean does not exist,
+        then null is returned.
      */
     public MBeanInfo getMBeanInfo( final ObjectName objectName )
     {
@@ -443,10 +444,15 @@ public final class ProxyFactory implements NotificationListener
             }
             return info;
         }
+        catch( final InstanceNotFoundException e )
+        {
+            // OK, return null
+        }
         catch ( Exception e )
         {
             throw new RuntimeException(e);
         }
+        return null;
     }
     
     public static boolean invariantMBeanInfo(final MBeanInfo info )
@@ -481,7 +487,10 @@ public final class ProxyFactory implements NotificationListener
 	    final ObjectName	objectName,
 	    Class<T>            intf)
 	{
-		final T proxy = getProxy( objectName, getMBeanInfo(objectName), intf);
+        final MBeanInfo info = getMBeanInfo(objectName);
+        if ( info == null ) return null;
+        
+		final T proxy = getProxy( objectName, info, intf);
 		return proxy;
 	}
     
@@ -490,6 +499,8 @@ public final class ProxyFactory implements NotificationListener
 	getProxy( final ObjectName	objectName)
 	{
         final MBeanInfo info = getMBeanInfo(objectName);
+        if ( info == null ) return null;
+        
         final Class<? extends AMXProxy>  intf = genericInterface(info);
 		final AMXProxy proxy = getProxy( objectName, info, intf);
         return proxy;

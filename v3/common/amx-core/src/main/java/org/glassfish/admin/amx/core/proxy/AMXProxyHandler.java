@@ -87,6 +87,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
     private final ObjectName mParentObjectName;
     private final String mName;
 
+    /** convert to specified class. */
     public <T extends AMXProxy> T as(final Class<T> intf)
     {
         final Class<?> thisClass = this.getClass();
@@ -96,7 +97,13 @@ public final class AMXProxyHandler extends MBeanProxyHandler
             return intf.cast(this);
         }
 
-        return proxyFactory().getProxy(getObjectName(), getMBeanInfo(), intf);
+        final T result = proxyFactory().getProxy(getObjectName(), getMBeanInfo(), intf);
+        if ( result == null )
+        {
+            throw new IllegalStateException( "Proxy no longer valid for: " + objectName() );
+        }
+        
+        return result;
 
     //throw new IllegalArgumentException( "Cannot convert " + getObjectName() +
     // " to interface " + intf.getName() + ", interfaceName from Descriptor = " + interfaceName());
@@ -879,7 +886,14 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 
     public AMXProxy parent()
     {
-        return mParentObjectName == null ? null : proxyFactory().getProxy(mParentObjectName);
+        if ( mParentObjectName == null ) return null;
+        
+        final AMXProxy proxy = proxyFactory().getProxy(mParentObjectName);
+        if ( proxy == null )
+        {
+            System.out.println( "AMXProxyHandler: cannot obtain parent proxy for " + objectName() + " , parent = " + mParentObjectName );
+        }
+        return proxy;
     }
 
     public String path()

@@ -140,6 +140,8 @@ public final class PathnamesImpl  extends AMXImplBase
                                 
                 // careful: name should be used only if it's not a singleton
                 final MBeanInfo mbeanInfo = getProxyFactory().getMBeanInfo(child);
+                if ( mbeanInfo == null ) continue;
+                
                 final boolean singleton = AMXProxyHandler.singleton( mbeanInfo );
                 // match only if it's a singleton with no name; the check above handled the other cases
                 if ( singleton && name == null )
@@ -306,6 +308,7 @@ public final class PathnamesImpl  extends AMXImplBase
             ImplUtil.getLogger().log( Level.WARNING,
                 "PathnamesImpl.getAllPathnames(): unexpected Throwable",
                 ExceptionUtil.getRootCause(t) );
+            t.printStackTrace();    // ****************************************
         }
         return new String[] { DomainRoot.PATH };
     }

@@ -179,7 +179,7 @@ public class QueryMgrImpl extends AMXImplBase   // implements Query
         for( final ObjectName candidate : all )
         {
             final MBeanInfo mbeanInfo = proxyFactory.getMBeanInfo(candidate);
-            if ( AMXProxyHandler.globalSingleton(mbeanInfo) )
+            if ( mbeanInfo != null && AMXProxyHandler.globalSingleton(mbeanInfo) )
             {
                 globalSingletons.add(candidate);
             }

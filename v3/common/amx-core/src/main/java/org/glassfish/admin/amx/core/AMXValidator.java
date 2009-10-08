@@ -108,7 +108,10 @@ public final class AMXValidator
     private static void progress(
         final Object... args)
     {
-        log(Level.FINE, toString(args), null);
+        if ( sLogger.isLoggable(Level.FINE) )
+        {
+            log(Level.FINE, toString(args), null);
+        }
     }
     
     private static String toString(final Object... args)
@@ -248,10 +251,11 @@ public final class AMXValidator
         }
 
     }
-
+    
+    /** keeps track of all validation failures */
     private static final class Failures
     {
-        private final ConcurrentMap<ObjectName, List<String>> mFailures = new ConcurrentHashMap<ObjectName, List<String>>();
+        private final ConcurrentMap<ObjectName, ProblemList> mFailures = new ConcurrentHashMap<ObjectName, ProblemList>();
 
         private AtomicInteger mNumTested = new AtomicInteger();
 
@@ -269,18 +273,23 @@ public final class AMXValidator
             return mFailures.keySet().size();
         }
 
-        public Map<ObjectName, List<String>> getFailures()
+        public Map<ObjectName, ProblemList> getFailures()
         {
             return mFailures;
         }
 
-        void result(final ObjectName objectName, final List<String> problems)
+        void result( final ProblemList problems)
         {
             mNumTested.incrementAndGet();
 
-            if (problems != null && problems.size() != 0)
+            if ( problems.hasProblems() )
             {
-                mFailures.put(objectName, problems);
+                if ( problems.instanceNotFound() )
+                {
+                    return;
+                }
+            
+                mFailures.put( problems.getObjectName(), problems);
             }
         }
 
@@ -290,10 +299,10 @@ public final class AMXValidator
 
             for (final ObjectName badBoy : mFailures.keySet())
             {
-                final List<String> failures = mFailures.get(badBoy);
+                final ProblemList problems = mFailures.get(badBoy);
 
                 builder.append(badBoy + NL);
-                builder.append(CollectionUtil.toString(failures, NL));
+                builder.append(CollectionUtil.toString( problems.getProblems(), NL));
                 builder.append(NL);
                 builder.append(NL);
             }
@@ -301,8 +310,70 @@ public final class AMXValidator
 
             return builder.toString() + NL + mNumTested + " MBeans tested.";
         }
-
     }
+    
+    private static final class ProblemList
+    {
+        final ObjectName   mObjectName;
+        final List<String> mProblems;
+        boolean            mInstanceNotFound;
+        
+        public ProblemList( final ObjectName objectName )
+        {
+            mObjectName = objectName;
+            mProblems = new ArrayList<String>();
+            mInstanceNotFound = false;
+        }
+        
+        public List<String> getProblems() { return mProblems; }
+        public ObjectName getObjectName() { return mObjectName; }
+        
+        public boolean hasProblems() { return mProblems.size() != 0; }
+        
+        public boolean instanceNotFound()
+        {
+            return mInstanceNotFound;
+        }
+        
+        private void add( final String msg )
+        {
+            try
+            {
+                add( msg, null);
+            }
+            catch( final InstanceNotFoundException e )
+            {
+                // can't happen
+            }
+        }
+        
+        private void add( final Throwable t) throws InstanceNotFoundException { add( "", t); }
+
+        private void add( final String msg, final Throwable t )
+            throws InstanceNotFoundException
+        {
+            if ( t == null )
+            {
+                mProblems.add( msg );
+            }
+            else
+            {
+                // it's not an issue if the MBean went missing
+                final Throwable rootCause = ExceptionUtil.getRootCause(t);
+                if ( AMXValidator.instanceNotFound(rootCause) )
+                {
+                    mInstanceNotFound = true;
+                    // abort validation by throwing InstanceNotFoundException
+                    throw new InstanceNotFoundException( "" + mObjectName );
+                }
+                else
+                {
+                    mProblems.add( msg + "\n" + ExceptionUtil.toString(rootCause) );
+                }
+            }
+        }
+    }
+
 
     private String toString(final Throwable t)
     {
@@ -390,75 +461,42 @@ public final class AMXValidator
         }
     }
 
-    boolean instanceNotFound(final Throwable t )
+    static boolean instanceNotFound(final Throwable t )
     {
         return ExceptionUtil.getRootCause(t) instanceof InstanceNotFoundException;
     }
     
-    private void addToProblems( final String msg, final List<String> problems, final Throwable t )
-    {
-        if ( t == null )
-        {
-            problems.add( msg );
-        }
-        else
-        {
-            // it's not an issue if the MBean went missing
-            final Throwable rootCause = ExceptionUtil.getRootCause(t);
-            if ( ! instanceNotFound(rootCause) )
-            {
-                problems.add( msg + "\n" + ExceptionUtil.toString(rootCause) );
-            }
-        }
-    }
-    
-    private void addToProblems( final List<String> problems, final Throwable t )
-    {
-        addToProblems( "", problems, t );
-    }
-    
-    
-    private void addToProblems( final String msg, final List<String> problems)
-    {
-        addToProblems( msg, problems, null );
-    }
-    
-    private List<String> _validate(final AMXProxy proxy)
+            
+    private void _validate(final AMXProxy proxy, final ProblemList problems) throws InstanceNotFoundException
     {
         progress( "Validate: ", proxy.objectName() );
-        final List<String> problems = new ArrayList<String>();
         final ObjectName objectName = proxy.objectName();
 
         try
         {
             validateObjectName(proxy);
         }
-        catch (Throwable t)
+        catch (final Exception t)
         {
-            addToProblems( problems, t);
+            problems.add( t);
         }
 
-        List<String> temp = null;
         try
         {
-            temp = validateMetadata(proxy);
-            if (temp != null)
-            {
-                problems.addAll(temp);
-            }
+            validateMetadata(proxy, problems);
         }
-        catch (Throwable t)
+        catch (final Exception t)
         {
-            addToProblems( problems, t);
+            problems.add(t);
         }
 
         try
         {
             validateRequiredAttributes(proxy);
         }
-        catch (Throwable t)
+        catch (final Exception t)
         {
-            addToProblems( problems, t);
+            problems.add(t);
         }
 
 
@@ -467,26 +505,26 @@ public final class AMXValidator
         {
             final String name = proxy.getName();
         }
-        catch (Throwable t)
+        catch (final Exception t)
         {
-            addToProblems( "Proxy access to 'Name' failed: ", problems, t);
+            problems.add( "Proxy access to 'Name' failed: ", t);
         }
 
         try
         {
             final ObjectName parent = proxy.getParent();
         }
-        catch (Throwable t)
+        catch (final Exception t)
         {
-            addToProblems( "Proxy access to 'Parent' failed: ", problems, t);
+            problems.add( "Proxy access to 'Parent' failed: ", t);
         }
         try
         {
             final ObjectName[] children = proxy.getChildren();
         }
-        catch (Throwable t)
+        catch (final Exception t)
         {
-            addToProblems( "Proxy access to 'Children' failed: ", problems, t);
+            problems.add( "Proxy access to 'Children' failed: ", t);
         }
 
 
@@ -515,9 +553,9 @@ public final class AMXValidator
                 problems.add("Path " + path + " does not resolve to ObjectName: " + actualObjectName);
             }
         }
-        catch (final Throwable t)
+        catch (final Exception t)
         {
-            addToProblems( problems, t);
+            problems.add(t);
         }
 
         // test attributes
@@ -530,11 +568,11 @@ public final class AMXValidator
 
                 checkLegalForRemote(result);
             }
-            catch (final Throwable t)
+            catch (final Exception t)
             {
                 if ( attrName.equals(ATTR_NAME) || attrName.equals(ATTR_PARENT) || attrName.equals(ATTR_CHILDREN) )
                 {
-                    addToProblems( "Attribute failed: '" + attrName + "': ", problems, t);
+                    problems.add( "Attribute failed: '" + attrName + "': ", t);
                 }
                 else   // too stringer to consider the MBean non-compliant because of a general attribute failure.
                 {
@@ -549,9 +587,9 @@ public final class AMXValidator
         {
             validateChildren(proxy);
         }
-        catch (Throwable t)
+        catch (final Exception t)
         {
-            addToProblems( problems, t);
+            problems.add(t);
         }
 
         // test proxy methods
@@ -560,7 +598,10 @@ public final class AMXValidator
             final AMXProxy parent = proxy.parent();
             if (parent == null && !proxy.type().equals(Util.deduceType(DomainRoot.class)))
             {
-                throw new Exception("Null parent");
+                final ObjectName parentObjectName = proxy.getParent();
+                final boolean exists = mMBeanServer.isRegistered( proxy.objectName() );
+                problems.add("Null parent for " + proxy.objectName() +
+                    ", isRegistered(self) = " + exists + ", parent = " + parentObjectName);
             }
 
             final String nameProp = proxy.nameProp();
@@ -607,9 +648,9 @@ public final class AMXValidator
             }
 
         }
-        catch (final Throwable t)
+        catch (final Exception t)
         {
-            addToProblems( "General test failure: ", problems, t);
+            problems.add( "General test failure: ", t);
         }
 
 
@@ -617,12 +658,10 @@ public final class AMXValidator
         {
             validateAMXConfig(proxy, problems);
         }
-        catch (Throwable t)
+        catch (final Exception t)
         {
-            addToProblems( "General test failure in validateAMXConfig: ", problems, t);
+            problems.add( "General test failure in validateAMXConfig: ", t);
         }
-
-        return problems;
     }
     
     
@@ -638,7 +677,7 @@ public final class AMXValidator
         throw new ValidationFailureException(amx, msg);
     }
 
-    private void validateAMXConfig(final AMXProxy proxy, final List<String> problems)
+    private void validateAMXConfig(final AMXProxy proxy, final ProblemList problems) throws InstanceNotFoundException
     {
         if (!AMXConfigProxy.class.isAssignableFrom(proxy.extra().genericInterface()))
         {
@@ -850,7 +889,7 @@ public final class AMXValidator
                             final AMXProxy next = iter.next();
                             if (!mbeanInfo.equals(next.extra().mbeanInfo()))
                             {
-                                fail(proxy, "Children of type " + type + " must  have the same MBeanInfo");
+                                fail(proxy, "Children of type=" + type + " must  have the same MBeanInfo: " + siblings.values() );
                             }
                         }
                     }
@@ -882,9 +921,9 @@ public final class AMXValidator
 
         private final Set<String> mFieldNames;
 
-        private final List<String> mProblems;
+        private final ProblemList mProblems;
 
-        public MetadataValidator(final Descriptor d, final List<String> problems)
+        public MetadataValidator(final Descriptor d, final ProblemList problems) throws InstanceNotFoundException
         {
             mDescriptor = d;
             mFieldNames = SetUtil.newSet(d.getFieldNames());
@@ -894,7 +933,7 @@ public final class AMXValidator
         }
         
         // Descriptor fields must be remotable
-        void validateRemote()
+        void validateRemote() throws InstanceNotFoundException
         {
             for (final String fieldName : mFieldNames)
             {
@@ -909,7 +948,7 @@ public final class AMXValidator
             }
         }
 
-        void validateMetadataBoolean(final String fieldName)
+        void validateMetadataBoolean(final String fieldName) throws InstanceNotFoundException
         {
             if (mFieldNames.contains(fieldName))
             {
@@ -925,7 +964,7 @@ public final class AMXValidator
             }
         }
 
-        void validateMetadataString(final String fieldName)
+        void validateMetadataString(final String fieldName) throws InstanceNotFoundException
         {
             if (mFieldNames.contains(fieldName))
             {
@@ -940,7 +979,7 @@ public final class AMXValidator
             }
         }
 
-        void validate(final String fieldName, final Class<?> clazz)
+        void validate(final String fieldName, final Class<?> clazz) throws InstanceNotFoundException
         {
             if (mFieldNames.contains(fieldName))
             {
@@ -965,26 +1004,27 @@ public final class AMXValidator
     }
 
     
-    private void checkLegalAttributeType(final String clazz, final String attrName, final List<String> problems )
+    private void checkLegalAttributeType(final String clazz, final String attrName, final ProblemList problems )
+        throws InstanceNotFoundException
     {
         if ( ! isLegalClassname(clazz) )
         {
-            addToProblems( "Illegal classname for attribute " + StringUtil.quote(attrName) + ": " + StringUtil.quote(clazz), problems );
+            problems.add( "Illegal classname for attribute " + StringUtil.quote(attrName) + ": " + StringUtil.quote(clazz) );
         }
     }
     
-    private void checkLegalReturnType(final String clazz, final String operation, final List<String> problems )
+    private void checkLegalReturnType(final String clazz, final String operation, final ProblemList problems )
+        throws InstanceNotFoundException
     {
         if ( ! isLegalClassname(clazz) )
         {
-            addToProblems( "Illegal return type for " + operation + "(): " + StringUtil.quote(clazz), problems );
+            problems.add( "Illegal return type for " + operation + "(): " + StringUtil.quote(clazz) );
         }
     }
 
-    private List<String> validateMetadata(final AMXProxy proxy)
+    private void validateMetadata(final AMXProxy proxy, final ProblemList problems)
+        throws InstanceNotFoundException
     {
-        final List<String> problems = new ArrayList<String>();
-
         final MBeanInfo mbeanInfo = proxy.extra().mbeanInfo();
         final Descriptor d = mbeanInfo.getDescriptor();
 
@@ -1059,8 +1099,6 @@ public final class AMXValidator
                 throw new RuntimeException(e);
             }
         }
-
-        return problems;
     }
 
     private void validateRequiredAttributes(final AMXProxy proxy)
@@ -1153,9 +1191,8 @@ public final class AMXValidator
         {
             return details();
         }
-
     }
-    
+        
     private void unregisterNonCompliantMBean( final ObjectName objectName)
     {
         if ( mUnregisterNonCompliant )
@@ -1186,51 +1223,60 @@ public final class AMXValidator
         // list them in order
         for (final ObjectName objectName : targets)
         {
-            //debug( "AMXValidator.validate(): " + objectName );
-            List<String> problems = new ArrayList<String>();
+            progress( "AMXValidator.validate(), begin: " + objectName );
+            final ProblemList problems = new ProblemList(objectName);
             AMXProxy     amx = null;
+            
             try
             {
                 // certain failures prevent even the proxy from being created, a fatal error
                 amx = mProxyFactory.getProxy(objectName);
+                if ( amx == null )
+                {
+                    continue;    // not found
+                }
                 //debug( "VALIDATING: got proxy for: " + objectName );
             }
             catch( final Exception e )
             {
-                if ( ! instanceNotFound(e) )
+                if ( instanceNotFound(e) )
                 {
-                    progress( "Unable to create AMXProxy for " + objectName );
-                    
-                    final String msg = "Cannot create AMXProxy for MBean \"" + objectName + "\" -- MBean is  non-compliant, unregistering it.";
-                    problems.add(msg);
+                    progress( "AMXValidator.validate(), InstanceNotFound: " + objectName );
+                    continue;
                 }
+                
+                final String msg = "Cannot create AMXProxy for MBean \"" + objectName;
+                progress( msg );
+                problems.add(msg);
             }
             
             if ( amx != null )
             {
                 try
                 {
-                    problems = _validate(amx);
+                    _validate(amx, problems);
+                }
+                catch( final InstanceNotFoundException e )
+                {
+                    continue;   // can't be tested, it's gone
                 }
                 catch( final Exception e )
                 {
-                    progress( "AMXValidator.validate(): got exception from _validate for " + objectName + " : " + e );
-                    problems = new ArrayList<String>();
-                    addToProblems( "Validation failure for MBean " + objectName + ", ", problems, e);
+                    logWarning( "AMXValidator.validate(): got exception from _validate for " + objectName, e);
+                    problems.add( "Validation failure for MBean " + objectName + e);
                 }
-                if ( problems.size() != 0 )
-                {
-                    debug( "AMXValidator.validate(): got problems from _validate for " + objectName + " : " + problems );
-                }
-            }
-            if ( problems.size() != 0 )
-            {
-                //debug( "Calling unregisterNonCompliantMBean(): " + objectName + " for problems: " + problems );
-                unregisterNonCompliantMBean(objectName);
             }
 
-            failures.result(objectName, problems);
-            //debug( "AMXValidator.validate(): finished for: " + objectName );
+            if ( problems.hasProblems() && ! problems.instanceNotFound() )
+            {
+                debug( "AMXValidator.validate(): got problems from _validate for " + objectName + " : " + problems );
+                
+                //debug( "Calling unregisterNonCompliantMBean(): " + objectName + " for problems: " + problems );
+                unregisterNonCompliantMBean(objectName);
+
+                failures.result(problems);
+            }
+            progress( "AMXValidator.validate(): validated: " + objectName );
         }
         final long elapsedMillis = System.currentTimeMillis() - startMillis;
 
