@@ -190,7 +190,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
             for (String name : targetNode.model.getAttributeNames()) {
                 String finalDottedName = node.getValue()+"."  + name;
                 if (matches(finalDottedName, pattern)) {
-                    if (matchName(attrName,name)) {
+                    if (attrName.equals(name)) {
                         targetName = prefix + finalDottedName;
                         success(context, targetName, value);
                         
