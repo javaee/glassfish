@@ -16,7 +16,7 @@
     &testproperties;
     &jaxwsTools;
 
-    <target name="all" depends="clean, setup, runclient, restart-test, undeploy"/>
+    <target name="all" depends="clean, setup, runclient, undeploy"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
