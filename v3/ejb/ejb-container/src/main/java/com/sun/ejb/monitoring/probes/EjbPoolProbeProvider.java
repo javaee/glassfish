@@ -49,12 +49,21 @@ import org.glassfish.gmbal.Description;
 public class EjbPoolProbeProvider {
 
     @Probe(name="objectAddedEvent")
-    public void ejbObjectAddedEvent() {}
+    public void ejbObjectAddedEvent(
+            @ProbeParam("appName") String appName,
+            @ProbeParam("modName") String modName,
+            @ProbeParam("ejbName") String ejbName) {}
 
     @Probe(name="objectAddFailedEvent")
-    public void ejbObjectAddFailedEvent() {}
+    public void ejbObjectAddFailedEvent(
+            @ProbeParam("appName") String appName,
+            @ProbeParam("modName") String modName,
+            @ProbeParam("ejbName") String ejbName) {}
 
     @Probe(name="objectDestroyedEvent")
-    public void ejbObjectDestroyedEvent() {}
+    public void ejbObjectDestroyedEvent(
+            @ProbeParam("appName") String appName,
+            @ProbeParam("modName") String modName,
+            @ProbeParam("ejbName") String ejbName) {}
 
 }

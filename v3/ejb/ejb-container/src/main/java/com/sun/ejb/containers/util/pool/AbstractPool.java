@@ -95,7 +95,11 @@ public abstract class AbstractPool
     protected int                  poolReturned = 0; 
 
     protected String		   configData;
-    protected EjbPoolProbeProvider poolProbeNotifier = new EjbPoolProbeProvider();
+    protected EjbPoolProbeProvider poolProbeNotifier;
+
+    protected String appName;
+    protected String modName;
+    protected String ejbName;
 
     protected AbstractPool() {
     }
@@ -123,7 +127,7 @@ public abstract class AbstractPool
         if (steadyPoolSize > 0) {
             for (int i=0; i<steadyPoolSize; i++) {
                 list.add(factory.create(null));
-                poolProbeNotifier.ejbObjectAddedEvent();
+                poolProbeNotifier.ejbObjectAddedEvent(appName, modName, ejbName);
                 createdCount++;
             }
         }
@@ -148,6 +152,13 @@ public abstract class AbstractPool
 
     public void setContainerClassLoader(ClassLoader loader) {
         this.containerClassLoader = loader;
+    }
+
+    public void setInfo(String appName, String modName, String ejbName) {
+        this.appName = appName;
+        this.modName = modName;
+        this.ejbName = ejbName;
+        poolProbeNotifier = new EjbPoolProbeProvider();
     }
     
     /**
@@ -182,7 +193,7 @@ public abstract class AbstractPool
                     poolSuccess++;
                     return list.remove(size-1);
                 } else if ((createdCount - destroyedCount) < maxPoolSize) {
-                    poolProbeNotifier.ejbObjectAddedEvent();
+                    poolProbeNotifier.ejbObjectAddedEvent(appName, modName, ejbName);
                     createdCount++;	//hope that everything will be OK.
                     break;
                 }
@@ -219,7 +230,7 @@ public abstract class AbstractPool
             return factory.create(param);
         } catch (Exception poolEx) {
             synchronized (list) {
-                poolProbeNotifier.ejbObjectAddFailedEvent(); 
+                poolProbeNotifier.ejbObjectAddFailedEvent(appName, modName, ejbName); 
                 createdCount--;
             }
             throw new RuntimeException("Caught Exception when trying " +
@@ -252,7 +263,7 @@ public abstract class AbstractPool
      */
     public void destroyObject(Object object) {
     	synchronized (list) {
-            poolProbeNotifier.ejbObjectDestroyedEvent();
+            poolProbeNotifier.ejbObjectDestroyedEvent(appName, modName, ejbName);
             destroyedCount++;
             if (waitCount > 0) {
                 list.notify();
@@ -275,7 +286,7 @@ public abstract class AbstractPool
             for (int i=0; i<count; i++) {
                 try {
                     list.add(factory.create(null));
-                    poolProbeNotifier.ejbObjectAddedEvent();
+                    poolProbeNotifier.ejbObjectAddedEvent(appName, modName, ejbName);
                     createdCount++;
                 } catch (PoolException poolEx) {
                     _logger.log(Level.FINE, "Exception in preload()", poolEx);
@@ -310,7 +321,7 @@ public abstract class AbstractPool
             Object[] array = list.toArray();
             for (int i=0; i<array.length; i++) {
                 try {
-                    poolProbeNotifier.ejbObjectDestroyedEvent();
+                    poolProbeNotifier.ejbObjectDestroyedEvent(appName, modName, ejbName);
                     destroyedCount++;
                     try {
                         factory.destroy(array[i]);
@@ -343,7 +354,7 @@ public abstract class AbstractPool
             int size = list.size();
             for (int i=0; (i<count) && (size > 0); i++) {
                 removeList.add(list.remove(--size));
-                poolProbeNotifier.ejbObjectDestroyedEvent();
+                poolProbeNotifier.ejbObjectDestroyedEvent(appName, modName, ejbName);
                 destroyedCount++;
             }
             

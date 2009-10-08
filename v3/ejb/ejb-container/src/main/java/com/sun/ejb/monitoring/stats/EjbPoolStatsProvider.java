@@ -89,6 +89,7 @@ public class EjbPoolStatsProvider {
         this.appName = appName;
         this.moduleName = moduleName;
         this.beanName = beanName;
+        delegate.setInfo(appName, moduleName, beanName);
 
         long now = System.currentTimeMillis();
 
@@ -151,18 +152,64 @@ public class EjbPoolStatsProvider {
     }
 
     @ProbeListener("glassfish:ejb:pool:objectAddedEvent")
-    public void ejbObjectAddedEvent() {
-        createdStat.increment();
+    public void ejbObjectAddedEvent(
+            @ProbeParam("appName") String appName,
+            @ProbeParam("modName") String modName,
+            @ProbeParam("ejbName") String ejbName) {
+        if (isValidRequest(appName, modName, ejbName)) {
+            createdStat.increment();
+        } else {
+            logWrongEvent(appName, modName, ejbName);
+        }
     }
 
     @ProbeListener("glassfish:ejb:pool:objectAddFailedEvent")
-    public void ejbObjectAddFailedEvent() {
-        createdStat.decrement();
+    public void ejbObjectAddFailedEvent(
+            @ProbeParam("appName") String appName,
+            @ProbeParam("modName") String modName,
+            @ProbeParam("ejbName") String ejbName) {
+        if (isValidRequest(appName, modName, ejbName)) {
+            createdStat.decrement();
+        } else {
+            logWrongEvent(appName, modName, ejbName);
+        }
     }
 
     @ProbeListener("glassfish:ejb:pool:objectDestroyedEvent")
-    public void ejbObjectDestroyedEvent() {
-        destroyedStat.increment();
+    public void ejbObjectDestroyedEvent(
+            @ProbeParam("appName") String appName,
+            @ProbeParam("modName") String modName,
+            @ProbeParam("ejbName") String ejbName) {
+        if (isValidRequest(appName, modName, ejbName)) {
+            destroyedStat.increment();
+        } else {
+            logWrongEvent(appName, modName, ejbName);
+        }
     }
 
+    private boolean isValidRequest(String appName, String moduleName,
+            String beanName) {
+        if ((this.appName == null && appName != null)
+                || (this.appName != null && !this.appName.equals(appName))) {
+            return false;
+        }
+        if ((this.moduleName == null && moduleName != null)
+                || (this.moduleName != null && !this.moduleName.equals(moduleName))) {
+            return false;
+        }
+        if ((this.beanName == null && beanName != null)
+                || (this.beanName != null && !this.beanName.equals(beanName))) {
+            return false;
+        }
+
+        return true;
+    }
+  
+
+    private void logWrongEvent(String appName, String moduleName,
+            String beanName) {
+        _logger.fine("Recieved event for: [" + this.appName + ":" + 
+                this.moduleName + ":" + this.beanName + "] but this provider is for [" + 
+                appName + ":" + moduleName + ":" + beanName+ "]");
+    }
 }
