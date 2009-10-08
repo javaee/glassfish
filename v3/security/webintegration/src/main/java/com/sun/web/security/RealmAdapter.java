@@ -79,7 +79,6 @@ import org.apache.catalina.realm.RealmBase;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.internal.api.ServerContext;
-import org.glassfish.external.probe.provider.StatsProviderManager;
 //import com.sun.enterprise.Switch;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
@@ -109,7 +108,6 @@ import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
 import com.sun.enterprise.security.auth.login.DigestCredentials;
 import com.sun.enterprise.security.auth.digest.api.Key;
 import com.sun.enterprise.security.auth.digest.api.DigestParameterGenerator;
-import org.glassfish.external.probe.provider.PluginPoint;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import static com.sun.enterprise.security.auth.digest.api.Constants.A1;
@@ -543,12 +541,12 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      */
     public void preSetRunAsIdentity(ComponentInvocation inv) {
 
-        String name = this.getServletName(inv);
-        if (name == null) {
+        String servletName = this.getServletName(inv);
+        if (servletName == null) {
             return;
         }
 
-        String runAs = (String) runAsPrincipals.get(name);
+        String runAs = (String) runAsPrincipals.get(servletName);
 
         if (runAs != null) {
             // The existing SecurityContext is saved - however, this seems
@@ -561,7 +559,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             loginForRunAs(runAs);
 
             if (_logger.isLoggable(Level.FINE)) {
-                _logger.fine("run-as principal for " + name +
+                _logger.fine("run-as principal for " + servletName +
                         " set to: " + runAs);
             }
         }
@@ -620,12 +618,12 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      */
     public void postSetRunAsIdentity(ComponentInvocation inv) {
 
-        String name = this.getServletName(inv);
-        if (name == null) {
+        String servletName = this.getServletName(inv);
+        if (servletName == null) {
             return;
         }
 
-        String runAs = (String) runAsPrincipals.get(name);
+        String runAs = (String) runAsPrincipals.get(servletName);
         if (runAs != null) {
             setSecurityContext((SecurityContext) inv.getOldSecurityContext()); // always null
 
@@ -920,7 +918,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         }
 
         String protocol = "https";
-        String host = hrequest.getServerName();
+        String serverHost = hrequest.getServerName();
         StringBuffer file = new StringBuffer(hrequest.getRequestURI());
         String requestedSessionId = hrequest.getRequestedSessionId();
         if ((requestedSessionId != null) &&
@@ -935,7 +933,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         }
         URL url = null;
         try {
-            url = new URL(protocol, host, redirectPort, file.toString());
+            url = new URL(protocol, serverHost, redirectPort, file.toString());
             hresponse.sendRedirect(url.toString());
             return (false);
         } catch (MalformedURLException e) {
@@ -951,21 +949,18 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     private String getCanonicalName(HttpServletRequest currentRequest) {
         //END SJSAS 6232464
         String servletUri = "";
-        String currentUri = "";
+        String currentUri = getResourceName(currentRequest.getRequestURI(), currentRequest.getContextPath());
         String aliasUri = "";
-        String currentUriExtension = "";
+        String currentUriExtension = getExtension(currentUri);
         String aliasUriExtension = "";
         boolean isAliasExists = false;
-        for (Iterator itr = webDesc.getWebComponentDescriptors().iterator(); itr.hasNext();) {
-            WebComponentDescriptor webComponentDescriptor = (WebComponentDescriptor) itr.next();
+        for (Iterator<WebComponentDescriptor> itr = webDesc.getWebComponentDescriptors().iterator(); itr.hasNext();) {
+            WebComponentDescriptor webComponentDescriptor = itr.next();
             servletUri = webComponentDescriptor.getWebComponentImplementation();
 
-            currentUri = getResourceName(currentRequest.getRequestURI(), currentRequest.getContextPath());
-            currentUriExtension = getExtension(currentUri);
-
             // First check the servlet mapping
-            for (Iterator i = webComponentDescriptor.getUrlPatternsSet().iterator(); i.hasNext();) {
-                aliasUri = i.next().toString();
+            for (Iterator<String> i = webComponentDescriptor.getUrlPatternsSet().iterator(); i.hasNext();) {
+                aliasUri = i.next();
                 aliasUriExtension = getExtension(aliasUri);
 
                 if (aliasUri.equalsIgnoreCase(currentUri)) {
@@ -987,18 +982,18 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     }
 
     private String getResourceName(String uri, String contextPath) {
-        try {
+        if (contextPath.length() < uri.length()) {
             return uri.substring(contextPath.length());
-        } catch (java.lang.Exception ex) {
+        } else {
             return "";
         }
     }
 
     private String getExtension(String uri) {
-        try {
-            return uri.substring(uri.lastIndexOf("."));
-        } catch (java.lang.Exception ex) {
-            // don't use the cache and let jacc create the permission.
+        int index=uri.lastIndexOf(".");
+        if(index >= 0) {
+            return uri.substring(index);
+        } else {
             return "";
         }
     }
@@ -1007,7 +1002,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      * Return a short name for this Realm Adapter implementation.
      */
     protected String getName() {
-        return (this.name);
+        return name;
     }
 
     /**
