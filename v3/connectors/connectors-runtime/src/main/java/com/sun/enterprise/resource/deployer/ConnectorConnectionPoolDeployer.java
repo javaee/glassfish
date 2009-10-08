@@ -84,7 +84,10 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
     /**
      * {@inheritDoc}
      */
-    public synchronized void deployResource(Object resource) throws Exception {
+    public void deployResource(Object resource) throws Exception {
+        //deployResource is not synchronized as there is only one caller
+        //ResourceProxy which is synchronized
+        
         _logger.fine("ConnectorConnectionPoolDeployer : deployResource ");
 
         final com.sun.enterprise.config.serverbeans.ConnectorConnectionPool

@@ -102,7 +102,10 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
     /**
      * {@inheritDoc}
      */
-    public synchronized void deployResource(Object resource) throws Exception {
+    public void deployResource(Object resource) throws Exception {
+        //deployResource is not synchronized as there is only one caller
+        //ResourceProxy which is synchronized
+
         //intentional no-op
         //From 8.1 PE/SE/EE, JDBC connection pools are no more resources and 
         //they would be available only to server instances that have a resoruce-ref
@@ -121,7 +124,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
      * @param resource a resource object
      * @throws Exception thrown if fail
      */
-    public synchronized void actualDeployResource(Object resource) {
+    public void actualDeployResource(Object resource) {
         _logger.fine(" JdbcConnectionPoolDeployer - actualDeployResource : " + resource);
         JdbcConnectionPool adminPool = (JdbcConnectionPool) resource;
         try {

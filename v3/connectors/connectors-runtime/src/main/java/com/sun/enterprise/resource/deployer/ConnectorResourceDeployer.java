@@ -65,8 +65,10 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
     /**
      * {@inheritDoc}
      */
-    public synchronized void deployResource(Object resource) throws Exception {
-
+    public void deployResource(Object resource) throws Exception {
+        //deployResource is not synchronized as there is only one caller
+        //ResourceProxy which is synchronized
+        
         ConnectorResource domainResource = (ConnectorResource) resource;
         String jndiName = domainResource.getJndiName();
         String poolName = domainResource.getPoolName();

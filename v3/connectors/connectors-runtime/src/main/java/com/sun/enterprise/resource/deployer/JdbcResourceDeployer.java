@@ -92,7 +92,9 @@ public class JdbcResourceDeployer implements ResourceDeployer {
     /**
      * {@inheritDoc}
      */
-    public synchronized void deployResource(Object resource) throws Exception {
+    public void deployResource(Object resource) throws Exception {
+        //deployResource is not synchronized as there is only one caller
+        //ResourceProxy which is synchronized
 
         com.sun.enterprise.config.serverbeans.JdbcResource jdbcRes =
                 (com.sun.enterprise.config.serverbeans.JdbcResource) resource;

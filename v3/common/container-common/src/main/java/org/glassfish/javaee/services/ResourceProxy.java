@@ -74,14 +74,19 @@ public class ResourceProxy implements NamingObjectProxy.InitializationNamingObje
     private String jndiName = null;
 
     public Object create(Context ic) throws NamingException {
-        //TODO V3 need to be synchronized ?
-        try{
-            if(result == null){
-                getResourceDeployer(resource).deployResource(resource);
+        //this is a per-lookup object and once we have the resource,
+        //we remove the proxy and bind the resource (ref) with same jndi-name
+        //hence block synchronization is fine as it blocks only callers
+        //of this particular resource and also only for first time (initialization)
+        synchronized(this){
+            try{
+                if(result == null){
+                    getResourceDeployer(resource).deployResource(resource);
+                }
+                result = ic.lookup(jndiName);
+            }catch(Exception e){
+                throwResourceNotFoundException(e, jndiName);
             }
-            result = ic.lookup(jndiName);
-        }catch(Exception e){
-            throwResourceNotFoundException(e, jndiName);            
         }
         return result;
     }
