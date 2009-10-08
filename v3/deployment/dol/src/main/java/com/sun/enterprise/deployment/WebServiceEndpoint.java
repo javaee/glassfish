@@ -624,15 +624,26 @@ public class WebServiceEndpoint extends Descriptor
     public URL composeEndpointAddress(URL root)
             throws MalformedURLException  {
 
-        String uri = getEndpointAddressPath();
+        return composeEndpointAddress(root, null);
+    }
+
+
+    public URL composeEndpointAddress(URL root, String contextRoot)
+            throws MalformedURLException  {
+
+        String uri = getEndpointAddressPath(contextRoot);
         return new URL(root.getProtocol(), root.getHost(), root.getPort(), uri);
+    }
+
+    public String getEndpointAddressPath(){
+        return getEndpointAddressPath(null);
     }
 
     /**
      * return the endpoint address path (without http://<host>:<port>)
      * used to make web service invocations on this endpoint .
      */
-    public String getEndpointAddressPath() {
+    private String getEndpointAddressPath(String cr) {
         String uri = null;
         // Compose file portion of URL depending on endpoint type.
         // The file portion of the URL MUST have a single leading slash.
@@ -647,7 +658,7 @@ public class WebServiceEndpoint extends Descriptor
             // web app context root.
             WebBundleDescriptor webBundle =
                     webComponentImpl.getWebBundleDescriptor();
-            String contextRoot = webBundle.getContextRoot();
+            String contextRoot = (cr == null)?webBundle.getContextRoot():cr;
 
             if( contextRoot != null ) {
                 if( !contextRoot.startsWith("/") ) {
@@ -911,19 +922,23 @@ public class WebServiceEndpoint extends Descriptor
 
     private void updateServletEndpointRuntime() {
 
+        //An endpoint might have been loaded off a jar file. In that case the WebFragmentDescriptor can be stale. So patch it
+        WebComponentDescriptor wc = ((WebBundleDescriptor)webService.getBundleDescriptor()).getWebComponentByCanonicalName(webComponentImpl.getCanonicalName());
+        if(!(wc == webComponentImpl)){
+            setWebComponentImpl(wc);
+        }
+
         // Copy the value of the servlet impl bean class into
         // the runtime information.  This way, we'll still 
         // remember it after the servlet-class element has been 
         // replaced with the name of the container's servlet class.
         saveServletImplClass();
 
-        WebComponentDescriptor webComp =
-                (WebComponentDescriptor) getWebComponentImpl();
+        WebBundleDescriptor bundle = webComponentImpl.getWebBundleDescriptor();
 
-        WebBundleDescriptor bundle = webComp.getWebBundleDescriptor();
         WebServicesDescriptor webServices = bundle.getWebServices();
         Collection endpoints =
-                webServices.getEndpointsImplementedBy(webComp);
+                webServices.getEndpointsImplementedBy(webComponentImpl);
 
         if( endpoints.size() > 1 ) {
             String msg = "Servlet " + getWebComponentLink() +
@@ -933,7 +948,7 @@ public class WebServiceEndpoint extends Descriptor
         }
 
         if( getEndpointAddressUri() == null ) {
-            Set urlPatterns = webComp.getUrlPatternsSet();
+            Set urlPatterns = webComponentImpl.getUrlPatternsSet();
             if( urlPatterns.size() == 1 ) {
 
                 // Set endpoint-address-uri runtime info to uri.
@@ -967,7 +982,7 @@ public class WebServiceEndpoint extends Descriptor
                 String msg = "Endpoint " + getEndpointName() +
                         " has not been assigned an endpoint address " +
                         " and is associated with servlet " +
-                        webComp.getCanonicalName() + " , which has " +
+                        webComponentImpl.getCanonicalName() + " , which has " +
                         urlPatterns.size() + " url patterns";
                 throw new IllegalStateException(msg);
             }
@@ -993,4 +1008,5 @@ public class WebServiceEndpoint extends Descriptor
         toStringBuffer.append( "\n ejb Link = ").append(ejbLink);
         toStringBuffer.append( "\n web Link = ").append(webComponentLink);
     }
+
 }
