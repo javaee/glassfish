@@ -80,46 +80,32 @@ import org.jvnet.hk2.config.Transactions;
 @I18n("create.http.listener")
 public class CreateHttpListener implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateHttpListener.class);
-
     @Param(name = "listeneraddress")
     String listenerAddress;
-
     @Param(name = "listenerport")
     String listenerPort;
-
     @Param(name = "defaultvs", optional = true)
     String defaultVS;
-
     @Param(name = "default-virtual-server", optional = true)
     String defaultVirtualServer;
-
     @Param(name = "servername", optional = true)
     String serverName;
-
     @Param(name = "acceptorthreads", optional = true)
     String acceptorThreads;
-
     @Param(name = "xpowered", optional = true, defaultValue = "true")
     Boolean xPoweredBy;
-
     @Param(name = "redirectport", optional = true)
     String redirectPort;
-
     @Param(name = "securityenabled", optional = true, defaultValue = "false")
     Boolean securityEnabled;
-
     @Param(optional = true, defaultValue = "true")
     Boolean enabled;
-
     @Param(optional = true, defaultValue = "false")
     Boolean secure; //FIXME
-
     @Param(name = "listener_id", primary = true)
     String listenerId;
-
     @Inject
     Configs configs;
-
     @Inject
     Habitat habitat;
 
@@ -144,7 +130,6 @@ public class CreateHttpListener implements AdminCommand {
             final Transport transport = createOrGetTransport(networkConfig);
             final Protocol protocol = createProtocol(networkConfig);
             final ThreadPool threadPool = getThreadPool(networkConfig);
-
             createNetworkListener(networkConfig, transport, protocol, threadPool);
             updateVirtualServer(vs);
 
@@ -215,13 +200,19 @@ public class CreateHttpListener implements AdminCommand {
     }
 
     private boolean verifyDefaultVirtualServer(ActionReport report, HttpService httpService) {
-        if(defaultVS != null && defaultVirtualServer != null && !defaultVS.equals(defaultVirtualServer)) {
+        if (defaultVS == null && defaultVirtualServer == null) {
+            report.setMessage(localStrings.getLocalString("create.http.listener.vs.blank",
+                "A default virtual server is required.  Please use --default-virtual-server to specify this value."));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return false;
+        }
+        if (defaultVS != null && defaultVirtualServer != null && !defaultVS.equals(defaultVirtualServer)) {
             report.setMessage(localStrings.getLocalString("create.http.listener.vs.bothparams",
-                "--defaultVS and --default-virtual-server conflict.  Please use only --default-virtu     al-server"
+                "--defaultVS and --default-virtual-server conflict.  Please use only --default-virtual-server"
                     + " to specify this value."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return false;
-        } else if(defaultVirtualServer == null && defaultVS != null) {
+        } else if (defaultVirtualServer == null && defaultVS != null) {
             defaultVirtualServer = defaultVS;
         }
         //no need to check the other things (e.g. id) for uniqueness
