@@ -5125,10 +5125,8 @@ public abstract class BaseContainer
         }
     }
     
-    protected EjbMonitoringStatsProvider getMonitoringStatsProvider(
-            String appName, String modName, String ejbName) {
-        return new EjbMonitoringStatsProvider(appName, modName, ejbName);
-    }
+    protected abstract EjbMonitoringStatsProvider getMonitoringStatsProvider(
+            String appName, String modName, String ejbName);
 
     private MonitoredObjectType getEJBMonitoredObjectType()
     {

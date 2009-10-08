@@ -53,7 +53,7 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.ResourceHandler;
 import org.glassfish.ejb.startup.SingletonLifeCycleManager;
 
-import com.sun.ejb.monitoring.stats.EjbMonitoringStatsProvider;
+import com.sun.ejb.monitoring.stats.SingletonBeanStatsProvider;
 
 import javax.ejb.*;
 import javax.transaction.Transaction;
@@ -68,6 +68,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import com.sun.ejb.Container;
 import com.sun.ejb.InvocationInfo;
+import com.sun.ejb.monitoring.stats.EjbMonitoringStatsProvider;
 
 
 public abstract class AbstractSingletonContainer
@@ -293,7 +294,7 @@ public abstract class AbstractSingletonContainer
     protected EjbMonitoringStatsProvider getMonitoringStatsProvider(
             String appName, String modName, String ejbName) {
         // TODO - which stats provider to use?
-        return new EjbMonitoringStatsProvider(appName, modName, ejbName);
+        return new SingletonBeanStatsProvider(appName, modName, ejbName);
     }
 
     public void onReady() {

@@ -51,6 +51,8 @@ import org.glassfish.gmbal.*;
  *
  * @author Marina Vatkina
  */
+@AMXMetadata(type="stateless-session-bean-mon", group="monitoring", isSingleton=false)
+@ManagedObject
 public class StatelessSessionBeanStatsProvider extends EjbMonitoringStatsProvider {
 
     private BoundedRangeStatisticImpl methodReadyCount = null;

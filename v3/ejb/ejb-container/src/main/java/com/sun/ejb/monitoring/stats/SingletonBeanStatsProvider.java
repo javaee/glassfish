@@ -35,47 +35,19 @@
  */
 package com.sun.ejb.monitoring.stats;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.glassfish.external.probe.provider.StatsProviderManager;
-import org.glassfish.external.probe.provider.annotations.*;
-import org.glassfish.external.statistics.*;
-import org.glassfish.external.statistics.impl.*;
 import org.glassfish.gmbal.*;
 
 /**
- * Probe listener for the Message-Driven Beans part of the EJB monitoring events. 
+ * Defines SingletonBeanStatsProvider
  *
  * @author Marina Vatkina
  */
-@AMXMetadata(type="message-driven-bean-mon", group="monitoring", isSingleton=false)
+@AMXMetadata(type="singleton-bean-mon", group="monitoring", isSingleton=false)
 @ManagedObject
-public class MessageDrivenBeanStatsProvider extends EjbMonitoringStatsProvider {
+public class SingletonBeanStatsProvider extends EjbMonitoringStatsProvider {
 
-    private CountStatisticImpl messageCount = new CountStatisticImpl("MessageCount",
-            "count", "Number of messages received for a message-driven bean");
-
-    public MessageDrivenBeanStatsProvider(String appName, String moduleName, 
-            String beanName) {
+    public SingletonBeanStatsProvider(String appName, 
+            String moduleName, String beanName) {
         super(appName, moduleName, beanName);
     }
-
-    @ManagedAttribute(id="messagecount")
-    @Description( "Number of messages received for a message-driven bean")
-    public CountStatistic getCreateCount() {
-        return messageCount.getStatistic();
-    }
-
-    @ProbeListener("glassfish:ejb:bean:messageDeliveredEvent")
-    public void messageDeliveredEvent(
-            @ProbeParam("appName") String appName,
-            @ProbeParam("modName") String modName,
-            @ProbeParam("ejbName") String ejbName) {
-        if (isValidRequest(appName, modName, ejbName)) {
-            log ("messageDeliveredEvent", "MessageDrivenBeanStatsProvider");
-            messageCount.increment();
-        }
-    }
-
 }

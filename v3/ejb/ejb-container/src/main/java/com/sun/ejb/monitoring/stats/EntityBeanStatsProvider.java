@@ -51,6 +51,8 @@ import org.glassfish.gmbal.*;
  *
  * @author Marina Vatkina
  */
+@AMXMetadata(type="entity-bean-mon", group="monitoring", isSingleton=false)
+@ManagedObject
 public class EntityBeanStatsProvider extends EjbMonitoringStatsProvider {
 
     private BoundedRangeStatisticImpl pooledCount = null;

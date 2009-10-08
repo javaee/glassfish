@@ -58,11 +58,9 @@ import com.sun.ejb.containers.EjbContainerUtilImpl;
  *
  * @author Marina Vatkina
  */
-// TODO: find the right names
-@AMXMetadata(type="ejb-application-mon", group="monitoring", isSingleton=false)
-@ManagedObject
-@Description("Ejb Application Statistics")
-public class EjbMonitoringStatsProvider {
+// @AMXMetadata and @ManagedObject should NOT be added here on this base class.
+// Need to be added to derived classes to define the individual types.
+public abstract class EjbMonitoringStatsProvider {
 
     private Map<String, EjbMethodStatsProvider> methodMonitorMap = 
             new HashMap<String, EjbMethodStatsProvider>();
