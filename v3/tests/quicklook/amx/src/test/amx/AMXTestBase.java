@@ -108,6 +108,18 @@ public class AMXTestBase
     {
         System.out.println("" + s);
     }
+    
+    protected static void println(final String s)
+    {
+        System.out.println("" + s);
+    }
+    
+    
+    protected static void warning(final String s)
+    {
+        System.out.println("" + s);
+    }
+
 
     AMXTestBase()
     {
