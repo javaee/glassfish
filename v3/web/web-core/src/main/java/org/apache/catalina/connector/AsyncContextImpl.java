@@ -53,7 +53,7 @@ public class AsyncContextImpl implements AsyncContext {
     /* 
      * Event notification types for async mode
      */
-    static enum AsyncEventType { COMPLETE, TIMEOUT, ERROR }
+    static enum AsyncEventType { COMPLETE, TIMEOUT, ERROR, START_ASYNC }
 
     private static final Logger log =
         Logger.getLogger(AsyncContextImpl.class.getName());
@@ -282,9 +282,7 @@ public class AsyncContextImpl implements AsyncContext {
         this.servletResponse = servletResponse;
         this.isOriginalRequestAndResponse = isOriginalRequestAndResponse;
         isDispatchInProgress.set(false);
-        synchronized(asyncListenerHolders) {
-            asyncListenerHolders.clear();
-        }
+        notifyAsyncListeners(AsyncEventType.START_ASYNC, null);
         if (isOriginalRequestAndResponse) {
             zeroArgDispatchTarget = getZeroArgDispatchTarget(origRequest);
         } else if (servletRequest instanceof HttpServletRequest) {
@@ -353,6 +351,9 @@ public class AsyncContextImpl implements AsyncContext {
             LinkedList<AsyncListenerHolder> clone =
                 (LinkedList<AsyncListenerHolder>)
                     asyncListenerHolders.clone();
+            if (asyncEventType.equals(AsyncEventType.START_ASYNC)) {
+                asyncListenerHolders.clear();
+            }
             for (AsyncListenerHolder asyncListenerHolder : clone) {
                 AsyncListener asyncListener =
                     asyncListenerHolder.getAsyncListener();
@@ -369,6 +370,9 @@ public class AsyncContextImpl implements AsyncContext {
                         break;
                     case ERROR:
                         asyncListener.onError(asyncEvent);
+                        break;
+                    case START_ASYNC:
+                        asyncListener.onStartAsync(asyncEvent);
                         break;
                     }
                 } catch (IOException ioe) {
