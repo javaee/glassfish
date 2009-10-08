@@ -431,9 +431,8 @@ public final class AMXProxyTests extends AMXTestBase
         if ( problems.size() != 0 )
         {
             System.out.println( "\nPROBLEMS:\n" + CollectionUtil.toString(problems, "\n\n") );
+            assert false : "" + problems;
         }
-        // don't mark this as a failure just yet
-        // assert problems.size() == 0;
     }
     
     

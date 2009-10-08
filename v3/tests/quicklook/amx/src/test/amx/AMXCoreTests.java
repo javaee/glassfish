@@ -123,10 +123,10 @@ public final class AMXCoreTests extends AMXTestBase
     {
         try
         {
-        final int failureCount = getDomainRootProxy().getNumComplianceFailures();
+        final Map<ObjectName, List<String>> failures = getDomainRootProxy().getComplianceFailures();
         
-        assert failureCount == 0 :
-            "Server indicates that there are non-compliant AMX MBean validator failures, failure count = " + failureCount + ", examine the server log for failures";
+        assert failures.size() == 0 :
+            "Server indicates that there are non-compliant AMX MBean validator failures, failure count = " + failures.size() + "\n" + failures;
         }
         catch( final Throwable t )
         {
