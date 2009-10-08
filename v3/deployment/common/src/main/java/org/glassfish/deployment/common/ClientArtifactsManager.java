@@ -112,43 +112,35 @@ public class ClientArtifactsManager {
      * @throws IllegalStateException if invokes after the accumulated artifacts have been consumed
      */
     public void add(final URI baseURI, final URI artifactURI) {
-        URI relativeURI;
-        URI absoluteURI;
-        if (artifactURI.isAbsolute()) {
-            absoluteURI = artifactURI;
-            relativeURI = baseURI.relativize(absoluteURI);
-        } else {
-            relativeURI = artifactURI;
-            absoluteURI = baseURI.resolve(relativeURI);
-        }
+        final URIPair uris = new URIPair(baseURI, artifactURI);
         if (isArtifactSetConsumed) {
             throw new IllegalStateException(
                     formattedString("enterprise.deployment.backend.appClientArtifactOutOfOrder",
-                        absoluteURI.toASCIIString())
+                        uris.absoluteURI.toASCIIString())
                     );
         } else {
             DownloadableArtifacts.FullAndPartURIs existingArtifact =
-                    artifacts.get(relativeURI);
+                    artifacts.get(uris.relativeURI);
             if (existingArtifact != null) {
                 throw new IllegalArgumentException(
                         formattedString("enterprise.deployment.backend.appClientArtifactCollision",
-                            relativeURI.toASCIIString(),
-                            absoluteURI.toASCIIString(),
+                            uris.relativeURI.toASCIIString(),
+                            uris.absoluteURI.toASCIIString(),
                             existingArtifact.getFull().toASCIIString())
                         );
             }
-            final File f = new File(absoluteURI);
+            final File f = new File(uris.absoluteURI);
             if ( ! f.exists() || ! f.canRead()) {
                 throw new IllegalArgumentException(
                         formattedString("enterprise.deployment.backend.appClientArtifactMissing",
-                            relativeURI.toASCIIString(),
-                            absoluteURI.toASCIIString())
+                            uris.relativeURI.toASCIIString(),
+                            uris.absoluteURI.toASCIIString())
                         );
             }
             final DownloadableArtifacts.FullAndPartURIs newArtifact =
                     new DownloadableArtifacts.FullAndPartURIs(
-                    absoluteURI, relativeURI);
-            artifacts.put(relativeURI, newArtifact);
+                    uris.absoluteURI, uris.relativeURI);
+            artifacts.put(uris.relativeURI, newArtifact);
         }
     }
 
@@ -179,6 +171,14 @@ public class ClientArtifactsManager {
         }
     }
 
+    public boolean contains(final URI baseURI, final URI artifactURI) {
+        final URIPair uris = new URIPair(baseURI, artifactURI);
+        return artifacts.containsKey(artifactURI);
+    }
+
+    public boolean contains(final File baseFile, final File artifactFile) {
+        return contains(baseFile.toURI(), artifactFile.toURI());
+    }
     /**
      * Returns the set (in unmodifiable form) of FullAndPartURIs for the
      * accumulated artifacts.
@@ -195,5 +195,20 @@ public class ClientArtifactsManager {
     private String formattedString(final String key, final Object... args) {
         final String format = logger.getResourceBundle().getString(key);
         return MessageFormat.format(format, args);
+    }
+
+    private static class URIPair {
+        private final URI relativeURI;
+        private final URI absoluteURI;
+
+        private URIPair(final URI baseURI, final URI artifactURI) {
+            if (artifactURI.isAbsolute()) {
+                absoluteURI = artifactURI;
+                relativeURI = baseURI.relativize(absoluteURI);
+            } else {
+                relativeURI = artifactURI;
+                absoluteURI = baseURI.resolve(relativeURI);
+            }
+        }
     }
 }
