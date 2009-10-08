@@ -73,6 +73,7 @@ import com.sun.corba.ee.org.omg.CSIIOP.*;
 import sun.security.x509.X500Name;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
+import com.sun.enterprise.security.auth.login.common.LoginException;
 import com.sun.enterprise.security.common.ClientSecurityContext;
 import com.sun.enterprise.security.common.SecurityConstants;
 import com.sun.enterprise.security.ssl.SSLUtils;
@@ -855,6 +856,8 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
                 ctx.authcls = PasswordCredential.class;
             }
             return ctx;
+        } catch(LoginException le){
+            throw le;
         } catch(Exception e) {
             _logger.log(Level.SEVERE,"iiop.user_password_exception",e);
             return null;

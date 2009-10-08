@@ -51,6 +51,9 @@ import com.sun.enterprise.security.GUILoginDialog;
  * client container. The container tries to use the application specified 
  * callback handler (if provided). If there is no callback handler or if
  * the handler cannot be instantiated then this default handler is used.
+ *
+ * Note: User-defined Callback Handlers which intend to indicate cancel
+ * status must extend this class and set the ThreadLocal cancelStatus.
  */
 public class LoginCallbackHandler implements CallbackHandler 
 {
