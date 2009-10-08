@@ -152,19 +152,21 @@ public class ProxyHandlers {
         input = {
             @HandlerInput(name = "objectNameStr", type = String.class, required = true),
             @HandlerInput(name = "type", type = String.class, required = true),
-            @HandlerInput(name = "selectedRows", type = List.class, required = true)})
+            @HandlerInput(name = "selectedRows", type = List.class, required = true),
+            @HandlerInput(name = "key", type = String.class, defaultValue="Name", required = false)})
     public static void deleteChildren(HandlerContext handlerCtx) {
         String type = (String) handlerCtx.getInputValue("type");
         if (type.equals(CONNECTOR_CONNECTION_POOL) || type.equals(JDBC_CONNECTION_POOL)) {
             deleteCascade(handlerCtx);
         } else {
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+            String key = (String) handlerCtx.getInputValue("key");
             AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
 
             List<Map> selectedRows = (List) handlerCtx.getInputValue("selectedRows");
             try {
                 for (Map oneRow : selectedRows) {
-                    String Name = (String) oneRow.get("Name");
+                    String Name = (String) oneRow.get(key);
                     amx.removeChild(type, Name);
                 }
             } catch (Exception ex) {

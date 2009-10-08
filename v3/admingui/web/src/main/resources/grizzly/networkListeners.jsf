@@ -39,9 +39,25 @@
 
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
+    setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.grizzly.networkListenersPageTitle}" >
+<!define name="deleteButton">
+    <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
+        onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
+        { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
+        else {return false;} "
+    >
+        <!command
+            getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
+            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
+            deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
+            setAttribute(key="selectedRows" value="${selectedRows}");
+            deleteChildren(objectNameStr="#{pageSession.protocolStrEl}", type="protocol", key="Protocol", selectedRows="${selectedRows}");
+            redirect(page="#{pageSession.listLink}");
+        />
+    </sun:button>
+</define>
 <!define name="content">
     <event>
     <!beforeCreate
@@ -55,6 +71,8 @@
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/networkListeners.jsf?configName=#{configName}");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?configName=#{configName}");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18n_web.grizzly.networkListeners.tableName}");
+
+        setPageSessionAttribute(key="protocolStrEl", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols");
     />
     </event>
 #include "/common/shared/restart.inc"    

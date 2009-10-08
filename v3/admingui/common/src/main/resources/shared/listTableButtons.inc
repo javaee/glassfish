@@ -8,6 +8,7 @@
             <!command redirect(page="#{pageSession.createLink}") />
         </sun:button>
 
+        <!insert name="deleteButton">
         <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
             onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
             { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
@@ -24,6 +25,7 @@
             redirect(page="#{pageSession.listLink}");
         />
         </sun:button>
+        </insert>
 
      </sun:panelGroup>
  </facet>
