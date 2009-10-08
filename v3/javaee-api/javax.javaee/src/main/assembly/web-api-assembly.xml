@@ -21,6 +21,9 @@
                     <exclude>META-INF/mailcap*</exclude>
                     <exclude>META-INF/*.default</exclude>
                     <exclude>com/googlecode/**</exclude>
+                    <exclude>com/google/**</exclude>
+                    <exclude>ee/**</exclude>
+                    <exclude>javassist/**</exclude>
                     <exclude>sample/**</exclude>
                     <exclude>com/sun/**</exclude>
                     <exclude>**/*.html</exclude>
@@ -59,8 +62,7 @@
                 <include>org.eclipse.persistence:javax.persistence</include>
                 <include>org.glassfish:javax.xml.soap</include>
                 <include>org.glassfish:bean-validator</include>
-                <include>org.jboss.webbeans:jsr299-api</include>
-                <include>javax.inject:inject-api</include>
+                <include>org.jboss.webbeans:webbeans-osgi-bundle</include>
                 <include>org.glassfish.web:jstl-impl</include>
             </includes>
         </dependencySet>
