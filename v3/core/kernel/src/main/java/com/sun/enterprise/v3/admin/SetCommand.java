@@ -106,6 +106,10 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
         }
         String attrName = target.substring(lastDotIndex+1);
         String pattern =  target.substring(0, lastDotIndex);
+        if (attrName.replace('_', '-').equals("jndi-name")) {
+            fail(context, "Cannot change a primary key\nChange of " + target + " is rejected.");
+            return false;
+        }
         boolean isProperty = false;
         if ("property".equals(pattern.substring(pattern.lastIndexOf('.')+1))) {
             // we are looking for a property, let's look it it exists already...
