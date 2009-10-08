@@ -42,6 +42,7 @@ import com.sun.enterprise.security.UsernamePasswordStore;
 import com.sun.enterprise.security.appclient.integration.AppClientSecurityInfo;
 import com.sun.enterprise.security.auth.login.LoginCallbackHandler;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
+import com.sun.enterprise.security.common.ClientSecurityContext;
 import com.sun.enterprise.security.common.SecurityConstants;
 import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.security.jmac.config.GFAuthConfigFactory;
@@ -232,5 +233,19 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
 
     public List<MessageSecurityConfig> getMsgSecConfigs() {
         return msgSecConfigs;
+    }
+
+    @Override
+    public void clearClientSecurityContext() {
+        ClientSecurityContext.setCurrent(null);
+    }
+
+    @Override
+    public boolean isLoginCancelled() {
+        boolean isCancelled = false;
+        if(callbackHandler instanceof LoginCallbackHandler){
+            isCancelled=((LoginCallbackHandler) callbackHandler).getCancelStatus();
+        }
+        return isCancelled;
     }
 }

@@ -200,6 +200,21 @@ public class AppClientContainerSecurityHelper {
         return iiopProperties;
     }
 
+    /**
+     * Clears the Client's current Security Context.
+     */
+    void clearClientSecurityContext() {
+        secInfo.clearClientSecurityContext();
+    }
+
+    /**
+     * Check if the Login attempt was cancelled.
+     * @return boolean indicating whether the login attempt was cancelled.
+     */
+    boolean isLoginCancelled(){
+        return secInfo.isLoginCancelled();
+    }
+
     private void initHttpAuthenticator(final AppClientSecurityInfo.CredentialType loginType) {
         Authenticator.setDefault(
                 new HttpAuthenticator(secInfo, loginType));

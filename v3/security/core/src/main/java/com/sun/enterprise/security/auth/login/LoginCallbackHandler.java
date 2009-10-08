@@ -57,6 +57,17 @@ public class LoginCallbackHandler implements CallbackHandler
     private boolean isGUI;
     private static final LocalStringManagerImpl localStrings =
     new LocalStringManagerImpl(LoginCallbackHandler.class);
+    protected ThreadLocal<Boolean> cancelStatus = new ThreadLocal<Boolean>();
+
+    /**
+     * Check whether the authentication was cancelled by the user.
+     * @return boolean indicating whether the authentication was cancelled.
+     */
+    public boolean getCancelStatus() {
+        boolean cancelled = cancelStatus.get();
+        cancelStatus.set(false);
+        return cancelled;
+    }
 
     public LoginCallbackHandler() {
         this(true);
@@ -64,6 +75,7 @@ public class LoginCallbackHandler implements CallbackHandler
 
     public LoginCallbackHandler(boolean gui) {
         isGUI = gui;
+        cancelStatus.set(false);
     }
 
     /**
@@ -78,7 +90,13 @@ public class LoginCallbackHandler implements CallbackHandler
         if(isGUI) {
             String user = localStrings.getLocalString("login.user", "user");
 	    new GUILoginDialog(user, callbacks);
-	} else {
+            for (int i = 0; i < callbacks.length; i++) {
+                if (callbacks[i] instanceof NameCallback) {
+                    cancelStatus.set(((NameCallback) callbacks[i]).getName() == null);
+                    break;
+                }
+            }
+        } else {
 	    new TextLoginDialog(callbacks);
         }
     }

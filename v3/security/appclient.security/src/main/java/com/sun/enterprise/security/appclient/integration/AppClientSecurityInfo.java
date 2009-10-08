@@ -87,4 +87,15 @@ public interface AppClientSecurityInfo {
      * @return
      */
     public Subject  doClientLogin(CredentialType credType);
+
+    /**
+     * Clears the Client's current Security Context.
+     */
+    public void clearClientSecurityContext();
+
+    /**
+     * Check if the Login attempt was cancelled.
+     * @return boolean indicating whether the login attempt was cancelled.
+     */
+    public boolean isLoginCancelled();
 }

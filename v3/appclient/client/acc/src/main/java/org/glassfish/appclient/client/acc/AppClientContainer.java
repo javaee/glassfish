@@ -582,9 +582,9 @@ public class AppClientContainer {
                     ComponentInvocation.ComponentInvocationType.APP_CLIENT_INVOCATION,
                     container);
             invocationManager.preInvoke(ci);
-            InjectionException injExc = null;;
+            InjectionException injExc = null;
             if ( ! isInjected) {
-                int retriesLeft = 3;
+                int retriesLeft = Integer.getInteger("org.glassfish.appclient.acc.maxLoginRetries", 3);
                 while (retriesLeft > 0 && ! isInjected) {
                     injExc = null;
                     try {
@@ -593,12 +593,16 @@ public class AppClientContainer {
                     } catch (InjectionException ie) {
                         Throwable t = ie;
                         boolean isAuthError = false;
+                        if (container.secHelper.isLoginCancelled()) {
+                            throw new UserError(logger.getResourceBundle().getString("appclient.userCanceledAuth"));
+                        }
                         while (t != null && ! isAuthError) {
                             isAuthError = t instanceof org.omg.CORBA.NO_PERMISSION;
                             t = t.getCause();
-                        }
+                        }                        
                         if (isAuthError) {
                             injExc = ie;
+                            container.secHelper.clearClientSecurityContext();
                             retriesLeft--;
                         } else {
                             throw ie;
