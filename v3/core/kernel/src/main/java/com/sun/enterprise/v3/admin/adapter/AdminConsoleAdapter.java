@@ -485,7 +485,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         if (appExistsInConfig()) {
             isOK = true; // FIXME: I don't think this is good enough
             setStateMsg(AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED);
-        } else if (warFile.exists()) {
+        } else if (new File(warFile.getParentFile(), ADMIN_APP_NAME).exists() || warFile.exists()) {
+	    // The exploded dir, or the .war exists... mark as downloded
             if (logger.isLoggable(Level.FINE)) {
                 setStateMsg(AdapterState.DOWNLOADED);
             }
@@ -896,4 +897,3 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	return directoryDeploy;
     }
 }
-
