@@ -85,9 +85,6 @@ update tool    updatetool 800
 //		component=>$attribute{desc});
 //	    buildUIComponentTree(layoutElement="$attribute{desc}" parent="#{parent}" result=>$attribute{newComp});
 //	    replaceUIComponent(old="${temp}" new="$attribute{newComp}");
-//
-//	    // Ugly hack to make Tree work for now...
-//	    removeWidgetsFromTree(tree="#{requestScope.newComp}");
 //	/>
 //    </sun:button>
   <sun:form id="treeForm">
@@ -196,9 +193,6 @@ update tool    updatetool 800
 	<!afterCreate
 	    getUIComponent(clientId="#{pageSession.treeId}"  component=>$attribute{component});
 	    includeIntegrations(type="org.glassfish.admingui:navNode" root="#{requestScope.component}");
-	    // This is a hack which modifies the rendererType
-	    // to ensure no "widget" renderers are used.
-	    removeWidgetsFromTree(tree="#{requestScope.component}");
 	/>
     </event>
   </sun:form>

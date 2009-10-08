@@ -30,8 +30,6 @@
                 setPageSessionAttribute(key="ajaxButton" value="$this{clientId}");
             />
             <!command
-		getUIComponent("#{pageSession.ucLink}" component=>$attribute{oldComp});
-                removeWidgetsFromTree(tree="#{requestScope.oldComp}");
                 #println("Call updateComponentCount");
                 getUpdateComponentCount(count=>$attribute{numUpdatesAvailable});
                 setPageSessionAttribute(key="showUpdateMsg", value="#{numUpdatesAvailable != 0}");
