@@ -464,9 +464,9 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
                 poolTable.remove(poolName);
 
             }
+            if (listener != null)
+                listener.poolDestroyed(poolName);
         }
-        if (listener != null)
-            listener.poolDestroyed(poolName);        
     }
 
     public void killFreeConnectionsInPools() {
