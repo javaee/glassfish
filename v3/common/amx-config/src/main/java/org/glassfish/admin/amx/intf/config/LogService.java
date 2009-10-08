@@ -61,8 +61,11 @@ public interface LogService
 	public String	getLogHandler();
 	public void	setLogHandler( String value );
 
-	public String	getLogRotationTimeLimitInMinutes();
-	public void	setLogRotationTimeLimitInMinutes( String value );
+    /** Note bad spelling to match bug in config 'Timelimit'.
+        See https://glassfish.dev.java.net/issues/show_bug.cgi?id=10114
+    */
+	public String	getLogRotationTimelimitInMinutes();
+	public void	setLogRotationTimelimitInMinutes( String value );
     
 	public String	getLogRotationLimitInBytes();
 	public void	setLogRotationLimitInBytes( String value );

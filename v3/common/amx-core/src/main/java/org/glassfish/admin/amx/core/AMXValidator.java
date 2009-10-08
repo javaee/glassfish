@@ -312,7 +312,7 @@ public final class AMXValidator
         }
     }
     
-    private static final class ProblemList
+    public static final class ProblemList
     {
         final ObjectName   mObjectName;
         final List<String> mProblems;
@@ -329,6 +329,7 @@ public final class AMXValidator
         public ObjectName getObjectName() { return mObjectName; }
         
         public boolean hasProblems() { return mProblems.size() != 0; }
+        
         
         public boolean instanceNotFound()
         {
@@ -371,6 +372,16 @@ public final class AMXValidator
                     mProblems.add( msg + "\n" + ExceptionUtil.toString(rootCause) );
                 }
             }
+        }
+        
+        public String toString()
+        {
+            if ( mInstanceNotFound )
+            {
+                return "MBean " + mObjectName + " unregistered while being validated";
+            }
+            
+            return "MBean " + mObjectName + " problems: " + NL + CollectionUtil.toString( mProblems, NL);
         }
     }
 
@@ -1161,20 +1172,25 @@ public final class AMXValidator
         private final int mNumTested;
 
         private final int mNumFailures;
+        
+        private final Map<ObjectName, ProblemList> mProblems;
 
-        public ValidationResult(
-                final int numTested,
-                final int numFailures,
-                final String details)
+        public ValidationResult( final Failures failures )
         {
-            mNumTested = numTested;
-            mNumFailures = numFailures;
-            mDetails = details;
+            mNumTested = failures.getNumTested();
+            mNumFailures = failures.getNumFailures();
+            mDetails = failures.toString();
+            mProblems = failures.getFailures();
         }
 
         public String details()
         {
             return mDetails;
+        }
+
+        public Map<ObjectName,ProblemList> failures()
+        {
+            return mProblems;
         }
 
         public int numTested()
@@ -1280,10 +1296,7 @@ public final class AMXValidator
         }
         final long elapsedMillis = System.currentTimeMillis() - startMillis;
 
-        final ValidationResult result = new ValidationResult(
-                failures.getNumTested(),
-                failures.getNumFailures(),
-                failures.toString() );
+        final ValidationResult result = new ValidationResult( failures );
         return result;
     }
 

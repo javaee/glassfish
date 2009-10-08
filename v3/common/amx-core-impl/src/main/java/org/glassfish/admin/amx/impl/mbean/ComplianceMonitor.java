@@ -37,7 +37,9 @@ package org.glassfish.admin.amx.impl.mbean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Set;
 import java.util.logging.Level;
@@ -91,9 +93,9 @@ public final class ComplianceMonitor implements NotificationListener
         ImplUtil.getLogger().info(  "AMX ComplianceMonitor: validation level = " + mValidationLevel +
                                     ", unregisterNonCompliant = " + mUnregisterNonCompliant );
     }
-    
-    public int getNumComplianceFailures() {
-        return mValidatorThread.getNumComplianceFailures();
+        
+    public Map<ObjectName, AMXValidator.ProblemList> getComplianceFailures() {
+        return mValidatorThread.getComplianceFailures();
     }
 
     private void listen()
@@ -180,13 +182,17 @@ public final class ComplianceMonitor implements NotificationListener
             mServer = server;
             mValidationLevel = validationLevel;
             mUnregisterNonCompliant = unregisterNonCompliant;
+            
+            mFailures = new ConcurrentHashMap<ObjectName,AMXValidator.ProblemList>();
         }
         
         /** queue poison pill */
         private static final ObjectName QUIT = JMXUtil.newObjectName("quit:type=quit");
 
-        public int getNumComplianceFailures() {
-            return mComplianceFailures.get();
+        private final ConcurrentHashMap<ObjectName,AMXValidator.ProblemList>  mFailures;
+        public Map<ObjectName, AMXValidator.ProblemList> getComplianceFailures()
+        {
+            return mFailures;
         }
         
         void quit()
@@ -235,6 +241,8 @@ public final class ComplianceMonitor implements NotificationListener
                     final AMXValidator.ValidationResult result = validator.validate(objectNames);
                     if (result.numFailures() != 0)
                     {
+                        mFailures.putAll( result.failures() );
+                        
                         mComplianceFailures.addAndGet( result.numFailures() );
                         ImplUtil.getLogger().info(result.toString());
                     }

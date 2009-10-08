@@ -47,127 +47,129 @@ Values are those defined in {@link LogLevelValues}.
  */
 public interface ModuleLogLevels extends PropertiesAccess, ConfigElement, Singleton
 {
-    public String getNodeAgent();
 
-    public void setNodeAgent(String level);
-
-    public String getUtil();
-
-    public void setUtil(String level);
-
-    public String getSelfManagement();
-
-    public void setSelfManagement(String level);
-
-    public String getSynchronization();
-
-    public void setSynchronization(String level);
-
-    public String getGroupManagementService();
-
-    public void setGroupManagementService(String level);
-
-    public String getManagementEvent();
-
-    public void setManagementEvent(String level);
-
-    public String getAdmin();
-
-    public void setAdmin(String value);
-
-    public String getClaoader();
-
-    public void setClaoader(String value);
-
-    public String getCMPContainer();
-
-    public void setCMPContainer(String value);
-
-    public String getCMP();
-
-    public void setCMP(String value);
-
-    public String getConfiguration();
-
-    public void setConfiguration(String value);
-
-    public String getConnector();
-
-    public void setConnector(String value);
-
-    public String getCORBA();
-
-    public void setCORBA(String value);
-
-    public String getDeployment();
-
-    public void setDeployment(String value);
-
-    public String getEJBContainer();
-
-    public void setEJBContainer(String value);
-
-    public String getJavamail();
-
-    public void setJavamail(String value);
-
-    public String getJAXR();
-
-    public void setJAXR(String value);
-
-    public String getJAXRPC();
-
-    public void setJAXRPC(String value);
-
-    public String getJDO();
-
-    public void setJDO(String value);
-
-    public String getJMS();
-
-    public void setJMS(String value);
-
-    public String getJTA();
-
-    public void setJTA(String value);
-
-    public String getJTS();
-
-    public void setJTS(String value);
-
-    public String getMDBContainer();
-
-    public void setMDBContainer(String value);
-
-    public String getNaming();
-
-    public void setNaming(String value);
-
-    public String getResourceAdapter();
-
-    public void setResourceAdapter(String value);
 
     public String getRoot();
 
     public void setRoot(String value);
 
-    public String getSAAJ();
+    public String getServer();
 
-    public void setSAAJ(String value);
+    public void setServer(String value);
+
+    public String getEjbContainer();
+
+    public void setEjbContainer(String value);
+
+    public String getCmpContainer();
+
+    public void setCmpContainer(String value);
+
+    public String getMdbContainer();
+
+    public void setMdbContainer(String value);
+
+    public String getWebContainer();
+
+    public void setWebContainer(String value);
+
+    public String getClassloader();
+
+    public void setClassloader(String value);
+
+    public String getConfiguration();
+
+    public void setConfiguration(String value);
+
+    public String getNaming();
+
+    public void setNaming(String value);
 
     public String getSecurity();
 
     public void setSecurity(String value);
 
-    public String getServer();
+    public String getJts();
 
-    public void setServer(String value);
+    public void setJts(String value);
+
+    public String getJta();
+
+    public void setJta(String value);
+
+    public String getAdmin();
+
+    public void setAdmin(String value);
+
+    public String getDeployment();
+
+    public void setDeployment(String value);
 
     public String getVerifier();
 
     public void setVerifier(String value);
 
-    public String getWebContainer();
+    public String getJaxr();
 
-    public void setWebContainer(String value);
+    public void setJaxr(String value);
+
+    public String getJaxrpc();
+
+    public void setJaxrpc(String value);
+
+    public String getSaaj();
+
+    public void setSaaj(String value);
+
+    public String getCorba();
+
+    public void setCorba(String value);
+
+    public String getJavamail();
+
+    public void setJavamail(String value);
+
+    public String getJms();
+
+    public void setJms(String value);
+
+    public String getConnector();
+
+    public void setConnector(String value);
+
+    public String getJdo();
+
+    public void setJdo(String value);
+
+    public String getCmp();
+
+    public void setCmp(String value);
+
+    public String getUtil();
+
+    public void setUtil(String value);
+
+    public String getResourceAdapter();
+
+    public void setResourceAdapter(String value);
+
+    public String getSynchronization();
+
+    public void setSynchronization(String value);
+
+    public String getNodeAgent();
+
+    public void setNodeAgent(String value);
+
+    public String getSelfManagement();
+
+    public void setSelfManagement(String value);
+
+    public String getGroupManagementService();
+
+    public void setGroupManagementService(String value);
+
+    public String getManagementEvent();
+
+    public void setManagementEvent(String value);
 }

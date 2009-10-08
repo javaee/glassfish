@@ -35,8 +35,12 @@
  */
 package org.glassfish.admin.amx.impl.mbean;
 
+import java.util.Map;
+import java.util.List;
+
 import org.glassfish.admin.amx.base.*;
 
+import org.glassfish.admin.amx.core.AMXValidator;
 
 import org.glassfish.admin.amx.util.FeatureAvailability;
 import com.sun.appserv.server.util.Version;
@@ -61,6 +65,7 @@ import java.util.Set;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.monitoring.MonitoringRoot;
 import org.glassfish.admin.amx.util.CollectionUtil;
+import org.glassfish.admin.amx.util.MapUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
 /**
@@ -150,8 +155,17 @@ public class DomainRootImpl extends AMXImplBase
         }
     }
     
-    public int getNumComplianceFailures() {
-        return mCompliance.getNumComplianceFailures();
+    public Map<ObjectName,List<String>> getComplianceFailures() {
+        final Map<ObjectName, AMXValidator.ProblemList> failures = mCompliance.getComplianceFailures();
+        final Map<ObjectName, List<String>> result = MapUtil.newMap();
+        
+        for( final ObjectName failed : failures.keySet() )
+        {
+            final AMXValidator.ProblemList problems = failures.get(failed);
+            result.put( failed, problems.getProblems() );
+        }
+        
+        return result;
     }
 
     public String getAppserverDomainName()

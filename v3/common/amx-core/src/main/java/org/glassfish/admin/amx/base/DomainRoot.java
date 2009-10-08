@@ -35,7 +35,12 @@
  */
 package org.glassfish.admin.amx.base;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.management.MBeanOperationInfo;
+import javax.management.ObjectName;
+
 import org.glassfish.admin.amx.monitoring.MonitoringRoot;
 import org.glassfish.admin.amx.annotation.*;
 
@@ -254,10 +259,14 @@ public interface DomainRoot extends AMXProxy
     @Description("Return the time the domain admin server has been running.  uptime[0] contains the time in milliseconds.  uptime[1] contains a human-readable string describing the duration.")
     public Object[] getUptimeMillis();
     
-    /** How many registrations of AMX MBeans are non-compliant? (should be zero).
-    AMX attempts to unregister non-compliant MBeans, but cannot guarantee it */
+    /**
+        Return a Map of all non-compliant MBeans (MBeans might no longer be registered).
+        The List&lt;String> contains all issues with that MBean.
+        @since Glassfish V3
+     */
     @ManagedAttribute
-    public int getNumComplianceFailures();
+    @Description("Return a Map of all non-compliant MBeans (MBeans might no longer be registered).  The List&lt;String> contains all issues with that MBean")
+    public Map<ObjectName, List<String>> getComplianceFailures();
 }
 
 
