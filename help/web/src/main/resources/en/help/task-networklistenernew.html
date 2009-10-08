@@ -16,7 +16,9 @@ protocol, but this is not required.</p><ol>
 <li><b>In the Name field, type a name for the network listener.</b><p>A network listener name cannot begin with a number.</p></li>
 <li><b>In the Protocol field, specify the protocol to be associated with the network
 listener.</b><ul>
-<li><b>Select Create a New Protocol to create a new protocol with default settings.</b><p>The default name of the protocol is the name of the network listener
+<li><b>Select Create a New Protocol to create a new protocol with default settings.
+Also, from the Virtual Server drop-down list, select the virtual server to be
+associated with the protocol.</b><p>The default name of the protocol is the name of the network listener
 with <tt>-protocol</tt> appended, but you can edit this value.</p></li>
 <li><b>Select Use an Existing Protocol, then select a protocol from the drop-down list.</b><p>If you select this option, you would typically have created the protocol for
 this listener beforehand.</p></li></ul><p>You can specify the protocol only when you create the network listener. You
@@ -46,8 +48,7 @@ with the network listener.</b><p>Normally, you select one of the two thread pool
 you install the Enterprise Server.</p></li>
 <li><b>From the Transport drop-down list, select the transport type to be used by
 the network listener.</b><p>By default, the only choice is <tt>tcp</tt>.</p></li>
-<li><b>Click OK.</b></li></ol><h6>Next Steps</h6><p>After you create a network listener, you can create a virtual server that
-uses the network listener.</p><p>If you enabled security for the network listener, you can use the
+<li><b>Click OK.</b></li></ol><h6>Next Steps</h6><p>If you enabled security for the network listener, you can use the
 SSL tab to edit the SSL settings of the protocol used by the
 network listener.</p><h6>See Also</h6>
 <ul><li><p><a href="task-networklisteneredit.html">To Edit a Network Listener</a></p></li>

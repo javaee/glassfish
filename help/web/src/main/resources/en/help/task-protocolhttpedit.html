@@ -34,7 +34,7 @@ is reached.</b><p>If this option is disabled, servlet connections do not time ou
 is disabled by default.</p></li>
 <li><b>In the Connection Upload Timeout field, type the timeout for uploads, in milliseconds.
 </b><p>This field is applicable only if the Upload Timeout Disabled checkbox is selected.
-The default value is 30000 milliseconds.</p></li>
+The default value is 300000 milliseconds.</p></li>
 <li><b>In the Request Timeout field, type the number of seconds before a request
 times out.</b><p>If the request is not processed before the timeout value is reached, the
 request is ignored. The default value is 30 seconds.</p></li>
@@ -48,7 +48,8 @@ of POST actions.</b><p>The default value is 2097152 bytes.</p></li>
 to decode the request URIs received.</b><p>The value must be a valid IANA character set name. The default value
 is UTF-8.</p></li>
 <li><b>In the Version field, type the version of the HTTP protocol used.</b><p>The default value is HTTP/1.1.</p></li>
-<li><b>Select the Compression checkbox to enable HTTP/1.1 GZIP compression to save server bandwidth.</b><p>This option is disabled by default.</p></li>
+<li><b>Select the Compression Enabled checkbox to enable HTTP/1.1 GZIP compression to save server
+bandwidth.</b><p>This option is disabled by default.</p></li>
 <li><b>In the Compressible Mime Type field, type a comma-separated list of MIME types
 for which HTTP compression is used.</b><p>The default value is <tt>text/html,text/xml,text/plain</tt>.</p></li>
 <li><b>In the Compression Minimum Size field, type the minimum size of a file
@@ -66,7 +67,7 @@ charset. The default value is <tt>text/html; charset=iso-8859-1</tt>.</p></li>
 type used if no MIME mapping is available that matches the file extension.</b><p>The format is a semicolon-delimited string consisting of the content-type, encoding, language, and
 charset. The default value is <tt>text/html; charset=iso-8859-1</tt>.</p></li>
 <li><b>In the Adapter field, type the class name of the static resources adapter.</b><p>The default value is <tt>com.sun.grizzly.tcp.StaticResourcesAdapter</tt>.</p></li>
-<li><b>Select the Comet Support Enabled checkbox to enable Comet support for the protocol.</b></li>
+<li><b>Select the Comet Support Enabled checkbox to enable Comet support for the protocol.</b><p>This option is disabled by default.</p></li>
 <li><b>Select the DNS Lookup Enabled checkbox to enable Domain Name System (DNS) lookup.</b><p>This option is disabled by default.</p></li>
 <li><b>Select the RCM Support Enabled checkbox to enable Resource Configuration Management (RCM).</b><p>This option is disabled by default.</p></li>
 <li><b>Select the Trace Enabled checkbox to enable the TRACE operation.</b><p>If this option is disabled, the Enterprise Server is less susceptible to cross-site

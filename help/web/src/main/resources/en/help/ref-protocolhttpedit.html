@@ -22,7 +22,7 @@ Use is subject to License Terms  -->
 <dt>Upload Timeout</dt>
 <dd><p>If this option is selected, the connection for a servlet that reads bytes slowly is closed after the Connection Upload Timeout limit is reached. If this option is disabled, servlet connections do not time out. This option is disabled by default.</p></dd>
 <dt>Connection Upload Timeout</dt>
-<dd><p>The timeout for uploads, in milliseconds. This field is applicable only if the Upload Timeout Enabled checkbox is selected. The default value is 30000 milliseconds.</p></dd>
+<dd><p>The timeout for uploads, in milliseconds. This field is applicable only if the Upload Timeout Enabled checkbox is selected. The default value is 300000 milliseconds.</p></dd>
 <dt>Request Timeout</dt>
 <dd><p>The number of seconds before a request times out. If the request is not processed before the timeout value is reached, the request is ignored. The default value is 30 seconds.</p></dd>
 <dt>Send Buffer Size</dt>
@@ -52,7 +52,7 @@ Use is subject to License Terms  -->
 <dt>Adapter</dt>
 <dd><p>The class name of the static resources adapter. The default value is <tt>com.sun.grizzly.tcp.StaticResourcesAdapter</tt>.</p></dd>
 <dt>Comet Support</dt>
-<dd><p>If this option is selected, Comet support is enabled for the protocol.</p></dd>
+<dd><p>If this option is selected, Comet support is enabled for the protocol. This option is disabled by default.</p></dd>
 <dt>DNS Lookup</dt>
 <dd><p>If this option is selected, Domain Name System (DNS) lookup is enabled. This option is disabled by default.</p></dd>
 <dt>RCM Support</dt>
