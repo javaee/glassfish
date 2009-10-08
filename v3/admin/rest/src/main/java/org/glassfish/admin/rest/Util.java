@@ -46,6 +46,8 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.ParameterMetaData;
 import org.glassfish.admin.rest.provider.ProviderUtil;
@@ -219,4 +221,6 @@ public class Util {
         String methodName = upperCaseFirstLetter(elementName);
         return methodName = prefix + methodName;
     }
+
+    protected final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Util.class);
 }

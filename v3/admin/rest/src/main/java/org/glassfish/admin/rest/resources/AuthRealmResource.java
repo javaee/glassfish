@@ -16,6 +16,28 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 public class AuthRealmResource extends TemplateResource<AuthRealm> {
 
+@Path("create-user/")
+public AuthRealmCreateUserResource getAuthRealmCreateUserResource() {
+AuthRealmCreateUserResource resource = resourceContext.getResource(AuthRealmCreateUserResource.class);
+return resource;
+}
+
+@Path("delete-user/")
+public AuthRealmDeleteUserResource getAuthRealmDeleteUserResource() {
+AuthRealmDeleteUserResource resource = resourceContext.getResource(AuthRealmDeleteUserResource.class);
+return resource;
+}
+
+@Path("list-users/")
+public AuthRealmListUsersResource getAuthRealmListUsersResource() {
+AuthRealmListUsersResource resource = resourceContext.getResource(AuthRealmListUsersResource.class);
+return resource;
+}
+
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"create-user", "POST"}, {"delete-user", "DELETE"}, {"list-users", "GET"}};
+}
+
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);

@@ -16,6 +16,22 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.IiopService;
 public class IiopServiceResource extends TemplateResource<IiopService> {
 
+@Path("create-ssl/")
+public IiopServiceCreateSslResource getIiopServiceCreateSslResource() {
+IiopServiceCreateSslResource resource = resourceContext.getResource(IiopServiceCreateSslResource.class);
+return resource;
+}
+
+@Path("delete-ssl/")
+public IiopServiceDeleteSslResource getIiopServiceDeleteSslResource() {
+IiopServiceDeleteSslResource resource = resourceContext.getResource(IiopServiceDeleteSslResource.class);
+return resource;
+}
+
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"create-ssl", "POST"}, {"delete-ssl", "DELETE"}};
+}
+
 	@Path("orb/")
 	public OrbResource getOrbResource() {
 		OrbResource resource = resourceContext.getResource(OrbResource.class);

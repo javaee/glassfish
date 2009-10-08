@@ -16,6 +16,22 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.IiopListener;
 public class IiopListenerResource extends TemplateResource<IiopListener> {
 
+@Path("create-ssl/")
+public IiopListenerCreateSslResource getIiopListenerCreateSslResource() {
+IiopListenerCreateSslResource resource = resourceContext.getResource(IiopListenerCreateSslResource.class);
+return resource;
+}
+
+@Path("delete-ssl/")
+public IiopListenerDeleteSslResource getIiopListenerDeleteSslResource() {
+IiopListenerDeleteSslResource resource = resourceContext.getResource(IiopListenerDeleteSslResource.class);
+return resource;
+}
+
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"create-ssl", "POST"}, {"delete-ssl", "DELETE"}};
+}
+
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);

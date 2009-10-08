@@ -290,6 +290,50 @@ public class ProviderUtil extends Util {
     }
 
 
+    static protected String getHtmlRespresentationsForCommand(
+            MethodMetaData methodMetaData, String commandMethod,
+                String commandDisplayName, UriInfo uriInfo) {
+        String result ="";
+        if (methodMetaData != null) {
+            Set<String> parameters = methodMetaData.parameters();
+            Iterator<String> iterator = parameters.iterator();
+            String parameter;
+            ParameterMetaData parameterMetaData;
+            while (iterator.hasNext()) {
+                parameter = iterator.next();
+                parameterMetaData = methodMetaData.getParameterMetaData(parameter);
+                result = result +
+                    getHtmlRespresentationForParameter(parameter, parameterMetaData);
+            }
+
+            //Fix to diplay component for commands with 0 arguments.
+            //For example, rotate-log or restart.
+            if (result.equals("")) {
+                result = " ";
+            }
+
+        }
+
+        if (result != "") {
+            result = "<div><form action=\"" + uriInfo.getAbsolutePath().toString() +
+                "\" method=\"" + /*commandMethod*/"post" + "\">" +  //hack-1 : support delete method for html
+                "<dl>" + result;                       //hardcode "post" instead of commandMethod which chould be post or delete.
+
+            //hack-1 : support delete method for html
+            //add hidden field
+            if(commandMethod.equalsIgnoreCase("DELETE")) {
+                result = result +
+                    "<input name=\"operation\" value=\"__deleteoperation\" type=\"hidden\">";
+            }
+
+            result = result + "<dt class=\"button\"></dt><dd class=\"button\"><input value=\"" + commandDisplayName + "\" type=\"submit\"></dd>";
+            result = result + "</dl></form></div>";
+        }
+
+        return result;
+    }
+
+
     static protected String getHtmlForComponent(String component, String heading,
             String result) {
         if ((component != null) && (component.length() > 0)) {

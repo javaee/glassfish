@@ -29,12 +29,12 @@ import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.api.ActionReport;
 
-public class DomainStopResource {
+public class IiopListenerDeleteSslResource {
 
-public DomainStopResource() {
+public IiopListenerDeleteSslResource() {
 __resourceUtil = new ResourceUtil();
 }
-@POST
+@DELETE
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 public Response executeCommand(HashMap<String, String> data) {
 try {
@@ -78,13 +78,31 @@ throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 }
 //Handle POST request without any entity(input).
 //Do not care what the Content-Type is.
-@POST
+@DELETE
 public Response executeCommand() {
 try {
 return executeCommand(new HashMap<String, String>());
 } catch (Exception e) {
 throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 }
+}
+//hack-1 : support delete method for html
+//Currently, browsers do not support delete method. For html media,
+//delete operations can be supported through POST. Redirect html
+//client POST request for delete operation to DELETE method.
+
+//In case of delete command reosurce, we will also create post method
+//which simply forwards the request to delete method. Only in case of
+//html client delete request is routed through post. For other clients
+//delete request is directly handled by delete method.
+@POST
+@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+public Response hack(HashMap<String, String> data) {
+if ((data.containsKey("operation")) &&
+(data.get("operation").equals("__deleteoperation"))) {
+data.remove("operation");
+}
+return executeCommand(data);
 }
 @GET
 @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -119,12 +137,16 @@ protected HttpHeaders requestHeaders;
 @Context
 protected UriInfo uriInfo;
 
-private static final String resourceName = "DomainStop";
-private static final String commandName = "stop-domain";
-private static final String commandDisplayName = "stop";
-private static final String commandMethod = "POST";
-private static final String commandAction = "Stop";
-private HashMap<String, String> commandParams = null;
-private static final boolean isLinkedToParent = false;
+private static final String resourceName = "IiopListenerDeleteSsl";
+private static final String commandName = "delete-ssl";
+private static final String commandDisplayName = "delete-ssl";
+private static final String commandMethod = "DELETE";
+private static final String commandAction = "Delete";
+private HashMap<String, String> commandParams =
+new HashMap<String, String>() {{
+put("id","$parent");
+put("type","iiop-listener");
+}};
+private static final boolean isLinkedToParent = true;
 private ResourceUtil __resourceUtil;
 }

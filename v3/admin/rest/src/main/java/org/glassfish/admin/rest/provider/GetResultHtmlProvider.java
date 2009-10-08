@@ -99,7 +99,8 @@ public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWr
         result = getHtmlForComponent(attributes, "Attributes", result);
 
         String command = proxy.getDeleteCommand();
-        String deleteCommand = getHtmlRespresentationsForCommand(command, "delete", "Delete", uriInfo);
+        String deleteCommand = getHtmlRespresentationsForCommand(
+                proxy.getMetaData().getMethodMetaData("DELETE"), "DELETE", "Delete", uriInfo);
         result = getHtmlForComponent(deleteCommand, "Delete " + getTypeKey(proxy.getDom()), result);
 
         String childResourceLinks = getResourcesLinks(proxy.getDom(),

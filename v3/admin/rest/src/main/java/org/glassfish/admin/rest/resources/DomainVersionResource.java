@@ -44,7 +44,16 @@ try {
 	java.util.Properties properties = new java.util.Properties();
 	if (!Verbose.isEmpty()) {
 		properties.put("verbose", Verbose);
-	}ActionReport actionReport = __resourceUtil.runCommand(commandName, properties, RestService.getHabitat());
+	}if (commandParams != null) {
+//formulate parent-link attribute for this command resource
+//Parent link attribute may or may not be the id/target attribute
+if (isLinkedToParent) {
+__resourceUtil.resolveParentParamValue(commandParams, uriInfo);
+}
+properties.putAll(commandParams);
+}
+
+ActionReport actionReport = __resourceUtil.runCommand(commandName, properties, RestService.getHabitat());
 
 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
 
@@ -70,7 +79,7 @@ OptionsResult optionsResult = new OptionsResult(resourceName);
 try {
 //command method metadata
 MethodMetaData methodMetaData = __resourceUtil.getMethodMetaData(
-commandName, Constants.QUERY_PARAMETER, RestService.getHabitat(), RestService.logger);
+commandName, commandParams, Constants.QUERY_PARAMETER, RestService.getHabitat(), RestService.logger);
 optionsResult.putMethodMetaData(commandMethod, methodMetaData);
 } catch (Exception e) {
 throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
@@ -89,5 +98,8 @@ private static final String resourceName = "DomainVersion";
 private static final String commandName = "version";
 private static final String commandDisplayName = "version";
 private static final String commandMethod = "GET";
+private static final String commandAction = "Version";
+private HashMap<String, String> commandParams = null;
+private static final boolean isLinkedToParent = false;
 private ResourceUtil __resourceUtil;
 }

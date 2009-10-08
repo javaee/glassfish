@@ -98,7 +98,8 @@ public class GetResultListHtmlProvider extends ProviderUtil implements MessageBo
         result = result + "<h1>" + getTypeKey() + "</h1>";
 
         String command = proxy.getPostCommand();
-        String postCommand = getHtmlRespresentationsForCommand(command, "post", "Create", uriInfo);
+        String postCommand = getHtmlRespresentationsForCommand(
+            proxy.getMetaData().getMethodMetaData("POST"), "POST", "Create", uriInfo);
         result = getHtmlForComponent(postCommand, "Create " + getTypeKey(), result);
 
         String childResourceLinks = getResourcesLinks(proxy.getDomList(),

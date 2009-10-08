@@ -44,10 +44,14 @@ return __resourceUtil.getResponse(400, /*parsing error*/
  errorMessage, requestHeaders, uriInfo);
 }
 
-/*formulate id attribute for this command resource*/
-String parent = __resourceUtil.getParentName(uriInfo);
-if (parent != null) {
-data.put("id", parent);
+if (commandParams != null) {
+//formulate parent-link attribute for this command resource
+//Parent link attribute may or may not be the id/target attribute
+if (isLinkedToParent) {
+__resourceUtil.resolveParentParamValue(commandParams, uriInfo);
+}
+
+data.putAll(commandParams);
 }
 
 __resourceUtil.adjustParameters(data);
@@ -86,7 +90,7 @@ throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public CommandResourceGetResult get() {
 try {
-return new CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod, options());
+return new CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod, commandAction, options());
 } catch (Exception e) {
 throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 }
@@ -98,7 +102,7 @@ OptionsResult optionsResult = new OptionsResult(resourceName);
 try {
 //command method metadata
 MethodMetaData methodMetaData = __resourceUtil.getMethodMetaData(
-commandName, Constants.MESSAGE_PARAMETER, RestService.getHabitat(), RestService.logger);
+commandName, commandParams, Constants.MESSAGE_PARAMETER, RestService.getHabitat(), RestService.logger);
 //GET meta data
 optionsResult.putMethodMetaData("GET", new MethodMetaData());
 optionsResult.putMethodMetaData(commandMethod, methodMetaData);
@@ -119,5 +123,8 @@ private static final String resourceName = "ApplicationEnable";
 private static final String commandName = "enable";
 private static final String commandDisplayName = "enable";
 private static final String commandMethod = "POST";
+private static final String commandAction = "Enable";
+private HashMap<String, String> commandParams = null;
+private static final boolean isLinkedToParent = false;
 private ResourceUtil __resourceUtil;
 }

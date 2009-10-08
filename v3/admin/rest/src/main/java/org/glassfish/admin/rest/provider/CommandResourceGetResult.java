@@ -53,12 +53,13 @@ public class CommandResourceGetResult extends Result {
      */
     public CommandResourceGetResult(String commandResourceName, String command,
             String commandDisplayName, String commandMethod,
-                OptionsResult metaData) {
+                String commandAction, OptionsResult metaData) {
         __commandResourceName = commandResourceName;
         __command = command;
         __commandDisplayName = commandDisplayName;
         __commandMethod = commandMethod;
         __metaData = metaData;
+        __commandAction = commandAction;
     }
 
     /**
@@ -91,6 +92,14 @@ public class CommandResourceGetResult extends Result {
     }
 
     /**
+     * Returns the action of the command resoruce. Action can be used to
+     * lable button in case of html representation.
+     */
+    public String getCommondAction() {
+        return __commandAction;
+    }
+
+    /**
      * Returns OptionsResult - the meta-data of this resource.
      */
     public OptionsResult getMetaData() {
@@ -102,5 +111,9 @@ public class CommandResourceGetResult extends Result {
     String __command;
     String __commandDisplayName;
     String __commandMethod;
+
+    //used in case of html representation as button lable
+    String __commandAction;
+
     OptionsResult __metaData;
 }

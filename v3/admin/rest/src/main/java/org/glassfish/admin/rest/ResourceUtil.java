@@ -39,9 +39,11 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Properties;
 import java.util.Set;
@@ -188,13 +190,37 @@ public class ResourceUtil extends Util {
      * @param logger the logger to use
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public MethodMetaData getMethodMetaData(String command, 
+    public MethodMetaData getMethodMetaData(String command,
             int pamameterType, Habitat habitat, Logger logger) {
+        return getMethodMetaData(command, null, pamameterType, habitat, logger);
+    }
+
+
+    /**
+     * Constructs and returns the resource method meta-data.
+     * @param command the command assocaited with the resource method
+     * @param commandParamsToSkip the command parameters for which not to
+     *        include the meta-data.
+     * @param parameterType the type of parameter. Possible values are
+     *        Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
+     * @param habitat the habitat
+     * @param logger the logger to use
+     * @return MethodMetaData the meta-data store for the resource method.
+     */
+    public MethodMetaData getMethodMetaData(String command,
+            HashMap<String, String> commandParamsToSkip, int pamameterType,
+                Habitat habitat, Logger logger) {
         MethodMetaData methodMetaData = new MethodMetaData();
 
         if (command != null) {
-            Collection<CommandModel.ParamModel> params =
-                getParamMetaData(command, habitat, logger);
+            Collection<CommandModel.ParamModel> params;
+            if (commandParamsToSkip == null) {
+                params = getParamMetaData(command, habitat, logger);
+            } else {
+                params = getParamMetaData(command, commandParamsToSkip.keySet(),
+                    habitat, logger);
+            }
+
             Iterator<CommandModel.ParamModel> iterator = params.iterator();
             CommandModel.ParamModel paramModel;
             while(iterator.hasNext()) {
@@ -219,6 +245,30 @@ public class ResourceUtil extends Util {
         }
 
         return methodMetaData;
+    }
+
+
+    /**
+     * Resolve command parameter value of $parent for the parameter
+     * in the given map.
+     * @param uriInfo the uri context to extract parent name value.
+     */
+    public void resolveParentParamValue(HashMap<String, String> commandParams,
+            UriInfo uriInfo) {
+
+        String parent = getParentName(uriInfo);
+        if (parent != null) {
+            Set<String> keys = commandParams.keySet();
+            Iterator<String> iterator = keys.iterator();
+            String key;
+            while (iterator.hasNext()) {
+                key = iterator.next();
+                if (commandParams.get(key) == Constants.PARENT_NAME_VARIABLE) {
+                    commandParams.put(key, parent);
+                    break;
+                }
+            }
+        }
     }
 
 
@@ -298,6 +348,54 @@ public class ResourceUtil extends Util {
         Collection<CommandModel.ParamModel> params = cm.getParameters();
         //print(params);
         return params;
+    }
+
+
+    /**
+     * Constructs and returns the parameter meta-data.
+     * @param command the command assocaited with the resource method
+     * @param commandParamsToSkip the command parameters for which not to
+     *        include the meta-data.
+     * @param habitat the habitat
+     * @param logger the logger to use
+     * @return Collection the meta-data for the parameter of the resource method.
+     */
+    public Collection<CommandModel.ParamModel> getParamMetaData(
+            String commandName, Collection<String> commandParamsToSkip,
+                Habitat habitat, Logger logger) {
+        CommandRunner cr = habitat.getComponent(CommandRunner.class);
+        CommandModel cm = cr.getModel(commandName, logger);
+        Collection<String> parameterNames = cm.getParametersNames();
+
+        ArrayList<CommandModel.ParamModel> metaData =
+            new ArrayList<CommandModel.ParamModel>();
+        CommandModel.ParamModel paramModel;
+        for (String name : parameterNames) {
+            paramModel = cm.getModelFor(name);
+            String parameterName =
+                (paramModel.getParam().primary())?"id":paramModel.getName();
+
+            boolean skipParameter = false;
+            try {
+                skipParameter = commandParamsToSkip.contains(parameterName);
+            } catch (Exception e) {
+                String errorMessage =
+                    localStrings.getLocalString("rest.metadata.skip.error",
+                        "Parameter \"{0}\" may be redundant and not required.",
+                            new Object[] {parameterName});
+                Logger.getLogger(ResourceUtil.class.getName()).log(Level.INFO,
+                    null, errorMessage);
+                Logger.getLogger(ResourceUtil.class.getName()).log(Level.INFO,
+                    null, e);
+            }
+
+            if (!skipParameter) {
+                metaData.add(paramModel);
+            }
+        }
+
+        //print(metaData);
+        return metaData;
     }
 
 
@@ -430,4 +528,5 @@ public class ResourceUtil extends Util {
     private String getAttributeMethodName(String attributeName) {
         return methodNameFromDtdName(attributeName, "get");
     }
+
 }

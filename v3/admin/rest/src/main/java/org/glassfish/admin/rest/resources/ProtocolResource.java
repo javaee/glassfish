@@ -16,6 +16,22 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.grizzly.config.dom.Protocol;
 public class ProtocolResource extends TemplateResource<Protocol> {
 
+@Path("create-ssl/")
+public ProtocolCreateSslResource getProtocolCreateSslResource() {
+ProtocolCreateSslResource resource = resourceContext.getResource(ProtocolCreateSslResource.class);
+return resource;
+}
+
+@Path("delete-ssl/")
+public ProtocolDeleteSslResource getProtocolDeleteSslResource() {
+ProtocolDeleteSslResource resource = resourceContext.getResource(ProtocolDeleteSslResource.class);
+return resource;
+}
+
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"create-ssl", "POST"}, {"delete-ssl", "DELETE"}};
+}
+
 	@Path("port-unification/")
 	public PortUnificationResource getPortUnificationResource() {
 		PortUnificationResource resource = resourceContext.getResource(PortUnificationResource.class);

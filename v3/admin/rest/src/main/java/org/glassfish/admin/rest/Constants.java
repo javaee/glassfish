@@ -80,4 +80,6 @@ public interface Constants {
     public static final String DEFAULT_VALUE = "Default Value";
 
     public static final String ACCEPTABLE_VALUES = "Acceptable Values";
+
+    public static final String PARENT_NAME_VARIABLE = "$parent";
 }

@@ -63,6 +63,11 @@ public class MethodMetaData {
     }
 
 
+    public ParameterMetaData removeParamMetaData(String param) {
+        return __parameterMetaData.remove(param);
+    }
+
+
     public int sizeParameterMetaData() {
         return __parameterMetaData.size();
     }
@@ -76,6 +81,11 @@ public class MethodMetaData {
     public ParameterMetaData putQureyParamMetaData(String param,
             ParameterMetaData queryParamMetaData) {
         return __queryParamMetaData.put(param, queryParamMetaData);
+    }
+
+
+    public ParameterMetaData removeQureyParamMetaData(String param) {
+        return __queryParamMetaData.remove(param);
     }
 
 

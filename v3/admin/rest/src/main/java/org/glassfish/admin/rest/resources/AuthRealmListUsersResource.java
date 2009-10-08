@@ -30,32 +30,24 @@ import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.api.ActionReport;
 
-public class DomainHostPortResource {
+public class AuthRealmListUsersResource {
 
-public DomainHostPortResource() {
+public AuthRealmListUsersResource() {
 __resourceUtil = new ResourceUtil();
 }
 @GET
 @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 public StringResult executeCommand(
+	 @QueryParam("authrealmname")  @DefaultValue("")  String Authrealmname 
+ ,
 	 @QueryParam("target")  @DefaultValue("")  String Target 
- ,
-	 @QueryParam("virtualServer")  @DefaultValue("")  String VirtualServer 
- ,
-	 @QueryParam("securityEnabled")  @DefaultValue("false")  String SecurityEnabled 
- ,
-	 @QueryParam("moduleId")  @DefaultValue("")  String ModuleId 
  	) {
 try {
 	java.util.Properties properties = new java.util.Properties();
-	if (!Target.isEmpty()) {
+	if (!Authrealmname.isEmpty()) {
+		properties.put("authrealmname", Authrealmname);
+	}	if (!Target.isEmpty()) {
 		properties.put("target", Target);
-	}	if (!VirtualServer.isEmpty()) {
-		properties.put("virtualServer", VirtualServer);
-	}	if (!SecurityEnabled.isEmpty()) {
-		properties.put("securityEnabled", SecurityEnabled);
-	}	if (!ModuleId.isEmpty()) {
-		properties.put("moduleId", ModuleId);
 	}if (commandParams != null) {
 //formulate parent-link attribute for this command resource
 //Parent link attribute may or may not be the id/target attribute
@@ -106,12 +98,15 @@ protected HttpHeaders requestHeaders;
 @Context
 protected UriInfo uriInfo;
 
-private static final String resourceName = "DomainHostPort";
-private static final String commandName = "get-host-and-port";
-private static final String commandDisplayName = "host-port";
+private static final String resourceName = "AuthRealmListUsers";
+private static final String commandName = "list-file-users";
+private static final String commandDisplayName = "list-users";
 private static final String commandMethod = "GET";
-private static final String commandAction = "HostPort";
-private HashMap<String, String> commandParams = null;
-private static final boolean isLinkedToParent = false;
+private static final String commandAction = "List";
+private HashMap<String, String> commandParams =
+new HashMap<String, String>() {{
+put("authrealmname","$parent");
+}};
+private static final boolean isLinkedToParent = true;
 private ResourceUtil __resourceUtil;
 }

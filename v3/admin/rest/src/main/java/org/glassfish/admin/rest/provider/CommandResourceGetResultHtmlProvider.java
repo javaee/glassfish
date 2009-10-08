@@ -98,17 +98,16 @@ public class CommandResourceGetResultHtmlProvider extends ProviderUtil
 
     private String getHtml(CommandResourceGetResult proxy) {
         String result = getHtmlHeader();
-        result = result + "<h1>" + 
-            upperCaseFirstLetter(eleminateHypen(proxy.getCommandDisplayName())) + "</h1>";
-
-        String commandDisplayName = 
+        String commandDisplayName =
             upperCaseFirstLetter(eleminateHypen(proxy.getCommandDisplayName()));
+        result = result + "<h1>" + commandDisplayName + "</h1>";
         String parentName =
             upperCaseFirstLetter(eleminateHypen(getParentName(uriInfo.getAbsolutePath().toString())));
 
         String command = proxy.getCommand();
-        String commandRespresentation = getHtmlRespresentationsForCommand(command,
-            proxy.getCommandMethod(), commandDisplayName, uriInfo, false);
+        String commandRespresentation = getHtmlRespresentationsForCommand(
+            proxy.getMetaData().getMethodMetaData(proxy.getCommandMethod()),
+                proxy.getCommandMethod(), proxy.getCommondAction(), uriInfo);
         result = getHtmlForComponent(commandRespresentation, parentName +
             " - " + commandDisplayName, result);
 

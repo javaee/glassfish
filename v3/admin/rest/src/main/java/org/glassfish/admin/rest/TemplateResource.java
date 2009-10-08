@@ -249,6 +249,8 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             if (command != null) {
                 MethodMetaData deleteMethodMetaData = __resourceUtil.getMethodMetaData(
                         command, RestService.getHabitat(), RestService.logger);
+                //In case of delete operation(command), do not  display/provide id attribute.
+                deleteMethodMetaData.removeParamMetaData("id");
                 optionsResult.putMethodMetaData("DELETE", deleteMethodMetaData);
             }
         } catch (Exception e) {
@@ -385,7 +387,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         return new String[][]{};
     }
 
-    private String getDeleteCommand() {
+    public String getDeleteCommand() {
         return __resourceUtil.getCommand(
                 RestRedirect.OpType.DELETE, getConfigBean());
     }

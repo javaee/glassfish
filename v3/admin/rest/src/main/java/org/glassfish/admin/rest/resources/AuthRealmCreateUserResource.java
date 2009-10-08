@@ -29,9 +29,9 @@ import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.api.ActionReport;
 
-public class DomainStopResource {
+public class AuthRealmCreateUserResource {
 
-public DomainStopResource() {
+public AuthRealmCreateUserResource() {
 __resourceUtil = new ResourceUtil();
 }
 @POST
@@ -119,12 +119,15 @@ protected HttpHeaders requestHeaders;
 @Context
 protected UriInfo uriInfo;
 
-private static final String resourceName = "DomainStop";
-private static final String commandName = "stop-domain";
-private static final String commandDisplayName = "stop";
+private static final String resourceName = "AuthRealmCreateUser";
+private static final String commandName = "create-file-user";
+private static final String commandDisplayName = "create-user";
 private static final String commandMethod = "POST";
-private static final String commandAction = "Stop";
-private HashMap<String, String> commandParams = null;
-private static final boolean isLinkedToParent = false;
+private static final String commandAction = "Create";
+private HashMap<String, String> commandParams =
+new HashMap<String, String>() {{
+put("authrealmname","$parent");
+}};
+private static final boolean isLinkedToParent = true;
 private ResourceUtil __resourceUtil;
 }

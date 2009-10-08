@@ -48,6 +48,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 import javax.ws.rs.Path;
 
 import org.glassfish.api.admin.CommandModel;
@@ -613,18 +614,27 @@ public class GeneratorResource {
 
 
     private static String ConfigBeansToCommandResourcesMap[][] = {
-        //{config-bean, command, method, resource-path}
-        {"Domain", "stop-domain", "POST", "stop"},
-        {"Domain", "restart-domain", "POST", "restart"},
-        {"Domain", "uptime", "GET", "uptime"},
-        {"Domain", "version", "GET", "version"},
-        {"Domain", "rotate-log", "POST", "rotate-log"},
-        {"Domain", "get-host-and-port", "GET", "host-port"},
+        //{config-bean, command, method, resource-path, command-action, command-params...}
+        {"Domain", "stop-domain", "POST", "stop", "Stop"},
+        {"Domain", "restart-domain", "POST", "restart", "Restart"},
+        {"Domain", "uptime", "GET", "uptime", "Uptime"},
+        {"Domain", "version", "GET", "version", "Version"},
+        {"Domain", "rotate-log", "POST", "rotate-log", "RotateLog"},
+        {"Domain", "get-host-and-port", "GET", "host-port", "HostPort"},
         ///{"ListApplication", "deploy"},
         ///{"Application", "redeploy"},
-        {"Application", "enable", "POST", "enable"},
-        {"Application", "disable", "POST", "disable"},
-        {"ConnectionPool", "ping-connection-pool", "GET", "ping"},
+        {"Application", "enable", "POST", "enable", "Enable"},
+        {"Application", "disable", "POST", "disable", "Disable"},
+        {"ConnectionPool", "ping-connection-pool", "GET", "ping", "Ping"},
+        {"IiopService", "create-ssl", "POST", "create-ssl", "Create", "type=iiop-service"},
+        {"IiopService", "delete-ssl", "DELETE", "delete-ssl", "Delete", "type=iiop-service"},
+        {"IiopListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=iiop-listener"},
+        {"IiopListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=iiop-listener"},
+        {"AuthRealm", "create-file-user", "POST", "create-user", "Create", "authrealmname=$parent"},
+        {"AuthRealm", "delete-file-user", "DELETE", "delete-user", "Delete", "authrealmname=$parent"},
+        {"AuthRealm", "list-file-users", "GET", "list-users", "List", "authrealmname=$parent"},
+        {"Protocol", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
+        {"Protocol", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=http-listener"}
     };
 
 
@@ -685,6 +695,7 @@ public class GeneratorResource {
         String commandName = configBeansToCommandResourcesArray[1];
         String commandDisplayName = configBeansToCommandResourcesArray[3];
         String commandMethod = configBeansToCommandResourcesArray[2];
+        String commandAction = configBeansToCommandResourcesArray[4];
 
         File file = new File(commandResourceFileName);
         try {
@@ -757,6 +768,25 @@ public class GeneratorResource {
         out.write("private static final String commandName = \"" + commandName + "\";\n");
         out.write("private static final String commandDisplayName = \"" + commandDisplayName + "\";\n");
         out.write("private static final String commandMethod = \"" + commandMethod + "\";\n");
+        out.write("private static final String commandAction = \"" + commandAction + "\";\n");
+
+        boolean isLinkedToParent = false;
+        if (configBeansToCommandResourcesArray.length > 5 ) {
+            out.write("private HashMap<String, String> commandParams =\n");
+            out.write("new HashMap<String, String>() {{\n");
+            for (int i=5; i <= configBeansToCommandResourcesArray.length - 1; i++) {
+                String[] name_value = stringToArray(configBeansToCommandResourcesArray[i], "=");
+                if (name_value[1].equals(Constants.PARENT_NAME_VARIABLE)) {
+                    isLinkedToParent = true;
+                }
+                out.write("put(\"" + name_value[0] + "\",\"" + name_value[1] + "\");\n");
+            }
+
+            out.write("}};\n");
+        } else {
+            out.write("private HashMap<String, String> commandParams = null;\n");
+        }
+        out.write("private static final boolean isLinkedToParent = " + isLinkedToParent + ";\n");
         out.write("private ResourceUtil __resourceUtil;\n");
         out.write("}\n");
 
@@ -775,10 +805,13 @@ public class GeneratorResource {
         out.write("return __resourceUtil.getResponse(400, /*parsing error*/\n errorMessage, requestHeaders, uriInfo);\n");
         out.write("}\n\n");
 
-        out.write("/*formulate id attribute for this command resource*/\n");
-        out.write("String parent = __resourceUtil.getParentName(uriInfo);\n");
-        out.write("if (parent != null) {\n");
-        out.write("data.put(\"id\", parent);\n");
+        out.write("if (commandParams != null) {\n");
+        out.write("//formulate parent-link attribute for this command resource\n");
+        out.write("//Parent link attribute may or may not be the id/target attribute\n");
+        out.write("if (isLinkedToParent) {\n");
+        out.write("__resourceUtil.resolveParentParamValue(commandParams, uriInfo);\n");
+        out.write("}\n\n");
+        out.write("data.putAll(commandParams);\n");
         out.write("}\n\n");
         out.write("__resourceUtil.adjustParameters(data);\n\n");
         out.write("__resourceUtil.purgeEmptyEntries(data);\n\n");
@@ -809,6 +842,38 @@ public class GeneratorResource {
         out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
         out.write("}\n");
         out.write("}\n");
+
+
+        //hack-1 : support delete method for html
+        //Currently, browsers do not support delete method. For html media,
+        //delete operations can be supported through POST. Redirect html
+        //client POST request for delete operation to DELETE method.
+
+        //In case of delete command reosurce, we will also create post method
+        //which simply forwards the request to delete method. Only in case of
+        //html client delete request is routed through post. For other clients
+        //delete request is directly handled by delete method.
+        if (commandMethod.equals("DELETE")) {
+            out.write("//hack-1 : support delete method for html\n");
+            out.write("//Currently, browsers do not support delete method. For html media,\n");
+            out.write("//delete operations can be supported through POST. Redirect html\n");
+            out.write("//client POST request for delete operation to DELETE method.\n\n");
+
+            out.write("//In case of delete command reosurce, we will also create post method\n");
+            out.write("//which simply forwards the request to delete method. Only in case of\n");
+            out.write("//html client delete request is routed through post. For other clients\n");
+            out.write("//delete request is directly handled by delete method.\n");
+
+            out.write("@" + "POST" + "\n");
+            out.write("@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})\n");
+            out.write("public Response hack(HashMap<String, String> data) {\n");
+            out.write("if ((data.containsKey(\"operation\")) &&\n");
+            out.write("(data.get(\"operation\").equals(\"__deleteoperation\"))) {\n");
+            out.write("data.remove(\"operation\");\n");
+            out.write("}\n");
+            out.write("return executeCommand(data);\n");
+            out.write("}\n");
+        }
     }
 
 
@@ -818,7 +883,7 @@ public class GeneratorResource {
         out.write("@Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})\n");
         out.write("public CommandResourceGetResult get() {\n");
         out.write("try {\n");
-        out.write("return new CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod, options());\n");
+        out.write("return new CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod, commandAction, options());\n");
         out.write("} catch (Exception e) {\n");
         out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
         out.write("}\n");
@@ -865,6 +930,15 @@ public class GeneratorResource {
             out.write("\t}");
         }
 
+        out.write("if (commandParams != null) {\n");
+        out.write("//formulate parent-link attribute for this command resource\n");
+        out.write("//Parent link attribute may or may not be the id/target attribute\n");
+        out.write("if (isLinkedToParent) {\n");
+        out.write("__resourceUtil.resolveParentParamValue(commandParams, uriInfo);\n");
+        out.write("}\n");
+        out.write("properties.putAll(commandParams);\n");
+        out.write("}\n\n");
+
         out.write("ActionReport actionReport = __resourceUtil.runCommand(commandName, properties, RestService.getHabitat());\n\n");
         out.write("ActionReport.ExitCode exitCode = actionReport.getActionExitCode();\n\n");
         out.write("StringResult results = new StringResult(commandName, actionReport.getMessage(), options());\n");
@@ -894,10 +968,10 @@ public class GeneratorResource {
         out.write("//command method metadata\n");
         out.write("MethodMetaData methodMetaData = __resourceUtil.getMethodMetaData(\n");
         if (parameterType == Constants.QUERY_PARAMETER) {
-             out.write("commandName, Constants.QUERY_PARAMETER, RestService.getHabitat(), RestService.logger);\n");
+             out.write("commandName, commandParams, Constants.QUERY_PARAMETER, RestService.getHabitat(), RestService.logger);\n");
         } else {
             //message parameter
-            out.write("commandName, Constants.MESSAGE_PARAMETER, RestService.getHabitat(), RestService.logger);\n");
+            out.write("commandName, commandParams, Constants.MESSAGE_PARAMETER, RestService.getHabitat(), RestService.logger);\n");
 
             //GET meta data
             out.write("//GET meta data\n");
@@ -911,5 +985,24 @@ public class GeneratorResource {
 
         out.write("return optionsResult;\n");
         out.write("}\n\n");
+    }
+
+
+    //This method converts a string into stringarray, uses the delimeter as the
+    //separator character.
+    private static String[] stringToArray(String str, String delimiter) {
+        String[] retString = new String[0];
+
+        if (str != null) {
+            if(delimiter != null) {
+                StringTokenizer tokens = new StringTokenizer(str, delimiter);
+                retString = new String[tokens.countTokens()];
+                int i = 0;
+                while(tokens.hasMoreTokens()) {
+                    retString[i++] = tokens.nextToken();
+                }
+            }
+        }
+        return retString;
     }
 }
