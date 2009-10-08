@@ -553,8 +553,24 @@ function findFrame(frameName) {
     return findFrameRecursive(top, frameName);
 }
 
-//===========================================================================
+var reasonsHidden = true;
 
+function showRestartReasons() {
+    var el = document.getElementById('restartReasons');
+    var toggle = document.getElementById('toggle');
+    if (reasonsHidden) {
+        //toggle.src = "#{request.contextPath}/theme/woodstock4_3/suntheme/images/table/grouprow_expanded.gif";
+        toggle.className = "expanded";
+        el.style.visibility = "visible";
+    } else {
+        //toggle.src = "#{request.contextPath}/theme/woodstock4_3/suntheme/images/table/grouprow_collapsed.gif";
+        toggle.className = "collapsed";
+        el.style.visibility = "hidden";
+    }   
+    reasonsHidden = !reasonsHidden;
+}   
+
+//===========================================================================
 
 if (typeof(admingui) === "undefined") {
     admingui = {};
@@ -1955,7 +1971,7 @@ admingui.table = {
     },
 
     initAllRows : function (tableId) {
-        var table = document.getElementById(tableId);// + ":_table");
+        var table = document.getElementById(tableId + ":_table");
         table.initAllRows();
     }
 }

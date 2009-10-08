@@ -46,56 +46,44 @@
 <sun:script url="/resource/common/js/adminjsf.js" />
 <sun:script url="/resource/common/js/restart.js" />
     <event>    
-    <!beforeCreate setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");/>
+        <!beforeCreate setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");/>
     </event>
-            
-            <f:verbatim>
-            <script type="text/javascript">
-			    var reasonsHidden = true;
-
-                function showRestartReasons() {
-                    var el = document.getElementById('restartReasons');
-                    var toggle = document.getElementById('form:title:restartReasonsToggle');
-                    if (reasonsHidden) {
-                        toggle.src = "#{request.contextPath}/theme/woodstock4_3/suntheme/images/table/grouprow_expanded.gif";
-                        el.style.visibility = "visible";
-                    } else {
-                        toggle.src = "#{request.contextPath}/theme/woodstock4_3/suntheme/images/table/grouprow_collapsed.gif";
-                        el.style.visibility = "hidden";
-                    }   
-                    reasonsHidden = !reasonsHidden;
-                }
-            </script>
-            </f:verbatim>
-            <sun:form id="form">      
-                <!-- Page Title -->
+<f:verbatim>
+        <style type="text/css">
+            .collapsed { background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/table/grouprow_collapsed.gif); }
+            .expanded { background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/table/grouprow_expanded.gif); }
+        </style>
+</f:verbatim>
+        <sun:form id="form">
+            <!-- Page Title -->
 #include "/common/shared/alertMsg.inc"                
-                <sun:title id="title" title="$resource{i18n.common.restartRequired}"  helpText="$resource{i18n.restart.RestartHelpText}" >
-                    "<br/>
-                    "<a href="#" onclick="showRestartReasons()">
-                    <sun:image id="restartReasonsToggle" alt="show reasons" url="#{request.contextPath}/theme/woodstock4_3/suntheme/images/table/grouprow_collapsed.gif"/> 
-                    "</a>
-                    "$resource{i18n.restart.showRestartReasonList}
-                    "<br /><br /><br />
-                    <sun:button id="stopInstance" style="margin-left: 8pt"
-                        onClick="if (getConfirm(this, '$resource{i18n.msg.JS.confirmRestartInstance}')) {return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');} else {return false;}"
-                        text="$resource{i18n.button.Restart}"
-                        toolTip="$resource{i18n.restart.tooltip}">
-                        <!command
-                            redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/restart-2.jsf");
-                        />
-                    </sun:button>
-                </sun:title>
-                "<div id="restartReasons" style="visibility: hidden">
-                    "<br />
-                    <!-- TODO:  i18n -->
-                    "<table width="95%" style="margin: auto" cellpadding="0" cellspacing="0" border="1">
-                        "<tr><th>Property Name</th><th>Old Value</th><th>New Value</th><th>Source</th><th>Reason</th>
-                    <foreach key="reason" list="#{unprocessedChanges}">
-                        "<tr><td>#{reason[0]}</td><td>#{reason[1]}</td><td>#{reason[2]}</td><td>#{reason[3]}</td><td>#{reason[4]}</td></tr>
-                    </foreach>
-                    "</table>
-                "</div>
-            </sun:form>
+            <sun:title id="title" title="$resource{i18n.common.restartRequired}"  helpText="$resource{i18n.restart.RestartHelpText}" >
+                "<br/>
+                "<a href="#" onclick="showRestartReasons(); return false;">
+                "<div id="toggle" class="collapsed" style="float: left; width: 12px; height: 12px;">&#160;</div>
+                "</a>
+                "$resource{i18n.restart.showRestartReasonList}
+                "<br /><br /><br />
+                <sun:button id="stopInstance" style="margin-left: 8pt"
+                    onClick="if (getConfirm(this, '$resource{i18n.msg.JS.confirmRestartInstance}')) {return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');} else {return false;}"
+                    onClick="if (getConfirm(this, '$resource{i18n.msg.JS.confirmRestartInstance}')) { window.location = '#{request.contextPath}/common/appServer/restart-2.jsf';}; return false;"
+                    text="$resource{i18n.button.Restart}"
+                    toolTip="$resource{i18n.restart.tooltip}">
+                    //<!command
+                    //    redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/restart-2.jsf");
+                    ///>
+                </sun:button>
+            </sun:title>
+            "<div id="restartReasons" style="visibility: hidden">
+                "<br />
+                <!-- TODO:  i18n -->
+                "<table width="95%" style="margin: auto" cellpadding="0" cellspacing="0" border="1">
+                    "<tr><th>Property Name</th><th>Old Value</th><th>New Value</th><th>Source</th><th>Reason</th>
+                <foreach key="reason" list="#{unprocessedChanges}">
+                    "<tr><td>#{reason[0]}</td><td>#{reason[1]}</td><td>#{reason[2]}</td><td>#{reason[3]}</td><td>#{reason[4]}</td></tr>
+                </foreach>
+                "</table>
+            "</div>
+        </sun:form>
  </define>
 </composition>
