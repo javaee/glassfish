@@ -104,7 +104,7 @@ public class JaxRpcRICodegen extends ModuleContentLinker
     protected String moduleClassPath = null;
 
     // list of generated files
-    Vector files = new Vector();
+    ArrayList<String> files = new ArrayList<String>();
 
     private JaxRpcObjectFactory rpcFactory;
 
@@ -121,6 +121,8 @@ public class JaxRpcRICodegen extends ModuleContentLinker
     private CompileTool wscompileForAccept = null;
     private CompileTool wscompileForWebServices = null;
 
+    private boolean hasWebServiceClients = false;
+
     /** Creates a new instance of JaxRpcRICodegen */
     public JaxRpcRICodegen() {
         rpcFactory = JaxRpcObjectFactory.newInstance();
@@ -129,6 +131,9 @@ public class JaxRpcRICodegen extends ModuleContentLinker
     public void run(Habitat habitat, DeploymentContext context, String cp) throws Exception {
         rootLocation_ = new FileArchive();
         BundleDescriptor bundle = context.getModuleMetaData(BundleDescriptor.class);
+        if (bundle.hasWebServiceClients() && (bundle instanceof ApplicationClientDescriptor)) {
+            hasWebServiceClients = true;
+        }
         if(bundle.isStandalone()) {
             rootLocation_.open(context.getSourceDir().toURI());
         } else {
@@ -241,8 +246,9 @@ public class JaxRpcRICodegen extends ModuleContentLinker
                 wscompile.setDelegate(delegate);
 
                 jaxrpc(args, delegate, serviceRef, files);
-                addArtifactsForAppClient();
-
+                if (hasWebServiceClients)   {
+                    addArtifactsForAppClient();
+                }
             }
             if (wsdlOverriden) {
                 serviceRef.setWsdlOverride(wsdlOverride);
@@ -260,16 +266,16 @@ public class JaxRpcRICodegen extends ModuleContentLinker
     }
 
     private void addArtifactsForAppClient(){
-        ArrayList<File> filesList = new ArrayList<File>();
+        ClientArtifactsManager cArtifactsManager = ClientArtifactsManager.get(context);
         for (int i = 0; i < files.size(); i ++) {
-
-            filesList.add(new File((String)(files.get(i))));
+            URI baseURI = context.getScratchDir("ejb").toURI();
+            File file = new File(files.get(i));
+            URI artifact = baseURI.relativize(file.toURI());
+            //Fix for issue 9734
+            if (!cArtifactsManager.contains(baseURI,artifact) ){
+               cArtifactsManager.add(baseURI, artifact);
+            }
         }
-        //For jaxrpc based clients the generated sources need to be placed
-        // in the downloaded appclient jar
-        ClientArtifactsManager cArtifactsManager = ClientArtifactsManager.get(context);    
-        cArtifactsManager.addAll(context.getScratchDir("ejb"),filesList);
-
     }
 
     /**
@@ -683,7 +689,7 @@ public class JaxRpcRICodegen extends ModuleContentLinker
     }
 
     private void jaxrpc(String[] args, WsCompile wsCompile, Descriptor desc,
-                        Vector files)
+                        ArrayList<String> files)
             throws Exception {
 
         try {
@@ -725,7 +731,7 @@ public class JaxRpcRICodegen extends ModuleContentLinker
         }
     }
 
-    private void jaxrpcWebService(WebService webService, Vector files)
+    private void jaxrpcWebService(WebService webService, ArrayList<String> files)
             throws Exception {
 
         if((webService.getWsdlFileUrl() == null) ||
