@@ -117,6 +117,7 @@
     </target>
 
     <target name="checkForSession" depends="init-common">
+        <sleep seconds="10"/>
         <java classname="test.WebTest">
             <arg value="${http.host}"/>
             <arg value="${http.port}"/>
