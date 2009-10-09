@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="456"/>
+    <property name="TOTAL_EXPECTED" value="457"/>
 
     &commonSetup;
     &commonBuild;
@@ -319,9 +319,7 @@
         <ant dir="commonsDigesterClassNotFoundException" target="all"/>
         <ant dir="log4jLocallyBundled" target="all"/>
         <ant dir="log4jXmlInEarFile" target="all"/>
-<!-- XXX temporarily commented out, see IT 7548
         <ant dir="singleengine" target="all"/>
--->
         <ant dir="relativeRedirectAllowed" target="all"/>
         <ant dir="invokerServletDisabled" target="all"/>
         <ant dir="jmxUndeployEvent" target="all"/>
