@@ -197,6 +197,9 @@ public class ConnectionDefinitionUtils {
                 // a null is placed as the default value.
                 hm.put(property, defaultVal);
             }
+            if(resType != null && resType.equals("java.sql.Driver")) {
+                addDefaultJDBCDriverProperties(hm);
+            }
         } catch (ClassNotFoundException e) {
             handleException(e, connectionDefinitionClassName);
             //since the specified connectionDefinitionClassName is not found, 
@@ -217,7 +220,7 @@ public class ConnectionDefinitionUtils {
     }
     
     private static void addDefaultJDBCProperties(Map map){
-    String[] defaultProperties = {
+        String[] defaultProperties = {
              "databaseName", "serverName", "portNumber", "networkProtocol",
              "user", "password", "roleName", "datasourceName" };
 
@@ -232,10 +235,24 @@ public class ConnectionDefinitionUtils {
 
         //assuming that the provided map is not null
         for(int i=0; i<defaultProperties.length; i++){
-            map.put(defaultProperties[i],null);
+            if(!containsProperty(defaultProperties[i], map)) {
+                map.put(defaultProperties[i], null);
+            }
         }
     }
 
+    private static boolean containsProperty(String prop, Map map) {
+        boolean propFound = false;
+        Set<String> keys = map.keySet();
+        for(String key : keys) {
+            if(prop.equalsIgnoreCase(key)) {
+                propFound = true;
+                break;
+            }
+        }
+        return propFound;
+    }
+    
     private static void handleException(Exception ex, String className) {
         _logger.log(Level.FINE, "Exception while trying to find properties of class [ "+className+" ]", ex);
         //TODO V3 logStrings ?
