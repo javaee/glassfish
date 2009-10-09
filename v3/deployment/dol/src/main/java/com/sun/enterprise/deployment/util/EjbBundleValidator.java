@@ -428,12 +428,13 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                 Class clazz = null;
                 try {
                     clazz = classLoader.loadClass(homeIntf);
-                    try {
-                        if (clazz.getMethod("findByPrimaryKey", 
-                            java.lang.String.class) != null) {
+                    for (Method method : clazz.getDeclaredMethods()) {
+                        if (method.getName().equals("findByPrimaryKey")) {
                             ejbRef.setType("Entity");
+                            break;
                         }
-                    } catch (NoSuchMethodException nme) {
+                    }
+                    if (ejbRef.getType() == null) {
                         ejbRef.setType("Session");
                     }
                 } catch(Exception e) {
