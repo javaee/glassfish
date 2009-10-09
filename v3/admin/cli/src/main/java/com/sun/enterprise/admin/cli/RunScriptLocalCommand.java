@@ -45,6 +45,7 @@ import java.util.Set;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import java.util.UUID;
+import java.rmi.*;
 
 /** Establishes a connection with Comet server (Provided by servlet)
  *  and also initiates a server execution of the deployed javascript.
@@ -58,7 +59,7 @@ public final class RunScriptLocalCommand extends RemoteCommand {
 
     //public static final String TERSE = "terse";
     public static final String HTTP_PORT = "httpport";
-    //public static final String UPLOAD = "upload";
+    public static final String UPLOAD = "upload";
     public static final String SCRIPT_ID = "scriptid";
 
     //private String host = "localhost";
@@ -78,13 +79,14 @@ public final class RunScriptLocalCommand extends RemoteCommand {
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
-
+        super.prepare();
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, HTTP_PORT, '\0', "STRING", false, "8080");
+        addOption(opts, UPLOAD, '\0', "BOOLEAN", false, "false");
         //Need to add an option on the fly for the remote version of the command
         commandOpts = Collections.synchronizedSet(opts);
         operandName = "script";
-        operandType = "FILE";
+        operandType = "STRING";
         operandMin = 1;
         operandMax = 1;
 
@@ -106,7 +108,8 @@ public final class RunScriptLocalCommand extends RemoteCommand {
         String shttpPort = getOption(HTTP_PORT);
         if (ok(shttpPort))
             httpPort = Integer.parseInt(shttpPort);
-        //upload = Boolean.getBoolean(getOption(UPLOAD));
+        if (operands.size() == 0)
+            return;
         String scriptPath = operands.get(0);
         int i = scriptPath.lastIndexOf(File.separator);
         scriptName = scriptPath.substring(i+1, scriptPath.length());
@@ -146,15 +149,15 @@ public final class RunScriptLocalCommand extends RemoteCommand {
                 int c;
                 while ((c = rd.read()) >= 0)
                     System.out.print((char)c);
-            } catch (ConnectException ce) {
+            } catch (java.rmi.ConnectException ce) {
                 ce.printStackTrace();
                 logger.printMessage("\nConnection terminated by server");
                 return 1;
+            } catch (FileNotFoundException fnfe) {
+                logger.printMessage("\nConnection terminated by server, Comet servlet is not found");
+                return 1;
             } catch (IOException ioe) {
-                // need to handle 'FileNotFoundException: http://localhost:8080/comet/CometServlet' - when comet.war is not deployed
-                // also, java.io.IOException: Server returned HTTP response code: 500 for URL: http://localhost:8080/comet/cometServlet' - when comet is not enabled
-                ioe.printStackTrace();
-                logger.printMessage("\nConnection terminated by server, ioe");
+                logger.printMessage("\nConnection terminated by server, exiting the client");
                 return 1;
             }
             //rd.close();
