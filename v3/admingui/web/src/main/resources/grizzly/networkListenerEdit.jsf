@@ -77,8 +77,8 @@
     </event>
 #include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
-#include "/common/shared/alertMsg.inc"
 #include "listenerTabs.inc"
+#include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkListenerEditPageTitle}" helpText="$resource{i18n_web.grizzly.networkListenerEditPageTitleHelp}">
