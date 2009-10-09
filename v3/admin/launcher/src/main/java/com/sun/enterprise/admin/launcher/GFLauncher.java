@@ -150,6 +150,8 @@ public abstract class GFLauncher {
         setClasspath();
         setCommandLine();
         logCommandLine();
+        // if no <network-config> element, we need to upgrade this domain
+        needsUpgrade = !parser.hasNetworkConfig();
         setupCalledByClients = true;
     }
 
@@ -231,6 +233,15 @@ public abstract class GFLauncher {
             }
         }
         return -1;
+    }
+
+    /**
+     * Does this domain need to be upgraded before it can be started?
+     *
+     * @return true if the domain needs to be upgraded first
+     */
+    public boolean needsUpgrade() {
+        return needsUpgrade;
     }
     
     ///////////////////////////////////////////////////////////////////////////
@@ -729,6 +740,7 @@ public abstract class GFLauncher {
     private Process process;
     private ProcessStreamDrainer    psd;
     private boolean logFilenameWasFixed = false;
+    private boolean needsUpgrade = false;
 
     ///////////////////////////////////////////////////////////////////////////
     

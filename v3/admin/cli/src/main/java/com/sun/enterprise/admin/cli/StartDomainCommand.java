@@ -37,6 +37,7 @@
 package com.sun.enterprise.admin.cli;
 
 import java.io.*;
+import java.util.*;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -52,8 +53,6 @@ import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
-
-import java.util.*;
 
 /**
  * The start-domain command.
@@ -73,7 +72,10 @@ public class StartDomainCommand extends LocalDomainCommand {
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartDomainCommand.class);
-    private static final int DEATH_TIMEOUT_MS = 5 * 60 * 1000; // 5 minute timeout should be plenty!
+    // 5 minute timeout should be plenty!
+    private static final int DEATH_TIMEOUT_MS = 5 * 60 * 1000;
+    // the name of the master password option
+    private static final String MASTER_PASSWORD = "AS_ADMIN_MASTER_PASSWORD";
 
     /**
      * The prepare method must ensure that the commandOpts,
@@ -112,21 +114,7 @@ public class StartDomainCommand extends LocalDomainCommand {
 
     private int runCommandNotEmbedded() throws CommandException {
         try {
-            launcher = GFLauncherFactory.getInstance(
-                    GFLauncherFactory.ServerType.domain);
-            info = launcher.getInfo();
-
-            info.setDomainName(domainName);
-            info.setDomainParentDir(domainsDir.getPath());
-            info.setVerbose(verbose || upgrade);
-            info.setDebug(debug);
-            info.setUpgrade(upgrade);
-
-            info.setRespawnInfo(programOpts.getClassName(),
-                            programOpts.getClassPath(),
-                            programOpts.getProgramArguments());
-
-            launcher.setup();
+            createLauncher(GFLauncherFactory.ServerType.domain);
 
             if (Boolean.getBoolean(RESTART_FLAG)) {
                 new DeathWaiter();
@@ -141,7 +129,45 @@ public class StartDomainCommand extends LocalDomainCommand {
 
             // this can be slow, 500 msec,
             // with --passwordfile option it is ~~ 18 msec
-            setMasterPassword(info);
+            String mpv = getMasterPassword();
+            info.addSecurityToken(MASTER_PASSWORD, mpv);
+
+            /*
+             * If this domain needs to be upgraded and --upgrade wasn't
+             * specified, first start the domain to do the upgrade and
+             * then start the domain again for real.
+             */
+            if (!upgrade && launcher.needsUpgrade()) {
+                logger.printMessage(strings.get("upgradeNeeded"));
+                info.setUpgrade(true);
+                launcher.setup();
+                launcher.launch();
+                Process p = launcher.getProcess();
+                int exitCode = -1;
+                try {
+                    exitCode = p.waitFor();
+                } catch (InterruptedException ex) {
+                    // should never happen
+                }
+                if (exitCode != SUCCESS) {
+                    ProcessStreamDrainer psd =
+                        launcher.getProcessStreamDrainer();
+                    String output = psd.getOutErrString();
+                    if (ok(output))
+                        throw new CommandException(
+                                strings.get("upgradeFailedOutput",
+                                    info.getDomainName(), exitCode, output));
+                    else
+                        throw new CommandException(strings.get("upgradeFailed",
+                                    info.getDomainName(), exitCode));
+                }
+                logger.printMessage(strings.get("upgradeSuccessful"));
+
+                // need a new launcher to start the domain for real
+                createLauncher(GFLauncherFactory.ServerType.domain);
+                info.addSecurityToken(MASTER_PASSWORD, mpv);
+                // continue with normal start...
+            }
 
             // launch returns very quickly if verbose is not set
             // if verbose is set then it returns after the domain dies
@@ -170,32 +196,39 @@ public class StartDomainCommand extends LocalDomainCommand {
         }
     }
 
-    private void setMasterPassword1(GFLauncherInfo info)
-                                throws CommandException {
-        // Sets the password into the launcher info.
-        // Yes, setting master password into a string is not right ...
-        long t0 = System.currentTimeMillis();
-        String mpn  = "AS_ADMIN_MASTERPASSWORD";
-        String mpv  = passwords.get(mpn);
-        if (mpv == null)
-            mpv = readFromMasterPasswordFile();
-        if (mpv == null)
-            mpv = "changeit"; //the default
-        boolean ok = verifyMasterPassword(mpv);
-        long t1 = System.currentTimeMillis();
-        logger.printDebugMessage("Master Password processing took: " + (t1-t0) + " msec");
-        if (!ok) {
-            mpv = retry(3);
-        }
-        info.addSecurityToken(mpn, mpv);
+    /**
+     * Create a launcher for the domain specified by arguments to
+     * this command.  The launcher is for a server of the specified type.
+     * Sets the launcher and info fields.
+     */
+    private void createLauncher(GFLauncherFactory.ServerType type)
+                        throws GFLauncherException, MiniXmlParserException {
+            launcher = GFLauncherFactory.getInstance(type);
+            info = launcher.getInfo();
+
+            info.setDomainName(domainName);
+            info.setDomainParentDir(domainsDir.getPath());
+            info.setVerbose(verbose || upgrade);
+            info.setDebug(debug);
+            info.setUpgrade(upgrade);
+
+            info.setRespawnInfo(programOpts.getClassName(),
+                            programOpts.getClassPath(),
+                            programOpts.getProgramArguments());
+
+            launcher.setup();
     }
-    private void setMasterPassword(GFLauncherInfo info) throws CommandException {
+
+    /**
+     * Get the master password, either from a password file or
+     * by asking the user.
+     */
+    private String getMasterPassword() throws CommandException {
         // Sets the password into the launcher info.
-        // Yes, setting master password into a string is not right ...
+        // Yes, returning master password as a string is not right ...
         final int RETRIES = 3;
         long t0 = System.currentTimeMillis();
-        String mpn  = "AS_ADMIN_MASTERPASSWORD";
-        String mpv  = passwords.get(mpn);
+        String mpv  = passwords.get(MASTER_PASSWORD);
         if (mpv == null) { //not specified in the password file
             mpv = "changeit";  //optimization for the default case -- see 9592
             if (!verifyMasterPassword(mpv)) {
@@ -204,13 +237,14 @@ public class StartDomainCommand extends LocalDomainCommand {
                     mpv = retry(RETRIES);
                 }
             }
-        } else { //the passwordfile contains AS_ADMIN_MASTERPASSWORD, use it at once
-            if(!verifyMasterPassword(mpv))
+        } else { // the passwordfile contains AS_ADMIN_MASTERPASSWORD, use it
+            if (!verifyMasterPassword(mpv))
                 mpv = retry(RETRIES);
         }
-        info.addSecurityToken(mpn, mpv);
         long t1 = System.currentTimeMillis();
-        logger.printDebugMessage("Time spent in master password extraction: " + (t1-t0) + " msec");       //TODO
+        logger.printDebugMessage("Time spent in master password extraction: " +
+                                    (t1-t0) + " msec");       //TODO
+        return mpv;
     }
 
     private String retry(int times) throws CommandException {
@@ -237,14 +271,7 @@ public class StartDomainCommand extends LocalDomainCommand {
 
     private int runCommandEmbedded() throws CommandException {
         try {
-            launcher = GFLauncherFactory.getInstance(
-                    GFLauncherFactory.ServerType.embedded);
-            info = launcher.getInfo();
-            info.setDomainName(domainName);
-            info.setDomainParentDir(domainsDir.getPath());
-            info.setVerbose(verbose);
-            info.setDebug(debug);
-            launcher.setup();
+            createLauncher(GFLauncherFactory.ServerType.embedded);
 
             // now admin ports are set.
             Set<Integer> ports = info.getAdminPorts();
