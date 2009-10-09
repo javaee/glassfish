@@ -1,300 +1,869 @@
-<!--Arbortext, Inc., 1988-2008, v.4002-->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html lang="en">
-<!--
-DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-
-Copyright 2008 Sun Microsystems, Inc. All rights reserved.
-
-Use is subject to License Terms
--->
 <head>
-<style type="text/css">  body,td,p,div,span,a,ul,ul li, ol, ol li, ol li b, dl,h1,h2,h3,h4,h5,h6,li {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:10pt   }      body{margin-top:0}      h1 {font-size:18pt}   h2 {font-size:14pt}   h3 {font-size:12pt}   code,kbd,tt,pre {     font-family:monaco,courier,"courier new";     font-size:10pt;   }    p.copy, p.copy a {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:8pt     }   p.copy {text-align: center}    table.grey1,tr.grey1,td.grey1{background:#f1f1f1}   th {     color:#ffffff;     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:12pt   }   td.insidehead {     font-weight:bold;     background:white;     text-align: left;   }   a {text-decoration:none; color:#3E6B8A}   a:visited{color:#917E9C}   a:hover {text-decoration:underline}   
-</style>
-<title>Sun GlassFish Enterprise Server v3 Prelude Quick Start Guide</title>
+<!--Arbortext, Inc., 1988-2008, v.4002--><!--DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. Copyright 2009 Sun Microsystems, Inc. All rights reserved. Use is subject to License Terms-->
+  <style type="text/css">  body,td,p,div,span,a,ul,ul li, ol, ol li, ol li b, dl,h1,h2,h3,h4,h5,h6,li {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:10pt   }      body{margin-top:0}      h1 {font-size:18pt}   h2 {font-size:14pt}   h3 {font-size:12pt}   code,kbd,tt,pre {     font-family:monaco,courier,"courier new";     font-size:10pt;   }    p.copy, p.copy a {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:8pt     }   p.copy {text-align: center}    table.grey1,tr.grey1,td.grey1{background:#f1f1f1}   th {     color:#ffffff;     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:12pt   }   td.insidehead {     font-weight:bold;     background:white;     text-align: left;   }   a {text-decoration:none; color:#3E6B8A}   a:visited{color:#917E9C}   a:hover {text-decoration:underline}   
+  </style>
+  <title>Sun GlassFish Enterprise Server v3 Quick Start Guide</title>
 </head>
 <body style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);"
-link="#594fbf" vlink="#1005fb" alink="#333366"><table width="100%" border="0"
-cellspacing="4" cellpadding="2">
-<tbody>
-<tr>
-<td align="right" valign="top"> <a href="http://www.sun.com"></a> </td>
-</tr>
-<tr>
-<td align="left" valign="top" bgcolor="#587993"> <font color="#ffffff"><b>Sun
-GlassFish Enterprise Server v3 Preview</b></font></td>
-</tr>
-</tbody>
-</table> <div class="maincontent"><a name="aboaa"></a><h3>Sun GlassFish Enterprise
-Server v3 Preview Quick Start Guide</h3><p>Sun GlassFish<sup>TM</sup> Enterprise
-Server (GlassFish server) v3 Preview provides the following:</p> <ul>
-<li><p>A lightweight and extensible core based on OSGi Alliance standards</p></li>
-<li><p>A web and scripting container</p></li>
-<li><p>An easy-to-use Administration Console for configuration and management</p></li>
-<li><p>Update Center connectivity</p></li>
-</ul> <p>This document provides the following topics:</p> <ul>
-<li><p><a href="#ghgpe">How This Quick Start Guide Works</a></p></li>
-<li><p><a href="#gglog">Starting and Stopping the Default Domain</a></p></li>
-<li><p><a href="#gglmh">Starting and Stopping the Database Server</a></p></li>
-<li><p><a href="#ggllq">Starting the Administration Console</a></p></li>
-<li><p><a href="#geyvr">Deploying and Undeploying Applications</a></p></li>
-<li><p><a href="#ghgqg">Removing GlassFish Server v3 Preview Software</a></p></li>
-<li><p><a href="#ggkzh">For More Information</a></p></li>
-</ul>   <a name="ghgpe"></a><h3>How This Quick Start Guide Works</h3> <p>The <i>Sun
-GlassFish Enterprise Server v3 Preview Quick Start Guide</i> enables you to
-quickly learn the basics about key GlassFish server features.</p><p>Step-by-step
-procedures introduce you to product features and allow you to learn about
-and use them immediately. </p><p>Throughout this document, the installation
-directory is referred to as <i>as-install</i>. The instructions and examples
-use the forward slash character (<tt>/</tt>) as path separators in all file
-and command names. Be sure to use the correct character for the system on
-which GlassFish server is installed. For example:</p> <ul>
-<li><p><b>UNIX<sup>&reg;</sup> systems, Linux, or MacOS X systems:</b> <tt></tt><i>
-as-install</i><tt>/bin/asadmin</tt></p></li>
-<li><p><b>Windows systems or Mac OS X systems:</b> <tt></tt><i>as-install</i><tt>
-\bin\asadmin</tt></p></li>
-</ul> <p>This document provides fundamental information only. For comprehensive
-information about GlassFish server or other entities mentioned in this document,
-see <a href="#ggkzh">For More Information</a>. </p><p>To read additional details
-about this release before you begin using the software, review the <a
-href="http://docs.sun.com/doc/820-7688"><i>Sun GlassFish Enterprise Server
-v3 Preview Release Notes</i></a>. The <b>Release Notes</b> provide recent
-information, limitations, and tips for installing and working with GlassFish
-server software. </p><p>When this <b>Quick Start Guide</b> is updated, the
-most recent version is available in the GlassFish server v3 Preview <a
-href="http://docs.sun.com/coll/1343.9">documentation collection</a>.</p>  <a
-name="gglog"></a><h3>Starting and Stopping the Default Domain</h3> <p>When
-you install GlassFish server, a default domain named <tt>domain1</tt> is created.
-</p>  <a name="ggmpd"></a><h4>To Start the Default Domain</h4><h6>Before You
-Begin</h6><p>GlassFish server software must be installed before you start
-the domain.</p><ul>
-<li><b>To start the default domain, use the <tt>start-domain</tt> command:</b><pre><tt><b></b></tt><i>
-as-install</i><tt>/bin/asadmin start-domain<b></b></tt></pre><p>The command
-starts the default domain, <tt>domain1</tt>.</p></li>
-</ul>  <a name="ggmsx"></a><h4>To Stop the Default Domain</h4><ul>
-<li><b>To stop the default domain, use the <tt>asadmin stop-domain</tt> command:</b><pre><tt><b></b></tt><i>
-as-install</i><tt>/bin/asadmin stop-domain<b></b></tt></pre><p>The command
-stops the default domain, <tt>domain1</tt>.</p> <hr><p><?Pub Caret><b>Tip
-- </b>To show the status of domains (running or not), use the <tt>list-domains</tt> command: 
-</p><pre><tt><b></b></tt><i>as-install</i><tt>/bin/asadmin list-domains<b></b></tt></pre> <hr></li>
-</ul>  <a name="gglmh"></a><h3>Starting and Stopping the Database Server</h3> <p>
-A database server is not started by default when you start the GlassFish server
-domain. If you have applications that need a database back end, you must start
-and stop the database server manually. </p>  <a name="ggncr"></a><h4>To Start
-the Sun GlassFish Java DB Server</h4><p>The instructions in this procedure
-describe how to start the Java<sup>TM</sup> DB server that is bundled with
-GlassFish server, but they apply for the most part to any database you want
-to use.</p><h6>Before You Begin</h6><p>At least one GlassFish server domain
-must be started before you start the database server.</p><ul>
-<li><b>Use the <tt>asadmin start-database</tt> command.</b><p>The general
-form for the command is:</p><pre><i>as-install</i>/bin/asadmin start-database --dbhome <i>
-directory-path</i></pre><p>For example, to start the Java DB server from its
-default location:</p><pre><tt><b></b></tt><i>as-install</i><tt>/bin/asadmin start-database --dbhome 
-</tt><i>as-install</i><tt>/javadb<b></b></tt></pre></li>
-</ul>  <a name="ggnez"></a><h4>To Stop the Java DB Server</h4><ul>
-<li><b>Use the <tt>asadmin stop-database</tt> command:</b><pre><tt><b></b></tt><i>
-as-install</i><tt>/bin/asadmin stop-database<b></b></tt></pre></li>
-</ul>  <a name="ggllq"></a><h3>Starting the Administration Console</h3> <p>The
-GlassFish server Administration Console provides a browser interface for configuring,
-administering, and monitoring GlassFish server and your domains.</p>  <a
-name="ggnbp"></a><h4>To Launch the Administration Console</h4><h6>Before You
-Begin</h6><p>At least one GlassFish server domain must be started before you
-launch the Administration Console.</p><ol>
-<li><b>To open the Administration Console, type the URL in a browser window.</b><p>
-The default URL for the Administration Console is:</p><pre><tt><b>http://localhost:4848
-</b></tt></pre></li>
-<li><b>If prompted, log in to the Administration Console.</b><p>By default,
-the user name is <tt>anonymous</tt> and the Password field is left blank (no
-password).</p></li>
-</ol><h6>See Also</h6><p>Refer to the Administration Console online help for
-additional information.</p>  <a name="geyvr"></a><h3>Deploying and Undeploying
-Applications</h3> <p>The process of configuring and enabling an application
-to run within the GlassFish server framework is referred to as <b>deployment</b>.
-</p><p>This section explains how to deploy, list, and undeploy applications.</p> <ul>
-<li><p><a href="#ghgis">Obtaining a Sample Application</a></p></li>
-<li><p><a href="#ghgjj">Deploying an Application from the Command Line</a></p></li>
-<li><p><a href="#ghgjn">Deploying an Application by Using the Administration
-Console</a></p></li>
-<li><p><a href="#ghgmi">Deploying an Application Automatically</a></p></li>
-</ul>   <a name="ghgis"></a><h4>Obtaining a Sample Application</h4> <p>The
-procedures in this section use the <tt>hello.war</tt> application.</p>  <a
-name="ggolx"></a><h5>To Obtain a Sample Application</h5> <ol>
-<li><b>To download a copy of the <tt>hello.war</tt> sample, go to <a
-href="https://glassfish.dev.java.net/downloads/quickstart/hello.war">https://glassfish.dev.java.net/downloads/quickstart/hello.war
-</a>.</b></li>
-<li><b>Click Yes to save the <tt>hello.war</tt> file. </b></li>
-<li><b>Save the <tt>hello.war</tt> file in the directory of your choice. This
-document refers to this directory as <i>sample-dir</i>.</b></li>
-</ol>  <a name="ghgjj"></a><h4>Deploying an Application from the Command Line</h4> <p>
-You can deploy applications from the command line by using the <tt>asadmin
-deploy</tt> command.</p>  <a name="ggndq"></a><h5>To Deploy the Sample Application
-From the Command Line</h5> <h6>Before You Begin</h6><p>The sample application
-must be available before you start this task. To download the sample, see <a
-href="#ghgis">Obtaining a Sample Application</a>. At least one GlassFish server
-domain must be started before you deploy the sample application.</p><ol>
-<li><b>Use the <tt>asadmin deploy</tt> command.</b><p>The general form for
-the command is:</p><pre><i>as-install</i>/bin/asadmin deploy <i>war-name</i></pre><p>
-To deploy the <tt>hello.war</tt> sample, the command is:</p><pre><tt><b></b></tt><i>
-as-install</i><tt>/bin/asadmin deploy </tt><i>sample-dir</i><tt>/hello.war<b></b></tt></pre></li>
-<li><b>Access the <tt>hello</tt> application by typing the following URL in
-a browser window:</b><pre><tt><b>http://localhost:8080/hello</b></tt></pre><p>The
-application's start page is displayed, and you are prompted to type your name.</p><pre>
-Hi, my name is Duke. What's yours?</pre></li>
-<li><b>Type your name and click Submit.</b><p>The application displays a customized
-response, giving you a personal <tt>Hello</tt>.</p></li>
-</ol><h6>See Also</h6><p>See <a
-href="http://docs.sun.com/doc/820-7701/deploy-1?a=view"><tt>deploy</tt>(1)</a> for
-more information about the <tt>deploy</tt> command.</p><p>See the <a
-href="http://docs.sun.com/doc/820-7693"><i>Sun GlassFish Enterprise Server
-v3 Preview Application Deployment Guide</i></a> for more information about
-deploying applications from the command line.</p>  <a name="ggnco"></a><h5>To
-List Deployed Applications From the Command Line</h5> <ul>
-<li><b>Use the <tt>asadmin list-applications</tt> command:</b><pre><tt><b></b></tt><i>
-as-install</i><tt>/bin/asadmin list-applications<b></b></tt></pre></li>
-</ul>  <a name="ggnbm"></a><h5>To Undeploy the Sample Application From the
-Command Line</h5> <ul>
-<li><b>Use the <tt>asadmin undeploy</tt> command.</b><p>The general form for
-the command is:</p><pre><i>as-install</i>/bin/asadmin undeploy <i>war-name</i></pre><p>
-For <i>war-name</i>, use the literal <tt>hello</tt>, not the full <tt>hello.war</tt> name.
-</p><p>For the <tt>hello.war</tt> example, the command is:</p><pre><tt><b></b></tt><i>
-as-install</i><tt>/bin/asadmin undeploy hello<b></b></tt></pre></li>
-</ul><h6>See Also</h6><p>See <a
-href="http://docs.sun.com/doc/820-7701/undeploy-1?a=view"><tt>undeploy</tt>(1)</a> for
-more information about the <tt>undeploy</tt> command.</p>  <a name="ghgjn"></a><h4>
-Deploying an Application by Using the Administration Console</h4> <p>You can
-deploy applications from the graphical Administration Console.</p>  <a
-name="ggnbn"></a><h5>To Deploy the Sample Application From the Administration
-Console</h5> <h6>Before You Begin</h6><p>The sample application must be available
-before you start this task. To download the sample, see <a href="#ghgis">Obtaining
-a Sample Application</a>. At least one GlassFish server domain must be started
-before you deploy the sample application.</p><ol>
-<li><b>Open the Administration Console by typing the following URL in a browser
-window:</b><pre><tt><b>http://localhost:4848</b></tt></pre></li>
-<li><b>Click the Applications node in the tree on the left.</b><p>The Applications
-page is displayed.</p></li>
-<li><b>Click Deploy.</b><p>The Deploy Applications or Modules page is displayed.</p></li>
-<li><b>Select Packaged File to be Uploaded to the Server, and click Browse.</b></li>
-<li><b>Navigate to the location in which you saved the <tt>hello.war</tt> sample,
-select the file, and then click Open.</b><p>You are returned to the Deploy
-Applications or Modules page.</p></li>
-<li><b>Specify a description in the Description field, for example:</b><p><tt>hello
-</tt></p></li>
-<li><b>Accept the other default settings, and click OK.</b><p>You are returned
-to the Applications page.</p></li>
-<li><b>Click the <tt>Launch</tt> link on the Applications page to run the
-sample application.</b><p>The default URL for the application is:</p><pre><tt><b>
-http://localhost:8080/hello/</b></tt></pre></li>
-</ol><h6>See Also</h6><p>Refer to the Administration Console online help for
-additional information.</p>  <a name="ggncd"></a><h5>To View Deployed Applications
-in the Administration Console</h5> <ol>
-<li><b>Open the Administration Console by typing the following URL in a browser
-window:</b><pre><tt><b>http://localhost:4848</b></tt></pre></li>
-<li><b>Click the Applications node in the tree on the left.</b><p>The node
-expands to list deployed applications. The applications are also listed in
-the table on the Applications page.</p></li>
-</ol>  <a name="ggneh"></a><h5>To Undeploy the Sample Application From the
-Administration Console</h5> <ol>
-<li><b>Open the Administration Console by typing the following URL in a browser
-window:</b><pre><tt><b>http://localhost:4848</b></tt></pre></li>
-<li><b>Click the Applications node in the tree on the left.</b><p>The Applications
-page is displayed.</p></li>
-<li><b>Select the check box next to the sample application.</b></li>
-<li><b>Remove or disable the application.</b><ul>
-<li><b>To remove the application, click Undeploy.</b></li>
-<li><b>To disable the application, click Disable.</b></li>
-</ul></li>
-</ol><h6>See Also</h6><p>Refer to the Administration Console online help for
-additional information.</p>  <a name="ghgmi"></a><h4>Deploying an Application
-Automatically</h4> <p>To use automatic deployment, you can deploy applications
-by placing the applications in the <tt></tt><i>as-install</i><tt>/domains/</tt><i>
-domain-name</i><tt>/autodeploy</tt> directory.</p><p><i>domain-name</i> is
-the name of the domain for which you want to configure automatic deployment.
-For this example, use the default <tt>domain1</tt> domain:</p><pre><i>as-install</i>/domains/domain1/autodeploy
-</pre>  <a name="geyvj"></a><h5>To Deploy the Sample Application Automatically</h5> <h6>
-Before You Begin</h6><p>The sample application must be available before you
-start this task. To download the sample, see <a href="#ghgis">Obtaining a
-Sample Application</a>.</p><ul>
-<li><b>Copy the application WAR file to the <tt></tt><i>as-install</i><tt>/domains/
-</tt><i>domain-name</i><tt>/autodeploy</tt> directory.</b><p><tt><b>cp </b></tt><i>
-sample-dir</i><tt>/hello.war </tt><i>as-install</i><tt>/domains/</tt><i>domain-name
-</i><tt>/autodeploy<b></b></tt></p><p>(Use <tt><b>copy</b></tt> instead of <tt><b>
-cp</b></tt> on Windows systems.)</p><p>GlassFish server automatically discovers
-and deploys the application.</p></li>
-</ul>  <a name="ggncw"></a><h5>To Undeploy the Sample Application Automatically</h5> <ol>
-<li><b>Use the <tt>cd</tt> command to change to the domain's <tt>autodeploy</tt> directory.
-</b><p><tt><b>cd </b></tt><i>as-install</i><tt>/domains/</tt><i>domain-name</i><tt>
-/autodeploy<b></b></tt> </p></li>
-<li><b>Use the <tt>rm</tt> command to undeploy and remove the application.</b><p><tt><b>
-rm hello.war</b></tt></p><p>(Use <tt><b>del</b></tt> instead of <tt><b>rm</b></tt> on
-Windows systems.)</p></li>
-</ol>  <a name="ghgqg"></a><h3>Removing GlassFish Server v3 Preview Software</h3> <p>
-Uninstall GlassFish server if you no longer want to use the software.</p>  <a
-name="ggrkk"></a><h4>To Remove GlassFish Server Software</h4><h6>Before You
-Begin</h6><p>Stop all GlassFish server processes that are running (domains
-and other related  processes, command prompts using the installation directory
-or its subdirectories, and so on).</p><ol>
-<li><b>Change to the directory where GlassFish server v3 Preview is installed
-(referred to as <i>as-install</i> throughout this document).</b></li>
-<li><b>Run the uninstallation command.</b><ul>
-<li><b>Solaris, Linux or MacOS X systems: From the command line, type the
-following command:</b><p><tt><b>./uninstall.sh</b></tt></p></li>
-<li><b>Windows systems: Double-click the <tt>uninstall.exe</tt> file.</b></li>
-</ul></li>
-<li><b>Examine the installation directory contents and remove any remaining
-files or directories that you do not want. </b></li>
-</ol>  <a name="ggkzh"></a><h3>For More Information</h3> <p>This section provides
-links to helpful resources and includes the following:</p> <ul>
-<li><p><a href="#gintf">Your First Cup</a></p></li>
-<li><p><a href="#ginur">Java EE 6 Tutorial, Volume I</a></p></li>
-<li><p><a href="#gintm">Java EE 6 Samples</a></p></li>
-<li><p><a href="#ghhir">Product Documentation</a></p></li>
-<li><p><a href="#ghhis">GlassFish Communities</a></p></li>
-</ul> <p>Many other add-on components for GlassFish server v3 Preview are
-available through Update Tool. </p>  <a name="gintf"></a><h4>Your First Cup</h4> <p><i><a
-href="http://java.sun.com/javaee/6/docs/firstcup/doc/toc.html">Your First
-Cup: An Introduction to the Java EE Platform</a></i> provides a short tutorial
-for beginning Java EE programmers that shows how to develop a simple enterprise
-application from scratch. The sample application is a web application that
-consists of a JavaServer Faces<sup>TM</sup>-managed bean, a JAX-RS web service,
-and a Facelet web front end.</p>  <a name="ginur"></a><h4>Java EE 6 Tutorial,
-Volume I</h4> <p>The <i><a href="http://java.sun.com/javaee/6/docs/tutorial/doc/">
-Java EE 6 Tutorial, Volume I</a></i> provides a beginner's guide to developing
-enterprise applications for the GlassFish server. The tutorial includes working
-examples and instructions for creating applications with Java EE 6 technologies,
-including Java Servlets, JavaServer Faces, Facelets, RESTful Web Services,
-Enterprise JavaBeans<sup>TM</sup>, Java Persistence API, and more. The document
-is also available through the Update Tool.</p>  <a name="gintm"></a><h4>Java
-EE 6 Samples</h4> <p>The sample applications demonstrate Java EE 6 technologies.
-The sample applications are available in <i>as-install</i><tt>/bin</tt>.</p>  <a
-name="ghhir"></a><h4>Product Documentation</h4>  <ul>
-<li><p><a href="http://docs.sun.com/doc/820-7688"><i>Sun GlassFish Enterprise
-Server Preview v3 Release Notes</i></a>: Recent information, limitations,
-and tips for installing and working with GlassFish server.</p></li>
-<li><p><a href="http://docs.sun.com/coll/1343.9">GlassFish server documentation</a>:
-Collection of guides that document GlassFish server features and functions.</p></li>
-<li><p><a href="http://wiki.glassfish.java.net/Wiki.jsp?page=Screencasts">GlassFish
-server screencasts</a>: Collection of video recordings that demonstrate numerous
-features and examples for working with GlassFish server and related projects.</p></li>
-</ul>  <ul>
-<li><p><a href="http://wiki.glassfish.java.net/Wiki.jsp?page=GlassFishFAQIndex">GlassFish
-server FAQs</a>: Frequently asked questions covering various GlassFish server
-topics.</p></li>
-</ul>   <a name="ghhis"></a><h4>GlassFish Communities</h4>  <ul>
-<li><p><a href="http://forums.java.net/jive/forum.jspa?forumID=56">Glass Fish
-User Forum</a>: Public online discussions that provide community support and
-tips for working with GlassFish server.</p></li>
-<li><p><a href="http://wiki.glassfish.java.net/">GlassFish Wiki</a>: Open
-source development community site that provides a wide range of information
-related to GlassFish server.</p></li>
-</ul>  <ul>
-<li><p><a href="https://glassfish.dev.java.net/docs/project.html">GlassFish
-Documentation</a> project: Open source Documentation community site that provides
-details about GlassFish server documentation and how you can participate.</p></li>
-<li><p><a href="https://glassfish.dev.java.net/quality/portal/index.html">GlassFish
-Quality Community</a>: Open source Quality community focused on testing and
-improving GlassFish server.</p></li>
-</ul> </div><hr style="width: 80%; height: 2px;"><p class="copy"><a
-href="http://www.sun.com/company/">Company Info</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a
-href="http://www.sun.com/contact/">Contact</a> &nbsp;&nbsp;|&nbsp;&nbsp; Copyright
-2009 Sun Microsystems <br></p></body></html>
-<?Pub *0000021049 0>
+ link="#594fbf" vlink="#1005fb" alink="#333366">
+<table width="100%" border="0" cellspacing="4" cellpadding="2">
+  <tbody>
+    <tr>
+      <td align="right" valign="top"> <a href="http://www.sun.com"></a>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" bgcolor="#587993"> <font
+ color="#ffffff"><b>Sun
+GlassFish Enterprise Server v3</b></font></td>
+    </tr>
+  </tbody>
+</table>
+<div class="maincontent">
+<a name="aboaa"></a>
+<h1>Sun GlassFish Enterprise Server v3 Quick Start Guide</h1>
+<p>Sun GlassFish<sup>TM</sup> Enterprise Server (GlassFish server) v3
+provides a server
+for the development and deployment
+of Java<sup>TM</sup> Platform, Enterprise Edition (Java EE platform)
+applications and web technologies based on
+Java technology. GlassFish server v3 provides the following:</p>
+<ul>
+  <li>
+    <p>A lightweight and extensible core based on OSGi Alliance
+standards</p>
+  </li>
+  <li>
+    <p>A web and scripting container</p>
+  </li>
+  <li>
+    <p>An easy-to-use Administration Console for configuration and
+management</p>
+  </li>
+  <li>
+    <p>Update Tool connectivity for updates and add-on components</p>
+  </li>
+</ul>
+<p>The following topics are addressed in this guide:</p>
+<ul>
+  <li>
+    <p><a href="#ghgpe">About This Quick Start Guide</a></p>
+  </li>
+  <li>
+    <p><a href="#gixuf">Default Paths and File Names</a></p>
+  </li>
+  <li>
+    <p><a href="#gixue">Default Administration Values</a></p>
+  </li>
+  <li>
+    <p><a href="#gglog">Starting and Stopping the Default Domain</a></p>
+  </li>
+  <li>
+    <p><a href="#gglmh">Starting and Stopping the Database Server</a></p>
+  </li>
+  <li>
+    <p><a href="#ggllq">Starting the Administration Console</a></p>
+  </li>
+  <li>
+    <p><a href="#geyvr">Deploying and Undeploying Applications</a></p>
+  </li>
+  <li>
+    <p><a href="#gjahq">Updating and Extending an Existing Installation</a></p>
+  </li>
+  <li>
+    <p><a href="#ghgqg">Removing GlassFish Server v3 Software</a></p>
+  </li>
+  <li>
+    <p><a href="#ggkzh">For More Information</a></p>
+  </li>
+</ul>
+<a name="ghgpe"></a>
+<h2>About This Quick Start Guide</h2>
+<p>The <i>Sun GlassFish Enterprise Server v3 Quick Start Guide</i>
+demonstrates key features of GlassFish server and enables
+you
+to quickly learn the basics. Step-by-step procedures introduce you to
+product features and enable
+you to learn about and use them immediately.</p>
+<p>This guide assumes that you have already obtained and installed the
+GlassFish server v3 software. For more information about installing
+GlassFish server v3, see
+the <a href="http://docs.sun.com/doc/820-7690"><i>Sun GlassFish
+Enterprise Server v3 Installation Guide</i></a>.</p>
+<p>The instructions and examples in this guide use the forward slash
+character (<tt>/</tt>)
+as path separators in all file and command names. Be sure to use
+the correct character for the system on which GlassFish server is
+installed. For
+example:</p>
+<ul>
+  <li>
+    <p><b>UNIX<sup>&reg;</sup>, Linux, or Mac OS X systems:</b> <tt></tt><i>as-install</i><tt>/bin/asadmin</tt></p>
+  </li>
+  <li>
+    <p><b>Windows systems:</b> <tt></tt><i>as-install</i><tt>\bin\asadmin</tt></p>
+  </li>
+</ul>
+<p>This guide provides basic information only. For comprehensive
+information about GlassFish server and
+other entities mentioned in this guide, see <a href="#ggkzh">For More
+Information</a>. </p>
+<p>To review additional details about this release before you begin
+using the software,
+see the <a href="http://docs.sun.com/doc/820-7688"><i>Sun GlassFish
+Enterprise Server v3 Release Notes</i></a>. The <i>Release Notes</i>
+provide important information about the GlassFish server v3 release,
+including details about new features, information about
+known issues and possible workarounds,
+and tips for installing and working with GlassFish server software.</p>
+<p>When this <i>Quick Start Guide</i> is updated, the most recent
+version is available in the
+GlassFish server v3 <a href="http://docs.sun.com/coll/1343.9">documentation
+collection</a>.</p>
+<a name="gixuf"></a>
+<h2>Default Paths and File Names</h2>
+<p>The following table lists the default paths and file names used in
+this guide and throughout GlassFish server documentation.</p>
+<table border="1">
+  <col width="13%"><col width="35%"><col width="50%"><tbody>
+    <tr>
+      <td align="left" valign="top" scope="column"
+ style="font-weight: bold;">
+      <p>Placeholder</p>
+      </td>
+      <td align="left" valign="top" scope="column"
+ style="font-weight: bold;">
+      <p>Description</p>
+      </td>
+      <td align="left" valign="top" scope="column"
+ style="font-weight: bold;">
+      <p>Default Value</p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p><i>as-install</i></p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p>Represents the base installation directory for
+GlassFish server.</p>
+      <p>In configuration files, <i>as-install</i> is represented as
+follows: </p>
+      <p><tt>${com.sun.aas.installRoot}</tt></p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p>Installations on the
+Solaris<sup>TM</sup> operating system, Linux operating system, and Mac
+operating system:</p>
+      <p><i>user&#8217;s-home-directory</i><tt>/glassfishv3/glassfish</tt></p>
+      <p>Windows, all installations:</p>
+      <p><i>SystemDrive</i><tt>:\glassfishv3\glassfish</tt></p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p><i>as-install-parent</i></p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p>Represents the
+parent of the base installation directory for GlassFish server.</p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p>Installations on the Solaris
+operating system, Linux operating system, and Mac operating system:</p>
+      <p><i>user&#8217;s-home-directory</i><tt>/glassfishv3</tt></p>
+      <p>Windows, all installations:</p>
+      <p><i>SystemDrive</i><tt>:\glassfishv3</tt></p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p><i>domain-root-dir</i></p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p>Represents the directory
+in which a domain is created by default.</p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p><i>as-install</i><tt>/domains/</tt></p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p><i>domain-dir</i></p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p>Represents the directory in which
+a domain's configuration is stored.</p>
+      <p>In configuration files, <i>domain-dir</i> is represented as
+follows: </p>
+      <p><tt>${com.sun.aas.instanceRoot}</tt></p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p><i>domain-root-dir</i><tt>/</tt><i>domain-name</i></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<a name="gixue"></a>
+<h2>Default Administration Values</h2>
+<p>The following table lists default administration values for
+GlassFish server. See <a href="#gixuf">Default Paths and File Names</a>
+for
+more information about the <i>as-install</i> and <i>domain-dir</i>
+placeholders.</p>
+<a name="gixxy"></a>
+<table border="1">
+  <col width="50%"><col width="50%"><tbody>
+    <tr>
+      <td align="left" valign="top" scope="column"
+ style="font-weight: bold;">
+      <p>Item</p>
+      </td>
+      <td align="left" valign="top" scope="column"
+ style="font-weight: bold;">
+      <p>Default Value or Location</p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p>Domain name</p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p><tt>domain1</tt></p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p>Master password</p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p><tt>changeit</tt></p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p>Command-line
+utility (<tt>asadmin</tt>)</p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p><i>as-install</i><tt>/bin</tt></p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p>Configuration files</p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p><i>domain-dir</i><tt>/config</tt></p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p>Log files</p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p><i>domain-dir</i><tt>/logs</tt></p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p>Administration server port</p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p><tt>4848</tt></p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p>HTTP port</p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p><tt>8080</tt></p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p>HTTPS port</p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p><tt>8181</tt></p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p>Pure JMX clients port</p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p><tt>8686</tt></p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p>Message Queue
+port</p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p><tt>7676</tt></p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p>IIOP port</p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p><tt>3700</tt></p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p>IIOP/SSL port</p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p><tt>3820</tt></p>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" scope="row">
+      <p>IIOP/SSL port with mutual authentication </p>
+      </td>
+      <td align="left" valign="top" scope="row">
+      <p><tt>3920</tt></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<a name="gglog"></a>
+<h2>Starting and Stopping the Default Domain</h2>
+<p>When you install GlassFish server, a default domain named <tt>domain1</tt>
+is created. The
+following procedures describe how to start and stop <tt>domain1</tt>
+when it is
+the only domain. For information about starting and stopping a domain
+when there
+are multiple domains, see the <a
+ href="http://docs.sun.com/doc/820-7692"><i>Sun GlassFish Enterprise
+Server v3 Administration Guide</i></a>.</p>
+<a name="ggmpd"></a>
+<h3>To Start the Default Domain</h3>
+<h4>Before You Begin</h4>
+<p>GlassFish server software must be installed before you start the
+domain.</p>
+<ul>
+  <li><b>To start the default domain, use the <tt>start-domain</tt>
+command:</b>
+    <pre><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin start-domain</tt></b></pre>
+    <p>The command starts the default domain, <tt>domain1</tt>.</p>
+  </li>
+</ul>
+<a name="ggmsx"></a>
+<h3>To Stop the Default Domain</h3>
+<ul>
+  <li><b>To stop the default domain, use the <tt>asadmin stop-domain</tt>
+command:</b>
+    <pre><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin stop-domain</tt></b></pre>
+    <p>The command stops the default domain, <tt>domain1</tt>.</p>
+    <hr>
+    <p><b>Tip - </b>To determine whether a domain is running, use the <tt>asadmin
+list-domains</tt> command: <tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin
+list-domains</tt></b></p>
+    <hr> </li>
+</ul>
+<a name="gglmh"></a>
+<h2>Starting and Stopping the Database Server</h2>
+<p>A database server is not started by default when you start the
+GlassFish server domain. If your applications require a database back
+end, you must
+start and stop the database server manually.</p>
+<p>The following procedures describe how to start and stop the Java DB
+server that is bundled with GlassFish server. For information about
+starting and stopping
+other database servers, see the documentation for your specific
+product. </p>
+<p>For the list of database products supported in this release, see the
+<a href="http://docs.sun.com/doc/820-7688"><i>Sun GlassFish Enterprise
+Server v3 Release Notes</i></a>. For more information about database
+connectivity, see the <a href="http://docs.sun.com/doc/820-7692"><i>Sun
+GlassFish Enterprise Server v3 Administration Guide</i></a>.</p>
+<a name="ggncr"></a>
+<h3>To Start the Java DB Server</h3>
+<h4>Before You Begin</h4>
+<p>At least one GlassFish server domain must be started before you
+start
+the database server.</p>
+<ul>
+  <li><b>Use the <tt>asadmin start-database</tt> command.</b>
+    <p>The general form for the command is:</p>
+    <pre><i>as-install</i>/bin/asadmin start-database --dbhome <i>directory-path</i></pre>
+    <p>For example, to start the Java DB server from its default
+location:</p>
+    <pre><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin start-database --dbhome </tt><i>as-install-parent</i><tt>/javadb</tt></b></pre>
+  </li>
+</ul>
+<a name="ggnez"></a>
+<h3>To Stop the Java DB Server</h3>
+<ul>
+  <li><b>Use the <tt>asadmin stop-database</tt> command:</b>
+    <pre><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin stop-database</tt></b></pre>
+  </li>
+</ul>
+<a name="ggllq"></a>
+<h2>Starting the Administration Console</h2>
+<p>The GlassFish server Administration Console provides a browser
+interface for configuring, administering, and
+monitoring GlassFish server.</p>
+<a name="ggnbp"></a>
+<h3>To Start the Administration Console</h3>
+<h4>Before You Begin</h4>
+<p>At least one GlassFish server domain must be started before you
+start the
+Administration Console.</p>
+<ol>
+  <li><b>To start the Administration Console, type the URL in your
+browser.</b>
+    <p>The default URL for the Administration Console is:</p>
+    <pre><tt><b>http://localhost:4848</b></tt></pre>
+  </li>
+  <li><b>If prompted, log in to the Administration Console.</b>
+    <p>You will be prompted to log in if you chose to require an
+administration
+password at the time GlassFish server was installed.</p>
+  </li>
+</ol>
+<h4>See Also</h4>
+<p>Refer to the Administration Console online help for additional
+information.</p>
+<a name="geyvr"></a>
+<h2>Deploying and Undeploying Applications</h2>
+<p>The process of configuring and enabling applications to run within
+the GlassFish server framework is referred to as <i>deployment</i>.</p>
+<p>This section explains how to deploy, list, and undeploy
+applications. The following topics
+are addressed here:</p>
+<ul>
+  <li>
+    <p><a href="#ghgis">Obtaining a Sample Application</a></p>
+  </li>
+  <li>
+    <p><a href="#ghgjj">Deploying an Application From the Command Line</a></p>
+  </li>
+  <li>
+    <p><a href="#ghgjn">Deploying an Application by Using the
+Administration Console</a></p>
+  </li>
+  <li>
+    <p><a href="#ghgmi">Deploying an Application Automatically</a></p>
+  </li>
+</ul>
+<a name="ghgis"></a>
+<h3>Obtaining a Sample Application</h3>
+<p>The procedures in this section use the <tt>hello.war</tt> sample
+application.</p>
+<a name="ggolx"></a>
+<h4>To Obtain the Sample Application</h4>
+<ol>
+  <li><b>To download a copy of the <tt>hello.war</tt> sample
+application, go to <a
+ href="https://glassfish.dev.java.net/downloads/quickstart/hello.war">https://glassfish.dev.java.net/downloads/quickstart/hello.war</a>.</b></li>
+  <li><b>Save the <tt>hello.war</tt> file in the directory of your
+choice. This directory is
+referred to as <i>sample-dir</i>.</b></li>
+</ol>
+<a name="ghgjj"></a>
+<h3>Deploying an Application From the Command Line</h3>
+<p>You can deploy applications from the command line using the <tt>asadmin
+deploy</tt> command.</p>
+<a name="ggndq"></a>
+<h4>To Deploy the Sample Application From the Command Line</h4>
+<h4>Before You Begin</h4>
+<p>The sample application must be available before you start this task.
+To download
+the sample, see <a href="#ghgis">Obtaining a Sample Application</a>.
+At least one GlassFish server domain must be
+started before you deploy the sample application.</p>
+<ol>
+  <li><b>Use the <tt>asadmin deploy</tt> command.</b>
+    <p>The general form for the command is:</p>
+    <pre><i>as-install</i>/bin/asadmin deploy <i>war-name</i></pre>
+    <p>To deploy the <tt>hello.war</tt> sample, the command is:</p>
+    <pre><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin deploy </tt><i>sample-dir</i><tt>/hello.war</tt></b></pre>
+  </li>
+  <li><b>Access the <tt>hello</tt> application by typing the following
+URL in your browser:</b>
+    <pre><tt><b>http://localhost:8080/hello</b></tt></pre>
+    <p>The application's start page is displayed, and you are prompted
+to type your
+name.</p>
+    <pre>Hi, my name is Duke. What's yours?</pre>
+  </li>
+  <li><b>Type your name and click Submit.</b>
+    <p>The application displays a customized response, giving you a
+personal <tt>Hello</tt>.</p>
+  </li>
+</ol>
+<h4>See Also</h4>
+<p>See <a href="http://docs.sun.com/doc/820-7701/deploy-1?a=view"><tt>deploy</tt>(1)</a>
+for more information about the <tt>deploy</tt> command.</p>
+<p>See the <a href="http://docs.sun.com/doc/820-7693"><i>Sun GlassFish
+Enterprise Server v3 Application Deployment Guide</i></a> for more
+information about deploying applications from the command line.</p>
+<a name="ggnco"></a>
+<h4>To List Deployed Applications From the Command Line</h4>
+<ul>
+  <li><b>Use the <tt>asadmin list-applications</tt> command:</b>
+    <pre><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin list-applications</tt></b></pre>
+  </li>
+</ul>
+<a name="ggnbm"></a>
+<h4>To Undeploy the Sample Application From the Command Line</h4>
+<ul>
+  <li><b>Use the <tt>asadmin undeploy</tt> command.</b>
+    <p>The general form for the command is:</p>
+    <pre><i>as-install</i>/bin/asadmin undeploy <i>war-name</i></pre>
+    <p>For <i>war-name</i>, use the literal <tt>hello</tt>, not the
+full <tt>hello.war</tt> name.</p>
+    <p>For the <tt>hello.war</tt> example, the command is:</p>
+    <pre><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin undeploy hello</tt></b></pre>
+  </li>
+</ul>
+<h4>See Also</h4>
+<p>See <a href="http://docs.sun.com/doc/820-7701/undeploy-1?a=view"><tt>undeploy</tt>(1)</a>
+for more information about the <tt>undeploy</tt> command.</p>
+<a name="ghgjn"></a>
+<h3>Deploying an Application by Using the Administration Console</h3>
+<p>You can deploy applications from the graphical Administration
+Console.</p>
+<a name="ggnbn"></a>
+<h4>To Deploy the Sample Application From the Administration Console</h4>
+<h4>Before You Begin</h4>
+<p>The sample application must be available before you start this task.
+To download
+the sample, see <a href="#ghgis">Obtaining a Sample Application</a>.
+At least one GlassFish server domain must be
+started before you deploy the sample application.</p>
+<ol>
+  <li><b>Launch the Administration Console by typing the following URL
+in your browser:</b>
+    <pre><tt><b>http://localhost:4848</b></tt></pre>
+  </li>
+  <li><b>Click the Applications node in the tree on the left.</b>
+    <p>The Applications page is displayed.</p>
+  </li>
+  <li><b>Click the Deploy button.</b>
+    <p>The Deploy Applications or Modules page is displayed.</p>
+  </li>
+  <li><b>Select Packaged File to be Uploaded to the Server, and click
+Browse.</b></li>
+  <li><b>Navigate to the location in which you saved the <tt>hello.war</tt>
+sample, select the
+file, and click Open.</b>
+    <p>You are returned to the Deploy Applications or Modules page.</p>
+  </li>
+  <li><b>Specify a description in the Description field, for example:</b>
+    <p><tt>hello</tt></p>
+  </li>
+  <li><b>Accept the other default settings, and click OK.</b>
+    <p>You are returned to the Applications page.</p>
+  </li>
+  <li><b>Select the check box next to the <tt>hello</tt> application
+and click the <tt>Launch</tt>
+link to run the application.</b>
+    <p>The default URL for the application is:</p>
+    <pre><tt><b>http://localhost:8080/hello/</b></tt></pre>
+  </li>
+</ol>
+<h4>See Also</h4>
+<p>Refer to the Administration Console online help for additional
+information.</p>
+<a name="ggncd"></a>
+<h4>To View Deployed Applications in the Administration Console</h4>
+<ol>
+  <li><b>Launch the Administration Console by typing the following URL
+in your browser:</b>
+    <pre><tt><b>http://localhost:4848</b></tt></pre>
+  </li>
+  <li><b>Click the Applications node in the tree on the left.</b>
+    <p>The node expands to list deployed applications. The applications
+are also listed in the
+table on the Applications page.</p>
+  </li>
+</ol>
+<a name="ggneh"></a>
+<h4>To Undeploy the Sample Application From the Administration Console</h4>
+<ol>
+  <li><b>Launch the Administration Console by typing the following URL
+in your browser:</b>
+    <pre><tt><b>http://localhost:4848</b></tt></pre>
+  </li>
+  <li><b>Click the Applications node in the tree on the left.</b>
+    <p>The Applications page is displayed.</p>
+  </li>
+  <li><b>Select the check box next to the <tt>hello</tt> sample
+application.</b></li>
+  <li><b>Remove or disable the application.</b>
+  <ul>  
+  <li><b>To remove the application, click the Undeploy button.</b></li>
+  <li><b>To disable the application, click the Disable button.</b></li>
+    </ul>
+  </li>
+</ol>
+<h4>See Also</h4>
+<p>Refer to the Administration Console online help for additional
+information.</p>
+<a name="ghgmi"></a>
+<h3>Deploying an Application Automatically</h3>
+<p>You can deploy applications automatically by placing them in the <tt></tt><i>as-install</i><tt>/domains/</tt><i>domain-name</i><tt>/autodeploy</tt>
+directory,
+where <i>domain-name</i> is the name of the domain for which you want
+to configure automatic deployment. For this example, use the default
+domain, <tt>domain1</tt>:</p>
+<pre><i>as-install</i>/domains/domain1/autodeploy</pre>
+<a name="geyvj"></a>
+<h4>To Deploy the Sample Application Automatically</h4>
+<h4>Before You Begin</h4>
+<p>The sample application must be available before you start this task.
+To download
+the sample, see <a href="#ghgis">Obtaining a Sample Application</a>.</p>
+<ul>
+  <li><b>Copy the application WAR file to the <tt></tt><i>as-install</i><tt>/domains/</tt><i>domain-name</i><tt>/autodeploy</tt>
+directory.</b>
+    <p><tt><b>cp </b></tt><b><i>sample-dir</i><tt>/hello.war </tt><i>as-install</i><tt>/domains/</tt><i>domain-name</i><tt>/autodeploy</tt></b></p>
+    <p>Use <tt><b>copy</b></tt> instead of <tt><b>cp</b></tt> on
+Windows systems.</p>
+    <p>GlassFish server automatically discovers and deploys the
+application. The default URL for the
+application is:</p>
+    <pre><tt><b>http://localhost:8080/hello/</b></tt></pre>
+  </li>
+</ul>
+<a name="ggncw"></a>
+<h4>To Undeploy the Sample Application Automatically</h4>
+<ol>
+  <li><b>Change to the domain's <tt>autodeploy</tt> directory.</b>
+    <p><tt><b>cd </b></tt><b><i>as-install</i><tt>/domains/</tt><i>domain-name</i><tt>/autodeploy</tt></b>
+    </p>
+  </li>
+  <li><b>Use the <tt>rm</tt> command to undeploy and remove the
+application.</b>
+    <p><tt><b>rm hello.war</b></tt></p>
+    <p>Use <tt><b>del</b></tt> instead of <tt><b>rm</b></tt> on
+Windows systems.</p>
+  </li>
+</ol>
+<a name="gjahq"></a>
+<h2>Updating and Extending an Existing Installation</h2>
+<p>GlassFish server provides an administrative tool called Update Tool
+that enables you to
+install updates and add-on components to your existing GlassFish server
+installation. Update Tool
+can be accessed as a standalone graphical tool from the command line or
+as a browser-based graphical tool from the Administration Console. For
+more information about
+Update Tool, see the <a href="http://docs.sun.com/doc/820-7692"><i>Sun
+GlassFish Enterprise Server v3 Administration Guide</i></a>.</p>
+<a name="gjdfe"></a>
+<h3>To Access the Graphical Update Tool From the Command Line</h3>
+<ul>
+  <li><b>Use the <tt>updatetool</tt> command:</b>
+    <pre><i>as-install-parent</i>/bin/updatetool</pre>
+    <p>If Update Tool is not installed, you will be prompted to install
+it. Install the tool if desired, then use the <tt>updatetool</tt>
+command to start the
+tool. Extensive online help is available from the tool's Help menu.</p>
+  </li>
+</ul>
+<h4>See Also</h4>
+<p>A command-line interface is also available for Update Tool. The
+command-line interface uses
+the <tt>pkg</tt> command and enables you to perform most of the tasks
+provided
+by the graphical version. For more information about the <tt>pkg</tt>
+command, see the
+<a href="http://docs.sun.com/doc/820-7692"><i>Sun GlassFish Enterprise
+Server v3 Administration Guide</i></a>.</p>
+<a name="gjanh"></a>
+<h3>To Access Update Tool Using the Administration Console</h3>
+<h4>Before You Begin</h4>
+<p>At least one GlassFish server domain must be started before you
+launch the
+Administration Console.</p>
+<ol>
+  <li><b>Launch the Administration Console by typing the following URL
+in your browser:</b>
+    <pre><tt><b>http://localhost:4848</b></tt></pre>
+  </li>
+  <li><b>Click the Update Tool node in the tree on the left.</b></li>
+</ol>
+<h4>See Also</h4>
+<p>Refer to the Administration Console online help for additional
+information.</p>
+<p>Also see the <a href="http://docs.sun.com/doc/820-7690"><i>Sun
+GlassFish Enterprise Server v3 Installation Guide</i></a>.</p>
+<a name="ghgqg"></a>
+<h2>Removing GlassFish Server v3 Software</h2>
+<p>The following procedure describes how to remove the software using
+the command-line interface. For additional information about uninstalling the software, see the <a
+ href="http://docs.sun.com/doc/820-7690"><i>Sun GlassFish Enterprise
+Server v3 Installation Guide</i></a>.</p>
+<a name="ggrkk"></a>
+<h3>To Remove GlassFish Server Software</h3>
+<h4>Before You Begin</h4>
+<p>Stop all domains and all processes related to the installation,
+including prompts that
+use the installation directory or its subdirectories and any
+applications that use the
+Java EE platform files bundled with the product. Stop all Update Tool
+processes,
+including the Notifier process. </p>
+<ol>
+  <li><b>Change to <i>as-install-parent</i>, the directory that
+contains
+the uninstallation program.</b></li>
+  <li><b>Run the uninstallation command.</b>
+    <ul>	
+      <li><b>UNIX, Linux, or Mac OS X systems: Type <tt><b>./uninstall.sh</b></tt></b><br> If necessary, grant execute permissions to the uninstall file before executing it: <tt>chmod +x ./uninstall.sh</tt>      
+      </li>	 	  
+      <li><b>Windows systems: Type <tt><b>uninstall.exe</b></tt></b></li>
+    </ul>
+  </li>  
+  <li><b>Not all files and directories are removed automatically.
+Examine the remaining contents and
+remove any files and directories that you do not want, including hidden
+directories
+prefixed with a dot.</b></li>
+</ol>
+<a name="ggkzh"></a>
+<h2>For More Information</h2>
+<p>Additional resources are available to help you learn more about and
+use GlassFish server v3 and related technologies.</p>
+<p>The following resources are addressed here:</p>
+<ul>
+  <li>
+    <p><a href="#ghhir">Product Documentation</a></p>
+  </li>
+  <li>
+    <p><a href="#ghhis">GlassFish Communities</a></p>
+  </li>
+  <li>
+    <p><a href="#giyjo">Tutorials</a></p>
+  </li>
+  <li>
+    <p><a href="#gintm">Java EE 6 Samples</a></p>
+  </li>
+</ul>
+<a name="ghhir"></a>
+<h3>Product Documentation</h3>
+<p>Comprehensive product documentation is available and includes the
+following.</p>
+<ul>
+  <li>
+    <p><a href="http://docs.sun.com/doc/820-7688"><i>Sun GlassFish
+Enterprise Server v3 Release Notes</i></a>: Latest details about new
+features, known issues, and tips for installing and working with
+GlassFish server software.</p>
+  </li>
+  <li>
+    <p><a href="http://docs.sun.com/coll/1343.9">GlassFish Server
+Documentation</a>: Collection of guides that document GlassFish server
+features and functions.</p>
+  </li>
+  <li>
+    <p><a
+ href="http://wiki.glassfish.java.net/Wiki.jsp?page=Screencasts">GlassFish
+Server Screencasts</a>: Collection of video recordings that demonstrate
+various features and provide examples for working with GlassFish server
+and related technologies.</p>
+  </li>
+</ul>
+<ul>
+  <li>
+    <p><a
+ href="http://wiki.glassfish.java.net/Wiki.jsp?page=GlassFishFAQIndex">GlassFish
+Server FAQs</a>: Frequently asked questions covering a variety of
+GlassFish server topics.</p>
+  </li>
+</ul>
+<a name="ghhis"></a>
+<h3>GlassFish Communities</h3>
+<p>The following resources will help you connect with other users,
+learn more about
+GlassFish server, and get help if needed.</p>
+<ul>
+  <li>
+    <p><a href="http://forums.java.net/jive/forum.jspa?forumID=56">GlassFish
+User Forum</a>: Public online discussion forum that provides community
+support and tips for working with GlassFish server.</p>
+  </li>
+  <li>
+    <p><a href="http://wiki.glassfish.java.net/">GlassFish Wiki</a>:
+Community site that provides a wide range of information related to
+GlassFish server.</p>
+  </li>
+</ul>
+<ul>
+  <li>
+    <p><a href="https://glassfish.dev.java.net/docs/project.html">GlassFish
+Documentation Project</a>: Documentation community site that provides
+details about GlassFish server documentation and how you can
+participate.</p>
+  </li>
+  <li>
+    <p><a href="https://glassfish.dev.java.net/quality/portal/">GlassFish
+Quality Community</a>: Quality community site focused on testing and
+improving GlassFish server.</p>
+  </li>
+</ul>
+<a name="giyjo"></a>
+<h3>Tutorials</h3>
+<p>The following tutorials provide working examples and detailed
+instructions for creating enterprise applications
+for the Java EE 6 platform.</p>
+<ul>
+  <li>
+    <p><a href="http://docs.sun.com/doc/820-7759"><i>Your First Cup: An
+Introduction to the Java EE Platform</i></a>: Short tutorial for
+beginning Java EE programmers that shows how to develop a simple
+enterprise application from scratch. The sample application consists of
+four main components: a JAX-RS RESTful web service, an enterprise bean,
+a Java Persistence API entity, and a web application created with
+JavaServer<sup>TM</sup> Faces Facelets technology.</p>
+  </li>
+  <li>
+    <p><a href="http://docs.sun.com/doc/820-7627"><i>The Java EE 6
+Tutorial, Volume I</i></a>: Beginner's guide to developing enterprise
+applications for the GlassFish server. The tutorial includes working
+examples and instructions for creating applications with Java EE 6
+technologies, including Java Servlets, JavaServer Faces, Facelets,
+RESTful Web Services, Enterprise JavaBeans<sup>TM</sup>, Java
+Persistence API, Contexts and Dependency Injection for the Java EE
+platform, and more. The document is also available through Update Tool.
+    </p>
+  </li>
+  <li>
+    <p><i>The Java EE 6 Tutorial, Volume II</i>: Advanced guide that
+builds on <i>The Java EE 6 Tutorial, Volume I</i> and contains
+advanced topics, additional technologies, and case studies. The
+document is available to registered users of GlassFish server.</p>
+  </li>
+</ul>
+<a name="gintm"></a>
+<h3>Java EE 6 Samples</h3>
+<p>The sample applications demonstrate Java EE 6 technologies and how
+to use them.
+The samples are available as part of the Java EE 6 SDK
+distributions. To obtain the samples, you must install the SDK. For
+more information
+and to download the samples, see the Java EE 6 SDK <a
+ href="http://java.sun.com/javaee/downloads/index.jsp">download page</a>.</p>
+</div>
+<hr style="width: 80%; height: 2px;">
+<p class="copy"><a href="http://www.sun.com/company/">Company Info</a>
+&nbsp;&nbsp;|&nbsp;&nbsp; <a href="http://www.sun.com/contact/">Contact</a>
+&nbsp;&nbsp;|&nbsp;&nbsp; Copyright
+2009 Sun Microsystems <br>
+</p>
+</body>
+</html>
