@@ -47,6 +47,7 @@
         setSessionAttribute(key="listenerTabs" value="generalTab");
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
+
         setPageSessionAttribute(key="listenerName" value="#{pageSession.Name}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/networkListeners.jsf");
@@ -54,12 +55,15 @@
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=network-listeners");
         setPageSessionAttribute(key="childType" value="network-listener");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled", "JkEnabled"});
         setPageSessionAttribute(key="protocolName" value="#{pageSession.valueMap['Protocol']}")
-        setPageSessionAttribute(key="parentObjectNameStr2", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=network-listeners");
+
+        setPageSessionAttribute(key="parentObjectNameStr2", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols");
         setPageSessionAttribute(key="childType2" value="protocol");
         setPageSessionAttribute(key="objectNameStr2" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=#{pageSession.valueMap['Protocol']}")
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
+
         setPageSessionAttribute(key="convertToFalseList2" value={"SecurityEnabled"});
 
         //set the following for including buttons.inc
