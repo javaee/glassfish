@@ -36,20 +36,21 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.annotation.security.TransportProtected;
-
 import javax.servlet.ServletException;
+import javax.servlet.annotation.HttpConstraint;
+import javax.servlet.annotation.HttpMethodConstraint;
+import javax.servlet.annotation.ServletSecurity;
+import javax.servlet.annotation.ServletSecurity.TransportGuarantee;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/myurl3")
-@RolesAllowed("javaee")
+@ServletSecurity(value=@HttpConstraint(rolesAllowed={ "javaee" } ),
+        httpMethodConstraints={ @HttpMethodConstraint(value="GET", rolesAllowed={ "javaee" }, transportGuarantee=TransportGuarantee.CONFIDENTIAL),
+        @HttpMethodConstraint(value="TRACE", rolesAllowed={ "javaee" }, transportGuarantee=TransportGuarantee.NONE)} )
 public class TestServlet3 extends HttpServlet {
-    @TransportProtected
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
@@ -57,7 +58,6 @@ public class TestServlet3 extends HttpServlet {
         writer.write("g:Hello:" + req.getRemoteUser() + ":" + req.isSecure());
     }
 
-    @TransportProtected(false)
     protected void doTrace(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 

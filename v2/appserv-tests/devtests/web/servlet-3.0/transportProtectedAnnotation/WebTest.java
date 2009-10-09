@@ -54,7 +54,7 @@ public class WebTest{
         String contextRoot = args[3];
         String trustStorePath = args[4];
 
-        stat.addDescription("Testing @TransportProtected");
+        stat.addDescription("Testing @ServletSecurity transportGuarantee");
 
         try {
             SSLSocketFactory ssf = getSSLSocketFactory(trustStorePath);
