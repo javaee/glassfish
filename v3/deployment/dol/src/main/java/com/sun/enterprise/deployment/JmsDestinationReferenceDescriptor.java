@@ -45,6 +45,9 @@ public class JmsDestinationReferenceDescriptor extends EnvironmentProperty imple
 
     private String refType;
 
+    private boolean isManagedBean = false;
+    private ManagedBeanDescriptor managedBeanDesc;
+
     private static final String SESSION_CTX_TYPE = "javax.ejb.SessionContext";
     private static final String MDB_CTX_TYPE ="javax.ejb.MessageDrivenContext";
     private static final String EJB_CTX_TYPE ="javax.ejb.EJBContext";
@@ -78,6 +81,22 @@ public class JmsDestinationReferenceDescriptor extends EnvironmentProperty imple
         setRefType(refType);
     }
 
+    public void setIsManagedBean(boolean flag) {
+        isManagedBean = flag;
+    }
+
+    public boolean isManagedBean() {
+        return isManagedBean;
+    }
+
+    public void setManagedBeanDescriptor(ManagedBeanDescriptor desc) {
+        managedBeanDesc = desc;
+    }
+
+    public ManagedBeanDescriptor getManagedBeanDescriptor() {
+        return managedBeanDesc;
+    }
+    
    /**
     * Return the jndi name of the destination to which I refer.
     */

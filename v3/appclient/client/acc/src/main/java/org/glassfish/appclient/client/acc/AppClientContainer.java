@@ -76,6 +76,8 @@ import org.glassfish.appclient.client.acc.config.Property;
 import org.glassfish.appclient.client.acc.config.Security;
 import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.glassfish.persistence.jpa.PersistenceUnitLoader;
+import com.sun.enterprise.container.common.spi.ManagedBeanManager;
+
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -354,7 +356,7 @@ public class AppClientContainer {
          * the JVM will invoke the client's main method itself and launch will
          * be skipped.
          */
-        cleanup = Cleanup.arrangeForShutdownCleanup(logger, habitat);
+        cleanup = Cleanup.arrangeForShutdownCleanup(logger, habitat, desc);
 
         /*
          * If this app client contains persistence unit refs, then initialize
@@ -382,6 +384,12 @@ public class AppClientContainer {
         System.setProperty("javax.xml.ws.spi.Provider",
                            "com.sun.enterprise.webservice.spi.ProviderImpl");
         //InjectionManager's injectClass will be called from getMainMethod
+
+
+        // Load any managed beans
+        ManagedBeanManager managedBeanManager = habitat.getByContract(ManagedBeanManager.class);
+        managedBeanManager.loadManagedBeans(desc.getApplication());
+        cleanup.setManagedBeanManager(managedBeanManager);
 
         /**
          * We don't really need the main method here but we do need the side-effects.
@@ -866,27 +874,32 @@ public class AppClientContainer {
         private Collection<EntityManagerFactory> emfs = null;
         private final Habitat habitat;
         private ConnectorRuntime connectorRuntime;
+        private ManagedBeanManager managedBeanMgr;
 
         static Cleanup arrangeForShutdownCleanup(final Logger logger,
-                final Habitat habitat) {
-            final Cleanup cu = new Cleanup(logger, habitat);
+                final Habitat habitat, final ApplicationClientDescriptor appDesc) {
+            final Cleanup cu = new Cleanup(logger, habitat, appDesc);
             cu.enable();
             return cu;
         }
 
-        private Cleanup(final Logger logger, final Habitat habitat) {
+        private Cleanup(final Logger logger, final Habitat habitat, final ApplicationClientDescriptor appDesc) {
             this.logger = logger;
             this.habitat = habitat;
+            this.appClient = appDesc;
         }
 
         void setAppClientInfo(AppClientInfo info) {
             appClientInfo = info;
         }
 
-        void setInjectionManager(InjectionManager injMgr, Class cls, ApplicationClientDescriptor appDesc) {
+        void setInjectionManager(InjectionManager injMgr, Class cls) {
             injectionMgr = injMgr;
             this.cls = cls;
-            appClient = appDesc;
+        }
+
+        void setManagedBeanManager(ManagedBeanManager mgr) {
+            managedBeanMgr = mgr;
         }
 
         void setEMFs(Collection<EntityManagerFactory> emfs) {
@@ -944,6 +957,10 @@ public class AppClientContainer {
 
         void cleanUp() {
             if( !cleanedUp ) {
+
+                // Do managed bean cleanup early since it can result in
+                // application code (@PreDestroy) invocations
+                cleanupManagedBeans();
                 cleanupEMFs();
                 cleanupInfo();
                 cleanupInjection();
@@ -988,6 +1005,17 @@ public class AppClientContainer {
                 }
             } catch (Throwable t) {
                 logger.log(Level.SEVERE, "cleanupInjection", t);
+            }
+
+        }
+
+        private void cleanupManagedBeans() {
+            try {
+                if ( managedBeanMgr != null) {
+                    managedBeanMgr.unloadManagedBeans(appClient.getApplication());
+                }
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "cleanupManagedBeans", t);
             }
 
         }

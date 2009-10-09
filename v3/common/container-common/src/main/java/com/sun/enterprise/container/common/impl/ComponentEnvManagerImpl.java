@@ -54,6 +54,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.naming.ComponentNamingUtil;
+import org.glassfish.api.admin.*;
 
 import javax.naming.NamingException;
 import javax.naming.NameNotFoundException;
@@ -92,6 +93,10 @@ public class ComponentEnvManagerImpl
 
     @Inject
     ComponentNamingUtil componentNamingUtil;
+
+
+    @Inject
+    private ProcessEnvironment processEnv;
 
     // TODO: container-common shouldn't depend on EJB stuff, right?
     // this seems like the abstraction design failure.
@@ -554,6 +559,13 @@ public class ComponentEnvManagerImpl
                 value = new EjbContextProxy(next.getRefType());
             } else if( next.isCDIBeanManager() ) {
                 value = namingUtils.createLazyNamingObjectFactory(name, "java:comp/BeanManager", false);
+            } else if( next.isManagedBean() ) {
+                ManagedBeanDescriptor managedBeanDesc = next.getManagedBeanDescriptor();
+                if( processEnv.getProcessType().isServer() ) {
+                    value = namingUtils.createLazyNamingObjectFactory(name, next.getJndiName(), false);
+                } else {
+                    value = namingUtils.createLazyNamingObjectFactory(name, managedBeanDesc.getAppJndiName(), false);
+                }
             } else {
                 // we lookup first in the InitialContext, if not found we look up in the habitat.
                 value = new NamingObjectFactory() {

@@ -48,6 +48,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
 import java.lang.annotation.Annotation;
 
+import javax.naming.InitialContext;
+
 
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -79,6 +81,8 @@ import org.glassfish.api.Startup;
 
 import com.sun.enterprise.container.common.spi.util.InterceptorInfo;
 import com.sun.enterprise.container.common.spi.*;
+
+import org.glassfish.api.naming.NamingObjectProxy;
 
 /**
  */
@@ -114,6 +118,9 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
     // Keep track of contexts for managed bean instances instantiated via JCDI
     private Map<BundleDescriptor, Map<Object, JCDIService.JCDIInjectionContext>> jcdiManagedBeanInstanceMap =
             new HashMap<BundleDescriptor, Map<Object, JCDIService.JCDIInjectionContext>>();
+
+    // Used to hold managed beans in app client container
+    private Map<String, NamingObjectProxy> appClientManagedBeans = new HashMap<String, NamingObjectProxy>();
 
     public void postConstruct() {
         events.register(this);
@@ -173,8 +180,6 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
          }
      }
 
-
-    
     private void loadManagedBeans(ApplicationInfo appInfo) {
 
         Application app = appInfo.getMetaData(Application.class);
@@ -183,14 +188,20 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
             return;
         }
 
+        loadManagedBeans(app);
+    }
+    
+    public void loadManagedBeans(Application app) {
+
+
         for(BundleDescriptor bundle : app.getBundleDescriptors()) {
 
             if (!bundleEligible(bundle)) {
                 continue;
             }
 
-            // Only need to validate if this is an ejb-jar
-            boolean validationRequired  = bundle instanceof EjbBundleDescriptor;
+            boolean validationRequired  = (bundle instanceof EjbBundleDescriptor)
+                    || (bundle instanceof ApplicationClientDescriptor);
 
             for(ManagedBeanDescriptor next : bundle.getManagedBeans()) {
 
@@ -240,7 +251,14 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
                     ManagedBeanNamingProxy namingProxy =
                         new ManagedBeanNamingProxy(next, habitat);
 
-                    namingManager.publishObject(jndiName, namingProxy, true);
+                    if( processType.isServer() ) {
+                        namingManager.publishObject(jndiName, namingProxy, true);
+                    } else {
+                        // Can't store them in server's global naming service so keep
+                        // them in local map.
+                        appClientManagedBeans.put(jndiName, namingProxy);
+                    }
+
 
                 } catch(Exception e) {
                     throw new RuntimeException("Error binding ManagedBean " + next.getBeanClassName() +
@@ -252,6 +270,21 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
                 Collections.synchronizedMap(new HashMap<Object, JCDIService.JCDIInjectionContext>()));
         }
 
+    }
+
+    public Object getManagedBean(String globalJndiName) throws Exception {
+
+        NamingObjectProxy proxy = appClientManagedBeans.get(globalJndiName);
+
+        Object managedBean = null;
+
+        if( proxy != null ) {
+
+            managedBean = proxy.create(new InitialContext());
+
+        }
+
+        return managedBean;      
     }
 
     /**
@@ -281,6 +314,12 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
         if( app == null ) {
             return;
         }
+
+        unloadManagedBeans(app);
+
+    }
+
+    public void unloadManagedBeans(Application app) {
 
         for(BundleDescriptor bundle : app.getBundleDescriptors()) {
 
@@ -327,11 +366,15 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
                         habitat.getByContract(org.glassfish.api.naming.GlassfishNamingManager.class);
                 String jndiName = next.getGlobalJndiName();
 
-                try {
-                    namingManager.unpublishObject(jndiName);
-                } catch(javax.naming.NamingException ne) {
-                    _logger.log(Level.FINE, "Error unpubishing managed bean " +
-                           next.getBeanClassName() + " with jndi name " + jndiName, ne);
+                if( processType.isServer() ) {
+                    try {
+                        namingManager.unpublishObject(jndiName);
+                    } catch(javax.naming.NamingException ne) {
+                        _logger.log(Level.FINE, "Error unpubishing managed bean " +
+                               next.getBeanClassName() + " with jndi name " + jndiName, ne);
+                    }
+                } else {
+                    appClientManagedBeans.remove(jndiName);
                 }
 
                 next.clearAllBeanInstanceInfo();
@@ -350,9 +393,9 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
             eligible = (bundle instanceof WebBundleDescriptor) ||
                 (bundle instanceof EjbBundleDescriptor);
 
+        } else if( processType == ProcessType.ACC ) {
+            eligible = (bundle instanceof ApplicationClientDescriptor);
         }
-
-        // TODO handle Application Clients
 
         return eligible;
     }
@@ -459,7 +502,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
     private void inject(Object instance, ManagedBeanDescriptor managedBeanDesc)
         throws Exception {
         BundleDescriptor bundle = managedBeanDesc.getBundle();
-        if( bundle instanceof EjbBundleDescriptor ) {
+        if( (bundle instanceof EjbBundleDescriptor) || (bundle instanceof ApplicationClientDescriptor) ) {
             injectionMgr.injectInstance(instance, managedBeanDesc.getGlobalJndiName(), false);
         } else {
             //  Inject instances, but use injection invoker for PostConstruct

@@ -25,6 +25,7 @@ package com.sun.enterprise.container.common.impl;
 
 import org.glassfish.api.naming.NamedNamingObjectProxy;
 import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.api.admin.*;
 
 import com.sun.enterprise.deployment.*;
 
@@ -37,12 +38,16 @@ import org.jvnet.hk2.component.PostConstruct;
 import javax.naming.NamingException;
 
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import com.sun.enterprise.container.common.spi.ManagedBeanManager;
 import com.sun.logging.LogDomains;
 
 import javax.naming.*;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 
 
 @Service
@@ -51,6 +56,12 @@ public class JavaModuleNamingProxy
 
     @Inject
     Habitat habitat;
+
+    @Inject
+    private ProcessEnvironment processEnv;
+
+    private ProcessEnvironment.ProcessType processType;
+
 
     private static Logger _logger = LogDomains.getLogger(JavaModuleNamingProxy.class,
             LogDomains.NAMING_LOGGER);
@@ -63,6 +74,8 @@ public class JavaModuleNamingProxy
         } catch(NamingException ne) {
             throw new RuntimeException("JavaModuleNamingProxy InitialContext creation failure", ne);
         }
+
+        processType = processEnv.getProcessType();
     }
 
     private static final String JAVA_MODULE_CONTEXT
@@ -253,7 +266,24 @@ public class JavaModuleNamingProxy
         if( newName != null ) {
 
             try {
-                returnValue = ic.lookup(newName);
+
+                if( processType == ProcessType.ACC) {
+
+                    ManagedBeanManager mbMgr = habitat.getByContract(ManagedBeanManager.class);
+
+                    try {
+                        returnValue = mbMgr.getManagedBean(newName);
+                    } catch(Exception e) {
+                        NamingException ne = new NamingException("Error creating ACC managed bean " + newName);
+                        ne.initCause(e);
+                        throw ne;                     
+                    }
+
+                }
+
+                if( returnValue == null ) {
+                    returnValue = ic.lookup(newName);
+                }
             } catch(NamingException ne) {
 
                 _logger.log(Level.FINE, newName + " Unable to map " + name + " to derived name " +

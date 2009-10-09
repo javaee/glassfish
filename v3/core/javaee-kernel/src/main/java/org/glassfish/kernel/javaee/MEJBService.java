@@ -47,6 +47,7 @@ import org.glassfish.api.naming.GlassfishNamingManager;
 import com.sun.logging.LogDomains;
 
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * MEJB service to register mejb with a temporary NamingObjectProxy at server 
@@ -71,11 +72,13 @@ public class MEJBService implements Init, PostConstruct {
             habitat.getComponent(GlassfishNamingManager.class);
         MEJBNamingObjectProxy mejbProxy = 
             new MEJBNamingObjectProxy(habitat);
-        try {
-            gfNamingManager.publishObject(mejbProxy.MEJB_JNDI_NAME, mejbProxy, true);
-        } catch (Exception e) {
-            _logger.warning("Problem in publishing temp proxy for MEJB: " + 
-                e.getMessage());
+        for(String next : MEJBNamingObjectProxy.getJndiNames()) {
+            try {
+                gfNamingManager.publishObject(next, mejbProxy, true);
+            } catch (Exception e) {
+                _logger.log(Level.WARNING, "Problem in publishing temp proxy for MEJB: " + 
+                    e.getMessage(), e);
+            }
         }
     }
 }

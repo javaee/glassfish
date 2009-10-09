@@ -38,6 +38,7 @@ package com.sun.enterprise.container.common.spi;
 import org.jvnet.hk2.annotations.Contract;
 
 import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ManagedBeanDescriptor;
 
 /**
@@ -47,6 +48,12 @@ import com.sun.enterprise.deployment.ManagedBeanDescriptor;
 
 @Contract
 public interface ManagedBeanManager {
+
+    public void loadManagedBeans(Application app);
+
+    public void unloadManagedBeans(Application app);
+
+    public Object getManagedBean(String globalJndiName) throws Exception;
 
     public Object createManagedBean(Class managedBean) throws Exception;
 

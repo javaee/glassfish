@@ -59,7 +59,15 @@ import javax.naming.NamingException;
  */
 public class MEJBNamingObjectProxy implements NamingObjectProxy {
 
-    public static final String MEJB_JNDI_NAME = "ejb/mgmt/MEJB";
+    private static final String NON_PORTABLE_MEJB_JNDI_NAME = "ejb/mgmt/MEJB";
+    private static final String PORTABLE_MEJB_JNDI_NAME_SHORT = "java:global/mejb/MEJBBean";
+    private static final String PORTABLE_MEJB_JNDI_NAME_LONG =
+            "java:global/mejb/MEJBBean!org.glassfish.admin.mejb.MEJBHome";
+
+    private static String[] jndiNames = new String[]
+            { NON_PORTABLE_MEJB_JNDI_NAME,
+              PORTABLE_MEJB_JNDI_NAME_SHORT,
+              PORTABLE_MEJB_JNDI_NAME_LONG };
 
     private Habitat habitat;
 
@@ -71,13 +79,17 @@ public class MEJBNamingObjectProxy implements NamingObjectProxy {
         this.habitat = habitat;
     }
 
+    static String[] getJndiNames() {
+        return jndiNames;
+    }
+
     public Object create(Context ic) throws NamingException {
-        GlassfishNamingManager gfNamingManager = habitat.getComponent(GlassfishNamingManager.class);
+
         Object mEJBHome = null;
         try {
-            gfNamingManager.unpublishObject(MEJB_JNDI_NAME);
+            unpublishJndiNames();
             deployMEJB();
-            mEJBHome = ic.lookup(MEJB_JNDI_NAME);
+            mEJBHome = ic.lookup(NON_PORTABLE_MEJB_JNDI_NAME);
         } catch (NamingException ne) {
             throw ne;
         } catch (Exception e) {
@@ -87,6 +99,13 @@ public class MEJBNamingObjectProxy implements NamingObjectProxy {
             throw namingException;
         }
         return mEJBHome;
+    }
+
+    private void unpublishJndiNames() throws NamingException {
+        GlassfishNamingManager gfNamingManager = habitat.getComponent(GlassfishNamingManager.class);
+        for(String next : getJndiNames()) {
+            gfNamingManager.unpublishObject(next);
+        }
     }
 
     private void deployMEJB() throws IOException {

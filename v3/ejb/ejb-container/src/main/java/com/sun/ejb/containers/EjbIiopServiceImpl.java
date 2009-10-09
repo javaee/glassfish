@@ -46,15 +46,17 @@ import org.jvnet.hk2.annotations.Service;
 @Service
 public class EjbIiopServiceImpl implements EjbService {
 
-    EjbContainerUtil containerUtil = EjbContainerUtilImpl.getInstance();
 
     public EjbDescriptor ejbIdToDescriptor(long ejbId) {
-        
-        if( containerUtil == null ) {
-            throw new IllegalStateException("EJB Container not initialized");
-        }
 
-        return containerUtil.getDescriptor(ejbId);
+        // Ejb container util might not have been initialized yet if this is being
+        // called from a security interceptor callback during the initial portions
+        // of lazy-orb naming service initialization.  Just return null if
+        // it's not available since in that case the id can not be for an EJB anyway.
+        //
+        return EjbContainerUtilImpl.isInitialized() ?
+                EjbContainerUtilImpl.getInstance().getDescriptor(ejbId) : null;
+
     }
     
 

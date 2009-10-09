@@ -335,6 +335,30 @@ public class ManagedBeanDescriptor extends JndiEnvironmentRefsGroupDescriptor {
         return javaGlobalPrefix.toString();        
     }
 
+    public String getAppJndiName() {
+
+        String modName = enclosingBundle.getModuleDescriptor().getModuleName();
+
+        StringBuffer javaAppPrefix = new StringBuffer("java:app/");
+
+        javaAppPrefix.append(modName);
+        javaAppPrefix.append("/");
+
+
+        // If the managed bean is named, use the name for the final component
+        // of the managed bean global name.  Otherwise, use a derived internal
+        // name since we'll still need a way to register and lookup the bean
+        // from within the container.
+
+        String componentName = isNamed() ? name :
+                "___internal_managed_bean_" + beanClassName;
+        javaAppPrefix.append(componentName);
+
+
+        return javaAppPrefix.toString();
+               
+    }
+
 
 	/**
 	* Returns a formatted String of the attributes of this object.

@@ -50,6 +50,7 @@
       <ejb-name>MEJBBean</ejb-name>
       <jndi-name>ejb/mgmt/MEJB</jndi-name>
       <pass-by-reference>false</pass-by-reference>
+<!-- disable security for now
       <ior-security-config>
         <as-context>
           <auth-method>USERNAME_PASSWORD</auth-method>
@@ -57,6 +58,7 @@
           <required>true</required>
         </as-context>
       </ior-security-config>
+-->
       <is-read-only-bean>false</is-read-only-bean>
       <refresh-period-in-seconds>-1</refresh-period-in-seconds>
       <cmt-timeout-in-seconds>0</cmt-timeout-in-seconds>

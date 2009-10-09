@@ -862,10 +862,13 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
 
         if (jmsDestRef.getJndiName() == null ||
                 jmsDestRef.getJndiName().length() == 0) {
-            Map<String, String> managedBeanMap = getManagedBeanMap();
+            Map<String, ManagedBeanDescriptor> managedBeanMap = getManagedBeanMap();
             String refType = jmsDestRef.getRefType();
             if( managedBeanMap.containsKey(refType) ) {
-                jmsDestRef.setJndiName(managedBeanMap.get(refType));
+                ManagedBeanDescriptor desc = managedBeanMap.get(refType);
+                jmsDestRef.setJndiName(desc.getGlobalJndiName());
+                jmsDestRef.setIsManagedBean(true);
+                jmsDestRef.setManagedBeanDescriptor(desc);
             }
         }
 
@@ -928,7 +931,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
         return intfInfoMap;
     }
 
-    private Map<String, String> getManagedBeanMap() {
+    private Map<String, ManagedBeanDescriptor> getManagedBeanMap() {
         BundleDescriptor thisBundle = getBundleDescriptor();
 
         Set<BundleDescriptor> bundleDescs = new HashSet<BundleDescriptor>();
@@ -943,7 +946,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
 
         }
 
-        Map<String, String> managedBeanMap = new HashMap<String, String>();
+        Map<String, ManagedBeanDescriptor> managedBeanMap = new HashMap<String, ManagedBeanDescriptor>();
         Set<String> allManagedBeanClasses = new HashSet<String>();
 
         for(BundleDescriptor bundle : bundleDescs ) {
@@ -959,8 +962,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                     break;
                 } else {
                     allManagedBeanClasses.add(beanClassName);
-                    String jndiName = managedBean.getGlobalJndiName();
-                    managedBeanMap.put(beanClassName, jndiName);
+                    managedBeanMap.put(beanClassName, managedBean);
                 }
 
             }
