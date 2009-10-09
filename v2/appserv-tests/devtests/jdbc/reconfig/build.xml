@@ -19,12 +19,6 @@
     &eeProperties;
 
     <target name="all">
-        <delete>
-           <fileset dir="${env.APS_HOME}" includes="test_results*"/>
-        </delete>
-        <delete>
-           <fileset dir="." includes="*.output"/>
-        </delete>
         <record name="reconfig.output" action="start" />
 	<ant dir="maxpoolsize" target="all"/>
         <record name="reconfig.output" action="stop" />

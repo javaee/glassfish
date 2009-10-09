@@ -14,7 +14,7 @@ public class Client {
         throws Exception {
         
 	SimpleReporterAdapter stat = new SimpleReporterAdapter();
-	String testSuite = "notxops-test1 ";
+	String testSuite = "notxops ";
 
         InitialContext ic = new InitialContext();
         Object objRef = ic.lookup("java:comp/env/ejb/SimpleSessionHome");

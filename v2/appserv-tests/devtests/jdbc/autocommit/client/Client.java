@@ -26,14 +26,13 @@ public class Client {
         javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
 
         SimpleBMP simpleBMP = simpleBMPHome.create();
-	stat.addDescription("autocommit test");
+	stat.addDescription("Autocommit Test");
 
         if ( simpleBMP.test1() ) {
 	    stat.addStatus(" autocommit test1 : ", stat.PASS);
 	} else {
 	    stat.addStatus(" autocommit test1 : ", stat.FAIL);
 	}
-        stat.printStatus();
 
         if ( simpleBMP.test2() ) {
 	    stat.addStatus(" autocommit test2 : ", stat.PASS);

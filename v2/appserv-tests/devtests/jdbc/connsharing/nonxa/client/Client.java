@@ -14,14 +14,14 @@ public class Client {
             throws Exception {
 
         SimpleReporterAdapter stat = new SimpleReporterAdapter();
-        String testSuite = "connsharing-test1 ";
+        String testSuite = "ConnSharing ";
 
         InitialContext ic = new InitialContext();
         Object objRef = ic.lookup("java:comp/env/ejb/SimpleSessionHome");
         SimpleSessionHome simpleSessionHome = (SimpleSessionHome)
                 javax.rmi.PortableRemoteObject.narrow(objRef, SimpleSessionHome.class);
 
-        stat.addDescription("Running notxops testSuite1 ");
+        stat.addDescription("Connection Sharing tests ");
         SimpleSession simpleSession = simpleSessionHome.create();
         if (simpleSession.test1() && simpleSession.query()) {
             stat.addStatus(testSuite + " test1 : ", stat.PASS);

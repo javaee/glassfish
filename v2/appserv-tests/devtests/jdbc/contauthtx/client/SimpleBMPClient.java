@@ -10,10 +10,17 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 public class SimpleBMPClient {
 
+    SimpleReporterAdapter stat = new SimpleReporterAdapter();
+
     public static void main(String[] args)
         throws Exception {
+
+	SimpleBMPClient client = new SimpleBMPClient();
+	client.runTest();
+    }
+
+    public void runTest() throws Exception {
      
-	SimpleReporterAdapter stat = new SimpleReporterAdapter();
 	String testSuite = "jdbccontauthtx ";
 
         InitialContext ic = new InitialContext();
@@ -23,6 +30,7 @@ public class SimpleBMPClient {
 
         SimpleBMP simpleBMP = simpleBMPHome.create();
         System.out.println(" Will Fail till a better XA driver is integrated into Derby");
+	stat.addDescription("JDBC Container Authentication TX test");
         if ( simpleBMP.test1() ) {
 	    stat.addStatus(testSuite+"test1 : ", stat.PASS);
 	} else {

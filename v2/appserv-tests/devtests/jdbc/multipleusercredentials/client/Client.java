@@ -12,13 +12,13 @@ public class Client {
     public static void main(String[] args)
             throws Exception {
         SimpleReporterAdapter stat = new SimpleReporterAdapter();
-        String testSuite = "multipleusercredentials-test1 ";
+        String testSuite = "MultipleUserCredentials ";
 
         InitialContext ic = new InitialContext();
         Object objRef = ic.lookup("java:comp/env/ejb/SimpleSessionHome");
         SimpleSessionHome simpleSessionHome = (SimpleSessionHome)
                 javax.rmi.PortableRemoteObject.narrow(objRef, SimpleSessionHome.class);
-        stat.addDescription("Running multipleusercredentials testSuite1 ");
+        stat.addDescription("Multiple User Credentials Test ");
         SimpleSession simpleSession = simpleSessionHome.create();
 
         boolean passed = true;

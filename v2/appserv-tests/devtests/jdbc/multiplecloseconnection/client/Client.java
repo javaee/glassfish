@@ -12,13 +12,13 @@ public class Client {
             throws Exception {
 
         SimpleReporterAdapter stat = new SimpleReporterAdapter();
-        String testSuite = "multiplecloseconnection";
+        String testSuite = "MultipleCloseConnection ";
 
         InitialContext ic = new InitialContext();
         Object objRef = ic.lookup("java:comp/env/ejb/SimpleSessionHome");
         SimpleSessionHome simpleSessionHome = (SimpleSessionHome)
                 javax.rmi.PortableRemoteObject.narrow(objRef, SimpleSessionHome.class);
-        stat.addDescription("Running multiplecloseconnection");
+        stat.addDescription("Multiple Close Connection Tests");
         SimpleSession simpleSession = simpleSessionHome.create();
 
         boolean passed = true;

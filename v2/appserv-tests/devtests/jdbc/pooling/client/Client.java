@@ -13,7 +13,7 @@ public class Client {
     private static SimpleReporterAdapter stat = new SimpleReporterAdapter();
     private static boolean rollback;
     private static boolean isXA;
-    private static String testSuite = "pooling-test";
+    private static String testSuite = "Pooling ";
 
     private static InitialContext ic;
     public static void main(String[] args)
@@ -45,7 +45,6 @@ public class Client {
             stat.addStatus( testSuite + " openMaxConnections (non-xa) : ", stat.PASS );
 	}
 
-        stat.printSummary();
 
         rollback = false;
         System.out.println("rollback set to " + rollback);
@@ -55,6 +54,7 @@ public class Client {
         System.out.println("rollback set to " + rollback);
         runTest(simpleSession, rollback);
 
+        stat.printSummary();
     }
     
     private static void runTest(SimpleSession simpleSession, boolean rollback) {
@@ -63,17 +63,17 @@ public class Client {
         //non-xa resource
         isXA = false;
         if ( simpleSession.test1(isXA, rollback) ) {
-            stat.addStatus( testSuite + " test1 (non-xa. con opened & closed within tx : ", stat.PASS );
+            stat.addStatus( testSuite + " test1 rollback=" + rollback + " (non-xa. con opened closed within tx) : ", stat.PASS );
         } else {
-            stat.addStatus( testSuite + " test1 : ", stat.FAIL );
+            stat.addStatus( testSuite + " test1 rollback=" + rollback + " (non-xa. con opened closed within tx) : ", stat.FAIL );
         }
 
         //xa resource
         isXA = true;
         if ( simpleSession.test1(isXA, rollback) ) {
-            stat.addStatus( testSuite + " test1 (xa. con opened & closed within tx : ", stat.PASS );
+            stat.addStatus( testSuite + " test1 rollback=" + rollback + " (xa. con opened closed within tx) : ", stat.PASS );
         } else {
-            stat.addStatus( testSuite + " test1 : ", stat.FAIL );
+            stat.addStatus( testSuite + " test1 rollback=" + rollback + " (xa. con opened closed within tx) : ", stat.FAIL );
         }
         
         //Connection opened within transaction 
@@ -81,28 +81,28 @@ public class Client {
         isXA = false;
         //non-xa resource
         if ( simpleSession.test2(isXA, rollback) ) {
-            stat.addStatus( testSuite + " test2 (non-xa. con opened & thin tx & closed after tx : ", stat.PASS );
+            stat.addStatus( testSuite + " test2 rollback=" + rollback + " (non-xa. con opened closed after tx) : ", stat.PASS );
         } else {
-            stat.addStatus( testSuite + " test2 : ", stat.FAIL );
+            stat.addStatus( testSuite + " test2 rollback=" + rollback + " (non-xa. con opened closed after tx) : ", stat.FAIL );
         }
 
         //xa resource
         isXA = true;
         if ( simpleSession.test2(isXA, rollback) ) {
-            stat.addStatus( testSuite + " test2 (xa. con opened & thin tx & closed after tx : ", stat.PASS );
+            stat.addStatus( testSuite + " test2 rollback=" + rollback + " (xa. con opened closed after tx) : ", stat.PASS );
         } else {
-            stat.addStatus( testSuite + " test2 : ", stat.FAIL );
+            stat.addStatus( testSuite + " test2 rollback=" + rollback + " (xa. con opened closed after tx) : ", stat.FAIL );
         }
                 
         //XA and Non-XA resource within same transaction
         //non-xa resource and xa  resource together
         if ( simpleSession.test3(rollback) ) {
-            stat.addStatus( testSuite + " test3 (xa & non-xa within same tx : ", stat.PASS );
+            stat.addStatus( testSuite + " test3 rollback=" + rollback + " (xa  non-xa within same tx) : ", stat.PASS );
         } else {
-            stat.addStatus( testSuite + " test3 : ", stat.FAIL );
-        }} catch(Exception ex) {
+            stat.addStatus( testSuite + " test3 rollback=" + rollback + " (xa  non-xa within same tx) : ", stat.FAIL );
+        } 
+	}catch(Exception ex) {
 		ex.printStackTrace();
 	}
-        stat.printSummary();
     }
 }

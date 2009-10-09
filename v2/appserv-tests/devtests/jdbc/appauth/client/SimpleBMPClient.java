@@ -13,7 +13,7 @@ public class SimpleBMPClient {
     public static void main(String[] args)
         throws Exception {
         
-	SimpleReporterAdapter stat = new SimpleReporterAdapter();
+        SimpleReporterAdapter stat = new SimpleReporterAdapter();
 	String testSuite = "jdbcappauth ";
 
         InitialContext ic = new InitialContext();
@@ -21,7 +21,7 @@ public class SimpleBMPClient {
 	SimpleBMPHome simpleBMPHome = (SimpleBMPHome)
         javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
         
-	stat.addDescription("Running jdbc appauth");
+	stat.addDescription("JDBC Application Authentication test");
         SimpleBMP simpleBMP = simpleBMPHome.create();
   	
         System.out.println("test 3 will fail with Derby" );
@@ -48,13 +48,13 @@ public class SimpleBMPClient {
 	    stat.addStatus(testSuite + "test4 : ", stat.FAIL);
 	}
 
-    if ( simpleBMP.test5() ) {
+        if ( simpleBMP.test5() ) {
 	    stat.addStatus(testSuite + "test5 : ", stat.PASS);
 	} else {
 	    stat.addStatus(testSuite + "test5 : ", stat.FAIL);
 	}
 
-    System.out.println("jdbc appauth status: ");
+        System.out.println("jdbc appauth status: ");
 	stat.printSummary();
     }
 }

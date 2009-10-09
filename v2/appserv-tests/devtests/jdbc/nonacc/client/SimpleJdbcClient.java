@@ -9,8 +9,8 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 public class SimpleJdbcClient {
     
     public static void main( String argv[] ) throws Exception {
-        
-        SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests");
+        String testSuite = "nonacc ";
+        SimpleReporterAdapter stat = new SimpleReporterAdapter();
         stat.addDescription("Test a stand-alone java program that does getConnection");
         Connection con = null;
         Statement stmt = null;
@@ -23,10 +23,10 @@ public class SimpleJdbcClient {
 
             stmt = con.createStatement();
             stmt.executeQuery("SELECT * FROM NONACC");
-            stat.addStatus("test1 ", stat.PASS ); 
+            stat.addStatus(testSuite + "test1 ", stat.PASS ); 
         } catch( Exception e) {
             e.printStackTrace();
-            stat.addStatus( "test1 ",  stat.FAIL );
+            stat.addStatus(testSuite + "test1 ",  stat.FAIL );
         } finally {
             if (stmt != null) { try { stmt.close(); }catch( Exception e) {} }
             if (con != null) { try { con.close(); }catch( Exception e) {} }

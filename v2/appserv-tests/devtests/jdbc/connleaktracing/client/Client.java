@@ -12,10 +12,11 @@ public class Client {
             throws Exception {
 
         SimpleReporterAdapter stat = new
-                SimpleReporterAdapter("appserv-tests");
-        String testSuite = "connectionleaktracing";
+                SimpleReporterAdapter();
+        String testSuite = "ConnectionLeakTracing";
         InitialContext ic = new InitialContext();
         Object objRef = ic.lookup("java:comp/env/ejb/SimpleBMPHome");
+	stat.addDescription("Connection Leak Tracing Tests");
 
 	for(int i=0; i<3; i++){
             SimpleBMPHome convalBMPHome = (SimpleBMPHome)
@@ -23,12 +24,12 @@ public class Client {
 
             SimpleBMP convalBMP = convalBMPHome.create();
 	    if(!convalBMP.test1()){
-		stat.addStatus("jdbc-connectionleakttracing : test ", stat.FAIL);
+		stat.addStatus(testSuite + "test1 : ", stat.FAIL);
 		break;
 	    }
 	    Thread.sleep(20000);
 	}
-	stat.addStatus("jdbc-connectionleakttracing : test ", stat.PASS);
-        stat.printSummary("connection leak tracing tests");
+	stat.addStatus(testSuite + "test1 : ", stat.PASS);
+        stat.printSummary();
     }
 }

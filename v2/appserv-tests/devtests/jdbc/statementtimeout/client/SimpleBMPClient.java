@@ -12,7 +12,7 @@ public class SimpleBMPClient {
             throws Exception {
 
         SimpleReporterAdapter stat = new SimpleReporterAdapter();
-        String testSuite = "jdbc-statementtimeout ";
+        String testSuite = "StatementTimeout ";
 
         InitialContext ic = new InitialContext();
         Object objRef = ic.lookup("java:comp/env/ejb/SimpleBMPHome");
@@ -20,6 +20,7 @@ public class SimpleBMPClient {
                 javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
 
         SimpleBMP simpleBMP = simpleBMPHome.create();
+	stat.addDescription("JDBC Statement Timeout Tests");
 
         if (simpleBMP.statementTest()) {
             stat.addStatus(testSuite + " statementTest : ", SimpleReporterAdapter.PASS);

@@ -24,10 +24,6 @@
     &reporting;
 
     <target name="all">
-        <antcall target="${execution.mode}-all"/>
-    </target>
-
-    <target name="pe-all">
         <delete>
             <fileset dir="${env.APS_HOME}" includes="test_results*"/>
         </delete>
@@ -41,6 +37,7 @@
 	<ant dir="contauthtx" target="all"/>
 	<ant dir="contauth1" target="all"/>
 	<ant dir="contauth1tx" target="all"/>
+	<ant dir="reconfig" target="all"/>
 	<ant dir="autocommit" target="all"/>
 	<ant dir="jdbcjmsauth" target="all"/>
 	<ant dir="nopasswdfordb" target="all"/>
@@ -62,12 +59,13 @@
 	<ant dir="validateatmostonceperiod" target="all"/>
 	<ant dir="connsharing" target="nonxa"/>
 	<ant dir="cpds" target="all"/>
-	<!--<ant dir="txisolation" target="all"/>-->
+	<ant dir="txisolation" target="all"/>
 	<ant dir="stmtCaching_hit_miss" target="all"/>
 	<ant dir="pooling" target="all"/>
-	<ant dir="dmmcf" target="all"/>
+	<!-- Due to some issues with CLI this is commented as of now-->
+	<!--<ant dir="dmmcf" target="all"/>
 	<ant dir="dmmcf.markconnectionasbad.xa" target="all"/>
-	<ant dir="dmmcf.appclient" target="all"/>
+	<ant dir="dmmcf.appclient" target="all"/>-->
 	<antcall target="report"/>
 	<record name="jdbc.output" action="stop"/>
     </target>

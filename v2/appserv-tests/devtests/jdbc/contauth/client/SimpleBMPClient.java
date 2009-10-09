@@ -10,10 +10,15 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 public class SimpleBMPClient {
 
+    SimpleReporterAdapter stat = new SimpleReporterAdapter();
     public static void main(String[] args)
         throws Exception {
      
-	SimpleReporterAdapter stat = new SimpleReporterAdapter();
+        	SimpleBMPClient client = new SimpleBMPClient();
+             client.runTest();
+    }
+
+    public void runTest() throws Exception {
 	String testSuite = "jdbccontauth ";
 
         InitialContext ic = new InitialContext();
@@ -22,6 +27,7 @@ public class SimpleBMPClient {
         javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
 
         SimpleBMP simpleBMP = simpleBMPHome.create();
+        stat.addDescription("JDBC Container Authentication test");
 
         if ( simpleBMP.test1() ) {
 	    stat.addStatus(testSuite+"test1 : ", stat.PASS);

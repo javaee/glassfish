@@ -14,7 +14,7 @@ public class SimpleBMPClient {
             throws Exception {
 
         SimpleReporterAdapter stat = new SimpleReporterAdapter();
-        String testSuite = "jdbc-tx-isolation ";
+        String testSuite = "JDBCTxIsolation ";
 
         InitialContext ic = new InitialContext();
         Object objRef = ic.lookup("java:comp/env/ejb/SimpleBMPHome");
@@ -22,12 +22,13 @@ public class SimpleBMPClient {
                 javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
 
         SimpleBMP simpleBMP = simpleBMPHome.create();
+	stat.addDescription("JDBC TX Isolation tests");
+            boolean result = false;
+            String testName = null;
 
         if (args != null && args.length > 0) {
             String param = args[0];
 
-            boolean result = false;
-            String testName = null;
             switch (Integer.parseInt(args[0])) {
 
                 case 1:
@@ -67,12 +68,12 @@ public class SimpleBMPClient {
                     testName = "serializable, guaranteed";
                     break;
             }
-
             if (result) {
-                stat.addStatus(testSuite + " " + testName + " : ", SimpleReporterAdapter.PASS);
+                stat.addStatus(testSuite + testName, stat.PASS);
             } else {
-                stat.addStatus(testSuite + " " + testName + " : ", SimpleReporterAdapter.FAIL);
+                stat.addStatus(testSuite + testName, stat.FAIL);
             }
+
 
         }
         stat.printSummary();

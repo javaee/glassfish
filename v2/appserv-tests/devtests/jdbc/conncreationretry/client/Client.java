@@ -12,20 +12,21 @@ public class Client {
             throws Exception {
 
         SimpleReporterAdapter stat = new
-                SimpleReporterAdapter("appserv-tests");
-        String testSuite = "jdbcconnectioncreationretry";
+                SimpleReporterAdapter();
+        String testSuite = "ConnectionCreationRetry ";
         InitialContext ic = new InitialContext();
         Object objRef = ic.lookup("java:comp/env/ejb/SimpleBMPHome");
         SimpleBMPHome convalBMPHome = (SimpleBMPHome)
                 javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
 
         SimpleBMP convalBMP = convalBMPHome.create();
+	stat.addDescription("Connection Creation Retry Tests");
 
         if (convalBMP.test1()) {
-        	stat.addStatus("jdbc-connectioncreationretry : test ", stat.PASS);
+        	stat.addStatus(testSuite + "test ", stat.PASS);
         } else {
-        	stat.addStatus("jdbc-connectioncreationretry : test ", stat.FAIL);
+        	stat.addStatus(testSuite + "test ", stat.FAIL);
         }
-        stat.printSummary("connectioncreationretry tests");
+        stat.printSummary();
     }
 }

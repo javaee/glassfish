@@ -14,7 +14,7 @@ public class Client {
         throws Exception {
         
 	SimpleReporterAdapter stat = new SimpleReporterAdapter();
-	String testSuite = "lazyassoc-test1 ";
+	String testSuite = "lazyassoc ";
 
         InitialContext ic = new InitialContext();
         Object objRef = ic.lookup("java:comp/env/ejb/SimpleSessionHome");
