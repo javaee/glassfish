@@ -25,7 +25,7 @@
 * Contributor(s): 
 * 
 * If you wish your version of this file to be governed by only the CDDL or 
-* only the GPL Version 2, indicate your decision by adding "[Contributor] 
+* only the GPL Version 2, indicate your decision by adding "[Contributor]
 * elects to include this software in this distribution under the [CDDL or GPL 
 * Version 2] license."  If you don't indicate a single choice of license, a 
 * recipient has the option to distribute your version of this file under 
@@ -36,24 +36,48 @@
 * holder. 
 */ 
 --> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish</groupId>
-        <artifactId>glassfish-parent</artifactId>
+        <groupId>org.glassfish.common</groupId>
+        <artifactId>common</artifactId>
         <version>3.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>org.glassfish.flashlight</groupId>
-    <artifactId>glassfish-flashlight</artifactId>
-    <packaging>pom</packaging>
-    <name>GlassFish Flashlight Module</name>  
-    <modules>
-        <module>btrace</module>
-        <module>agent</module>
-        <module>flashlight-extra-jdk-packages</module>
-        <module>framework</module>
-        <module>client</module>
-    </modules>
+    <artifactId>flashlight-extra-jdk-packages</artifactId>
+    <packaging>jar</packaging>
+    <name>GlassFish Flashlight Extra JDK Pkgs</name>
+    
+    <developers>
+        <developer>
+            <id>msreddy</id>
+            <name>Sreenivas Munnangi</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                            <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                            <Fragment-Host>system.bundle; extension:=framework</Fragment-Host>
+                            <Export-Package>
+ com.sun.tools,
+ com.sun.tools.attach
+                            </Export-Package>
+                            <Bundle-Description>${project.description}</Bundle-Description> 
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

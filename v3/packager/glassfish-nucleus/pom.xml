@@ -175,7 +175,7 @@
         </dependency>   	
         <dependency>
             <groupId>org.glassfish.flashlight</groupId>
-            <artifactId>extra-jdk-packages</artifactId>
+            <artifactId>flashlight-extra-jdk-packages</artifactId>
             <version>${project.version}</version>
         </dependency> 
         <dependency>
