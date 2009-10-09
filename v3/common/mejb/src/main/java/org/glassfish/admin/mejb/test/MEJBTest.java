@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.Properties;
+import javax.rmi.PortableRemoteObject;
 import javax.management.AttributeList;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
@@ -20,8 +21,9 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 
 import javax.management.j2ee.ManagementHome;
-import org.glassfish.admin.mejb.MEJB;
 import org.glassfish.external.amx.AMXGlassfish;
+
+import javax.management.j2ee.Management;
 
 //import com.sun.appserv.security.ProgrammaticLogin;
 
@@ -34,9 +36,9 @@ java -cp $V3M/gf-client.jar:$V3M/javax.management.j2ee.jar:target/MEJB.jar $MAIN
 
  */
 public class MEJBTest {    
-    private final MEJB mMEJB;
+    private final Management mMEJB;
     
-    public MEJBTest( final MEJB mejb )
+    public MEJBTest( final Management mejb )
     {
         mMEJB = mejb;
     }
@@ -60,7 +62,7 @@ public class MEJBTest {
         println( "" );
         println( "" + objectName );
         
-        final MEJB mejb = mMEJB;
+        final Management mejb = mMEJB;
         final MBeanInfo info = mejb.getMBeanInfo(objectName);
         final String[] attrNames = getAttributeNames( info.getAttributes() );
         
@@ -84,7 +86,7 @@ public class MEJBTest {
     private void _test()
         throws Exception
     {
-        final MEJB mejb = mMEJB;
+        final Management mejb = mMEJB;
         
         final String defaultDomain = mejb.getDefaultDomain();
         println("MEJB default domain = " + defaultDomain + ", MBeanCount = " + mejb.getMBeanCount() );
@@ -247,9 +249,18 @@ public class MEJBTest {
             final Object objref = initial.lookup(mejbName);
            // println("Received from initial.lookup(): " + objref + " for " + mejbName);
 
-            final ManagementHome home = (ManagementHome)objref;
+            final ManagementHome home = (ManagementHome) PortableRemoteObject.narrow(objref, ManagementHome.class);
+            try
+            {
+                final ManagementHome home2 = (ManagementHome)objref;
+            }
+            catch( final Exception e )
+            {
+                println("WARNING: (ManagementHome)PortableRemoteObject.narrow(objref, ManagementHome.class) works, but (ManagementHome)objref does not!" );
+            }
+            
             //println("ManagementHome: " + home + " for " + mejbName);
-            final MEJB mejb = (MEJB)home.create();
+            final Management mejb = (Management)home.create();
             println("Got the MEJB");
 
             new MEJBTest( mejb ).test();

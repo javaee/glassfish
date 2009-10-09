@@ -48,15 +48,17 @@ import javax.management.NotificationListener;
 import javax.management.ObjectName;
 import javax.management.j2ee.ListenerRegistration;
 import javax.management.j2ee.ManagementHome;
+import javax.management.j2ee.Management;
 import javax.naming.Context;
 import javax.naming.InitialContext;
+
 
 /**
  */
 public final class MEJBUtility {
     private final MBeanServer mServer;
     private final ListenerRegistry listenerRegistry;
-    private MEJB  mMEJB;
+    private Management  mMEJB;
     
     private static final MEJBUtility INSTANCE = new MEJBUtility();
 
@@ -73,14 +75,14 @@ public final class MEJBUtility {
     public static final String MEJB_NAME_PROP = "mejb.name";
     public static final String MEJB_DEFAULT_NAME = "ejb/mgmt/MEJB";
 
-    public synchronized MEJB getMEJB() throws RemoteException {
+    public synchronized Management getMEJB() throws RemoteException {
         if (mMEJB == null) {
             try {
                 final Context ic = new InitialContext();
                 final String ejbName = System.getProperty( MEJB_NAME_PROP, MEJB_DEFAULT_NAME);
                 final Object objref = ic.lookup(ejbName);
                 final ManagementHome home = (ManagementHome) PortableRemoteObject.narrow(objref, ManagementHome.class);
-                mMEJB = (MEJB) home.create();
+                mMEJB = (Management) home.create();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

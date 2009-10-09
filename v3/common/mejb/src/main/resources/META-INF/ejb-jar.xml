@@ -49,13 +49,12 @@
     <session>
       <display-name>MEJBBean</display-name>
       <ejb-name>MEJBBean</ejb-name>
-      <home>org.glassfish.admin.mejb.MEJBHome</home>
-      <remote>org.glassfish.admin.mejb.MEJB</remote>
+      <home>javax.management.j2ee.ManagementHome</home>
+      <remote>javax.management.j2ee.Management</remote>
       <ejb-class>org.glassfish.admin.mejb.MEJBBean</ejb-class>
       <session-type>Stateless</session-type>
       <transaction-type>Bean</transaction-type>
 
-    <!--
       <security-role-ref>
         <role-name>admin-role</role-name>
         <role-link>admin-role</role-link>
@@ -64,19 +63,10 @@
         <description></description>
         <use-caller-identity></use-caller-identity>
       </security-identity>
-    -->
 
     </session>
   </enterprise-beans>
 
-<!--
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-2009-04-13:  security disabled until the EJB world supports it
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
--->
-
-<!-- 
   <assembly-descriptor>
     <security-role>
       <role-name>admin-role</role-name>
@@ -440,7 +430,6 @@
       </method>
     </method-permission>
   </assembly-descriptor>
--->
 
 
 </ejb-jar>
