@@ -5,6 +5,7 @@ import javax.management.ObjectName;
 
 import java.util.Set;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 import org.glassfish.external.amx.AMXGlassfish;
 
@@ -28,6 +29,12 @@ public interface MBeanTrackerMBean
     
     @ManagedOperation
     public ObjectName getParentOf(final ObjectName child);
+    
+    @ManagedAttribute
+    public boolean getEmitMBeanStatus();
+    
+    @ManagedAttribute
+    public void setEmitMBeanStatus(boolean emit);
 }
 
 

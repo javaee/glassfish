@@ -42,12 +42,23 @@ public final class MBeanTracker implements NotificationListener, MBeanRegistrati
     
     private final String mDomain;
     
+    private volatile boolean mEmitMBeanStatus;
+    
     public MBeanTracker( final String jmxDomain )
     {
         mParentChildren = new ConcurrentHashMap<ObjectName,Set<ObjectName>>();
         mChildParent    = new ConcurrentHashMap<ObjectName,ObjectName>();
         
         mDomain = jmxDomain;
+        
+        mEmitMBeanStatus = false;
+    }
+    
+    public boolean getEmitMBeanStatus() { return mEmitMBeanStatus; }
+    
+    public void setEmitMBeanStatus( final boolean emit )
+    {
+        mEmitMBeanStatus = emit;
     }
     
     public void handleNotification(final Notification notifIn, final Object handback)
@@ -67,12 +78,18 @@ public final class MBeanTracker implements NotificationListener, MBeanRegistrati
                 // first and there's nothing we could do about it.
                 if ( type.equals( MBeanServerNotification.REGISTRATION_NOTIFICATION ) )
                 {
-                    //debug( "MBeanTracker.handleNotification: MBean registered: " + objectName );
+                    if ( mEmitMBeanStatus )
+                    {
+                        System.out.println( "AMX MBean registered: " + objectName );
+                    }
                     addChild(objectName);
                 }
                 else if ( type.equals( MBeanServerNotification.UNREGISTRATION_NOTIFICATION ) )
                 {
-                    //debug( "MBeanTracker.handleNotification: MBean unregistered: " + objectName );
+                    if ( mEmitMBeanStatus )
+                    {
+                        System.out.println( "AMX MBean UNregistered: " + objectName );
+                    }
                     removeChild(objectName);
                 }
             }

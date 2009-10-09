@@ -75,6 +75,8 @@ import org.glassfish.admin.amx.util.stringifier.StringifierRegistryIniterImpl;
 
 import org.glassfish.external.amx.AMXGlassfish;
 
+import com.sun.enterprise.config.serverbeans.AmxPref;
+
 /**
 An {@link AMXLoader} responsible for loading core amx MBeans
  */
@@ -150,6 +152,10 @@ public final class AMXStartupService
             mMBeanServer.registerMBean(mbean, OBJECT_NAME);
 
             mMBeanTracker = new MBeanTracker( AMXGlassfish.DEFAULT.amxJMXDomain() );
+            
+            final AmxPref amxPref = InjectedValues.getInstance().getAMXPrefs();
+            mMBeanTracker.setEmitMBeanStatus( amxPref == null ? false : Boolean.valueOf(amxPref.getEmitRegisrationStatus()) );
+        
             //final StandardMBean supportMBean = new StandardMBean(mMBeanTracker, MBeanTrackerMBean.class);
             mMBeanServer.registerMBean(mMBeanTracker, MBeanTrackerMBean.MBEAN_TRACKER_OBJECT_NAME);
         }
