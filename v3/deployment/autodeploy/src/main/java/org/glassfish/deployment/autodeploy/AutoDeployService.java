@@ -28,12 +28,13 @@ import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.api.Startup;
-import org.glassfish.api.Async;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.Inject;
@@ -266,55 +267,60 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
                             " from " + event.getOldValue() + " to " + event.getNewValue());
                     continue;
                 }
+                /*
+                 * Substitute any placeholders in the new and old values.
+                 */
+                final String oldValue = replaceTokens((String) event.getOldValue(), System.getProperties());
+                final String newValue = replaceTokens((String) event.getNewValue(), System.getProperties());
                 if (propName.equals("autodeploy-enabled")) {
                     /*
                      * Either start the currently stopped autodeployer or stop the
                      * currently running one.
                      */
-                    newEnabled = Boolean.valueOf((String) event.getNewValue());
+                    newEnabled = Boolean.valueOf(newValue);
                     logger.fine("[AutoDeploy] Reconfig - enabled changed to " + newEnabled);
                 } else if (propName.equals("autodeploy-polling-interval-in-seconds")) {
                     try {
-                        newPollingIntervalInSeconds = new Integer((String) event.getNewValue());
+                        newPollingIntervalInSeconds = new Integer(newValue);
                         logger.fine("[AutoDeploy] Reconfig - polling interval (seconds) changed from " 
-                                + ((String) event.getOldValue()) + " to " + 
+                                + oldValue + " to " +
                                 newPollingIntervalInSeconds);
                     } catch (NumberFormatException ex) {
                         logger.log(Level.WARNING, "enterprise.deployment.autodeploy.error_processing_config_change", 
                                 new Object[] {
                                     propName, 
-                                    event.getOldValue(), 
-                                    event.getNewValue(), 
+                                    oldValue,
+                                    newValue,
                                     ex.getClass().getName(), 
                                     ex.getLocalizedMessage()} );
                     }
                 } else if (propName.equals("autodeploy-dir")) {
-                    String newDir = (String) event.getNewValue();
+                    String newDir = newValue;
                     try {
                         autoDeployer.setDirectory(newDir);
                         logger.fine("[AutoDeploy] Reconfig - directory changed from " + 
-                                ((String) event.getOldValue()) + " to " +
+                                oldValue + " to " +
                                 newDir);
                     } catch (AutoDeploymentException ex) {
                         logger.log(Level.WARNING, "enterprise.deployment.autodeploy.error_processing_config_change",
                                 new Object[] {
                                     propName, 
-                                    event.getOldValue(), 
-                                    event.getNewValue(), 
+                                    oldValue,
+                                    newValue,
                                     ex.getClass().getName(), 
                                     ex.getCause().getLocalizedMessage()});
                     }
                 } else if (propName.equals("autodeploy-verifier-enabled")) {
-                    boolean newVerifierEnabled = Boolean.parseBoolean((String) event.getOldValue());
+                    boolean newVerifierEnabled = Boolean.parseBoolean(newValue);
                     autoDeployer.setVerifierEnabled(newVerifierEnabled);
                     logger.fine("[AutoDeploy] Reconfig - verifierEnabled changed from " + 
-                            Boolean.parseBoolean((String) event.getOldValue()) +
+                            Boolean.parseBoolean(oldValue) +
                             " to " + newVerifierEnabled);
                 } else if (propName.equals("autodeploy-jsp-precompilation-enabled")) {
-                    boolean newJspPrecompiled = Boolean.parseBoolean((String) event.getNewValue());
+                    boolean newJspPrecompiled = Boolean.parseBoolean(newValue);
                     autoDeployer.setJspPrecompilationEnabled(newJspPrecompiled);
                     logger.fine("[AutoDeploy] Reconfig - jspPrecompilationEnabled changed from " + 
-                            Boolean.parseBoolean((String) event.getOldValue()) +
+                            Boolean.parseBoolean(oldValue) +
                             " to " + newJspPrecompiled);
                 }
             }
@@ -339,4 +345,68 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
         }
         return (unprocessedEvents.size() > 0) ? new UnprocessedChangeEvents(unprocessedEvents) : null;
     }
+
+
+    /**
+     * pattern is: "${" followed by all chars excluding "}" followed by "}",
+     * capturing into group 1 all chars between the "${" and the "}"
+     */
+    private static final Pattern TOKEN_SUBSTITUTION = Pattern.compile("\\$\\{([^\\}]*)\\}");
+    private static final String SLASH_REPLACEMENT = Matcher.quoteReplacement("\\\\");
+    private static final String DOLLAR_REPLACEMENT = Matcher.quoteReplacement("\\$");
+
+
+    /**
+     * Searches for placeholders of the form ${token-name} in the input String, retrieves
+     * the property with name token-name from the Properties object, and (if
+     * found) replaces the token in the input string with the property value.
+     * @param s String possibly containing tokens
+     * @param values Properties object containing name/value pairs for substitution
+     * @return the original string with tokens substituted using their values
+     * from the Properties object
+     */
+    private static String replaceTokens(final String s, final Properties values) {
+        final Matcher m = TOKEN_SUBSTITUTION.matcher(s);
+
+        final StringBuffer sb = new StringBuffer();
+        /*
+         * For each match, retrieve group 1 - the token - and use its value from
+         * the Properties object (if found there) to replace the token with the
+         * value.
+         */
+        while (m.find()) {
+            final String propertyName = m.group(1);
+            final String propertyValue = values.getProperty(propertyName);
+
+            /*
+             * Substitute only if the properties object contained a setting
+             * for the placeholder we found.
+             */
+            if (propertyValue != null) {
+                /*
+                 * The next line quotes any $ signs and backslashes in the replacement string
+                 * so they are not interpreted as meta-characters by the regular expression
+                 * processor's appendReplacement.
+                 */
+                final String adjustedPropertyValue =
+                        propertyValue.replaceAll("\\\\",SLASH_REPLACEMENT).
+                            replaceAll("\\$", DOLLAR_REPLACEMENT);
+                final String x = s.substring(m.start(),m.end());
+                try {
+                    m.appendReplacement(sb, adjustedPropertyValue);
+                } catch (IllegalArgumentException iae) {
+                    System.err.println("**** appendReplacement failed: segment is " + x + "; original replacement was " + propertyValue + " and adj. replacement is " + adjustedPropertyValue + "; exc follows");
+                    throw iae;
+                }
+            }
+        }
+        /*
+         * There are no more matches, so append whatever remains of the matcher's input
+         * string to the output.
+         */
+        m.appendTail(sb);
+
+        return sb.toString();
+    }
+
 }
