@@ -197,8 +197,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
                         errorMessage, requestHeaders, uriInfo);
             }
 
-            ActionReport actionReport =
-                    processRedirectsAnnotation(RestRedirect.OpType.DELETE, data);
+            ActionReport actionReport = runCommand(getDeleteCommand(), data);
 
             if (actionReport != null) {
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
@@ -403,6 +402,19 @@ public class TemplateResource<E extends ConfigBeanProxy> {
 
         return null;//not processed
     }
+
+
+    private ActionReport runCommand(String commandName,
+            HashMap<String, String> data) {
+
+        if (commandName != null) {
+            return __resourceUtil.runCommand(commandName,
+                    data, RestService.getHabitat());//processed
+        }
+
+        return null;//not processed
+    }
+
 
     private void addDefaultParameter(HashMap<String, String> data) {
         int index = uriInfo.getAbsolutePath().getPath().lastIndexOf('/');

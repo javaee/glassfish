@@ -31,6 +31,6 @@ public class ListThreadPoolResource extends TemplateListOfResource<ThreadPool> {
 
 
 public String getPostCommand() {
-	return null;
+	return "create-threadpool";
 }
 }

@@ -16,6 +16,9 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.grizzly.config.dom.Transport;
 public class TransportResource extends TemplateResource<Transport> {
 
+public String getDeleteCommand() {
+	return "delete-transport";
+}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);

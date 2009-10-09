@@ -124,7 +124,10 @@ private static final String commandName = "disable";
 private static final String commandDisplayName = "disable";
 private static final String commandMethod = "POST";
 private static final String commandAction = "Disable";
-private HashMap<String, String> commandParams = null;
-private static final boolean isLinkedToParent = false;
+private HashMap<String, String> commandParams =
+new HashMap<String, String>() {{
+put("id","$parent");
+}};
+private static final boolean isLinkedToParent = true;
 private ResourceUtil __resourceUtil;
 }

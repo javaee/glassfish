@@ -16,6 +16,25 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.grizzly.config.dom.NetworkListener;
 public class NetworkListenerResource extends TemplateResource<NetworkListener> {
 
+@Path("create-ssl/")
+public NetworkListenerCreateSslResource getNetworkListenerCreateSslResource() {
+NetworkListenerCreateSslResource resource = resourceContext.getResource(NetworkListenerCreateSslResource.class);
+return resource;
+}
+
+@Path("delete-ssl/")
+public NetworkListenerDeleteSslResource getNetworkListenerDeleteSslResource() {
+NetworkListenerDeleteSslResource resource = resourceContext.getResource(NetworkListenerDeleteSslResource.class);
+return resource;
+}
+
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"create-ssl", "POST"}, {"delete-ssl", "DELETE"}};
+}
+
+public String getDeleteCommand() {
+	return "delete-network-listener";
+}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);

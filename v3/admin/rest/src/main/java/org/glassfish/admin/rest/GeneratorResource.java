@@ -326,6 +326,8 @@ public class GeneratorResource {
 
         generateCommandResources(beanName, out);
 
+        generateGetDeleteCommandMethod(beanName, out);
+
         Set<String> elem = model.getElementNames();
 
         for (String a : elem) {
@@ -507,6 +509,29 @@ public class GeneratorResource {
         return null; //POST is not mapped to any create command for this resource
     }
 
+
+    void generateGetDeleteCommandMethod(String resourceName, BufferedWriter out) throws IOException {
+        String commandName = getDeleteCommandName(resourceName);
+        if (commandName != null) {
+            out.write("public String getDeleteCommand() {\n");
+            out.write("\treturn \"" + commandName + "\";\n");
+            out.write("}\n");
+        }
+    }
+
+
+    private String getDeleteCommandName(String resourceName) {
+        //FIXME - fetch command name from config bean(RestRedirect annotation).
+        //This delete commands meta-data witll move to com.sun.grizzly.config.dom.* config beans
+        for (int i = 0; i < MappingConfigBeansToDELETECommands.length; i++) {
+            if (resourceName.equals(MappingConfigBeansToDELETECommands[i][0])) {
+                    return MappingConfigBeansToDELETECommands[i][1];
+            }
+        }
+        return null;
+    }
+
+
     /*
      * temporary mapping to add Admin Commands to some of our configbeans
      *
@@ -610,7 +635,16 @@ public class GeneratorResource {
         {"ListResourceRef", "create-resource-ref"},
         {"ListSystemProperty", "create-system-properties"},
         {"ListVirtualServer", "create-virtual-server"},
+        {"ListThreadPool", "create-threadpool"}
      };
+
+
+    private static String MappingConfigBeansToDELETECommands[][] = {
+        {"Transport", "delete-transport"},
+        {"ThreadPool", "delete-threadpool"},
+        {"NetworkListener", "delete-network-listener"},
+        {"Protocol", "delete-protocol"}
+    };
 
 
     private static String ConfigBeansToCommandResourcesMap[][] = {
@@ -623,8 +657,8 @@ public class GeneratorResource {
         {"Domain", "get-host-and-port", "GET", "host-port", "HostPort"},
         ///{"ListApplication", "deploy"},
         ///{"Application", "redeploy"},
-        {"Application", "enable", "POST", "enable", "Enable"},
-        {"Application", "disable", "POST", "disable", "Disable"},
+        {"Application", "enable", "POST", "enable", "Enable", "id=$parent"},
+        {"Application", "disable", "POST", "disable", "Disable", "id=$parent"},
         {"ConnectionPool", "ping-connection-pool", "GET", "ping", "Ping"},
         {"IiopService", "create-ssl", "POST", "create-ssl", "Create", "type=iiop-service"},
         {"IiopService", "delete-ssl", "DELETE", "delete-ssl", "Delete", "type=iiop-service"},
@@ -633,8 +667,10 @@ public class GeneratorResource {
         {"AuthRealm", "create-file-user", "POST", "create-user", "Create", "authrealmname=$parent"},
         {"AuthRealm", "delete-file-user", "DELETE", "delete-user", "Delete", "authrealmname=$parent"},
         {"AuthRealm", "list-file-users", "GET", "list-users", "List", "authrealmname=$parent"},
-        {"Protocol", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
-        {"Protocol", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=http-listener"}
+        {"NetworkListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
+        {"NetworkListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=http-listener"},
+        {"Protocol", "create-http", "POST", "create-http", "Create", "id=$parent"},
+        {"Protocol", "delete-http", "DELETE", "delete-http", "Delete", "id=$parent"}
     };
 
 

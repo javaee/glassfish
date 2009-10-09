@@ -16,6 +16,9 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.grizzly.config.dom.ThreadPool;
 public class ThreadPoolResource extends TemplateResource<ThreadPool> {
 
+public String getDeleteCommand() {
+	return "delete-threadpool";
+}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
