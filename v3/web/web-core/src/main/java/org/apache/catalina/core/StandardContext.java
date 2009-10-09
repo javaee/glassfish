@@ -2864,6 +2864,10 @@ public class StandardContext
         return webappLoader;
     }
 
+    public void declareRoles(String... roleNames) {
+        // TBD
+    }
+
     public void setEffectiveMajorVersion(int effectiveMajorVersion) {
         this.effectiveMajorVersion = effectiveMajorVersion;
     }

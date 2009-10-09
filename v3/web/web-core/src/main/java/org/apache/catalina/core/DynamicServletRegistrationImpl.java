@@ -53,7 +53,6 @@ public class DynamicServletRegistrationImpl
         super(wrapper, ctx);
     }
 
-
     public void setLoadOnStartup(int loadOnStartup) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
@@ -65,7 +64,6 @@ public class DynamicServletRegistrationImpl
         wrapper.setLoadOnStartup(loadOnStartup);
     }
 
-
     public void setAsyncSupported(boolean isAsyncSupported) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
@@ -75,6 +73,18 @@ public class DynamicServletRegistrationImpl
         }
 
         wrapper.setIsAsyncSupported(isAsyncSupported);
+    }
+
+    public void setServletSecurity(ServletSecurityElement constraint) {
+        // TBD
+    }
+
+    public void setMultipartConfig(MultipartConfigElement multipartConfig) {
+        // TBD
+    }
+
+    public void setRunAsRole(String roleName) {
+        // TBD
     }
 
 }

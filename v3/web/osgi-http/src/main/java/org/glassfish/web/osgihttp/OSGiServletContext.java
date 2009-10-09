@@ -342,4 +342,8 @@ public class OSGiServletContext implements ServletContext {
     public ClassLoader getClassLoader() {
         return delegate.getClassLoader();
     }
+
+    public void declareRoles(String... roleNames) {
+        delegate.declareRoles(roleNames);
+    }
 }
