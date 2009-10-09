@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.ObjectName;
 
+import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.intf.config.Config;
 import org.glassfish.admin.amx.intf.config.HttpService;
@@ -31,12 +31,8 @@ public class V3AMXUtil {
     }
 
     public static Integer getAdminPort(){
-        AMXProxy amx = V3AMX.getInstance().getAdminListener();
-        String port = (String) amx.attributesMap().get("Port");
-        if (port.startsWith("$")){
-            //TODO: resolve attribute
-            port = "4848";
-        }
+        AMXConfigProxy amx = (AMXConfigProxy)V3AMX.getInstance().getAdminListener();
+        String port = (String) amx.resolveAttribute("Port");
         return Integer.valueOf(port);
     }
 
@@ -88,7 +84,7 @@ public class V3AMXUtil {
             if (listener == null) {
                 return null;
             }
-            String port = (String) listener.attributesMap().get("Port");
+            String port = (String) listener.resolveAttribute("Port");
             String security = (String)listener.findProtocol().attributesMap().get("SecurityEnabled");
             return ("true".equals(security)) ? "-" + port : port;
         }catch(Exception ex){
