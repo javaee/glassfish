@@ -38,7 +38,7 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * Unit test for @RolesAllowed, @DenyAll, @PermitAll
+ * Unit test for @ServletSecurity
  */
 public class WebTest {
 
@@ -59,7 +59,7 @@ public class WebTest {
     
     public static void main(String[] args) {
 
-        stat.addDescription("Unit test for @RolesAllowed, @DenyAll, @PermitAll");
+        stat.addDescription("Unit test for @ServletSecurity");
         WebTest webTest = new WebTest(args);
 
         try {

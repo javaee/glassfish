@@ -36,18 +36,21 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-
 import javax.servlet.ServletException;
+import javax.servlet.annotation.HttpConstraint;
+import javax.servlet.annotation.HttpMethodConstraint;
+import javax.servlet.annotation.ServletSecurity;
+import javax.servlet.annotation.ServletSecurity.EmptyRoleSemantic;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/myurl2")
-@RolesAllowed("javaee")
+@ServletSecurity(value=@HttpConstraint(rolesAllowed={"javaee"}),
+        httpMethodConstraints={ @HttpMethodConstraint(value="POST", rolesAllowed={"staff"}),
+        @HttpMethodConstraint("TRACE"),
+        @HttpMethodConstraint(value="PUT", emptyRoleSemantic=EmptyRoleSemantic.DENY)  })
 public class TestServlet2 extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
@@ -56,7 +59,6 @@ public class TestServlet2 extends HttpServlet {
         writer.write("g:Hello, " + req.getRemoteUser() + "\n");
     }
 
-    @RolesAllowed("staff")
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
@@ -64,7 +66,6 @@ public class TestServlet2 extends HttpServlet {
         writer.write("p:Hello, " + req.getRemoteUser() + "\n");
     }
 
-    @PermitAll
     public void doTrace(HttpServletRequest req, HttpServletResponse res) 
             throws IOException, ServletException {
 
@@ -72,7 +73,6 @@ public class TestServlet2 extends HttpServlet {
         writer.write("t:Hello");
     }
 
-    @DenyAll
     protected void doPut(HttpServletRequest req, HttpServletResponse res) 
             throws IOException, ServletException {
 
