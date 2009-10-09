@@ -70,6 +70,7 @@ import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.persistence.common.Java2DBProcessorHelper;
+import org.glassfish.persistence.common.DatabaseConstants;
 
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
@@ -451,7 +452,7 @@ public class EjbContainerUtilImpl
 
                         ExtendedDeploymentContext dc = deployment.getBuilder(
                                 _logger, params, report).source(app).build();
-                        dc.addTransientAppMetaData("org.glassfish.datasource.jndi.name", resourceName);
+                        dc.addTransientAppMetaData(DatabaseConstants.JTA_DATASOURCE_JNDI_NAME_OVERRIDE, resourceName);
                         deployment.deploy(dc);
 
                         if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {

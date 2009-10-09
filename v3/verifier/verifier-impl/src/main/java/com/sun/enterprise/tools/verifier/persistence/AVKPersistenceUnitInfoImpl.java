@@ -117,6 +117,11 @@ public class AVKPersistenceUnitInfoImpl extends PersistenceUnitInfoImpl
             {
                 // NOOP
             }
+
+            @Override
+            public String getJTADataSourceOverride() {
+                return null;
+            }
         }
         );
     }

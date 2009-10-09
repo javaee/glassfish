@@ -124,6 +124,9 @@ public class PersistenceUnitLoader {
 
         checkForUpgradeFromTopLinkEssentials(pud);
 
+        checkForDataSourceOverride(pud);
+
+
         PersistenceUnitInfo pInfo = new PersistenceUnitInfoImpl(pud, providerContainerContractInfo);
 
         String applicationLocation = providerContainerContractInfo.getApplicationLocation();
@@ -191,6 +194,16 @@ public class PersistenceUnitLoader {
                     applicationLocation);
         }
         return emf;
+    }
+
+    /**
+     * If use provided data source is overridde, update PersistenceUnitDescriptor with it
+     */
+    private void checkForDataSourceOverride(PersistenceUnitDescriptor pud) {
+        String jtaDataSourceOverride = providerContainerContractInfo.getJTADataSourceOverride();
+        if(jtaDataSourceOverride != null) {
+            pud.setJtaDataSource(jtaDataSourceOverride);
+        }
     }
 
     /**

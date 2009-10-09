@@ -58,6 +58,11 @@ public interface DatabaseConstants {
     String CREATE_SQL_FILE_SUFFIX     = NAME_SEPARATOR + CREATE + SQL_FILE_EXTENSION;
     String DROP_SQL_FILE_SUFFIX       = NAME_SEPARATOR + DROP + SQL_FILE_EXTENSION;
 
+    /**
+     * Used as key to set propety in DeploymentContext indicating to override JTA dataource
+     */
+    String JTA_DATASOURCE_JNDI_NAME_OVERRIDE = "org.glassfish.jta.datasource.jndi.name";
+
     // Flag used to indicate a database generation mode.
     public static final String JAVA_TO_DB_FLAG = "java-to-database"; // NOI18N
 }

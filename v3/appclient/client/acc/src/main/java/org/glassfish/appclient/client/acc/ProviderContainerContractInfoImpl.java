@@ -145,6 +145,11 @@ public class ProviderContainerContractInfoImpl implements ProviderContainerContr
         emfs.add(emf);
     }
 
+    public String getJTADataSourceOverride() {
+        // Returns whether JTA datasource is overridden. For an appclient it is never the case.
+        return null;
+    }
+
     public Collection<EntityManagerFactory> emfs() {
         return emfs;
     }

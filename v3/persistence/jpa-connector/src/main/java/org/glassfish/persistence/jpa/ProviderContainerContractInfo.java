@@ -110,6 +110,7 @@ public interface ProviderContainerContractInfo {
      */
     DeploymentContext getDeploymentContext();
 
+
     /**
      * Register the give emf with underlying container
      * @param unitName Name of correspoding PersistenceUnit
@@ -119,4 +120,8 @@ public interface ProviderContainerContractInfo {
      */
     void registerEMF(String unitName, String persistenceRootUri, RootDeploymentDescriptor containingBundle, EntityManagerFactory emf);
 
+    /**
+     * Returns JTA DataSource override if any
+     */
+    String getJTADataSourceOverride();
 }

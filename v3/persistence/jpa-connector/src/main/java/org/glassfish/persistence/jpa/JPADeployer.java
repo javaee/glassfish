@@ -32,6 +32,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.SimpleDeployer;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.persistence.common.Java2DBProcessorHelper;
+import org.glassfish.persistence.common.DatabaseConstants;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -267,6 +268,9 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
             }
         }
 
+        public String getJTADataSourceOverride() {
+            return deploymentContext.getTransientAppMetaData(DatabaseConstants.JTA_DATASOURCE_JNDI_NAME_OVERRIDE, String.class);
+        }
 
     } // class ProviderContainerContractInfoImpl
 
