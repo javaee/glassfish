@@ -52,25 +52,31 @@ import org.jvnet.hk2.component.Habitat;
 @Service
 public class ConnectionPoolProbeProviderUtil {
 
-    private ConnectorConnPoolProbeProvider connectorConnPoolProvider = null;
-    private JdbcConnPoolProbeProvider jdbcConnPoolProvider = null;
+    private ConnectionPoolProbeProvider jcaProbeProvider = null;
+    private ConnectionPoolProbeProvider jdbcProbeProvider = null;
     private Logger _logger = LogDomains.getLogger(ConnectionPoolProbeProviderUtil.class, LogDomains.RSR_LOGGER);
     
     @Inject 
     private Habitat habitat;
     
+    public void registerProbeProvider() {
+        if(ConnectorRuntime.getRuntime().isServer()) {
+            getConnPoolBootstrap().registerProvider();
+        }        
+    }
+    
     /**
-     * Create probe providers for jdbcPool related events.
+     * Create probe provider for jcaPool related events.
      * 
-     * The generated jdbcPool probe providers are shared by all 
-     * jdbc connection pools. Each jdbc connection pool will qualify a 
+     * The generated jcaPool probe providers are shared by all 
+     * jca connection pools. Each jca connection pool will qualify a 
      * probe event with its pool name.
      *
      */   
-    public void createProbeProviders() {
+    public void createJcaProbeProvider() {    
         try {
-            connectorConnPoolProvider = new ConnectorConnPoolProbeProvider();
-            if (connectorConnPoolProvider == null) {
+            jcaProbeProvider = new ConnectorConnPoolProbeProvider();
+            if (jcaProbeProvider == null) {
                 // Should never happen
                 _logger.log(Level.WARNING,
                     "Unable to create probe provider for interface " +
@@ -84,10 +90,20 @@ public class ConnectionPoolProbeProviderUtil {
                         ", using no-op provider",
                         e);
         }
-
+    }
+    
+    /**
+     * Create probe provider for jdbcPool related events.
+     * 
+     * The generated jdbcPool probe providers are shared by all 
+     * jdbc connection pools. Each jdbc connection pool will qualify a 
+     * probe event with its pool name.
+     *
+     */   
+    public void createJdbcProbeProvider() {
         try {
-            jdbcConnPoolProvider = new JdbcConnPoolProbeProvider();
-            if (jdbcConnPoolProvider == null) {
+            jdbcProbeProvider = new JdbcConnPoolProbeProvider();
+            if (jdbcProbeProvider == null) {
                 //Should never happen
                 _logger.log(Level.WARNING,
                     "Unable to create probe provider for interface " +
@@ -101,9 +117,6 @@ public class ConnectionPoolProbeProviderUtil {
                         ", using no-op provider",
                         e);
         }
-        if(ConnectorRuntime.getRuntime().isServer()) {
-            getConnPoolBootstrap().registerProvider();
-        }
     }
     
     private ConnectionPoolStatsProviderBootstrap getConnPoolBootstrap() {
@@ -113,16 +126,16 @@ public class ConnectionPoolProbeProviderUtil {
      * Get probe provider for connector connection pool related events
      * @return ConnectorConnPoolProbeProvider
      */
-    public ConnectorConnPoolProbeProvider getConnectorConnPoolProvider() {
-        return connectorConnPoolProvider;
+    public ConnectionPoolProbeProvider getJcaProbeProvider() {
+        return jcaProbeProvider;
     }
     
     /**
      * Get probe provider for jdbc connection pool related events
      * @return JdbcConnPoolProbeProvider
      */
-    public JdbcConnPoolProbeProvider getJdbcConnPoolProvider() {
-        return jdbcConnPoolProvider;
+    public ConnectionPoolProbeProvider getJdbcProbeProvider() {
+        return jdbcProbeProvider;
     }
 
 }

@@ -35,7 +35,6 @@
 */
 package com.sun.enterprise.resource.pool.monitor;
 
-import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.listener.PoolLifeCycleListener;
 
 /**
@@ -47,8 +46,7 @@ import com.sun.enterprise.resource.listener.PoolLifeCycleListener;
  */
 public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
     private String poolName;
-    private ConnectorConnPoolProbeProvider connectorConnProbeProvider;
-    private JdbcConnPoolProbeProvider jdbcProbeProvider;
+    private ConnectionPoolProbeProvider poolProbeProvider;
 
     /**
      * Constructor.
@@ -56,10 +54,9 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * @param jdbcPool the jdbc connection pool on whose behalf this
      * ConnectionPoolEmitterImpl emits jdbc pool related probe events
      */
-    public ConnectionPoolEmitterImpl(String poolName) {
+    public ConnectionPoolEmitterImpl(String poolName, ConnectionPoolProbeProvider provider) {
         this.poolName = poolName;
-        this.connectorConnProbeProvider = ConnectorRuntime.getRuntime().getConnectorConnPoolProvider();
-        this.jdbcProbeProvider = ConnectorRuntime.getRuntime().getJdbcConnPoolProvider();
+        this.poolProbeProvider = provider;
     }
 
     /**
@@ -70,8 +67,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      */
     public void toString(StringBuffer stackTrace) {
         stackTrace.append("\n Monitoring Statistics for \n" + poolName);
-        connectorConnProbeProvider.toString(poolName, stackTrace);
-        jdbcProbeProvider.toString(poolName, stackTrace);
+        poolProbeProvider.toString(poolName, stackTrace);
     }
     
     /**
@@ -79,8 +75,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * for the given jdbc connection pool.
      */
     public void connectionAcquired() {
-        connectorConnProbeProvider.connectionAcquiredEvent(poolName);
-        jdbcProbeProvider.connectionAcquiredEvent(poolName);
+        poolProbeProvider.connectionAcquiredEvent(poolName);
     }
 
     /**
@@ -91,8 +86,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * @param timeTakenInMillis time taken to serve a connection
      */    
     public void connectionRequestServed(long timeTakenInMillis) {
-        connectorConnProbeProvider.connectionRequestServedEvent(poolName, timeTakenInMillis);
-        jdbcProbeProvider.connectionRequestServedEvent(poolName, timeTakenInMillis);
+        poolProbeProvider.connectionRequestServedEvent(poolName, timeTakenInMillis);
     }
 
     /**
@@ -100,8 +94,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * has got a connection timed-out event.
      */
     public void connectionTimedOut() {
-        connectorConnProbeProvider.connectionTimedOutEvent(poolName);
-        jdbcProbeProvider.connectionTimedOutEvent(poolName);
+        poolProbeProvider.connectionTimedOutEvent(poolName);
     }
 
     /**
@@ -109,8 +102,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * current request for the given jdbc connection pool.
      */
     public void connectionNotMatched() {
-        connectorConnProbeProvider.connectionNotMatchedEvent(poolName);
-        jdbcProbeProvider.connectionNotMatchedEvent(poolName);        
+        poolProbeProvider.connectionNotMatchedEvent(poolName);        
     }
 
     /**
@@ -118,8 +110,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * request for the given jdbc connection pool.
      */
     public void connectionMatched() {
-        connectorConnProbeProvider.connectionMatchedEvent(poolName);
-        jdbcProbeProvider.connectionMatchedEvent(poolName);        
+        poolProbeProvider.connectionMatchedEvent(poolName);        
     }
 
     /**
@@ -127,8 +118,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * given jdbc connection pool.
      */
     public void connectionDestroyed() {
-        connectorConnProbeProvider.connectionDestroyedEvent(poolName);
-        jdbcProbeProvider.connectionDestroyedEvent(poolName);
+        poolProbeProvider.connectionDestroyedEvent(poolName);
     }
 
     /**
@@ -136,8 +126,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * connection pool.
      */
     public void connectionReleased() {
-        connectorConnProbeProvider.connectionReleasedEvent(poolName);
-        jdbcProbeProvider.connectionReleasedEvent(poolName);
+        poolProbeProvider.connectionReleasedEvent(poolName);
     }
 
     /**
@@ -145,8 +134,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * connection pool.
      */
     public void connectionCreated() {
-        connectorConnProbeProvider.connectionCreatedEvent(poolName);
-        jdbcProbeProvider.connectionCreatedEvent(poolName);
+        poolProbeProvider.connectionCreatedEvent(poolName);
     }
     
     /**
@@ -155,8 +143,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      *
      */
     public void foundPotentialConnectionLeak() {
-        connectorConnProbeProvider.potentialConnLeakEvent(poolName);
-        jdbcProbeProvider.potentialConnLeakEvent(poolName);
+        poolProbeProvider.potentialConnLeakEvent(poolName);
     }
 
     /**
@@ -166,8 +153,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * @param count number of times the validation failed
      */
     public void connectionValidationFailed(int count) {
-        connectorConnProbeProvider.connectionValidationFailedEvent(poolName, count);
-        jdbcProbeProvider.connectionValidationFailedEvent(poolName, count);
+        poolProbeProvider.connectionValidationFailedEvent(poolName, count);
     }
 
     /**
@@ -175,8 +161,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * got a connection used event.
      */
     public void connectionUsed() {
-        connectorConnProbeProvider.connectionUsedEvent(poolName);
-        jdbcProbeProvider.connectionUsedEvent(poolName);
+        poolProbeProvider.connectionUsedEvent(poolName);
     }
 
     /**
@@ -186,8 +171,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * @param count number of connections freed to pool
      */
     public void connectionsFreed(int count) {
-        connectorConnProbeProvider.connectionsFreedEvent(poolName, count);
-        jdbcProbeProvider.connectionsFreedEvent(poolName, count);
+        poolProbeProvider.connectionsFreedEvent(poolName, count);
     }
 
     /**
@@ -196,8 +180,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * 
      */
     public void decrementConnectionUsed() {
-        connectorConnProbeProvider.decrementConnectionUsedEvent(poolName);
-        jdbcProbeProvider.decrementConnectionUsedEvent(poolName);
+        poolProbeProvider.decrementConnectionUsedEvent(poolName);
     }
 
     /**
@@ -206,8 +189,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * 
      */
     public void decrementNumConnFree() {
-        connectorConnProbeProvider.decrementNumConnFreeEvent(poolName);
-        jdbcProbeProvider.decrementNumConnFreeEvent(poolName);
+        poolProbeProvider.decrementNumConnFreeEvent(poolName);
     }
     
     /**
@@ -218,8 +200,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * @param steadyPoolSize 
      */
     public void incrementNumConnFree(boolean beingDestroyed, int steadyPoolSize) {
-        connectorConnProbeProvider.incrementNumConnFreeEvent(poolName, beingDestroyed, steadyPoolSize);
-        jdbcProbeProvider.incrementNumConnFreeEvent(poolName, beingDestroyed, steadyPoolSize);
+        poolProbeProvider.incrementNumConnFreeEvent(poolName, beingDestroyed, steadyPoolSize);
     }
 
     /**
@@ -228,8 +209,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * 
      */
     public void connectionRequestQueued() {
-        connectorConnProbeProvider.connectionRequestQueuedEvent(poolName);
-        jdbcProbeProvider.connectionRequestQueuedEvent(poolName);
+        poolProbeProvider.connectionRequestQueuedEvent(poolName);
     }
 
     /**
@@ -238,7 +218,6 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * 
      */
     public void connectionRequestDequeued() {
-        connectorConnProbeProvider.connectionRequestDequeuedEvent(poolName);
-        jdbcProbeProvider.connectionRequestDequeuedEvent(poolName);
+        poolProbeProvider.connectionRequestDequeuedEvent(poolName);
     }
 }

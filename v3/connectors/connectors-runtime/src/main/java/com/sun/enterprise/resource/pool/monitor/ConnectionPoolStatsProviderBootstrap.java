@@ -37,18 +37,15 @@ package com.sun.enterprise.resource.pool.monitor;
 
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-//import com.sun.enterprise.config.serverbeans.MonitoringService;
 import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.listener.PoolLifeCycle;
 import com.sun.enterprise.resource.pool.PoolLifeCycleListenerRegistry;
 import com.sun.enterprise.resource.pool.PoolLifeCycleRegistry;
 import com.sun.enterprise.resource.pool.PoolManager;
-//import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-//import java.util.logging.Level;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.monitoring.ContainerMonitoring;
@@ -57,14 +54,9 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
-//import org.jvnet.hk2.config.ConfigSupport;
-//import org.jvnet.hk2.config.SingleConfigCode;
-//import org.jvnet.hk2.config.TransactionFailure;
-//import org.glassfish.api.monitoring.MonitoringItem;
-//import org.glassfish.jdbc.admin.monitor.config.JdbcConnectionPoolMI;
-//import org.glassfish.connectors.admin.monitor.config.ConnectorConnectionPoolMI;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Bootstrap operations of stats provider objects are done by this class.
@@ -92,11 +84,11 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
     @Inject
     private PoolManager poolManager;
 
+    @Inject
+    private Habitat habitat;
+    
     //@Inject
     //MonitoringService monitoringService;
-
-    //public static final String JDBC_CONNECTION_POOL = "jdbc-connection-pool";
-    //public static final String CONNECTOR_CONNECTION_POOL = "connector-connection-pool";
 
     //List of all jdbc pool stats providers that are created and stored.
     private List<JdbcConnPoolStatsProvider> jdbcStatsProviders = null;
@@ -133,10 +125,18 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
      * @param poolName
      * @return registry of pool lifecycle listeners
      */
-    private PoolLifeCycleListenerRegistry registerPool(String poolName) {
-        PoolLifeCycleListenerRegistry poolRegistry = new PoolLifeCycleListenerRegistry(poolName);
-        poolRegistry.registerPoolLifeCycleListener(new com.sun.enterprise.resource.pool.monitor.ConnectionPoolEmitterImpl(poolName));
+    private PoolLifeCycleListenerRegistry registerPool(String poolName, 
+            ConnectionPoolProbeProvider poolProvider) {
+        PoolLifeCycleListenerRegistry poolRegistry = 
+                new PoolLifeCycleListenerRegistry(poolName);
+        poolRegistry.registerPoolLifeCycleListener(
+                new com.sun.enterprise.resource.pool.monitor.ConnectionPoolEmitterImpl(
+                poolName, poolProvider));
         return poolRegistry;
+    }
+
+    public ConnectionPoolProbeProviderUtil getProbeProviderUtil(){
+        return habitat.getComponent(ConnectionPoolProbeProviderUtil.class);
     }
 
     /**
@@ -148,17 +148,18 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
      */
     private void registerJdbcPool(String poolName) {
         if(poolManager.getPool(poolName) != null) {
+            getProbeProviderUtil().createJdbcProbeProvider();
             //Found in the pool table (pool has been initialized/created)
             JdbcConnPoolStatsProvider jdbcPoolStatsProvider =
                     new JdbcConnPoolStatsProvider(poolName, logger);
             StatsProviderManager.register(
                     ContainerMonitoring.JDBC_CONNECTION_POOL,
                     PluginPoint.SERVER,
-                    "resources/" + poolName, jdbcPoolStatsProvider);            
+                    "resources/" + poolName, jdbcPoolStatsProvider);
             String jdbcPoolName = jdbcPoolStatsProvider.getJdbcPoolName();
-            PoolLifeCycleListenerRegistry registry = registerPool(jdbcPoolName);
+            PoolLifeCycleListenerRegistry registry = registerPool(jdbcPoolName, 
+                    getProbeProviderUtil().getJdbcProbeProvider());
             jdbcPoolStatsProvider.setPoolRegistry(registry);
-            
             jdbcStatsProviders.add(jdbcPoolStatsProvider);
         }
     }
@@ -173,6 +174,7 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
      */
     private void registerCcPool(String poolName) {
         if(poolManager.getPool(poolName) != null) {
+            getProbeProviderUtil().createJcaProbeProvider();
             //Found in the pool table (pool has been initialized/created)
             ConnectorConnPoolStatsProvider ccPoolStatsProvider =
                     new ConnectorConnPoolStatsProvider(poolName, logger);
@@ -181,7 +183,8 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
                     PluginPoint.SERVER,
                     "resources/" + poolName, ccPoolStatsProvider);            
             String ccPoolName = ccPoolStatsProvider.getCcPoolName();
-            PoolLifeCycleListenerRegistry registry = registerPool(ccPoolName);
+            PoolLifeCycleListenerRegistry registry = registerPool(
+                    ccPoolName, getProbeProviderUtil().getJcaProbeProvider());
             ccPoolStatsProvider.setPoolRegistry(registry);
             
             ccStatsProviders.add(ccPoolStatsProvider);

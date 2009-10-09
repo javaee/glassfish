@@ -43,7 +43,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.URI;
-import java.net.URISyntaxException;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
@@ -82,8 +81,6 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.resource.pool.monitor.ConnectionPoolProbeProviderUtil;
-import com.sun.enterprise.resource.pool.monitor.ConnectorConnPoolProbeProvider;
-import com.sun.enterprise.resource.pool.monitor.JdbcConnPoolProbeProvider;
 import com.sun.enterprise.security.jmac.callback.ContainerCallbackHandler;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
@@ -218,22 +215,6 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         return habitat.getComponent(ConnectionPoolProbeProviderUtil.class);
     }
     
-    /**
-     * Get probe provider for connector connection pool related events
-     * @return ConnectorConnPoolProbeProvider
-     */
-    public ConnectorConnPoolProbeProvider getConnectorConnPoolProvider() {
-        return habitat.getComponent(ConnectionPoolProbeProviderUtil.class).getConnectorConnPoolProvider();
-    }
-
-    /**
-     * Get probe provider for jdbc connection pool related events
-     * @return JdbcConnPoolProbeProvider
-     */
-    public JdbcConnPoolProbeProvider getJdbcConnPoolProvider() {
-        return habitat.getComponent(ConnectionPoolProbeProviderUtil.class).getJdbcConnPoolProvider();
-    }
-
     /**
      * Returns the execution environment.
      *
@@ -706,8 +687,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
         initializeEnvironment(processEnvironment);
         if(isServer()) {
-            getProbeProviderUtil().createProbeProviders();
-        }
+            getProbeProviderUtil().registerProbeProvider();
+         }
     }
 
     /**
