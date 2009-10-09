@@ -88,6 +88,13 @@
                 parentId="propSheetSection"
                 content="configuration/jmxConfigurationLink.jsf"
         />
+        <integration-point
+                id="web_MonitorConfigurationLink"
+                type="org.glassfish.admingui:configuration"
+                priority="750"
+                parentId="propSheetSection"
+                content="monitor/configurationLink.jsf"
+        />
 
 
         <integration-point
