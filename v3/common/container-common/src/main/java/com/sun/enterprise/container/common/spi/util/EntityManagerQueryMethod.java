@@ -99,12 +99,6 @@ public enum EntityManagerQueryMethod {
         }
     },
 
-    GET_SUPPORTED_HINTS {
-        public String toString() {
-            return "getSupportedHints()";
-        }
-    },
-
     SET_PARAMETER_PARAMETER_OBJECT {
         public String toString() {
             return "setParameter(Parameter<T> param, T value)";

@@ -35,7 +35,6 @@
  */
 package com.sun.enterprise.container.common.impl;
 
-import com.sun.enterprise.container.common.spi.JavaEEContainer;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deployment.*;
 import com.sun.logging.LogDomains;
@@ -47,7 +46,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Cache;
 import javax.persistence.PersistenceUnitUtil;
-import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 import java.io.Serializable;
 import java.util.Map;
@@ -106,20 +105,16 @@ public class EntityManagerFactoryWrapper
         return getDelegate().createEntityManager(map);
     }
 
-    public QueryBuilder getQueryBuilder() {
-        return getDelegate().getQueryBuilder();
+    public CriteriaBuilder getCriteriaBuilder() {
+        return getDelegate().getCriteriaBuilder();
     }
 
     public Metamodel getMetamodel() {
         return getDelegate().getMetamodel();
     }
 
-    public Map getProperties() {
+    public Map<java.lang.String, java.lang.Object> getProperties() {
         return getDelegate().getProperties();
-    }
-
-    public Set<String> getSupportedProperties() {
-        return getDelegate().getSupportedProperties();
     }
 
     public void close() {

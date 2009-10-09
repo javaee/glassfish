@@ -56,7 +56,6 @@ import javax.transaction.TransactionManager;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -818,23 +817,6 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         }
     }
 
-    public Set<String> getSupportedProperties() {
-
-        try {
-            if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.GET_SUPPORTED_PROPERTIES);
-            }
-            return _getDelegate().getSupportedProperties();
-        } finally {
-            if( nonTxEntityManager != null ) {
-                cleanupNonTxEntityManager();
-            }
-            if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerMethodEnd();
-            }
-        }
-    }
-
     public void close() {
 
         if(callFlowAgent.isEnabled()) {
@@ -893,13 +875,13 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         }
     }
 
-    public QueryBuilder getQueryBuilder() {
+    public CriteriaBuilder getCriteriaBuilder() {
 
         try {
             if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.GET_QUERY_BUILDER);
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.GET_CRITERIA_BUILDER);
             }
-            return _getDelegate().getQueryBuilder();
+            return _getDelegate().getCriteriaBuilder();
         } finally {
             if( nonTxEntityManager != null ) {
                 cleanupNonTxEntityManager();

@@ -177,12 +177,6 @@ public enum EntityManagerMethod {
         }
     },
 
-    GET_SUPPORTED_PROPERTIES {
-        public String toString() {
-            return "getSupportedProperties())";
-        }
-    },
-
     CREATE_QUERY {
         public String toString() {
             return "createQuery(String qlString)";
@@ -267,9 +261,9 @@ public enum EntityManagerMethod {
         }
     },
 
-    GET_QUERY_BUILDER {
+    GET_CRITERIA_BUILDER {
         public String toString() {
-            return "getQueryBuilder()";
+            return "getCriteriaBuilder()";
         }
     },
 

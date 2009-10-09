@@ -341,23 +341,6 @@ public class QueryWrapper implements Query {
         }
     }
 
-    public Set<String> getSupportedHints() {
-        
-        try {
-            if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_SUPPORTED_HINTS);
-            }
-
-            Query delegate = getQueryDelegate();
-            return delegate.getSupportedHints();
-
-        } finally {
-            if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerQueryEnd();
-            }
-        }
-    }
-
     public <T> Query setParameter(Parameter<T> param, T value) {
 
         try {
