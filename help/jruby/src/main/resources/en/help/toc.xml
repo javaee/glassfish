@@ -1,10 +1,8 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!-- ident   "%Z%%M% %I%   %E% SMI" -->
 <toc version="2.0">
 
  <tocitem target="tasks-topic-group" text="Enterprise Server Administration Console Tasks" expand="false">
     <tocitem target="task-group-rubycontainer" text="Configuring the Ruby Container" expand="false">
-        <tocitem target="task-installjruby" text="To Install the JRuby Component" expand="false"></tocitem>
+        <tocitem target="task-installjruby" text="To Install the JRuby Add-On Component" expand="false"></tocitem>
         <tocitem target="task-configrubycontainer" text="To Configure the Ruby Container" expand="false"></tocitem></tocitem></tocitem>
  <tocitem target="ref-topic-group" text="Enterprise Server Administration Console Reference" expand="false">
     <tocitem target="ref-group-configuration" text="Configuration" expand="false">

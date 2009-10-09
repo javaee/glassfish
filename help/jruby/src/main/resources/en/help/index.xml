@@ -1,9 +1,7 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!-- ident   "%Z%%M% %I%   %E% SMI" -->
 <index version="2.0">
 
  <indexitem text="containers, See Ruby container"></indexitem>
- <indexitem target="task-installjruby" text="JRuby component, installing"></indexitem>
+ <indexitem target="task-installjruby" text="JRuby add-on component, installing"></indexitem>
  <indexitem text="Ruby container">
     <indexitem target="ref-configrubycontainer" text="configuring (reference)"></indexitem>
     <indexitem target="task-configrubycontainer" text="configuring (task)"></indexitem>
