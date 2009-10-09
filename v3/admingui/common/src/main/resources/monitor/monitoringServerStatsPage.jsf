@@ -49,7 +49,7 @@
 	getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service" type="virtual-server" result="#{pageSession.vsList}");
         getProxyNamesByType(type="threadinfo-mon", end="#{true}", result="#{pageSession.threadList}" firstItem="#{pageSession.firstThread}");
         populateServerMonitorDropDown(VSList="#{vsList}", ThreadSystemList="#{threadList}", MonitorList=>$attribute{monitorList});
-        getStatsbyTypeName(type="ejb-security-mon" name="ejb-security", result=>$attribute{ejbStatsList} hasStats=>$attribute{hasStatsEJB});
+        getStatsbyTypeName(type="ejb-security-mon" name="security/ejb", result=>$attribute{ejbStatsList} hasStats=>$attribute{hasStatsEJB});
         getStatsbyTypeName(type="jsp-mon" name="web/jsp", result=>$attribute{jspWebStatsList}  hasStats=>$attribute{hasStatsJsp});
         getStatsbyTypeName(type="web-request-mon" name="web/request", result=>$attribute{requestWebStatsList}  hasStats=>$attribute{hasStatsWRS});
         getStatsbyTypeName(type="session-mon" name="web/session", result=>$attribute{sessionWebList}  hasStats=>$attribute{hasStatsWSSP});
