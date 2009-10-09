@@ -405,12 +405,12 @@ public class WoodstockHandler {
             ListIterator al = aList.listIterator();
             while (al.hasNext()) {
                 String name = (String) al.next();
-                if (!doesAppProxyExit(name, "bean-pool-mon")) {
+                //if (!doesAppProxyExit(name, "bean-pool-mon")) {
                     appsList.add(new Option(name, name));
                     if (firstItem == null) {
                         firstItem = name;
                     }
-                }
+                //}
             }
         }
         groupedOptions1 = (Option[]) appsList.toArray(new Option[appsList.size()]);
