@@ -2054,7 +2054,7 @@ admingui.ajax = {
     uploadingFiles : function(form) {
         var uploading = false;
         for (var i = 0; i < form.elements.length; i++) {
-            if (form.elements[i] instanceof HTMLInputElement) {
+            if (form.elements[i].nodeName == 'INPUT') {
                 if (form.elements[i].type == 'file') {
                     uploading = true;
                     break;
