@@ -11,6 +11,8 @@ import java.util.concurrent.*;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
+import com.sun.appserv.security.ProgrammaticLogin;
+
 public class Client {
 
     private static SimpleReporterAdapter stat = 
@@ -63,10 +65,14 @@ public class Client {
     @Resource(name="envEntry4", lookup="java:app/env/value1")
     static Integer envEntry4;
 
+    private static boolean appClient = false;
+
  @PostConstruct
     public static void init() {
 	try {
 	    System.out.println("In init()");
+
+	    appClient = true;
 
 	    System.out.println("AppName = " + appNameL);
 	    System.out.println("ModuleName = " + moduleName);
@@ -122,9 +128,20 @@ public class Client {
 	    System.out.println("NOT expecting permission to access protected methods");
 	}
 
+
 	String results;
 
 	try {
+	    
+	    /**
+	    if( !appClient ) {
+		System.out.println("In SE client.  Using programmatic login");
+		ProgrammaticLogin pm = new ProgrammaticLogin();
+		pm.login("mary", "mob", "default", true);
+		System.out.println("Programmatic login succeeded");
+		
+	    }
+	    */
 
 	    //	    ProgrammaticLogin login = new com.sun.appserv.security.api.ProgrammaticLogin();
 	    
@@ -238,8 +255,16 @@ public class Client {
 
 	    System.out.println("pass = " + pass);
 
-
 	    stat.addStatus("local main", stat.PASS);
+
+	} catch(NamingException ne) {
+	    
+	    if( appClient ) {
+		stat.addStatus("local main", stat.FAIL);
+	    } else {
+		System.out.println("Got expected security failure during lookup for non-authenticated SE client");
+		stat.addStatus("local main", stat.PASS);
+	    }
 
 	} catch(Exception e) {
 	    stat.addStatus("local main", stat.FAIL);
