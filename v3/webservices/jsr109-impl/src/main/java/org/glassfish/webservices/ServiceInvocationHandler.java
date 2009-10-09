@@ -99,6 +99,7 @@ public class ServiceInvocationHandler implements InvocationHandler {
     private boolean noWsdl = false;
 
     private WsUtil wsUtil = new WsUtil();
+    private org.glassfish.webservices.SecurityService  secServ;
 
     // Service method types
     private static final int CREATE_CALL_NO_ARGS = 1;
@@ -141,6 +142,9 @@ public class ServiceInvocationHandler implements InvocationHandler {
         getClientManagedPortMethod = javax.xml.rpc.Service.class.getMethod
                 ("getPort", new Class[] { QName.class, Class.class } );
 
+        if (Globals.getDefaultHabitat() != null) {
+            secServ = Globals.get(org.glassfish.webservices.SecurityService.class);
+        }
         addMessageSecurityHandler(delegate);
     }
 
@@ -236,9 +240,6 @@ public class ServiceInvocationHandler implements InvocationHandler {
         if (portInfo != null) {
             binding = portInfo.getMessageSecurityBinding();
         }
-
-        org.glassfish.webservices.SecurityService  secServ = Globals.get(
-                        org.glassfish.webservices.SecurityService.class);
         if (secServ != null) {
            rvalue = secServ.getMessageSecurityHandler(binding, serviceRef.getServiceName());
         }

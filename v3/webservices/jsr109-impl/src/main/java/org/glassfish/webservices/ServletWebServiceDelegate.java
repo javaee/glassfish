@@ -97,10 +97,15 @@ public class ServletWebServiceDelegate extends ServletSecondDelegate {
     private WebServiceEngineImpl wsEngine_;
     private JAXRPCEndpointImpl endpointImpl_;
 
+    private org.glassfish.webservices.SecurityService  secServ;
+
     public ServletWebServiceDelegate (ServletDelegate firstDelegate) {
         rpcDelegate_ = firstDelegate;
         rpcFactory_ = JaxRpcObjectFactory.newInstance();
         wsEngine_ = WebServiceEngineImpl.getInstance();
+        if (Globals.getDefaultHabitat() != null) {
+            secServ = Globals.get(org.glassfish.webservices.SecurityService.class);
+        }
     }
 
     public void postInit(ServletConfig servletConfig) throws ServletException {
@@ -134,8 +139,6 @@ public class ServletWebServiceDelegate extends ServletSecondDelegate {
                 // if a conventional authentication mechanism has NOT been configured
                 // for the endpoint create and install system handler for web services
                 // security
-                org.glassfish.webservices.SecurityService  secServ = Globals.get(
-                        org.glassfish.webservices.SecurityService.class);
                 if (secServ != null) {
                     SystemHandlerDelegate securityHandlerDelegate = secServ.getSecurityHandler(endpoint_);
                     if (securityHandlerDelegate != null) {

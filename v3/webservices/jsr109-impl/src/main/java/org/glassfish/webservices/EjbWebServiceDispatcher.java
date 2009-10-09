@@ -100,9 +100,15 @@ public class EjbWebServiceDispatcher implements EjbMessageDispatcher {
     private static final String HTTP_SERVLET_RESPONSE = 
         "com.sun.xml.rpc.server.http.HttpServletResponse";
 
+    //the security service
+    org.glassfish.webservices.SecurityService  secServ;
+
     public EjbWebServiceDispatcher() {
         rpcFactory = JaxRpcObjectFactory.newInstance();
         wsEngine = WebServiceEngineImpl.getInstance();
+        if (Globals.getDefaultHabitat() != null) {
+            secServ = Globals.get(org.glassfish.webservices.SecurityService.class);
+        }
     }           
 
     public void invoke(HttpServletRequest req, 
@@ -181,8 +187,6 @@ public class EjbWebServiceDispatcher implements EjbMessageDispatcher {
                     // Set http response object so one-way operations will
                     // response before actual business method invocation.
                     msgContext.setProperty(HTTP_SERVLET_RESPONSE, resp);
-                    org.glassfish.webservices.SecurityService  secServ = Globals.get(
-                        org.glassfish.webservices.SecurityService.class);
                     if (secServ != null) {
                         wssSucceded = secServ.validateRequest(endpointInfo2.getServerAuthConfig(),
                                 (StreamingHandler)aInfo.getHandler(), msgContext);
@@ -220,8 +224,6 @@ public class EjbWebServiceDispatcher implements EjbMessageDispatcher {
                 endpoint.processResponse(msgContext);
             }
             SOAPMessage reply = msgContext.getMessage();
-            org.glassfish.webservices.SecurityService  secServ = Globals.get(
-                        org.glassfish.webservices.SecurityService.class);
             if (secServ != null && wssSucceded) {
                 Ejb2RuntimeEndpointInfo endpointInfo2 = (Ejb2RuntimeEndpointInfo)endpointInfo;
                 secServ.secureResponse(endpointInfo2.getServerAuthConfig(),(StreamingHandler)endpointInfo2.getHandlerImplementor().getHandler(),msgContext);

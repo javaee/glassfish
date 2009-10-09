@@ -74,7 +74,14 @@ public class EjbWebServiceServlet extends HttpServlet {
     private ResourceBundle rb = logger.getResourceBundle()   ;
     private static final Base64 base64Helper = new Base64();
     private static final String AUTHORIZATION_HEADER = "authorization";
+    private SecurityService secServ;
 
+    public EjbWebServiceServlet() {
+        super();
+        if (org.glassfish.internal.api.Globals.getDefaultHabitat() != null) {
+            secServ = org.glassfish.internal.api.Globals.get(SecurityService.class);
+        }
+    }
 
     protected void service(HttpServletRequest hreq,
                            HttpServletResponse hresp)
@@ -143,7 +150,6 @@ public class EjbWebServiceServlet extends HttpServlet {
         ClassLoader savedClassLoader = null;
 
         boolean authenticated = false;
-        SecurityService secServ = org.glassfish.internal.api.Globals.get(SecurityService.class);
         try {
             // Set context class loader to application class loader
             savedClassLoader = Thread.currentThread().getContextClassLoader();

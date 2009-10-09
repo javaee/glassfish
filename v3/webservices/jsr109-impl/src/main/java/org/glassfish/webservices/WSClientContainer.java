@@ -40,21 +40,27 @@ import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.client.ServiceInterceptor;
 
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
+import org.glassfish.internal.api.Globals;
 
 public class WSClientContainer extends Container {
 
     ServiceReferenceDescriptor svcRef;
+    private org.glassfish.webservices.SecurityService  secServ;
     
     public WSClientContainer(ServiceReferenceDescriptor ref) {
         svcRef = ref;
+        if (Globals.getDefaultHabitat() != null) {
+            secServ = Globals.get(org.glassfish.webservices.SecurityService.class);
+        }
     }
 
     public <T> T getSPI(Class<T> spiType) {
-        /*
-         TODO BM revisit later
+        
         if((spiType == com.sun.xml.ws.assembler.ClientPipelineHook.class)){
-            return((T)(new ClientPipeCreator(svcRef)));
-        }*/
+            if (secServ != null) {
+                return((T)(secServ.getClientPipelineHook(svcRef)));
+            }
+        }
         if((spiType == ServiceInterceptor.class)){
             return((T)(new PortCreationCallbackImpl(svcRef)));
         }

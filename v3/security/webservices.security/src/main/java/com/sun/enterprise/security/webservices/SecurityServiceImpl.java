@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.security.webservices;
 
+import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
 import com.sun.enterprise.security.jauth.AuthException;
@@ -43,6 +44,7 @@ import com.sun.logging.LogDomains;
 import com.sun.web.security.RealmAdapter;
 import com.sun.xml.rpc.spi.runtime.SOAPMessageContext;
 import com.sun.xml.rpc.spi.runtime.SystemHandlerDelegate;
+import com.sun.xml.ws.assembler.ClientPipelineHook;
 import java.security.cert.X509Certificate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -308,5 +310,10 @@ public class SecurityServiceImpl implements SecurityService {
             throw new RuntimeException(ex);
         }
         return rvalue;
+    }
+
+    @Override
+    public ClientPipelineHook getClientPipelineHook(ServiceReferenceDescriptor ref) {
+        return new ClientPipeCreator(ref);
     }
 }
