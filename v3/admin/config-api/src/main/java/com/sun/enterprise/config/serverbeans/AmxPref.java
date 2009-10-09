@@ -74,4 +74,10 @@ public interface AmxPref extends ConfigBeanProxy, Injectable, PropertyBag, Syste
     @Attribute(defaultValue="" + AUTO_START_DEFAULT, dataType=Boolean.class)
     public String getAutoStart();
     public void setAutoStart(String autoStart);
+    
+    /** Whether to log registration and unregistration of AMX MBeans */
+    @Attribute(defaultValue="false", dataType=Boolean.class)
+    public String getEmitRegisrationStatus();
+    public void setEmitRegisrationStatus(String emit);
+
 }
