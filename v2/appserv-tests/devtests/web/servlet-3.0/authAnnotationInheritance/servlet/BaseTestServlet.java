@@ -36,16 +36,19 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.RolesAllowed;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.annotation.HttpMethodConstraint;
+import javax.servlet.annotation.ServletSecurity;
+import static javax.servlet.annotation.ServletSecurity.EmptyRoleSemantic.*;
 
+@ServletSecurity(httpMethodConstraints={
+        @HttpMethodConstraint(value="POST", rolesAllowed={ "javaee" }),
+        @HttpMethodConstraint(value="TRACE", emptyRoleSemantic=DENY)
+        } )
 public class BaseTestServlet extends HttpServlet {
-    @RolesAllowed("javaee")
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
@@ -53,7 +56,6 @@ public class BaseTestServlet extends HttpServlet {
         writer.write("p:Hello, " + req.getRemoteUser() + "\n");
     }
 
-    @DenyAll
     protected void doTrace(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 

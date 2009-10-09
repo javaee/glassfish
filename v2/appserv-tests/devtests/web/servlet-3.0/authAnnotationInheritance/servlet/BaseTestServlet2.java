@@ -36,19 +36,21 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.RolesAllowed;
-
 import javax.servlet.ServletException;
+import javax.servlet.annotation.HttpConstraint;
+import javax.servlet.annotation.HttpMethodConstraint;
+import javax.servlet.annotation.ServletSecurity;
+import javax.servlet.annotation.ServletSecurity.EmptyRoleSemantic;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/myurl2b")
-@RolesAllowed("javaee")
+@ServletSecurity(value=@HttpConstraint(rolesAllowed={ "javaee" }),
+        httpMethodConstraints={ @HttpMethodConstraint(value="GET", rolesAllowed={ "noSuchRole" }),
+        @HttpMethodConstraint(value="TRACE", emptyRoleSemantic=EmptyRoleSemantic.DENY) })
 public class BaseTestServlet2 extends HttpServlet {
-    @RolesAllowed("noSuchRole")
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
@@ -63,7 +65,6 @@ public class BaseTestServlet2 extends HttpServlet {
         writer.write("p:Hello, " + req.getRemoteUser() + "\n");
     }
 
-    @DenyAll
     protected void doTrace(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 

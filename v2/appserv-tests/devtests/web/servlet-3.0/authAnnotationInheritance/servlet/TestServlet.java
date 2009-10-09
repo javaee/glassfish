@@ -39,13 +39,15 @@ import java.io.PrintWriter;
 import javax.annotation.security.PermitAll;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.HttpMethodConstraint;
+import javax.servlet.annotation.ServletSecurity;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/myurl")
+@ServletSecurity(httpMethodConstraints={ @HttpMethodConstraint("TRACE") })
 public class TestServlet extends BaseTestServlet {
-    @PermitAll
     protected void doTrace(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
