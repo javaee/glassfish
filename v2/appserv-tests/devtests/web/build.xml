@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="457"/>
+    <property name="TOTAL_EXPECTED" value="461"/>
 
     &commonSetup;
     &commonBuild;
@@ -433,12 +433,10 @@
         <ant dir="formLoginTransportGuaranteeConfidential" target="all"/>
         <ant dir="jspForwardNormalizePath" target="all"/>
         <ant dir="requestDispatcherDirectoryTraversal" target="all"/>
-        <!-- XXX temp removed, wait for new annotations
         <ant dir="servlet-3.0/authAnnotations" target="all"/>
         <ant dir="servlet-3.0/authAnnotationInheritance" target="all"/>
         <ant dir="servlet-3.0/transportProtectedAnnotation" target="all"/>
         <ant dir="servlet-3.0/xmlOverrideAuthAnnotations" target="all"/>
-        -->
         <ant dir="servlet-3.0/loginLogout" target="all"/>
     </target>
 
