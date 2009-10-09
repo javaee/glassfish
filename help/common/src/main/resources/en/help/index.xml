@@ -1,5 +1,3 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!-- ident   "%Z%%M% %I%   %E% SMI" -->
 <index version="2.0">
 
  <indexitem text="add-on components">
@@ -164,6 +162,10 @@
     <indexitem target="task-eelogginglevels" text="configuring levels (task)"></indexitem>
     <indexitem target="ref-logviewer" text="viewing the server log (reference)"></indexitem>
     <indexitem target="task-logviewer" text="viewing the server log (task)"></indexitem></indexitem>
+ <indexitem text="message security">
+    <indexitem target="task-configmsgsecproviders" text="configuring"></indexitem>
+    <indexitem target="task-enablemesec4appclients" text="enabling for application clients"></indexitem>
+    <indexitem target="ref-configreq-respolicy" text="request and response policy configurations"></indexitem></indexitem>
  <indexitem text="message security configurations">
     <indexitem target="ref-messagesecurityconfignew" text="creating (reference)"></indexitem>
     <indexitem target="task-messagesecurityconfignew" text="creating (task)"></indexitem>
@@ -179,18 +181,14 @@
     <indexitem target="task-messagesecurityproviderconfigedit" text="editing (task)"></indexitem>
     <indexitem target="ref-messagesecurityproviderconfigprops" text="properties"></indexitem>
     <indexitem target="ref-messagesecurityproviderconfig" text="viewing and configuring"></indexitem></indexitem>
- <indexitem text="message security">
-    <indexitem target="task-configmsgsecproviders" text="configuring"></indexitem>
-    <indexitem target="task-enablemesec4appclients" text="enabling for application clients"></indexitem>
-    <indexitem target="ref-configreq-respolicy" text="request and response policy configurations"></indexitem></indexitem>
+ <indexitem text="monitoring">
+    <indexitem target="ref-monitoringservice" text="configuring (reference)"></indexitem>
+    <indexitem target="task-confmonitor" text="configuring (task)"></indexitem></indexitem>
  <indexitem text="monitoring data">
     <indexitem target="ref-appmonitoringdata" text="viewing for applications (reference)"></indexitem>
     <indexitem target="task-appmonitoringdata" text="viewing for applications (task)"></indexitem>
     <indexitem target="ref-servermonitoringdata" text="viewing for virtual servers (reference)"></indexitem>
     <indexitem target="task-servermonitoringdata" text="viewing for virtual servers (task)"></indexitem></indexitem>
- <indexitem text="monitoring">
-    <indexitem target="ref-monitoringservice" text="configuring (reference)"></indexitem>
-    <indexitem target="task-confmonitor" text="configuring (task)"></indexitem></indexitem>
  <indexitem target="task-uc-set-proxy" text="network proxy settings, configuring for Update Tool"></indexitem>
  <indexitem text="password">
     <indexitem target="ref-setadminpassword" text="changing administrator (reference)"></indexitem>
@@ -229,6 +227,9 @@
  <indexitem text="Ruby applications">
     <indexitem target="ref-uploaddev" text="deploying (reference)"></indexitem>
     <indexitem target="task-appdeployruby" text="deploying (task)"></indexitem></indexitem>
+ <indexitem text="security">
+    <indexitem target="ref-jmxconnectorssledit" text="JMX connector (reference)"></indexitem>
+    <indexitem target="task-jmxconnectorssledit" text="JMX connector (task)"></indexitem></indexitem>
  <indexitem text="security manager">
     <indexitem target="task-securitymanagerdisable" text="disabling"></indexitem>
     <indexitem target="ref-security" text="enabling (reference)"></indexitem>
@@ -237,9 +238,6 @@
  <indexitem text="security settings">
     <indexitem target="ref-security" text="configuring (reference)"></indexitem>
     <indexitem target="task-securitysettings" text="configuring (task)"></indexitem></indexitem>
- <indexitem text="security">
-    <indexitem target="ref-jmxconnectorssledit" text="JMX connector (reference)"></indexitem>
-    <indexitem target="task-jmxconnectorssledit" text="JMX connector (task)"></indexitem></indexitem>
  <indexitem text="server log">
     <indexitem target="ref-logviewer" text="viewing (reference)"></indexitem>
     <indexitem target="task-logviewer" text="viewing (task)"></indexitem></indexitem>
@@ -249,9 +247,9 @@
     <indexitem target="task-jmxconnectorssledit" text="JMX connector (task)"></indexitem></indexitem>
  <indexitem target="task-subscriptions" text="Subscriptions page, viewing"></indexitem>
  <indexitem target="task-register" text="Sun Online Account"></indexitem>
+ <indexitem target="ref-preconfiguredprops" text="system properties, predefined"></indexitem>
  <indexitem target="ref-systemproperties" text="system properties (reference)"></indexitem>
  <indexitem target="task-systemproperties" text="system properties (task)"></indexitem>
- <indexitem target="ref-preconfiguredprops" text="system properties, predefined"></indexitem>
  <indexitem text="Update Tool">
     <indexitem target="ref-uc-concepts" text="concepts"></indexitem>
     <indexitem target="ref-uc-config" text="configuring"></indexitem>
