@@ -13,7 +13,7 @@ public class SimpleBMPClient {
     public static void main(String[] args)
         throws Exception {
      
-	String testSuite = "jdbcappauthtx ";
+	String testSuite = "AppAuthTX ";
 	SimpleReporterAdapter stat = new SimpleReporterAdapter();
 
         InitialContext ic = new InitialContext();

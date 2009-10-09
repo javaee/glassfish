@@ -21,7 +21,7 @@ public class SimpleBMPClient {
 
     public void runTest() throws Exception {
      
-	String testSuite = "jdbccontauthtx ";
+	String testSuite = "ContAuthTX ";
 
         InitialContext ic = new InitialContext();
         Object objRef = ic.lookup("java:comp/env/ejb/SimpleBMPHome");

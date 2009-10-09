@@ -14,7 +14,7 @@ public class SimpleBMPClient {
         throws Exception {
 
 	SimpleReporterAdapter stat = new SimpleReporterAdapter();
-	String testSuite = "jdbccontauth1tx ";
+	String testSuite = "ContAuth1TX ";
 
         InitialContext ic = new InitialContext();
         Object objRef = ic.lookup("java:comp/env/ejb/SimpleBMPHome");
@@ -22,6 +22,7 @@ public class SimpleBMPClient {
         javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
 
         SimpleBMP simpleBMP = simpleBMPHome.create();
+	stat.addDescription("JDBC ContAuth1TX tests");
         System.out.println(" All tests shall fail till a stable XA driver is integrated into Derby");
         if ( simpleBMP.test1() ) {
 	    stat.addStatus(testSuite+"test1 : ", stat.PASS);

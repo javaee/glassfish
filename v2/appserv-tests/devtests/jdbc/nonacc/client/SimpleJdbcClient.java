@@ -9,7 +9,7 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 public class SimpleJdbcClient {
     
     public static void main( String argv[] ) throws Exception {
-        String testSuite = "nonacc ";
+        String testSuite = "NonACC ";
         SimpleReporterAdapter stat = new SimpleReporterAdapter();
         stat.addDescription("Test a stand-alone java program that does getConnection");
         Connection con = null;

@@ -10,17 +10,17 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 public class Client {
     static SimpleReporterAdapter stat = 
-        new SimpleReporterAdapter("appserv-tests");
+        new SimpleReporterAdapter();
 
     public static void main(String[] args)
         throws Exception {
         
-        stat.addDescription("jdbcjmsauth tests");
+        stat.addDescription("JDBC JMS Authentication tests");
         Client c = new Client();
 	c.doJdbcTests();
 	c.doJmsTests();
 
-	stat.printSummary("jdbcjmsauthID");
+	stat.printSummary();
     }
 
     private void doJdbcTests() throws Exception {
@@ -31,7 +31,7 @@ public class Client {
             PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
         
         SimpleBMP simpleBMP = simpleBMPHome.create();
-        String testSuite = "jdbcjmsauth-jdbc-tests";	
+        String testSuite = "JDBCJmsAuth-JDBC ";	
         System.out.println(" jdbc tests 3 & 7 will fail with Derby"); 	
 	System.out.println("-----------------------------------------------");
 	System.out.println("          JDBC Tests ");
@@ -39,10 +39,10 @@ public class Client {
 	System.out.println("app auth : getting connection w/o user/pass");
 	System.out.print("Should NOT get a connection : " );
         if ( simpleBMP.test1() ) {
-	    stat.addStatus(testSuite+" jdbc-test1 ", stat.PASS);
+	    stat.addStatus(testSuite+" test1 ", stat.PASS);
 	    //System.out.println("PASS");
 	} else {
-	    stat.addStatus(testSuite+" jdbc-test1 ", stat.FAIL);
+	    stat.addStatus(testSuite+" test1 ", stat.FAIL);
 	    //System.out.println("FAIL");
 	}
 
@@ -51,9 +51,9 @@ public class Client {
 	System.out.print("Should get a connection : " );
 	if ( simpleBMP.test2() ) {
 	    //System.out.println("PASS");
-	    stat.addStatus(testSuite+" jdbc-test2 ", stat.PASS);
+	    stat.addStatus(testSuite+" test2 ", stat.PASS);
 	} else {
-	    stat.addStatus(testSuite+" jdbc-test2 ", stat.FAIL);
+	    stat.addStatus(testSuite+" test2 ", stat.FAIL);
 	    //System.out.println("FAIL");
 	}
 
@@ -62,9 +62,9 @@ public class Client {
 	System.out.print("Should NOT get a connection : " );
 	if ( simpleBMP.test3() ) {
 	    //System.out.println("PASS");
-	    stat.addStatus(testSuite + " jdbc-test3 ", stat.PASS);
+	    stat.addStatus(testSuite + " test3 ", stat.PASS);
 	} else {
-	    stat.addStatus(testSuite + " jdbc-test3 ", stat.FAIL);
+	    stat.addStatus(testSuite + " test3 ", stat.FAIL);
 	    //System.out.println("FAIL");
 	}
 
@@ -73,9 +73,9 @@ public class Client {
 	System.out.print("Should get a connection then NOT get a connection : " );
 	if ( simpleBMP.test4() ) {
 	    //System.out.println("PASS");
-	    stat.addStatus(testSuite + " jdbc-test4 ", stat.PASS);
+	    stat.addStatus(testSuite + " test4 ", stat.PASS);
 	} else {
-	    stat.addStatus(testSuite + " jdbc-test4 ", stat.FAIL);
+	    stat.addStatus(testSuite + " test4 ", stat.FAIL);
 	    //System.out.println("FAIL");
 	}
 
@@ -84,9 +84,9 @@ public class Client {
 	System.out.print("Should get a connection : " );
         if ( simpleBMP.test5() ) {
 	    //System.out.println("PASS");
-	    stat.addStatus(testSuite+" jdbc-test5 ", stat.PASS);
+	    stat.addStatus(testSuite+" test5 ", stat.PASS);
 	} else {
-	    stat.addStatus(testSuite+" jdbc-test5 ", stat.FAIL);
+	    stat.addStatus(testSuite+" test5 ", stat.FAIL);
 	    //System.out.println("FAIL");
 	}
 
@@ -95,9 +95,9 @@ public class Client {
 	System.out.print("Should get a connection : " );
 	if ( simpleBMP.test6() ) {
 	    //System.out.println("PASS");
-	    stat.addStatus(testSuite+" jdbc-test6 ", stat.PASS);
+	    stat.addStatus(testSuite+" test6 ", stat.PASS);
 	} else {
-	    stat.addStatus(testSuite+" jdbc-test6 ", stat.FAIL);
+	    stat.addStatus(testSuite+" test6 ", stat.FAIL);
 	    //System.out.println("FAIL");
 	}
 
@@ -106,9 +106,9 @@ public class Client {
 	System.out.print("Should NOT get a connection : " );
 	if ( simpleBMP.test7() ) {
 	    //System.out.println("PASS");
-	    stat.addStatus(testSuite + " jdbc-test7 ", stat.PASS);
+	    stat.addStatus(testSuite + " test7 ", stat.PASS);
 	} else {
-	    stat.addStatus(testSuite + " jdbc-test7 ", stat.FAIL);
+	    stat.addStatus(testSuite + " test7 ", stat.FAIL);
 	    //System.out.println("FAIL");
 	}
     }
@@ -121,7 +121,7 @@ public class Client {
 	    PortableRemoteObject.narrow( obj, JmsAuthHome.class );
 	JmsAuth jmsAuth = jmsAuthHome.create();
 
-	String testSuite = "jdbcjmsauth-jms-tests";
+	String testSuite = "JDBCJmsAuth-JMS";
         
 	System.out.println("-----------------------------------------------");
 	System.out.println("          JMS tests ");
@@ -130,9 +130,9 @@ public class Client {
 	System.out.print("Should get a connection : " );
 	if ( jmsAuth.test1() ) {
 	    //System.out.println("PASS");
-	    stat.addStatus(testSuite + " jms-test1 ", stat.PASS );
+	    stat.addStatus(testSuite + " test1 ", stat.PASS );
 	} else {
-	    stat.addStatus(testSuite + " jms-test1 ", stat.FAIL );
+	    stat.addStatus(testSuite + " test1 ", stat.FAIL );
 	    //System.out.println("FAIL");
 	}
 
@@ -141,9 +141,9 @@ public class Client {
 	System.out.print("Should get a connection : " );
        	if ( jmsAuth.test2() ) {
 	    //System.out.println("PASS");
-	    stat.addStatus(testSuite + " jms-test2 ", stat.PASS );
+	    stat.addStatus(testSuite + " test2 ", stat.PASS );
 	} else {
-	    stat.addStatus(testSuite + " jms-test2 ", stat.FAIL );
+	    stat.addStatus(testSuite + " test2 ", stat.FAIL );
 	    //System.out.println("FAIL");
 	}
 
@@ -152,9 +152,9 @@ public class Client {
 	System.out.print("Should NOT get a connection : " );
 	if ( jmsAuth.test3() ) {
 	    //System.out.println("PASS");
-	    stat.addStatus(testSuite + " jms-test3 ", stat.PASS );
+	    stat.addStatus(testSuite + " test3 ", stat.PASS );
 	} else {
-	    stat.addStatus(testSuite + " jms-test3 ", stat.FAIL );
+	    stat.addStatus(testSuite + " test3 ", stat.FAIL );
 	    //System.out.println("FAIL");
 	}
 
@@ -163,9 +163,9 @@ public class Client {
 	System.out.print("Should get a connection then NOT get a connection : " );
        	if ( jmsAuth.test4() ) {
 	    //System.out.println("PASS");
-	    stat.addStatus(testSuite + " jms-test4 ", stat.PASS );
+	    stat.addStatus(testSuite + " test4 ", stat.PASS );
 	} else {
-	    stat.addStatus(testSuite + " jms-test4 ", stat.FAIL );
+	    stat.addStatus(testSuite + " test4 ", stat.FAIL );
 	    //System.out.println("FAIL");
 	}
 
@@ -174,9 +174,9 @@ public class Client {
 	System.out.print("Should get a connection : " );
        	if ( jmsAuth.test5() ) {
 	    //System.out.println("PASS");
-	    stat.addStatus(testSuite + " jms-test5 ", stat.PASS );
+	    stat.addStatus(testSuite + " test5 ", stat.PASS );
 	} else {
-	    stat.addStatus(testSuite + " jms-test5 ", stat.FAIL );
+	    stat.addStatus(testSuite + " test5 ", stat.FAIL );
 	    //System.out.println("FAIL");
 	}
 	
@@ -185,9 +185,9 @@ public class Client {
 	System.out.print("Should get a connection : " );
        	if ( jmsAuth.test6() ) {
 	    //System.out.println("PASS");
-	    stat.addStatus(testSuite + " jms-test6 ", stat.PASS );
+	    stat.addStatus(testSuite + " test6 ", stat.PASS );
 	} else {
-	    stat.addStatus(testSuite + " jms-test6 ", stat.FAIL );
+	    stat.addStatus(testSuite + " test6 ", stat.FAIL );
 	    //System.out.println("FAIL");
 	}
 /*	

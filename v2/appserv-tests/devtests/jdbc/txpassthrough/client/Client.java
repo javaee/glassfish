@@ -13,7 +13,7 @@ public class Client {
         throws Exception {
 
  	SimpleReporterAdapter stat = new SimpleReporterAdapter();
-	String testSuite = "jdbc-txpassthrough ";
+	String testSuite = "TxPassThrough ";
 
         InitialContext ic = new InitialContext();
         Object objRef = ic.lookup("java:comp/env/ejb/NoTxConnTestEJB");
@@ -21,6 +21,7 @@ public class Client {
             javax.rmi.PortableRemoteObject.narrow(objRef, NoTxConnTestHome.class);
 
         NoTxConnTest bean = home.create();
+	stat.addDescription("TX Pass Through tests ");
 
         if ( bean.test1() ) {
 	    stat.addStatus(testSuite+" test1 : ", stat.PASS);

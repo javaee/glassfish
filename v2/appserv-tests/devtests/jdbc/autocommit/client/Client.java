@@ -29,15 +29,15 @@ public class Client {
 	stat.addDescription("Autocommit Test");
 
         if ( simpleBMP.test1() ) {
-	    stat.addStatus(" autocommit test1 : ", stat.PASS);
+	    stat.addStatus(" AutoCommit test1 : ", stat.PASS);
 	} else {
-	    stat.addStatus(" autocommit test1 : ", stat.FAIL);
+	    stat.addStatus(" AutoCommit test1 : ", stat.FAIL);
 	}
 
         if ( simpleBMP.test2() ) {
-	    stat.addStatus(" autocommit test2 : ", stat.PASS);
+	    stat.addStatus(" AutoCommit test2 : ", stat.PASS);
 	} else {
-	    stat.addStatus(" autocommit test2 : ", stat.FAIL);
+	    stat.addStatus(" AutoCommit test2 : ", stat.FAIL);
 	}
 
 	System.out.println("jdbc autocommit status: ");

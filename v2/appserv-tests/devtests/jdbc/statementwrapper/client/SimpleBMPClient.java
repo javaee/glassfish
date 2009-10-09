@@ -14,7 +14,7 @@ public class SimpleBMPClient {
         throws Exception {
 
  	SimpleReporterAdapter stat = new SimpleReporterAdapter();
-	String testSuite = "statementWrapper ";
+	String testSuite = "StatementWrapper ";
 
     InitialContext ic = new InitialContext();
     Object objRef = ic.lookup("java:comp/env/ejb/SimpleBMPHome");

@@ -14,14 +14,14 @@ public class Client {
         throws Exception {
         
 	SimpleReporterAdapter stat = new SimpleReporterAdapter();
-	String testSuite = "nopasswdfordb ";
+	String testSuite = "NoPasswordforDB ";
 
         InitialContext ic = new InitialContext();
         Object objRef = ic.lookup("java:comp/env/ejb/SimpleSessionHome");
 	SimpleSessionHome simpleSessionHome = (SimpleSessionHome)
         javax.rmi.PortableRemoteObject.narrow(objRef, SimpleSessionHome.class);
         System.out.println(" Will fail till Derby gets a better XA driver");
-	stat.addDescription("Running nopasswdfordb testSuite1 ");
+	stat.addDescription("No Password for DB tests");
         SimpleSession simpleSession = simpleSessionHome.create();
         	
 	if (simpleSession.test1() ) {

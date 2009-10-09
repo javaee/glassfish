@@ -14,7 +14,7 @@ public class SimpleBMPClient {
         throws Exception {
          
 	SimpleReporterAdapter stat = new SimpleReporterAdapter();
-	String testSuite = "jdbccontauth1 ";
+	String testSuite = "ContAuth1 ";
 
         InitialContext ic = new InitialContext();
         Object objRef = ic.lookup("java:comp/env/ejb/SimpleBMPHome");
@@ -22,7 +22,7 @@ public class SimpleBMPClient {
         javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
         
         System.out.println(" Test 2 will fail with Derby");
-	stat.addDescription("Running jdbc contauth1");
+	stat.addDescription("JDBC Container Authentication 1 tests ");
         SimpleBMP simpleBMP = simpleBMPHome.create();
   	
         if ( simpleBMP.test1() ) {

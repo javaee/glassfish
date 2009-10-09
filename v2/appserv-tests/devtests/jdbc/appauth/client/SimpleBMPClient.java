@@ -14,7 +14,7 @@ public class SimpleBMPClient {
         throws Exception {
         
         SimpleReporterAdapter stat = new SimpleReporterAdapter();
-	String testSuite = "jdbcappauth ";
+	String testSuite = "AppAuth ";
 
         InitialContext ic = new InitialContext();
         Object objRef = ic.lookup("java:comp/env/ejb/SimpleBMPHome");
