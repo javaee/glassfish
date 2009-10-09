@@ -1781,7 +1781,8 @@ public class WebModule extends PwcWebModule {
                     RunAs runAs = (RunAs)clazz.getAnnotation(RunAs.class);
                     String roleName = runAs.value();
                     webBundleDescriptor.addRole(new Role(roleName));
-                    RunAsIdentityDescriptor runAsDesc = new RunAsIdentityDescriptor();
+                    RunAsIdentityDescriptor runAsDesc =
+                        new RunAsIdentityDescriptor();
                     runAsDesc.setRoleName(roleName);
                     wcd.setRunAsIdentity(runAsDesc);
                 }
@@ -2114,10 +2115,12 @@ class DynamicWebServletRegistrationImpl
              * by the security subsystem, which uses the
              * WebBundleDescriptor as its input
              */
-            WebBundleDescriptor wbd = ((WebModule) getContext()).getWebBundleDescriptor();
+            WebBundleDescriptor wbd =
+                ((WebModule) getContext()).getWebBundleDescriptor();
             if (wbd == null) {
                 throw new IllegalStateException(
-                    "Missing WebBundleDescriptor for " + getContext().getName());
+                    "Missing WebBundleDescriptor for " +
+                    getContext().getName());
             }
             WebComponentDescriptor wcd =
                 wbd.getWebComponentByCanonicalName(getName());
@@ -2131,4 +2134,33 @@ class DynamicWebServletRegistrationImpl
         }
         return conflicts;
     }
+
+    @Override
+    public void setRunAsRole(String roleName) {
+        super.setRunAsRole(roleName);
+        /*
+         * Propagate the new mappings to the underlying 
+         * WebBundleDescriptor provided by the deployment backend,
+         * so that corresponding security constraints may be calculated
+         * by the security subsystem, which uses the
+         * WebBundleDescriptor as its input
+         */
+        WebBundleDescriptor wbd =
+            ((WebModule) getContext()).getWebBundleDescriptor();
+        if (wbd == null) {
+            throw new IllegalStateException(
+                "Missing WebBundleDescriptor for " + getContext().getName());
+        }
+        WebComponentDescriptor wcd =
+            wbd.getWebComponentByCanonicalName(getName());
+        if (wcd == null) {
+            throw new IllegalStateException(
+                "Missing WebComponentDescriptor for " + getName());
+        }
+        wbd.addRole(new Role(roleName));
+        RunAsIdentityDescriptor runAsDesc = new RunAsIdentityDescriptor();
+        runAsDesc.setRoleName(roleName);
+        wcd.setRunAsIdentity(runAsDesc);
+    }
+
 }

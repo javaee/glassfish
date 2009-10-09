@@ -95,7 +95,13 @@ public class DynamicServletRegistrationImpl
     }
 
     public void setRunAsRole(String roleName) {
-        // TBD
+        if (ctx.isContextInitializedCalled()) {
+            throw new IllegalStateException(
+                sm.getString("servletRegistration.alreadyInitialized",
+                             "run-as", wrapper.getName(), ctx.getName()));
+        }
+
+        wrapper.setRunAs(roleName);
     }
 
 }
