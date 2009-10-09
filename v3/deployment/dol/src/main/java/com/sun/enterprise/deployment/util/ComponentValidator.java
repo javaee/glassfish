@@ -43,6 +43,7 @@
 package com.sun.enterprise.deployment.util;
 
 import com.sun.enterprise.deployment.MessageDestinationDescriptor;
+import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
 import com.sun.enterprise.deployment.ServiceRefPortInfo;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
@@ -81,7 +82,11 @@ public class ComponentValidator extends DefaultDOLVisitor implements ComponentVi
                     msgDestReferencer.getMessageDestinationLinkName();
                 DOLUtils.getDefaultLogger().log(Level.WARNING, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
                     new Object[] {"message-destination", linkName});
-            }                                                   
+            } else {
+                if (msgDestReferencer instanceof MessageDestinationReferenceDescriptor) {
+                    ((MessageDestinationReferenceDescriptor)msgDestReferencer).setJndiName(msgDest.getJndiName());
+                }
+            }                                                 
         }
     }    
 
