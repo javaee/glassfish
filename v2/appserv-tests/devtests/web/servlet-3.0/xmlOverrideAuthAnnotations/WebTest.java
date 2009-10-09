@@ -38,7 +38,7 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * Unit test that web.xml overrides @RolesAllowed, @DenyAll, @PermitAll
+ * Unit test that web.xml overrides @ServletSecurity
  */
 public class WebTest {
 
@@ -59,7 +59,7 @@ public class WebTest {
     
     public static void main(String[] args) {
 
-        stat.addDescription("Unit test that web.xml overrides @RolesAllowed, @DenyAll, @PermitAll");
+        stat.addDescription("Unit test that web.xml overrides @ServletSecurity");
         WebTest webTest = new WebTest(args);
 
         try {
