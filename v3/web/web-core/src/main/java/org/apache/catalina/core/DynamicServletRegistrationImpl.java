@@ -79,8 +79,19 @@ public class DynamicServletRegistrationImpl
         // TBD
     }
 
-    public void setMultipartConfig(MultipartConfigElement multipartConfig) {
-        // TBD
+    public void setMultipartConfig(MultipartConfigElement mpConfig) {
+        if (ctx.isContextInitializedCalled()) {
+            throw new IllegalStateException(
+                sm.getString("servletRegistration.alreadyInitialized",
+                             "multipart-config", wrapper.getName(),
+                             ctx.getName()));
+        }
+
+        wrapper.setMultipartLocation(mpConfig.getLocation());
+        wrapper.setMultipartMaxFileSize(mpConfig.getMaxFileSize());
+        wrapper.setMultipartMaxRequestSize(mpConfig.getMaxRequestSize());
+        wrapper.setMultipartFileSizeThreshold(
+            mpConfig.getFileSizeThreshold());
     }
 
     public void setRunAsRole(String roleName) {
