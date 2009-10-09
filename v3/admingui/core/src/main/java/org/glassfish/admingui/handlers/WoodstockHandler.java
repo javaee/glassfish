@@ -308,11 +308,11 @@ public class WoodstockHandler {
           ArrayList optionList = new ArrayList();
           String name = (String) vs.next();
           jumpGroup1.setLabel(name);
+          optionList.add(new Option(name, name));
           String listeners = (String) V3AMX.getAttribute("amx:pp=/domain/configs/config[server-config]/http-service,type=virtual-server,name=" + name, "NetworkListeners");
           if (listeners != null) {
              StringTokenizer tokens = new StringTokenizer(listeners, ",");
               while (tokens.hasMoreTokens()) {
-                  optionList.add(new Option(name, name));
                   String token = tokens.nextToken().trim();
                   optionList.add(new Option(token, token));
               }

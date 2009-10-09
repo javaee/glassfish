@@ -134,6 +134,16 @@
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
+    <sun:tableRowGroup id="virtualServerStats" rendered="#{hasStatsVS}" data={"$attribute{virtualServerStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.virtualServerStatistics} : #{viewVal}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="virtualserverinfo-mon" name="http-service/#{viewVal}", result=>$attribute{virtualServerStatsList} hasStats=>$attribute{hasStatsVS});
+
+         />
+
+#include "/common/monitor/monitoringTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup>
     <sun:tableRowGroup id="httpServiceStats" rendered="#{hasStatsHTTP}" data={"$attribute{httpServiceStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.requestStatisticsHttp} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
