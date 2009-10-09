@@ -88,7 +88,7 @@ public class DisableMonitoring implements AdminCommand {
                 }
             } else {
                 // for each module set monitoring level to OFF
-                String[] strArr = modules.split(",");
+                String[] strArr = modules.split(":");
                 for (String moduleName: strArr) {
                     if (moduleName.length() > 0) {
                         MonitoringConfig.setMonitoringLevel(ms, moduleName, ContainerMonitoring.LEVEL_OFF, report);
