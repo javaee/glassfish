@@ -236,18 +236,21 @@ public class MEJBTest {
 
     public static void main(String[] args) {
         try {
+            final String mejbName = "java:global/mejb/MEJBBean";
+            final String username = "admin";
+            final String password = "changeit";
+            System.out.println( "Authenticating with \"" + username + "\", \"" + password + "\"");
+            
             final Properties props = new Properties();
             props.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
             props.setProperty("org.omg.CORBA.ORBInitialHost", "localhost");
             props.setProperty("org.omg.CORBA.ORBInitialPort", "3700");
+            props.setProperty( Context.SECURITY_PRINCIPAL, username);
+            props.setProperty( Context.SECURITY_CREDENTIALS, password);
             final InitialContext initial = new InitialContext(props);
             
-            //final String mejbName = MEJBUtility.MEJB_DEFAULT_NAME;
-            //final String mejbName = "java:global/MEJB/MEJBBean";
-            final String mejbName = "java:global/mejb/MEJBBean";
             println("Looking up: " + mejbName);
             final Object objref = initial.lookup(mejbName);
-           // println("Received from initial.lookup(): " + objref + " for " + mejbName);
 
             final ManagementHome home = (ManagementHome) PortableRemoteObject.narrow(objref, ManagementHome.class);
             try
