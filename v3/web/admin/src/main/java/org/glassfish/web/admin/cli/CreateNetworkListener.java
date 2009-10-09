@@ -83,6 +83,9 @@ public class CreateNetworkListener implements AdminCommand {
     String transport;
     @Param(name = "enabled", optional = true)
     String enabled;
+    @Param(name="jkenabled", optional=true)
+    String jkEnabled;
+
     @Inject
     Configs configs;
     @Inject
@@ -118,6 +121,7 @@ public class CreateNetworkListener implements AdminCommand {
                     newNetworkListener.setProtocol(protocol);
                     newNetworkListener.setTransport(transport);
                     newNetworkListener.setEnabled(enabled);
+                    newNetworkListener.setJkEnabled(jkEnabled);
                     newNetworkListener.setPort(port);
                     newNetworkListener.setThreadPool(threadPool);
                     newNetworkListener.setName(listenerName);
