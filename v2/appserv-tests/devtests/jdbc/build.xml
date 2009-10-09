@@ -28,6 +28,9 @@
             <fileset dir="${env.APS_HOME}" includes="test_results*"/>
         </delete>
         <delete>
+	    <fileset dir="${env.APS_HOME}" includes="JDBCtest_results.html"/>
+        </delete>
+        <delete>
             <fileset dir="." includes="*.output"/>
         </delete>
         <record name="jdbc.output" action="start"/>
