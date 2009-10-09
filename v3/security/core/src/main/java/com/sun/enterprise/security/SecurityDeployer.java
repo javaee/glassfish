@@ -94,6 +94,8 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
             String appName = null;
             if (Deployment.APPLICATION_STARTED.equals(event.type()) ||
                     Deployment.APPLICATION_LOADED.equals(event.type())) {
+
+
                 ApplicationInfo appInfo = (ApplicationInfo) event.hook();
                 app = appInfo.getMetaData(Application.class);
                 appName = appInfo.getName();
@@ -107,6 +109,16 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
                 }
                 Set<WebBundleDescriptor> webDesc = app.getWebBundleDescriptors();
                 Set<EjbBundleDescriptor> ejbDesc = app.getEjbBundleDescriptors();
+
+
+                if (webDesc != null && !webDesc.isEmpty()) {
+                    //Register the WebSecurityComponentInvocationHandler
+                    RegisteredComponentInvocationHandler handler = habitat.getComponent(RegisteredComponentInvocationHandler.class, "webSecurityCIH");
+                    if (handler != null) {
+                        handler.register();
+                    }
+                }
+
                 boolean alreadyLinked = false; //detect the case of restart
                 try {
                     // link with the ejb name                     
@@ -209,12 +221,6 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         OpsParams params = dc.getCommandParameters(OpsParams.class);
         if (params.origin != OpsParams.Origin.deploy) {
             return;
-        }
-        //Register the WebSecurityComponentInvocationHandler
-        
-        RegisteredComponentInvocationHandler handler = habitat.getComponent(RegisteredComponentInvocationHandler.class,"webSecurityCIH");
-        if (handler!=null) {
-            handler.register();
         }
         
         String appName = params.name();

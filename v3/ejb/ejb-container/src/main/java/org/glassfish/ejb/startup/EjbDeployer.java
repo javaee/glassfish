@@ -122,6 +122,12 @@ public class EjbDeployer
     public EjbApplication load(EjbContainerStarter containerStarter, DeploymentContext dc) {
         super.load(containerStarter, dc);
 
+
+        //Register the EjbSecurityComponentInvocationHandler
+
+        RegisteredComponentInvocationHandler handler = habitat.getComponent(RegisteredComponentInvocationHandler.class,"ejbSecurityCIH");
+        handler.register();
+
         EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
         
         if( ejbBundle == null ) {
@@ -262,11 +268,6 @@ public class EjbDeployer
             return;
         }
         
-        //Register the EjbSecurityComponentInvocationHandler
-        
-        RegisteredComponentInvocationHandler handler = habitat.getComponent(RegisteredComponentInvocationHandler.class,"ejbSecurityCIH");
-        handler.register();
-
         EjbBundleDescriptor bundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
         policyLoader.loadPolicy();
         if (bundle != null) {
