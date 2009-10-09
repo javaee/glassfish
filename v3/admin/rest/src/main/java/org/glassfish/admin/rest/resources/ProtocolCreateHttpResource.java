@@ -29,9 +29,9 @@ import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.api.ActionReport;
 
-public class ProtocolCreateSslResource {
+public class ProtocolCreateHttpResource {
 
-public ProtocolCreateSslResource() {
+public ProtocolCreateHttpResource() {
 __resourceUtil = new ResourceUtil();
 }
 @POST
@@ -119,15 +119,14 @@ protected HttpHeaders requestHeaders;
 @Context
 protected UriInfo uriInfo;
 
-private static final String resourceName = "ProtocolCreateSsl";
-private static final String commandName = "create-ssl";
-private static final String commandDisplayName = "create-ssl";
+private static final String resourceName = "ProtocolCreateHttp";
+private static final String commandName = "create-http";
+private static final String commandDisplayName = "create-http";
 private static final String commandMethod = "POST";
 private static final String commandAction = "Create";
 private HashMap<String, String> commandParams =
 new HashMap<String, String>() {{
 put("id","$parent");
-put("type","http-listener");
 }};
 private static final boolean isLinkedToParent = true;
 private ResourceUtil __resourceUtil;

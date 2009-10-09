@@ -29,9 +29,9 @@ import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.api.ActionReport;
 
-public class ProtocolDeleteSslResource {
+public class ProtocolDeleteHttpResource {
 
-public ProtocolDeleteSslResource() {
+public ProtocolDeleteHttpResource() {
 __resourceUtil = new ResourceUtil();
 }
 @DELETE
@@ -137,15 +137,14 @@ protected HttpHeaders requestHeaders;
 @Context
 protected UriInfo uriInfo;
 
-private static final String resourceName = "ProtocolDeleteSsl";
-private static final String commandName = "delete-ssl";
-private static final String commandDisplayName = "delete-ssl";
+private static final String resourceName = "ProtocolDeleteHttp";
+private static final String commandName = "delete-http";
+private static final String commandDisplayName = "delete-http";
 private static final String commandMethod = "DELETE";
 private static final String commandAction = "Delete";
 private HashMap<String, String> commandParams =
 new HashMap<String, String>() {{
 put("id","$parent");
-put("type","http-listener");
 }};
 private static final boolean isLinkedToParent = true;
 private ResourceUtil __resourceUtil;
