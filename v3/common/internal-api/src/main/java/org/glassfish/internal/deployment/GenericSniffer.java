@@ -255,7 +255,7 @@ public abstract class GenericSniffer implements Sniffer {
     }
 
     private String readDeploymentConfig(final InputStream is) throws IOException {
-        String encoding = "UTF-8";
+        String encoding = null;
         try {
             is.mark(Integer.MAX_VALUE);
             XMLEventReader rdr = xmlInputFactory.createXMLEventReader(
@@ -265,10 +265,15 @@ public abstract class GenericSniffer implements Sniffer {
                 if (ev.isStartDocument()) {
                     final StartDocument sd = (StartDocument) ev;
                     encoding = sd.getCharacterEncodingScheme();
+                    rdr.close();
+                    break;
                 }
             }
         } catch (XMLStreamException e) {
             throw new IOException(e);
+        }
+        if (encoding == null) {
+            encoding = "UTF-8";
         }
         is.reset();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
