@@ -2098,6 +2098,8 @@ admingui.ajax = {
             }
         } else  if (node.nodeName == 'TITLE') {
             document.title = node.text;
+	    // No longer needed, remove
+	    node.parentNode.removeChild(node);
         } else if (node.nodeName == 'SCRIPT') {
 	    recurse = false;  // don't walk scripts
 	    if (queueScripts) {
