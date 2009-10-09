@@ -55,7 +55,9 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Scoped(PerLookup.class)
 public class StopDomainCommand extends LocalDomainCommand {
 
-    private final static long WAIT_FOR_DAS_TIME_MS = 60000;
+    private File pidFile;
+
+    private static final long WAIT_FOR_DAS_TIME_MS = 60000; // 1 minute
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StopDomainCommand.class);
@@ -90,6 +92,11 @@ public class StopDomainCommand extends LocalDomainCommand {
         else if (operands.size() > 0)   // remote case
             throw new CommandException(
                 strings.get("StopDomain.noDomainNameAllowed"));
+
+        if (domainName != null) {
+            // local case, initialize pidFile
+            pidFile = new File(new File(domainRootDir, "config"), "pid");
+        }
     }
 
     @Override
@@ -174,7 +181,7 @@ public class StopDomainCommand extends LocalDomainCommand {
         boolean alive = true;
 
         while (!timedOut(startWait)) {
-            if (!isRunning(programOpts.getPort())) {
+            if (!isRunning()) {
                 alive = false;
                 break;
             }
@@ -198,5 +205,15 @@ public class StopDomainCommand extends LocalDomainCommand {
 
     private boolean timedOut(long startTime) {
         return (System.currentTimeMillis() - startTime) > WAIT_FOR_DAS_TIME_MS;
+    }
+
+    /**
+     * Is the server still running?
+     */
+    private boolean isRunning() {
+        if (domainName != null)
+            return pidFile.exists();                    // local case
+        else
+            return isRunning(programOpts.getPort());    // remote case
     }
 }
