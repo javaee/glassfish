@@ -22,7 +22,7 @@
 	<get src="${sun-wsdl-library.jar}" dest="${env.S1AS_HOME}/fuji/sun-wsdl-library.jar" />
 -->
 	<echo message="Downloading sun-http-binding.jar, this may take a few minutes..." />
-	<get src="${sun-http-binding.jar}" dest="${env.S1AS_HOME}/fuji/sun-http-binding.jar" />
+	<get src="${sun-http-binding.jar}" dest="${env.S1AS_HOME}/modules/sun-http-binding.jar" />
 	<copy file="${sun-javaee-engine.jar}" todir="${env.S1AS_HOME}/modules" overwrite="true"/>
 	<delete dir="temp" />
     </target>
