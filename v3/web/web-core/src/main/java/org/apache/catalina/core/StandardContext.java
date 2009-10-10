@@ -2709,8 +2709,7 @@ public class StandardContext
             addListener(loadListener(getClassLoader(), className),
                         isProgrammatic);
         } catch (Throwable t) {
-            throw new IllegalArgumentException(
-                "Unable to add listener of type " + className, t); 
+            throw new IllegalArgumentException(t); 
         }
     }
 
@@ -2797,9 +2796,7 @@ public class StandardContext
         try {
             addListener(listenerClass.newInstance());
         } catch (Throwable t) {
-            throw new IllegalArgumentException(
-                "Unable to instantiate listener of type " +
-                listenerClass.getName(), t); 
+            throw new IllegalArgumentException(t); 
         }
     }
 
@@ -2810,21 +2807,21 @@ public class StandardContext
      */
     public <T extends EventListener> T createListener(Class<T> clazz)
             throws ServletException {
-        if (!(ServletContextListener.class.isAssignableFrom(clazz)) &&
-                (ServletContextAttributeListener.class.isAssignableFrom(clazz)) &&
-                (ServletRequestListener.class.isAssignableFrom(clazz)) &&
-                (ServletRequestAttributeListener.class.isAssignableFrom(clazz)) &&
-                (HttpSessionListener.class.isAssignableFrom(clazz)) &&
-                (HttpSessionAttributeListener.class.isAssignableFrom(clazz))) {
-            throw new IllegalArgumentException("Invalid listener type");
+        if (!ServletContextListener.class.isAssignableFrom(clazz) &&
+                !ServletContextAttributeListener.class.isAssignableFrom(clazz) &&
+                !ServletRequestListener.class.isAssignableFrom(clazz) &&
+                !ServletRequestAttributeListener.class.isAssignableFrom(clazz) &&
+                !HttpSessionListener.class.isAssignableFrom(clazz) &&
+                !HttpSessionAttributeListener.class.isAssignableFrom(clazz)) {
+            throw new IllegalArgumentException(sm.getString(
+                    "standardContext.invalidListenerType", clazz.getName()));
         }
 
         T listener = null;
         try {
             listener = clazz.newInstance();
         } catch (Throwable t) {
-            throw new ServletException("Unable to instantiate " +
-                clazz.getName(), t);
+            throw new ServletException(t);
         }
 
         // START PWC 1.2 6310695
@@ -4729,7 +4726,7 @@ public class StandardContext
                                          String listenerClassName)
             throws Exception {
         if (log.isLoggable(Level.FINE)) {
-            log.fine(" Configuring event listener class '" +
+            log.fine("Configuring event listener class '" +
                      listenerClassName + "'");
         }
         return createListener((Class<EventListener>)
