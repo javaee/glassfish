@@ -212,6 +212,12 @@ public class ServletSecurityHandler extends AbstractWebHandler {
 
         AuthorizationConstraintImpl ac = null;
         if (rolesAllowed != null && rolesAllowed.length > 0) {
+            if (emptyRoleSemantic ==  EmptyRoleSemantic.DENY) {
+                 throw new IllegalArgumentException(localStrings.getLocalString(
+                        "enterprise.deployment.annotation.handlers.denyWithRolesAllowed",
+                        "One cannot specify DENY with an non-empty array of rolesAllowed in @ServletSecurity"));
+            }
+
             ac = new AuthorizationConstraintImpl();
             for (String roleName : rolesAllowed) {
                 Role role = new Role(roleName);
