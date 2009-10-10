@@ -41,6 +41,7 @@ import com.sun.enterprise.deployment.node.*;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
+import com.sun.enterprise.deployment.web.SessionConfig;
 import com.sun.enterprise.deployment.xml.TagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import com.sun.enterprise.deployment.xml.WebTagNames;
@@ -78,7 +79,7 @@ public abstract class WebCommonNode<T extends WebBundleDescriptor> extends Bundl
                                                             SecurityRoleNode.class, "addRole");            
         registerElementHandler(new XMLElement(WebTagNames.SERVLET), ServletNode.class);       
         registerElementHandler(new XMLElement(WebTagNames.SERVLET_MAPPING), ServletMappingNode.class);               
-        registerElementHandler(new XMLElement(WebTagNames.SESSION_CONFIG), SessionConfigNode.class, "setSessionConfig");               
+        registerElementHandler(new XMLElement(WebTagNames.SESSION_CONFIG), SessionConfigNode.class);
         registerElementHandler(new XMLElement(WebTagNames.MIME_MAPPING), 
                                                             MimeMappingNode.class, "addMimeMapping");
         registerElementHandler(new XMLElement(WebTagNames.CONTEXT_PARAM), 
@@ -153,6 +154,12 @@ public abstract class WebCommonNode<T extends WebBundleDescriptor> extends Bundl
             }
             descriptor.setLoginConfiguration(
                 (LoginConfiguration)newDescriptor);
+        } else if (newDescriptor instanceof SessionConfig) {
+            if (descriptor.getSessionConfig() != null) {
+                throw new RuntimeException(
+                    "Has more than one session-config element!");
+            }
+            descriptor.setSessionConfig((SessionConfig)newDescriptor);
         } else {
             super.addDescriptor(newDescriptor);
         }
