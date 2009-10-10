@@ -216,9 +216,16 @@ public class AppServerStartup implements ModuleStartup {
         Future<?> result = executor.submit(new Runnable() {
             public void run() {
                 for (final Inhabitant<? extends Startup> i : startups) {
-                    if (i.type().getAnnotation(Async.class)!=null) {
-                        //logger.fine("Runs " + i.get() + "asynchronously");
-                        i.get();
+                    try
+                    {
+                        if (i.type().getAnnotation(Async.class)!=null) {
+                            //logger.fine("Runs " + i.get() + "asynchronously");
+                            i.get();
+                        }
+                    }
+                    catch (Throwable e)
+                    {
+                        logger.log(Level.SEVERE, "Error processing " + i.typeName(), e);
                     }
                 }
             }

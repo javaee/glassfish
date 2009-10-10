@@ -12,5 +12,12 @@
                         com.sun.enterprise.v3.services.impl; \
                         org.glassfish.kernel.embedded; \
                         org.glassfish.kernel.event; version=${project.osgi.version}
+
+# The version of maven-bundle-plugin that we are currently using does not detect types
+# from generic use. So, we need to add any such packages explicitly.
+# e.g., TransactionRecovery has Holder<ResourceRecoveryManager> and this is the
+# only use of org.glassfish.transaction.api package in kernel.
+Import-Package: org.glassfish.transaction.api, *
+
 # dependent flashlight package resolved at runtime
 DynamicImport-Package: org.glassfish.flashlight.provider
