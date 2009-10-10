@@ -108,7 +108,7 @@ public class Servlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
 
         super.init(config);
-        System.out.println("In webclient::servlet... init()");
+        System.out.println("In DataSource-Definition-Test::servlet... init()");
     }
 
     public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -212,14 +212,14 @@ public class Servlet extends HttpServlet {
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            System.out.println("webclient servlet test failed");
+            System.out.println("DataSource-Definition-Test servlet test failed");
             throw new ServletException(ex);
         }
     }
 
 
     public void destroy() {
-        System.out.println("in webclient::servlet destroy");
+        System.out.println("in DataSource-Definition-Test client::servlet destroy");
     }
 
     class MyThread extends Thread {

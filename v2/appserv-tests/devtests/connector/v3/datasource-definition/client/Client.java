@@ -120,8 +120,15 @@ public class Client {
 
 
 
-            InitialContext ic = new InitialContext();
-            
+            boolean compds = lookupDataSource("java:comp/env/compds",true);
+            boolean defaultds = lookupDataSource("java:comp/env/defaultds",true);
+            boolean moduleds = lookupDataSource("java:module/env/moduleds", true);
+            boolean appds = lookupDataSource("java:app/env/appclient/appds",true);
+            boolean globalds = lookupDataSource("java:global/env/ts/datasource/appclient/globalds",true);
+
+            boolean comp = lookupDataSource("java:comp/env/Appclient_DataSource",true);
+            boolean comp_dd = lookupDataSource("java:comp/env/Appclient_DD_DataSource",true);
+            boolean globalAppclient = lookupDataSource("java:global/env/Appclient_DataSource", true);
 
             boolean globalServlet_DataSource = lookupDataSource("java:global/env/Servlet_DataSource", true);
             boolean compServlet_DataSource = lookupDataSource("java:comp/env/Servlet_DataSource", false);
@@ -143,40 +150,37 @@ public class Client {
             boolean compHello_DD_DataSource = lookupDataSource("java:comp/env/HelloEJB_DD_DataSource", false);
 
 
-            boolean comp = lookupDataSource("java:comp/env/Appclient_DataSource",true);
-            boolean comp_dd = lookupDataSource("java:comp/env/Appclient_DD_DataSource",true);
-            boolean globalAppclient = lookupDataSource("java:global/env/Appclient_DataSource", true);
 
-            if (comp && comp_dd &&  globalAppclient && globalServlet_DataSource && !compServlet_DataSource && globalHelloSfulEJB &&
+            if (compds && defaultds && moduleds && appds && globalds && comp && comp_dd &&  globalAppclient && globalServlet_DataSource && !compServlet_DataSource && globalHelloSfulEJB &&
                     globalServlet_DD_DataSource && !compServlet_DD_DataSource
                     && !compHelloSfulEJB && globalHelloEJB
                     && !compHelloEJB && globalHelloStateful_DD_DataSource
                     && !compHelloStateful_DD_DataSource && globalHello_DD_DataSource
                     && !compHello_DD_DataSource && appHelloStatefulEjb)
-/*if (comp && comp_dd &&  globalAppclient )*/
- {
+            {
                 System.out.println("AppClient successful lookup of datasource definitions !");
-                stat.addStatus("webclient main", stat.PASS);
+                stat.addStatus("DataSource-Definition-appclient-test", stat.PASS);
             } else {
-//                System.out.println("AppClient lookup not successful" );
+                System.out.println("AppClient lookup not successful" );
+                stat.addStatus("DataSource-Definition-appclient-test", stat.FAIL);
                 throw new RuntimeException("Appclient failure during lookup of datasource definitions");
             }
 
             String url = "http://" + host + ":" + port +
                     "/datasource-definition/servlet";
-            System.out.println("invoking webclient servlet at " + url);
+            System.out.println("invoking DataSource-Definition test servlet at " + url);
             int code = invokeServlet(url);
 
 
             if (code != 200) {
                 System.out.println("Incorrect return code: " + code);
-                stat.addStatus("webclient main", stat.FAIL);
+                stat.addStatus("DataSource-Definition-web-ejb-test", stat.FAIL);
             } else {
-                stat.addStatus("webclient main", stat.PASS);
+                stat.addStatus("DataSource-Definition-web-ejb-test", stat.PASS);
             }
         } catch (Exception ex) {
-            System.out.println("Jms web test failed.");
-            stat.addStatus("webclient main", stat.FAIL);
+            System.out.println("DataSource-Definition web & ejb test failed.");
+            stat.addStatus("DataSource-Definition-web-ejb-test", stat.FAIL);
             ex.printStackTrace();
         }
 
@@ -196,7 +200,6 @@ public class Client {
             if(expectSuccess){
             	e.printStackTrace();
             }
-  //          System.out.println("returning false for : " + dataSourceName);
             return false;
         } finally {
             try {
