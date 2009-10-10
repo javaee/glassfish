@@ -37,40 +37,37 @@ package org.glassfish.web.admin.cli;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
-import java.util.Properties;
-import java.util.Collection;
-import java.lang.reflect.Field;
+import java.util.logging.Logger;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
-import com.sun.grizzly.config.dom.Protocol;
-import com.sun.grizzly.config.dom.Protocols;
 import com.sun.grizzly.config.dom.ThreadPool;
 import com.sun.grizzly.config.dom.Transport;
-import com.sun.grizzly.config.dom.Transports;
+import com.sun.grizzly.config.dom.Http;
+import com.sun.grizzly.config.dom.Protocol;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
+import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandRunner;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.Dom;
-import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.Transactions;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 /**
  * Create Http Listener Command
@@ -90,10 +87,10 @@ public class CreateHttpListener implements AdminCommand {
     String defaultVirtualServer;
     @Param(name = "servername", optional = true)
     String serverName;
-    @Param(name = "acceptorthreads", optional = true)
-    String acceptorThreads;
     @Param(name = "xpowered", optional = true, defaultValue = "true")
     Boolean xPoweredBy;
+    @Param(name = "acceptorthreads", optional = true)
+    String acceptorThreads;
     @Param(name = "redirectport", optional = true)
     String redirectPort;
     @Param(name = "securityenabled", optional = true, defaultValue = "false")
@@ -108,6 +105,11 @@ public class CreateHttpListener implements AdminCommand {
     Configs configs;
     @Inject
     Habitat habitat;
+    @Inject
+    CommandRunner runner;
+    @Inject
+    Logger logger;
+    private static final String DEFAULT_TRANSPORT = "tcp";
 
     /**
      * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
@@ -122,18 +124,31 @@ public class CreateHttpListener implements AdminCommand {
         NetworkConfig networkConfig = config.getNetworkConfig();
         HttpService httpService = config.getHttpService();
         if (!(verifyUniqueName(report, networkConfig) && verifyUniquePort(report, networkConfig)
-            && verifyDefaultVirtualServer(report, httpService))) {
+            && verifyDefaultVirtualServer(report))) {
             return;
         }
         VirtualServer vs = httpService.getVirtualServerByName(defaultVirtualServer);
+        boolean listener = false;
+        boolean protocol = false;
+        boolean transport = false;
         try {
-            final Transport transport = createOrGetTransport(networkConfig);
-            final Protocol protocol = createProtocol(networkConfig);
+            transport = createOrGetTransport(null);
+            protocol = createProtocol(context);
+            createHttp(context);
             final ThreadPool threadPool = getThreadPool(networkConfig);
-            createNetworkListener(networkConfig, transport, protocol, threadPool);
+            listener = createNetworkListener(networkConfig, transport, threadPool);
             updateVirtualServer(vs);
-
+            System.out.println("************************* report.getActionExitCode() = " + report.getActionExitCode());
         } catch (TransactionFailure e) {
+            if (listener) {
+                deleteListener(context);
+            }
+            if (protocol) {
+                deleteProtocol(context);
+            }
+            if (transport) {
+                deleteTransport(context);
+            }
             report.setMessage(localStrings.getLocalString("create.http.listener.fail",
                 "Creation of: " + listenerId + "failed because of: " + e.getMessage(), listenerId, e.getMessage()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -168,7 +183,7 @@ public class CreateHttpListener implements AdminCommand {
         }, vs);
     }
 
-    private void createNetworkListener(NetworkConfig networkConfig, final Transport transport, final Protocol protocol,
+    private boolean createNetworkListener(NetworkConfig networkConfig, final boolean newTransport,
         final ThreadPool threadPool) throws TransactionFailure {
         ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
             public Object run(NetworkListeners listenersParam)
@@ -177,29 +192,19 @@ public class CreateHttpListener implements AdminCommand {
                 newListener.setName(listenerId);
                 newListener.setAddress(listenerAddress);
                 newListener.setPort(listenerPort);
-                newListener.setTransport(transport.getName());
-                newListener.setProtocol(protocol.getName());
+                newListener.setTransport(newTransport ? listenerId : DEFAULT_TRANSPORT);
+                newListener.setProtocol(listenerId);
                 newListener.setThreadPool(threadPool.getName());
                 newListener.setEnabled(enabled.toString());
-                //add properties
-/*
-                        if (properties != null) {
-                            for (Map.Entry entry : properties.entrySet()) {
-                                Property property = newListener.createChild(Property.class);
-                                property.setName((String) entry.getKey());
-                                property.setValue((String) entry.getValue());
-                                newListener.getProperty().add(property);
-                            }
-                        }
-*/
                 listenersParam.getNetworkListener().add(newListener);
                 return newListener;
             }
         }, networkConfig.getNetworkListeners());
         habitat.getComponent(Transactions.class).waitForDrain();
+        return true;
     }
 
-    private boolean verifyDefaultVirtualServer(ActionReport report, HttpService httpService) {
+    private boolean verifyDefaultVirtualServer(ActionReport report) {
         if (defaultVS == null && defaultVirtualServer == null) {
             report.setMessage(localStrings.getLocalString("create.http.listener.vs.blank",
                 "A default virtual server is required.  Please use --default-virtual-server to specify this value."));
@@ -217,7 +222,7 @@ public class CreateHttpListener implements AdminCommand {
         }
         //no need to check the other things (e.g. id) for uniqueness
         // ensure that the specified default virtual server exists
-        if (!defaultVirtualServerExists(httpService)) {
+        if (!defaultVirtualServerExists()) {
             report.setMessage(localStrings.getLocalString("create.http.listener.vs.notexists",
                 "Virtual Server, {0} doesn't exist", defaultVirtualServer));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -256,33 +261,6 @@ public class CreateHttpListener implements AdminCommand {
         return true;
     }
 
-    private void registerWithHabitat(NetworkListener newListener) {
-        Dom dom = Dom.unwrap(newListener);
-        habitat.add(dom);
-        String key = dom.getKey();
-        for (String contract : getContracts(dom.model)) {
-            habitat.addIndex(dom, contract, key);
-        }
-        if (key != null) {
-            habitat.addIndex(dom, dom.model.targetTypeName, key);
-        }
-        dom.initializationCompleted();
-    }
-
-    private Collection<String> getContracts(ConfigModel model) {
-        Field field;
-        try {
-            field = model.getClass().getDeclaredField("contracts");
-            field.setAccessible(true);
-            final Object value = field.get(model);
-            return (Collection<String>) value;
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e.getMessage());
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e.getMessage());
-        }
-    }
-
     private ThreadPool getThreadPool(NetworkConfig config) {
         final List<ThreadPool> pools = config.getParent(Config.class).getThreadPools().getThreadPool();
         ThreadPool target = null;
@@ -297,60 +275,74 @@ public class CreateHttpListener implements AdminCommand {
         return target;
     }
 
-    private Transport createOrGetTransport(NetworkConfig config)
-        throws TransactionFailure {
-        final Transports transports = config.getTransports();
-        Transport transport = null;
-        for (Transport item : transports.getTransport()) {
-            if ("tcp".equals(item.getName())) {
-                transport = item;
-            }
+    private boolean createOrGetTransport(final AdminCommandContext context) throws TransactionFailure {
+        boolean newTransport = false;
+        if (habitat.getComponent(Transport.class, DEFAULT_TRANSPORT) == null) {
+            final CreateTransport command = (CreateTransport) runner
+                .getCommand("create-transport", context.getActionReport(), context.getLogger());
+            command.transportName = listenerId;
+            command.acceptorThreads = acceptorThreads;
+            command.execute(context);
+            checkProgress(context);
+            newTransport = true;
         }
-        if (transport == null) {
-            transport = (Transport) ConfigSupport.apply(new SingleConfigCode<Transports>() {
-                public Object run(Transports param) throws TransactionFailure {
-                    Transport newTransport = param.createChild(Transport.class);
-                    newTransport.setName(listenerId);
-                    newTransport.setAcceptorThreads(acceptorThreads);
-                    param.getTransport().add(newTransport);
-                    return newTransport;
-                }
-            }, config.getTransports());
-        }
-        return transport;
+        return newTransport;
     }
 
-    private Protocol createProtocol(NetworkConfig config)
-        throws TransactionFailure {
-        return (Protocol) ConfigSupport.apply(new SingleConfigCode<Protocols>() {
-            public Object run(Protocols param) throws TransactionFailure {
-                final Protocol protocol = param.createChild(Protocol.class);
-                protocol.setSecurityEnabled(securityEnabled.toString());
-                protocol.setName(listenerId);
-                param.getProtocol().add(protocol);
-                final Http http = protocol.createChild(Http.class);
-                http.setDefaultVirtualServer(defaultVirtualServer);
-                //listener.setRedirectPort(redirectPort) FIXME: Applicable only in case of cluster or enterprise profile
-                http.setXpoweredBy(xPoweredBy.toString());
-                //listener.Ssl(ssl); FIXME
-                http.setServerName(serverName);
-                protocol.setHttp(http);
-                return protocol;
-            }
-        }, config.getProtocols());
+    private boolean createProtocol(final AdminCommandContext context) throws TransactionFailure {
+        final CreateProtocol command = (CreateProtocol) runner
+            .getCommand("create-protocol", context.getActionReport(), context.getLogger());
+        command.protocolName = listenerId;
+        command.securityEnabled = securityEnabled.toString();
+        command.execute(context);
+        checkProgress(context);
+        return true;
     }
 
-    private boolean defaultVirtualServerExists(HttpService httpService) {
-        if (defaultVirtualServer == null) {
-            return false;
+    private boolean createHttp(final AdminCommandContext context) throws TransactionFailure {
+        final CreateHttp command = (CreateHttp) runner
+            .getCommand("create-http", context.getActionReport(), context.getLogger());
+        command.protocolName = listenerId;
+        command.defaultVirtualServer = defaultVirtualServer;
+        command.xPoweredBy = xPoweredBy;
+        command.serverName = serverName;
+        command.execute(context);
+        checkProgress(context);
+        return true;
+    }
+
+    private void checkProgress(final AdminCommandContext context) throws TransactionFailure {
+        if(context.getActionReport().getActionExitCode() != ExitCode.SUCCESS) {
+            throw new TransactionFailure(context.getActionReport().getMessage());
         }
-        List<VirtualServer> list = httpService.getVirtualServer();
-        for (VirtualServer vs : list) {
-            String currId = vs.getId();
-            if (currId != null && currId.equals(defaultVirtualServer)) {
-                return true;
-            }
-        }
-        return false;
+    }
+
+    private boolean deleteProtocol(final AdminCommandContext context) {
+        final DeleteProtocol command = (DeleteProtocol) runner
+            .getCommand("delete-protocol", context.getActionReport(), context.getLogger());
+        command.protocolName = listenerId;
+        command.execute(context);
+        return true;
+    }
+
+    private boolean deleteTransport(final AdminCommandContext context) {
+        final DeleteTransport command = (DeleteTransport) runner
+            .getCommand("delete-transport", context.getActionReport(), context.getLogger());
+        command.transportName = listenerId;
+        command.execute(context);
+        return true;
+    }
+
+    private boolean deleteListener(final AdminCommandContext context) {
+        final DeleteNetworkListener command = (DeleteNetworkListener) runner
+            .getCommand("delete-network-listener", context.getActionReport(), context.getLogger());
+        command.networkListenerName = listenerId;
+        command.execute(context);
+        return true;
+    }
+
+    private boolean defaultVirtualServerExists() {
+        return (defaultVirtualServer != null) && (habitat.getComponent(VirtualServer.class, defaultVirtualServer)
+            != null);
     }
 }

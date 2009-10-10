@@ -97,6 +97,12 @@ public class CreateHttp implements AdminCommand {
     @Param(name="dns-lookup-enabled", defaultValue = "false", optional = true)
     String dnsLookupEnabled;
 
+    @Param(name = "servername", optional = true)
+    String serverName;
+
+    @Param(name = "xpowered", optional = true, defaultValue = "true")
+    Boolean xPoweredBy;
+
     @Inject
     Configs configs;
 
@@ -138,6 +144,8 @@ public class CreateHttp implements AdminCommand {
                     http.setDnsLookupEnabled(dnsLookupEnabled);
                     http.setMaxConnections(maxConnections);
                     http.setRequestTimeoutSeconds(requestTimeoutSeconds);
+                    http.setXpoweredBy(xPoweredBy.toString());
+                    http.setServerName(serverName);
                     param.setHttp(http);
                     return http;
                 }
