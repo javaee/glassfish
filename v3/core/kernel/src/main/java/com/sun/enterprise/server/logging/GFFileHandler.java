@@ -173,7 +173,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         absoluteServerLogName = filename;
         if (!serverLog.isAbsolute()) {
             serverLog = new File(env.getDomainRoot(), filename);
-            absoluteServerLogName= env.getDomainRoot() + LOGS_DIR + filename;
+            absoluteServerLogName= env.getDomainRoot() + File.separator + filename;
         }
         changeFileName(serverLog);
 
