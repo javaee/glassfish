@@ -127,6 +127,10 @@ public final class RunScriptLocalCommand extends RemoteCommand {
                                             scriptID));
             options.put(SCRIPT_ID, scriptID);
             super.executeCommand();
+            // Check if its --help which is already taken care of by RemoteCommand
+            if (programOpts.isHelp() || getBooleanOption("help")) {
+                return 0;
+            }
             String urlStr = "http://" + programOpts.getHost() + ":" +
                         httpPort + "/comet/cometServlet";
             logger.printDebugMessage("URL = " + urlStr);
