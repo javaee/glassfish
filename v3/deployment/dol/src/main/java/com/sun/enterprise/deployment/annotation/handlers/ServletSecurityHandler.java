@@ -180,7 +180,6 @@ public class ServletSecurityHandler extends AbstractWebHandler {
     private Set<String> getNonOverridedUrlPatterns(WebComponentDescriptor webCompDesc) {
 
         Set<String> nonOverridedUrlPatterns = new HashSet<String>(webCompDesc.getUrlPatternsSet());
-        Map<String, Boolean> url2MatchMap = new HashMap<String, Boolean>();
 
         WebBundleDescriptor webBundleDesc = webCompDesc.getWebBundleDescriptor();
         Set<String> urlPatterns = webCompDesc.getUrlPatternsSet();
