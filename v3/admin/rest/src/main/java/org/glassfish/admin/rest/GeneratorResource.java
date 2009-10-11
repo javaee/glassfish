@@ -977,7 +977,7 @@ public class GeneratorResource {
 
         out.write("ActionReport actionReport = __resourceUtil.runCommand(commandName, properties, RestService.getHabitat());\n\n");
         out.write("ActionReport.ExitCode exitCode = actionReport.getActionExitCode();\n\n");
-        out.write("StringResult results = new StringResult(commandName, actionReport.getMessage(), options());\n");
+        out.write("StringResult results = new StringResult(commandName, __resourceUtil.getMessage(actionReport), options());\n");
         out.write("if (exitCode == ActionReport.ExitCode.SUCCESS) {\n");
         out.write("results.setStatusCode(200); /*200 - ok*/\n");
         out.write("} else {\n");

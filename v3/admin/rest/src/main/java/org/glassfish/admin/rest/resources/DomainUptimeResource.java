@@ -54,7 +54,7 @@ ActionReport actionReport = __resourceUtil.runCommand(commandName, properties, R
 
 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
 
-StringResult results = new StringResult(commandName, actionReport.getMessage(), options());
+StringResult results = new StringResult(commandName, __resourceUtil.getMessage(actionReport), options());
 if (exitCode == ActionReport.ExitCode.SUCCESS) {
 results.setStatusCode(200); /*200 - ok*/
 } else {

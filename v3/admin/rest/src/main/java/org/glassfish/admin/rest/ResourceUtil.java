@@ -62,6 +62,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.ParameterMetaData;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
@@ -426,6 +427,32 @@ public class ResourceUtil extends Util {
             message = getHtml(message, uriInfo);
         }
         return Response.status(status).entity(message).build();
+    }
+
+
+    /**
+     * Extract the message from the given ActionReport object.
+     * @param actionReport the given ActionReport object
+     * @return String the extracted output message
+     */
+    public String getMessage(ActionReport actionReport) {
+        String message = "";
+        if (actionReport != null) {
+            message = actionReport.getMessage();
+            if (message == null) {
+                message = "";
+                boolean first = true;
+                for (MessagePart mp : actionReport.getTopMessagePart().getChildren()) {
+                    if (!first) {
+                        message = message + ", ";
+                    }
+                    message = message + mp.getMessage();
+                    first = false;
+                }
+            }
+        }
+
+        return message;
     }
 
 
