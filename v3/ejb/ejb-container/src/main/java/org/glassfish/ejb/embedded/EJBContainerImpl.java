@@ -60,6 +60,7 @@ import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.LifecycleException;
 import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.deployment.common.ModuleExploder;
 
 import org.jvnet.hk2.component.Habitat;
@@ -132,7 +133,7 @@ public class EJBContainerImpl extends EJBContainer {
             if (name != null) {
                 dp.name = name;
             } else {
-                dp.name = app.getName();
+                dp.name = DeploymentUtils.getDefaultEEName(app.getName());
             }
             deployedAppName = deployer.deploy(app, dp);
             cleanup = new Cleanup(this);
