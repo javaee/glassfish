@@ -38,10 +38,12 @@ package org.glassfish.admin.amx.impl.mbean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
+
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.util.StringUtil;
 
-final class ParentChildren
+final class ParentChildren implements Comparable<ParentChildren>
 {
     final AMXProxy mParent;
 
@@ -51,6 +53,27 @@ final class ParentChildren
     {
         mParent = parent;
         mChildren = children;
+    }
+    
+    public void sortChildren()
+    {
+        Collections.sort(mChildren);
+    }
+    
+    public int compareTo(final ParentChildren rhs)
+    {
+        int cmp = mParent.type().compareTo( rhs.mParent.type() );
+        if ( cmp == 0 )
+        {
+            cmp = mParent.nameProp().compareTo( rhs.mParent.nameProp() );
+        }
+        
+        if ( cmp == 0 )
+        {
+            cmp = mChildren.size() - rhs.mChildren.size();
+        }
+        
+        return cmp;
     }
 
     public AMXProxy parent()
@@ -65,11 +88,12 @@ final class ParentChildren
 
     public List<String> toLines(final boolean details)
     {
+        sortChildren();
         final List<String> lines = new ArrayList<String>();
 
         lines.add(descriptionFor(mParent));
-
-        for (final ParentChildren child : mChildren)
+        
+        for (final ParentChildren child : mChildren )
         {
             final List<String> moreLines = indentAll( child.toLines(details) );
             lines.addAll(moreLines);
@@ -109,7 +133,9 @@ final class ParentChildren
             pcList.add(pc);
         }
 
-        return new ParentChildren(top, pcList);
+        final ParentChildren result = new ParentChildren(top, pcList);
+        result.sortChildren();
+        return result;
     }
 
     public static String descriptionFor(final AMXProxy proxy)
