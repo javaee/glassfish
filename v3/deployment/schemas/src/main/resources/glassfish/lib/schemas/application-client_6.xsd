@@ -60,7 +60,7 @@
 
   <xsd:annotation>
     <xsd:documentation>
-<![CDATA[[
+      <![CDATA[[
       This is the XML Schema for the application client 6
       deployment descriptor.  The deployment descriptor must
       be named "META-INF/application-client.xml" in the
@@ -87,7 +87,7 @@
       
       http://java.sun.com/xml/ns/javaee/application-client_6.xsd
       
-]]>
+      ]]>
     </xsd:documentation>
   </xsd:annotation>
 
