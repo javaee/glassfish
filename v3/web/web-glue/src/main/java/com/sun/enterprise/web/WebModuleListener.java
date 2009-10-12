@@ -354,6 +354,11 @@ final class WebModuleListener
             _logger.fine(" sysClasspath for " + webModule.getID() + " is \n"  +
                 sysClassPath + "\n");
         }
+        if (sysClassPath.equals("")) {
+            // In embedded mode, habitat returns SingleModulesRegistry and it has no modules.
+            // Try "java.class.path" system property instead.
+            sysClassPath = System.getProperty("java.class.path"); 
+        }
         wrapper.addInitParameter("com.sun.appserv.jsp.classpath",
             sysClassPath);
         // END SJSAS 6311155
