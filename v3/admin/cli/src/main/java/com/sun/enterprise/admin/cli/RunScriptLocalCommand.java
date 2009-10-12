@@ -37,6 +37,8 @@
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.admin.cli.remote.*;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.SmartFile;
 import java.net.*;
 import java.io.*;
 import java.util.Collections;
@@ -51,6 +53,7 @@ import java.rmi.*;
  *  and also initiates a server execution of the deployed javascript.
  * 
  * @author Prashanth Abbagani
+ * @author Byron Nevins
  */
 
 @Service(name = "run-script")
@@ -61,11 +64,15 @@ public final class RunScriptLocalCommand extends RemoteCommand {
     public static final String HTTP_PORT = "httpport";
     public static final String UPLOAD = "upload";
     public static final String SCRIPT_ID = "scriptid";
+    private static final int DEFAULT_HTTP_PORT   = 8080;
 
     //private String host = "localhost";
     private boolean upload = true;
-    private int httpPort = 8080;
+    private int httpPort = -1;
     private String scriptName;
+    private static final LocalStringsImpl strings =
+            new LocalStringsImpl(RunScriptLocalCommand.class);
+
 
     public RunScriptLocalCommand() throws CommandException {
         super();
@@ -105,14 +112,8 @@ public final class RunScriptLocalCommand extends RemoteCommand {
     protected void validate()
             throws CommandException, CommandValidationException {
         super.validate();
-        String shttpPort = getOption(HTTP_PORT);
-        if (ok(shttpPort))
-            httpPort = Integer.parseInt(shttpPort);
-        if (operands.size() == 0)
-            return;
-        String scriptPath = operands.get(0);
-        int i = scriptPath.lastIndexOf(File.separator);
-        scriptName = scriptPath.substring(i+1, scriptPath.length());
+        validatePort();
+        validateScriptName();
     }
 
     @Override
@@ -181,4 +182,50 @@ public final class RunScriptLocalCommand extends RemoteCommand {
         logger.printExceptionStackTrace(e);
     }
 
+    private void validatePort() throws CommandValidationException {
+        httpPort = DEFAULT_HTTP_PORT;
+        String port = getOption(HTTP_PORT);
+
+        if(!ok(port))
+            return;
+
+        try {
+            httpPort = Integer.parseInt(port);
+
+            if(httpPort > 0 && httpPort < 65536)
+                return;
+            else
+                httpPort = DEFAULT_HTTP_PORT; // not necessary --> paranoia
+        }
+        catch(NumberFormatException nfe) {
+            // handled below...
+        }
+
+        throw new CommandValidationException(strings.get("runscript.badport", port));
+    }
+
+    private void validateScriptName() throws CommandValidationException {
+        if (operands.isEmpty() || !ok(operands.get(0)))
+            throw new CommandValidationException(strings.get("runscript.noscriptname"));
+
+        // we have a scriptname which is at least one character long
+        // several possibilities:
+        // 1. An absolute path on this client machine
+        // 2. A relative path that is relative to the current dir on this client machine
+        // 3. An absolute path on the server machine
+        // 4. A path relative to the server's current directory
+
+        // As of today, Oct 11, 2009, we only support 1 and 2 above.
+        // In the future it would be easy to support 3 and 4 -- we just send the paths
+        // off to the server
+
+        String op = operands.get(0);
+        File f = SmartFile.sanitize(new File(op));
+
+        if(!f.isFile())
+            throw new CommandValidationException(strings.get("runscript.badscriptname", op));
+
+        scriptName = f.getName();
+        operands.set(0, f.getPath().replace('\\', '/'));
+    }
 }
