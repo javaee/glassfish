@@ -50,6 +50,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
+import java.security.PrivilegedActionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Collection;
@@ -99,9 +100,21 @@ public class ConnectorsClassLoaderUtil {
         return createRARClassLoader(parent, moduleDir, moduleName, appLibs);
     }
 
-    private DelegatingClassLoader.ClassFinder getLibrariesClassLoader(List<URI> appLibs)
-            throws MalformedURLException {
-        return clh.getAppLibClassFinder(appLibs);
+    private DelegatingClassLoader.ClassFinder getLibrariesClassLoader(final List<URI> appLibs)
+            throws MalformedURLException, ConnectorRuntimeException {
+        try {
+            return (DelegatingClassLoader.ClassFinder) AccessController.doPrivileged(new PrivilegedExceptionAction(){
+                public Object run() throws Exception {
+                    return clh.getAppLibClassFinder(appLibs);
+                }
+            });
+        } catch (PrivilegedActionException e) {
+            //TODO V3 better log msg
+            _logger.log(Level.SEVERE, "failed to create libraries classloader", e);
+            ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
+            cre.initCause(e);
+            throw cre;
+        }
     }
 
     private ConnectorClassFinder createRARClassLoader(final ClassLoader parent, String moduleDir,
