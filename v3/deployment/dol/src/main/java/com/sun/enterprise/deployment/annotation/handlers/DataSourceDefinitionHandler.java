@@ -48,6 +48,7 @@ import java.util.Properties;
 
 import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
 import com.sun.enterprise.deployment.DataSourceDefinitionDescriptor;
+import com.sun.enterprise.deployment.MetadataSource;
 
 /**
  * @author Jagadish Ramu
@@ -248,6 +249,7 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
     private DataSourceDefinitionDescriptor getDescriptor(DataSourceDefinition defn) {
 
         DataSourceDefinitionDescriptor desc = new DataSourceDefinitionDescriptor();
+        desc.setMetadataSource(MetadataSource.ANNOTATION);
 
         desc.setName(defn.name());
         desc.setClassName(defn.className());

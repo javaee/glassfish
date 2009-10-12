@@ -47,6 +47,7 @@ public class LifecycleCallbackDescriptor extends Descriptor {
     private String lifecycleCallbackClass;
     private String lifecycleCallbackMethod;
     private String defaultLifecycleCallbackClass;
+    private MetadataSource metadataSource = MetadataSource.XML;
 
     public enum CallbackType {
 
@@ -121,5 +122,13 @@ public class LifecycleCallbackDescriptor extends Descriptor {
         }
 
         return m;
+    }
+
+    public MetadataSource getMetadataSource() {
+        return metadataSource;
+    }
+
+    public void setMetadataSource(MetadataSource metadataSource) {
+        this.metadataSource = metadataSource;
     }
 }

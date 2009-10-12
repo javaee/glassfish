@@ -39,8 +39,10 @@ import java.util.List;
 import java.util.Set;
 
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
+import com.sun.enterprise.deployment.web.EnvironmentEntry;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
+import com.sun.enterprise.deployment.types.EjbReference;
 
 /**
  * I am an object that represents all the deployment information about
@@ -92,6 +94,150 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
             if (lgConf != null && (!lgConf.equals(getLoginConfiguration()))) {
                 conflictLoginConfig = true;
             }
+        }
+    }
+
+    @Override
+    protected void combineEnvironmentEntries(WebBundleDescriptor webBundleDescriptor) {
+        for (EnvironmentEntry env: webBundleDescriptor.getEnvironmentEntrySet()) {
+            EnvironmentProperty envProp = _getEnvironmentPropertyByName(env.getName());
+            if (envProp != null) {
+                webBundleDescriptor.conflictEnvironmentEntry = true;
+                unionInjectionTargets(envProp, (EnvironmentProperty)env);
+            } else {
+                addEnvironmentEntry(env);
+            }
+        }
+    }
+
+    @Override
+    protected void combineEjbReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        for (EjbReference ejbRef: webBundleDescriptor.getEjbReferenceDescriptors()) {
+            EjbReferenceDescriptor ejbRefDesc = getEjbReferenceByName(ejbRef.getName());
+            if (ejbRefDesc != null) {
+                webBundleDescriptor.conflictEjbReference = true;
+                unionInjectionTargets(ejbRefDesc, (EnvironmentProperty)ejbRef);
+            } else {
+                addEjbReferenceDescriptor(ejbRef);
+            }
+        }
+    }
+
+    @Override
+    protected void combineServiceReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        for (ServiceReferenceDescriptor serviceRef: webBundleDescriptor.getServiceReferenceDescriptors()) {
+            ServiceReferenceDescriptor sr = _getServiceReferenceByName(serviceRef.getName());
+            if (sr != null) {
+                webBundleDescriptor.conflictServiceReference = true;
+                unionInjectionTargets(sr, serviceRef);
+            } else {
+                addServiceReferenceDescriptor(serviceRef);
+            }
+        }
+    }
+
+    @Override
+    protected void combineResourceReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        for (ResourceReferenceDescriptor resRef : webBundleDescriptor.getResourceReferenceDescriptors()) {
+            ResourceReferenceDescriptor rrd = _getResourceReferenceByName(resRef.getName());
+            if (rrd != null) {
+                webBundleDescriptor.conflictResourceReference = true;
+                unionInjectionTargets(rrd, resRef);
+            } else {
+                addResourceReferenceDescriptor(resRef);
+            }
+        }
+    }
+
+    @Override
+    protected void combineJmsDestinationReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        for (JmsDestinationReferenceDescriptor jdRef: getJmsDestinationReferenceDescriptors()) {
+            JmsDestinationReferenceDescriptor jdr = _getJmsDestinationReferenceByName(jdRef.getName());
+            if (jdr != null) {
+                webBundleDescriptor.conflictJmsDestinationReference = true;
+                unionInjectionTargets(jdr, jdRef);   
+            } else {
+                addJmsDestinationReferenceDescriptor(jdRef);
+            }
+        }
+    }
+
+    @Override
+    protected void combineMessageDestinationReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        for (MessageDestinationReferenceDescriptor mdRef :
+                getMessageDestinationReferenceDescriptors()) {
+            MessageDestinationReferenceDescriptor mdr =
+                _getMessageDestinationReferenceByName(mdRef.getName());
+            if (mdr != null) {
+                webBundleDescriptor.conflictMessageDestinationReference = true;
+                unionInjectionTargets(mdr, mdRef);
+            } else {
+                addMessageDestinationReferenceDescriptor(mdRef);
+            }
+        }
+    }
+
+    @Override
+    protected void combineEntityManagerReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        for (EntityManagerReferenceDescriptor emRef :
+                getEntityManagerReferenceDescriptors()) {
+            EntityManagerReferenceDescriptor emr =
+                _getEntityManagerReferenceByName(emRef.getName());
+            if (emr != null) {
+                webBundleDescriptor.conflictEntityManagerReference = true;
+                unionInjectionTargets(emr, emRef);
+            } else {
+                addEntityManagerReferenceDescriptor(emRef);
+            }
+        }
+    }
+
+    @Override
+     protected void combineEntityManagerFactoryReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        for (EntityManagerFactoryReferenceDescriptor emfRef :
+                getEntityManagerFactoryReferenceDescriptors()) {
+            EntityManagerFactoryReferenceDescriptor emfr =
+                _getEntityManagerFactoryReferenceByName(emfRef.getName());
+            if (emfr != null) {
+                webBundleDescriptor.conflictEntityManagerReference = true;
+                unionInjectionTargets(emfr, emfRef);
+            } else {
+                addEntityManagerFactoryReferenceDescriptor(emfRef);
+            }
+        }
+    }
+
+    @Override
+    protected void combinePostConstructDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        getPostConstructDescriptors().addAll(webBundleDescriptor.getPostConstructDescriptors());
+    }
+
+    @Override
+    protected void combinePreDestroyDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        getPreDestroyDescriptors().addAll(webBundleDescriptor.getPreDestroyDescriptors());
+    }
+
+    @Override
+    protected void combineDataSourceDefinitionDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        for (DataSourceDefinitionDescriptor ddd: webBundleDescriptor.getDataSourceDefinitionDescriptors()) {
+            DataSourceDefinitionDescriptor ddDesc = getDataSourceDefinitionDescriptor(ddd.getName());
+            if (ddDesc == null) {
+                getDataSourceDefinitionDescriptors().add(ddd);
+            } else {
+                conflictDataSourceDefinition = true;
+            }
+        }
+    }
+
+    /**
+     * Copy all injection targets from env2 to env1.
+     *
+     * @param env1
+     * @param env2
+     */
+    private void unionInjectionTargets(EnvironmentProperty env1, EnvironmentProperty env2) {
+        for (InjectionTarget injTarget: env2.getInjectionTargets()) {
+            env1.addInjectionTarget(injTarget);
         }
     }
 

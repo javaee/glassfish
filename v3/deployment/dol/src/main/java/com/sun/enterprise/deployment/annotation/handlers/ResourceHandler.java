@@ -160,6 +160,7 @@ public class ResourceHandler extends AbstractResourceHandler {
             InjectionTarget target = new InjectionTarget();
             target.setFieldName(f.getName());
             target.setClassName(targetClassName);
+            target.setMetadataSource(MetadataSource.ANNOTATION);
             
             for (EnvironmentProperty desc : descriptorInfo.descriptors) {            
                 desc.addInjectionTarget(target);
@@ -205,7 +206,8 @@ public class ResourceHandler extends AbstractResourceHandler {
             InjectionTarget target = new InjectionTarget();
             target.setMethodName(m.getName());
             target.setClassName(targetClassName);
-            
+            target.setMetadataSource(MetadataSource.ANNOTATION);
+
             for (EnvironmentProperty desc : descriptorInfo.descriptors) {
                 desc.addInjectionTarget(target);
                     

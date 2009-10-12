@@ -54,6 +54,7 @@ public class InjectionTarget implements Serializable {
     private String targetName=null;
     private String fieldName=null;
     private String methodName=null;
+    private MetadataSource metadataSource = MetadataSource.XML;
     
     // runtime info, not persisted
     private transient Field field=null;
@@ -134,6 +135,14 @@ public class InjectionTarget implements Serializable {
         this.method = method;
     }
 
+    public MetadataSource getMetadataSource() {
+        return metadataSource;
+    }
+
+    public void setMetadataSource(MetadataSource metadataSource) {
+        this.metadataSource = metadataSource;
+    }
+
     public boolean equals(Object o) {
         if (!(o instanceof InjectionTarget)) {
             return false;
@@ -142,7 +151,8 @@ public class InjectionTarget implements Serializable {
             return equals(className, injTarget.className) &&
                    equals(targetName, injTarget.targetName) &&
                    equals(fieldName, injTarget.fieldName) &&
-                   equals(methodName, injTarget.methodName);
+                   equals(methodName, injTarget.methodName) &&
+                   metadataSource == injTarget.metadataSource;
         }
     }
 

@@ -129,6 +129,15 @@ public class WebBundleDescriptor extends BundleDescriptor
 
     // conflict resolution checking
     protected boolean conflictLoginConfig = false;
+    protected boolean conflictDataSourceDefinition = false;
+    protected boolean conflictEnvironmentEntry = false;
+    protected boolean conflictEjbReference = false;
+    protected boolean conflictServiceReference = false;
+    protected boolean conflictResourceReference = false;
+    protected boolean conflictJmsDestinationReference = false;
+    protected boolean conflictMessageDestinationReference = false;
+    protected boolean conflictEntityManagerReference = false;
+    protected boolean conflictEntityManagerFactoryReference = false;
 
     /**
      * Constrct an empty web app [{0}].
@@ -176,9 +185,6 @@ public class WebBundleDescriptor extends BundleDescriptor
 
             addWebComponentDescriptor(webComponentDescriptor);
         }
-
-        // combine Injection Environments
-        combineInjectionReferences(webBundleDescriptor);
 
         getContextParametersSet().addAll(webBundleDescriptor.getContextParametersSet());
 
@@ -238,49 +244,20 @@ public class WebBundleDescriptor extends BundleDescriptor
             }
         }
 
-        Set<DataSourceDefinitionDescriptor> dataSourceDescriptors =
-                webBundleDescriptor.getDataSourceDefinitionDescriptors();
-        if(dataSourceDescriptors.size() > 0 ){
-            for(DataSourceDefinitionDescriptor desc : dataSourceDescriptors){
-                this.addDataSourceDefinitionDescriptor(desc);
-            }
-        }
-    }
-
-    /**
-     * This method combines injection references with the current references taking
-     * priority so that annotation for process can be handled correctly.
-     *
-     * @param webBundleDescriptor
-     */
-    // if you add any references in the following method, 
-    // then you may like to add them to setInjectionReferences method
-    private void combineInjectionReferences(WebBundleDescriptor webBundleDescriptor) {
-
-        for (EjbReference ejbRef: webBundleDescriptor.getEjbReferenceDescriptors()) {
-            addEjbReferenceDescriptor((EjbReferenceDescriptor)ejbRef);
-        }
-        getResourceReferenceDescriptors().addAll(webBundleDescriptor.getResourceReferenceDescriptors());
-
-        for (MessageDestinationReferenceDescriptor mdRef:
-                webBundleDescriptor.getMessageDestinationReferenceDescriptors()) {
-            addMessageDestinationReferenceDescriptor(mdRef);
-        }
-        for (ServiceReferenceDescriptor serviceRef: webBundleDescriptor.getServiceReferenceDescriptors()) {
-            addServiceReferenceDescriptor(serviceRef);
-        }
-        for (EntityManagerFactoryReferenceDescriptor emfRef:
-                webBundleDescriptor.getEntityManagerFactoryReferenceDescriptors()) {
-            addEntityManagerFactoryReferenceDescriptor(emfRef);
-        }
-        for (EntityManagerReferenceDescriptor emRef:
-                webBundleDescriptor.getEntityManagerReferenceDescriptors()) {
-            addEntityManagerReferenceDescriptor(emRef);
-        }
-        
-        for (EnvironmentEntry envProp : webBundleDescriptor.getEnvironmentProperties()) {
-            addEnvironmentEntry(envProp);
-        }
+        // combine with conflict resolution check
+        combineEnvironmentEntries(webBundleDescriptor);
+        combinePostConstructDescriptors(webBundleDescriptor);
+        combinePreDestroyDescriptors(webBundleDescriptor);
+        combineDataSourceDefinitionDescriptors(webBundleDescriptor);
+        combineEjbReferenceDescriptors(webBundleDescriptor);
+        combineServiceReferenceDescriptors(webBundleDescriptor);
+        // resource-env-ref
+        combineJmsDestinationReferenceDescriptors(webBundleDescriptor);
+        combineMessageDestinationReferenceDescriptors(webBundleDescriptor);
+        // persistence-context-ref
+        combineEntityManagerReferenceDescriptors(webBundleDescriptor);
+        // persistence-unit-ref
+        combineEntityManagerFactoryReferenceDescriptors(webBundleDescriptor);
     }
 
     public boolean isEmpty() {
@@ -430,16 +407,41 @@ public class WebBundleDescriptor extends BundleDescriptor
      * Throws an IllegalArgumentException if it is not found.
      */
     public ServiceReferenceDescriptor getServiceReferenceByName(String name) {
-        for (ServiceReferenceDescriptor srd : getServiceReferenceDescriptors()) {
-            if (srd.getName().equals(name)) {
-                return srd;
-            }
-
+        ServiceReferenceDescriptor sr = _getServiceReferenceByName(name);
+        if (sr != null) {
+            return sr;
         }
+
         throw new IllegalArgumentException(localStrings.getLocalString(
                 "enterprise.deployment.exceptionwebapphasnoservicerefbyname",
                 "This web app [{0}] has no service reference by the name of [{1}]",
                 new Object[]{getName(), name}));
+    }
+
+    protected ServiceReferenceDescriptor _getServiceReferenceByName(String name) {
+        for (ServiceReferenceDescriptor srd : getServiceReferenceDescriptors()) {
+            if (srd.getName().equals(name)) {
+                return srd;
+            }
+        }
+        return null;
+    }
+
+    protected void combineServiceReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        for (ServiceReferenceDescriptor serviceRef: webBundleDescriptor.getServiceReferenceDescriptors()) {
+            ServiceReferenceDescriptor sr = _getServiceReferenceByName(serviceRef.getName());
+            if (sr != null) {
+                combineInjectionTargets(sr, (EnvironmentProperty)serviceRef);
+            } else {
+                if (webBundleDescriptor.conflictEnvironmentEntry) {
+                    throw new IllegalArgumentException(localStrings.getLocalString(
+                            "enterprise.deployment.exceptionconflictserviceref",
+                            "There are more than one service references defined in web fragments with the same name, but not overrided in web.xml"));
+                } else {
+                    addServiceReferenceDescriptor(serviceRef);
+                }
+            }
+        }
     }
 
     /**
@@ -470,36 +472,97 @@ public class WebBundleDescriptor extends BundleDescriptor
      * @return a JMS destination reference by the same name or throw an IllegalArgumentException.
      */
     public JmsDestinationReferenceDescriptor getJmsDestinationReferenceByName(String name) {
+        JmsDestinationReferenceDescriptor jrd = _getJmsDestinationReferenceByName(name);
+        if (jrd != null) {
+            return jrd;
+        }
+
+        throw new IllegalArgumentException(localStrings.getLocalString(
+                "enterprise.deployment.exceptionwebapphasnojmsdestrefbyname",
+                "This web app [{0}] has no resource environment reference by the name of [{1}]", new Object[]{getName(), name}));
+    }
+
+    protected JmsDestinationReferenceDescriptor _getJmsDestinationReferenceByName(String name) {
         for (JmsDestinationReferenceDescriptor jdr : getJmsDestinationReferenceDescriptors()) {
             if (jdr.getName().equals(name)) {
                 return jdr;
             }
         }
-        throw new IllegalArgumentException(localStrings.getLocalString(
-                "enterprise.deployment.exceptionwebapphasnojmsdestrefbyname",
-                "This web app [{0}] has no resource environment reference by the name of [{1}]", new Object[]{getName(), name}));
+        return null;
+    }
+
+    protected void combineJmsDestinationReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        for (JmsDestinationReferenceDescriptor jdRef: getJmsDestinationReferenceDescriptors()) {
+            JmsDestinationReferenceDescriptor jdr = _getJmsDestinationReferenceByName(jdRef.getName());
+            if (jdr != null) {
+                combineInjectionTargets(jdr, jdRef);
+            } else {
+                if (webBundleDescriptor.conflictJmsDestinationReference) {
+                    throw new IllegalArgumentException(localStrings.getLocalString(
+                            "enterprise.deployment.exceptionconflictresourceenvref",
+                            "There are more than one resource env references defined in web fragments with the same name, but not overrided in web.xml"));
+                } else {
+                    addJmsDestinationReferenceDescriptor(jdRef);
+                }
+
+            }
+        }
     }
 
     public Set<DataSourceDefinitionDescriptor> getDataSourceDefinitionDescriptors() {
         return datasourceDefinitionDescs;
     }
 
+    protected DataSourceDefinitionDescriptor getDataSourceDefinitionDescriptor(String name) {
+        DataSourceDefinitionDescriptor ddDesc = null;
+        for (DataSourceDefinitionDescriptor ddd : this.getDataSourceDefinitionDescriptors()) {
+            if (ddd.getName().equals(name)) {
+                ddDesc = ddd;
+                break;
+            }
+        }
+
+        return ddDesc;
+    }
 
     public void addDataSourceDefinitionDescriptor(DataSourceDefinitionDescriptor reference) {
-        for(Iterator itr = this.getDataSourceDefinitionDescriptors().iterator(); itr.hasNext();){
-            DataSourceDefinitionDescriptor desc = (DataSourceDefinitionDescriptor)itr.next();
-            if(desc.getName().equals(reference.getName())){
-                throw new IllegalStateException(
-                        localStrings.getLocalString("exceptionwebduplicatedatasourcedefinition",
-                                "This web app [{0}] cannot have datasource definitions of same name : [{1}]",
-                                getName(), reference.getName()));
-            }
+        DataSourceDefinitionDescriptor ddDesc = getDataSourceDefinitionDescriptor(reference.getName());
+        if (ddDesc != null) {
+            throw new IllegalStateException(
+                    localStrings.getLocalString("exceptionwebduplicatedatasourcedefinition",
+                            "This web app [{0}] cannot have datasource definitions of same name : [{1}]",
+                            getName(), reference.getName()));
         }
         getDataSourceDefinitionDescriptors().add(reference);
     }
 
     public void removeDataSourceDefinitionDescriptor(DataSourceDefinitionDescriptor reference) {
         this.getDataSourceDefinitionDescriptors().remove(reference);
+    }
+
+    protected void combineDataSourceDefinitionDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        boolean isFromXml = false;
+        for (DataSourceDefinitionDescriptor ddd : getDataSourceDefinitionDescriptors()) {
+            isFromXml = (ddd.getMetadataSource() == MetadataSource.XML);
+            if (isFromXml) {
+                break;
+            }
+        }
+
+        if (isFromXml) {
+            for (DataSourceDefinitionDescriptor ddd: webBundleDescriptor.getDataSourceDefinitionDescriptors()) {
+                DataSourceDefinitionDescriptor ddDesc = getDataSourceDefinitionDescriptor(ddd.getName());
+                if (ddDesc == null) {
+                    if (webBundleDescriptor.conflictDataSourceDefinition) {
+                        throw new IllegalArgumentException(localStrings.getLocalString(
+                                "enterprise.deployment.exceptionconflictdatasourcedefinition",
+                                "There are more than one datasource definitions defined in web fragments with the same name, but not overrided in web.xml"));
+                    } else {
+                        getDataSourceDefinitionDescriptors().add(ddd);
+                    }
+                }
+            }
+        }
     }
 
     private Set<MimeMapping> getMimeMappingsSet() {
@@ -746,15 +809,25 @@ public class WebBundleDescriptor extends BundleDescriptor
      */
 
     public ResourceReferenceDescriptor getResourceReferenceByName(String name) {
+        ResourceReferenceDescriptor rrd = _getResourceReferenceByName(name);
+        if (rrd != null) {
+            return rrd;
+        }
+
+        throw new IllegalArgumentException(localStrings.getLocalString(
+                "enterprise.deployment.exceptionwebapphasnoresourcerefbyname",
+                "This web app [{0}] has no resource reference by the name of [{1}]", new Object[]{getName(), name}));
+    }
+
+    protected ResourceReferenceDescriptor _getResourceReferenceByName(String name) {
         for (ResourceReference next : getResourceReferenceDescriptors()) {
             if (next.getName().equals(name)) {
                 return (ResourceReferenceDescriptor) next;
             }
         }
-        throw new IllegalArgumentException(localStrings.getLocalString(
-                "enterprise.deployment.exceptionwebapphasnoresourcerefbyname",
-                "This web app [{0}] has no resource reference by the name of [{1}]", new Object[]{getName(), name}));
+        return null;
     }
+
 
     /**
      * @returns my Set of references to resources.
@@ -778,6 +851,20 @@ public class WebBundleDescriptor extends BundleDescriptor
      */
     public EntityManagerFactoryReferenceDescriptor
     getEntityManagerFactoryReferenceByName(String name) {
+        EntityManagerFactoryReferenceDescriptor emfr =
+            _getEntityManagerFactoryReferenceByName(name);
+        if (emfr != null) {
+            return emfr;
+        }
+
+        throw new IllegalArgumentException(localStrings.getLocalString(
+                "exceptionwebapphasnoentitymgrfactoryrefbyname",
+                "This web app [{0}] has no entity manager factory reference by the name of [{1}]",
+                new Object[]{getName(), name}));
+    }
+
+    protected EntityManagerFactoryReferenceDescriptor
+    _getEntityManagerFactoryReferenceByName(String name) {
         for (EntityManagerFactoryReferenceDescriptor next :
                 getEntityManagerFactoryReferenceDescriptors()) {
 
@@ -785,16 +872,33 @@ public class WebBundleDescriptor extends BundleDescriptor
                 return next;
             }
         }
-        throw new IllegalArgumentException(localStrings.getLocalString(
-                "exceptionwebapphasnoentitymgrfactoryrefbyname",
-                "This web app [{0}] has no entity manager factory reference by the name of [{1}]",
-                new Object[]{getName(), name}));
+        return null;
     }
 
     public void addEntityManagerFactoryReferenceDescriptor
             (EntityManagerFactoryReferenceDescriptor reference) {
         reference.setReferringBundleDescriptor(this);
         this.getEntityManagerFactoryReferenceDescriptors().add(reference);
+    }
+
+    protected void combineEntityManagerFactoryReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        for (EntityManagerFactoryReferenceDescriptor emfRef :
+                getEntityManagerFactoryReferenceDescriptors()) {
+            EntityManagerFactoryReferenceDescriptor emfr =
+                _getEntityManagerFactoryReferenceByName(emfRef.getName());
+            if (emfr != null) {
+                combineInjectionTargets(emfr, emfRef);
+            } else {
+                if (webBundleDescriptor.conflictEntityManagerFactoryReference) {
+                    throw new IllegalArgumentException(localStrings.getLocalString(
+                            "enterprise.deployment.exceptionconflictpersistenceunitref",
+                            "There are more than one persistence unit references defined in web fragments with the same name, but not overrided in web.xml"));
+
+                } else {
+                    addEntityManagerFactoryReferenceDescriptor(emfRef);
+                }
+            }
+        }
     }
 
     public Set<EntityManagerReferenceDescriptor>
@@ -808,6 +912,20 @@ public class WebBundleDescriptor extends BundleDescriptor
      */
     public EntityManagerReferenceDescriptor
     getEntityManagerReferenceByName(String name) {
+        EntityManagerReferenceDescriptor emr =
+            _getEntityManagerReferenceByName(name);
+        if (emr != null) {
+            return emr;
+        }
+
+        throw new IllegalArgumentException(localStrings.getLocalString(
+                "exceptionwebapphasnoentitymgrrefbyname",
+                "This web app [{0}] has no entity manager reference by the name of [{1}]",
+                new Object[]{getName(), name}));
+    }
+
+    protected  EntityManagerReferenceDescriptor
+    _getEntityManagerReferenceByName(String name) {
         for (EntityManagerReferenceDescriptor next :
                 getEntityManagerReferenceDescriptors()) {
 
@@ -815,16 +933,33 @@ public class WebBundleDescriptor extends BundleDescriptor
                 return next;
             }
         }
-        throw new IllegalArgumentException(localStrings.getLocalString(
-                "exceptionwebapphasnoentitymgrrefbyname",
-                "This web app [{0}] has no entity manager reference by the name of [{1}]",
-                new Object[]{getName(), name}));
+        return null;
     }
+
 
     public void addEntityManagerReferenceDescriptor
             (EntityManagerReferenceDescriptor reference) {
         reference.setReferringBundleDescriptor(this);
         getEntityManagerReferenceDescriptors().add(reference);
+    }
+
+    protected void combineEntityManagerReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        for (EntityManagerReferenceDescriptor emRef :
+                getEntityManagerReferenceDescriptors()) {
+            EntityManagerReferenceDescriptor emr =
+                _getEntityManagerReferenceByName(emRef.getName());
+            if (emr != null) {
+                combineInjectionTargets(emr, emRef);
+            } else {
+                if (webBundleDescriptor.conflictEntityManagerReference) {
+                    throw new IllegalArgumentException(localStrings.getLocalString(
+                            "enterprise.deployment.exceptionconflictpersistencecontextref",
+                            "There are more than one persistence context references defined in web fragments with the same name, but not overrided in web.xml"));
+                } else {
+                    addEntityManagerReferenceDescriptor(emRef);
+                }
+            }
+        }
     }
 
     /**
@@ -882,6 +1017,23 @@ public class WebBundleDescriptor extends BundleDescriptor
         ejbReferenceDescriptor.setReferringBundleDescriptor(null);
     }
 
+    protected void combineEjbReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        for (EjbReference ejbRef: webBundleDescriptor.getEjbReferenceDescriptors()) {
+            EjbReferenceDescriptor ejbRefDesc = getEjbReferenceByName(ejbRef.getName());
+            if (ejbRefDesc != null) {
+                combineInjectionTargets(ejbRefDesc, (EnvironmentProperty)ejbRef);
+            } else {
+                if (webBundleDescriptor.conflictEnvironmentEntry) {
+                    throw new IllegalArgumentException(localStrings.getLocalString(
+                            "enterprise.deployment.exceptionconflictejbref",
+                            "There are more than one ejb references defined in web fragments with the same name, but not overrided in web.xml"));
+                } else {
+                    addEjbReferenceDescriptor(ejbRef);
+                }
+            }
+        }
+    }
+
     /**
      * Return an enumeration of references to resources that I have.
      */
@@ -901,6 +1053,23 @@ public class WebBundleDescriptor extends BundleDescriptor
      */
     public void removeResourceReferenceDescriptor(ResourceReferenceDescriptor resourceReference) {
         getResourceReferenceDescriptors().remove(resourceReference);
+    }
+
+    protected void combineResourceReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        for (ResourceReferenceDescriptor resRef : webBundleDescriptor.getResourceReferenceDescriptors()) {
+            ResourceReferenceDescriptor rrd = _getResourceReferenceByName(resRef.getName());
+            if (rrd != null) {
+                combineInjectionTargets(rrd, resRef);
+            } else {
+                if (webBundleDescriptor.conflictResourceReference) {
+                    throw new IllegalArgumentException(localStrings.getLocalString(
+                            "enterprise.deployment.exceptionconflictresourceref",
+                            "There are more than one resource references defined in web fragments with the same name, but not overrided in web.xml"));
+                } else {
+                    addResourceReferenceDescriptor(resRef);
+                }
+            }
+        }
     }
 
     public Set<MessageDestinationReferenceDescriptor> getMessageDestinationReferenceDescriptors() {
@@ -927,16 +1096,45 @@ public class WebBundleDescriptor extends BundleDescriptor
      */
     public MessageDestinationReferenceDescriptor
     getMessageDestinationReferenceByName(String name) {
+        MessageDestinationReferenceDescriptor mdr =
+            _getMessageDestinationReferenceByName(name);
+        if (mdr != null) {
+            return mdr;
+        }
+
+        throw new IllegalArgumentException(localStrings.getLocalString(
+                "exceptionwebapphasnomsgdestrefbyname",
+                "This web app [{0}] has no message destination reference by the name of [{1}]",
+                new Object[]{getName(), name}));
+    }
+
+    protected MessageDestinationReferenceDescriptor _getMessageDestinationReferenceByName(String name) {
         for (MessageDestinationReferenceDescriptor mdr :
                 getMessageDestinationReferenceDescriptors()) {
             if (mdr.getName().equals(name)) {
                 return mdr;
             }
         }
-        throw new IllegalArgumentException(localStrings.getLocalString(
-                "exceptionwebapphasnomsgdestrefbyname",
-                "This web app [{0}] has no message destination reference by the name of [{1}]",
-                new Object[]{getName(), name}));
+        return null;
+    }
+
+    protected void combineMessageDestinationReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        for (MessageDestinationReferenceDescriptor mdRef :
+                getMessageDestinationReferenceDescriptors()) {
+            MessageDestinationReferenceDescriptor mdr =
+                _getMessageDestinationReferenceByName(mdRef.getName());
+            if (mdr != null) {
+                combineInjectionTargets(mdr, mdRef);           
+            } else {
+                if (webBundleDescriptor.conflictMessageDestinationReference) {
+                    throw new IllegalArgumentException(localStrings.getLocalString(
+                            "enterprise.deployment.exceptionconflictmessagedestinationref",
+                            "There are more than one message destination references defined in web fragments with the same name, but not overrided in web.xml"));
+                } else {
+                    addMessageDestinationReferenceDescriptor(mdRef);
+                }
+            }
+        }
     }
 
     public Set<LifecycleCallbackDescriptor>
@@ -964,6 +1162,20 @@ public class WebBundleDescriptor extends BundleDescriptor
         return getPostConstructDescriptorByClass(className, this);
     }
 
+    protected void combinePostConstructDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        boolean isFromXml = false;
+        for (LifecycleCallbackDescriptor lccd : getPostConstructDescriptors()) {
+            isFromXml = (lccd.getMetadataSource() == MetadataSource.XML);
+            if (isFromXml) {
+                break;
+            }
+        }
+
+        if (!isFromXml) {
+            getPostConstructDescriptors().addAll(webBundleDescriptor.getPostConstructDescriptors());
+        }
+    }
+
     public Set<LifecycleCallbackDescriptor> getPreDestroyDescriptors() {
         return preDestroyDescs;
     }
@@ -986,6 +1198,20 @@ public class WebBundleDescriptor extends BundleDescriptor
 
     public LifecycleCallbackDescriptor getPreDestroyDescriptorByClass(String className) {
         return getPreDestroyDescriptorByClass(className, this);
+    }
+
+    protected void combinePreDestroyDescriptors(WebBundleDescriptor webBundleDescriptor) {
+        boolean isFromXml = false;
+        for (LifecycleCallbackDescriptor lccd : getPreDestroyDescriptors()) {
+            isFromXml = (lccd.getMetadataSource() == MetadataSource.XML);
+            if (isFromXml) {
+                break;
+            }
+        }
+
+        if (!isFromXml) {
+            getPreDestroyDescriptors().addAll(webBundleDescriptor.getPreDestroyDescriptors());
+        }
     }
 
     protected List<InjectionCapable> getInjectableResourcesByClass(String className,
@@ -1221,7 +1447,16 @@ public class WebBundleDescriptor extends BundleDescriptor
      * Adds this given environment property to my list.
      */
     public void addEnvironmentEntry(EnvironmentEntry environmentEntry) {
-        addEnvironmentProperty((EnvironmentProperty)environmentEntry);
+        getEnvironmentEntrySet().add(environmentEntry);
+    }
+
+    protected EnvironmentProperty _getEnvironmentPropertyByName(String name) {
+        for (EnvironmentEntry ev : getEnvironmentEntrySet()) {
+            if (ev.getName().equals(name)) {
+                return (EnvironmentProperty) ev;
+            }
+        }
+        return null;
     }
 
     /**
@@ -1229,11 +1464,11 @@ public class WebBundleDescriptor extends BundleDescriptor
      * throws an illegal argument exception if no such environment property exists.
      */
     public EnvironmentProperty getEnvironmentPropertyByName(String name) {
-        for (EnvironmentEntry ev : getEnvironmentEntrySet()) {
-            if (ev.getName().equals(name)) {
-                return (EnvironmentProperty) ev;
-            }
+        EnvironmentProperty envProp = _getEnvironmentPropertyByName(name);
+        if (envProp != null) {
+            return envProp;
         }
+
         throw new IllegalArgumentException(localStrings.getLocalString(
                 "enterprise.deployment.exceptionwebapphasnoenvpropertybyname",
                 "This web app [{0}] has no environment property by the name of [{1}]",
@@ -1251,19 +1486,7 @@ public class WebBundleDescriptor extends BundleDescriptor
      * Adds this given environment property to my list.
      */
     public void addEnvironmentProperty(EnvironmentProperty environmentProperty) {
-        String name= environmentProperty.getName();
-        EnvironmentEntry envEntry = null;
-        for (EnvironmentEntry envE : getEnvironmentEntrySet()) {
-            if (name.equals(envE.getName())) {
-                envEntry = envE;
-                break;
-            }
-        }
-        if (envEntry != null && envEntry instanceof EnvironmentProperty) {
-            ((EnvironmentProperty)envEntry).merge(environmentProperty);
-        } else {
-            getEnvironmentEntrySet().add(environmentProperty);
-        }
+        getEnvironmentEntrySet().add(environmentProperty);
     }
 
     /**
@@ -1271,6 +1494,28 @@ public class WebBundleDescriptor extends BundleDescriptor
      */
     public void removeEnvironmentEntry(EnvironmentEntry environmentEntry) {
         getEnvironmentEntrySet().remove(environmentEntry);
+    }
+
+    protected void combineEnvironmentEntries(WebBundleDescriptor webBundleDescriptor) {
+        for (EnvironmentEntry env: webBundleDescriptor.getEnvironmentEntrySet()) {
+            EnvironmentProperty envProp = _getEnvironmentPropertyByName(env.getName());
+            if (envProp != null) {
+                combineInjectionTargets(envProp, (EnvironmentProperty)env);
+                EnvironmentProperty envP = (EnvironmentProperty)env;
+                if (!envProp.hasInjectionTargetFromXml() &&
+                        (!envProp.isSetValueCalled()) && envP.isSetValueCalled()) {
+                    envProp.setValue(env.getValue());
+                }
+            } else {
+                if (webBundleDescriptor.conflictEnvironmentEntry) {
+                    throw new IllegalArgumentException(localStrings.getLocalString(
+                            "enterprise.deployment.exceptionconflictenventry",
+                            "There are more than one environment entries defined in web fragments with the same name, but not overrided in web.xml"));
+                } else {
+                    addEnvironmentEntry(env);
+                }
+            }
+        }
     }
 
     /**
@@ -1293,10 +1538,10 @@ public class WebBundleDescriptor extends BundleDescriptor
 
     protected void combineLoginConfiguration(WebBundleDescriptor webBundleDescriptor) {
         if (getLoginConfiguration() == null) {
-            if (webBundleDescriptor.isConflictLoginConfiguration()) {
+            if (webBundleDescriptor.conflictLoginConfig) {
                 throw new IllegalArgumentException(localStrings.getLocalString(
                         "enterprise.deployment.exceptionconflictloginconfig",
-                        "There are more than one login config defined in web fragments with different values"));
+                        "There are more than one login-config defined in web fragments with different values"));
             } else {
                 setLoginConfiguration(webBundleDescriptor.getLoginConfiguration());
             }
@@ -1680,8 +1925,19 @@ public class WebBundleDescriptor extends BundleDescriptor
         orderedLibs.add(libName);
     }
 
-    public boolean isConflictLoginConfiguration() {
-        return conflictLoginConfig;
+    /**
+     * This method will copy the injection targets from env2 to env1
+     * if env1 does not injection target from xml.
+     *
+     * @param env1
+     * @param env2
+     */
+    private void combineInjectionTargets(EnvironmentProperty env1, EnvironmentProperty env2) {
+        if (!env1.hasInjectionTargetFromXml()) {
+            for (InjectionTarget injTarget: env2.getInjectionTargets()) {
+                env1.addInjectionTarget(injTarget);
+            }
+        }
     }
 
     /* ----

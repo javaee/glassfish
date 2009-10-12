@@ -36,6 +36,7 @@
 package com.sun.enterprise.deployment.annotation.handlers;
 
 import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
+import com.sun.enterprise.deployment.MetadataSource;
 import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
@@ -78,6 +79,7 @@ public class PostConstructHandler extends AbstractResourceHandler {
                    new LifecycleCallbackDescriptor();
             postConstructDesc.setLifecycleCallbackClass(pcClassName);
             postConstructDesc.setLifecycleCallbackMethod(pcMethodName);
+            postConstructDesc.setMetadataSource(MetadataSource.ANNOTATION);
             // override by xml is handled in addPostConstructDescriptor
             rcContext.addPostConstructDescriptor(postConstructDesc);
         }

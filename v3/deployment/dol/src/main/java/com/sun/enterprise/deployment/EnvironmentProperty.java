@@ -85,7 +85,7 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
     protected String mappedName;
 
     protected String lookupName;
-						    
+
     /** 
     ** copy constructor.
     */
@@ -128,40 +128,6 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
     /** 
     ** Returns the String value of this environment property 
     */
-    
-    void merge(EnvironmentProperty otherEnv) {
-        if (!getName().equals(otherEnv.getName())) {
-            throw new IllegalArgumentException(localStrings.getLocalString(
-                    "enterprise.deployment.exceptionmergewithdifferentname",
-                    "Cannot merge property with different names: [{0}], [{1}]",
-                    new Object[] {getName(), otherEnv.getName()}));
-        }
-        if (value == null && otherEnv.value != null) {
-            setValue(otherEnv.value);
-        }
-        if (valueObject == null && otherEnv.valueObject != null) {
-            valueObject = otherEnv.valueObject;
-        }
-        if (type == null && otherEnv.type != null) {
-            setType(otherEnv.type);
-        }
-        if (mappedName == null && otherEnv.mappedName != null) {
-            setMappedName(otherEnv.mappedName);
-        }
-        if (lookupName == null && otherEnv.lookupName != null) {
-            setLookupName(otherEnv.lookupName);
-        }
-        if (getDescription() == null || getDescription().length() == 0) {
-            setDescription(otherEnv.getDescription());
-        }
-
-        if (otherEnv.isInjectable()) {
-            for (InjectionTarget injTarget: otherEnv.getInjectionTargets()) {
-                addInjectionTarget(injTarget);
-            }
-        }
-    }
-
     public String getValue() {
 	if (this.value == null) {
 	    this.value = "";
@@ -335,10 +301,14 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
 
     }
 
+    public boolean isSetValueCalled() {
+        return setValueCalled;
+    }
+
     public boolean hasAValue() {
         return ( setValueCalled || hasLookupName() );
     }
-    
+
      /** 
     ** Returns true if the argument is an environment property of the same name, false else.
     */
@@ -467,6 +437,19 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
     public boolean isInjectable() {
         return (injectionTargets!=null && injectionTargets.size()>0);
         //return (getInjectTargetName() != null);
+    }
+
+    public boolean hasInjectionTargetFromXml() {
+        boolean fromXml = false;
+        if (injectionTargets != null) {
+            for (InjectionTarget injTarget: injectionTargets) {
+                fromXml = (MetadataSource.XML == injTarget.getMetadataSource());
+                if (fromXml) {
+                    break;
+                }
+            }
+        }
+        return fromXml;
     }
 
     public String getComponentEnvName() {

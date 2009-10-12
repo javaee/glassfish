@@ -36,6 +36,7 @@
 package com.sun.enterprise.deployment.annotation.handlers;
 
 import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
+import com.sun.enterprise.deployment.MetadataSource;
 import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
@@ -80,6 +81,7 @@ public class PreDestroyHandler extends AbstractResourceHandler {
                    new LifecycleCallbackDescriptor();
             preDestroyDesc.setLifecycleCallbackClass(pdClassName);
             preDestroyDesc.setLifecycleCallbackMethod(pdMethodName);
+            preDestroyDesc.setMetadataSource(MetadataSource.ANNOTATION);
             // override by xml is handled in addPreDestroyDescriptor
             rcContext.addPreDestroyDescriptor(preDestroyDesc);
         }

@@ -37,6 +37,7 @@ package com.sun.enterprise.deployment.annotation.handlers;
 
 import com.sun.enterprise.deployment.EntityManagerFactoryReferenceDescriptor;
 import com.sun.enterprise.deployment.InjectionTarget;
+import com.sun.enterprise.deployment.MetadataSource;
 import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
@@ -116,6 +117,8 @@ public class EntityManagerFactoryReferenceHandler
             InjectionTarget target = new InjectionTarget();
             target.setFieldName(f.getName());
             target.setClassName(targetClassName);
+            target.setMetadataSource(MetadataSource.ANNOTATION);
+
             for (EntityManagerFactoryReferenceDescriptor emfRef : emfRefs) {
                 emfRef.addInjectionTarget(target);
 
@@ -145,6 +148,8 @@ public class EntityManagerFactoryReferenceHandler
             InjectionTarget target = new InjectionTarget();
             target.setMethodName(m.getName());
             target.setClassName(targetClassName);            
+            target.setMetadataSource(MetadataSource.ANNOTATION);
+
             for (EntityManagerFactoryReferenceDescriptor emfRef : emfRefs) {
 
                 emfRef.addInjectionTarget(target);

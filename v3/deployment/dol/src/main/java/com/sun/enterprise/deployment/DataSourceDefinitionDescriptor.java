@@ -71,6 +71,8 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
 
     private String resourceId;
 
+    private MetadataSource metadataSource = MetadataSource.XML;
+
     private static final String JAVA_URL = "java:";
     private static final String JAVA_COMP_URL = "java:comp/";
 
@@ -333,6 +335,14 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
 
     public Properties getProperties(){
         return properties;
+    }
+
+    public MetadataSource getMetadataSource() {
+        return metadataSource;
+    }
+
+    public void setMetadataSource(MetadataSource metadataSource) {
+        this.metadataSource = metadataSource;
     }
 
     public boolean equals(Object object) {
