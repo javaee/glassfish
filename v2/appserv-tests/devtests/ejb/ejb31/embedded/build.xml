@@ -13,6 +13,7 @@
 
     <target name="all">
         <antcall target="basic"/>
+        <antcall target="testclose"/>
 <!--
         <antcall target="twomodules"/>
 -->
@@ -22,6 +23,12 @@
         <record name="basic.output" action="start" />
             <ant dir="basic" target="all"/>
         <record name="basic.output" action="stop" />
+    </target>
+
+    <target name="testclose">
+        <record name="testclose.output" action="start" />
+            <ant dir="testclose" target="all"/>
+        <record name="testclose.output" action="stop" />
     </target>
 
     <target name="twomodules">
