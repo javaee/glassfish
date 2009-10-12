@@ -64,6 +64,7 @@
 	<module>../../common/glassfish-api</module>
 	<module>../../common/glassfish-ee-api</module>
 	<module>../../common/internal-api</module>
+    <module>../../common/mbeanserver</module>
 	<module>../../core/bootstrap</module>
 	<module>../../core/kernel</module>
 	<module>../../connectors/admin</module>
