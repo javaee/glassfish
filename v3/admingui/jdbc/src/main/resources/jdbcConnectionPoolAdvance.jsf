@@ -38,7 +38,7 @@
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
 	setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" guiOnLoad="disableTableField();" >
 <!define name="content">
     <event>
     <!beforeEncode
@@ -131,7 +131,7 @@
 function disableTableField() {  \
     var methodType = getSelectElement("$pageSession{valMethod}"); \
     if(methodType.value == 'table') { \
-	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled("$pageSession{tableTextField}", false); \
+    	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled("$pageSession{tableTextField}", false); \
     } else{ \
 	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled("$pageSession{tableTextField}", true); \
     } \

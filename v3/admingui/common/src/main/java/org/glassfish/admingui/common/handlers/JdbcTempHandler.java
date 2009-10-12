@@ -128,25 +128,23 @@ public class JdbcTempHandler {
         output = {
             @HandlerOutput(name = "result", type = List.class)})
     public static void getTableNames(HandlerContext handlerCtx) {
-        try {
-            String name = (String) handlerCtx.getInputValue("name");
-            List result = new ArrayList();
-            Map<String, Object> tn = V3AMX.getInstance().getConnectorRuntime().getValidationTableNames(name);
-            if (tn != null) {
-                Set keys = (Set) tn.get(VALIDATION_TABLE_NAMES_KEY);
-                if (keys != null) {
-                    Iterator iter = keys.iterator();
-                    while (iter.hasNext()) {
-                        result.add(iter.next());
-                    }
+        String name = (String) handlerCtx.getInputValue("name");
+        List result = new ArrayList();
+        Map<String, Object> tn = V3AMX.getInstance().getConnectorRuntime().getValidationTableNames(name);
+        if (tn != null) {
+            Set keys = (Set) tn.get(VALIDATION_TABLE_NAMES_KEY);
+            if (keys != null) {
+                Iterator iter = keys.iterator();
+                while (iter.hasNext()) {
+                    result.add(iter.next());
                 }
+            } else if(tn.get(REASON_FAILED_KEY) != null) {
+               GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), tn.get(REASON_FAILED_KEY).toString());
+
             }
             handlerCtx.setOutputValue("result", result);
-        } catch (Exception ex) {
-            GuiUtil.handleException(handlerCtx, ex);
         }
     }
-
     /**
      *	<p> This handler gets the default values and resource type and puts them in session
      */
