@@ -77,7 +77,8 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
 
     protected String poolName;
 
-    static Logger _logger = LogDomains.getLogger(ConnectionManagerImpl.class,LogDomains.RSR_LOGGER);
+    protected Logger _logger = LogDomains.getLogger(ConnectionManagerImpl.class,LogDomains.RSR_LOGGER);
+    protected StringManager localStrings = StringManager.getManager(ConnectionManagerImpl.class);
 
     //The RAR name
     //This is pushed into the object in the connector runtime during
@@ -166,7 +167,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
 
         if (auth.equals(ResourceReferenceDescriptor.APPLICATION_AUTHORIZATION)) {
             if (cxRequestInfo == null) {
-                StringManager localStrings = StringManager.getManager(ConnectionManagerImpl.class);
+
                 String msg = localStrings.getString("con_mgr.null_userpass");
                 throw new ResourceException(msg);
             }
@@ -272,7 +273,6 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
         } catch (PoolingException ex) {
             Object[] params = new Object[]{poolName, ex};
             _logger.log(Level.WARNING, "poolmgr.get_connection_failure", params);
-            StringManager localStrings = StringManager.getManager(ConnectionManagerImpl.class);
             String i18nMsg = localStrings.getString("con_mgr.error_creating_connection", ex.getMessage());
             ResourceAllocationException rae = new ResourceAllocationException(i18nMsg);
             rae.initCause(ex);
@@ -285,8 +285,6 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
                                ConnectorDescriptor desc, boolean shareable)
             throws PoolingException, ResourceAllocationException, IllegalStateException {
         ResourceAllocator alloc;
-        StringManager localStrings =
-                StringManager.getManager(ConnectionManagerImpl.class);
 
         switch (txLevel) {
             case ConnectorConstants.NO_TRANSACTION_INT:
@@ -342,8 +340,6 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
     private void validatePool() throws ResourceException {
         ConnectorRegistry registry = ConnectorRegistry.getInstance();
         if (registry.getPoolMetaData(poolName) == null) {
-            StringManager localStrings =
-                    StringManager.getManager(ConnectionManagerImpl.class);
             String msg = localStrings.getString("con_mgr.no_pool_meta_data", poolName);
             throw new ResourceException(poolName + ": " + msg);
         }
