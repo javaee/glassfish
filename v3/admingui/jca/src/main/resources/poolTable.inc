@@ -37,12 +37,12 @@
 
 <sun:table id="poolTable" title="#{tableTitle}" 
             deselectMultipleButton="$boolean{true}"
-            deselectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
+            deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
             selectMultipleButton="$boolean{true}"
-            selectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
-         <!afterCreate
-            getClientId(component="$this{component}" clientId=>$page{tableId});
-        />
+            selectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{tableId});
+            />
     
 #include "/jca/poolTableButtons.inc"
 
@@ -54,7 +54,7 @@
             <sun:checkbox id="select" 
                 selected="#{td.value.selected}" 
                 selectedValue="$boolean{true}" 
-                onClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
+                onClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
             />
     </sun:tableColumn>    
 

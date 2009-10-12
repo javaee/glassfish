@@ -1792,6 +1792,7 @@ function showLargeHeaderFrame(showLarge) {
 
 admingui.deploy = {
     uploadInit: function(dirPathId, restartRequired, dirSelectBtnId, filSelectBtnId, fileuploadId) {
+            //
             //We need to set a timeout to delay the call to getTextElement inside disable component.
             //otherwise getTextElement will always return null, causing JS error.
             //disableComponent(dirPathId, 'text');
@@ -1954,8 +1955,8 @@ admingui.table = {
         try {
             var table = document.getElementById(tableId);// + ":_table");
             var selections =
-                table.getAllSelectedRowsCount();
-                //admingui.table.getAllSelectedRowsCount(table);
+                //table.getAllSelectedRowsCount();
+                admingui.table.getAllSelectedRowsCount(table);
             var disabled = (selections > 0) ? false : true;
             for (count=0; count < buttons.length; count++) {
                 var element = document.getElementById(buttons[count]);

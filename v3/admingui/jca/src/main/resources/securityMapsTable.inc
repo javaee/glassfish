@@ -36,21 +36,24 @@
 <!-- jca/securityMapsTable.inc used in securityMaps.jsf and workSecurityMaps.jsf-->
 
 <sun:table id="resourcesTable" title="#{tableTitle}"
-            deselectMultipleButton="$boolean{true}"
-            deselectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
+        deselectMultipleButton="$boolean{true}"
+            deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
             selectMultipleButton="$boolean{true}"
-            selectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
-         <!afterCreate
-            getClientId(component="$this{component}" clientId=>$page{tableId});
-        />
+            selectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{tableId});
+            />
 
 <!facet actionsTop>
      <sun:panelGroup id="topActionsGroup1">
+        <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{topActionGroup});
+            />
         <sun:button id="newButton" text="$resource{i18n.button.New}" >
             <!command redirect(page="#{pageSession.createLink}?name=#{pageSession.Name}") />
         </sun:button>
 
-        <sun:button id="deleteButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}"
+        <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
             onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
             { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
             else {return false;} "
@@ -74,7 +77,7 @@
             <sun:checkbox id="select"
                 selected="#{td.value.selected}"
                 selectedValue="$boolean{true}"
-                onClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
+                onClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
             />
     </sun:tableColumn>
 
