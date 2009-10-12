@@ -47,7 +47,7 @@ import java.util.logging.Logger;
 import javax.annotation.security.RunAs;
 import javax.servlet.*;
 import javax.servlet.http.HttpSession;
-
+import javax.servlet.annotation.MultipartConfig;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
@@ -1752,11 +1752,16 @@ public class WebModule extends PwcWebModule {
                 wrapper.getName());
         if (wcd == null) {
             /*
-             * Propagate the new servlet to the underlying 
-             * WebBundleDescriptor provided by the deployment backend,
-             * so that corresponding security constraints may be calculated
-             * by the security subsystem, which uses the
-             * WebBundleDescriptor as its input
+             * Servlet not present in the WebBundleDescriptor provided
+             * by the deployment backend, which means we are dealing with
+             * the dynamic registration for a programmtically added Servlet,
+             * as opposed to the dynamic registration for a Servlet with a
+             * preliminary declaration, that is, one without any class name.
+             *
+             * Propagate the new Servlet to the WebBundleDescriptor, so that
+             * corresponding security constraints may be calculated by the
+             * security subsystem, which uses the WebBundleDescriptor as its
+             * input.
              */
             wcd = new WebComponentDescriptor();
             wcd.setName(wrapper.getName());
@@ -1777,20 +1782,38 @@ public class WebModule extends PwcWebModule {
                         }
                     }
                 }
-                if (clazz.isAnnotationPresent(RunAs.class)) {
-                    RunAs runAs = (RunAs)clazz.getAnnotation(RunAs.class);
-                    String roleName = runAs.value();
-                    webBundleDescriptor.addRole(new Role(roleName));
-                    RunAsIdentityDescriptor runAsDesc =
-                        new RunAsIdentityDescriptor();
-                    runAsDesc.setRoleName(roleName);
-                    wcd.setRunAsIdentity(runAsDesc);
-                }
+                processServletAnnotations(clazz, webBundleDescriptor, wcd,
+                        wrapper);
             }
             webBundleDescriptor.addWebComponentDescriptor(wcd);
         }
 
         return new DynamicWebServletRegistrationImpl(wrapper, this);
+    }
+
+    private void processServletAnnotations(Class clazz,
+            WebBundleDescriptor webBundleDescriptor,
+            WebComponentDescriptor wcd, StandardWrapper wrapper) {
+        // Process RunAs annotation
+        if (clazz.isAnnotationPresent(RunAs.class)) {
+            RunAs runAs = (RunAs)clazz.getAnnotation(RunAs.class);
+            String roleName = runAs.value();
+            webBundleDescriptor.addRole(new Role(roleName));
+            RunAsIdentityDescriptor runAsDesc =
+                new RunAsIdentityDescriptor();
+            runAsDesc.setRoleName(roleName);
+            wcd.setRunAsIdentity(runAsDesc);
+        }
+        // Process MultipartConfig annotation
+        if (clazz.isAnnotationPresent(MultipartConfig.class)) {
+            MultipartConfig mpConfig = (MultipartConfig)
+                clazz.getAnnotation(MultipartConfig.class);
+            wrapper.setMultipartLocation(mpConfig.location());
+            wrapper.setMultipartMaxFileSize(mpConfig.maxFileSize());
+            wrapper.setMultipartMaxRequestSize(mpConfig.maxRequestSize());
+            wrapper.setMultipartFileSizeThreshold(
+                mpConfig.fileSizeThreshold());
+        }
     }
 
     @Override
@@ -2161,6 +2184,12 @@ class DynamicWebServletRegistrationImpl
         RunAsIdentityDescriptor runAsDesc = new RunAsIdentityDescriptor();
         runAsDesc.setRoleName(roleName);
         wcd.setRunAsIdentity(runAsDesc);
+    }
+
+    @Override
+    public void setServletSecurity(ServletSecurityElement constraint) {
+        super.setServletSecurity(constraint);
+        // TBD
     }
 
 }
