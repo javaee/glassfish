@@ -194,8 +194,7 @@ public interface TransactionService extends ConfigBeanProxy, Injectable, Propert
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (dataType=Integer.class)
-    @Min(value=1)
+    @Attribute (defaultValue="65536")
     public String getKeypointInterval();
 
     /**
