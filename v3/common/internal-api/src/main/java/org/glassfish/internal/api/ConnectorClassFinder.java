@@ -53,8 +53,10 @@ public class ConnectorClassFinder extends EJBClassLoader implements DelegatingCl
             this.raName = raName;
             // There should be better approach to skip libraries Classloader when none specified.
             // casting to DelegatingClassLoader is not a clean approach
-            if(((DelegatingClassLoader)librariesClassFinder).getDelegates().size() > 0){
-                this.librariesClassFinder = librariesClassFinder;
+            if(librariesClassFinder!= null){
+                if(((DelegatingClassLoader)librariesClassFinder).getDelegates().size() > 0){
+                    this.librariesClassFinder = librariesClassFinder;
+                }
             }
         }
 
