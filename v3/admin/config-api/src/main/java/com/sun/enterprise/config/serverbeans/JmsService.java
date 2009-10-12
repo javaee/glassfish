@@ -54,6 +54,7 @@ import org.jvnet.hk2.config.types.PropertyBag;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * The jms-service element specifies information about the bundled/built-in 
@@ -101,6 +102,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      */
     @Attribute
     @NotNull
+    @Pattern(regexp="(LOCAL|EMBEDDED|REMOTE)")
     String getType();
 
     /**
@@ -222,6 +224,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="random")
+    @Pattern(regexp="(random|priority)")
     String getAddresslistBehavior();
 
     /**
@@ -263,6 +266,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
+    @Pattern(regexp="(mq|http)")
     String getMqScheme();
 
     /**
@@ -284,6 +288,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
+    @Pattern(regexp="(ssljms|jms)")
     String getMqService();
 
     /**
