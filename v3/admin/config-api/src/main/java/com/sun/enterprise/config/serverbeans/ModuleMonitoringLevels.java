@@ -53,6 +53,7 @@ import org.jvnet.hk2.config.types.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.Pattern;
 
 /**
  *
@@ -74,6 +75,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
     public String getThreadPool();
 
     /**
@@ -94,6 +96,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
     public String getOrb();
 
     /**
@@ -113,6 +116,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
     public String getEjbContainer();
 
     /**
@@ -130,6 +134,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
     public String getWebContainer();
 
     /**
@@ -149,6 +154,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
     public String getTransactionService();
 
     /**
@@ -168,6 +174,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
     public String getHttpService();
 
     /**
@@ -187,6 +194,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
     public String getJdbcConnectionPool();
 
     /**
@@ -206,6 +214,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
     public String getConnectorConnectionPool();
 
     /**
@@ -223,6 +232,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
     public String getConnectorService();
 
     /**
@@ -240,6 +250,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
     public String getJmsService();
 
     /**
@@ -257,6 +268,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
     public String getJvm();
 
     /**
@@ -274,6 +286,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
     public String getSecurity();
 
     /**
@@ -291,6 +304,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
     public String getWebServicesContainer();
 
     /**
@@ -309,6 +323,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
     public String getJpa();
 
     /**
@@ -327,6 +342,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
     public String getJersey();
 
     /**

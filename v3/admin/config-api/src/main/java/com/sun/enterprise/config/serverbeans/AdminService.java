@@ -47,6 +47,7 @@ import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.*;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /* @XmlType(name = "", propOrder = {
     "jmxConnector",
@@ -75,6 +76,7 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="server")
+    @Pattern(regexp="(das|das-and-server|server)")
     String getType();
 
     /**

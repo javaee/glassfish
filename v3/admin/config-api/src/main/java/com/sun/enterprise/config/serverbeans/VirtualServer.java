@@ -60,6 +60,7 @@ import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.DuckTyped;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import com.sun.grizzly.config.dom.NetworkListener;
 
@@ -180,6 +181,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @return possible object is {@link String }
      */
     @Attribute(defaultValue = "on")
+    @Pattern(regexp="(on|off)")
     String getState();
 
     /**
@@ -228,6 +230,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @return possible object is {@link String }
      */
     @Attribute(defaultValue = "inherit")
+    @Pattern(regexp="(true|false|inherit)")
     String getSsoEnabled();
 
     /**
@@ -243,6 +246,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @return possible object is {@link String }
      */
     @Attribute(defaultValue = "inherit")
+    @Pattern(regexp="(true|false|inherit)")
     String getAccessLoggingEnabled();
 
     /**
@@ -292,6 +296,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * "true", "false", "dynamic"
      */
     @Attribute(defaultValue = "dynamic")
+    @Pattern(regexp="(true|false|dynamic)")
     String getSsoCookieSecure();
 
     void setSsoCookieSecure(String value);
