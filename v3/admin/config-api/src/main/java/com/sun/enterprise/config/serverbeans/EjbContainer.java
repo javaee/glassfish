@@ -53,7 +53,7 @@ import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.Min;
-
+import javax.validation.constraints.Pattern;
 
 /**
  * Configuration of EJB Container
@@ -295,6 +295,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="nru")
+    @Pattern(regexp="(nru|fifo|lru)")
     String getVictimSelectionPolicy();
 
     /**
@@ -315,6 +316,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="B")
+    @Pattern(regexp="B|C")
     String getCommitOption();
 
     /**

@@ -84,7 +84,7 @@ public interface ManagerProperties extends ConfigBeanProxy, Injectable, Property
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(defaultValue="60")
+    @Attribute(defaultValue="60",dataType=Integer.class)
     public String getReapIntervalInSeconds();
 
     /**

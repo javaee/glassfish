@@ -97,7 +97,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="2")
+    @Attribute (defaultValue="2",dataType=Integer.class)
     @Min(value=1)
     String getDynamicReloadPollIntervalInSeconds();
 
@@ -142,7 +142,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="2")
+    @Attribute (defaultValue="2",dataType=Integer.class)
     @Min(value=1)
     String getAutodeployPollingIntervalInSeconds();
 
@@ -220,7 +220,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="4")
+    @Attribute (defaultValue="4",dataType=Integer.class)
     String getAutodeployRetryTimeout();
 
     /**

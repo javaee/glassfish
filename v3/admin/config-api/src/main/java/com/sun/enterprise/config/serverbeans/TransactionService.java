@@ -55,6 +55,7 @@ import org.glassfish.config.support.datatypes.PositiveInteger;
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 
+import javax.validation.constraints.Min;
 /**
  * Configuration for Transaction Manager
  */
@@ -193,7 +194,8 @@ public interface TransactionService extends ConfigBeanProxy, Injectable, Propert
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="65536")
+    @Attribute (dataType=Integer.class)
+    @Min(value=1)
     public String getKeypointInterval();
 
     /**

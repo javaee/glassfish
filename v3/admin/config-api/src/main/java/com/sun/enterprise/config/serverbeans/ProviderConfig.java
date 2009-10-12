@@ -53,6 +53,7 @@ import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * The provider-config element defines the configuration of an authentication
@@ -104,6 +105,7 @@ public interface ProviderConfig extends ConfigBeanProxy, Injectable, PropertyBag
      */
     @Attribute
     @NotNull
+    @Pattern(regexp="(client|server|client-server)")
     public String getProviderType();
 
     /**

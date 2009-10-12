@@ -86,7 +86,7 @@ public interface StoreProperties extends ConfigBeanProxy, Injectable, PropertyBa
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(dataType=Integer.class)
     public String getReapIntervalInSeconds();
 
     /**

@@ -46,6 +46,7 @@ import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
 
+import javax.validation.constraints.Pattern;
 
 /**
  * Used to define the authentication policy requirements associated with the
@@ -69,6 +70,7 @@ public interface RequestPolicy extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute
+    @Pattern(regexp="(sender|content|username-password)")
     public String getAuthSource();
 
     /**
@@ -98,6 +100,7 @@ public interface RequestPolicy extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute
+    @Pattern(regexp="(before-content|after-content)")
     public String getAuthRecipient();
 
     /**

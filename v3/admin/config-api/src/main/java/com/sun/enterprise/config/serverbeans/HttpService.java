@@ -53,6 +53,7 @@ import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Attribute;
 
+import javax.validation.constraints.Pattern;
 
 @Configured
 public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
@@ -227,6 +228,7 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
     HttpListener getHttpListenerById(String id);
 
     @Attribute(defaultValue = "false")
+    @Pattern(regexp="(false|true|inherit)")
     String getAccessLoggingEnabled();
 
     void setAccessLoggingEnabled(String enabled);
@@ -241,6 +243,7 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is {@link String }
      */
     @Attribute(defaultValue = "false")
+    @Pattern(regexp="(true|false|inherit)")
     String getSsoEnabled();
 
     /**

@@ -121,7 +121,8 @@ public interface Orb extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="1024")
+    @Attribute (defaultValue="1024",dataType=Integer.class)
+    @Min(value=0)
     public String getMaxConnections();
 
     /**
