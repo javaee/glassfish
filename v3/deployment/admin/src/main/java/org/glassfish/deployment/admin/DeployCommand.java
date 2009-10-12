@@ -225,9 +225,12 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 file = expansionDir;
             }
 
-            // if the virtualservers param is not defined, set it to "server"
+            /*
+             * If the virtualservers param is not defined, set it to all
+             * defined virtual servers minus __asadmin
+             */
             if (virtualservers == null) {
-                virtualservers = "server";
+                virtualservers = getVirtualServers();
             }
 
             // create the parent class loader
@@ -554,5 +557,34 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 "Verifier class not found: ", cnfe); 
             return false;
         }
+    }
+
+    /*
+     * @return comma-separated list of all defined virtual servers (exclusive
+     * of __asadmin)
+     */
+    private String getVirtualServers() {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        List<Config> configs = domain.getConfigs().getConfig();
+        for (Config config : configs) {
+            List<VirtualServer> hosts =
+                config.getHttpService().getVirtualServer();
+            if (hosts != null) {
+                for (VirtualServer host : hosts) {
+                    if (("__asadmin").equals(host.getId())) {
+                        continue;
+                    }
+                    if (first) {
+                        sb.append(host.getId());
+                        first = false;
+                    } else {
+                        sb.append(",");
+                        sb.append(host.getId());
+                    }
+                }
+            }
+        }
+        return sb.toString();
     }
 }

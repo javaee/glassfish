@@ -1492,26 +1492,18 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             WebModuleConfig wmInfo, String j2eeApplication,
             Properties deploymentProperties) {
 
+        List<Result<WebModule>> results = new ArrayList<Result<WebModule>>();
         String vsIDs = wmInfo.getVirtualServers();
         List vsList = StringUtils.parseStringList(vsIDs, " ,");
-        boolean loadToAll = vsList == null || vsList.size() == 0;
+        if (vsList == null || vsList.isEmpty()) {
+            return results;
+        }
 
-        List<Result<WebModule>> results = new ArrayList<Result<WebModule>>();
         Container[] vsArray = getEngine().findChildren();
         for (Container aVsArray : vsArray) {
             if (aVsArray instanceof VirtualServer) {
                 VirtualServer vs = (VirtualServer) aVsArray;
-                /*
-                * Fix for bug# 4913636:
-                * If the vsList is null and the virtual server is
-                * __asadmin, continue with next iteration
-                * because we don't want to load user apps on __asadmin
-                */
-                if (vs.getID().equals(org.glassfish.api.web.Constants.ADMIN_VS) && loadToAll) {
-                    continue;
-                }
-                if (loadToAll || vsList.contains(vs.getID())
-                    || verifyAlias(vsList, vs)) {
+                if (vsList.contains(vs.getID()) || verifyAlias(vsList, vs)) {
                     WebModule ctx = null;
                     try {
                         ctx = loadWebModule(vs, wmInfo, j2eeApplication,
@@ -2028,8 +2020,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         for(Container aHostArray : hostArray) {
             host = (VirtualServer)aHostArray;
             /**
-             * Related to Bug: 4904290
-             * Do not unloadload module on ADMIN_VS
+             * Related to Bug: 4904290: Do not unload from __asadmin
              */
             if (unloadFromAll && host.getName().equalsIgnoreCase(
                     org.glassfish.api.web.Constants.ADMIN_VS)) {
@@ -2119,28 +2110,22 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public boolean suspendWebModule(String contextRoot,
                                     String appName,
                                     String hosts) {
+        boolean hasBeenSuspended = false;
+        List hostList = StringUtils.parseStringList(hosts, " ,");
+        if (hostList == null || hostList.isEmpty()) {
+            return hasBeenSuspended;
+        }
+
         // tomcat contextRoot starts with "/"
         if (contextRoot.length() != 0 && !contextRoot.startsWith("/") ) {
             contextRoot = "/" + contextRoot;
         }
-        List hostList = StringUtils.parseStringList(hosts, " ,");
-        boolean suspendOnAll = hostList == null || hostList.isEmpty();
-        boolean hasBeenSuspended = false;
         VirtualServer host = null;
         Context context = null;
         for (Container aHostArray : getEngine().findChildren()) {
             host = (VirtualServer)aHostArray;
-            /**
-             * Related to Bug: 4904290
-             * Do not unloadload module on ADMIN_VS
-             */
-            if (suspendOnAll &&
-                    host.getName().equalsIgnoreCase(
-                        org.glassfish.api.web.Constants.ADMIN_VS)) {
-                continue;
-            }
-            if (suspendOnAll || hostList.contains(host.getName())
-                    || verifyAlias(hostList, host)) {
+            if (hostList.contains(host.getName()) ||
+                    verifyAlias(hostList, host)) {
                 context = (Context)host.findChild(contextRoot);
                 if (context != null) {
                     context.setAvailable(false);
