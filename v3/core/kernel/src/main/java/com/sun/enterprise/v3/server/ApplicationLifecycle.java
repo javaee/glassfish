@@ -253,6 +253,7 @@ public class ApplicationLifecycle implements Deployment {
                 for (Object m : context.getModuleMetadata()) {
                     tempAppInfo.addMetaData(m);
                 }
+                tempAppInfo.setIsJavaEEApp(sortedEngineInfos);
                 appRegistry.add(appName, tempAppInfo);
 
                 context.createApplicationClassLoader(clh, handler);

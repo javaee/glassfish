@@ -57,6 +57,7 @@ public class ApplicationInfo extends ModuleInfo {
     final private Map<String, Object> transientAppMetaData = new HashMap<String, Object>();
 
     private String libraries;
+    private boolean isJavaEEApp = false;
 
 
     /**
@@ -122,6 +123,31 @@ public class ApplicationInfo extends ModuleInfo {
     public void setLibraries(String libraries) {
         this.libraries = libraries;
     }
+
+    /**
+     * Returns whether this application is a JavaEE application
+     * @return the isJavaEEApp flag
+     */
+    public boolean isJavaEEApp() {
+        return isJavaEEApp;
+    }
+
+    /**
+     * Sets whether this application is a JavaEE application
+     * @param engineInfos the engine info list
+     */
+    public void setIsJavaEEApp(List<EngineInfo> engineInfos) {
+        for (EngineInfo engineInfo : engineInfos) {
+            String moduleType = engineInfo.getSniffer().getModuleType(); 
+            if (moduleType.equals("web") || moduleType.equals("ejb") || 
+                moduleType.equals("appclient") || 
+                moduleType.equals("connector") ||  moduleType.equals("ear")) {
+                isJavaEEApp = true;
+                break;
+            }
+        }
+    }
+
 
     /**
      * Returns the directory where the application bits are located
