@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.docs.man</groupId>
         <artifactId>manpages</artifactId>
-        <version>3.0-SNAPSHOT</version>
+        <version>3.0-3.0-b03</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>    
     <artifactId>jdbc-admin-manpage</artifactId>
