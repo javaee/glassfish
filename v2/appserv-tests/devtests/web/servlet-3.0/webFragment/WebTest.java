@@ -68,21 +68,27 @@ public class WebTest {
 
     public void doTest() {
         try {
-            boolean testStatus = runTest("urlPatternFromWeb", "/mytest", 200, EXPECTED_RESPONSE);
-            testStatus = testStatus && runTest("urlPatternFromWebFragment", "/wftest", 404, null);
-            testStatus = testStatus && runTest("envEntryFromWebFragment", "/wftest2", 200, EXPECTED_RESPONSE_2);
-            testStatus = testStatus && runTest("envEntryFromWeb", "/mytest2", 200, EXPECTED_RESPONSE_3);
-            stat.addStatus(TEST_NAME, stat.PASS);
+            boolean ok1 = runTest("/mytest", 200, EXPECTED_RESPONSE);
+            System.out.println("test urlPatternFromWeb: " + ok1);
+
+            boolean ok2 = runTest("/wftest", 404, null);
+            System.out.println("test urlPatternFromWebFragment: " + ok2);
+
+            boolean ok3 = runTest("/wftest2", 200, EXPECTED_RESPONSE_2);
+            System.out.println("test envEntryFromWebFragment: " + ok3);
+
+            boolean ok4 = runTest("/mytest2", 200, EXPECTED_RESPONSE_3);
+            System.out.println("test envEntryFromWeb: " + ok4);
+            stat.addStatus(TEST_NAME, ((ok1 && ok2 && ok3 && ok4)? stat.PASS : stat.FAIL));
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
         }
     }
 
-    private boolean runTest(String info, String urlPattern, int statusCode,
+    private boolean runTest(String urlPattern, int statusCode,
             String expectedResponse) throws Exception {
 
-        System.out.println("test: " + info);
         String url = "http://" + host + ":" + port + contextRoot + urlPattern;
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();
