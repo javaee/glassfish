@@ -7,6 +7,7 @@ package org.glassfish.admingui.common.util;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,54 +62,63 @@ public class V3AMXUtil {
 
 
     //Application Utils
-    /* returns the port number on which appName could be executed
+    /* returns the launch link of the app.
      * will try to get a port number that is not secured.  But if it can't find one, a
-     * secured port will be returned, prepanded with '-'
+     * secured port will be used.
      */
-    public static String getPortForApplication(String appName) {
+    public static String getLaunchLink(String serverName, String appName) {
         try{
             AMXProxy  server = (AMXProxy) V3AMX.getInstance().getDomain().getServers().getServer().get("server");
             AMXProxy appRef = server.childrenMap("application-ref").get(appName);
-            NetworkListener listener = null;
+            Map<String,String> result = null;
             if (appRef == null) { // no application-ref found for this application, shouldn't happen for PE. TODO: think about EE
-                listener = getListener();
+                result = getListener();
             } else {
                 String vsId = (String)appRef.attributesMap().get("VirtualServers");
                 if (vsId == null || vsId.length() == 0) { // no vs specified
-                    listener = getListener();
+                    result = getListener();
                 } else {
-                    listener = getListener(vsId);
+                    result = getListener(vsId);
 
                 }
             }
-            if (listener == null) {
+            if (result == null) {
                 return null;
             }
-            String port = (String) listener.resolveAttribute("Port");
-            String security = (String)listener.findProtocol().attributesMap().get("SecurityEnabled");
-            return ("true".equals(security)) ? "-" + port : port;
+            String vs = result.get("vs");
+            if (vs.equals("server")){
+                vs = serverName;   //this is actually the hostName, more readable for user in the launch URL.
+            }
+            String port = result.get("port");
+            String protocol = result.get("protocol");
+            return protocol + "://" + vs + ":" + port ;
         }catch(Exception ex){
             GuiUtil.getLogger().warning(ex.getMessage());
-            return "";
+            return null;
         }
     }
 
     // returns a  http-listener that is linked to a non-admin VS
-    private static NetworkListener getListener() {
+    private static Map getListener() {
         Map<String, VirtualServer> vsMap = V3AMX.getServerConfig("server-config").getHttpService().childrenMap(VirtualServer.class);
         return getOneVsWithNetworkListener(new ArrayList(vsMap.keySet()));
     }
 
-    private static NetworkListener getListener(String vsIds) {
+    private static Map getListener(String vsIds) {
         return getOneVsWithNetworkListener(GuiUtil.parseStringList(vsIds, ","));
     }
 
-    private static NetworkListener getOneVsWithNetworkListener(List<String> vsList) {
+    private static Map getOneVsWithNetworkListener(List<String> vsList) {
+        Map result = new HashMap();
         if (vsList == null || vsList.size() == 0) {
             return null;
         }
-        NetworkListener secureListener = null;
-        HttpService hConfig = V3AMX.getServerConfig("server-config").getHttpService();
+        //Just to ensure we look at "server" first.
+        if (vsList.contains("server")){
+            vsList.remove("server");
+            vsList.add(0, "server");
+        }
+        boolean found = false;
         Map<String, VirtualServer> vsMap = V3AMX.getServerConfig("server-config").getHttpService().childrenMap(VirtualServer.class);
         for (String vsName : vsList) {
             if (vsName.equals("__asadmin")) {
@@ -127,15 +137,22 @@ public class V3AMXUtil {
                     }
                     String security = (String)oneListener.findProtocol().attributesMap().get("SecurityEnabled");
                     if ("true".equals(security)) {
-                        secureListener = oneListener;
+                        //use this secured port, but try to find one thats not secured.
+                        result.put("protocol", "https");
+                        result.put("port", oneListener.resolveAttribute("Port"));
+                        result.put("vs", vsName);
+                        found = true;
                         continue;
                     } else {
-                        return oneListener;
+                        result.put("protocol", "http");
+                        result.put("port", oneListener.resolveAttribute("Port"));
+                        result.put("vs", vsName);
+                        return result;
                     }
                 }
             }
         }
-        return secureListener;
+        return found ? result : null;
     }
 
     

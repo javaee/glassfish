@@ -426,6 +426,7 @@ public class WebAppHandlers {
     private static void getLaunchInfo(String serverName, AMXProxy oneApp,  Map oneRow) {
         Map<String, Object> attrs = oneApp.attributesMap();
         String contextRoot = (String) attrs.get("ContextRoot");
+        String appName = (String) attrs.get("Name");
         if (contextRoot == null){
             contextRoot = "";
         }
@@ -436,22 +437,12 @@ public class WebAppHandlers {
         if ( !enabled || contextRoot.equals("")){
             return;
         }
-        
-        String protocol = "http";
-        String port = V3AMXUtil.getPortForApplication( (String) attrs.get("Name"));
-        if (port == null) {
-            oneRow.put("port", "");
-            oneRow.put("hasLaunch", false);
-        } else {
-            if (port.startsWith("-")) {
-                protocol = "https";
-                port = port.substring(1);
-            }
-            oneRow.put("port", port);
+        String launchLink = V3AMXUtil.getLaunchLink(serverName, appName);
+        if (! GuiUtil.isEmpty(launchLink)){
             oneRow.put("hasLaunch", true);
-            String ctxRoot = calContextRoot(contextRoot);
-            oneRow.put("launchLink", protocol + "://" + serverName + ":" + port + ctxRoot);
+            oneRow.put("launchLink", launchLink + calContextRoot(contextRoot));
         }
+
     }
 
    @Handler(id = "restartApplication",
