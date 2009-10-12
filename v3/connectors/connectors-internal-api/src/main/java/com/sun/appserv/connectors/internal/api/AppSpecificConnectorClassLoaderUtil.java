@@ -39,6 +39,12 @@ public class AppSpecificConnectorClassLoaderUtil {
         }
         Application app = appInfo.getMetaData(Application.class);
 
+        if(app == null){
+            // for non Java EE Applications, Application object is not available
+            // need a better mechanism to distinguis Java EE app and a non Java EE app.
+            return;
+        }
+
         // Iterate through all bundle descriptors, ejb-descriptors, managed-bean descriptors
         // for references to resource-adapters
         //
@@ -100,10 +106,13 @@ public class AppSpecificConnectorClassLoaderUtil {
         ApplicationInfo appInfo = appRegistry.get(appName);
         if (appInfo != null) {
             Application app = appInfo.getMetaData(Application.class);
-            return app.getResourceAdapters();
-        } else {
-            return new HashSet<String>();
+            // for non Java EE Applications, Application object is not available
+            // need a better mechanism to distinguis Java EE app and a non Java EE app.
+            if(app != null){
+                return app.getResourceAdapters();
+            }
         }
+        return new HashSet<String>();
     }
 
     private void processDescriptorForRAReferences(com.sun.enterprise.deployment.Application app,
