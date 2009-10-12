@@ -113,6 +113,7 @@ public final class SMFService implements Service {
     private boolean trace = true;
     private boolean dryRun;
     private String  shortName;
+
     /**
      * Creates SMFService instance. All the tokens are initialized to default values. 
      * Callers must verify that the tokens are properly token-replaced before
@@ -531,7 +532,7 @@ public final class SMFService implements Service {
         //pairs.put(PASSWORD_FILE_PATH_TN, NULL_VALUE);
         pairs.put(TIMEOUT_SECONDS_TN, TIMEOUT_SECONDS_DV);
         pairs.put(OS_USER_TN, NULL_VALUE);
-        pairs.put(PRIVILEGES_TN, PRIVILEGES_DEFAULT_VAL);
+        pairs.put(PRIVILEGES_TN, BASIC_NETADDR_PRIV_VAL);
         pairs.put(CREDENTIALS_TN, " ");
     }
     
