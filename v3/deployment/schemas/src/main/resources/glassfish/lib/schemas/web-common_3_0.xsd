@@ -60,7 +60,7 @@
 
   <xsd:annotation>
     <xsd:documentation>
-<![CDATA[[
+      <![CDATA[[
       This is the common XML Schema for the Servlet 3.0 deployment descriptor.
       This file is in turn used by web.xml and web-fragment.xml
       web application's war file.  All Servlet deployment descriptors
@@ -85,7 +85,7 @@
       
       http://java.sun.com/xml/ns/javaee/web-common_3_0.xsd
       
-]]>
+      ]]>
     </xsd:documentation>
   </xsd:annotation>
 
@@ -204,10 +204,10 @@
   <xsd:complexType name="web-appType">
     <xsd:choice minOccurs="0"
                 maxOccurs="unbounded">
-      <xsd:group ref="javaee:web-commonType"/>
       <xsd:element name="module-name"
                    type="javaee:string"
                    minOccurs="0"/>
+      <xsd:group ref="javaee:web-commonType"/>
       <xsd:element name="absolute-ordering"
                    type="javaee:absoluteOrderingType"/>
     </xsd:choice>
@@ -1534,7 +1534,9 @@
                    maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation>
+
             The directory location where uploaded files will be stored
+            
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -1544,7 +1546,9 @@
                    maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation>
+
             The maximum size limit of uploaded files
+            
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -1554,7 +1558,9 @@
                    maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation>
+
             The maximum size limit of multipart/form-data requests
+            
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -1564,8 +1570,10 @@
                    maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation>
+
             The size threshold after which an uploaded file will be
             written to disk
+            
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
