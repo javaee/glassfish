@@ -225,6 +225,11 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 file = expansionDir;
             }
 
+            // if the virtualservers param is not defined, set it to "server"
+            if (virtualservers == null) {
+                virtualservers = "server";
+            }
+
             // create the parent class loader
             final ExtendedDeploymentContext deploymentContext =
                     deployment.getBuilder(logger, this, report).
