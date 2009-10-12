@@ -37,6 +37,7 @@
  */
 package com.sun.enterprise.v3.services.impl.monitor;
 
+import com.sun.enterprise.v3.services.impl.monitor.probes.ThreadPoolProbeProvider;
 import com.sun.grizzly.http.StatsThreadPool;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -45,18 +46,30 @@ import java.util.concurrent.TimeUnit;
  * Grizzly thread pool implementation that emits probe events.
  *
  * @author jluehe
+ * @author Alexey Stashok
  */
 public class MonitorableThreadPool extends StatsThreadPool {
 
     // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
     private final GrizzlyMonitoring monitoring;
-    private final String threadPoolMonitoringName;
+    private final String monitoringName;
 
     public MonitorableThreadPool(GrizzlyMonitoring monitoring,
-            String threadPoolMonitoringName) {
+            String monitoringName) {
         this.monitoring = monitoring;
-        this.threadPoolMonitoringName = threadPoolMonitoringName;
+        this.monitoringName = monitoringName;
         setThreadFactory(new ProbeWorkerThreadFactory());
+
+        final ThreadPoolProbeProvider threadPoolProbeProvider =
+                monitoring.getThreadPoolProbeProvider();
+
+        threadPoolProbeProvider.setCoreThreadsEvent(
+                monitoringName, corePoolSize);
+        threadPoolProbeProvider.setMaxThreadsEvent(
+                monitoringName, maxPoolSize);
+
+        monitoring.getConnectionQueueProbeProvider().setMaxTaskQueueSizeEvent(
+                monitoringName, workQueue.remainingCapacity());
     }
 
     public MonitorableThreadPool(
@@ -66,22 +79,103 @@ public class MonitorableThreadPool extends StatsThreadPool {
         super(threadPoolName, corePoolSize, maximumPoolSize, maxTasksCount,
                 keepAliveTime, unit);
         this.monitoring = monitoring;
-        this.threadPoolMonitoringName = threadPoolMonitoringName;
+        this.monitoringName = threadPoolMonitoringName;
         setThreadFactory(new ProbeWorkerThreadFactory());
+
+        final ThreadPoolProbeProvider threadPoolProbeProvider =
+                monitoring.getThreadPoolProbeProvider();
+        
+        threadPoolProbeProvider.setCoreThreadsEvent(
+                threadPoolMonitoringName, super.corePoolSize);
+        threadPoolProbeProvider.setMaxThreadsEvent(
+                threadPoolMonitoringName, super.maxPoolSize);
+
+        monitoring.getConnectionQueueProbeProvider().setMaxTaskQueueSizeEvent(
+                monitoringName, workQueue.remainingCapacity());
     }
+
+    @Override
+    public void setCorePoolSize(int corePoolSize) {
+        synchronized (statelock) {
+            super.setCorePoolSize(corePoolSize);
+
+            if (monitoring == null) return;
+
+            monitoring.getThreadPoolProbeProvider().setCoreThreadsEvent(
+                    monitoringName, corePoolSize);
+        }
+    }
+
+    @Override
+    public void setMaximumPoolSize(int maxPoolSize) {
+        synchronized (statelock) {
+            super.setMaximumPoolSize(maxPoolSize);
+            
+            if (monitoring == null) return;
+
+            monitoring.getThreadPoolProbeProvider().setMaxThreadsEvent(
+                    monitoringName, maxPoolSize);
+        }
+    }
+
+    @Override
+    protected void setPoolSizes(int corePoolSize, int maxPoolSize) {
+        synchronized (statelock) {
+            super.setPoolSizes(corePoolSize, maxPoolSize);
+
+            if (monitoring == null) return;
+
+            final ThreadPoolProbeProvider threadPoolProbeProvider =
+                    monitoring.getThreadPoolProbeProvider();
+
+            threadPoolProbeProvider.setCoreThreadsEvent(
+                    monitoringName, corePoolSize);
+            threadPoolProbeProvider.setMaxThreadsEvent(
+                    monitoringName, maxPoolSize);
+        }
+    }
+
 
     @Override
     protected void beforeExecute(Thread thread, Runnable runnable) {
         super.beforeExecute(thread, runnable);
         monitoring.getThreadPoolProbeProvider().threadDispatchedFromPoolEvent(
-                threadPoolMonitoringName, thread.getName());
+                monitoringName, thread.getName());
     }
 
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
         monitoring.getThreadPoolProbeProvider().threadReturnedToPoolEvent(
-                threadPoolMonitoringName, Thread.currentThread().getName());
+                monitoringName, Thread.currentThread().getName());
         super.afterExecute(r, t);
+    }
+
+    @Override
+    protected void onWorkerExit(BasicWorker worker) {
+        monitoring.getThreadPoolProbeProvider().threadReleasedEvent(
+                monitoringName, Thread.currentThread().getName());
+        super.onWorkerExit(worker);
+    }
+
+    @Override
+    protected void onTaskQueued(Runnable task) {
+        monitoring.getConnectionQueueProbeProvider().onTaskQueuedEvent(
+                monitoringName, task);
+        super.onTaskQueued(task);
+    }
+
+    @Override
+    protected void onTaskDequeued(Runnable task) {
+        monitoring.getConnectionQueueProbeProvider().onTaskDequeuedEvent(
+                monitoringName, task);
+        super.onTaskDequeued(task);
+    }
+
+    @Override
+    protected void onTaskQueueOverflow() {
+        monitoring.getConnectionQueueProbeProvider().onTaskQueueOverflowEvent(
+                monitoringName);
+        super.onTaskQueueOverflow();
     }
 
     public class ProbeWorkerThreadFactory implements ThreadFactory {
@@ -92,8 +186,8 @@ public class MonitorableThreadPool extends StatsThreadPool {
                     MonitorableThreadPool.this, r, name +
                     "-(" + workerThreadCounter.getAndIncrement() + ")",
                     initialByteBufferSize, monitoring);
-            monitoring.getThreadPoolProbeProvider().newThreadsAllocatedEvent(
-                    threadPoolMonitoringName, 1, true);
+            monitoring.getThreadPoolProbeProvider().threadAllocatedEvent(
+                    monitoringName, thread.getName());
             return thread;
         }
     }

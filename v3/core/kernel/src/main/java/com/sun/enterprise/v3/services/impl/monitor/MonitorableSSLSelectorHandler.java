@@ -78,7 +78,7 @@ public class MonitorableSSLSelectorHandler extends SSLSelectorThreadHandler {
     public SelectableChannel acceptWithoutRegistration(SelectionKey key)
             throws IOException {
         final SelectableChannel channel = super.acceptWithoutRegistration(key);
-        grizzlyMonitoring.getConnectionsProbeProvider().connectionAcceptedEvent(
+        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionAcceptedEvent(
                 listenerName, channel.hashCode());
 
         return channel;
@@ -87,7 +87,7 @@ public class MonitorableSSLSelectorHandler extends SSLSelectorThreadHandler {
     @Override
     public boolean onConnectInterest(SelectionKey key, Context ctx)
             throws IOException {
-        grizzlyMonitoring.getConnectionsProbeProvider().connectionConnectedEvent(
+        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionConnectedEvent(
                 listenerName, key.channel().hashCode());
 
         return super.onConnectInterest(key, ctx);

@@ -35,11 +35,11 @@
  */
 package com.sun.enterprise.v3.services.impl.monitor;
 
-import com.sun.enterprise.v3.services.impl.monitor.probes.ConnectionsProbeProvider;
+import com.sun.enterprise.v3.services.impl.monitor.probes.ConnectionQueueProbeProvider;
 import com.sun.enterprise.v3.services.impl.monitor.probes.FileCacheProbeProvider;
 import com.sun.enterprise.v3.services.impl.monitor.probes.KeepAliveProbeProvider;
 import com.sun.enterprise.v3.services.impl.monitor.probes.ThreadPoolProbeProvider;
-import com.sun.enterprise.v3.services.impl.monitor.stats.ConnectionsStatsProvider;
+import com.sun.enterprise.v3.services.impl.monitor.stats.ConnectionQueueStatsProvider;
 import com.sun.enterprise.v3.services.impl.monitor.stats.FileCacheStatsProvider;
 import com.sun.enterprise.v3.services.impl.monitor.stats.KeepAliveStatsProvider;
 import com.sun.enterprise.v3.services.impl.monitor.stats.ThreadPoolStatsProvider;
@@ -66,9 +66,9 @@ public class GrizzlyMonitoring {
     // network-listener->keep-alive-stats Map
     private final Map<String, KeepAliveStatsProvider> keepAliveStatsProvidersMap =
             new ConcurrentHashMap<String, KeepAliveStatsProvider>();
-    // network-listener->connections-stats Map
-    private final Map<String, ConnectionsStatsProvider> connectionsStatsProvidersMap =
-            new ConcurrentHashMap<String, ConnectionsStatsProvider>();
+    // network-listener->connection-queue-stats Map
+    private final Map<String, ConnectionQueueStatsProvider> connectionQueueStatsProvidersMap =
+            new ConcurrentHashMap<String, ConnectionQueueStatsProvider>();
 
     // thread-pool emitter probe
     private final ThreadPoolProbeProvider threadPoolProbeProvider;
@@ -76,14 +76,14 @@ public class GrizzlyMonitoring {
     private final FileCacheProbeProvider fileCacheProbeProvider;
     // keep-alive emitter probe
     private final KeepAliveProbeProvider keepAliveProbeProvider;
-    // connections emitter probe
-    private final ConnectionsProbeProvider connectionsProbeProvider;
+    // connection queue emitter probe
+    private final ConnectionQueueProbeProvider connectionQueueProbeProvider;
     
     public GrizzlyMonitoring() {
         threadPoolProbeProvider = new ThreadPoolProbeProvider();
         fileCacheProbeProvider = new FileCacheProbeProvider();
         keepAliveProbeProvider = new KeepAliveProbeProvider();
-        connectionsProbeProvider = new ConnectionsProbeProvider();
+        connectionQueueProbeProvider = new ConnectionQueueProbeProvider();
     }
 
     /**
@@ -114,12 +114,12 @@ public class GrizzlyMonitoring {
     }
 
     /**
-     * Get connections probe provider
+     * Get connection queue probe provider
      *
-     * @return connections probe provider
+     * @return connection queue probe provider
      */
-    public ConnectionsProbeProvider getConnectionsProbeProvider() {
-        return connectionsProbeProvider;
+    public ConnectionQueueProbeProvider getConnectionQueueProbeProvider() {
+        return connectionQueueProbeProvider;
     }
 
     /**
@@ -216,33 +216,33 @@ public class GrizzlyMonitoring {
     }
 
     /**
-     * Register connections statistics provider for a network listener
+     * Register connection queue statistics provider for a network listener
      *
      * @param name network listener name
      */
-    public void registerConnectionsStatsProvider(String name) {
-        ConnectionsStatsProvider connectionsStatsProvider = new ConnectionsStatsProvider(name);
-        ConnectionsStatsProvider oldConnectionsStatsProvider =
-                connectionsStatsProvidersMap.put(name, connectionsStatsProvider);
+    public void registerConnectionQueueStatsProvider(String name) {
+        ConnectionQueueStatsProvider connectionQueueStatsProvider = new ConnectionQueueStatsProvider(name);
+        ConnectionQueueStatsProvider oldConnectionQueueStatsProvider =
+                connectionQueueStatsProvidersMap.put(name, connectionQueueStatsProvider);
 
-        if (oldConnectionsStatsProvider != null) {
-            StatsProviderManager.unregister(oldConnectionsStatsProvider);
+        if (oldConnectionQueueStatsProvider != null) {
+            StatsProviderManager.unregister(oldConnectionQueueStatsProvider);
         }
 
         StatsProviderManager.register(CONFIG_ELEMENT, PluginPoint.SERVER,
-                subtreePrefix(name) + "/connections", connectionsStatsProvider);
+                subtreePrefix(name) + "/connection-queue", connectionQueueStatsProvider);
     }
 
     /**
-     * Unregister connections statistics provider for a network listener
+     * Unregister connection queue statistics provider for a network listener
      *
      * @param name network listener name
      */
-    public void unregisterConnectionsStatsProvider(String name) {
-        final ConnectionsStatsProvider connectionsStatsProvider =
-                connectionsStatsProvidersMap.remove(name);
-        if (connectionsStatsProvider != null) {
-            StatsProviderManager.unregister(connectionsStatsProvider);
+    public void unregisterConnectionQueueStatsProvider(String name) {
+        final ConnectionQueueStatsProvider connectionQueueStatsProvider =
+                connectionQueueStatsProvidersMap.remove(name);
+        if (connectionQueueStatsProvider != null) {
+            StatsProviderManager.unregister(connectionQueueStatsProvider);
         }
     }
 

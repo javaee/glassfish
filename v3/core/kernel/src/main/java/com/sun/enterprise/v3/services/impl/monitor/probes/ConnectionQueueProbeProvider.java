@@ -40,12 +40,12 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.external.probe.provider.annotations.ProbeProvider;
 
 /**
- * Probe provider interface for connection related events.
+ * Probe provider interface for connection queue related events.
  *
  * @author Alexey Stashok
  */
-@ProbeProvider(moduleProviderName = "glassfish", moduleName = "kernel", probeProviderName = "connections")
-public class ConnectionsProbeProvider {
+@ProbeProvider(moduleProviderName = "glassfish", moduleName = "kernel", probeProviderName = "connection-queue")
+public class ConnectionQueueProbeProvider {
 
     @Probe(name = "connectionAcceptedEvent")
     public void connectionAcceptedEvent(
@@ -55,12 +55,29 @@ public class ConnectionsProbeProvider {
     @Probe(name = "connectionConnectedEvent")
     public void connectionConnectedEvent(
             @ProbeParam("listenerName") String listenerName,
-            @ProbeParam("connection") int connectionId) {
-    }
+            @ProbeParam("connection") int connectionId) {}
 
     @Probe(name = "connectionClosedEvent")
     public void connectionClosedEvent(
             @ProbeParam("listenerName") String listenerName,
-            @ProbeParam("connection") int connectionId) {
-    }
+            @ProbeParam("connection") int connectionId) {}
+
+    @Probe(name = "setMaxTaskQueueSizeEvent")
+    public void setMaxTaskQueueSizeEvent(
+            @ProbeParam("listenerName") String listenerName,
+            @ProbeParam("size") int size) {}
+
+    @Probe(name = "onTaskQueuedEvent")
+    public void onTaskQueuedEvent(
+            @ProbeParam("listenerName") String listenerName,
+            @ProbeParam("task") Runnable task) {}
+
+    @Probe(name = "onTaskDequeuedEvent")
+    public void onTaskDequeuedEvent(
+            @ProbeParam("listenerName") String listenerName,
+            @ProbeParam("task") Runnable task) {}
+
+    @Probe(name = "onTaskQueueOverflowEvent")
+    public void onTaskQueueOverflowEvent(
+            @ProbeParam("listenerName") String listenerName) {}
 }

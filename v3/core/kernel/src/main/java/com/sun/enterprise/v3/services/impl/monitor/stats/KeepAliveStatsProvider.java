@@ -55,46 +55,77 @@ import org.glassfish.gmbal.ManagedObject;
 public class KeepAliveStatsProvider {
     private final String name;
 
-    private final CountStatisticImpl keepAliveConnectionsCount = new CountStatisticImpl("KeepAliveConnectionsCount", "count", "Number of connections in keep-alive mode");
-    private final CountStatisticImpl flushesCount = new CountStatisticImpl("FlushesCount", "count", "Number of keep-alive connections that were closed");
-    private final CountStatisticImpl hitsCount = new CountStatisticImpl("HitsCount", "count", "Number of requests received by connections in keep-alive mode");
-    private final CountStatisticImpl refusalsCount = new CountStatisticImpl("RefusalsCount", "count", "Number of keep-alive connections that were rejected");
-    private final CountStatisticImpl timeoutsCount = new CountStatisticImpl("TimeoutsCount", "count", "Number of keep-alive connections that timed out");
+    private final CountStatisticImpl maxRequestsCount = new CountStatisticImpl("MaxRequests", "count", "Maximum number of requests allowed on a single keep-alive connection");
+    private final CountStatisticImpl timeoutInSeconds = new CountStatisticImpl("SecondsTimeouts", "seconds", "Keep-alive timeout value in seconds");
+    private final CountStatisticImpl keepAliveConnectionsCount = new CountStatisticImpl("CountConnections", "count", "Number of connections in keep-alive mode");
+    private final CountStatisticImpl flushesCount = new CountStatisticImpl("CountFlushes", "count", "Number of keep-alive connections that were closed");
+    private final CountStatisticImpl hitsCount = new CountStatisticImpl("CountHits", "count", "Number of requests received by connections in keep-alive mode");
+    private final CountStatisticImpl refusalsCount = new CountStatisticImpl("CountRefusals", "count", "Number of keep-alive connections that were rejected");
+    private final CountStatisticImpl timeoutsCount = new CountStatisticImpl("CountTimeouts", "count", "Number of keep-alive connections that timed out");
 
     public KeepAliveStatsProvider(String name) {
         this.name = name;
     }
     
-    @ManagedAttribute(id = "keepaliveconnections")
+    @ManagedAttribute(id = "maxrequests")
+    @Description("Maximum number of requests allowed on a single keep-alive connection")
+    public CountStatistic getMaxKeepAliveRequestsCount() {
+        return maxRequestsCount;
+    }
+
+    @ManagedAttribute(id = "secondstimeouts")
+    @Description("Keep-alive timeout value in seconds")
+    public CountStatistic getKeepAliveTimeoutInSeconds() {
+        return timeoutInSeconds;
+    }
+
+    @ManagedAttribute(id = "countconnections")
     @Description("Number of connections in keep-alive mode")
     public CountStatistic getKeepAliveConnectionsCount() {
         return keepAliveConnectionsCount;
     }
 
-    @ManagedAttribute(id = "flushes")
+    @ManagedAttribute(id = "countflushes")
     @Description("Number of keep-alive connections that were closed")
     public CountStatistic getFlushesCount() {
         return flushesCount;
     }
 
-    @ManagedAttribute(id = "hits")
+    @ManagedAttribute(id = "counthits")
     @Description("Number of requests received by connections in keep-alive mode")
     public CountStatistic getHitsCount() {
         return hitsCount;
     }
 
-    @ManagedAttribute(id = "refusals")
+    @ManagedAttribute(id = "countrefusals")
     @Description("Number of keep-alive connections that were rejected")
     public CountStatistic getRefusalsCount() {
         return refusalsCount;
     }
 
-    @ManagedAttribute(id = "timeouts")
+    @ManagedAttribute(id = "counttimeouts")
     @Description("Number of keep-alive connections that timed out")
     public CountStatistic getTimeoutsCount() {
         return timeoutsCount;
     }
 
+    @ProbeListener("glassfish:kernel:connections-keep-alive:setMaxCountRequestsEvent")
+    public void setMaxCountRequestsEvent(
+            @ProbeParam("listenerName") String listenerName,
+            @ProbeParam("maxRequests") int max) {
+        if (name.equals(listenerName)) {
+            maxRequestsCount.setCount(max);
+        }
+    }
+
+    @ProbeListener("glassfish:kernel:connections-keep-alive:setTimeoutInSecondsEvent")
+    public void setTimeoutInSecondsEvent(
+            @ProbeParam("listenerName") String listenerName,
+            @ProbeParam("timeoutInSeconds") int timeoutInSeconds) {
+        if (name.equals(listenerName)) {
+            this.timeoutInSeconds.setCount(timeoutInSeconds);
+        }
+    }
 
     @ProbeListener("glassfish:kernel:connections-keep-alive:incrementCountConnectionsEvent")
     public void incrementCountConnectionsEvent(@ProbeParam("listenerName") String listenerName) {

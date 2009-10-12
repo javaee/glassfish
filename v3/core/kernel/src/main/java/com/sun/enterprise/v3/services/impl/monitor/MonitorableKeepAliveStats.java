@@ -51,11 +51,29 @@ public class MonitorableKeepAliveStats extends KeepAliveStats {
     public MonitorableKeepAliveStats(GrizzlyMonitoring grizzlyMonitoring, String listenerName) {
         this.grizzlyMonitoring = grizzlyMonitoring;
         this.listenerName = listenerName;
+
+        if (grizzlyMonitoring != null) {
+            // Set initial monitoring values
+            setMaxKeepAliveRequests(getMaxKeepAliveRequests());
+            setKeepAliveTimeoutInSeconds(getKeepAliveTimeoutInSeconds());
+        }
     }
 
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public void setMaxKeepAliveRequests(int maxKeepAliveRequests) {
+        super.setMaxKeepAliveRequests(maxKeepAliveRequests);
+        grizzlyMonitoring.getKeepAliveProbeProvider().setMaxCountRequestsEvent(listenerName, maxKeepAliveRequests);
+    }
+
+    @Override
+    public void setKeepAliveTimeoutInSeconds(int timeout) {
+        super.setKeepAliveTimeoutInSeconds(timeout);
+        grizzlyMonitoring.getKeepAliveProbeProvider().setTimeoutInSecondsEvent(listenerName, timeout);
     }
 
     @Override

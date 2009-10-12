@@ -47,21 +47,37 @@ import org.glassfish.external.probe.provider.annotations.ProbeProvider;
  */
 @ProbeProvider (moduleProviderName="glassfish", moduleName="kernel", probeProviderName="connections-keep-alive")
 public class KeepAliveProbeProvider {
+    @Probe(name="setMaxCountRequestsEvent")
+    public void setMaxCountRequestsEvent(
+            @ProbeParam("listenerName") String listenerName,
+            @ProbeParam("maxRequests") int max) {}
+
+    @Probe(name="setTimeoutInSecondsEvent")
+    public void setTimeoutInSecondsEvent(
+            @ProbeParam("listenerName") String listenerName,
+            @ProbeParam("timeoutInSeconds") int timeoutInSeconds) {}
+
     @Probe(name="incrementCountConnectionsEvent")
-    public void incrementCountConnectionsEvent(@ProbeParam("listenerName") String listenerName) {}
+    public void incrementCountConnectionsEvent(
+            @ProbeParam("listenerName") String listenerName) {}
 
     @Probe(name="decrementCountConnectionsEvent")
-    public void decrementCountConnectionsEvent(@ProbeParam("listenerName") String listenerName) {}
+    public void decrementCountConnectionsEvent(
+            @ProbeParam("listenerName") String listenerName) {}
 
     @Probe(name="incrementCountFlushesEvent")
-    public void incrementCountFlushesEvent(@ProbeParam("listenerName") String listenerName) {}
+    public void incrementCountFlushesEvent(
+            @ProbeParam("listenerName") String listenerName) {}
 
     @Probe(name="incrementCountHitsEvent")
-    public void incrementCountHitsEvent(@ProbeParam("listenerName") String listenerName) {}
+    public void incrementCountHitsEvent(
+            @ProbeParam("listenerName") String listenerName) {}
 
     @Probe(name="incrementCountRefusalsEvent")
-    public void incrementCountRefusalsEvent(@ProbeParam("listenerName") String listenerName) {}
+    public void incrementCountRefusalsEvent(
+            @ProbeParam("listenerName") String listenerName) {}
 
     @Probe(name="incrementCountTimeoutsEvent")
-    public void incrementCountTimeoutsEvent(@ProbeParam("listenerName") String listenerName) {}
+    public void incrementCountTimeoutsEvent(
+            @ProbeParam("listenerName") String listenerName) {}
 }

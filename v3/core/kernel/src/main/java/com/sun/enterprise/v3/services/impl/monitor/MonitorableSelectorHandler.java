@@ -80,7 +80,7 @@ public class MonitorableSelectorHandler extends SelectorThreadHandler {
     public SelectableChannel acceptWithoutRegistration(SelectionKey key)
             throws IOException {
         final SelectableChannel channel = super.acceptWithoutRegistration(key);
-        grizzlyMonitoring.getConnectionsProbeProvider().connectionAcceptedEvent(listenerName, channel.hashCode());
+        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionAcceptedEvent(listenerName, channel.hashCode());
         
         return channel;
     }
@@ -88,7 +88,7 @@ public class MonitorableSelectorHandler extends SelectorThreadHandler {
     @Override
     public boolean onConnectInterest(SelectionKey key, Context ctx)
             throws IOException {
-        grizzlyMonitoring.getConnectionsProbeProvider().connectionConnectedEvent(listenerName, key.channel().hashCode());
+        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionConnectedEvent(listenerName, key.channel().hashCode());
         
         return super.onConnectInterest(key, ctx);
     }

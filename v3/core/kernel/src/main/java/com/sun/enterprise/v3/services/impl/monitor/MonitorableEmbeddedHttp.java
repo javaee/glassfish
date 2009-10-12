@@ -62,6 +62,8 @@ public class MonitorableEmbeddedHttp extends GrizzlyEmbeddedHttp {
         super(grizzlyServiceListener);
         this.monitoring = monitoring;
         this.listenerName = listenerName;
+        
+        keepAliveStats = createKeepAliveStats();
     }
 
     @Override

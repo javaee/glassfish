@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.services.impl.monitor.stats;
 
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
@@ -50,67 +49,111 @@ import org.glassfish.gmbal.ManagedObject;
  * 
  * @author Alexey Stashok
  */
-@AMXMetadata(type="thread-pool-mon", group="monitoring")
+@AMXMetadata(type = "thread-pool-mon", group = "monitoring")
 @ManagedObject
 @Description("Thread Pool Statistics")
 public class ThreadPoolStatsProvider {
-    private final String name;
 
-    private final CountStatisticImpl totalExecutedTasksCount = new CountStatisticImpl("TotalExecutedTasksCount", "count", "Total number of tasks, which were executed by the thread-pool");
-    private final CountStatisticImpl currentThreadPoolSize = new CountStatisticImpl("CurrentThreadPoolSize", "count", "Current number of threads running by the thread-pool");
-    private final CountStatisticImpl numberOfActiveThreads = new CountStatisticImpl("NumberOfActiveThreads", "count", "Number of threads, which are currently executing tasks");
+    private final String name;
+    private final CountStatisticImpl maxThreadsCount = new CountStatisticImpl("MaxThreads", "count", "Maximum number of threads allowed in the thread pool");
+    private final CountStatisticImpl coreThreadsCount = new CountStatisticImpl("CoreThreads", "count", "Core number of threads in the thread pool");
+    
+    private final CountStatisticImpl totalExecutedTasksCount = new CountStatisticImpl("TotalExecutedTasksCount", "count", "Provides the total number of tasks, which were executed by the thread pool");
+    private final CountStatisticImpl currentThreadCount = new CountStatisticImpl("CurrentThreadCount", "count", "Provides the number of request processing threads currently in the listener thread pool");
+    private final CountStatisticImpl currentThreadsBusy = new CountStatisticImpl("CurrentThreadsBusy", "count", "Provides the number of request processing threads currently in use in the listener thread pool serving requests");
 
     public ThreadPoolStatsProvider(String name) {
         this.name = name;
     }
 
-    @ManagedAttribute(id="totalexecutedtasks")
-    @Description("Total number of tasks, which were executed by the thread-pool")
-    public CountStatistic getTotalExecutedTasksCount(){
-         return totalExecutedTasksCount;
+    @ManagedAttribute(id = "maxthreads")
+    @Description("Maximum number of threads allowed in the thread pool")
+    public CountStatistic getMaxThreadsCount() {
+        return maxThreadsCount;
     }
 
-    @ManagedAttribute(id="currentthreadpoolsize")
-    @Description("Current number of threads running by the thread-pool")
-    public CountStatistic getCurrentThreadPoolSize(){
-         return currentThreadPoolSize;
+    @ManagedAttribute(id = "corethreads")
+    @Description("Core number of threads in the thread pool")
+    public CountStatistic getCoreThreadsCount() {
+        return coreThreadsCount;
     }
 
-    @ManagedAttribute(id="numberofactivethreads")
-    @Description("Number of threads, which are currently executing tasks")
-    public CountStatistic getNumberOfActiveThreads(){
-         return numberOfActiveThreads;
+    @ManagedAttribute(id = "totalexecutedtasks")
+    @Description("Provides the total number of tasks, which were executed by the thread pool")
+    public CountStatistic getTotalExecutedTasksCount() {
+        return totalExecutedTasksCount;
     }
 
-    @ProbeListener("glassfish:kernel:thread-pool:newThreadsAllocatedEvent")
-    public void newThreadsAllocatedEvent(
-        @ProbeParam("threadPoolName") String threadPoolName,
-        @ProbeParam("increment") int increment,
-        @ProbeParam("startThread") boolean startThread) {
+    @ManagedAttribute(id = "currentthreadcount")
+    @Description("Provides the number of request processing threads currently in the listener thread pool")
+    public CountStatistic getCurrentThreadCount() {
+        return currentThreadCount;
+    }
+
+    @ManagedAttribute(id = "currentthreadsbusy")
+    @Description("Provides the number of request processing threads currently in use in the listener thread pool serving requests.")
+    public CountStatistic getCurrentThreadsBusy() {
+        return currentThreadsBusy;
+    }
+
+    @ProbeListener("glassfish:kernel:thread-pool:setMaxThreadsEvent")
+    public void setMaxThreadsEvent(
+            @ProbeParam("threadPoolName") String threadPoolName,
+            @ProbeParam("maxNumberOfThreads") int maxNumberOfThreads) {
 
         if (name.equals(threadPoolName)) {
-            currentThreadPoolSize.increment();
+            maxThreadsCount.setCount(maxNumberOfThreads);
+        }
+    }
+
+    @ProbeListener("glassfish:kernel:thread-pool:setCoreThreadsEvent")
+    public void setCoreThreadsEvent(
+            @ProbeParam("threadPoolName") String threadPoolName,
+            @ProbeParam("coreNumberOfThreads") int coreNumberOfThreads) {
+
+        if (name.equals(threadPoolName)) {
+            coreThreadsCount.setCount(coreNumberOfThreads);
+        }
+    }
+
+    @ProbeListener("glassfish:kernel:thread-pool:threadAllocatedEvent")
+    public void threadAllocatedEvent(
+            @ProbeParam("threadPoolName") String threadPoolName,
+            @ProbeParam("threadId") String threadId) {
+
+        if (name.equals(threadPoolName)) {
+            currentThreadCount.increment();
+        }
+    }
+
+    @ProbeListener("glassfish:kernel:thread-pool:threadReleasedEvent")
+    public void threadReleasedEvent(
+            @ProbeParam("threadPoolName") String threadPoolName,
+            @ProbeParam("threadId") String threadId) {
+
+        if (name.equals(threadPoolName)) {
+            currentThreadCount.decrement();
         }
     }
 
     @ProbeListener("glassfish:kernel:thread-pool:threadDispatchedFromPoolEvent")
     public void threadDispatchedFromPoolEvent(
-        @ProbeParam("threadPoolName") String threadPoolName,
-        @ProbeParam("threadId") String threadId) {
+            @ProbeParam("threadPoolName") String threadPoolName,
+            @ProbeParam("threadId") String threadId) {
 
         if (name.equals(threadPoolName)) {
-            numberOfActiveThreads.increment();
+            currentThreadsBusy.increment();
         }
     }
 
     @ProbeListener("glassfish:kernel:thread-pool:threadReturnedToPoolEvent")
     public void threadReturnedToPoolEvent(
-        @ProbeParam("threadPoolName") String threadPoolName,
-        @ProbeParam("threadId") String threadId) {
+            @ProbeParam("threadPoolName") String threadPoolName,
+            @ProbeParam("threadId") String threadId) {
 
         if (name.equals(threadPoolName)) {
             totalExecutedTasksCount.increment();
-            numberOfActiveThreads.decrement();
+            currentThreadsBusy.decrement();
         }
     }
 }

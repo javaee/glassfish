@@ -30,18 +30,13 @@ own identifying information: Portions Copyright [yyyy]
 	<graphDef id="all-modules" tolerateBrokenPOMs="true">
 		<scope level="compile,runtime">
 			<subtract>
-			    <subtract>
 				<fullGraph/>
-			         <subGraph groupID="org.glassfish.packager" artifactID="glassfish-nucleus">	
+			         <subGraph groupID="org.glassfish.packager" artifactID="glassfish-nucleus">
 	                             <scope level="compile,runtime"/>
 			         </subGraph>
-			     </subtract>
-			         <subGraph groupID="javax.servlet" artifactID="servlet-api">	
-	                                 <scope level="compile,runtime"/>
-				 </subGraph>
 			 </subtract>
-		</scope>					 
-       </graphDef>
+		</scope>
+      </graphDef>
 
        
        <stage-module-jars graphid="all-modules" />

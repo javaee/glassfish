@@ -335,7 +335,7 @@ public class GrizzlyProxy implements NetworkProxy {
         monitoring.registerThreadPoolStatsProvider(name);
         monitoring.registerKeepAliveStatsProvider(name);
         monitoring.registerFileCacheStatsProvider(name);
-        monitoring.registerConnectionsStatsProvider(name);
+        monitoring.registerConnectionQueueStatsProvider(name);
     }
 
     protected void unregisterMonitoringStatsProviders() {
@@ -345,7 +345,7 @@ public class GrizzlyProxy implements NetworkProxy {
         monitoring.unregisterThreadPoolStatsProvider(name);
         monitoring.unregisterKeepAliveStatsProvider(name);
         monitoring.unregisterFileCacheStatsProvider(name);
-        monitoring.unregisterConnectionsStatsProvider(name);
+        monitoring.unregisterConnectionQueueStatsProvider(name);
     }
     
 

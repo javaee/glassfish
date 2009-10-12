@@ -74,7 +74,7 @@ public class MonitorableSelectionKeyHandler extends SelectorThreadKeyHandler {
 
     @Override
     public void cancel(SelectionKey key) {
-        grizzlyMonitoring.getConnectionsProbeProvider().connectionClosedEvent(
+        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionClosedEvent(
                 listenerName, key.channel().hashCode());
 
         super.cancel(key);
