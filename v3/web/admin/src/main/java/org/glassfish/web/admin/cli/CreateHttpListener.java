@@ -38,6 +38,7 @@ package org.glassfish.web.admin.cli;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
@@ -136,15 +137,22 @@ public class CreateHttpListener implements AdminCommand {
             listener = createNetworkListener(networkConfig, transport, threadPool);
             updateVirtualServer(vs);
         } catch (TransactionFailure e) {
-            if (listener) {
-                deleteListener(context);
+            try {
+                if (listener) {
+                    deleteListener(context);
+                }
+                if (protocol) {
+                    deleteProtocol(context);
+                }
+                if (transport) {
+                    deleteTransport(context);
+                }
+            } catch (Exception e1) {
+                logger.log(Level.INFO, e.getMessage(), e);
+                e.printStackTrace();
+                throw new RuntimeException(e.getMessage());
             }
-            if (protocol) {
-                deleteProtocol(context);
-            }
-            if (transport) {
-                deleteTransport(context);
-            }
+            logger.log(Level.INFO, e.getMessage(), e);
             report.setMessage(localStrings.getLocalString("create.http.listener.fail",
                 "Creation of: " + listenerId + "failed because of: " + e.getMessage(), listenerId, e.getMessage()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

@@ -98,7 +98,7 @@ public class CreateProtocol implements AdminCommand {
     // the way create-ssl has been done. Grizzly team concurs on this proposal
 
     @Param(name="securityenabled", optional=true, defaultValue = "false")
-    Boolean securityEnabled;
+    Boolean securityEnabled = false;
 
     @Inject
     Configs configs;
@@ -138,7 +138,7 @@ public class CreateProtocol implements AdminCommand {
                     boolean accessLogAdded = false;
                     Protocol newProtocol = param.createChild(Protocol.class);
                     newProtocol.setName(protocolName);
-                    newProtocol.setSecurityEnabled(securityEnabled.toString());
+                    newProtocol.setSecurityEnabled(securityEnabled == null ? null : securityEnabled.toString());
                     param.getProtocol().add(newProtocol);
                     return newProtocol;
                 }

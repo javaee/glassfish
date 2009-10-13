@@ -28,6 +28,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import org.glassfish.api.admin.config.Named;
 import org.jvnet.hk2.annotations.Inject;
@@ -116,7 +118,7 @@ public final class ConfigBeansUtilities {
         if (domain == null || sn == null)
             throw new IllegalArgumentException("Null argument");
         List<Application> allApps = getAllDefinedSystemApplications();
-        if (allApps.size() == 0)
+        if (allApps.isEmpty())
             return (allApps); //if there are no sys-apps, none can reference one :)
         //allApps now contains ALL the system applications
         Server s = getServerNamed(sn);
@@ -210,7 +212,7 @@ public final class ConfigBeansUtilities {
         }
         if (theServer != null) {
             List<Named> modulesToExclude = excludeSystemApps ?
-                domain.getSystemApplications().getModules() : Collections.EMPTY_LIST;
+                domain.getSystemApplications().getModules() : Collections.<Named>emptyList();
             List<ApplicationRef> result = new ArrayList<ApplicationRef>();
               for (ApplicationRef candidateRef : theServer.getApplicationRef()) {
                 String appRefModuleName = candidateRef.getRef();
@@ -227,7 +229,7 @@ public final class ConfigBeansUtilities {
             }
             return result;
         } else {
-            return Collections.EMPTY_LIST;
+            return Collections.<ApplicationRef>emptyList();
         }
     }
 
@@ -380,5 +382,12 @@ public final class ConfigBeansUtilities {
             builder.append(string);
         }
         return builder.toString();
+    }
+
+    public static String toString(Throwable t) {
+        final StringWriter writer = new StringWriter();
+        t.printStackTrace(new PrintWriter(writer));
+
+        return writer.toString();
     }
 }

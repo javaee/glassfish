@@ -39,6 +39,7 @@ import java.util.List;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
@@ -60,55 +61,51 @@ import org.jvnet.hk2.config.TransactionFailure;
 /**
  * Command to create http element within a protocol element
  *
- * Sample Usage :
- *    create-http protocol_name
+ * Sample Usage : create-http protocol_name
  *
  * domain.xml element example
  *
- *   <http max-connections="250" default-virtual-server="server" server-name="">
- *     <file-cache enabled="false" />
- *   </http>
+ * <http max-connections="250" default-virtual-server="server" server-name=""> <file-cache enabled="false" /> </http>
  *
  * @author Justin Lee
  */
-@Service(name="create-http")
+@Service(name = "create-http")
 @Scoped(PerLookup.class)
 @I18n("create.http")
 public class CreateHttp implements AdminCommand {
-
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CreateHttp.class);
 
-    @Param(name="protocolname", primary=true)
+    @Param(name = "protocolname", primary = true)
     String protocolName;
 
-    @Param(name="request-timeout-seconds", defaultValue = "30", optional=true)
+    @Param(name = "request-timeout-seconds", defaultValue = "30", optional = true)
     String requestTimeoutSeconds;
 
-    @Param(name="timeout-seconds", defaultValue = "30", optional = true)
+    @Param(name = "timeout-seconds", defaultValue = "30", optional = true)
     String timeoutSeconds;
 
-    @Param(name="max-connection", defaultValue = "256", optional = true)
+    @Param(name = "max-connection", defaultValue = "256", optional = true)
     String maxConnections;
 
     @Param(name = "default-virtual-server")
     String defaultVirtualServer;
 
-    @Param(name="dns-lookup-enabled", defaultValue = "false", optional = true)
-    Boolean dnsLookupEnabled;
+    @Param(name = "dns-lookup-enabled", defaultValue = "false", optional = true)
+    Boolean dnsLookupEnabled = false;
 
     @Param(name = "servername", optional = true)
     String serverName;
 
     @Param(name = "xpowered", optional = true, defaultValue = "true")
-    Boolean xPoweredBy;
+    Boolean xPoweredBy = false;
 
     @Inject
     Configs configs;
 
     /**
-     * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
+     * the values the parameter values
      *
      * @param context information
      */
@@ -117,7 +114,7 @@ public class CreateHttp implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         // check for duplicates
-        List <Config> configList = configs.getConfig();
+        List<Config> configList = configs.getConfig();
         Config config = configList.get(0);
         Protocols protocols = config.getNetworkConfig().getProtocols();
         Protocol protocol = null;
@@ -141,20 +138,21 @@ public class CreateHttp implements AdminCommand {
                     cache.setEnabled("false");
                     http.setFileCache(cache);
                     http.setDefaultVirtualServer(defaultVirtualServer);
-                    http.setDnsLookupEnabled(dnsLookupEnabled.toString());
+                    http.setDnsLookupEnabled(dnsLookupEnabled == null ? null : dnsLookupEnabled.toString());
                     http.setMaxConnections(maxConnections);
                     http.setRequestTimeoutSeconds(requestTimeoutSeconds);
                     http.setTimeoutSeconds(timeoutSeconds);
-                    http.setXpoweredBy(xPoweredBy.toString());
+                    http.setXpoweredBy(xPoweredBy == null ? null : xPoweredBy.toString());
                     http.setServerName(serverName);
                     param.setHttp(http);
                     return http;
                 }
             }, protocol);
-        } catch(TransactionFailure e) {
+        } catch (TransactionFailure e) {
             report.setMessage(
                 localStrings.getLocalString("create.http.fail",
-                "Failed to create http for {0} ", protocolName));
+                    "Failed to create http for {0}: " + (e.getMessage() == null ? "No reason given." : e.getMessage()),
+                    protocolName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;
