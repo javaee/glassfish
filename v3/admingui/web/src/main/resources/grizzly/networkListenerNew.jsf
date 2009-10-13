@@ -98,13 +98,13 @@
         var compt = getTextElement('#{pageSession.protocolChoiceId}');
         compt.value = choice;
         if (choice == 'create'){
-            webui.suntheme.field.setDisabled("$pageSession{PdropDownId}", true);
-            webui.suntheme.field.setDisabled("$pageSession{pNameId}", false);
-            webui.suntheme.field.setDisabled("$pageSession{newVsId}", false);
+            disableComponent('$pageSession{PdropDownId}', 'select');
+            enableComponent('$pageSession{pNameId}', 'text');
+            enableComponent('$pageSession{newVsId}', 'select');
         }else{
-            webui.suntheme.field.setDisabled("$pageSession{PdropDownId}", false);
-            webui.suntheme.field.setDisabled("$pageSession{pNameId}", true);
-            webui.suntheme.field.setDisabled("$pageSession{newVsId}", true);
+            enableComponent('$pageSession{PdropDownId}', 'select');
+            disableComponent('$pageSession{pNameId}', 'text');
+            disableComponent('$pageSession{newVsId}', 'select');
         }
     }
     
