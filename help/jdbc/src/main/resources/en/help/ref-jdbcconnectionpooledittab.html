@@ -5,7 +5,11 @@ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
 Use is subject to License Terms  -->
 <a name="ref-jdbcconnectionpooledittab"></a><h4>Edit Connection Pool</h4>
 <a name="indexterm-23"></a><p>Use the Edit Connection Pool page to edit the general properties of a
-JDBC connection pool.</p><p>The Edit Connection Pool page contains the following options.</p><dl><dt>JNDI Name</dt>
+JDBC connection pool.</p><p>The Edit Connection Pool page contains the following options.</p><dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p></dd>
+<dt>Ping</dt>
+<dd><p>Button to verify the database connection. If an error message appears when you click this button, check to see if the database server has been started.</p></dd>
+<dt>JNDI Name</dt>
 <dd><p>The name of the connection pool. This is a read-only field. You can only specify the name when you create a JDBC connection pool.</p></dd>
 <dt>Resource Type</dt>
 <dd><p>Choices include javax.sql.XADataSource (global transactions), java.sql.ConnectionPoolDataSource (local transactions, possible performance improvements), and javax.sql.DataSource (local transactions only).</p></dd>

@@ -9,7 +9,9 @@ for web applications.</p><p>The HTTP service provides the facilities for deployi
 deployed web applications accessible by HTTP clients, along with virtual servers, thread pools,
 and the Network Configuration capability.</p><p>The Enterprise Server uses the HTTP Service Access Log to enable and
 configure rotation for the access logs for the virtual servers. These logs are
-located in the <tt><i>domain-dir</i>/logs/access</tt> directory and are named as follows: <tt><i>virtual_server_name</i>_access_log.<i>yyyyMMdd</i>-<i>HH</i>h<i>mm</i>m<i>ss</i>s.txt</tt></p><p>The HTTP Service Access Logging page contains the following options.</p><dl><dt>SSO</dt>
+located in the <tt><i>domain-dir</i>/logs/access</tt> directory and are named as follows: <tt><i>virtual_server_name</i>_access_log.<i>yyyyMMdd</i>-<i>HH</i>h<i>mm</i>m<i>ss</i>s.txt</tt></p><p>The HTTP Service page contains the following options.</p><dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p></dd>
+<dt>SSO</dt>
 <dd><p>Identifies whether single sign-on is enabled by default for all web applications on all virtual servers on this server that are configured for the same realm. If this option is not enabled, single sign-on is disabled by default for all virtual servers, and users must authenticate separately to every application on each virtual server. You can override this setting for an individual virtual server. SSO can be can be enabled or disabled. This option is disabled by default.</p></dd>
 <dt>Access Logging</dt>
 <dd><p>If this option is selected, access logging is enabled for all virtual server sub-elements that do not specify this property. If not selected, this option disables access logging for all virtual-server sub-elements that do not specify this property. This option is disabled by default.</p></dd>

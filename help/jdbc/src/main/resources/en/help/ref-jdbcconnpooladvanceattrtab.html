@@ -5,7 +5,11 @@ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
 Use is subject to License Terms  -->
 <a name="ref-jdbcconnpooladvanceattrtab"></a><h4>Edit Connection Pool Advanced Attributes</h4>
 <a name="indexterm-24"></a><p>Use the Edit Connection Pool Advanced Attributes page to specify attributes that help
-diagnose connection leaks and improve ease-of&#8211;use.</p><p>The Edit Connection Pool Advanced Attributes page contains the following options.</p><dl><dt>JNDI Name</dt>
+diagnose connection leaks and improve ease-of&#8211;use.</p><p>The Edit Connection Pool Advanced Attributes page contains the following options.</p><dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p></dd>
+<dt>Flush</dt>
+<dd><p>Button to reinitialize the connections in the connection pool. Clicking this button destroys any existing connections, recreates connections established for the pool, and restores the pool to its initial and minimum pool size.</p></dd>
+<dt>JNDI Name</dt>
 <dd><p>The name of the connection pool. The name is a read-only field. You can only specify the connection pool name when you create a new JDBC connection pool.</p></dd>
 <dt>Statement Timeout</dt>
 <dd><p>The length of time, in seconds, after which abnormally long running queries will be terminated. Enterprise Server will set <tt>QueryTimeout</tt> on the statements created. A value of &#8211;1 means that the option is disabled. The default value is &#8211;1.</p></dd>

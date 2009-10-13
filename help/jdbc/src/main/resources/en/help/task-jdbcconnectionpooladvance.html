@@ -92,7 +92,8 @@ used. This option is disabled by default.</p></li>
 be used by non-component callers such as servlet filters and third-party persistence managers.</b><p>Connections obtained by non-component callers are not automatically closed at the end of
 a transaction by the container. They must be explicitly closed by the caller.
 This option is disabled by default.</p></li>
-<li>(Optional) <b>Click the Flush button to flush all connections.</b></li>
+<li>(Optional) <b>Click the Flush button to flush all connections from the pool.</b><p>Clicking the Flush button destroys any existing connections, recreates connections established for the
+pool, and restores the pool to its initial and minimum pool size.</p></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>

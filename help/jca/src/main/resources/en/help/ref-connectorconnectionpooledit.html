@@ -5,7 +5,11 @@ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
 Use is subject to License Terms  -->
 <a name="ref-connectorconnectionpooledit"></a><h4>Edit Connector Connection Pool</h4>
 <a name="indexterm-40"></a><p>Use the Edit Connector Connection Pool page to modify the settings for a
-connector connection pool.</p><p>The Edit Connector Connection Pool page contains the following options.</p><dl><dt>JNDI Name</dt>
+connector connection pool.</p><p>The Edit Connector Connection Pool page contains the following options.</p><dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p></dd>
+<dt>Flush</dt>
+<dd><p>Button to reinitialize the connections in the connection pool. Clicking this button destroys any existing connections, recreates connections established for the pool, and restores the pool to its initial and minimum pool size.</p></dd>
+<dt>JNDI Name</dt>
 <dd><p>A unique name that identifies the connector connection pool. The JNDI name is a read-only field. You can only specify the JNDI name when you create a new connector connection pool.</p></dd>
 <dt>Resource Adapter</dt>
 <dd><p>The resource adapter associated with the connector connection pool.</p></dd>
@@ -51,5 +55,6 @@ connector connection pool.</p><p>The Edit Connector Connection Pool page contain
 
 <ul><li><p><a href="http://docs.sun.com/doc/820-7701/create-connector-connection-pool-1?a=view"><tt>create-connector-connection-pool</tt>(1)</a></p></li>
 <li><p><a href="http://docs.sun.com/doc/820-7701/list-connector-connection-pools-1?a=view"><tt>list-connector-connection-pools</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/delete-connector-connection-pool-1?a=view"><tt>delete-connector-connection-pool</tt>(1)</a></p></li></ul>
+<li><p><a href="http://docs.sun.com/doc/820-7701/delete-connector-connection-pool-1?a=view"><tt>delete-connector-connection-pool</tt>(1)</a></p></li>
+<li><p></p></li></ul>
 

@@ -5,7 +5,9 @@ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
 Use is subject to License Terms  -->
 <a name="ref-serverinstappsconfig"></a><h4>Applications Configuration</h4>
 <a name="indexterm-123"></a><a name="indexterm-124"></a><a name="indexterm-125"></a><a name="indexterm-126"></a><a name="indexterm-127"></a><p>Use the Applications Configuration page to set properties that help ensure that changes
-to deployed applications are detected and that the modified classes are reloaded.</p><p>The Applications Configuration page contains the following options.</p><dl><dt>Reload</dt>
+to deployed applications are detected and that the modified classes are reloaded.</p><p>The Applications Configuration page contains the following options.</p><dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p></dd>
+<dt>Reload</dt>
 <dd><p>If this option is enabled, modified classes are reloaded dynamically. The server periodically checks for changes in the deployment directory and redeploys the application, automatically and dynamically, with the changes. This is useful in a development environment, because it allows code changes to be tested quickly. In a production environment, however, dynamic reloading might degrade performance. In addition, whenever a reload is done, the sessions at that transit time become invalid. The client must restart the session. This option is enabled by default.</p></dd>
 <dt>Reload Poll Interval</dt>
 <dd><p>Identifies how often the server should check for code changes in the deployed applications and modules. The default value is 2.</p></dd>

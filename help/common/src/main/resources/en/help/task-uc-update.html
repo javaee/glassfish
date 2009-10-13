@@ -5,15 +5,15 @@ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
 Use is subject to License Terms  -->
 
 
-<a name="task-uc-update"></a><h4>To View Available Updates for Components</h4><a name="indexterm-110"></a><p>The Administration Console displays available updates for installed components. To update installed components,
-use one of these commands:</p>
+<a name="task-uc-update"></a><h4>To View Available Updates for Components</h4><a name="indexterm-110"></a><p>The Administration Console displays available updates for installed components.</p><ol>
+<li><b>In the navigation tree, select the Update Tool node.</b><p>The Available Add-Ons page opens.</p></li>
+<li><b>On the Available Add-Ons page, click the Available Updates tab.</b><p>The Available Updates page opens. If no updates are available, the table is
+empty.</p></li></ol><h6>Next Steps</h6><p>To update installed components, first stop the Enterprise Server domain. Then use one
+of these commands:</p>
 <ul><li><p><tt><i>as-install-parent</i>/bin/updatetool</tt>, which starts the Update Tool graphical utility</p></li>
 <li><p><tt><i>as-install-parent</i>/bin/pkg</tt>, a command-line version of the Update Tool</p></li></ul>
 <p>For information on using the <tt>pkg</tt> command, see <a href="http://docs.sun.com/doc/820-7692/ghapp?a=view">Chapter 10, Extending Enterprise Server, in <i>Sun GlassFish Enterprise Server v3 Administration Guide</i></a>. The Update Tool
-utility has its own online help.</p><ol>
-<li><b>In the navigation tree, select the Update Tool node.</b><p>The Available Add-Ons page opens.</p></li>
-<li><b>On the Available Add-Ons page, click the Available Updates tab.</b><p>The Available Updates page opens. If no updates are available, the table is
-empty.</p></li></ol><h6>See Also</h6>
+utility has its own online help.</p><p>Restart the server after you have finished installing the updates.</p><h6>See Also</h6>
 <ul><li><p><a href="task-uc-set-proxy.html">To Configure Network Proxy Settings for Accessing Network Repositories</a></p></li>
 <li><p><a href="task-uc-addon.html">To Install Add-On Components</a></p></li>
 <li><p><a href="task-uc-installed-remove.html">To Uninstall Components</a></p></li>

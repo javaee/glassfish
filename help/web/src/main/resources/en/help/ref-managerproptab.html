@@ -7,7 +7,9 @@ Use is subject to License Terms  -->
 <a name="indexterm-44"></a><a name="indexterm-45"></a><p>The session manager provides the means to configure how sessions are created and
 destroyed, where the session state is stored, and the maximum number of sessions
 that are available.</p><p>Use the Manager Properties page to add or modify session manager properties for
-the web container.</p><p>The Manager Properties page contains the following options.</p><dl><dt>Reap Interval</dt>
+the web container.</p><p>The Manager Properties page contains the following options.</p><dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p></dd>
+<dt>Reap Interval</dt>
 <dd><p>The number of seconds before inactive session data is deleted from the store. The default value is 60.</p><p>Set this value lower than the frequency at which session data changes. For example, this value should be as low as possible (1 second) for a hit counter servlet on a frequently accessed web site; otherwise, you could lose the last few hits each time you restart the server.</p></dd>
 <dt>Max Sessions</dt>
 <dd><p>The maximum number of sessions that can be in cache. A value of &#8211;1 indicates no limit to the number of sessions. The default value is &#8211;1. </p><p>After the limit is reached, an attempt to create a new session causes an <tt>IllegalStateException</tt> to be thrown.</p></dd>

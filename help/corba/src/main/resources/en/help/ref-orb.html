@@ -6,7 +6,9 @@ Use is subject to License Terms  -->
 <a name="ref-orb"></a><h4>ORB</h4>
 <a name="indexterm-8"></a><a name="indexterm-9"></a><p>Use the ORB page to configure the Object Request Broker.</p><p>The ORB provides the required infrastructure to identify and locate objects, handle connection
 management, deliver data, and request communication. Remote clients of enterprise beans (EJB modules)
-communicate with the Enterprise Server using the ORB.</p><p>The ORB page contains the following options.</p><dl><dt>Thread Pool ID</dt>
+communicate with the Enterprise Server using the ORB.</p><p>The ORB page contains the following options.</p><dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p></dd>
+<dt>Thread Pool ID</dt>
 <dd><p>The thread pool used by the ORB. The ORB uses thread pools to respond to requests from remote clients of enterprise beans and other clients that communicate by using RMI-IIOP. The default thread pool for the ORB is <tt>thread-pool-1</tt>, which uses defaults appropriate for RMI/IIOP requests.</p></dd>
 <dt>Max Message Fragment Size</dt>
 <dd><p>The maximum fragment size for IIOP messages. Messages larger than this size are fragmented. The default value is 1024 bytes.</p></dd>
