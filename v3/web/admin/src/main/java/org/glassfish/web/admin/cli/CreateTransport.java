@@ -44,7 +44,6 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
-
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -52,7 +51,6 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.grizzly.config.dom.NetworkConfig;
@@ -65,113 +63,84 @@ import java.beans.PropertyVetoException;
 /**
  * Command to create transport element within network-config
  *
- * Sample Usage :
- *    create-transport [--acceptorThreads no_of_acceptor_threads] 
- *        [--bufferSizeBytes buff_size_bytes] [--classname class_name]
- *        [--enableSnoop true|false][--selectionKeyHandler true|false] 
- *        [--displayConfiguration true|false][--maxConnectionsCount count]
- *        [--idleKeyTimeoutSeconds idle_key_timeout] [--tcpNoDelay true|false]
- *        [--readTimeoutMillis read_timeout][--writeTimeoutMillis write_timeout]
- *        [--byteBufferType buff_type] [--selectorPollTimeoutMillis true|false]
- *        transport_name
+ * Sample Usage : create-transport [--acceptorThreads no_of_acceptor_threads] [--bufferSizeBytes buff_size_bytes]
+ * [--classname class_name] [--enableSnoop true|false][--selectionKeyHandler true|false] [--displayConfiguration
+ * true|false][--maxConnectionsCount count] [--idleKeyTimeoutSeconds idle_key_timeout] [--tcpNoDelay true|false]
+ * [--readTimeoutMillis read_timeout][--writeTimeoutMillis write_timeout] [--byteBufferType buff_type]
+ * [--selectorPollTimeoutMillis true|false] transport_name
  *
- * domain.xml element example
- *  <transports>
- *      <transport name="tcp" />
- *  </transports>
+ * domain.xml element example <transports> <transport name="tcp" /> </transports>
  *
- * 
  * @author Nandini Ektare
- *
  */
-@Service(name="create-transport")
+@Service(name = "create-transport")
 @Scoped(PerLookup.class)
 @I18n("create.transport")
 public class CreateTransport implements AdminCommand {
-    
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CreateTransport.class);
-
-    @Param(name="transportname", primary=true)
+    @Param(name = "transportname", primary = true)
     String transportName;
-
-    @Param(name="acceptorthreads", optional=true, defaultValue="-1")
+    @Param(name = "acceptorthreads", optional = true, defaultValue = "-1")
     String acceptorThreads;
-
-    @Param(name="buffersizebytes", optional=true, defaultValue="8192")
+    @Param(name = "buffersizebytes", optional = true, defaultValue = "8192")
     String bufferSizeBytes;
-
-    @Param(name="bytebuffertype", optional=true, defaultValue="HEAP")
+    @Param(name = "bytebuffertype", optional = true, defaultValue = "HEAP")
     String byteBufferType;
-
-    @Param(name="classname", optional=true,
-           defaultValue="com.sun.grizzly.TCPSelectorHandler")
+    @Param(name = "classname", optional = true,
+        defaultValue = "com.sun.grizzly.TCPSelectorHandler")
     String className;
-
-    @Param(name="displayconfiguration", optional=true, defaultValue="false")
+    @Param(name = "displayconfiguration", optional = true, defaultValue = "false")
     String displayConfiguration;
-
-    @Param(name="enablesnoop", optional=true, defaultValue="false")
+    @Param(name = "enablesnoop", optional = true, defaultValue = "false")
     String enableSnoop;
-
-    @Param(name="idlekeytimeoutseconds", optional=true, defaultValue="30")
+    @Param(name = "idlekeytimeoutseconds", optional = true, defaultValue = "30")
     String idleKeyTimeoutSeconds;
-
-    @Param(name="maxconnectionscount", optional=true, defaultValue="4096")
+    @Param(name = "maxconnectionscount", optional = true, defaultValue = "4096")
     String maxConnectionsCount;
-
-    @Param(name="readtimeoutmillis", optional=true, defaultValue="30000")
+    @Param(name = "readtimeoutmillis", optional = true, defaultValue = "30000")
     String readTimeoutMillis;
-
-    @Param(name="writetimeoutmillis", optional=true, defaultValue="30000")
+    @Param(name = "writetimeoutmillis", optional = true, defaultValue = "30000")
     String writeTimeoutMillis;
-
-    @Param(name="selectionkeyhandler", optional=true)
+    @Param(name = "selectionkeyhandler", optional = true)
     String selectionKeyHandler;
-
-    @Param(name="selectorpolltimeoutmillis", optional=true)
+    @Param(name = "selectorpolltimeoutmillis", optional = true, defaultValue = "1000")
     String selectorPollTimeoutMillis;
-
-    @Param(name="tcpnodelay", optional=true)
+    @Param(name = "tcpnodelay", optional = true)
     String tcpNoDelay;
-
     @Inject
     Configs configs;
 
     /**
-     * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
+     * the values the parameter values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-
         final ActionReport report = context.getActionReport();
-
         // check for duplicates
-        List <Config> configList = configs.getConfig();
+        List<Config> configList = configs.getConfig();
         Config config = configList.get(0);
         NetworkConfig networkConfig = config.getNetworkConfig();
         Transports transports = networkConfig.getTransports();
         for (Transport transport : transports.getTransport()) {
-            if (transportName!= null &&
-                    transportName.equalsIgnoreCase(transport.getName())) {
+            if (transportName != null &&
+                transportName.equalsIgnoreCase(transport.getName())) {
                 report.setMessage(localStrings.getLocalString(
                     "create.transport.fail.duplicate",
-                    "{0} transport already exists. " +
-                    "Cannot add duplicate transport"));
+                    "{0} transport already exists. Cannot add duplicate transport"));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
         }
-
         // Add to the <network-config>
         try {
             ConfigSupport.apply(new SingleConfigCode<Transports>() {
                 public Object run(Transports param)
-                throws PropertyVetoException, TransactionFailure {                    
+                    throws PropertyVetoException, TransactionFailure {
                     boolean docrootAdded = false;
-                    boolean accessLogAdded = false;                    
+                    boolean accessLogAdded = false;
                     Transport newTransport = param.createChild(Transport.class);
                     newTransport.setName(transportName);
                     newTransport.setAcceptorThreads(acceptorThreads);
@@ -193,15 +162,14 @@ public class CreateTransport implements AdminCommand {
                     return newTransport;
                 }
             }, transports);
-        } catch(TransactionFailure e) {
+        } catch (TransactionFailure e) {
             report.setMessage(
                 localStrings.getLocalString("create.transport.fail",
-                "Failed to create transport {0} ", transportName));
+                    "Failed to create transport {0} ", transportName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;
         }
-        
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }
