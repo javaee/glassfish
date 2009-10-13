@@ -35,13 +35,16 @@
  */
 package org.glassfish.admin.amx.impl.j2ee;
 
+import java.util.Set;
+
 import org.glassfish.admin.amx.j2ee.J2EEServer;
+import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.impl.util.Issues;
 
 import javax.management.ObjectName;
 
 
-import org.glassfish.admin.amx.j2ee.J2EETypes;
+import static org.glassfish.admin.amx.j2ee.J2EETypes.*;
 
 /**
 JSR 77 extension representing an Appserver standalone server (non-clustered).
@@ -64,7 +67,7 @@ public class J2EEServerImpl extends J2EELogicalServerImplBase
 
     public String[] getjavaVMs()
     {
-        final ObjectName child = child(J2EETypes.JVM);
+        final ObjectName child = child(JVM);
 
         return child == null ? new String[0] : new String[]
                 {
@@ -72,9 +75,20 @@ public class J2EEServerImpl extends J2EELogicalServerImplBase
                 };
     }
 
+    public static final Set<String> J2EE_RESOURCE_TYPES = SetUtil.newUnmodifiableStringSet(
+        JDBC_RESOURCE,
+        JAVA_MAIL_RESOURCE,
+        JCA_RESOURCE,
+        JMS_RESOURCE,
+        JNDI_RESOURCE,
+        JTA_RESOURCE,
+        RMI_IIOP_RESOURCE,
+        URL_RESOURCE
+    );
+
     public String[] getresources()
     {
-        return getChildrenAsStrings(RegistrationSupport.RESOURCE_TYPES.keySet());
+        return getChildrenAsStrings( J2EE_RESOURCE_TYPES );
     }
 
     public String getserverVersion()
@@ -90,7 +104,7 @@ public class J2EEServerImpl extends J2EELogicalServerImplBase
 
     public String getjvm()
     {
-        return "" + getAncestorByType(J2EETypes.JVM);
+        return "" + getAncestorByType(JVM);
     }
 
     @Override

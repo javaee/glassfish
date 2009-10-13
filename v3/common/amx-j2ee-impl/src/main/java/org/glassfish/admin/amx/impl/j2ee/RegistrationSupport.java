@@ -164,7 +164,7 @@ final class RegistrationSupport
     }
 
     /** Maps configuration MBean type to J2EE type */
-    public static final Map<String, Class> RESOURCE_TYPES =
+    public static final Map<String, Class> CONFIG_RESOURCE_TYPES =
             MapUtil.toMap(new Object[]
             {
                 "jdbc-resource", JDBCResourceImpl.class,
@@ -691,7 +691,7 @@ final class RegistrationSupport
         }
 
         final String configType = amxConfig.type();
-        final Class<J2EEManagedObjectImplBase> implClass = RESOURCE_TYPES.get(configType);
+        final Class<J2EEManagedObjectImplBase> implClass = CONFIG_RESOURCE_TYPES.get(configType);
         if (implClass == null)
         {
             ImplUtil.getLogger().info("Unrecognized resource type for JSR 77 purposes: " + amxConfig.objectName());
