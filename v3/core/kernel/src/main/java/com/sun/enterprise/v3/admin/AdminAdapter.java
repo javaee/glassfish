@@ -38,6 +38,8 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.AdminService;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -67,6 +69,7 @@ import java.net.HttpURLConnection;
 import com.sun.enterprise.universal.GFBase64Decoder;
 import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
 import com.sun.enterprise.v3.admin.listener.GenericJavaConfigListener;
+import com.sun.enterprise.v3.admin.listener.SystemPropertyListener;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
@@ -82,6 +85,8 @@ import org.glassfish.api.event.RestrictTo;
 import org.glassfish.internal.api.*;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.ObservableBean;
+import org.jvnet.hk2.config.ConfigSupport;
 
 /**
  * Listen to admin commands...
@@ -127,6 +132,9 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
     @Inject
     volatile AdminService as = null;
 
+    @Inject
+    volatile Domain domain;
+
     final Class<? extends Privacy> privacyClass;
 
     private boolean isRegistered = false;
@@ -141,7 +149,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         events.register(this);
         
         epd = new AdminEndpointDecider(config, logger);
-        registerJavaConfigListener();
+        registerDynamicReconfigListeners();
             this.setHandleStaticResources(true);
             this.setRootFolder(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/");
     }
@@ -470,5 +478,17 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         ConstructorWomb<GenericJavaConfigListener> womb = new 
                 ConstructorWomb<GenericJavaConfigListener>(GenericJavaConfigListener.class, habitat, null);
         ConfigListener jcl = womb.get(null);
+    }
+    private void registerSystemPropertyListener() {
+        ObservableBean ob = (ObservableBean)ConfigSupport.getImpl(domain);
+        SystemPropertyListener ls = habitat.getComponent(SystemPropertyListener.class);
+        ob.addListener(ls); //there should be a better way to do this ...
+        Server s = domain.getServerNamed(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME);
+        ob = (ObservableBean)ConfigSupport.getImpl(s);
+        ob.addListener(ls);
+    }
+    private void registerDynamicReconfigListeners() {
+        registerJavaConfigListener();
+        registerSystemPropertyListener();
     }
 }
