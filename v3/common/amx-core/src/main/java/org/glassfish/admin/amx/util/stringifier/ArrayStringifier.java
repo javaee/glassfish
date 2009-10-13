@@ -51,7 +51,7 @@ public final class ArrayStringifier implements Stringifier
 	
 	static final char	LEFT_BRACE	= '{';
 	static final char	RIGHT_BRACE	= '}';
-	static final String	DEFAULT_DELIM=",";
+	static final String	DEFAULT_DELIM=", ";
 	
 		public 
 	ArrayStringifier()

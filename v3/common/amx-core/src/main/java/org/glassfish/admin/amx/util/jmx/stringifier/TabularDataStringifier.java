@@ -37,6 +37,7 @@ package org.glassfish.admin.amx.util.jmx.stringifier;
 
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 import org.glassfish.admin.amx.util.stringifier.Stringifier;
+import org.glassfish.admin.amx.util.TypeCast;
 
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
@@ -61,16 +62,11 @@ public class TabularDataStringifier implements Stringifier
         final TabularData data = (TabularData) o;
         final TabularType type = data.getTabularType();
 
-        final List indexNames = type.getIndexNames();
-        final Set rowKeys = data.keySet();
-        final Iterator rowIter = rowKeys.iterator();
         int rowIndex = 0;
-        while (rowIter.hasNext())
+        for( final Object temp : data.values() )
         {
-            final Object[] key = (Object[]) rowIter.next();
-            final CompositeData item = data.get(key);
-
-            final String s = SmartStringifier.toString(item);
+            final CompositeData item = (CompositeData)temp;
+            final String s = CompositeDataStringifier.DEFAULT.stringify(item);
 
             // emit the row index followed by the row
             buf.append("[" + rowIndex + "] ");
