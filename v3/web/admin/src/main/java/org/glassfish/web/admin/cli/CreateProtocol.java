@@ -97,8 +97,8 @@ public class CreateProtocol implements AdminCommand {
     // of config options and no specific ids to co-relate, we may need to choose
     // the way create-ssl has been done. Grizzly team concurs on this proposal
 
-    @Param(name="securityenabled", optional=true)
-    String securityEnabled;
+    @Param(name="securityenabled", optional=true, defaultValue = "false")
+    Boolean securityEnabled;
 
     @Inject
     Configs configs;

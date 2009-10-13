@@ -95,7 +95,7 @@ public class CreateHttp implements AdminCommand {
     String defaultVirtualServer;
 
     @Param(name="dns-lookup-enabled", defaultValue = "false", optional = true)
-    String dnsLookupEnabled;
+    Boolean dnsLookupEnabled;
 
     @Param(name = "servername", optional = true)
     String serverName;
