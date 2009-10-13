@@ -6,37 +6,33 @@ NAME
      instance(s)
 
 SYNOPSIS
-     list-timers
-     [--help]
-     target
+     list-timers [--help] target
 
 DESCRIPTION
-     The list-timers command lists the timers owned by a specific
-     server  instance  or a cluster of server instances. Adminis-
-     trators can use this information to decide whether to  do  a
-     timer  migration or to verify that a migration has been com-
-     pleted successfully. This command  is  supported  in  remote
-     mode only.
+     The list-timers subcommand  lists  the  timers  owned  by  a
+     specific  server  instance.  This  command  is  supported in
+     remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
 OPERANDS
      target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         The name of the standalone  server  instance,  typically
+         server.
 
 EXAMPLES
-     Example 1 Using list-timers
+     Example 1 Listing the Current Timers in a Server Instance
 
-     This is an example of how the command is used.
+     This example lists the timers  in  a  particular  standalone
+     server instance. There is one currently active timer set.
 
-       asadmin>list-timers --user admin --passwordfile filename
+       asadmin> list-timers server
+       1
+
        The list-timers command was executed successfully.
 
 EXIT STATUS
@@ -44,12 +40,17 @@ EXIT STATUS
 
      1                           error in executing the command
 
-Java EE 6           Last change: 16 Apr 2009                    1
+SEE ALSO
+     asadmin(1M)
+
+Java EE 6           Last change: 12 Oct 2009                    1
 
 asadmin Utility Subcommands                        list-timers(1)
 
-SEE ALSO
-     migrate-timers(1)
+     Using the Timer Service in The Java EE 6 Tutorial, Volume I
 
-Java EE 6           Last change: 16 Apr 2009                    2
+     EJB Timer Service in Sun GlassFish Enterprise Server v3 Pre-
+     view Application Development Guide
+
+Java EE 6           Last change: 12 Oct 2009                    2
 

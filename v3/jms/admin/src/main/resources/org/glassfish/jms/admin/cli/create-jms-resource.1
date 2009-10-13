@@ -5,11 +5,10 @@ NAME
      create-jms-resource - creates a JMS resource
 
 SYNOPSIS
-     create-jms-resource
-     [--help]
-     [ --target  target]
+     create-jms-resource [--help]
+     [--target target]
      --restype type [--enabled={true|false}]
-     [ --description  text] [--property (name=value)[:name=value]*]
+     [--description text] [--property (name=value)[:name=value]*]
      jndi_name
 
 DESCRIPTION
@@ -20,6 +19,7 @@ DESCRIPTION
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -33,7 +33,7 @@ OPTIONS
      --restype
 
          The JMS resource type,  which  can  be  javax.jms.Topic,
-         javax.jms.Queue,javax.jms.ConnectionFactory,
+         javax.jms.Queue,            javax.jms.ConnectionFactory,
          javax.jms.TopicConnectionFactory,                     or
          javax.jms.QueueConnectionFactory.
 
@@ -48,7 +48,7 @@ OPTIONS
      --property
          Optional attribute name/value pairs for configuring  the
 
-Java EE 6           Last change: 19 Aug 2009                    1
+Java EE 6           Last change: 16 Sep 2009                    1
 
 asadmin Utility Subcommands                create-jms-resource(1)
 
@@ -100,7 +100,7 @@ asadmin Utility Subcommands                create-jms-resource(1)
              of   -1  indicates  that  the  number  of  reconnect
              attempts is unlimited (the client  runtime  attempts
 
-Java EE 6           Last change: 19 Aug 2009                    2
+Java EE 6           Last change: 16 Sep 2009                    2
 
 asadmin Utility Subcommands                create-jms-resource(1)
 
@@ -154,7 +154,7 @@ asadmin Utility Subcommands                create-jms-resource(1)
              (replacing any forward slash in the JNDI  name  with
              an underscore).
 
-Java EE 6           Last change: 19 Aug 2009                    3
+Java EE 6           Last change: 16 Sep 2009                    3
 
 asadmin Utility Subcommands                create-jms-resource(1)
 
@@ -198,14 +198,14 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-Java EE 6           Last change: 19 Aug 2009                    4
+Java EE 6           Last change: 16 Sep 2009                    4
 
 asadmin Utility Subcommands                create-jms-resource(1)
 
 SEE ALSO
      delete-jms-resource(1), list-jms-resources(1)
 
-     asadmin(1)
+     asadmin(1M)
 
-Java EE 6           Last change: 19 Aug 2009                    5
+Java EE 6           Last change: 16 Sep 2009                    5
 

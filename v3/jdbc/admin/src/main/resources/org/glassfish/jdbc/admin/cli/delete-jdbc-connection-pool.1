@@ -6,23 +6,24 @@ NAME
      connection pool
 
 SYNOPSIS
-     delete-jdbc-connection-pool
-     [--help]
-     [ --cascade =false]
+     delete-jdbc-connection-pool [--help]
+     [--cascade={false|true}]
+     [--target target]
      connectionpoolid
 
 DESCRIPTION
-     The delete-jdbc-connection-pool command deletes a JDBC  con-
-     nection  pool.  The  operand  identifies the JDBC connection
+     The delete-jdbc-connection-pool subcommand  deletes  a  JDBC
+     connection  pool. The operand identifies the JDBC connection
      pool to be deleted.
 
      Ensure that all associations to this  resource  are  removed
-     before executing the delete-jdbc-connection-pool command.
+     before executing the delete-jdbc-connection-pool subcommand.
 
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -36,34 +37,41 @@ OPTIONS
 
      --target
 
-         This option is deprecated.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
 
 OPERANDS
-     connectionpoolid            The name of the JDBC resource to
-                                 be removed.
+     connectionpoolid
+         The name of the JDBC resource to be removed.
 
-EXAMPLES
-     Example 1 Using the delete-jdbc-connection-pool command
-
-       asadmin delete-jdbc-connection-pool --user admin --passwordfile passwords.txt
-       --host localhost --port 7070 --cascade=false sample_derby_pool
-
-Java EE 6           Last change: 30 Jan 2007                    1
+Java EE 6           Last change: 09 Oct 2009                    1
 
 asadmin Utility Subcommands        delete-jdbc-connection-pool(1)
 
+EXAMPLES
+     Example 1 Using the delete-jdbc-connection-pool subcommand
+
+       asadmin> delete-jdbc-connection-pool
+       --cascade=false sample_derby_pool
+
        Command delete-jdbc-connection-pool executed correctly.
 
-     Where: asadmin is the command prompt  and  sample_derby_pool
-     is the JDBC connection pool to be removed.
+     Where sample_derby_pool is the JDBC connection  pool  to  be
+     removed.
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      create-jdbc-connection-pool(1),list-jdbc-connection-pools(1)
 
-Java EE 6           Last change: 30 Jan 2007                    2
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    2
 

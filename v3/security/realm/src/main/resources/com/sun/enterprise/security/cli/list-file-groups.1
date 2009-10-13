@@ -8,18 +8,19 @@ SYNOPSIS
      list-file-groups
      [--help]
       [ --name  username]
-      [--authrealmname auth_realm_name] [ target]
+      [--authrealmname auth_realm_name]
 
 DESCRIPTION
-     Use this command to administer file users  and  groups  sup-
-     ported  by the file realm authentication. This command lists
+     Use this subcommand to view file users and groups  supported
+     by  the  file  realm  authentication.  This subcommand lists
      available groups in the file user. If the --name  option  is
      not specified, all groups are listed.
 
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -29,8 +30,8 @@ OPTIONS
 
      --authrealmname
 
-         Name, in the domain.xml file, where you  have  different
-         stores for file auth realm.
+         The name of the authentication realm for which  to  list
+         available groups.
 
 OPERANDS
      target
@@ -41,16 +42,17 @@ OPERANDS
          ignored.
 
 EXAMPLES
-     Example 1 Using the list-file-groups command
+     Example 1 Listing Groups in all File Realms
 
        asadmin>list-file-groups
        staff
        manager
-       Command list-file-groups executed successfully
 
 Java EE 6          Last change: 28 August 2009                  1
 
 asadmin Utility Subcommands                   list-file-groups(1)
+
+       Command list-file-groups executed successfully
 
 EXIT STATUS
      0                           command executed successfully

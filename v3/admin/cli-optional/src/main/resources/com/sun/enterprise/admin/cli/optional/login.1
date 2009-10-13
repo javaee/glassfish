@@ -2,130 +2,65 @@
 asadmin Utility Subcommands                              login(1)
 
 NAME
-     login - lets you log in to a domain
+     login - logs you into a domain
 
 SYNOPSIS
-     login  [--terse=false] [--echo=false]
-      [--host host_name] [--port port_number]
-      [--secure| -s ] [ --help ]
+     login [--help]
 
 DESCRIPTION
-     Lets you log in to a domain.
+     The purpose of  the  login  subcommand  is  to  ease  domain
+     administration  by letting you log into a particular domain.
+     If Enterprise Server domains are created on various machines
+     (locally), you can run the asadmin utility from any of these
+     machines and manage domains  located  elsewhere  (remotely).
+     This  is  especially  useful  when  a  particular machine is
+     chosen as an administration  client  that  manages  multiple
+     domains and servers.
 
-     If various application server domains are created on various
-     machines  (locally),  asadmin  invocation  from any of these
-     machines  can   manage   the   domains   located   elsewhere
-     (remotely). This comes in handy especially when a particular
-     machine is chosen as an administration client and it manages
-     multiple domains and servers. asadmin commands that are used
-     to manage domains located elsewhere are called  remote  com-
-     mands. The asadmin login command eases the administration of
-     such remote domains.
+     The login subcommand prompts you for the admin user name and
+     password.  After  successful login, the .asadminpass file is
+     created in your home directory. (This is the same file  that
+     is  modified  when you run the create-domain subcommand with
+     the --savelogin option.) The literal host  name  is  stored,
+     and  no resolution with the DNS is attempted. If a domain is
+     being administered from other machines, it is sufficient  to
+     run  the  login  subcommand once. You do not need to specify
+     the asadmin utility options --user and  --passwordfile  when
+     you  run additional remote subcommands on that domain. After
+     you have logged into a domain, you still need to provide the
+     host  and  port for any subsequent remote subcommands unless
+     you chose the default values for --host (localhost)  and  --
+     port (4848) options.
 
-     This command runs only in the interactive mode.  It  prompts
-     you  for  the  admin  user  name and password. On successful
-     login. the file .asadminpass will be created in user's  home
-     directory. This is the same file that is modified during the
-     create-domain command while using  the  --savelogin  option.
-     The domain must be running for this command to run.
+     Subsequent use of same subcommand with the  same  parameters
+     will  result in overwriting the contents of the .asadminpass
+     file for the given admin host and port. You  can  decide  to
+     overwrite the file or to reject such a login.
 
-     The host name is stored as-is  and there will be no  resolu-
-     tion  attempted  with  the  DNS.  It is enough for a user to
-     login to a particular domain which  is  fully  qualified  by
-     [admin-host,  admin-port]  pair  once.  Thus, if a domain is
-     being administered from various machines, it  is  sufficient
-     to invoke asadmin login once.
+     Login information is  saved  permanently  and  can  be  used
+     across multiple domain restarts.
 
-     After logging into a domain with the asadmin login  command,
-     you  need  not  specify the --user and --passwordfile option
-     when you  run  subsequently  run  remote  commands  on  that
-     domain.
-
-     Successive successful invocations of the same  command  with
-     same parameters result in overwriting the contents of .asad-
-     minpass file for the given admin host and port. The user can
-     decide to overwrite the file or reject such a login.
-
-Java EE 6           Last change: 22 Dec 2004                    1
-
-asadmin Utility Subcommands                              login(1)
-
-     Once you have logged in to a domain, you will still need  to
-     provide the host and port for the subsequent remote commands
-     unless you have chosen the  default values  for  --host  and
-     --port  options.  The  advantage of this command is apparent
-     especially if you choose the default  host  (localhost)  and
-     default admin port (4848).
-
-     If you do not use the login command,  and you choose not  to
-     get  prompted  for  admin user and admin password, you would
-     invoke asadmin commands in succession like this:
-
-       asadmin>create-jdbc-connection-pool --user admin --passwordfile passwordfile.txt <other options> samplePool1
-
-       asadmin>deploy --user admin --passwordfile passwordfile.txt <other options> /home/myapplication.ear
-
-       asadmin>list-components --user admin --passwordfile passwordfile.txt <other options>
-
-     If you now log in, you can run remote commands like this:
-
-       asadmin>create-jdbc-connection-pool <other options> samplePool1
-
-       asadmin>deploy <other options> /home/myapplication.ear
-
-       asadmin>list-components <other options>
-
-     Login information is saved permanently and this  information
-     can be used across multiple domain restarts.
-
-     There is no logout command. If you want to login to  another
-     domain,  invoke asadmin login with new values for --host and
-     --port.
+     There is no logout subcommand.  If  you  want  to  login  to
+     another  domain,  run  the  login subcommand and specify new
+     values for the asadmin utility options --host and --port.
 
 OPTIONS
-     -t --terse
+     --help
+     -?
 
-         Indicates that any output data  must  be  very  concise,
-         typically avoiding human-friendly sentences and favoring
+         Displays the help text for the subcommand.
 
-Java EE 6           Last change: 22 Dec 2004                    2
+Java EE 6            Last change: 9 Oct 2009                    1
 
 asadmin Utility Subcommands                              login(1)
 
-         well-formatted data for consumption by a script. Default
-         is false.
-
-     -e --echo
-
-         Setting to true will echo the command line statement  on
-         the standard output. Default is false.
-
-     -H --host
-         The machine name where the domain administration  server
-         is running. The default value is lcoalhost. If you login
-         to localhost, you need not specify host or port  options
-         for subsequent remote commands.
-
-     -p --port
-
-         The port number  of  the  domain  administration  server
-         listening for administration requests.
-
-     -s --secure
-         If set to true, uses SSL/TLS  to  communicate  with  the
-         domain administration server.
-
-      --help
-
-         Displays the help text for the command.
-
 EXAMPLES
-     Example 1 Using the login command
+     Example 1 Logging Into a Domain on a Remote Machine
 
-     The following command logs into a domain located on  another
-     machine:
+     This example logs into a domain located on another  machine.
+     Options are specified before the login subcommand.
 
-       asadmin> login --host foo --port 8282
+       asadmin --host foo --port 8282 login
        Please enter the admin user name>admin
        Please enter the admin password>
 
@@ -136,16 +71,13 @@ EXAMPLES
        Make sure that this file remains protected. Information stored in this
        file will be used by asadmin commands to manage associated domain.
 
-Java EE 6           Last change: 22 Dec 2004                    3
+     Example 2 Logging Into a  Domain  on  the  Default  Port  of
+     Localhost
 
-asadmin Utility Subcommands                              login(1)
+     This example logs into a domain on mylhost  on  the  default
+     port. Options are specified before the login subcommand.
 
-     Example 2 Using the login command
-
-     The following command logs into a domain on  local  host  on
-     default port.
-
-       asadmin> login --host myhost
+       asadmin --host myhost login
        Please enter the admin user name>admin
        Please enter the admin password>
        Trying to authenticate for administration of server
@@ -159,12 +91,19 @@ asadmin Utility Subcommands                              login(1)
        file will be used by asadmin commands to manage associated domain.
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
+
+Java EE 6            Last change: 9 Oct 2009                    2
+
+asadmin Utility Subcommands                              login(1)
 
 SEE ALSO
      create-domain(1), delete-domain(1)
 
-Java EE 6           Last change: 22 Dec 2004                    4
+     asadmin(1M)
+
+Java EE 6            Last change: 9 Oct 2009                    3
 

@@ -5,65 +5,39 @@ NAME
      start-domain - starts a domain
 
 SYNOPSIS
-     start-domain  [--domaindir domain-dir]
-     --user admin_user --passwordfile file_name
-     [--terse={true|false}] [ --echo ={true|false}]
-     [ --interactive ={true|false}] [ --verbose ={true|false}]
-     [ --debug ={true|false}] [domain_name]
+     start-domain [--help] [--domaindir domain-dir] [--verbose={true|false}]
+     [ --debug ={true|false}] [--upgrade={true|false}] [domain-name]
 
 DESCRIPTION
-     Use the start-domain command  to  start  a  domain.  If  the
-     domain directory is not specified, the domain in the default
-     as-install/domains directory is started. If there are two or
-     more domains, the domain_name operand must be specified.
+     The start-domain subcommand starts the specified domain.  If
+     the  domain  directory  is  not specified, the domain in the
+     default as-install/glassfish/domains directory  is  started.
+     If  there  are  two or more domains, the domain-name operand
+     must be specified.
 
-     On the Mac OS X platform, processes can  bind  to  the  same
-     port.  To  avoid this problem, do not start multiple domains
-     with the same port number at the same time.
+     Note -
 
-     This command is supported in local mode only.
+       On the Mac OS X platform, processes can bind to  the  same
+       port. To avoid this problem, do not start multiple domains
+       with the same port number at the same time.
+
+     This subcommand is supported in local mode only.
 
 OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
      --domaindir
-
-         The directory where the domain  is  to  be  started.  If
-         specified,  the  path must be accessible in the filesys-
-         tem.  If  not  specified,  the  domain  in  the  default
-         install_dir/domains directory is started.
-
-     -u --user
-         The authorized domain application server  administrative
-         username.
-
-     --passwordfile
-
-         The file containing the domain application server  pass-
-         word  associated  with  the administrative instance. The
-         password   is   defined   in   the    following    form:
-         AS_ADMIN_PASSWORD=password. Where password is the actual
-         administrator password for the domain.
-
-     -t--terse
-         Indicates that any output data  must  be  very  concise,
-         typically avoiding human-friendly sentences and favoring
-         well-formatted data for consumption by a script. Default
-
-Java EE 6           Last change: 27 Apr 2009                    1
-
-asadmin Utility Subcommands                       start-domain(1)
-
-         is false.
-
-     -e --echo
-
-         Setting to true will echo the command line statement  on
-         to the standard output. Default is false.
-
-     -I --interactive
-         If set to true (default),  only  the  required  password
-         options are prompted.
+         Specifies the directory where the domain to  be  started
+         is located. If specified, the path must be accessible in
+         the file system. If not specified,  the  domain  in  the
+         default   install-dir/glassfish/domains   directory   is
+         started.
 
      --verbose
+     -v
 
          Specifies whether detailed server startup  messages  are
          displayed. Possible values are as follows:
@@ -75,13 +49,16 @@ asadmin Utility Subcommands                       start-domain(1)
 
              A console window is opened in which detailed  server
              startup  messages  are  displayed.  If the domain is
-             later restarted by using the restart-domain(1)  com-
-             mand, messages continue to be displayed in this con-
-             sole window.
 
-             The console window that is opened alsoTMenables  you
-             to  obtain  a thread dump and, on UNIX   systems, to
-             kill the server:
+Java EE 6            Last change: 7Oct 2009                     1
+
+asadmin Utility Subcommands                       start-domain(1)
+
+             later restarted by using the restart-domain  subcom-
+             mand, messages continue to be displayed in this con-
+             sole window. The console window that is opened  also
+             enables  you  to obtain a thread dump and, on UNIXTM
+             systems, to kill the server:
 
                  o    On Windows  systems,  press  CTRL-Break  to
                       obtain a thread dump.
@@ -90,54 +67,52 @@ asadmin Utility Subcommands                       start-domain(1)
                       server  and press CTRL-\ to obtain a thread
                       dump.
 
+         --upgrade
+
+             Specifies upgrade TBWritten. Default is false.
+
+             false    TBW
+
+             true     TBW
+
      --debug
-         By default this flag is set to false. If  set  to  true,
-         the  server is started in debug mode and prints the JPDA
-         port on the console.
+         If set to true, the server is started in debug mode  and
+         prints the JPDA port on the console. Default is false.
 
 OPERANDS
+     domain-name         The unique name of the domain  you  want
+                         to  start. Default is the name specified
+                         during installation, usually domain1.
 
-Java EE 6           Last change: 27 Apr 2009                    2
+EXAMPLES
+     Example 1 Starting a Domain
+
+     This example starts mydomain4 in the default domains  direc-
+     tory.
+
+       asadmin> start-domain mydomain4
+       Waiting for DAS to start. ...........
+       Started domain: mydomain4
+       Domain location: /myhome/glassfishv3/glassfish/domains/mydomain4
+       Log file: /myhome/glassfishv3/glassfish/domains/mydomain4/logs/server.log
+       Admin port for the domain: 4848
+       Command start-domain executed successfully.
+
+Java EE 6            Last change: 7Oct 2009                     2
 
 asadmin Utility Subcommands                       start-domain(1)
 
-     domain_name         The unique name of the domain  you  wish
-                         to start.
-
-EXAMPLES
-     Example 1 Using the start-domain command
-
-       asadmin> start-domain domain1
-       Starting Domain domain1, please wait.
-       Log redirected to /usr/appserver/domains/domain1/logs/server.log.
-       Redirecting output to /usr/appserver/domains/domain1/logs/server.log
-       Domain domain1 started.
-       Domain [domain1] is running [Sun Java System Application Server 9.1 (build
-       b50d-beta3)] with its configuration and logs at: [/usr/appserver/domains].
-       Admin Console is available at [http://localhost:4848].
-       Use the same port [4848] for "asadmin" commands.
-       User web applications are available at these URLs:
-       [http://localhost:8080 https://localhost:8181 ].
-       Following web-contexts are available:
-       [/web1  /__wstx-services ].
-       Standard JMX Clients (like JConsole) can connect to JMXServiceURL:
-       [service:jmx:rmi:///jndi/rmi://pdavies.SFBay.Sun.COM:8686/jmxrmi] for domain
-       management purposes.
-       Domain listens on at least following ports for connections:
-       [8080 8181 4848 3700 3820 3920 8686 ].
-       Domain supports application server clusters and other standalone instances.
-
-     Where: domain1 is the domain in  the  /usr/appserver/domains
-     directory.
-
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      create-domain(1),     delete-domain(1),     list-domains(1),
      restart-domain(1), stop-domain(1)
 
-Java EE 6           Last change: 27 Apr 2009                    3
+     asadmin(1M)
+
+Java EE 6            Last change: 7Oct 2009                     3
 

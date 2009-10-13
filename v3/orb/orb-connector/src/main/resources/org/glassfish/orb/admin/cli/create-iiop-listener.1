@@ -13,11 +13,12 @@ SYNOPSIS
       [--target server] listener_id
 
 DESCRIPTION
-     The create-iiop-listener command creates an  IIOP  listener.
-     This command is supported in remote mode only.
+     The  create-iiop-listener   subcommand   creates   an   IIOP
+     listener. This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -44,14 +45,13 @@ OPTIONS
          Optional attribute name/value pairs for configuring  the
          IIOP listener.
 
-     --target
-
-         Do not specify this option. This option is retained  for
-
 Java EE 6           Last change: 15 Apr 2009                    1
 
 asadmin Utility Subcommands               create-iiop-listener(1)
 
+     --target
+
+         Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
          command  runs  successfully  and  the option is silently
@@ -59,42 +59,19 @@ asadmin Utility Subcommands               create-iiop-listener(1)
 
 OPERANDS
      listener_id
-
          A unique identifier for the IIOP listener to be created.
 
 EXAMPLES
-     Example 1 Using the create-iiop-listener command
+     Example 1 Using the create-iiop-listener subcommand
 
      The  following  command  creates  an  IIOP  listener   named
      sample_iiop_listener:
 
-       asadmin> create-iiop-listener --user admin
-       --passwordfile passwords.txt --host host1 --port 4848
-       --listeneraddress 192.168.1.100 --iiopport 1400
-       sample_iiop_listener
-       Command create-iiop-listener executed successfully.
-
-     Example 2 Using the create-iiop-listener  command  with  the
-     target option.
-
-     The  following  command  creates  an  IIOP  listener   named
-     iiop_listener_2  for the cluster mycluster. It uses the tar-
-     get option. This option is valid only in  domains  that  are
-     configured  to  support  clusters,  such as domains that are
-     created with the cluster profile or the enterprise profile.
-
-       asadmin> create-iiop-listener --user admin
-       --passwordfile passwords.txt --host host1 --port 4848
-       --listeneraddress 0.0.0.0 --iiopport 1401
-       --target mycluster iiop_listener_2
+       asadmin> create-iiop-listener --listeneraddress 192.168.1.100 --iiopport 1400 sample_iiop_listener
        Command create-iiop-listener executed successfully.
 
 EXIT STATUS
      0                           command executed successfully
-
-Java EE 6           Last change: 15 Apr 2009                    2
-
-asadmin Utility Subcommands               create-iiop-listener(1)
 
      1                           error in executing the command
 
@@ -102,5 +79,7 @@ SEE ALSO
      delete-iiop-listener(1),   list-iiop-listeners(1),   create-
      ssl(1)
 
-Java EE 6           Last change: 15 Apr 2009                    3
+     asadmin(1M)
+
+Java EE 6           Last change: 15 Apr 2009                    2
 

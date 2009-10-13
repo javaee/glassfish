@@ -1,21 +1,19 @@
 
-asadmin Utility Subcommands                  delete-threadpool(1)
+asadmin Utility Subcommands                  deletee-hreadpool(1)
 
 NAME
-     delete-threadpool - removes the named threadpool
+     delete-threadpool - removes a thread pool
 
 SYNOPSIS
-     delete-threadpool
-     [--help]
-      [ --target  target_name ]
-      threadpool_id
+     delete-threadpool [--help] [--target target_name ] threadpool_id
 
 DESCRIPTION
-     Removes the threadpool with the named ID.  This  command  is
-     supported in remote mode only.
+     Removes the thread pool with the specified ID. This  subcom-
+     mand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -29,27 +27,31 @@ OPTIONS
 OPERANDS
      threadpool_id
 
-         An ID for the work queue,  for  example,  thread-pool-1,
-         thread-pool-2, and so forth.
+         An ID for the work  queue,  for  example,  thread-pool1,
+         threadpool-2, and so forth.
 
 EXAMPLES
-     Example 1 Using delete-threadpool command
+     Example 1 Deleting a Thread Pool
 
-       asadmin> delete-threadpool --user admin1 --passwordfile password.txt
-       threadpool-1
+     This example deletes threadpool-l.
+
+       asadmin> delete-threadpool threadpool-1
        Command delete-threadpool executed successfully
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
-Java EE 6           Last change: 16 Apr 2009                    1
+Java EE 6            Last change: 1 Oct 2009                    1
 
-asadmin Utility Subcommands                  delete-threadpool(1)
+asadmin Utility Subcommands                  deletee-hreadpool(1)
 
 SEE ALSO
      create-threadpool(1), list-threadpools(1)
 
-Java EE 6           Last change: 16 Apr 2009                    2
+     asadmin(1M)
+
+Java EE 6            Last change: 1 Oct 2009                    2
 

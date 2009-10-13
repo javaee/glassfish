@@ -8,20 +8,20 @@ NAME
 SYNOPSIS
      create-ssl
      [--help]
-     [ --target  target]
-     --type listener_type  --certname cert_name
+
+      --type  listener_or_service_type  --certname cert_name
      [--ssl2enabled=false  ] [--ssl2ciphers ss12ciphers ]
      [--ssl3enabled=true ] [--tlsenabled=true ]
      [--ssl3tlsciphers ssl3tlsciphers ] [--tlsrollbackenabled=true ]
      [--clientauthenabled=false  ] [listener_id]
 
 DESCRIPTION
-     The create-ssl command creates and configures the  SSL  ele-
-     ment  in  the selected HTTP listener, IIOP listener, or IIOP
-     service   to   enable   secure   communication    on    that
+     The create-ssl subcommand creates  and  configures  the  SSL
+     element  in  the  selected  HTTP listener, IIOP listener, or
+     IIOP  service  to  enable  secure  communication   on   that
      listener/service.
 
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      If an option has a short option name, then the short  option
@@ -29,6 +29,7 @@ OPTIONS
      whereas long options have two dashes.
 
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -44,13 +45,19 @@ OPTIONS
          The type of service or listener for  which  the  SSL  is
          created. The type can be:
 
-             o    network-listener
+             o    http-listener
 
              o    iiop-listener
+
+             o    iiop-service
 
 Java EE 6           Last change: 28 Aug 2009                    1
 
 asadmin Utility Subcommands                         create-ssl(1)
+
+         When the type  is  iiop-service,  the  ssl-client-config
+         along  with  the  embedded  ssl  element  is  created in
+         domain.xml.
 
      --certname
 
@@ -150,7 +157,7 @@ Java EE 6           Last change: 28 Aug 2009                    3
 asadmin Utility Subcommands                         create-ssl(1)
 
 EXAMPLES
-     Example 1 Using create-ssl
+     Example 1 Creating an SSL element for an HTTP listener
 
      The following example shows how to create an SSL element for
      an HTTP listener named http-listener-1.

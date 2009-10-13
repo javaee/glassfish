@@ -5,20 +5,19 @@ NAME
      list-resource-refs - lists the existing resource references
 
 SYNOPSIS
-     list-resource-refs
-     [--help]
-      [target]
+     list-resource-refs [--help] [target]
 
 DESCRIPTION
-      The list-resource-refs command lists  all  resource  refer-
+     The list-resource-refs subcommand lists all resource  refer-
      ences  in  a server instance. This effectively lists all the
      resources (for example, JDBC  resources)  available  in  the
      JNDI tree.
 
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -31,7 +30,7 @@ OPERANDS
          ignored.
 
 EXAMPLES
-     Example 1 Using the list-resource-refs command
+     Example 1 Using the list-resource-refs subcommand
 
      The following command lists resource references.
 
@@ -41,16 +40,19 @@ EXAMPLES
        Command list-resource-refs executed successfully.
 
 EXIT STATUS
-     0    command executed successfully
+     0                           subcommand executed successfully
 
-Java EE 6           Last change: 12 Aug 2009                    1
+     1                           error in executing  the  subcom-
+                                 mand
+
+Java EE 6           Last change: 09 Oct 2009                    1
 
 asadmin Utility Subcommands                 list-resource-refs(1)
-
-     1    error in executing the command
 
 SEE ALSO
      create-resource-ref(1), delete-resource-ref(1)
 
-Java EE 6           Last change: 12 Aug 2009                    2
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    2
 

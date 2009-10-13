@@ -2,37 +2,36 @@
 asadmin Utility Subcommands                            monitor(1)
 
 NAME
-     monitor - displays monitoring data for commonly used  Enter-
-     prise Server components and services
+     monitor - displays monitoring data for  commonly  used  com-
+     ponents and services
 
 SYNOPSIS
-     monitor
-     [--help]
-      --type  monitor_type [--filename file_name]
-     [--interval interval] [--filter filter_name]
-     instance_name
+     monitor [--help] --type monitor-type  [--interval interval] [--filter filter_name] instance-name
 
 DESCRIPTION
-     This command  displays  commonly  monitored  statistics  for
-     Enterprise Server components and services.
+     The monitor subcommand displays statistics for commonly mon-
+     itored Enterprise Server components and services. The --type
+     option must be used to specify the object for which  statis-
+     tics  are to be displayed. Data is displayed continuously in
+     a tabular form, or the data can be displayed at a particular
+     time interval by using the --interval option.
 
-     Note -
+     Before a given component or service can be monitored,  moni-
+     toring  must  be  enabled  (set to HIGH or LOW) for the com-
+     ponent or service by using the Administration  Console,  the
+     enable-monitoring subcommand, or the set subcommand.
 
-       Before a given component or service can be monitored,  the
-       monitoring  level  of the component or service must be set
-       to HIGH or LOW. To  set  the  monitoring  level,  use  the
-       Administration Console or the set(1) command.
+     This subcommand is supported in local mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
      --type
          The component or service  to  monitor.  This  option  is
          required. No default value is defined.
-
-         The valid values are as follows:
 
          httplistener
 
@@ -50,11 +49,12 @@ OPTIONS
              mt
 
                  The longest response time (in milliseconds)  for
-                 the processing of a single HTTP request.
 
-Java EE 6           Last change: 29 Sep 2008                    1
+Java EE 6            Last change: 7 Oct 2009                    1
 
 asadmin Utility Subcommands                            monitor(1)
+
+                 the processing of a single HTTP request.
 
              pt
 
@@ -96,17 +96,17 @@ asadmin Utility Subcommands                            monitor(1)
 
                  Retained for compatibility with other releases.
 
+Java EE 6            Last change: 7 Oct 2009                    2
+
+asadmin Utility Subcommands                            monitor(1)
+
              count
+
                  The  amount  of  memory  (in  bytes)   that   is
                  guaranteed  to  be  available for use by the JVM
                  machine.
 
-Java EE 6           Last change: 29 Sep 2008                    2
-
-asadmin Utility Subcommands                            monitor(1)
-
          webmodule
-
              For  this   type,   the   attribute   server.server-
              config.monitoring-service.module-monitoring-
              levels.web-container must be set to LOW or HIGH.
@@ -115,55 +115,55 @@ asadmin Utility Subcommands                            monitor(1)
              web modules:
 
              asc
+
                  The number of currently active sessions.
 
              ast
-
                  The total number of sessions that are  currently
                  active or have been active previously.
 
              rst
+
                  The total number of rejected sessions.
 
              st
-
                  The total number  of  sessions  that  have  been
                  created.
 
              ajlc
-                 The  number  of  currently   active   JavaServer
-                 PagesTM   (JSPTM)   technology  pages  that  are
+
+                 The  TMmber  oTM currently   active   JavaServer
+                 Pages     (JSP  )   technology  pages  that  are
                  loaded.
 
              mjlc
-
                  The maximum number of JSP technology pages  that
                  were active at any time simultaneously.
 
              tjlc
+
                  Total number of JSP technology pages  that  have
                  been loaded.
+
+Java EE 6            Last change: 7 Oct 2009                    3
+
+asadmin Utility Subcommands                            monitor(1)
 
              aslc
 
                  The number of  currently  active  Java  servlets
                  that are loaded.
 
-Java EE 6           Last change: 29 Sep 2008                    3
-
-asadmin Utility Subcommands                            monitor(1)
-
              mslc
-
                  The maximum number of Java  servlets  that  were
                  active at any time simultaneously.
 
              tslc
+
                  The total number of Java servlets that have been
                  loaded.
 
      --filename
-
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
@@ -171,13 +171,13 @@ asadmin Utility Subcommands                            monitor(1)
          ignored.
 
      --interval
+
          The interval  in  seconds  before  capturing  monitoring
          attributes.  The  interval  must  be greater than 0. The
          monitoring attributes are displayed on stdout until  you
          type Control-C or q. The default value is 30.
 
      --filter
-
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
@@ -185,49 +185,43 @@ asadmin Utility Subcommands                            monitor(1)
          ignored.
 
 OPERANDS
-     instance_name               The server instance for which to
+     instance-name               The server instance for which to
                                  view monitoring data.
 
 EXAMPLES
-     Example 1 Displaying Statistics for the JVM Machine
+     Example 1 Displaying Monitoring Statistics by Interval
 
-     This example shows the sequence of commands  for  displaying
-     statistics for the JVM machine every 2000 seconds.
-
-         1.   This   command    sets    the    server.monitoring-
-              service.module-monitoring-levels.jvm  attribute  to
-
-Java EE 6           Last change: 29 Sep 2008                    4
+Java EE 6            Last change: 7 Oct 2009                    4
 
 asadmin Utility Subcommands                            monitor(1)
 
-              HIGH.
+     This example displays monitoring data for  the  JVM  machine
+     every 2000 seconds.
 
-                asadmin> set
-                "server.server-config.monitoring-service.module-monitoring-levels.jvm=HIGH"
-                monitoring-service.module-monitoring-levels.jvm=HIGH
+       asadmin> monitor --type=jvm --interval 2000 server
+                                      JVM Monitoring
+       UpTime(ms)                          Heap and NonHeap Memory(bytes)
+       current                   min        max        low        high       count
+       957843                    29523968   188284928  0          0          60370944
 
-                Command set executed successfully.
-
-         2.   This command displays monitoring data for  the  JVM
-              machine every 2000 seconds.
-
-                asadmin> monitor --type=jvm --interval 2000 server
-                                               JVM Monitoring
-                UpTime(ms)                          Heap and NonHeap Memory(bytes)
-                current                   min        max        low        high       count
-                957843                    29523968   188284928  0          0          60370944
-
-                q
-                Command monitor executed successfully.
+       q
+       Command monitor executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
-     get(1), list(1), set(1)
+     enable-monitoring(1), disable-monitoring(1), set(1)
 
-Java EE 6           Last change: 29 Sep 2008                    5
+     monitoring(5ASC)
+
+     asadmin(1M)
+
+     Chapter 8, Administering  the  Monitoring  Service,  in  Sun
+     GlassFish Enterprise Server v3 Administration Guide
+
+Java EE 6            Last change: 7 Oct 2009                    5
 

@@ -7,14 +7,17 @@ NAME
 SYNOPSIS
      create-network-listener
      [--help]
-      --listeneraddress  address --listenerport listener-port
-     [--transport transport] [--protocol protocol]
-     [--thread-pool thread-pool] [--enabled={true|false}]
-     [ --target  server] listener-name
+     [ --address  address]
+     --listenerport listener-port
+     [--threadpool thread-pool]
+     --protocol protocol
+     [--transport transport]
+     [--enabled={true|false}]
+     [ --jkenabled ={true|false}] listener-name
 
 DESCRIPTION
-     The  create-network-listener  command  creates   a   network
-     listener. This command is supported in remote mode only.
+     The create-network-listener  subcommand  creates  a  network
+     listener. This subcommand is supported in remote mode only.
 
      Note -
 
@@ -23,12 +26,21 @@ DESCRIPTION
        take effect. The Administration Console does not tell  you
        that a restart is required in this case.
 
+     Note -
+
+       You can use the create-http-listener subcommand to  create
+       a  network  listener  that  uses the HTTP protocol without
+       having to first create a protocol, transport, or HTTP con-
+       figuration.  This subcommand is a convenient shortcut, but
+       it gives access to only a limited number of options.
+
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
-     --listeneraddress
+     --address
          The IP address or the hostname (resolvable by DNS).
 
      --listenerport
@@ -39,62 +51,62 @@ OPTIONS
          Configuring  an  SSL listen socket to listen on port 443
          is standard.
 
-     --transport
-         The name of the transport for this listener. If no tran-
-         sport is specified, the default transport is used.
-
-     --protocol
-
-         The name of the protocol for this listener. If no proto-
-         col  is  specified,  a protocol is automatically created
-         with the same name as the network listener.
-
-Java EE 6           Last change: 17 Jun 2009                    1
+Java EE 6           Last change: 10 Sep 2009                    1
 
 asadmin Utility Subcommands            create-network-listener(1)
 
-     --thread-pool
+     --threadpool
 
          The name of the thread pool for this listener.  Specify-
-         ing a thread pool is optional.
+         ing  a  thread  pool  is  optional. The default is http-
+         thread-pool.
+
+     --protocol
+         The name of the protocol for this listener.
+
+     --transport
+
+         The name of the transport for this listener.  Specifying
+         a transport is optional. The default is tcp.
 
      --enabled
          If set to true, the default, the listener is enabled  at
          runtime.
 
-     --target
+     --jkenabled
 
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         If set to true, mod_jk is enabled for this listener. The
+         default is false.
 
 OPERANDS
      listener-name               The   name   of   the    network
                                  listener.
 
 EXAMPLES
-     Example 1 Using the create-network-listener command
+     Example 1 Using the create-network-listener subcommand
 
      The following command creates a network listener named  sam-
      pleListener that is not enabled at runtime:
 
-       asadmin> create-network-listener --user admin1
-       --passwordfile passwords.txt --host host1 --port 4848
-       --listeneraddress 0.0.0.0 --listenerport 7272
+       asadmin> create-network-listener --listenerport 7272 protocol http-1
        --enabled=false sampleListener
        Command create-network-listener executed successfully.
 
 EXIT STATUS
      0                           command executed successfully
 
+Java EE 6           Last change: 10 Sep 2009                    2
+
+asadmin Utility Subcommands            create-network-listener(1)
+
      1                           error in executing the command
 
 SEE ALSO
      delete-network-listener(1),       list-network-listeners(1),
-     create-transport(1),    create-protocol(1),   create-thread-
-     pool(1)
+     create-transport(1),       create-protocol(1),       create-
+     threadpool(1), create-http-listener(1)
 
-Java EE 6           Last change: 17 Jun 2009                    2
+     asadmin(1M)
+
+Java EE 6           Last change: 10 Sep 2009                    3
 

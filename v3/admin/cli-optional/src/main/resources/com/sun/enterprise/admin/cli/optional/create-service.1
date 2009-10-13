@@ -2,119 +2,103 @@
 asadmin Utility Subcommands                     create-service(1)
 
 NAME
-     create-service -  configures the starting of a DAS  or  node
-     agent on an unattended boot.
+     create-service - configures the starting of a  DAS  or  node
+     agent on an unattended boot
 
 SYNOPSIS
-     create-service  --passwordfile passwordfile
-      [--echo={true | false}][--terse={true | false}][--name servicename] [--type das | nodeagent]
-      [--serviceproperties serviceproperties]
-      domain-or-node-agent-configuration-directory
+     create-service [--name servicename] [--serviceproperties serviceproperties]
+     [--dry-run={false|true}] [--domaindir domain-dir] [domain-name]
 
 DESCRIPTION
-     Configures the starting of a DAS or node agent on  an  unat-
-     tended  boot.  On  Solaris 10, this command uses the Service
-     Management Facility (SMF). This is  a  local  command.  This
-     command  must  be  run  as  the OS-level user with superuser
-     privileges. For AS 9.0, this is available only  for  Solaris
-     10.  This  command  creates  the service and the user has to
-     start, enable, disable, delete, or  stop  the  service.  The
-     DAS/node-agent  configuration  must be stored on a folder to
-     which the super-user has access. The configuration cannot be
-     stored  on  a  network file system. This command creates the
-     service such that it is controlled by the OS-level user, who
-     owns  the  folder where the configuration of the DAS or node
-     agent resides.
+     The create-service subcommand configures the starting  of  a
+     DAS or node agent on an unattended boot by using the Solaris
+     10 Service Management Facility (SMF). This  subcommand  must
+     be run as the OS-level user with superuser privileges. After
+     this subcommand creates the service, you must start, enable,
+     disable,  delete,  or  stop  the service. The DAS/node-agent
+     configuration must be  stored  on  a  folder  to  which  the
+     superuser  has access and cannot be stored on a network file
+     system. The service is created such that it is controlled by
+     the  OS-level user, who owns the folder where the configura-
+     tion of the DAS or node agent resides.
 
-     To run this command, you must have solaris.smf.*  authoriza-
-     tion.  See  the useradd and usermod manpages to find out how
-     to set the authorizations. It  is  also  essential  for  the
-     users  to  have  write  permission  in  the  directory tree:
-     /var/svc/manifest/application/SUNWappserver.  Usually,   the
-     super-user  has both these permissions. If one wishes to run
-     these commands as non-root user, then the system administra-
-     tor  must  be  contacted so that the relevant authorizations
-     are granted.
-
-     You need to also ensure that:
+     To run this subcommand, you must have solaris.smf.* authori-
+     zation.  (Refer  to  the useradd and usermod man pages.) You
+     must also have  write  permission  in  the  directory  tree:
+     /var/svc/manifest/application/SUNWappserver.   Usually,  the
+     superuser has both these permissions. To run these  commands
+     as non-root user, the system administrator must be contacted
+     so that the relevant authorizations are granted.   You  need
+     to also ensure that:
 
          o    Solaris 10 administration commands such as  svccfg,
               svcs,  and auths are available in the PATH, so that
               these commands can be executed. A simple test to do
-              so  is to issue the command, which svccfg on a bash
-              shell.
+              so  is  to  issue the subcommand, which svccfg on a
+              bash shell.
 
          o    You should have  write  permission  for  the  path,
               /var/svc/manifest/application.
 
+     This subcommand is supported in local mode only.
+
 OPTIONS
-     --passwordfile
+     --help
+     -?
 
-         The --passwordfile option specifies the name of  a  file
+         Displays the help text for the subcommand.
 
-Java EE 6           Last change: 24 July 2007                   1
+Java EE 6            Last change: 8 Oct 2009                    1
 
 asadmin Utility Subcommands                     create-service(1)
-
-         containing  the  password entries in a specified format.
-         The entry for the password  must have the AS_ADMIN_ pre-
-         fix  followed  by  the password name in capital letters.
-         For example, to specify the domain administration server
-         password,  use  an  entry  with  the  following  format:
-         AS_ADMIN_PASSWORD=password, where password is the actual
-         administrator  password.  Other  passwords  that  can be
-         specified        include        AS_ADMIN_MAPPEDPASSWORD,
-         AS_ADMIN_USERPASSWORD, AS_ADMIN_MQPASSWORD, and so on.
-
-     -e --echo
-
-         Setting to true will echo the command line statement  on
-         the standard output. Default is false.
-
-     -t --terse
-         Indicates that any output data  must  be  very  concise,
-         typically avoiding human-friendly sentences and favoring
-         well-formatted data for consumption by a script. Default
-         is false.
 
      --name
 
           Indicates the name of the  service  and  overrides  the
          default, if present.
 
-     --type
-          Specifies whether the service pertains to DAS  or  node
-         agent.  Valid  values  are  das  and  node-agent and the
-         default value is das, indicating that the user's  domain
-         will be created as a service by default.
-
      --serviceproperties
-
-          Specifies a colon(:)-separated list of various  proper-
+          Specifies a : (colon)-separated list of various proper-
          ties  that  are specific to the service. For Solaris 10,
          if you specify  net_privaddr,  the  service's  processes
          will  be able to bind to the privileged ports (<1024) on
          the platform. You can bind to ports< 1024  only  if  the
-         owner of the service is super-user, this is not allowed.
-         If you specify startinstances=true/false, when the  type
-         is  node-agent,  all  the instances are started when the
-         node-agent starts up.
+         owner  of  the  service is superuser, otherwise, this is
+         not allowed. If  you  specify  startinstances=true/false
+         for a node agent, all the instances are started when the
+         node agent starts.
+
+     --dry-run
+
+         Default is false.
+
+     --domaindir
 
 OPERANDS
-
-Java EE 6           Last change: 24 July 2007                   2
-
-asadmin Utility Subcommands                     create-service(1)
-
-     domain-dir or node-agent-dir
+     domain-name
 
           The absolute path of directory on  disk  that  contains
          the configuration of the domain or node agent.
 
+EXAMPLES
+     Example 1 Creating a Service
+
+     This example creates a service.
+
+       asadmin> create-service
+
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
-Java EE 6           Last change: 24 July 2007                   3
+Java EE 6            Last change: 8 Oct 2009                    2
+
+asadmin Utility Subcommands                     create-service(1)
+
+SEE ALSO
+     asadmin(1M)
+
+Java EE 6            Last change: 8 Oct 2009                    3
 

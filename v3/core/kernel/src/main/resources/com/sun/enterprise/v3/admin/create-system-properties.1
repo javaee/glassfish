@@ -13,15 +13,19 @@ SYNOPSIS
      [name=value)[:name=value]*]
 
 DESCRIPTION
-     Shared or clustered server  instances  will  often  need  to
-     override  attributes  defined in their referenced configura-
-     tion. Any configuration attribute in a server  instance  can
-     be overridden through a system property of the corresponding
-     name. This command adds or updates the system properties  of
-     a domain, configuration, cluster, or server instance.
+     The create-system-properties subcommand adds or updates  the
+     system  properties  of  a domain, configuration, cluster, or
+     server instance. Shared or clustered server instances  often
+     need to override attributes defined in their referenced con-
+     figuration. Any configuration attribute in a server instance
+     can   be   overridden  through  a  system  property  of  the
+     corresponding name.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -41,24 +45,28 @@ OPERANDS
          will be updated with the newly specified value.
 
 EXAMPLES
-     Example 1 Using create-system-properties
+     Example 1 Creating System Properties
 
-       asadmin> create-system-properties --user admin
-       --passwordfile password.txt --host localhost --port 4848
-       --target mycluster http-listener-port=1088
-       Command create-system-properties executed successfully.
-
-Java EE 6            Last change: 2 Sep 2008                    1
+Java EE 6            Last change: 4 Sep 2009                    1
 
 asadmin Utility Subcommands           create-system-properties(1)
 
-EXIT STATUS
-     0                           command executed successfully
+     This example creates a system property  associated  with  an
+     HTTP listener.
 
-     1                           error in executing the command
+       asadmin> create-system-properties mycluster http-listener-port=1088
+       Command create-system-properties executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      delete-system-property(1), list-system-properties(1)
 
-Java EE 6            Last change: 2 Sep 2008                    2
+     asadmin(1M)
+
+Java EE 6            Last change: 4 Sep 2009                    2
 

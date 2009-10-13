@@ -5,18 +5,18 @@ NAME
      disable - disables the component
 
 SYNOPSIS
-     disable
-     [--help]
-     [ --target  target_name]
-     component_name
+     disable [--help] [--target target_name] component_name
 
 DESCRIPTION
-     The disable command  immediately  disables  the  named  com-
-     ponent.  The  component must have been deployed. If the com-
-     ponent has not been deployed, an error message is returned.
+     The disable subcommand immediately  disables  the  specified
+     deployed  component. If the component has not been deployed,
+     an error message is returned.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -32,18 +32,29 @@ OPERANDS
                                  abled.
 
 EXAMPLES
-     Example 1 Using disable command
+     Example 1 Disabling a Component
 
-       asadmin> disable  --user admin1 --passwordfile password.txt sampleApp
+     This example disables the deployed component sampleApp.
+
+       asadmin> disable sampleApp
        Command disable executed successfully
 
 EXIT STATUS
-     0                   command executed successfully
+     0                   subcommand executed successfully
 
-     1                   error in executing the command
+Java EE 6            Last change: 9 Sep 2009                    1
+
+asadmin Utility Subcommands                            disable(1)
+
+     1                   error in executing the subcommand
 
 SEE ALSO
-     deploy(1), deploydir(1), undeploy(1), enable(1)
+     deploy(1), undeploy(1), enable(1)
 
-Java EE 6            Last change: 2 Sep 2008                    1
+     asadmin(1M)
+
+     Sun  GlassFish  Enterprise  Server  v3  Preview  Application
+     Deployment Guide
+
+Java EE 6            Last change: 9 Sep 2009                    2
 

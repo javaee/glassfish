@@ -16,12 +16,6 @@ DESCRIPTION
      client container package targeted at remote  hosts  that  do
      not contain a server installation.
 
-     The appclient.jar archive contains native code  and  can  be
-     used  on a target machine that is of similar architecture as
-     the machine where it  was  produced.  So,  for  example,  an
-     appclient.jar produced on a Solaris SPARC platform cannot be
-     used on a Windows client machine.
-
      After copying the appclient.jar file to a  remote  location,
      unjar   it  to  get  a set of libraries and jar files in the
      appclient directory
@@ -39,7 +33,7 @@ DESCRIPTION
                                       W
          o    set AS_INSTALL to appclient_install_dir
 
-         o    set AS_JAVA to your JDK 1.5 home directory
+         o    set AS_JAVA to your JDK 1.6 home directory
 
          o    set                AS_ACC_CONFIG                 to
               appclient_install_dir/config/sun-acc.xml
@@ -49,24 +43,18 @@ DESCRIPTION
          o    Ensure     the     DOCTYPE     file      references
               appclient_install_dir/lib/dtds
 
-Java EE 6           Last change: 22 Dec 2004                    1
-
-Utility Commands                            package-appclient(1M)
-
          o    Ensure that target-server address attribute  refer-
               ences the server machine.
 
          o    Ensure that target-server port attribute references
               the ORB port on the remote machine.
 
+Java EE 6           Last change: 15 Sep 2009                    1
+
+Utility Commands                            package-appclient(1M)
+
          o    Ensure that log-service references a log  file;  if
               the user wants to put log messages to a log file.
-
-     Modify  appclient_install_dir/bin/appclient   (appclient.bat
-     for Windows) as follows:
-
-         o    change        token        %CONFIG_HOME%         to
-              appclient_install_dir/config
 
      To use the newly installed application client container, you
      must do the following:
@@ -89,5 +77,5 @@ ATTRIBUTES
 SEE ALSO
      appclient(1M)
 
-Java EE 6           Last change: 22 Dec 2004                    2
+Java EE 6           Last change: 15 Sep 2009                    2
 

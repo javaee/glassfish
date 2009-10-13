@@ -8,8 +8,8 @@ NAME
 DESCRIPTION
      A dotted name is an identifier for a  particular  Enterprise
      Server  element,  such  as  a  configurable or a monitorable
-     object. A dotted name uses the period (.), known dot,  as  a
-     delimiter  to  separate  the  parts  of an element name. The
+     object. A dotted name uses the period (.), known as dot,  as
+     a  delimiter  to  separate the parts of an element name. The
      period in a dotted name is similar to the slash (/)  charac-
      ter  that delimits the levels in the absolute path name of a
      file in the UNIX file system.
@@ -25,7 +25,7 @@ DESCRIPTION
               butes.
 
          o    The set subcommand enables you to modify  configur-
-              able attributes.
+              able attributes and set properties.
 
      The configuration hierarchy is loosely based on the domain's
      schema  document,  and  the  attributes  are modifiable. The
@@ -47,7 +47,7 @@ DESCRIPTION
 
          o    The top-level is configuration, server,  or  domain
 
-Java EE 6           Last change: 27 Aug 2009                    1
+Java EE 6           Last change: 14 Sep 2009                    1
 
 Enterprise Server Concepts                     dotted-names(5ASC)
 
@@ -78,9 +78,12 @@ Enterprise Server Concepts                     dotted-names(5ASC)
 
          Note -
 
-           On SolarisTM systems, double quotes are required  when
-           running  subcommands  that  use  *  (asterisk)  as the
-           option value or operand.
+           Characters that have special meaning to the  shell  or
+           command  interpreter,  such as * (asterisk), should be
+           quoted or escaped as appropriate  to  the  shell,  for
+           example,  by enclosing the argument in quotes. In mul-
+           timode, quotes are  needed  only  for  arguments  that
+           include spaces, quotes, or backslash.
 
          o    The --monitor option of the get  and  list  subcom-
               mands   selects  the  monitoring  or  configuration
@@ -100,12 +103,13 @@ Enterprise Server Concepts                     dotted-names(5ASC)
                   to  the  list  subcommand,  the  names  of  the
                   immediate children at that level are  returned.
                   For  example,  the  following command lists all
-                  the web modules deployed to the domain  or  the
-                  default server:
 
-Java EE 6           Last change: 27 Aug 2009                    2
+Java EE 6           Last change: 14 Sep 2009                    2
 
 Enterprise Server Concepts                     dotted-names(5ASC)
+
+                  the web modules deployed to the domain  or  the
+                  default server:
 
                     asadmin> list server.applications.web-module
 
@@ -130,11 +134,9 @@ Enterprise Server Concepts                     dotted-names(5ASC)
 EXAMPLES
      Example 1 Listing All Configurable Elements
 
-     This example lists  all  the  configurable  elements.  (This
-     example  of the Solaris operating system. On other operating
-     systems, the double quotes would be omitted.)
+     This example lists all the configurable elements.
 
-       asadmin> list "*"
+       asadmin> list *
 
      Output similar to the following is displayed:
 
@@ -148,12 +150,12 @@ EXAMPLES
        configs.config.server-config.admin-service.property.adminConsoleDownloadLocation
        configs.config.server-config.admin-service.property.ipsRoot
        configs.config.server-config.ejb-container
-       configs.config.server-config.ejb-container.ejb-timer-service
 
-Java EE 6           Last change: 27 Aug 2009                    3
+Java EE 6           Last change: 14 Sep 2009                    3
 
 Enterprise Server Concepts                     dotted-names(5ASC)
 
+       configs.config.server-config.ejb-container.ejb-timer-service
        configs.config.server-config.http-service
        configs.config.server-config.http-service.access-log
        configs.config.server-config.http-service.virtual-server.__asadmin
@@ -191,16 +193,15 @@ Enterprise Server Concepts                     dotted-names(5ASC)
        servers.server.server.resource-ref.jdbc/__TimerPool
        servers.server.server.resource-ref.jdbc/__default
        system-applications
-
        Command list executed successfully.
 
      Example 2 Listing All the Monitorable Objects
 
      The following example lists all the monitorable objects.
 
-       asadmin> list --monitor=true *
+       asadmin> list --monitor *
 
-Java EE 6           Last change: 27 Aug 2009                    4
+Java EE 6           Last change: 14 Sep 2009                    4
 
 Enterprise Server Concepts                     dotted-names(5ASC)
 
@@ -228,7 +229,6 @@ Enterprise Server Concepts                     dotted-names(5ASC)
        server.network.http-listener-1.keep-alive
        server.network.http-listener-1.thread-pool
        server.transaction-service
-
        Command list executed successfully.
 
 SEE ALSO
@@ -236,7 +236,5 @@ SEE ALSO
 
      asadmin(1M)
 
-     8 Administering the Monitoring Service, Configuration Tasks
-
-Java EE 6           Last change: 27 Aug 2009                    5
+Java EE 6           Last change: 14 Sep 2009                    5
 

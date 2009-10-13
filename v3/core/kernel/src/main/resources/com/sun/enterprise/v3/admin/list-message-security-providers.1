@@ -10,15 +10,15 @@ NAME
 SYNOPSIS
      list-message-security-providers
      [--help]
-       --layer   message_layer  [target]
+       --layer   message_layer
 
 DESCRIPTION
-     This command enables administrators  to  list  all  security
-     message  providers  (provider-config  sub-elements)  for the
-     given  message  layer  (message-security-config  element  of
-     domain.xml).
+     The   list-message-security-providers   subcommand   enables
+     administrators   to  list  all  security  message  providers
+     (provider-config sub-elements) for the given  message  layer
+     (message-security-config element of domain.xml).
 
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      If an option has a short option name, then the short  option
@@ -26,12 +26,13 @@ OPTIONS
      whereas long options have two dashes.
 
      --help
+     -?
 
          Displays the help text for the subcommand.
 
      --layer
          The message-layer for  which  the  provider  has  to  be
-         listed. The default value is SOAP.
+         listed. The default value is HttpServlet.
 
 OPERANDS
      target
@@ -43,14 +44,14 @@ OPERANDS
          ignored.
 
 EXAMPLES
-     Example 1 Using list-message-security-providers
-
-     The following example shows how  to  list  message  security
-     providers for a message layer.
+     Example 1 Listing message security providers
 
 Java EE 6           Last change: 28 Aug 2009                    1
 
 asadmin Utility Subcommands    list-message-security-providers(1)
+
+     The following example shows how  to  list  message  security
+     providers for a message layer.
 
        asadmin> list-message-security-providers
        --layer SOAP

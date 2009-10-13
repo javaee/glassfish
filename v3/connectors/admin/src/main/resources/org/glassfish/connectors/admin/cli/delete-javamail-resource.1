@@ -6,19 +6,18 @@ NAME
      resource
 
 SYNOPSIS
-     delete-javamail-resource
-     [--help]
-     [ --target  target]
-     jndi_name
+     delete-javamail-resource [--help] [--target target] jndi_name
 
 DESCRIPTION
-     The delete-javamail-resource command removes  the  specified
-     JavaMail session resource. Ensure that you remove all refer-
-     ences to this resource before executing this  command.  This
-     command is supported in remote mode only.
+     The delete-javamail-resource subcommand removes  the  speci-
+     fied  JavaMail  session resource. Ensure that you remove all
+     references to this resource before running this subcommand.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -36,26 +35,28 @@ OPERANDS
          deleted.
 
 EXAMPLES
-     Example 1 Using the delete-javamail-resource command
+     Example 1 Deleting a JavaMail Resource
 
-     The following command deletes the JavaMail session  resource
-     named mail/MyMailSession:
+     This example deletes the  JavaMail  session  resource  named
+     mail/MyMailSession.
 
-       asadmin> delete-javamail-resource --user admin
-       --passwordfile passwords.txt --host fuyako --port 7070 mail/MyMailSession
+       asadmin> delete-javamail-resource mail/MyMailSession
        Command delete-javamail-resource executed successfully.
 
-Java EE 6           Last change: 16 Apr 2009                    1
+Java EE 6            Last change: 8 Oct 2009                    1
 
 asadmin Utility Subcommands           delete-javamail-resource(1)
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      create-javamail-resource(1), list-javamail-resources(1)
 
-Java EE 6           Last change: 16 Apr 2009                    2
+     asadmin(1M)
+
+Java EE 6            Last change: 8 Oct 2009                    2
 

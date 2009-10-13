@@ -5,41 +5,39 @@ NAME
      list-admin-objects - gets all the administered objects
 
 SYNOPSIS
-     list-admin-objects
-     [--help]
-      [target]
+     list-admin-objects [--help] target]
 
 DESCRIPTION
-     This command lists all the administered objects.  This  com-
-     mand is supported in remote mode only.
+     The list-admin-objects subcommand lists all the administered
+     objects.
+
+      This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
-OPERANDS
-     target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
-
 EXAMPLES
-     Example 1 Using the list-admin-objects command
+     Example 1 Listing Administered Objects
 
-       asadmin> list-admin-objects --user admin --passwordfile passwords.txt
+     This example lists all the administered objects.
+
+       asadmin> list-admin-objects
        jms/samplequeue
        Command list-admin-objects executed successfully
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      create-admin-object(1), delete-admin-object(1)
 
-Java EE 6           Last change: 16 Apr 2009                    1
+     asadmin(1M)
+
+Java EE 6            Last change: 8 Oct 2009                    1
 

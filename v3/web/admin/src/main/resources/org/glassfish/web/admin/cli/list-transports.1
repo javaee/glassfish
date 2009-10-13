@@ -7,56 +7,26 @@ NAME
 SYNOPSIS
      list-transports
      [--help]
-     [target]
 
 DESCRIPTION
-     The list-transports command lists the  existing  transports.
-     This command is supported in remote mode only.
+     The list-transports  subcommand  lists  the  existing  tran-
+     sports. This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
-OPERANDS
-     target
-         This option is valid only in domains that are configured
-         to  support  clusters,  such as domains that are created
-         with the cluster profile or the enterprise profile. This
-         operand  specifies  the  target for which the transports
-         are to be listed. Valid values are:
-
-         server
-
-             Lists the transports for the default server instance
-             server and is the default value.
-
-         configuration-name
-             Lists the transports for  the  specified  configura-
-             tion.
-
-         cluster-name
-
-             Lists the transports for the specified cluster.
-
-         instance-name
-             Lists  the  transports  for  a   particular   server
-             instance.
-
 EXAMPLES
-     Example 1 Using the list-transports command
-
-Java EE 6           Last change: 16 Apr 2009                    1
-
-asadmin Utility Subcommands                    list-transports(1)
+     Example 1 Using the list-transports subcommand
 
      The following command  lists  all  the  transports  for  the
      server instance:
 
-       asadmin> list-transports --user admin1
-       --passwordfile passwords.txt --host host1 --port 5001
+       asadmin> list-transports
        http1-trans
-       https2-trans
+       tcp
        Command list-transports executed successfully.
 
 EXIT STATUS
@@ -67,5 +37,7 @@ EXIT STATUS
 SEE ALSO
      create-transport(1), delete-transport(1)
 
-Java EE 6           Last change: 16 Apr 2009                    2
+     asadmin(1M)
+
+Java EE 6           Last change: 10 Sep 2009                    1
 

@@ -3,52 +3,47 @@ asadmin Utility Subcommands      list-resource-adapter-configs(1)
 
 NAME
      list-resource-adapter-configs  -  lists  the  names  of  the
-     resource-adapter-configs created.
+     current resource adapter configurations
 
 SYNOPSIS
-     list-resource-adapter-configs
-     [--help]
-      [ --verbose ={false|true}] [ --raname  connectorModuleName]
+     list-resource-adapter-configs [--help] [--raname connector-module-name]
 
 DESCRIPTION
      This command lists  the  configuration  information  in  the
      domain.xml  for  the  connector  module.   It lists an entry
-     called resource-adapter-config in the domain.xml file.
+     called resource-adapter-config in the  domain.xml  file.  If
+     the  --raname option is specified, only the resource adapter
+     configurations  for  the  specified  connector  module   are
+     listed.
 
      This command is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
-     --verbose
-         This option helps to list the properties that  are  con-
-         figured. Default is false.
-
      --raname
-
-         This option lists the connector module name.
+         This option specifies the connector module name.
 
 OPERANDS
      target
-         This is the name of the target upon which the command is
-         operating.  The  valid  targets  for  this  command  are
-         instance, cluster, domain, and  server.  Server  is  the
-         default option.
 
          This operand is deprecated.
 
 EXAMPLES
-     Example 1 Using the list-resource-adapter-configs command
+     Example 1 Listing the Resource Adapter Configurations
 
-       asadmin> list-resource-adapter-configs --user admin1
-       --passwordfile passwords.txt
+     This example lists the current resource  adapter  configura-
+     tions.
+
+       asadmin> list-resource-adapter-configs
        ra1
        ra2
        Command list-resource-adapter-configs executed successfully
 
-Java EE 6           Last change: 30 Jan 2007                    1
+Java EE 6            Last change: 8 Oct 2009                    1
 
 asadmin Utility Subcommands      list-resource-adapter-configs(1)
 
@@ -61,5 +56,7 @@ SEE ALSO
      create-resource-adapter-config(1),  delete-resource-adapter-
      config(1)
 
-Java EE 6           Last change: 30 Jan 2007                    2
+     asadmin(1M)
+
+Java EE 6            Last change: 8 Oct 2009                    2
 

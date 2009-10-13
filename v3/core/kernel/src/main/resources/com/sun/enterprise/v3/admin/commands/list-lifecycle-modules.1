@@ -10,14 +10,15 @@ SYNOPSIS
       [target]
 
 DESCRIPTION
-     The  list-lifecycle-modules  command  lists  the   lifecycle
-     modules.  The  lifecycle  modules provide a means of running
-     short or long duration Java-based tasks within the  applica-
-     tion server environment. This command is supported in remote
-     mode only.
+     The  list-lifecycle-modules   subcommand   lists   lifecycle
+     modules.  A  lifecycle  module provides a means of running a
+     short or long duration Java-based task at a  specific  stage
+     in  the  server  life cycle. This subcommand is supported in
+     remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -32,26 +33,25 @@ OPERANDS
 EXAMPLES
      Example 1 Using list-lifecycle-modules:
 
-       asadmin> list-lifecycle-modules --user admin
-       --passwordfile adminpassword.txt --host fuyako --port 7070
-       JBIFramework
-       WSTCPConnectorLCModule
+       asadmin> list-lifecycle-modulesWSTCPConnectorLCModule
        Command list-lifecycle-modules executed successfully
 
-     Where  JBIFramework  and  WSTCPConnectorLCModule   are   the
-     lifecycle modules listed for the default target, server.
+     Where WSTCPConnectorLCModule is the  only  lifecycle  module
+     listed for the default target, server.
 
 EXIT STATUS
      0                           command executed successfully
 
-Java EE 6           Last change: 30 Jan 2007                    1
+     1                           error in executing the command
+
+Java EE 6            Last change: 2 Sep 2009                    1
 
 asadmin Utility Subcommands             list-lifecycle-modules(1)
-
-     1                           error in executing the command
 
 SEE ALSO
      create-lifecycle-module(1), delete-lifecycle-module(1)
 
-Java EE 6           Last change: 30 Jan 2007                    2
+     asadmin(1M)
+
+Java EE 6            Last change: 2 Sep 2009                    2
 

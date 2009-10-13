@@ -7,55 +7,28 @@ NAME
 SYNOPSIS
      list-protocols
      [--help]
-     [target]
 
 DESCRIPTION
-     The list-protocols command  lists  the  existing  protocols.
-     This command is supported in remote mode only.
+     The list-protocols subcommand lists the existing  protocols.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
-OPERANDS
-     target
-         This option is valid only in domains that are configured
-         to  support  clusters,  such as domains that are created
-         with the cluster profile or the enterprise profile. This
-         operand specifies the target for which the protocols are
-         to be listed. Valid values are:
-
-         server
-
-             Lists the protocols for the default server  instance
-             server and is the default value.
-
-         configuration-name
-             Lists the protocols for the specified configuration.
-
-         cluster-name
-
-             Lists the protocols for the specified cluster.
-
-         instance-name
-             Lists  the  protocols  for   a   particular   server
-             instance.
-
 EXAMPLES
-     Example 1 Using the list-protocols command
-
-Java EE 6           Last change: 16 Apr 2009                    1
-
-asadmin Utility Subcommands                     list-protocols(1)
+     Example 1 Using the list-protocols subcommand
 
      The following command lists all the protocols for the server
      instance:
 
-       asadmin> list-protocols --user admin1
-       --passwordfile passwords.txt --host host1 --port 5001
-       http1
-       https2
+       asadmin> list-protocols
+       admin-listener
+       http-1
+       http-listener-1
+       http-listener-2
        Command list-protocols executed successfully.
 
 EXIT STATUS
@@ -66,5 +39,7 @@ EXIT STATUS
 SEE ALSO
      create-protocol(1), delete-protocol(1)
 
-Java EE 6           Last change: 16 Apr 2009                    2
+     asadmin(1M)
+
+Java EE 6           Last change: 10 Sep 2009                    1
 

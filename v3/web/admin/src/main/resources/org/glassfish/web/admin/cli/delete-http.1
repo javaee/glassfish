@@ -2,56 +2,51 @@
 asadmin Utility Subcommands                        delete-http(1)
 
 NAME
-     delete-http - removes HTTP parameters
+     delete-http - removes HTTP parameters from a protocol
 
 SYNOPSIS
      delete-http
      [--help]
-     [ --target  server]
      protocol-name
 
 DESCRIPTION
-     The delete-http command removes the specified HTTP parameter
-     set. This command is supported in remote mode only.
+     The delete-http subcommand removes the specified HTTP param-
+     eter  set  from  a protocol. This subcommand is supported in
+     remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
-     --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
-
 OPERANDS
-     protocol-name               The name of the protocol associ-
-                                 ated with the HTTP parameter set
-                                 to be deleted.
+     protocol-name               The name of  the  protocol  from
+                                 which to delete the HTTP parame-
+                                 ter set.
 
 EXAMPLES
-     Example 1 Using the delete-http command
+     Example 1 Using the delete-http subcommand
 
-     The following command deletes the HTTP  parameter  set  from
-     the protocol named http-1:
+     The following command deletes the HTTP parameter set from  a
+     protocol named http-1:
 
-       asadmin> delete-http --user admin1
-       --passwordfile passwords.txt --host host1 --port 5001 http-1
+       asadmin> delete-http http-1
        Command delete-http executed successfully.
 
 EXIT STATUS
      0                           command executed successfully
-
-Java EE 6           Last change: 25 Jun 2008                    1
-
-asadmin Utility Subcommands                        delete-http(1)
 
      1                           error in executing the command
 
 SEE ALSO
      create-http(1)
 
-Java EE 6           Last change: 25 Jun 2008                    2
+Java EE 6           Last change: 10 Sep 2009                    1
+
+asadmin Utility Subcommands                        delete-http(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 10 Sep 2009                    2
 

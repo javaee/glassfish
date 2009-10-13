@@ -6,32 +6,34 @@ NAME
      butes
 
 SYNOPSIS
-     get
-     [--help]
-     [ --monitor =[{true|false}]
+     get [--help] [--monitor[={true|false}]]
      (dotted-attribute--name)+
 
 DESCRIPTION
-     The get subcommand gets the names and values of configurable
-     or monitorable attributes for Enterprise Server elements.
+     The get subcommand uses dotted names to get  the  names  and
+     values  of configurable or monitorable attributes for Enter-
+     prise Server elements.
 
-     The get subcommand uses dotted names to  access  attributes.
-     You  can  use  the  list(1) subcommand to display the dotted
-     names that represent individual server components  and  sub-
-     systems.    For    example,   a   dotted   name   might   be
+     You can use the list(1) subcommand  to  display  the  dotted
+     names  that  represent individual server components and sub-
+     systems.   For   example,   a   dotted   name    might    be
      server.applications.web-module. Attributes from the monitor-
-     ing  hierarchy  are  read-only, but configuration attributes
-     can be  modified  using  the  set(1)  subcommand.  For  more
+     ing hierarchy are read-only,  but  configuration  attributes
+     can  be  modified  using  the  set(1)  subcommand.  For more
      detailed  information  on  dotted  names,  see  the  dotted-
      names(5ASC) help page.
 
      Note -
 
-       On SolarisTM systems, double quotes are required when run-
-       ning subcommands that use * (asterisk) as the option value
-       or operand.
+       Characters that have special meaning to the shell or  com-
+       mand  interpreter,  such as * (asterisk), should be quoted
+       or escaped as appropriate to the shell,  for  example,  by
+       enclosing the argument in quotes. In multimode, quotes are
+       needed only for arguments that include spaces, quotes,  or
+       backslash.
 
-     The following list shows common usage of the get subcommand:
+     The following list shows common usage of the get  subcommand
+     with the * (asterisk):
 
      get * or get *.*
 
@@ -41,68 +43,35 @@ DESCRIPTION
          Gets all values on the  dotted  names  that  begin  with
          domain.
 
-     get domain.*
-
-         Gets all values on the dotted  name  domain.  Note  that
-         this example is quite different from domain*.
-
-Java EE 6           Last change: 27 Aug 2009                    1
-
-asadmin Utility Subcommands                                get(1)
-
      get *config*.*.*
 
          Gets all values on the dotted  names  that  match  *con-
          fig*.*.
 
+Java EE 6           Last change: 14 Sep 2009                    1
+
+asadmin Utility Subcommands                                get(1)
+
      get domain.j2ee-applications.*.ejb-module.*.*
+
          Gets all values on all EJB modules of all applications.
 
      get *web-modules.*.*
-
          Gets all values on all web modules whether in an  appli-
          cation or standalone.
 
      get *.*.*.*
-         Gets all values on all  dotted  names  that  have  three
+
+         Gets all values on  all  dotted  names  that  have  four
          parts.
 
-     The following list shows examples  of  the  get  subcommands
-     with the --monitor option. Monitoring must be enabled for an
-     object before attributes can be accessed.
-
-     get --monitor=true server.monitoring-service.modulel-
-     monitoring-levels.*
-
-         Gets  the  monitoring  settings  for   all   monitorable
-         objects.
-
-     get monitor=true server.http-service.*
-         No output. A message states that there are no attributes
-         at this node.
-
-     get monitor=true server.http-service.virtual-server1
-
-         No output. A message states that there are no attributes
-         at this node.
-
-     get monitor=true server.http-service.virtual-server1.http-
-     listener-1
-         Gets attributes and values that correspond to  the  HTTP
-         listener statistics.
-
 OPTIONS
-
-Java EE 6           Last change: 27 Aug 2009                    2
-
-asadmin Utility Subcommands                                get(1)
-
      --help
-
+     -?
          Displays the help text for the subcommand.
 
-     --monitor--m
-     --m
+     --monitor or -m
+
          Defaults to false. If set  to  false,  the  configurable
          attribute values are returned. If set to true, the moni-
          torable attribute values are returned.
@@ -128,6 +97,11 @@ EXAMPLES
        server.http-service.http-listener.http-listener-1.default-virtual-server = server
        server.http-service.http-listener.http-listener-1.enabled = true
        server.http-service.http-listener.http-listener-1.external-port =
+
+Java EE 6           Last change: 14 Sep 2009                    2
+
+asadmin Utility Subcommands                                get(1)
+
        server.http-service.http-listener.http-listener-1.family = inet
        server.http-service.http-listener.http-listener-1.id = http-listener-1
        server.http-service.http-listener.http-listener-1.port = 8080
@@ -135,23 +109,16 @@ EXAMPLES
        server.http-service.http-listener.http-listener-1.security-enabled = false
        server.http-service.http-listener.http-listener-1.server-name =
        server.http-service.http-listener.http-listener-1.xpowered-by = true
-
        Command get executed successfully.
 
      Example 2 Getting Monitorable Objects
 
-Java EE 6           Last change: 27 Aug 2009                    3
-
-asadmin Utility Subcommands                                get(1)
-
-     This example gets the monitorable objects and shows  whether
-     they are enabled (LOW or HIGH) or disabled (OFF).
+     This example gets the configuration attributes  for  setting
+     the monitoring level and shows whether they are enabled (LOW
+     or HIGH) or disabled (OFF). The jvm component is enabled for
+     monitoring.
 
        asadmin> get server.monitoring-service.module-monitoring-levels.*
-
-     The output shows that only the jvm component is enabled  for
-     monitoring (HIGH).
-
        server.monitoring-service.module-monitoring-levels.connector-connection-pool=OFF
        server.monitoring-service.module-monitoring-levels.connector-service=OFF
        server.monitoring-service.module-monitoring-levels.d-trace=OFF
@@ -159,27 +126,31 @@ asadmin Utility Subcommands                                get(1)
        server.monitoring-service.module-monitoring-levels.http-service=OFF
        server.monitoring-service.module-monitoring-levels.jdbc-connection-pool=OFF
        server.monitoring-service.module-monitoring-levels.jms-service=OFF
-       server.monitoring-service.module-monitoring-levels.jvm=ON
+       server.monitoring-service.module-monitoring-levels.jvm=HIGH
        server.monitoring-service.module-monitoring-levels.orb=OFF
        server.monitoring-service.module-monitoring-levels.thread-pool=OFF
        server.monitoring-service.module-monitoring-levels.transaction-service=OFF
        server.monitoring-service.module-monitoring-levels.web-container=OFF
-
        Command get executed successfully.
 
      Example 3 Getting Attributes and Values  for  a  Monitorable
      Object
 
-     This example gets all attributes and values the jvm monitor-
-     able object.
+     This example gets all attributes and values of the jvm moni-
+     torable object.
 
-       asadmin> get --monitor=true server.jvm.*
+       asadmin> get --monitor server.jvm.*
        server.jvm.HeapSize_Current = 45490176
        server.jvm.HeapSize_Description = Describes JvmHeapSize
        server.jvm.HeapSize_HighWaterMark = 45490176
        server.jvm.HeapSize_LastSampleTime = 1063217002433
        server.jvm.HeapSize_LowWaterMark = 0
        server.jvm.HeapSize_LowerBound = 0
+
+Java EE 6           Last change: 14 Sep 2009                    3
+
+asadmin Utility Subcommands                                get(1)
+
        server.jvm.HeapSize_Name = JvmHeapSize
        server.jvm.HeapSize_StartTime = 1063238840055
        server.jvm.HeapSize_Unit = bytes
@@ -187,21 +158,16 @@ asadmin Utility Subcommands                                get(1)
        server.jvm.UpTime_Count = 1063238840100
        server.jvm.UpTime_Description = Describes JvmUpTime
        server.jvm.UpTime_LastSampleTime = 1-63238840070
-
-Java EE 6           Last change: 27 Aug 2009                    4
-
-asadmin Utility Subcommands                                get(1)
-
        server.jvm.UpTime_Name = JvmUpTime
        server.jvm.UpTime_StartTime = 1063217002430
        server.jvm.UpTime_Unit = milliseconds
-
        Command get executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      list(1), set(1)
@@ -212,5 +178,5 @@ SEE ALSO
 
      Sun GlassFish Enterprise Server v3 Administration Guide
 
-Java EE 6           Last change: 27 Aug 2009                    5
+Java EE 6           Last change: 14 Sep 2009                    4
 

@@ -1,0 +1,147 @@
+
+asadmin Utility Subcommands              set-web-context-param(1)
+
+NAME
+     set-web-context-param   -   sets    a    servlet    context-
+     initialization  parameter  of  a deployed web application or
+     module
+
+SYNOPSIS
+     set-web-context-param [--help] --name=context-param-name
+     {--value=value|--ignoreDescriptorItem={false|true}}
+     [--description=description] application-name[/module-name]
+
+DESCRIPTION
+     The  set-web-context-param   subcommand   sets   a   servlet
+     context-initialization  parameter  of  one  of the following
+     items:
+
+         o    A deployed web application
+
+         o    A web module in a deployed  Java  Platform,  Enter-
+              prise Edition (Java EE) application
+
+     The application must  already  be  deployed.  Otherwise,  an
+     error occurs.
+
+     This subcommand enables you to change the configuration of a
+     deployed   application   without  the  need  to  modify  the
+     application's deployment descriptors and repackage and rede-
+     ploy the application.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --name
+         The name of the servlet context-initialization parameter
+         that is to be set.
+
+     --value
+
+         The value to which  the  servlet  context-initialization
+         parameter is to be set.
+
+         Either the --value option or the  --ignoreDescriptorItem
+         option must be set.
+
+Java EE 6            Last change: 7 Oct 2009                    1
+
+asadmin Utility Subcommands              set-web-context-param(1)
+
+     --ignoreDescriptorItem
+
+         Specifies  whether  the  servlet  context-initialization
+         parameter  is  ignored if it is set in the application's
+         deployment descriptor. When a parameter is ignored,  the
+         application  behaves  as if the parameter had never been
+         set in  the  application's  deployment  descriptor.  The
+         behavior  of an application in this situation depends on
+         the application.
+
+         The possible values are as follows:
+
+         false
+             The value is not ignored (default).
+
+         true
+
+             The value is ignored.
+
+         Either the --value option or the  --ignoreDescriptorItem
+         option must be set.
+
+         Note -
+
+           Do not use the --ignoreDescriptorItem option to  unset
+           a  servlet  context-initialization  parameter that has
+           previously been set by using the set-web-context-param
+           subcommand.   Instead,   use   the  unset-web-context-
+           param(1) subcommand for this purpose.
+
+     --description
+         An optional textual description of the context parameter
+         that is being set.
+
+OPERANDS
+     application-name
+
+         The  name  of  the  application.  The  application  must
+         already be deployed. Otherwise, an error occurs.
+
+     module-name
+         The name of the module within the  application.  module-
+         name   is   required   only   if  the  servlet  context-
+         initialization parameter applies to a web  module  of  a
+         Java EE application. If specified, module-name must fol-
+         low application-name, separated by a slash (/).
+
+Java EE 6            Last change: 7 Oct 2009                    2
+
+asadmin Utility Subcommands              set-web-context-param(1)
+
+EXAMPLES
+     Example 1 Setting a Servlet Context-Initialization Parameter
+     for a Web Application
+
+     This example sets the servlet context-initialization parame-
+     ter  javax.faces.STATE_SAVING_METHOD  of the web application
+     basic-ezcomp to client. The description The  location  where
+     the  application's  state  is preserved is provided for this
+     parameter.
+
+       asadmin> set-web-context-param --name=javax.faces.STATE_SAVING_METHOD
+       --description="The location where the application's state is preserved"
+       --value=client basic-ezcomp
+
+       Command set-web-context-param executed successfully.
+
+     Example 2 Ignoring a Servlet Context-Initialization  Parame-
+     ter That Is Defined in a Deployment Descriptor
+
+     This  example  ignores  the  servlet  context-initialization
+     parameter  javax.faces.PROJECT_STAGE  of the web application
+     basic-ezcomp.
+
+       asadmin> set-web-context-param --name=javax.faces.PROJECT_STAGE
+       --ignoreDescriptorItem=true
+       basic-ezcomp
+
+       Command set-web-context-param executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     list-web-context-param(1), unset-web-context-param(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 7 Oct 2009                    3
+

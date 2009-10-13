@@ -2,29 +2,27 @@
 asadmin Utility Subcommands                  create-threadpool(1)
 
 NAME
-     create-threadpool - adds a threadpool
+     create-threadpool - adds a thread pool
 
 SYNOPSIS
-     create-threadpool
-     [--help]
-      [ --target  target_name]
-      [--maxthreadpoolsize max_thread_pool_size]
-      [--minthreadpoolsize min_thread_pool_size]
-      [--idletimeout idle_thread_timeout_in_seconds]
-      [--workqueues number_work_queues] threadpool_id
+     create-threadpool [--help] [--target target_name] [--idle-timeout idle_thread_timeout_in_seconds]
+     [--maxthreadpoolsize max_threadpool_size] [--minthreadpoolsize min_threadpool_size]
+     [max-queue-size max-queue-size] [--workqueues number_work_queues] threadpool_id
 
 DESCRIPTION
-     The create-threadpool command creates a threadpool with  the
-     specified  name.  You can specify maximum and minimum number
-     of threads in the pool, the number of work queues,  and  the
-     idle  timeout  of  a  thread. The created thread pool can be
+     The create-threadpool subcommand creates a thread pool  with
+     the  specified  name.  You  can  specify maximum and minimum
+     number of threads in the pool, the maximum queue  size,  and
+     the idle timeout of a thread. The created thread pool can be
      used for servicing IIOP requests and for  resource  adapters
-     to  service  work  management  requests.  Please note that a
-     created  thread  pool  can  be  used  in  multiple  resource
-     adapters. This command is supported in remote mode only.
+     to  service  work  management requests. A thread pool can be
+     used in multiple resource adapters.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -35,50 +33,62 @@ OPTIONS
          command  runs  successfully  and  the option is silently
          ignored.
 
-     --maxthreadpoolsize
+     --idle-timeout
 
-         Maximum number of threads in  the  threadpool  servicing
-         requests  in  this queue. This is the upper bound on the
-         number of threads that exist in the threadpool.
+         Specifies the amount of time in seconds after which idle
+         threads are removed from the pool. Default is 900.
+
+     --maxthreadpoolsize
+         Specifies the maximum number of  threads  the  pool  can
+         contain. Default is 5.
 
      --minthreadpoolsize
-         Minimum number of threads in  the  threadpool  servicing
-         requests  in this queue. These are created up front when
-         the threadpool is instantiated.
 
-     --idletimeout
+         Specifies the minimum number of  threads  in  the  pool.
+         These  are created when the thread pool is instantiated.
+         Default is 2.
 
-         Idle threads are removed from the pool after this time.
-
-Java EE 6           Last change: 16 Apr 2009                    1
+Java EE 6            Last change: 9 Oct 2009                    1
 
 asadmin Utility Subcommands                  create-threadpool(1)
 
-     --workqueues
+     --max-queue-size
 
+         Specifies the maximum number of  messages  that  can  be
+         queued  until  threads  are available to process them. A
+         value of -1 specifies no limit,  which  is  the  optimal
+         value  for  a  thread  pool  used with an IIOP listener.
+         Default is 4096.
+
+     --workqueues
          Identifies the total number of work queues  serviced  by
          this threadpool.
 
 OPERANDS
      threadpool_id
-         An ID for the work queue;  for  example,  thread-pool-1,
-         thread-pool-2, and so forth.
+
+         An ID for the work  queue;  for  example,  threadpool-1,
+         threadpool-2, and so forth.
 
 EXAMPLES
-     Example 1 Using create-threadpool Command
+     Example 1 Creating a Thread Pool
 
-       asadmin> create-threadpool --user admin1
-       --passwordfile password.txt --maxthreadpoolsize 100
-       --minthreadpoolsize 20 --idletimeout 2 --workqueues 100 threadpool-1
+     This command creates a new thread pool called threadpool-l.
+
+       asadmin> create-threadpool --maxthreadpoolsize 100
+       --minthreadpoolsize 20 --idletimeout 2 threadpool-1
        Command create-threadpool executed successfully
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
-     delete-threadpool(1), list-threadpools(1)
+     deletee-hreadpool(1), list-threadpools(1)
 
-Java EE 6           Last change: 16 Apr 2009                    2
+     asadmin(1M)
+
+Java EE 6            Last change: 9 Oct 2009                    2
 

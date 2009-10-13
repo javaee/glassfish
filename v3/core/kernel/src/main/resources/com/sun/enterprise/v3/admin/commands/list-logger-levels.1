@@ -1,0 +1,95 @@
+
+asadmin Utility Subcommands                 list-logger-levels(1)
+
+NAME
+     list-logger-levels - lists the loggers and their log levels
+
+SYNOPSIS
+     list-logger-levels [--help]
+
+DESCRIPTION
+     The list-logger-levels subcommand lists the  current  Enter-
+     prise  Server  loggers and their log levels. This subcommand
+     reports  on  all  the  loggers  that  are  listed   in   the
+     logging.properties  file.   In some cases, loggers that have
+     not been created by the respective containers will appear in
+     the list.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+OPERANDS
+EXAMPLES
+     Example 1 Listing the Log Levels
+
+     This example lists the existing loggers and their  log  lev-
+     els.
+
+       asadmin> list-log-levels
+       javax.enterprise.system.container.cmp: INFO
+       javax.enterprise.system.tools.admin: INFO
+       java.util.logging.ConsoleHandler: FINEST
+       javax.enterprise.system.container.web: INFO
+       javax.enterprise.system.util: INFO
+       javax.enterprise.resource.webcontainer.jsf.timing: INFO
+       javax: INFO
+       javax.enterprise.resource.corba: INFO
+       javax.enterprise.system.core.naming: INFO
+       javax.enterprise.system.core.selfmanagement: INFO
+       javax.enterprise.system.container.ejb: INFO
+       javax.enterprise.resource.webcontainer.jsf.config: INFO
+       javax.enterprise.resource.javamail: INFO
+       org.apache.catalina: INFO
+       javax.enterprise.system.core.config: INFO
+       javax.enterprise.system.webservices.rpc: INFO
+       javax.enterprise.system.webservices.registry: INFO
+       javax.enterprise.system.tools.deployment: INFO
+
+Java EE 6            Last change: 1 Oct 2009                    1
+
+asadmin Utility Subcommands                 list-logger-levels(1)
+
+       javax.enterprise.resource.jms: INFO
+       javax.enterprise.system: INFO
+       javax.enterprise.system.webservices.saaj: INFO
+       org.apache.jasper: INFO
+       javax.enterprise.resource.webcontainer.jsf.lifecycle: INFO
+       javax.enterprise.resource.jta: INFO
+       javax.enterprise.resource.jdo: INFO
+       javax.enterprise.resource.resourceadapter: INFO
+       javax.enterprise.system.core.transaction: INFO
+       javax.enterprise.resource.webcontainer.jsf.resource: INFO
+       javax.enterprise.system.core.security: INFO
+       javax.enterprise.resource.webcontainer.jsf.application: INFO
+       javax.enterprise.system.core.classloading: INFO
+       org.apache.coyote: INFO
+       javax.enterprise.resource.webcontainer.jsf.managedbean: INFO
+       javax.enterprise.system.container.ejb.mdb: INFO
+       javax.enterprise.resource.webcontainer.jsf.context: INFO
+       javax.enterprise.resource.webcontainer.jsf.renderkit: INFO
+       javax.enterprise.resource.webcontainer.jsf.facelets: INFO
+       javax.enterprise.resource.webcontainer.jsf.taglib: INFO
+
+       Command list-logger-levels executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     rotate-log(1), set-log-level(1)
+
+     asadmin(1M)
+
+     Chapter 7, Administering the Logging Service, in Sun GlassF-
+     ish Enterprise Server v3 Administration Guide
+
+Java EE 6            Last change: 1 Oct 2009                    2
+

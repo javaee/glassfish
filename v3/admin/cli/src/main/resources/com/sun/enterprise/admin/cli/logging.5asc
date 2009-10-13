@@ -2,29 +2,50 @@
 Enterprise Server Concepts                          logging(5ASC)
 
 NAME
-     logging - logging application server events
+     logging - capturing information on Enterprise Server runtime
+     events
 
 DESCRIPTION
-     The Enterprise Server uses the Java 2 platform  Logging  API
-     specified in JSR 047. Enterprise Server logging messages are
-     recorded in  the  server  log,  normally  found  at  domain-
-     dir/logs/server.log.
+     Logging is the process by which Enterprise  Server  captures
+     data about events that occur during Enterprise Server opera-
+     tion. Enterprise  Server  components  and  application  com-
+     ponents  generate logging data, which is saved in the server
+     log, typically domain-dir/logs/server.log. The server log is
+     the  first  source of information if Enterprise Server prob-
+     lems occur.
 
-     The domain-dir/logs directory contains two  other  kinds  of
-     logs  in addition to the server log. In the access subdirec-
-     tory are the HTTP Service access logs, and in  the  tx  sub-
-     directory  are the Transaction Service logs. For information
-     about these logs, consult the Admin Console online help  and
-     Configuring  Transactions.  The components of the Enterprise
-     Server generate logging output. Application  components  can
-     also generate logging output.
+     The server log is rotated when the file reaches  the  speci-
+     fied  size  in bytes, or the specified time has elapsed. The
+     file can also be rotated manually by  using  the  rotate-log
+     subcommand.
 
-     Application components may use the  Apache  Commons  Logging
-     Library  to log messages. The platform standard JSR 047 API,
-     however, is recommended for better log configuration.
+     In addition to the server log, the domain-dir/logs directory
+     contains two other kinds of logs:
+
+         o    HTTP service access logs, located  in  the  /access
+              subdirectory
+
+         o    Transaction service logs, located in the  /tx  sub-
+              directory
+
+     Logging levels can be configured by using the Administration
+     Console or the set-log-level subcommand.  Additional proper-
+     ties can be set by using the Administration  Console  or  by
+     editing    the    logging.properties   file.   The   default
+     logging.properties file  is  typically  located  in  domain-
+     dir/config.
+
+     Although application components can use the  Apache  Commons
+     Logging  Library  to  record messages, the platform standard
+     JSR 047 API is recommended for better log configuration.
 
 SEE ALSO
+     list-logger-levels(1), rotate-log(1), set-log-level(1)
+
      asadmin(1M)
 
-Java EE 6           Last change: 24 Sep 2008                    1
+     Chapter 7, Administering the Logging Service, in Sun GlassF-
+     ish Enterprise Server v3 Administration Guide
+
+Java EE 6            Last change: 8 Oct 2009                    1
 

@@ -5,28 +5,29 @@ NAME
      create-lifecycle-module - adds a lifecycle module
 
 SYNOPSIS
-     create-lifecycle-module  --classname classname
+     create-lifecycle-module
      [--help]
-
-      [ --enabled ={true|false}] [ --target  target]
+       --classname  classname
+      [--enabled={true|false}] [ --target  target]
       [--classpath classpath] [--loadorder loadorder]
       [--failurefatal={false|true} ] [ --description  description]
       [--property (name=value)[:name=value]*]
       module_name
 
 DESCRIPTION
-     Creates the lifecycle module. The lifecycle modules  provide
-     a  means  of running short or long duration Java-based tasks
-     within the application server environment. This  command  is
-     supported in remote mode only.
+     Creates a lifecycle module. A lifecycle  module  provides  a
+     means of running a short or long duration Java-based task at
+     a specific stage in the server life cycle.  This  subcommand
+     is supported in remote mode only.
 
 OPTIONS
-     --classname
-
-         This is the fully qualified name of the startup class.
-
      --help
+     -?
+
          Displays the help text for the subcommand.
+
+     --classname
+         This is the fully qualified name of the startup class.
 
      --target
 
@@ -38,7 +39,8 @@ OPTIONS
 
      --classpath
          This option indicates  where  this  module  is  actually
-         located if it is not under applications-root.
+         located  if  it is not under the applicationsroot direc-
+         tory.
 
      --loadorder
 
@@ -48,7 +50,7 @@ OPTIONS
          are  loaded  sooner. Order is unspecified if two or more
          lifecycle modules have the same load-order value.
 
-Java EE 6            Last change: 2 Jul 2009                    1
+Java EE 6            Last change: 2 Sep 2009                    1
 
 asadmin Utility Subcommands            create-lifecycle-module(1)
 
@@ -82,29 +84,29 @@ OPERANDS
 EXAMPLES
      Example 1 Using create-lifecycle-module
 
-       asadmin> create-lifecycle-module --user admin --passwordfile adminpassword.txt
-       --host fuyako --port 7070 --classname "com.acme.CustomSetup"
+       asadmin> create-lifecycle-module --classname "com.acme.CustomSetup"
        --classpath "/export/customSetup" --loadorder 1 --failurefatal=true
        --description "this is a sample customSetup"
        --property rmi="Server=acme1:7070":timeout=30 customSetup
        Command create-lifecycle-module executed successfully
 
      Where: customSetup is  the  lifecycle  module  created.  The
-     escape  character  is used in the property option to distin-
-     guish the colons (:).
+     escape  character \fR is used in the property option to dis-
+     tinguish the colons (:).
 
 EXIT STATUS
+     0                           command executed successfully
 
-Java EE 6            Last change: 2 Jul 2009                    2
+Java EE 6            Last change: 2 Sep 2009                    2
 
 asadmin Utility Subcommands            create-lifecycle-module(1)
-
-     0                           command executed successfully
 
      1                           error in executing the command
 
 SEE ALSO
      delete-lifecycle-module(1), list-lifecycle-modules(1)
 
-Java EE 6            Last change: 2 Jul 2009                    3
+     asadmin(1M)
+
+Java EE 6            Last change: 2 Sep 2009                    3
 

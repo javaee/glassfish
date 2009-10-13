@@ -13,10 +13,10 @@ SYNOPSIS
      [:jvm_option_name=jvm_option_value*]
 
 DESCRIPTION
-     The create-jvm-options command creates command-line  options
-     that  are  passed  to  the  JavaTM application launcher when
-     Enterprise Server is started. These options  are  stored  in
-     the  Java  configuration  element or profiler element of the
+     The  create-jvm-options  subcommand   creates   command-line
+     options  that  are passed to the JavaTM application launcher
+     when Enterprise Server is started. These options are  stored
+     in the Java configuration element or profiler element of the
      domain.xml file. If options are created for a profiler, they
      are used to record the settings that are required to start a
      particular profiler.
@@ -26,9 +26,9 @@ DESCRIPTION
        In  the  syntax,  there  can  be  more  than  one  option,
        separated by a colon.
 
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
-     The  create-jvm-options  command   creates   the   following
+     The  create-jvm-options  subcommand  creates  the  following
      options:
 
          o    Java system properties. System properties  are  set
@@ -49,7 +49,7 @@ DESCRIPTION
 
              o    --XX:PermSize=size
 
-Java EE 6           Last change: 30 Apr 2009                    1
+Java EE 6            Last change: 4 Sep 2009                    1
 
 asadmin Utility Subcommands                 create-jvm-options(1)
 
@@ -99,7 +99,7 @@ asadmin Utility Subcommands                 create-jvm-options(1)
 
       To restart the DAS, use the restart-domain(1) command.
 
-Java EE 6           Last change: 30 Apr 2009                    2
+Java EE 6            Last change: 4 Sep 2009                    2
 
 asadmin Utility Subcommands                 create-jvm-options(1)
 
@@ -116,6 +116,7 @@ asadmin Utility Subcommands                 create-jvm-options(1)
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -145,15 +146,16 @@ OPERANDS
            the  backslash  (\fR) must be used to escape the colon
            in the name or  value.  Other  characters  might  also
            require  an  escape  character.  For  more information
-           about escape characters in command  options,  see  the
+           about escape characters in subcommand options, see the
            asadmin(1M) man page.
 
 EXAMPLES
-     Example 1 Setting Java System Properties
 
-Java EE 6           Last change: 30 Apr 2009                    3
+Java EE 6            Last change: 4 Sep 2009                    3
 
 asadmin Utility Subcommands                 create-jvm-options(1)
+
+     Example 1 Setting Java System Properties
 
      JVM machine options must start with  a  dash  (-).  Use  the
      backslash (\fR) to escape the dash delimiter.
@@ -172,45 +174,38 @@ asadmin Utility Subcommands                 create-jvm-options(1)
      Example 2 Setting a Single Startup  Parameter  for  the  JVM
      Machine
 
-     This example shows  the  command  for  setting  the  maximum
-     available heap size to 1024. Because this command is setting
-     a startup parameter for the JVM machine without a value, the
-     command is terminated by a double dash -- before the parame-
-     ter.
+     This example sets the maximum available heap size  to  1024.
+     Because  this example is setting a startup parameter for the
+     JVM machine without a value, the command is terminated by  a
+     double dash -- before the parameter.
 
        asadmin> create-jvm-options -- -Xmx1024m
        created 1 option(s)
-
        Command create-jvm-options executed successfully.
 
      Example 3 Setting Multiple Startup Parameters  for  the  JVM
      Machine
 
-     This example shows the command for setting  startup  parame-
-     ters for the JVM machine as follows:
-
-         o    The maximum available heap size is set to 1024.
-
-         o    Information about garbage collection is to be  pro-
-              vided.
+     This example sets startup parameters for  the  JVM  machine.
+     The  maximum available heap size is set to 1024. Information
+     about garbage collection is to be provided.
 
        asadmin> create-jvm-options "-Xmx1024m:-XX:+PrintGCDetails"
        created 1 option(s)
-
        Command create-jvm-options executed successfully.
 
-Java EE 6           Last change: 30 Apr 2009                    4
+Java EE 6            Last change: 4 Sep 2009                    4
 
 asadmin Utility Subcommands                 create-jvm-options(1)
 
-     In this example, one parameter already  existed  before  the
-     command  was  run.  Therefore, the command reports that only
-     one option was set.
+     Because one parameter already existed before the command was
+     run, the command reports that only one option was set.
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      delete-jvm-options(1),     list-jvm-options(1),     restart-
@@ -218,12 +213,5 @@ SEE ALSO
 
      asadmin(1M)
 
-     java  - the Java application launcher reference page for the
-     Solaris               OS              and              Linux
-     (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html),
-     java  -  the  Java  application launcher  reference page for
-     Windows
-     (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
-
-Java EE 6           Last change: 30 Apr 2009                    5
+Java EE 6            Last change: 4 Sep 2009                    5
 

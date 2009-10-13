@@ -5,32 +5,22 @@ NAME
      list-components - lists deployed components
 
 SYNOPSIS
-     list-components
-     [--help]
-     [ --type  {application|connector|ejb|jruby|web|webservice}]
-     [target]
+     list-components [--help] [--type type] [target]
 
 DESCRIPTION
-     The command list-components lists all  deployed  Java  EE  5
-     components.  If the --type option is not specified, all com-
-     ponents are listed. The possible types are as follows:
+     The list-components subcommand lists all  deployed  Java  EE
+     components.
 
-         o    application (default)
+      If the --type option is not specified, all  components  are
+     listed.  If the type option is specified, you must specify a
+     type. The possible types are listed in the  Options  section
+     in this help page.
 
-         o    connector
-
-         o    ejb
-
-         o    jruby
-
-         o    web
-
-         o    webservice
-
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -38,7 +28,9 @@ OPTIONS
          Specifies the type of the  components  that  are  to  be
          listed. The options are as follows:
 
-             o    application (default)
+             o    application
+
+             o    appclient
 
              o    connector
 
@@ -51,35 +43,42 @@ OPTIONS
              o    webservice
          If no type is specified, all components are listed.
 
-Java EE 6           Last change: 23 Sep 2008                    1
-
-asadmin Utility Subcommands                    list-components(1)
-
 OPERANDS
      target
 
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
+         option, a syntax error  does  not  occur.  Instead,  the
+
+Java EE 6           Last change: 14 Sep 2009                    1
+
+asadmin Utility Subcommands                    list-components(1)
+
+         subcommand  runs successfully and the option is silently
          ignored.
 
 EXAMPLES
-     Example 1 Using the list-components command
+     Example 1 Listing Components
 
-       asadmin> list-components --user admin --passwordfile password.txt --type connector
-       cciblackbox-tx connector-module
+     This example lists the connector  components.  (cciblackbox-
+     tx.rar was deployed.)
+
+       asadmin> list-components --type connector
+       cciblackbox-tx <connector>
        Command list-components executed successfully
 
-     Note: cciblackbox-tx.rar was deployed.
-
 EXIT STATUS
-     0                   command executed successfully
+     0                   subcommand executed successfully
 
-     1                   error in executing the command
+     1                   error in executing the subcommand
 
 SEE ALSO
-     list-applications(1)
+     list-applications(1), show-component-status(1)
 
-Java EE 6           Last change: 23 Sep 2008                    2
+     asadmin(1M)
+
+     Sun  GlassFish  Enterprise  Server  v3  Preview  Application
+     Deployment Guide
+
+Java EE 6           Last change: 14 Sep 2009                    2
 

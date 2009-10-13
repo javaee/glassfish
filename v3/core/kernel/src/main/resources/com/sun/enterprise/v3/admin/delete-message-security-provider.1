@@ -3,23 +3,25 @@ asadmin Utility Subcommands   delete-message-security-provider(1)
 
 NAME
      delete-message-security-provider  -  enables  administrators
-     to  delete  a provider-config sub-element for the given mes-
-     sage layer (message-security-config element of domain.xml)
+     to delete a message security provider
 
 SYNOPSIS
      delete-message-security-provider
      [--help]
-      [ --target   target] --layer   message_layer
+        --layer    message_layer
       provider_name
 
 DESCRIPTION
-     Enables administrators  to  delete  a  provider-config  sub-
-     element for the given message layer (message-security-config
-     element of domain.xml, the file  that  specifies  parameters
-     and properties to the Enterprise Server). The options speci-
-     fied in the  list  below  apply  to  attributes  within  the
-     message-security-config  and provider-config sub-elements of
-     the domain.xml file.
+     The  delete-message-security-provider   subcommand   enables
+     administrators to delete a message security provider.
+
+     In terms of what happens when this subcommand  is  run,  the
+     provider-config  sub-element  for  the  given  message layer
+     (message-security-config element of domain.xml  is  deleted.
+     The  domain.xmlfile  specifies  parameters and properties to
+     the Enterprise Server). The options specified  in  the  list
+     below apply to attributes within the message-security-config
+     and provider-config sub-elements of the domain.xml file.
 
      If  the  message-layer  (message-security-config  attribute)
      does  not exist, it is created, and then the provider-config
@@ -33,6 +35,7 @@ OPTIONS
      whereas long options have two dashes.
 
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -43,23 +46,22 @@ OPTIONS
          command  runs  successfully  and  the option is silently
          ignored.
 
-      --layer
-
-         The message-layer from which  the  provider  has  to  be
-         deleted. The default value is SOAP.
-
 Java EE 6            Last change: 28 Aug2009                    1
 
 asadmin Utility Subcommands   delete-message-security-provider(1)
 
+      --layer
+
+         The message-layer from which  the  provider  has  to  be
+         deleted. The default value is HttpServlet.
+
 OPERANDS
      provider_name
-
          The  name  of  the  provider  used  to   reference   the
          provider-config element.
 
 EXAMPLES
-     Example 1 Using delete-message-security-provider
+     Example 1 Deleting a message security provider
 
      The following example shows how to delete a message security
      provider for a client.

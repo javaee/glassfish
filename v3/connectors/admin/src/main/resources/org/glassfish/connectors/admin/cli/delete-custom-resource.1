@@ -5,17 +5,17 @@ NAME
      delete-custom-resource - removes a custom resource
 
 SYNOPSIS
-     delete-custom-resource
-     [--help]
-      [ --target  target]
-      jndi_name
+     delete-custom-resource [--help] [--target target] jndi-name
 
 DESCRIPTION
-     The  delete-custom-resource   command   removes   a   custom
-     resource. This command is supported in remote mode only.
+     The  delete-custom-resource  subcommand  removes  a   custom
+     resource.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -27,23 +27,33 @@ OPTIONS
          ignored.
 
 OPERANDS
-     jndi_name
+     jndi-name
 
          The JNDI name of this resource.
 
 EXAMPLES
-     Example 1 Using the delete-custom-resource command
+     Example 1 Deleting a Custom Resource
 
-       asadmin> delete-custom-resource --user admin --passwordfile passwords.txt sample_custom_resource
+     This example  deletes  a  custom  resource  named  mycustom-
+     resource.
+
+       asadmin> delete-custom-resource mycustomresource
        Command delete-custom-resource executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+Java EE 6            Last change: 7 Oct 2009                    1
+
+asadmin Utility Subcommands             delete-custom-resource(1)
+
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      create-custom-resource(1), list-custom-resources(1)
 
-Java EE 6           Last change: 16 Apr 2009                    1
+     asadmin(1M)
+
+Java EE 6            Last change: 7 Oct 2009                    2
 

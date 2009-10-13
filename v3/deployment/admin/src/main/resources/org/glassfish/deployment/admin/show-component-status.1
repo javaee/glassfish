@@ -6,20 +6,17 @@ NAME
      component
 
 SYNOPSIS
-     show-component-status
-     [--help]
-     [ --target  target]
-     component-name
+     show-component-status  [--help] [--target target] component-name
 
 DESCRIPTION
-     The show-component-status command gets  the  status  of  the
-     deployed  component.  The  status is a string representation
-     returned by the server. The possible status strings  include
-     status  of app-name is enabled or status of app-name is dis-
-     abled. This command is supported in remote mode only.
+     The show-component-status subcommand gets the status (either
+     enabled or disabled) of the deployed component.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -36,24 +33,30 @@ OPERANDS
          The name of the component whose status is to be listed.
 
 EXAMPLES
-     Example 1 Using show-component-status command
+     Example 1 Showing the Status of a Component
 
-       asadmin> show-component-status --user admin MEjbApp
-       Please enter the admin password>
+     This example gets the status of the MEjbApp component.
+
+       asadmin> show-component-status MEjbApp
        Status of MEjbApp is enabled
        Command show-component-status executed successfully.
 
 EXIT STATUS
-     0                   command executed successfully
+     0                   subcommand executed successfully
 
-Java EE 6            Last change: 2 Jul 2009                    1
+Java EE 6           Last change: 11 Sep 2009                    1
 
 asadmin Utility Subcommands              show-component-status(1)
 
-     1                   error in executing the command
+     1                   error in executing the subcommand
 
 SEE ALSO
      list-components(1), list-sub-components(1)
 
-Java EE 6            Last change: 2 Jul 2009                    2
+     asadmin(1M)
+
+     Sun  GlassFish  Enterprise  Server  v3  Preview  Application
+     Deployment Guide
+
+Java EE 6           Last change: 11 Sep 2009                    2
 

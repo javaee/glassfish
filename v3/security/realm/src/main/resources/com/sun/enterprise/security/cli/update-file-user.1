@@ -8,16 +8,17 @@ SYNOPSIS
      update-file-user
      [--help]
      [ --groups  user_groups[:user_groups]*]
-     [--authrealmname authrealm_name] [--target target]
+     [--authrealmname authrealm_name]
      username
 
 DESCRIPTION
-     This command updates an existing entry in the keyfile  using
-     the  specified  user  name,  password  and  groups. Multiple
-     groups can be entered by separating them, with a colon (:)
+     This subcommand updates an existing  entry  in  the  keyfile
+     using the specified user name, password and groups. Multiple
+     groups can be entered by separating them, with a colon (:).
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -27,8 +28,8 @@ OPTIONS
 
      --authrealmname
 
-         This is the file  where  the  user  may  have  different
-         stores for file auth realm.
+         Name of the authentication realm where the  user  to  be
+         updated can be found.
 
      --target
          Do not specify this option. This option is retained  for
@@ -38,19 +39,21 @@ OPTIONS
          ignored.
 
 OPERANDS
-     username                    This is the  name  of  the  file
-                                 user to be updated.
+     username
+
+         This is the name of the file user to be updated.
 
 EXAMPLES
-     Example 1 Using the update-file-user command
+     Example 1 Updating a user's information in a file realm
 
        asadmin> update-file-user
         --groups staff:manager:engineer sample_user
-       Command update-file-user executed successfully
 
 Java EE 6          Last change: 28 August 2009                  1
 
 asadmin Utility Subcommands                   update-file-user(1)
+
+       Command update-file-user executed successfully
 
      Where sample_user is the file  user  for whom the groups and
      the user name are updated.

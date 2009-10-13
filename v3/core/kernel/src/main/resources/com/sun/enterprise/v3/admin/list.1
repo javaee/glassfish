@@ -5,22 +5,18 @@ NAME
      list - lists configurable or monitorable elements
 
 SYNOPSIS
-     list
-     [--help]
-     [ --monitor ={false|true}]
+     list [--help] [--monitor={false|true}]
      [dotted-parent-attribute-name]
 
 DESCRIPTION
-     Lists the names of the configurable or monitorable  elements
-     of Enterprise Server.
+     The  list  subcommand  lists  configurable  and  monitorable
+     attributes of Enterprise Server.
 
-     The list subcommand uses dotted names to  access  configura-
-     tion  and monitoring attributes. The output of the list sub-
-     command is a list of the dotted names that represent indivi-
-     dual server components and subsystems. For example, a dotted
-     name might be server.applications.web-module. After you know
-     the  particular component or subsystem, you can then use the
-     get(1) subcommand to access any attributes, and  the  set(1)
+     The output of the list subcommand is a list  of  the  dotted
+     names  that  represent individual server components and sub-
+     systems. For example, server.applications.web-module.  After
+     you know the particular component or subsystem, you can then
+     use the get subcommand to access any attributes, and the set
      subcommand to modify configurable attributes.
 
      The following rules apply to dotted names in a list  subcom-
@@ -28,9 +24,12 @@ DESCRIPTION
 
      Note -
 
-       On Solaris systems, double quotes are required  when  run-
-       ning subcommands that use * (asterisk) as the option value
-       or operand.
+       Characters that have special meaning to the shell or  com-
+       mand  interpreter,  such as * (asterisk), should be quoted
+       or escaped as appropriate to the shell,  for  example,  by
+       enclosing the argument in quotes. In multimode, quotes are
+       needed only for arguments that include spaces, quotes,  or
+       backslash.
 
          o    Any list subcommand that has a dotted name that  is
               not  followed  by  a wildcard (*) lists the current
@@ -38,7 +37,7 @@ DESCRIPTION
               ing  command lists all immediate children belonging
               to the server node:
 
-                asadmin> list --monitor server
+                asadmin> list server
 
          o    Any list subcommand that has a dotted name followed
               by a wildcard(*) lists a hierarchical tree of child
@@ -46,9 +45,9 @@ DESCRIPTION
               lowing  command  lists  all child nodes of applica-
               tions and their subsequent child nodes, and so on:
 
-                asadmin> list monitor server.applications.*
+                asadmin> list server.applications.*
 
-Java EE 6           Last change: 27 Aug 2009                    1
+Java EE 6           Last change: 14 Sep 2009                    1
 
 asadmin Utility Subcommands                               list(1)
 
@@ -63,11 +62,11 @@ asadmin Utility Subcommands                               list(1)
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
-     --monitor
-     --m
+     --monitor or -m
          Defaults to false. If set  to  false,  the  configurable
          attribute values are returned. If set to true, the moni-
          torable attribute values are returned.
@@ -79,11 +78,9 @@ OPERANDS
 EXAMPLES
      Example 1 Listing Dotted Names of Configurable Elements
 
-     This example lists the  elements  that  can  be  configured.
-     (This  example  of  the  Solaris  operating system. On other
-     operating systems, the double quotes would be omitted.)
+     This example lists the elements that can be configured.
 
-       asadmin> list "*"
+       asadmin> list *
        applications
        configs
        configs.config.server-config
@@ -98,13 +95,13 @@ EXAMPLES
        configs.config.server-config.http-service
        configs.config.server-config.http-service.access-log
        configs.config.server-config.http-service.virtual-server.__asadmin
+       configs.config.server-config.http-service.virtual-server.server
+       configs.config.server-config.iiop-service
 
-Java EE 6           Last change: 27 Aug 2009                    2
+Java EE 6           Last change: 14 Sep 2009                    2
 
 asadmin Utility Subcommands                               list(1)
 
-       configs.config.server-config.http-service.virtual-server.server
-       configs.config.server-config.iiop-service
        configs.config.server-config.iiop-service.iiop-listener.SSL
        configs.config.server-config.iiop-service.iiop-listener.SSL.ssl
        configs.config.server-config.iiop-service.iiop-listener.SSL_MUTUALAUTH
@@ -134,7 +131,6 @@ asadmin Utility Subcommands                               list(1)
        servers.server.server.resource-ref.jdbc/__TimerPool
        servers.server.server.resource-ref.jdbc/__default
        system-applications
-
        Command list executed successfully.
 
      Example 2 Listing Attributes of a Configurable Element
@@ -144,21 +140,18 @@ asadmin Utility Subcommands                               list(1)
        asadmin> list configs.config.server-config.web-container
        configs.config.server-config.web-container
        configs.config.server-config.web-container.session-config
-
        Command list executed successfully.
 
      Example 3 Listing Dotted Names of Monitorable Objects
 
-Java EE 6           Last change: 27 Aug 2009                    3
+     This example lists the names of the monitorable objects that
+     are enabled for monitoring.
+
+Java EE 6           Last change: 14 Sep 2009                    3
 
 asadmin Utility Subcommands                               list(1)
 
-     This example lists the names of the monitorable objects that
-     are  enabled  for  monitoring.  (This example of the Solaris
-     operating system. On other  operating  systems,  the  double
-     quotes would be omitted.)
-
-       asadmin>  list --monitor=true "*"
+       asadmin>  list --monitor *
        server.jvm
        server.jvm.class-loading-system
        server.jvm.compilation-system
@@ -180,13 +173,13 @@ asadmin Utility Subcommands                               list(1)
        server.network.http-listener-1.keep-alive
        server.network.http-listener-1.thread-pool
        server.transaction-service
-
        Command list executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      get(1), set(1)
@@ -197,5 +190,5 @@ SEE ALSO
 
      Sun GlassFish Enterprise Server v3 Administration Guide
 
-Java EE 6           Last change: 27 Aug 2009                    4
+Java EE 6           Last change: 14 Sep 2009                    4
 

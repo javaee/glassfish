@@ -6,20 +6,19 @@ NAME
      specified JNDI name
 
 SYNOPSIS
-     create-admin-object   --restype aorestype
-      --raname  resource_adapter_name
-     [--help]
-
-     [ --enabled ={true | false}] [--target target] [--description text]
-      [--property name=value[:name=value]*]
-      jndi_name
+     create-admin-object [--help] --restype restype --raname  resource_adapter_name
+     [--enabled={true|false}] [--target target] [--description text]
+     [--classname class-name] [--property name=value[:name=value]*] jndi-name
 
 DESCRIPTION
-     This command creates the  administered  object  that  has  a
-     specified JNDI name.
+     The create-admin-object subcommand creates the  administered
+     object that has a specified JNDI name.
+
+     This subcommand is supported in remote mote only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -30,65 +29,62 @@ OPTIONS
          command  runs  successfully  and  the option is silently
          ignored.
 
-     --enabled
-
-         Specifies if this object is enabled. The  default  value
-         is true.
-
      --restype
-         This option is used to administer  the  object  resource
-         types,  as defined by the resource adapter in the ra.xml
-         file.
+
+         Administers the object resource types, as defined by the
+         resource adapter in the ra.xml file.
 
      --classname
-         This option is used to specify the administered object
-         classname, as defined by the resource adapter in the ra.xml
-         file. This option is needed when more than one administered object
-         is defined the ra.xml for a particular restype.
 
       --raname
 
-         This is the name of the resource adapter associated with
-         this object.
+         Specifies the name of the  resource  adapter  associated
+         with this object.
 
-     --description
-         This option is the text description of the  administered
+     --enabled
+         Specifies if this object is enabled. Default is true.
 
-Java EE 6           Last change: 09 Sep 2009                    1
+Java EE 6            Last change: 8 Oct 2009                    1
 
 asadmin Utility Subcommands                create-admin-object(1)
 
-         object.
+     --description
+
+         The text description of the administered object.
 
      --property
-
-         This option describes the "name/values" pairs for confi-
-         guring the resource.
+         Describes the "name/values" pairs  for  configuring  the
+         resource.  Dependent  on  the  resource adapter. For JMS
+         properties, see create-jms-resource(1) for JMS  destina-
+         tion resources.
 
 OPERANDS
-     jndi_name
+     jndi-name
+
          This is the JNDI name of the administered object  to  be
          created.
 
 EXAMPLES
-     Example 1 Using create-admin-object
+     Example 1 Creating an Administered Object
 
      The javax.jms.Queue  resource  type  is  obtained  from  the
-     ra.xml  file.  The jmsrar.rar must be deployed prior to exe-
-     cuting this command.
+     ra.xml  file. The jmsrar.rar must be deployed before running
+     this subcommand.
 
-       asadmin> create-admin-object --user admin1 --passwordfile  passwords.txt
-       --restype javax.jms.Queue --raname jmsra --description "sample administered object"
-       --property Name=sample_jmsqueue jms/samplequeue
+       asadmin> create-admin-object --restype javax.jms.Queue --raname jmsra
+       --description "sample administered object" --property Name=sample_jmsqueue jms/samplequeue
        Command create-admin-object executed successfully
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      delete-admin-object(1), list-admin-objects(1)
 
-Java EE 6           Last change: 09 Sep 2009                    2
+     asadmin(1M)
+
+Java EE 6            Last change: 8 Oct 2009                    2
 

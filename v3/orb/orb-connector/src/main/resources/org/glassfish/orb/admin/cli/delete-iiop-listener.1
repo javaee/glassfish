@@ -11,11 +11,13 @@ SYNOPSIS
       listener_id
 
 DESCRIPTION
-     The delete-iiop-listener command removes the specified  IIOP
-     listener. This command is supported in remote mode only.
+     The delete-iiop-listener subcommand  removes  the  specified
+     IIOP  listener.  This subcommand is supported in remote mode
+     only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -33,26 +35,28 @@ OPERANDS
          deleted.
 
 EXAMPLES
-     Example 1 Using the delete-iiop-listener command
+     Example 1 Using the delete-iiop-listener subcommand
 
      The  following  command  deletes  the  IIOP  listener  named
      sample_iiop_listener:
 
-       asadmin> delete-iiop-listener --user admin
-       --passwordfile passwords.txt --host host1 --port 7070 sample_iiop_listener
+       asadmin> delete-iiop-listener sample_iiop_listener
        Command delete-iiop-listener executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
 
 Java EE 6           Last change: 16 Apr 2009                    1
 
 asadmin Utility Subcommands               delete-iiop-listener(1)
 
+     0                           command executed successfully
+
      1                           error in executing the command
 
 SEE ALSO
      create-iiop-listener(1), list-iiop-listeners(1)
+
+     asadmin(1M)
 
 Java EE 6           Last change: 16 Apr 2009                    2
 

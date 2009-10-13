@@ -2,127 +2,62 @@
 asadmin Utility Subcommands                        stop-domain(1)
 
 NAME
-     stop-domain -  Stops the Domain Administration Server of the
+     stop-domain -  stops the Domain Administration Server of the
      specified domain
 
 SYNOPSIS
-     stop-domain  [--terse={false|true}] [ --echo ={false|true}]
-     [ --user  admin_user] [--passwordfile filename] [--domaindir domain-dir]
-     [--help] domain_name
+     stop-domain [--help] [--domaindir domain-dir] [domain-name]
 
 DESCRIPTION
-     Use the stop-domain command to stop the  Domain  Administra-
-     tion Server of the specified domain. The stop-domain command
-     can be run in the local mode only.
+     The stop-domain subcommand stops the  Domain  Administration
+     Server  (DAS)  of  the specified domain. If there are two or
+     more  domains  in  the  domain  directory,  the  domain-name
+     operand must be specified.
+
+     This subcommand is supported in the local mode only.
 
 OPTIONS
-     -t--terse
+     --help
+     -?
 
-         Indicates that any output data  must  be  very  concise,
-         typically avoiding human-friendly sentences and favoring
-         well-formatted data for consumption by a script. Default
-         is false.
-
-     -e --echo
-         Setting to true will echo the command line statement  on
-         to the standard output. Default is false.
-
-     -u --user
-
-         The user name of the authorized administrative  user  of
-         the domain administration server.
-
-         If you have authenticated to a domain by using the asad-
-         min  login  command,  you  need  not  specify the --user
-         option for subsequent operations on the domain.
-
-     --passwordfile
-         Specifies the name, including the full path, of  a  file
-         that contains the password entries in a specific format.
-
-         The entry for a password must have the AS_ADMIN_  prefix
-         followed  by the password name in uppercase letters. For
-         example, to specify the password for the domain adminis-
-         tration server, use an entry with the following format:
-
-           AS_ADMIN_PASSWORD=password
-
-         In this example, password is  the  actual  administrator
-         password.
-
-Java EE 6            Last change: 3 May 2009                    1
-
-asadmin Utility Subcommands                        stop-domain(1)
-
-         The following other passwords can also be specified:
-
-             o    AS_ADMIN_MAPPEDPASSWORD
-
-             o    AS_ADMIN_USERPASSWORD
-
-             o    AS_ADMIN_ALIASPASSWORD
-         All remote  commands  must  specify  the  administration
-         password  to  authenticate  to the domain administration
-         server. The password can be specified by one of the fol-
-         lowing means:
-
-             o    Through the --passwordfile option
-
-             o    Through the asadmin login command
-
-             o    Interactively at the command prompt
-         The asadmin login command can be used  only  to  specify
-         the  administration  password.  For other passwords that
-         remote commands require, use the  --passwordfile  option
-         or specify them at the command prompt.
-
-         After authenticating to a domain by  using  the  asadmin
-         login  command,  you need not specify the administration
-         password through the --passwordfile  option  for  subse-
-         quent  operations  on  the  domain.  However,  only  the
-         AS_ADMIN_PASSWORD option is not required. You still must
-         provide    the    other    passwords,    for    example,
-         AS_ADMIN_USERPASSWORD, when required by individual  com-
-         mands, such as update-file-user.
-
-         For security reasons, a password that is specified as an
-         environment variable is not read by the asadmin command.
-
-         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
-         changeit.
+         Displays the help text for the subcommand.
 
      --domaindir
-
-         The directory where the domain  is  to  be  stopped.  If
-         specified,  the  path must be accessible in the filesys-
-         tem. If not specified, the domain  in  the  default  as-
-         install/domains directory is stopped.
-
-     --help
-         Displays the help text for the command.
+         Specifies the directory of the  domain  that  is  to  be
+         stopped.  If  specified,  the path must be accessible in
+         the file system. If not specified,  the  domain  in  the
+         default    as-install/glassfish/domains   directory   is
+         stopped.
 
 OPERANDS
+     domain-name         The name of the domain you want to stop.
+                         Default  is  the  name  specified during
+                         installation, usually domain1.
 
-Java EE 6            Last change: 3 May 2009                    2
+EXAMPLES
+     Example 1 Stopping a Domain
+
+     This example stops the  domain  named  sampleDomain  in  the
+     default domains directory.
+
+       asadmin> stop-domain sampleDomain
+       Waiting for the domain to stop .................
+       Command stop-domain executed successfully.
+
+Java EE 6            Last change: 7 Oct 2009                    1
 
 asadmin Utility Subcommands                        stop-domain(1)
 
-     domain_name         This is the name of the domain to stop.
-
-EXAMPLES
-     Example 1 Using the stop-domain Command
-
-       asadmin> stop-domain sampleDomain
-       Domain sampleDomain stopped
-
 EXIT STATUS
-     0                   command executed successfully
+     0                   subcommand executed successfully
 
-     1                   error in executing the command
+     1                   error in executing the subcommand
 
 SEE ALSO
      delete-domain(1),    list-domains(1),     restart-domain(1),
      start-domain(1)
 
-Java EE 6            Last change: 3 May 2009                    3
+     asadmin(1M)
+
+Java EE 6            Last change: 7 Oct 2009                    2
 

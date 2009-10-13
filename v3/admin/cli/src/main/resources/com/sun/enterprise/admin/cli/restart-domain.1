@@ -2,107 +2,73 @@
 asadmin Utility Subcommands                     restart-domain(1)
 
 NAME
-     restart-domain -  restarts the DAS of the specified domain
+     restart-domain - restarts the DAS of the specified domain
 
 SYNOPSIS
-     restart-domain  [--terse={false|true}] [ --echo ={false|true}]
-     [ --host  host ] [--port admin-port ]
-     [--user admin-user] [--passwordfile file-name]
+     restart-domain [--help] [--domaindir domain-dir] [domain-name]
 
 DESCRIPTION
-     Use  the  restart-domain  command  to  restart  the   Domain
-     Administration  Server  (DAS)  of  the specified domain. The
-     domain is specified through  a  combination  of  the  --host
-     option  and  the  --port  option. The domain must already be
-     started.
+     The restart-domain subcommand stops and  then  restarts  the
+     Domain  Administration Server (DAS) of the specified domain.
+     If a domain is not specified, the default domain is assumed.
+     If  there  are  two or more domains, the domain-name operand
+     must be specified. If the server is not already running, you
+     are asked if you want to start it.
 
-     The restart-domain command does not exit until  the  command
-     has verified that the domain has been stopped and restarted.
+     The restart-domain subcommand does not exit until  the  sub-
+     command  has  verified  that the domain has been stopped and
+     restarted.
 
-     A domain might be started with the  verbose  option  of  the
-     start-domain(1)  command  set  to  true.  In this situation,
-     after the domain  is  restarted,  messages  continue  to  be
-     displayed  in  the  console  window that was opened when the
-     domain was originally started.
+     A domain can also be restarted  by  using  the  start-domain
+     subcommand  with  the  --verbose option set to true. In this
+     situation, after the domain is restarted, messages  continue
+     to  be  displayed in the console window that was opened when
+     the domain was originally started.
 
-     This command can be run in the remote mode only.
+     This subcommand is supported in local mode only.
 
 OPTIONS
-     -t--terse
+     --help
+     -?
 
-         Indicates that any output data  must  be  very  concise,
-         typically avoiding human-friendly sentences and favoring
-         well-formatted data for consumption by a script. Default
-         is false.
+         Displays the help text for the subcommand.
 
-     -e --echo
-         Setting to true will echo the command line statement  on
-         to the standard output. Default is false.
+     --domaindir
+         The directory of the domain that is to be restarted.  If
+         specified,  the path must be accessible in the file sys-
+         tem. If not specified, the domain  in  the  default  as-
+         install/glassfish/domains directory is restarted.
 
-     -H --host
+OPERANDS
+     domain-name         The name of the domain you want to  res-
+                         tart. Default is the name specified dur-
+                         ing installation, usually domain1.
 
-         The machine name where the domain administration  server
-         is running. The default value is localhost.
+EXAMPLES
 
-     -p --port
-         The HTTP port or HTTPS  port  for  administration.  This
-
-Java EE 6           Last change: 27 Apr 2009                    1
+Java EE 6            Last change: 7Oct 2009                     1
 
 asadmin Utility Subcommands                     restart-domain(1)
 
-         port is the port in the URL that you specify in your web
-         browser   to   manage   the   domain,    for    example,
-         http://localhost:4848.
+     Example 1 Restarting a Domain
 
-         The default port number for administration is 4848.
+     This example  restarts  mydomain4  in  the  default  domains
+     directory.
 
-     -u --user
-
-         The user name of the authorized administrative  user  of
-         the domain administration server.
-
-         If you have authenticated to a domain by using the asad-
-         min  login  command,  you  need  not  specify the --user
-         option for subsequent operations on the domain.
-
-     --passwordfile
-         Specifies the name, including the full path, of  a  file
-         that contains the password entries in a specific format.
-
-         The password is defined in the following form:
-
-           AS_ADMIN_PASSWORD=password
-
-         password is the actual administrator  password  for  the
-         domain.
-
-OPERANDS
-     None.
-
-EXAMPLES
-     Example 1 Using the restart-domain Command
-
-     This example shows the command for restarting a domain  that
-     is  running  on  localhost  and  listens  for administration
-     requests on HTTP port 4848.
-
-       asadmin> restart-domain
+       asadmin> restart-domain mydomain4
        Successfully restarted the domain
        Command restart-domain executed successfully.
 
 EXIT STATUS
-     0                   command executed successfully
+     0                   subcommand executed successfully
 
-Java EE 6           Last change: 27 Apr 2009                    2
-
-asadmin Utility Subcommands                     restart-domain(1)
-
-     1                   error in executing the command
+     1                   error in executing the subcommand
 
 SEE ALSO
      delete-domain(1),  list-domains(1),  start-domain(1),  stop-
      domain(1)
 
-Java EE 6           Last change: 27 Apr 2009                    3
+     asadmin(1M)
+
+Java EE 6            Last change: 7Oct 2009                     2
 

@@ -7,15 +7,16 @@ NAME
 SYNOPSIS
      create-protocol
      [--help]
-     [ --securityenabled ={true|false}]
-     [ --target  server] protocol-name
+     [ --securityenabled ={true|false}] protocol_name
 
 DESCRIPTION
-     The create-protocol command creates a protocol for a network
-     listener. This command is supported in remote mode only.
+     The create-protocol subcommand creates a protocol for a net-
+     work  listener.  This subcommand is supported in remote mode
+     only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -26,39 +27,32 @@ OPTIONS
          making  certificates  available  to the server instance.
          The default value is false.
 
-     --target
-
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
-
 OPERANDS
      protocol-name               The name of the protocol.
 
 EXAMPLES
-     Example 1 Using the create-protocol command
+     Example 1 Using the create-protocol subcommand
 
-     The following command creates a protocol named http1:
+     The following command creates a protocol named  http-1  with
+     security enabled:
 
-       asadmin> create-protocol --user admin1
-       --passwordfile passwords.txt --host host1 --port 4848
-       --securityenabled=true http1
+       asadmin> create-protocol --securityenabled=true http-1
        Command create-protocol executed successfully.
-
-Java EE 6           Last change: 18 Jun 2009                    1
-
-asadmin Utility Subcommands                    create-protocol(1)
 
 EXIT STATUS
      0                           command executed successfully
 
      1                           error in executing the command
 
+Java EE 6           Last change: 10 Sep 2009                    1
+
+asadmin Utility Subcommands                    create-protocol(1)
+
 SEE ALSO
      delete-protocol(1),    list-protocols(1),    create-network-
      listener(1)
 
-Java EE 6           Last change: 18 Jun 2009                    2
+     asadmin(1M)
+
+Java EE 6           Last change: 10 Sep 2009                    2
 

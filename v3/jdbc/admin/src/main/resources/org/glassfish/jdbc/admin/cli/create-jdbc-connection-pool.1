@@ -6,55 +6,63 @@ NAME
      pool
 
 SYNOPSIS
-     create-jdbc-connection-pool
-     [--help]
-     [ --target =target]
+     create-jdbc-connection-pool [--help]
      --datasourceclassname=classname [--restype=res_type]
      [--steadypoolsize=poolsize] [--maxpoolsize=poolsize]
      [--maxwait=time] [--poolresize=limit]
-     [--idletimeout=time] [--isolationlevel=isolation_level]
-     [--isisolationguaranteed={true|false}] [ --isconnectvalidatereq ={false|true}]
-     [ --validationmethod =method] [--validationtable=tablename]
-     [--failconnection={false|true}] [ --allownoncomponentcallers ={false|true}]
-     [ --nontransactionalconnections ={false|true}]
-     [ --leaktimeout =timeout] [--leakreclaim={false|true}]
-     [ --creationretryattempts =attempts]
-     [--creationretryinterval=interval] [--statementtimeout=timeout]
-     [--lazyconnectionenlistment={false|true}]
-     [ --lazyconnectionassociation ={false|true}]
-     [ --associatewiththread ={false|true}] [ --matchconnections ={false|true}]
-     [ --maxconnectionusagecount =count]
+     [--idletimeout=time]
+     [--initsql=sql-string]
+     [--isolationlevel=isolation_level]
+     [--isisolationguaranteed={true|false}] [--isconnectvalidatereq={false|true}]
+     [--validationmethod=method] [--validationtable=tablename]
+     [--failconnection={false|true}] [--allownoncomponentcallers={false|true}]
+     [--nontransactionalconnections={false|true}]
      [--validateatmostonceperiod=interval]
+     [--leaktimeout=timeout] [--leakreclaim={false|true}]
+     [--creationretryattempts=attempts]
+     [--creationretryinterval=interval]
+     [--sqltracelisteners=listener-class-name[,listener-class-name]
+     [--statementtimeout=timeout]
+     [--lazyconnectionenlistment={false|true}]
+     [--lazyconnectionassociation={false|true}]
+     [--associatewiththread={false|true}]
+     [--associatewiththreadconnectionscount=count]
+     [--driverclassname=jdbc-driver-class-name]
+     [--matchconnections={false|true}]
+     [--maxconnectionusagecount=count]
+     [--ping={false|true}]
+     [--pooling={false|true}]
+     [--statementcachesize=count]
+     [--validationclassname=class-name]
      [--wrapjdbcobjects={false|true}]
-     [ --description  text] [--property (name=value)
-     [:name=value]*] connectionpoolid
+     [--description text]
+     [--property (name=value)[:name=value]*]
+     [--target=target]
+     connectionpoolid
 
 DESCRIPTION
-     The  create-jdbc-connection-pool  command  registers  a  new
+     The create-jdbc-connection-pool subcommand registers  a  new
      JavaTM  DataBase Connectivity ("JDBCTM") software connection
      pool with the specified JDBC connection pool name.
 
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
-     --target
-         This option is deprecated.
+Java EE 6           Last change: 09 Oct 2009                    1
+
+asadmin Utility Subcommands        create-jdbc-connection-pool(1)
 
      --datasourceclassname
 
          The name of the vendor-supplied JDBC datasource resource
          manager.
 
-Java EE 6            Last change: 3 May 2009                    1
-
-asadmin Utility Subcommands        create-jdbc-connection-pool(1)
-
      --restype
-
          The interface that the datasource class implements. Must
          be          one         of         javax.sql.DataSource,
          javax.sql.ConnectionPoolDataSource                    or
@@ -64,21 +72,22 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
          no default value.
 
      --steadypoolsize
+
          The minimum and initial number of connections maintained
          in the pool. The default value is 8.
 
      --maxpoolsize
-
          The maximum number of connections that can  be  created.
          The default value is 32.
 
      --maxwait
-         The amount of time a caller will wait before  a  connec-
-         tion timeout is sent. The default is 60 seconds. A value
-         of 0 forces the caller to wait indefinitely.
+
+         The amount of time, in milliseconds, that a caller  will
+         wait before a connection timeout is sent. The default is
+         60000 (60 seconds). A value of 0 forces  the  caller  to
+         wait indefinitely.
 
      --poolresize
-
          Quantity by which the pool will scale-up  or  scale-down
          the  number  of connections. Scale-up: When the pool has
          no free connections, pool will scale-up  by  this  quan-
@@ -89,22 +98,29 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
          The default value is 2.
 
      --idletimeout
+
          The maximum time, in  seconds,  that  a  connection  can
          remain  idle in the pool. After this time, the implemen-
          tation can close this  connection.  This  timeout  value
          must  be kept shorter than the server side timeout value
          to prevent the accumulation of unusable  connections  in
-         the application. The default value is 300.
 
-     --isolationlevel
-
-         The transaction-isolation-level on the  pooled  database
-         connections.  This option does not have a default value.
-
-Java EE 6            Last change: 3 May 2009                    2
+Java EE 6           Last change: 09 Oct 2009                    2
 
 asadmin Utility Subcommands        create-jdbc-connection-pool(1)
 
+         the application. The default value is 300.
+
+     --initsql
+
+         An SQL string that is executed whenever a connection  is
+         created  from  the  pool.  If  an existing connection is
+         reused, this string is not executed. This option has  no
+         default value.
+
+     --isolationlevel
+         The transaction-isolation-level on the  pooled  database
+         connections.  This option does not have a default value.
          If not specified, the pool  operates  with  the  default
          isolation level that the JDBC driver provides.
 
@@ -137,23 +153,23 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
 
          The name of the validation table used to perform a query
          to  validate  a  connection.  Valid  settings are: auto-
-         commit, meta-data, or table. The default value is  auto-
-         commit.
+         commit,  meta-data,  table,  or  custom-validation.  The
+         default value is auto-commit.
+
+Java EE 6           Last change: 09 Oct 2009                    3
+
+asadmin Utility Subcommands        create-jdbc-connection-pool(1)
 
      --validationtable
+
          The name of the validation table used to perform a query
          to validate a connection.
 
      --failconnection
-
          If set to true, all connections  in  the  pool  must  be
          closed when a single validation check fails. The default
          value is false. One  attempt  is  made  to  re-establish
          failed connections.
-
-Java EE 6            Last change: 3 May 2009                    3
-
-asadmin Utility Subcommands        create-jdbc-connection-pool(1)
 
      --allownoncomponentcallers
 
@@ -168,8 +184,17 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
          transactional  connections. This connection does not get
          automatically enlisted with the transaction manager.
 
-     --leaktimeout
+     --validateatmostonceperiod
 
+         Specifies the time interval in seconds  between  succes-
+         sive request to validate a connection at most once. Set-
+         ting this attribute to an  appropriate  value  minimizes
+         the number of validation requests by a connection.
+
+         The default value is 0, which specifies that the connec-
+         tion is never validated.
+
+     --leaktimeout
          Specifies the amount of time, in seconds, for which con-
          nection leaks in a connection pool are to be traced.
 
@@ -181,32 +206,31 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
          The default value is 0, which disables  connection  leak
          tracing.
 
+Java EE 6           Last change: 09 Oct 2009                    4
+
+asadmin Utility Subcommands        create-jdbc-connection-pool(1)
+
      --leakreclaim
+
          Specifies whether leaked connections are restored to the
          connection  pool  after  leak connection tracing is com-
          plete. Possible values are as follows:
 
          false
-
              Leaked connections are not restored to  the  connec-
              tion pool (default).
 
          true
+
              Leaked connections are restored to   the  connection
              pool.
 
      --creationretryattempts
-
          Specifies the maximum number of  times  that  Enterprise
          Server  retries  to  create  a connection if the initial
          attempt fails.
 
          The default value is 0, which specifies that  Enterprise
-
-Java EE 6            Last change: 3 May 2009                    4
-
-asadmin Utility Subcommands        create-jdbc-connection-pool(1)
-
          Server does not retry to create the connection.
 
      --creationretryinterval
@@ -219,13 +243,25 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
 
          The default value is 10.
 
+     --sqltracelisteners
+         A list of one or more custom modules that provide custom
+         logging  of database activities. Each module must imple-
+         ment the  org.glassfish.api.jdbc.SQLTraceListener  pubic
+         interface. This option has no default value.
+
      --statementtimeout
+
          Specifies the length of time in seconds  after  which  a
          query that is not completed is terminated.
 
          A query that remains incomplete for  a  long  period  of
          time  might  cause  the  application  that submitted the
          query to hang. To  prevent  this  occurrence,  use  this
+
+Java EE 6           Last change: 09 Oct 2009                    5
+
+asadmin Utility Subcommands        create-jdbc-connection-pool(1)
+
          option  set  a  timeout  for all statements that will be
          created from the connection pool that you are  creating.
          When  creating  a  statement, Enterprise Server sets the
@@ -252,16 +288,11 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
              method actually uses the resource.
 
      --lazyconnectionassociation
-         Specifies  whether  a  physical  connection  should   be
-
-Java EE 6            Last change: 3 May 2009                    5
-
-asadmin Utility Subcommands        create-jdbc-connection-pool(1)
-
-         associated  with  the  logical  connection only when the
-         physical connection is used, and disassociated when  the
-         transaction is completed. Such association and dissocia-
-         tion enable the reuse of physical connections.  Possible
+         Specifies whether a physical connection should be  asso-
+         ciated  with the logical connection only when the physi-
+         cal connection is used, and disassociated when the tran-
+         saction  is completed. Such association and dissociation
+         enable  the  reuse  of  physical  connections.  Possible
          values are as follows:
 
          false
@@ -277,6 +308,10 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
              used, and disassociated when the transaction is com-
              pleted.   The --lazyconnectionenlistment option must
              also be set to true.
+
+Java EE 6           Last change: 09 Oct 2009                    6
+
+asadmin Utility Subcommands        create-jdbc-connection-pool(1)
 
      --associatewiththread
 
@@ -295,6 +330,16 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
 
              A connection is associated with the thread.
 
+     --associatewiththreadconnectionscount
+         The maximum number of connections to  associate  with  a
+         thread.  This  value is used only if associatewiththread
+         is true. The default value of this option is 1.
+
+     --driverclassname
+
+         The name of the vendor-supplied JDBC driver class.  This
+         driver should implement the java.sql.Driver interface.
+
      --matchconnections
          Specifies whether a connection that is selected from the
          pool should be matched with the resource adaptor. If all
@@ -305,19 +350,18 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
          false
 
              A connection should not be matched with the resource
-
-Java EE 6            Last change: 3 May 2009                    6
-
-asadmin Utility Subcommands        create-jdbc-connection-pool(1)
-
              adaptor (default).
 
          true
-
              A connection should be  matched  with  the  resource
              adaptor.
 
+Java EE 6           Last change: 09 Oct 2009                    7
+
+asadmin Utility Subcommands        create-jdbc-connection-pool(1)
+
      --maxconnectionusagecount
+
          Specifies the maximum number of times that a  connection
          can be reused.
 
@@ -328,15 +372,30 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
          The default value is 0, which specifies no limit on  the
          number of times that a connection can be reused.
 
-     --validateatmostonceperiod
+     --ping
+         Specifies if the pool is pinged during pool creation  or
+         reconfiguration  to  identify  and warn of any erroneous
+         values for its attributes. Default value of this  option
+         is false.
 
-         Specifies the time interval in seconds  between  succes-
-         sive request to validate a connection at most once. Set-
-         ting this attribute to an  appropriate  value  minimizes
-         the number of validation requests by a connection.
+     --pooling
 
-         The default value is 0, which specifies that the connec-
-         tion is never validated.
+         Specifies if connection pooling is enabled for the pool.
+         The default value of this option is true.
+
+     --statementcachesize
+         The number of SQL statements  to  be  cached  using  the
+         default  caching  mechanism  (Least  Recently Used). The
+         default value of this option is 0, which indicates  that
+         statement caching is not enabled.
+
+     --validationclassname
+
+         The name of the class that  provides  custom  validation
+         when the value of validationmethod is custom-validation.
+         This       class        must        implement        the
+         org.glassfish.api.jdbc.ConnectionValidation   interface,
+         and it must be accessible to the application server.
 
      --wrapjdbcobjects
          Specifies whether the  pooling  infrastructure  provides
@@ -348,6 +407,11 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
          pool,  not physical connections. The use of logical con-
          nections ensures that the connections  are  returned  to
          the  connection  pool when they are closed. However, the
+
+Java EE 6           Last change: 09 Oct 2009                    8
+
+asadmin Utility Subcommands        create-jdbc-connection-pool(1)
+
          provision of wrapped JDBC objects can impair the perfor-
          mance of applications.
 
@@ -356,10 +420,6 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
          API:
 
              o    java.sql.CallableStatement
-
-Java EE 6            Last change: 3 May 2009                    7
-
-asadmin Utility Subcommands        create-jdbc-connection-pool(1)
 
              o    java.sql.DatabaseMetaData
 
@@ -386,7 +446,75 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
 
      --property
          Optional attribute name/value pairs for configuring  the
-         connection pool.
+         pool. The following properties are available:
+
+         user
+
+             Specifies the user name for connecting to the  data-
+             base.
+
+         password
+             Specifies the password for connecting to  the  data-
+             base.
+
+Java EE 6           Last change: 09 Oct 2009                    9
+
+asadmin Utility Subcommands        create-jdbc-connection-pool(1)
+
+         databaseName
+
+             Specifies the database for this connection pool.
+
+         serverName
+             Specifies the database server  for  this  connection
+             pool.
+
+         port
+
+             Specifies the port  on  which  the  database  server
+             listens for requests.
+
+         networkProtocol
+             Specifies the communication protocol.
+
+         roleName
+
+             Specifies the initial SQL role name.
+
+         datasourceName
+             Specifies an underlying XADataSource, or  a  Connec-
+             tionPoolDataSource if connection pooling is done.
+
+         description
+
+             Specifies a text description.
+
+         url
+             Specifies the URL for this connection pool. Although
+             this  is  not  a  standard  property, it is commonly
+             used.
+
+         LazyConnectionEnlistment
+
+             Deprecated.  Use  the  equivalent   attribute.   The
+             default value is false.
+
+         LazyConnectionAssociation
+             Deprecated.  Use  the  equivalent   attribute.   The
+             default value is false.
+
+Java EE 6           Last change: 09 Oct 2009                   10
+
+asadmin Utility Subcommands        create-jdbc-connection-pool(1)
+
+         AssociateWithThread
+
+             Deprecated.  Use  the  equivalent   attribute.   The
+             default value is false.
+
+         MatchConnections
+             Deprecated.  Use  the  equivalent   attribute.   The
+             default value is true.
 
          Note -
 
@@ -397,21 +525,24 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
            about escape characters in command  options,  see  the
            asadmin(1M) man page.
 
+     --target
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
 OPERANDS
-     connectionpoolid            The name of the JDBC  connection
-                                 pool to be created.
+     connectionpoolid
+         The name of the JDBC connection pool to be created.
 
 EXAMPLES
-     Example 1 Using create-jdbc-connection-pool command
+     Example 1 Using create-jdbc-connection-pool subcommand
 
-       asadmin> create-jdbc-connection-pool --user admin
-       --passwordfile passwords.txt --host localhost --port 7070
+       asadmin> create-jdbc-connection-pool
+       --host localhost --port 7070
        --datasourceclassname org.apache.derby.jdbc.ClientDataSource
-
-Java EE 6            Last change: 3 May 2009                    8
-
-asadmin Utility Subcommands        create-jdbc-connection-pool(1)
-
        --restype javax.sql.XADataSource
        --property portNumber=1527:password=APP:user=APP:serverName=
        localhost:databaseName=sun-appserv-samples:connectionAttributes=;
@@ -419,14 +550,20 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
        Command create-jdbc-connection-pool executed successfully
 
      Where, the sample_derby_pool is created. The escape  charac-
-     ter backslash (\fR) is used in the --property option to dis-
-     tinguish the semicolon (;). Two backslashes (\) are used  to
-     distinguish the equal (=) sign.
+     ter  backslash  (\fR)  is  used  in the --property option to
+
+Java EE 6           Last change: 09 Oct 2009                   11
+
+asadmin Utility Subcommands        create-jdbc-connection-pool(1)
+
+     distinguish the semicolon (;). Two backslashes (\) are  used
+     to distinguish the equal sign (=).
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      delete-jdbc-connection-pool(1),        list-jdbc-connection-
@@ -434,5 +571,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 3 May 2009                    9
+Java EE 6           Last change: 09 Oct 2009                   12
 

@@ -7,14 +7,14 @@ NAME
 SYNOPSIS
      list-auth-realms
      [--help]
-     [target_name]
 
 DESCRIPTION
-     The  list-auth-realms  command  lists   the   authentication
-     realms. This command is supported in remote mode only.
+     The list-auth-realms  subcommand  lists  the  authentication
+     realms. This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -27,7 +27,7 @@ OPERANDS
          ignored.
 
 EXAMPLES
-     Example 1 Using list-auth-realms
+     Example 1 Listing authentication realms
 
        asadmin> list-auth-realms
        file
@@ -36,8 +36,8 @@ EXAMPLES
        db
        Command list-auth-realms executed successfully
 
-     Where file, ldap, certificate, and db are the listed authen-
-     tication realms.
+     Where file, ldap, certificate,  and  db  are  the  available
+     authentication realms.
 
 EXIT STATUS
      0                           command executed successfully

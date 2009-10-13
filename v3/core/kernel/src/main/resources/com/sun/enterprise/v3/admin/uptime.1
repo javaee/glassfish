@@ -6,59 +6,41 @@ NAME
      running
 
 SYNOPSIS
-     uptime
-     [--help]
+     uptime [--help]
 
 DESCRIPTION
-     The uptime command returns  the  length  of  time  that  the
+     The uptime subcommand returns the length of  time  that  the
      domain administration server (DAS) has been running since it
      was last restarted.
 
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
-OPERANDS
-     None.
-
 EXAMPLES
-     Example 1 Getting the Length of Time That the DAS  Has  Been
-     Running
+     Example 1 Showing How Long the DAS Has Been Running
+
+     This example shows the length of time that the DAS has  been
+     running.
 
        asadmin> uptime
-       Uptime: 23 minutes, 41 seconds
-
+       Uptime: 2 days, 1 hours, 30 minutes, 18 seconds, Total milliseconds: 178218706
        Command uptime executed successfully.
 
-     This example shows the command to determine  the  length  of
-     time that the DAS has been running. In this example, the DAS
-     has been running for 23 minutes and 41 seconds.
-
-     Example 2 Attempting to Run the uptime Command in Local Mode
-
-       prompt% asadmin uptime
-       Remote server does not listen for requests on [localhost:4,848].
-       Is the server up?
-       Command uptime failed.
-
-Java EE 6           Last change: 23 Sep 2008                    1
-
-asadmin Utility Subcommands                             uptime(1)
-
-     This example shows the response to an  attempt  to  run  the
-     uptime  command  in local mode, that is, when no DAS is run-
-     ning.
-
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      list-domains(1), start-domain(1), stop-domain(1)
 
-Java EE 6           Last change: 23 Sep 2008                    2
+     asadmin(1M)
+
+Java EE 6            Last change: 8 Sep 2009                    1
 

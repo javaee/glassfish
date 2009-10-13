@@ -5,41 +5,40 @@ NAME
      list-jdbc-connection-pools - lists all JDBC connection pools
 
 SYNOPSIS
-     list-jdbc-connection-pools
-     [--help]
+     list-jdbc-connection-pools [--help]
 
 DESCRIPTION
-     Use this command to get the JDBC connection pools that  have
-     been  created.  This command is supported in the remote mode
-     only.
+     Use this subcommand to get the JDBC  connection  pools  that
+     have been created.
+
+     This subcommand is supported in the remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
-OPERANDS
-     target                      The  target  operand  is  depre-
-                                 cated.
-
 EXAMPLES
-     Example 1 Using the list-jdbc-connection-pools command
+     Example 1 Using the list-jdbc-connection-pools subcommand
 
-       asadmin> list-jdbc-connection-pools --user admin --passwordfile passwords.txt
-       --host localhost --port 7070
+       asadmin> list-jdbc-connection-pools
        sample_derby_pool
        Command list-jdbc-connection-pools executed successfully.
 
      Where: sample_derby_pool is the JDBC connection pool.
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      create-jdbc-connection-pool(1),      delete-jdbc-connection-
      pool(1)
 
-Java EE 6           Last change: 30 Jan 2007                    1
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    1
 

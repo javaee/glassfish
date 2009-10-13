@@ -10,10 +10,10 @@ SYNOPSIS
      [--help]
 
 DESCRIPTION
-     The list-jvm-options command displays a list of command-line
-     options  that  are  passed  to the Java application launcher
-     when the Enterprise Server is started. The  list-jvm-options
-     command displays the following options:
+     The list-jvm-options subcommand displays a list of  command-
+     line  options  that  are  passed  to  the  Java  application
+     launcher when Enterprise Server is  started.  The  list-jvm-
+     options command displays the following options:
 
          o    Java system properties. System properties  are  set
               through  the  -D  option  of  the  Java application
@@ -39,23 +39,19 @@ DESCRIPTION
 
              o    -d64
 
-     The options are specified through the  JVM Options  page  of
-     the  Administration  Console  or  through the following com-
-     mands:
-
-         o    create-jvm-options(1)
-
-         o    delete-jvm-options(1)
+     The options are specified by using the  JVM Options page  of
+     the  Administration  Console  or  by  using  the create-jvm-
+     options or delete-jvm-options subcommands:
 
      This command is supported in remote mode only.
-
-Java EE 6           Last change: 24 Sep 2008                    1
-
-asadmin Utility Subcommands                   list-jvm-options(1)
 
      For more information about the  Java  application  launcher,
      see the reference page for the operating system that you are
      using:
+
+Java EE 6            Last change: 4 Sep 2009                    1
+
+asadmin Utility Subcommands                   list-jvm-options(1)
 
          o    Solaris Operating System (Solaris  OS)  and  Linux:
               java    -    the    Java    application    launcher
@@ -66,13 +62,17 @@ asadmin Utility Subcommands                   list-jvm-options(1)
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
 EXAMPLES
-     Example 1 Using the list-jvm-options command
+     Example 1 Listing the JVM Options
 
-       asadmin> list-jvm-options --user admin1 --passwordfile passwords.txt
+     This example lists the options that are  used  by  the  Java
+     application launcher.
+
+       asadmin> list-jvm-options
        -Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy
        -Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks
        -Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks
@@ -85,19 +85,15 @@ EXAMPLES
        Command list-jvm-options executed successfully
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      create-jvm-options(1), delete-jvm-options(1),
 
-     java  - the Java application launcher reference page for the
-     Solaris               OS              and              Linux
-     (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html),
-     java  -  the  Java  application launcher  reference page for
-     Windows
-     (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
+     asadmin(1M)
 
-Java EE 6           Last change: 24 Sep 2008                    2
+Java EE 6            Last change: 4 Sep 2009                    2
 

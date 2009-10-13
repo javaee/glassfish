@@ -7,15 +7,16 @@ NAME
 SYNOPSIS
      delete-file-user
      [--help]
-     [ --authrealmname  auth_realm_name] [--target target]
+     [ --authrealmname  auth_realm_name]
      username
 
 DESCRIPTION
-     The delete-file-user command deletes the entry in  the  key-
-     file for the specified username.
+     The delete-file-user subcommand deletes  the  entry  in  the
+     keyfile for the specified username.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -36,7 +37,7 @@ OPERANDS
                                  be deleted.
 
 EXAMPLES
-     Example 1 Using the delete-file-user command
+     Example 1 Deleting a User From a File Realm
 
        asadmin> delete-file-user
         sample_user

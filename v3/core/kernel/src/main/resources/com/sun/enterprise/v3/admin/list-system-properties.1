@@ -6,20 +6,21 @@ NAME
      domain
 
 SYNOPSIS
-     list-system-properties
-     [--help]
-     [ target]
+     list-system-properties [--help] [--target target]
 
 DESCRIPTION
-     This command lists the system properties of a domain.
+     The list-system-properties subcommand lists the system  pro-
+     perties of a domain.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
-OPERANDS
-     target
+     --target
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
@@ -27,21 +28,28 @@ OPERANDS
          ignored.
 
 EXAMPLES
-     Example 1 Using list-system-properties
+     Example 1 Listing System Properties
 
-       asadmin> list-system-properties --user admin
-       --passwordfile password.txt --host localhost --port 4848
-       http-listener-port=1088 mycluster
+     This example lists the system properties on localhost.
+
+       asadmin> list-system-properties
        http-listener-port=1088
        Command list-system-properties executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
+
+Java EE 6            Last change: 9 Oct 2009                    1
+
+asadmin Utility Subcommands             list-system-properties(1)
 
 SEE ALSO
      create-system-properties(1), delete-system-property(1)
 
-Java EE 6           Last change: 23 Sep 2008                    1
+     asadmin(1M)
+
+Java EE 6            Last change: 9 Oct 2009                    2
 

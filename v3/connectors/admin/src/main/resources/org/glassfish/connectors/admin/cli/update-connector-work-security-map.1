@@ -7,74 +7,85 @@ NAME
      rity map for the specified resource adapter
 
 SYNOPSIS
-     update-connector-work-security-map
-     [--help]
-       --raname  resource-adapter-name
-      [ --addprincipals eis-principal1=server-principal1[, eis-principal2=server-principal2]*]
-     [--addusergroups eis-group1=server-group1[, eis-group2=server-group2]*]
-      [--removeprincipals eis-principal1[,eis-principal2]*]
-      [--removeusergroups eis-group1[, eis-group2]* ]
-      work-security-map-name
+     update-connector-work-security-map [--help]
+     --raname resource-adapter-name
+     [--addprincipals eis-principal1=server-principal1[, eis-principal2=server-principal2]*] |
+     --addgroups eis-group1=server-group1[, eis-group2=server-group2]*]
+     [--removeprincipals eis-principal1[,eis-principal2]*]
+     [--removegroups eis-group1[, eis-group2]* ]
+     work-security-map-name
 
 DESCRIPTION
-     Use this command to modify a security map for the  specified
-     resource adapter.
+     Use this subcommand to modify a security map for the  speci-
+     fied resource adapter.
 
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
+     --raname
+         Indicates the connector module name with which the  work
+         security map is associated.
+
      --addprincipals
+
          Specifies a comma-separated list of EIS-specific princi-
          pals  to be added. Use either the --addprincipals option
          or the --addgroups option, but not both.
 
-     --addusergroups
-
+     --addgroups
          Specifies a comma-separated list of  EIS  groups  to  be
          added.  Use  either the --addprincipals option or the --
          addgroups option, but not both.
 
      --removeprincipals
+
          Specifies a comma-separated list of EIS-specific princi-
-         palsto  be  removed.  Use  either the --removeprincipals
-         option or the --removeusergroups option, but not both.
+         pals to be removed.
 
-     --removeusergroups
-
-         Specifies a comma-separated list of  EIS  groups  to  be
-         removed. Use either the --removeprincipals option or the
-         --removeusergroups option, but not both.
-
-Java EE 6           Last change: 20 Apr 2009                    1
+Java EE 6           Last change: 09 Oct 2009                    1
 
 asadmin Utility Subcommands
                             update-connector-work-security-map(1)
 
+     --removegroups
+
+         Specifies a comma-separated list of  EIS  groups  to  be
+         removed.
+
 OPERANDS
-     work-security-map-name      The name of  the  work  security
-                                 map to be updated.
+     work-security-map-name
+         The name of the work security map to be updated.
 
 EXAMPLES
-     Example 1 Using the update-connector-work-security-map  com-
-     mand
+     Example 1 Using the update-connector-work-security-map  sub-
+     command
+
+       asadmin> update-connector-work-security-map
+       --raname my-resource-adapter-name --removegroups eis-group-2 workSecurityMap2
+
+       Command update-connector-work-security-map executed successfully.
 
 EXIT STATUS
-     0                            command executed successfully
+     0                           subcommand executed successfully
 
-     1                            error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      delete-connector-work-security-map(1),  list-connector-work-
      security-maps(1), create-connector-work-security-map(1)
 
-Java EE 6           Last change: 20 Apr 2009                    2
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    2
 
 asadmin Utility Subcommands
                             update-connector-work-security-map(1)
 
-Java EE 6           Last change: 20 Apr 2009                    3
+Java EE 6           Last change: 09 Oct 2009                    3
 

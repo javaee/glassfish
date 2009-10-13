@@ -2,26 +2,25 @@
 asadmin Utility Subcommands             delete-system-property(1)
 
 NAME
-     delete-system-property - removes one system property of  the
-     domain,  configuration,  cluster,  or  server instance, at a
+     delete-system-property - removes a system  property  of  the
+     domain, configuration, cluster, or server instance, one at a
      time
 
 SYNOPSIS
-     delete-system-property
-     [--help]
-     [ --target  target_name ]
+     delete-system-property [--help] [--target  target_name ]
      [property_name]
 
 DESCRIPTION
-     Shared or clustered server  instances  will  often  need  to
-     override  attributes  defined in their referenced configura-
-     tion. Any configuration attribute in a server  instance  can
-     be overridden through a system property of the corresponding
-     name. This command deletes system properties  of  a  domain,
-     configuration, cluster, or server instance.
+     The delete-system-property subcommand deletes a system  pro-
+     perty   of  a  domain,  configuration,  cluster,  or  server
+     instance. Make sure that the system property is  not  refer-
+     enced elsewhere in the configuration before deleting it.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -38,25 +37,28 @@ OPERANDS
          The name of the system property to remove.
 
 EXAMPLES
-     Example 1 Using delete-system-properties
+     Example 1 Deleting a System Property
 
-       asadmin> delete-system-property --user admin
-       --passwordfile password.txt --host localhost --port 4848
-       --target mycluster http-listener-port
+     This  example  deletes  the  system  property  named   http-
+     listener-port.
+
+       asadmin> delete-system-property http-listener-port
        Command delete-system-property executed successfully.
 
-EXIT STATUS
-
-Java EE 6            Last change: 2 Sep 2008                    1
+Java EE 6            Last change: 9 Oct 2009                    1
 
 asadmin Utility Subcommands             delete-system-property(1)
 
-     0                           command executed successfully
+EXIT STATUS
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      create-system-properties(1), list-system-properties(1)
 
-Java EE 6            Last change: 2 Sep 2008                    2
+     asadmin(1M)
+
+Java EE 6            Last change: 9 Oct 2009                    2
 

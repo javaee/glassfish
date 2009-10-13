@@ -5,45 +5,56 @@ NAME
      list-containers - lists application containers
 
 SYNOPSIS
-     list-containers
-     [--help]
+     list-containers [--help]
 
 DESCRIPTION
-     The list-containers command displays a list  of  application
-     containers.
+     The list-containers subcommand displays a list  of  applica-
+     tion containers.
 
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
 EXAMPLES
-     Example 1 Using the list-containers command
+     Example 1 Listing the Application Containers
 
-       asadmin> list-containers --user admin1 --passwordfile passwords.txt
-       Container : phobos
-              properties=(ContractProvider=phobos)
+     This example lists the current application containers.
+
+       asadmin> list-containers
+       List all known application containers
+       Container : grizzly
+       Container : ejb
+       Container : webservices
+       Container : ear
+       Container : appclient
+       Container : connector
        Container : jpa
-              properties=(ContractProvider=jpa)
-       Container : security
-              properties=(ContractProvider=security)
        Container : web
-              properties=(ContractProvider=web)
+       Container : osgi
        Container : jruby
-              properties=(ContractProvider=jruby)
-       Container : connectors
-              properties=(ContractProvider=connectors)
-       Command list-containers executed successfully
+       Container : security
+       Container : webbeans
+
+       Command list-containers executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+Java EE 6            Last change: 9 Oct 2009                    1
+
+asadmin Utility Subcommands                    list-containers(1)
+
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      list-commands(1), list-components(1), list-modules(1)
 
-Java EE 6           Last change: 10 Apr 2008                    1
+     asadmin(1M)
+
+Java EE 6            Last change: 9 Oct 2009                    2
 

@@ -7,15 +7,15 @@ NAME
 SYNOPSIS
      delete-audit-module
      [--help]
-      [ --target  target_name]
-      audit_module_name
+       audit_module_name
 
 DESCRIPTION
-     This command removes the named audit module. This command is
-     supported in remote mode only.
+     This subcommand removes the named audit module. This subcom-
+     mand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -27,11 +27,12 @@ OPTIONS
          ignored.
 
 OPERANDS
-     audit_module_name           The name of the audit module  to
-                                 be deleted.
+     audit_module_name
+
+         The name of the audit module to be deleted.
 
 EXAMPLES
-     Example 1 Using delete-audit-module
+     Example 1 Deleting an audit module
 
        asadmin> delete-audit-module sampleAuditModule
        Command delete-audit-module executed successfully

@@ -2,57 +2,63 @@
 asadmin Utility Subcommands   create-connector-connection-pool(1)
 
 NAME
-     create-connector-connection-pool -  adds a  connection  pool
+     create-connector-connection-pool - adds  a  connection  pool
      with the specified connection pool name
 
 SYNOPSIS
-     create-connector-connection-pool
-     [--help]
-     --raname resource_adapter_name --connectiondefinition connection_definition_name
-      [--steadypoolsize steadypoolsize] [--maxpoolsize maxpoolsize]
-     [--maxwait maxwait] [--poolresize poolresize]
-     [--idletimeout idletimeout] [--failconnection={false|true}]
-     [--leaktimeout=timeout] [--leakreclaim={false|true}]
-     [ --creationretryattempts =attempts]
+     create-connector-connection-pool [--help]
+     --raname resource_adapter_name
+     --connectiondefinition connection_definition_name
+     [--steadypoolsize steadypoolsize]
+     [--maxpoolsize maxpoolsize]
+     [--maxwait maxwait]
+     [--poolresize poolresize]
+     [--idletimeout idletimeout]
+     [--isconnectvalidatereq={false|true}]
+     [--failconnection={false|true}]
+     [--leaktimeout=timeout]
+     [--leakreclaim={false|true}]
+     [--creationretryattempts=attempts]
      [--creationretryinterval=interval]
      [--lazyconnectionenlistment={false|true}]
-     [ --lazyconnectionassociation ={false|true}]
-     [ --associatewiththread ={false|true}] [ --matchconnections ={false|true}]
-     [ --maxconnectionusagecount =count]
+     [--lazyconnectionassociation={false|true}]
+     [--associatewiththread={false|true}]
+     [--matchconnections={false|true}]
+     [--maxconnectionusagecount=count]
      [--validateatmostonceperiod=interval]
-      [--transactionsupport transaction_support] [--isconnectvalidatereq={false|true}]
-      [--description text]
+     [--transactionsupport transaction_support]
+     [--description text]
      [--property (name=value)[:name=value]*]
      [--target=target]
      connector_connection_pool_name
 
 DESCRIPTION
-     The create-connector-connection-pool adds  a  new  connector
-     connection pool with the specified connection pool name.
+     The create-connector-connection-pool subcommand adds  a  new
+     connector connection pool with the specified connection pool
+     name.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
-     --target
-         The target option is deprecated.
-
      --raname
-
          The name of the resource adapter.
 
+Java EE 6           Last change: 09 Oct 2009                    1
+
+asadmin Utility Subcommands   create-connector-connection-pool(1)
+
      --connectiondefinition
+
          The name of the connection definition.
 
      --steadypoolsize
-
          The minimum and initial number of connections maintained
          in the pool. The default value is 8.
-
-Java EE 6           Last change: 20 Apr 2009                    1
-
-asadmin Utility Subcommands   create-connector-connection-pool(1)
 
      --maxpoolsize
 
@@ -83,15 +89,26 @@ asadmin Utility Subcommands   create-connector-connection-pool(1)
          the  pool. After this amount of time, the pool can close
          this connection. The default value is 300.
 
-     --failconnection
+     --isconnectvalidatereq
 
+         If the value is set to true,  the  connections  will  be
+         checked to see if they are usable, before they are given
+         out to the application. The default value is false.
+
+     --failconnection
          If set to true, all connections in the pool  are  closed
+
+Java EE 6           Last change: 09 Oct 2009                    2
+
+asadmin Utility Subcommands   create-connector-connection-pool(1)
+
          if  a  single  validation check fails. This parameter is
          mandatory  if  the   --is-connection-validation-required
          option  is  set  to true. Legal values are on, off, yes,
          no, 1,0, true or false. The default value is false.
 
      --leaktimeout
+
          Specifies the amount of time, in seconds, for which con-
          nection leaks in a connection pool are to be traced.
 
@@ -101,29 +118,24 @@ asadmin Utility Subcommands   create-connector-connection-pool(1)
          leaks.
 
          The default value is 0, which disables  connection  leak
-
-Java EE 6           Last change: 20 Apr 2009                    2
-
-asadmin Utility Subcommands   create-connector-connection-pool(1)
-
          tracing.
 
      --leakreclaim
-
          Specifies whether leaked connections are restored to the
          connection  pool  after  leak connection tracing is com-
          plete. Possible values are as follows:
 
          false
+
              Leaked connections are not restored to  the  connec-
              tion pool (default).
 
          true
-
              Leaked connections are restored to   the  connection
              pool.
 
      --creationretryattempts
+
          Specifies the maximum number of times  that  the  server
          retries  to  create  a connection if the initial attempt
          fails.
@@ -132,29 +144,29 @@ asadmin Utility Subcommands   create-connector-connection-pool(1)
          does not retry to create the connection.
 
      --creationretryinterval
-
          Specifies the interval, in seconds,  between  successive
          attempts to create a connection.
 
          If    --creationretryattempts    is    0,     the     --
+
+Java EE 6           Last change: 09 Oct 2009                    3
+
+asadmin Utility Subcommands   create-connector-connection-pool(1)
+
          creationretryinterval option is ignored.
 
          The default value is 10.
 
      --lazyconnectionenlistment
+
          Specifies  whether  a  resource  to  a  transaction   is
          enlisted  only when a method actually uses the resource.
          Possible values are as follows:
 
          false
-
              Resources to a transaction are always  enlisted  and
              not  only  when  a method actually uses the resource
              (default).
-
-Java EE 6           Last change: 20 Apr 2009                    3
-
-asadmin Utility Subcommands   create-connector-connection-pool(1)
 
          true
 
@@ -187,22 +199,23 @@ asadmin Utility Subcommands   create-connector-connection-pool(1)
 
          Specifies whether a connection is  associated  with  the
          thread  to enable the thread to reuse the connection. If
+
+Java EE 6           Last change: 09 Oct 2009                    4
+
+asadmin Utility Subcommands   create-connector-connection-pool(1)
+
          a connection is not  associated  with  the  thread,  the
          thread  must obtain a connection from the pool each time
          that the thread requires a connection.  Possible  values
          are as follows:
 
          false
+
              A connection  is  not  associated  with  the  thread
              (default).
 
          true
-
              A connection is associated with the thread.
-
-Java EE 6           Last change: 20 Apr 2009                    4
-
-asadmin Utility Subcommands   create-connector-connection-pool(1)
 
      --matchconnections
 
@@ -237,12 +250,18 @@ asadmin Utility Subcommands   create-connector-connection-pool(1)
          Specifies the time interval in seconds  between  succes-
          sive request to validate a connection at most once. Set-
          ting this attribute to an  appropriate  value  minimizes
+
+Java EE 6           Last change: 09 Oct 2009                    5
+
+asadmin Utility Subcommands   create-connector-connection-pool(1)
+
          the number of validation requests by a connection.
 
          The default value is 0, which specifies that the connec-
          tion is never validated.
 
      --transactionsupport
+
          Indicates the level of  transaction  support  that  this
          pool  will  have.  Possible  values  are  XATransaction,
          LocalTransaction and NoTransaction. This  attribute  can
@@ -252,49 +271,167 @@ asadmin Utility Subcommands   create-connector-connection-pool(1)
          an order of values, where XATransaction is the  highest,
          and NoTransaction the lowest.
 
-Java EE 6           Last change: 20 Apr 2009                    5
-
-asadmin Utility Subcommands   create-connector-connection-pool(1)
-
-     --isconnectvalidatereq
-
-         If the value is set to true,  the  connections  will  be
-         checked to see if they are usable, before they are given
-         out to the application. The default value is false.
-
      --description
          Text providing descriptive details about  the  connector
          connection pool.
 
      --property
 
-         Optional attribute name value pairs for configuring  the
-         resource.
+         Optional attribute name/value pairs for configuring  the
+         pool. The following properties are available:
+
+         AddressList
+             Specifies a list of host/port  combinations  of  the
+             Message  Queue  software.  For  JMS resources of the
+             type       javax.jms.TopicConnectionFactory       or
+             javax.jms.QueueConnectionFactory.    There   is   no
+             default value.
+
+         ClientId
+
+             Specifies the JMS Client Identifier to be associated
+             with  a Connection created using the createTopicCon-
+             nection method of the TopicConnectionFactory  class.
+             For      JMS      resources      of     the     type
+             javax.jms.TopicConnectionFactory.   There   is    no
+             default value.
+
+             Durable subscription names are unique and only valid
+             within  the  scope of a client identifier. To create
+             or reactivate a durable subscriber,  the  connection
+             must have a valid client identifier. The JMS specif-
+             ication ensures that client identifiers  are  unique
+             and  that a given client identifier is allowed to be
+             used by only one active connection at a time.  There
+             is no default value.
+
+Java EE 6           Last change: 09 Oct 2009                    6
+
+asadmin Utility Subcommands   create-connector-connection-pool(1)
+
+         UserName
+
+             Specifies the user name for connecting to  the  Mes-
+             sage  Queue  software. For JMS resources of the type
+             javax.jms.TopicConnectionFactory                  or
+             javax.jms.QueueConnectionFactory.  The default value
+             is guest.
+
+         Password
+             Specifies the password for connecting to the Message
+             Queue  software.  For  JMS  resources  of  the  type
+             javax.jms.TopicConnectionFactory                  or
+             javax.jms.QueueConnectionFactory.  The default value
+             is guest.
+
+         ReconnectAttempts
+
+             Specifies the number  of  attempts  to  connect  (or
+             reconnect)  for  each  address in the imqAddressList
+             before the client runtime moves on to try  the  next
+             address  in  the  list. A value of -1 indicates that
+             the number of reconnect attempts is  unlimited  (the
+             client  runtime  attempts  to  connect  to the first
+             address until it succeeds). The default value is 6.
+
+         ReconnectInterval
+             Specifies the interval between reconnect attempts in
+             milliseconds.  This  applies  to  attempts  on  each
+             address in  the  imqAddressList  and  on  successive
+             addresses  in  the  list.  If  too  short, this time
+             interval does not give a broker time to recover.  If
+             too long, the reconnect might represent an unaccept-
+             able delay. The default value is 30000 (30 seconds).
+
+         ReconnectEnabled
+
+             If true, specifies that the client runtime  attempts
+             to  reconnect  to  a  message server (or the list of
+             addresses in imqAddressList) when  a  connection  is
+             lost. The default value is false.
+
+         AddressListBehavior
+             Specifies whether connection  attempts  are  in  the
+             order  of  addresses in the imqAddressList attribute
+             (priority) or in a random order  (random).  If  many
+             clients  are  attempting a connection using the same
+             connection factory, use a random  order  to  prevent
+
+Java EE 6           Last change: 09 Oct 2009                    7
+
+asadmin Utility Subcommands   create-connector-connection-pool(1)
+
+             them  from  all being connected to the same address.
+             The default value is priority.
+
+         AddressListIterations
+
+             Specifies the number of  times  the  client  runtime
+             iterates  through the imqAddressList in an effort to
+             establish (or reestablish) a connection. The default
+             value  is  -1,  which  indicates  that the number of
+             attempts is unlimited.
+
+         LazyConnectionEnlistment
+             Deprecated.  Use  the  equivalent   attribute.   The
+             default value is false.
+
+         LazyConnectionAssociation
+
+             Deprecated.  Use  the  equivalent   attribute.   The
+             default value is false.
+
+         AssociateWithThread
+             Deprecated.  Use  the  equivalent   attribute.   The
+             default value is false.
+
+         MatchConnections
+
+             Deprecated.  Use  the  equivalent   attribute.   The
+             default value is true.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
 
 OPERANDS
      connector_connection_pool_name
-          The name of the connection pool to be created.
+
+         The name of the connection pool to be created.
 
 EXAMPLES
-     Example 1 Using the create-connector-connection-pool command
+
+Java EE 6           Last change: 09 Oct 2009                    8
+
+asadmin Utility Subcommands   create-connector-connection-pool(1)
+
+     Example 1 Using the create-connector-connection-pool subcom-
+     mand
 
        asadmin> create-connector-connection-pool
-       --passwordfile passwords.txt --steadypoolsize 20
-       --maxpoolsize 100 --poolresize 2 --maxwait 60000 --raname jmsra
+       --raname jmsra
        --connectiondefinition javax.jms.QueueConnectionFactory jms/qConnPool
+       --steadypoolsize 20 --maxpoolsize 100
+       --poolresize 2 --maxwait 60000
        Command create-connector-connection-pool executed successfully
 
      Where jms/qConnPool is the name of the new connector connec-
      tion pool.
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      delete-connector-connection-pool(1),         list-connector-
      connection-pools(1)
 
-Java EE 6           Last change: 20 Apr 2009                    6
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    9
 

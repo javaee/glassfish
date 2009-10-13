@@ -5,16 +5,17 @@ NAME
      list-custom-resources - gets all custom resources
 
 SYNOPSIS
-     list-custom-resources
-     [--help]
-      [target]
+     list-custom-resources [--help] [--target target]
 
 DESCRIPTION
-     Use this command to list custom resources. This  command  is
-     supported in remote mode only.
+     The  list-custom-resources  subcommand  lists   the   custom
+     resources.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -27,41 +28,29 @@ OPERANDS
          ignored.
 
 EXAMPLES
-     Example 1 Using the list-custom-resources command
+     Example 1 Listing Custom Resources
 
-     The following example displays the usage of this command  in
-     a domain whose profile is the developer profile.
+     This example lists the current custom resources.
 
-       asadmin> list-custom-resources --user admin --passwordfile
-       passwords.txt --host plum --port 4848
+       asadmin> list-custom-resources
        sample_custom_resource01
        sample_custom_resource02
        Command list-custom-resources executed successfully.
 
-     Example 2 Using the  list-custom-resources  command  with  a
-     target
+EXIT STATUS
+     0                           subcommand executed successfully
 
-     The following example displays the usage of this command  in
-     a  domain whose profile is the cluster profile or the enter-
-     prise profile.
+     1                           error in executing  the  subcom-
+                                 mand
 
-Java EE 6           Last change: 16 Apr 2009                    1
+Java EE 6            Last change: 8 Oct 2009                    1
 
 asadmin Utility Subcommands;             list-custom-resources(1)
-
-       asadmin> list-custom-resources --user admin --passwordfile
-       passwords.txt --host plum --port 4848 target6
-       sample_custom_resource03
-       sample_custom_resource04
-       Command list-custom-resources executed successfully.
-
-EXIT STATUS
-     0                           command executed successfully
-
-     1                           error in executing the command
 
 SEE ALSO
      create-custom-resource(1),delete-custom-resource(1)
 
-Java EE 6           Last change: 16 Apr 2009                    2
+     asadmin(1M)
+
+Java EE 6            Last change: 8 Oct 2009                    2
 

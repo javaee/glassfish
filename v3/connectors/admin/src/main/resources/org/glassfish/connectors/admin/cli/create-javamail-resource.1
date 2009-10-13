@@ -6,25 +6,22 @@ NAME
      resource
 
 SYNOPSIS
-     create-javamail-resource
-     [--help]
-     [ --target  target]
-     --mailhost hostname --mailuser username
-     --fromaddress address [--storeprotocol storeprotocol]
-     [--storeprotocolclass storeprotocolclass]
-     [--transprotocol transprotocol] [--transprotocolclass transprotocolclass]
-     [--debug={false|true}] [ --enabled ={true|false}]
-     [ --description  text] [--property (name=value)[:name=value]*]
-     jndi-name
+     create-javamail-resource [--help] [--target target] --mailhost hostname
+     --mailuser username --fromaddress address [--storeprotocol storeprotocol]
+     [storeprotocolclass storeprotocolclass] [transprotocol transprotocol]
+     [--transprotocolclass transprotocolclass] [--debug={false|true}] [--enabled={true|false}]
+     [--description text]
+     [--property (name=value)[:name=value]*] jndi-name
 
 DESCRIPTION
-     The create-javamail-resource command creates a JavaMail ses-
-     sion resource.
+     The create-javamail-resource subcommand creates  a  JavaMail
+     session resource.
 
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -49,7 +46,7 @@ OPTIONS
          and Transport objects use  this  value  if  a  protocol-
          specific username property is not supplied.
 
-Java EE 6           Last change: 20 Jul 2009                    1
+Java EE 6            Last change: 8 Oct 2009                    1
 
 asadmin Utility Subcommands           create-javamail-resource(1)
 
@@ -97,7 +94,7 @@ asadmin Utility Subcommands           create-javamail-resource(1)
          If set to true, the resource is enabled at runtime.  The
          default value is true.
 
-Java EE 6           Last change: 20 Jul 2009                    2
+Java EE 6            Last change: 8 Oct 2009                    2
 
 asadmin Utility Subcommands           create-javamail-resource(1)
 
@@ -107,8 +104,10 @@ asadmin Utility Subcommands           create-javamail-resource(1)
 
      --property
          Optional attribute name/value pairs for configuring  the
-         JavaMail  resource. The JavaMail API documentation lists
-         the properties you might want to set.
+         JavaMail  resource.  GlassFish-specific  mail- prefix is
+         converted to standard  mail  prefix.  The  JavaMail  API
+         documentation  lists  the  properties  you might want to
+         set.
 
 OPERANDS
      jndi-name
@@ -120,7 +119,7 @@ OPERANDS
 EXAMPLES
      Example 1 Creating a JavaMail Resource
 
-     The following command  creates  a  JavaMail  resource  named
+     This   example   creates   a   JavaMail    resource    named
      mail/MyMailSession.  The escape character (\) is used in the
      --fromaddress option to distinguish the dot (.) and at  sign
      (@).  The  JNDI  name  for  a JavaMail session resource cus-
@@ -131,12 +130,15 @@ EXAMPLES
        Command create-javamail-resource executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      delete-javamail-resource(1), list-javamail-resources(1)
 
-Java EE 6           Last change: 20 Jul 2009                    3
+     asadmin(1M)
+
+Java EE 6            Last change: 8 Oct 2009                    3
 

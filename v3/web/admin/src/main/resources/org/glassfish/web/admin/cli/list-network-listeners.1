@@ -8,7 +8,6 @@ NAME
 SYNOPSIS
      list-network-listeners
      [--help]
-     [target]
 
 DESCRIPTION
      The list-network-listeners command lists the  existing  net-
@@ -17,49 +16,20 @@ DESCRIPTION
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
-OPERANDS
-     target
-         This option is valid only in domains that are configured
-         to  support  clusters,  such as domains that are created
-         with the cluster profile or the enterprise profile. This
-         operand  specifies  the  target  for  which  the network
-         listeners are to be listed. Valid values are:
-
-         server
-
-             Lists the listeners for the default server  instance
-             server and is the default value.
-
-         configuration-name
-             Lists the listeners for the specified configuration.
-
-         cluster-name
-
-             Lists the listeners for the specified cluster.
-
-         instance-name
-             Lists  the  listeners  for   a   particular   server
-             instance.
-
 EXAMPLES
-
-Java EE 6           Last change: 16 Apr 2009                    1
-
-asadmin Utility Subcommands             list-network-listeners(1)
-
      Example 1 Using the list-network-listeners command
 
      The following command lists all the  network  listeners  for
      the server instance:
 
-       asadmin> list-network-listeners --user admin1
-       --passwordfile passwords.txt --host host1 --port 5001
+       asadmin> list-network-listeners
+       admin-listener
        http-listener-1
        https-listener-2
-       admin-listener
        Command list-network-listeners executed successfully.
 
 EXIT STATUS
@@ -70,5 +40,5 @@ EXIT STATUS
 SEE ALSO
      create-network-listener(1), delete-network-listener(1)
 
-Java EE 6           Last change: 16 Apr 2009                    2
+Java EE 6           Last change: 10 Sep 2009                    1
 
