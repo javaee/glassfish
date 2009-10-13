@@ -35,6 +35,8 @@
     </developers>
 
 	<build>
+        <!-- parent HK2 pom uses src/java and hence need to override here -->
+        <sourceDirectory>src/main/java</sourceDirectory>
 		<resources>
 			<resource>
 				<directory>${basedir}/src/main/command</directory>
