@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -59,6 +60,8 @@ public class ServletContainerInitializerUtil {
 
     private static final Logger log = LogDomains.getLogger(
         ServletContainerInitializerUtil.class, LogDomains.WEB_LOGGER);
+
+    private static final ResourceBundle rb = log.getResourceBundle();
 
     /**
      * Given a class loader, check for ServletContainerInitializer
@@ -281,9 +284,11 @@ public class ServletContainerInitializerUtil {
                         }
                     }
                 } catch(IOException ioex) {
-                    log.log(Level.SEVERE,
-                        "servletContainerInitializerUtil.ioError",
-                        ioex);
+                    String msg = rb.getString(
+                        "servletContainerInitializerUtil.ioError");
+                    msg = MessageFormat.format(msg,
+                        new Object[] { path });
+                    log.log(Level.SEVERE, msg, ioex);
                     return null;
                 }
             }
