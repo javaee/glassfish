@@ -18,19 +18,27 @@
 </target>
 
 <target name="setup-jruby" depends="setJRubyCon" unless="local.jruby.present">
-   <unzip src="${jruby_path}/jruby-all-1.0-1.2.0.zip" dest="${jruby_path}"/>
+   <unzip src="${jruby_path}/jruby-all-1.1-1.3.1.zip" dest="${jruby_path}"/>
    <chmod dir="${JRUBY_HOME}/bin" perm="ugo+rx" 
        includes="**/*"/>
+</target>
+
+<target name="create-app">
+   <antcall target="create-app-common"/>
+</target>
+
+<target name="build" depends="compile-tests">
+   <antcall target="compile-tests"/>
 </target>
 
 <target name="deploy">
    <record name="deploy.output" action="start"/>
    <mkdir dir="${dist.dir}"/>
-   <copy todir="${dist.dir}/helloapp">
-      <fileset dir="helloapp"/>
-   </copy>
+   <move todir="${dist.dir}/helloworld" failonerror="false">
+      <fileset dir="helloworld"/>
+   </move>
    <antcall target="deploy-v3-impl">
-      <param name="deployed.app" value="helloapp"/>
+      <param name="deployed.app" value="${appName}"/>
    </antcall>
    <record name="deploy.output" action="stop"/>
 </target>
@@ -45,6 +53,31 @@
 
 <target name="undeploy">
    <antcall target="undeploy-v3-impl"/>
+</target>
+
+<target name="create-app-common" depends="setOSConditions">
+    <echo message="JRUBY_HOME: ${JRUBY_HOME}"/>
+    <echo message="${JRUBY_HOME}/bin/jruby -S rails -d mysql ${appName}"/>
+    <antcall target="create-app-common-unix"/>
+    <antcall target="create-app-common-windows"/>
+</target>
+
+<target name="create-app-common-unix" if="isUnix">
+    <exec executable="${JRUBY_HOME}/bin/jruby" failonerror="true">
+        <arg line="-S rails -d mysql ${appName}"/>
+    </exec>
+    <exec executable="${JRUBY_HOME}/bin/jruby" failonerror="true">
+         <arg line="${appName}/script/generate controller ${controller} ${view}"/>
+    </exec>
+</target>
+
+<target name="create-app-common-windows" if="isWindows">
+    <exec executable="${JRUBY_HOME}/bin/jruby.bat" failonerror="true">
+        <arg line="-S rails -d mysql ${appName}"/>
+    </exec>
+    <exec executable="${JRUBY_HOME}/bin/jruby.bat" failonerror="true">
+        <arg line="${appName}/script/generate controller ${controller} ${view}"/>
+    </exec>
 </target>
     
 </project>
