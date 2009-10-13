@@ -105,7 +105,8 @@ public class ListConnectorWorkSecurityMaps implements AdminCommand {
             if (!foundWSM) {
                  report.setMessage(localStrings.getLocalString(
                         "list.connector.work.security.maps.workSecurityMapNotFound",
-                        "Work security map {0} for resource adapter {1} not found", securityMap, raName));
+                        "Nothing to list. Either the resource adapter {0} does not exist or the" +
+                                "resource adapter {0} is not associated with any work security map.", raName));
             }
 
         } catch (Exception e) {
