@@ -8,6 +8,13 @@
         parentId="resources"
         content="jmailTreeNode.jsf"
     />
+    <integration-point
+                id="fullResourceLink"
+                parentId="propSheetSection"
+                type="org.glassfish.admingui:resources"
+                priority="400"
+                content="fullResourceLink.jsf"
+    />
 
 
     <!-- add the property sheet for deployment page, specific for ear app -->

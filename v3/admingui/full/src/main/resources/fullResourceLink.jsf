@@ -1,0 +1,16 @@
+<sun:property>
+    <sun:hyperlink 
+        toolTip="$resource{i18n.tree.javaMailSessions.tooltip}"
+        url="/full/mailResources.jsf" >
+        <sun:image url="/resource/images/javaMailSession.gif" />
+        <sun:staticText text="$resource{i18n.tree.javaMailSessions}" />
+    </sun:hyperlink>
+</sun:property>
+<sun:property>
+    <sun:hyperlink
+        toolTip="$resource{i18n.tree.jndi.tooltip}"
+        url="/full/jndi.jsf" >
+        <sun:image url="/resource/images/jndi.gif" />
+        <sun:staticText text="$resource{i18n.tree.jndi}" />
+    </sun:hyperlink>
+</sun:property>

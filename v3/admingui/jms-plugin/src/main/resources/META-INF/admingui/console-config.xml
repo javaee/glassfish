@@ -22,4 +22,11 @@
                         content="configLinks.jsf"
     />
 
+    <integration-point
+                id="jmsResourceLink"
+                parentId="propSheetSection"
+                type="org.glassfish.admingui:resources"
+                priority="300"
+                content="jmsResourceLink.jsf"
+    />
 </console-config> 

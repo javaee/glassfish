@@ -1,0 +1,16 @@
+<sun:property>
+    <sun:hyperlink 
+        toolTip="$resource{i18n.tree.connectors.tooltip}"
+        url="/jca/jca.jsf" >
+        <sun:image url="/resource/images/connector.png" />
+        <sun:staticText text="$resource{i18n.tree.connectors}" />
+    </sun:hyperlink>
+</sun:property>
+<sun:property>
+    <sun:hyperlink
+        toolTip="$resource{i18n.tree.resourceAdapterConfigs.tooltip}"
+        url="/jca/resourceAdapterConfigs.jsf" >
+        <sun:image url="/resource/images/connector.png" />
+        <sun:staticText text="$resource{i18n.tree.resourceAdapterConfigs}" />
+    </sun:hyperlink>
+</sun:property>
