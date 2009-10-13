@@ -1099,11 +1099,9 @@ function guiValidate(reqMsg, reqInt, reqPort) {
     var component = null;
     for ( i=0; i < inputs.length; i++) {
         component = inputs[i];
-	if ((component.type == ("hidden")) || (component.type == "submit")) {
-	    continue;
-	}
 	// Find the styleClass for this input
-	styleClass = admingui.util.getWoodstockProp(inputs[i], "className");
+	// styleClass = admingui.util.getWoodstockProp(inputs[i], "className");  This is the woodstock 4.4.0.1 style
+        styleClass = component.className;
         if (styleClass == null || styleClass == '') {
             continue;
         }
@@ -1171,7 +1169,8 @@ function guiValidateWithDropDown(reqMsg,reqInt, reqPort, reqMsgSelect){
     for (i=0; i < selectFields.length; i++) {
         component = selectFields[i];
 	// Find the styleClass for this input
-	styleClass = admingui.util.getWoodstockProp(selectFields[i], "className");
+        // styleClass = admingui.util.getWoodstockProp(selectFields[i], "className");  This is the woodstock 4.4.0.1 style
+        styleClass = component.className;
         if (styleClass == null || styleClass == '') {
             continue;
         }
