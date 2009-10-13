@@ -706,7 +706,7 @@ public class EJBTimerService
             timerLocal_.cancelTimers(timers);
         } catch(Exception e) {
             logger.log(Level.WARNING, "ejb.cancel_entity_timers",
-                       new Object[] { new Long(containerId), primaryKey });
+                       new Object[] { String.valueOf(containerId), primaryKey });
             logger.log(Level.WARNING, "", e);
         }
     }
@@ -766,8 +766,8 @@ public class EJBTimerService
             }
 
         } catch(Exception ex) {
-            logger.log(Level.WARNING, "destroy_timers_error",
-                       new Object[] { new Long(containerId) });
+            logger.log(Level.WARNING, "ejb.destroy_timers_error",
+                       new Object[] { String.valueOf(containerId) });
             logger.log(Level.WARNING, "", ex);
             return;
         } finally {
@@ -776,8 +776,8 @@ public class EJBTimerService
             } catch(Exception e) {
                 // Most likely caused by two or more server instances trying
                 // to delete the timers for the same ejb at the same time.
-                logger.log(Level.WARNING, "destroy_timers_error",
-                           new Object[] { new Long(containerId) });
+                logger.log(Level.WARNING, "ejb.destroy_timers_error",
+                           new Object[] { String.valueOf(containerId) });
                 logger.log(Level.WARNING, "", e);
             }
         }
@@ -1113,7 +1113,7 @@ public class EJBTimerService
                 }
             } catch(Exception e) {
                 logger.log(Level.SEVERE, "ejb.create_timer_failure",
-                           new Object[] { new Long(containerId), 
+                           new Object[] { String.valueOf(containerId), 
                                           timedObjectPrimaryKey,
                                           timerConfig.getInfo() });
                 logger.log(Level.SEVERE, "", e);
