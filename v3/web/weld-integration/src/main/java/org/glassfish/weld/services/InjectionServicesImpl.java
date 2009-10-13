@@ -34,10 +34,10 @@
  * holder.
  */
 
-package org.glassfish.webbeans.services;
+package org.glassfish.weld.services;
 
-import org.jboss.webbeans.injection.spi.InjectionServices;
-import org.jboss.webbeans.injection.spi.InjectionContext;
+import org.jboss.weld.injection.spi.InjectionServices;
+import org.jboss.weld.injection.spi.InjectionContext;
 
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.component.Habitat;

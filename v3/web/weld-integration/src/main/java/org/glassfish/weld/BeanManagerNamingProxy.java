@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.webbeans;
+package org.glassfish.weld;
 
 import org.glassfish.api.naming.NamedNamingObjectProxy;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -52,9 +52,9 @@ import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 
-import org.jboss.webbeans.bootstrap.WebBeansBootstrap;
+import org.jboss.weld.bootstrap.WeldBootstrap;
 
-import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
+import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 
 import javax.naming.NamingException;
 
@@ -74,7 +74,7 @@ public class BeanManagerNamingProxy implements NamedNamingObjectProxy {
     private InvocationManager invocationManager;
 
     @Inject
-    private WebBeansDeployer webBeansDeployer;
+    private WeldDeployer weldDeployer;
 
     private static final String BEAN_MANAGER_CONTEXT
             = "java:comp/BeanManager";
@@ -109,9 +109,9 @@ public class BeanManagerNamingProxy implements NamedNamingObjectProxy {
                         }
 
                         if( bundle != null ) {
-                            BeanDeploymentArchive bda = webBeansDeployer.getBeanDeploymentArchiveForBundle(bundle);
+                            BeanDeploymentArchive bda = weldDeployer.getBeanDeploymentArchiveForBundle(bundle);
                             if( bda != null ) {
-                                WebBeansBootstrap bootstrap = webBeansDeployer.getBootstrapForApp(bundle.getApplication());
+                                WeldBootstrap bootstrap = weldDeployer.getBootstrapForApp(bundle.getApplication());
                                 beanManager = bootstrap.getManager(bda);
                             }
                         }

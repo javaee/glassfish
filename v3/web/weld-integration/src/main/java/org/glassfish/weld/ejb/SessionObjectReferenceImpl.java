@@ -35,10 +35,10 @@
  */
 
 
-package org.glassfish.webbeans.ejb;
+package org.glassfish.weld.ejb;
 
 
-import org.jboss.webbeans.ejb.api.SessionObjectReference;
+import org.jboss.weld.ejb.api.SessionObjectReference;
 
 import org.glassfish.ejb.api.EjbContainerServices;
 

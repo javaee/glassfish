@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.webbeans.util;
+package org.glassfish.weld.util;
 
 public class Util {
 

@@ -34,16 +34,16 @@
  * holder.
  */
 
-package org.glassfish.webbeans.services;
+package org.glassfish.weld.services;
 
 import javax.servlet.ServletContext;
 
 import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.webbeans.DeploymentImpl;
-import org.glassfish.webbeans.WebBeansDeployer;
+import org.glassfish.weld.DeploymentImpl;
+import org.glassfish.weld.WeldDeployer;
 
-import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
-import org.jboss.webbeans.servlet.api.ServletServices;
+import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
+import org.jboss.weld.servlet.api.ServletServices;
 
 public class ServletServicesImpl implements ServletServices {
 
@@ -55,7 +55,7 @@ public class ServletServicesImpl implements ServletServices {
 
     public BeanDeploymentArchive getBeanDeploymentArchive(ServletContext ctx) {
         DeploymentImpl deploymentImpl = (DeploymentImpl)deploymentContext.getTransientAppMetaData(
-                WebBeansDeployer.WEB_BEAN_DEPLOYMENT, DeploymentImpl.class);
+                WeldDeployer.WELD_DEPLOYMENT, DeploymentImpl.class);
         return deploymentImpl.getBeanDeploymentArchives().get(0);
     }
 

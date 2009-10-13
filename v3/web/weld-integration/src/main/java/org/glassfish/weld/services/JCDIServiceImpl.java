@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.webbeans.services;
+package org.glassfish.weld.services;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -49,8 +49,8 @@ import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 
-import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
-import org.jboss.webbeans.bootstrap.WebBeansBootstrap;
+import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
+import org.jboss.weld.bootstrap.WeldBootstrap;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -61,16 +61,16 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
-import org.jboss.webbeans.manager.api.WebBeansManager;
+import org.jboss.weld.manager.api.WeldManager;
 
-import org.glassfish.webbeans.WebBeansDeployer;
+import org.glassfish.weld.WeldDeployer;
 
 
 @Service
 public class JCDIServiceImpl implements JCDIService
 {
     @Inject
-    private WebBeansDeployer webBeansDeployer;
+    private WeldDeployer weldDeployer;
 
     @Inject
     private Habitat h;
@@ -110,7 +110,7 @@ public class JCDIServiceImpl implements JCDIService
         // E.g. allows EjbBundleDescriptor from a .war to be handled correctly.
         BundleDescriptor topLevelBundleDesc = (BundleDescriptor) bundle.getModuleDescriptor().getDescriptor();
 
-        return webBeansDeployer.is299Enabled(topLevelBundleDesc);
+        return weldDeployer.is299Enabled(topLevelBundleDesc);
 
     }
 
@@ -120,21 +120,21 @@ public class JCDIServiceImpl implements JCDIService
                 ejb.getEjbBundleDescriptor().getModuleDescriptor().getDescriptor();
 
         // First get BeanDeploymentArchive for this ejb
-        BeanDeploymentArchive bda = webBeansDeployer.getBeanDeploymentArchiveForBundle(topLevelBundleDesc);
+        BeanDeploymentArchive bda = weldDeployer.getBeanDeploymentArchiveForBundle(topLevelBundleDesc);
      
-        WebBeansBootstrap bootstrap = webBeansDeployer.getBootstrapForApp(ejb.getEjbBundleDescriptor().getApplication());
-        WebBeansManager webBeansManager = bootstrap.getManager(bda);
+        WeldBootstrap bootstrap = weldDeployer.getBootstrapForApp(ejb.getEjbBundleDescriptor().getApplication());
+        WeldManager weldManager = bootstrap.getManager(bda);
 
-        org.jboss.webbeans.ejb.spi.EjbDescriptor ejbDesc = webBeansManager.getEjbDescriptor(ejb.getName());
+        org.jboss.weld.ejb.spi.EjbDescriptor ejbDesc = weldManager.getEjbDescriptor(ejb.getName());
 
         // Get an the Bean object
-        Bean<?> bean = webBeansManager.getBean(ejbDesc);
+        Bean<?> bean = weldManager.getBean(ejbDesc);
 
         // Create the injection target
-        InjectionTarget it = webBeansManager.createInjectionTarget(ejbDesc);
+        InjectionTarget it = weldManager.createInjectionTarget(ejbDesc);
 
         // Per instance required, create the creational context
-        CreationalContext<?> cc = webBeansManager.createCreationalContext(bean);
+        CreationalContext<?> cc = weldManager.createCreationalContext(bean);
 
         // Perform injection and call initializers
         it.inject(instance, cc);
@@ -153,9 +153,9 @@ public class JCDIServiceImpl implements JCDIService
         BundleDescriptor topLevelBundleDesc = (BundleDescriptor) bundle.getModuleDescriptor().getDescriptor();
 
         // First get BeanDeploymentArchive for this ejb
-        BeanDeploymentArchive bda = webBeansDeployer.getBeanDeploymentArchiveForBundle(topLevelBundleDesc);
+        BeanDeploymentArchive bda = weldDeployer.getBeanDeploymentArchiveForBundle(topLevelBundleDesc);
 
-        WebBeansBootstrap bootstrap = webBeansDeployer.getBootstrapForApp(bundle.getApplication());
+        WeldBootstrap bootstrap = weldDeployer.getBootstrapForApp(bundle.getApplication());
 
         BeanManager beanManager = bootstrap.getManager(bda);
 

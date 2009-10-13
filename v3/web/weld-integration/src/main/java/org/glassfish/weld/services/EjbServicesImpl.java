@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.webbeans.services;
+package org.glassfish.weld.services;
 
 import com.sun.enterprise.deployment.*;
 
@@ -46,12 +46,13 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.glassfish.ejb.api.EjbContainerServices;
-import org.glassfish.webbeans.ejb.EjbDescriptorImpl;
-import org.glassfish.webbeans.ejb.SessionObjectReferenceImpl;
+import org.glassfish.weld.ejb.EjbDescriptorImpl;
+import org.glassfish.weld.ejb.SessionObjectReferenceImpl;
 
-import org.jboss.webbeans.ejb.spi.EjbServices;
-import org.jboss.webbeans.ejb.spi.EjbDescriptor;
-import org.jboss.webbeans.ejb.api.SessionObjectReference;
+import org.jboss.weld.ejb.api.SessionObjectReference;
+import org.jboss.weld.ejb.spi.EjbServices;
+import org.jboss.weld.ejb.spi.EjbDescriptor;
+import org.jboss.weld.ejb.spi.InterceptorBindings;
 
 import org.jvnet.hk2.component.Habitat;
 
@@ -125,6 +126,11 @@ public class EjbServicesImpl implements EjbServices
         }
 
         return (clientView != null) ? sessionDesc.getPortableJndiName(clientView) : null;
+
+    }
+
+    // TODO  ****  Implement
+    public void registerInterceptors(EjbDescriptor<?> ejbDescriptor, InterceptorBindings interceptorBindings) {
 
     }
 

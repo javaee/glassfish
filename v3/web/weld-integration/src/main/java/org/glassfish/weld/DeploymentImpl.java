@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.webbeans;
+package org.glassfish.weld;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,13 +51,13 @@ import java.util.logging.Logger;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 
-import org.jboss.webbeans.bootstrap.api.ServiceRegistry;
-import org.jboss.webbeans.bootstrap.api.helpers.SimpleServiceRegistry;
-import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
-import org.jboss.webbeans.bootstrap.spi.Deployment;
+import org.jboss.weld.bootstrap.api.ServiceRegistry;
+import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
+import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
+import org.jboss.weld.bootstrap.spi.Deployment;
 
 /*
- * Represents a deployment of a CDI (WebBeans) application. 
+ * Represents a deployment of a CDI (Weld) application. 
  */
 public class DeploymentImpl implements Deployment {
 
@@ -162,7 +162,8 @@ public class DeploymentImpl implements Deployment {
             logger.log(Level.SEVERE, cne.getLocalizedMessage(), cne);
         }
 
-        BeanDeploymentArchive beanDeploymentArchive = new BeanDeploymentArchiveImpl(wbClasses, wbUrls, ejbs);
+        String archiveId = archive.getURI().getPath();
+        BeanDeploymentArchive beanDeploymentArchive = new BeanDeploymentArchiveImpl(archiveId, wbClasses, wbUrls, ejbs);
         beanDeploymentArchives.add(beanDeploymentArchive);
     }
 

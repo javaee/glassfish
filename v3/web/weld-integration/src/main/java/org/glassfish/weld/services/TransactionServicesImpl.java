@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.webbeans.services;
+package org.glassfish.weld.services;
 
 import static javax.transaction.Status.STATUS_ACTIVE;
 
@@ -46,7 +46,7 @@ import javax.transaction.UserTransaction;
 
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
-import org.jboss.webbeans.transaction.spi.TransactionServices;
+import org.jboss.weld.transaction.spi.TransactionServices;
 
 public class TransactionServicesImpl implements TransactionServices {
 

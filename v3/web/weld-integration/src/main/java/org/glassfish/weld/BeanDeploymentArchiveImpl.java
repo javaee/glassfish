@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.webbeans;
+package org.glassfish.weld;
 
 import java.net.URL;
 import java.util.*;
@@ -42,29 +42,31 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.webbeans.ejb.EjbDescriptorImpl;
+import org.glassfish.weld.ejb.EjbDescriptorImpl;
 
-import org.jboss.webbeans.bootstrap.api.ServiceRegistry;
-import org.jboss.webbeans.bootstrap.api.helpers.SimpleServiceRegistry;
-import org.jboss.webbeans.bootstrap.spi.BeanDeploymentArchive;
-import org.jboss.webbeans.ejb.spi.EjbDescriptor;
+import org.jboss.weld.bootstrap.api.ServiceRegistry;
+import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
+import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
+import org.jboss.weld.ejb.spi.EjbDescriptor;
 
 
 /*
- * The means by which Web Beans are discovered on the classpath. 
+ * The means by which Weld Beans are discovered on the classpath. 
  */
 public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
    
     private Logger logger = Logger.getLogger(BeanDeploymentArchiveImpl.class.getName());
 
+    private String id;
     private final List<Class<?>> wbClasses;
     private final List<URL> wbUrls;
     private final Collection<EjbDescriptor<?>> ejbDescImpls;
 
     private SimpleServiceRegistry simpleServiceRegistry = null;
 
-    public BeanDeploymentArchiveImpl(List<Class<?>> wbClasses, List<URL> wbUrls,
+    public BeanDeploymentArchiveImpl(String id, List<Class<?>> wbClasses, List<URL> wbUrls,
                                      Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs) {
+        this.id = id;
         this.wbClasses = wbClasses;
         this.wbUrls = wbUrls;
 
@@ -121,6 +123,8 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         return simpleServiceRegistry;
     }
 
-   
+    public String getId() {
+        return id;
+    }
 
 }

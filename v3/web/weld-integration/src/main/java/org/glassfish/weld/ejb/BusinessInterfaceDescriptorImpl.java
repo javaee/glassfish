@@ -35,9 +35,9 @@
  */
 
 
-package org.glassfish.webbeans.ejb;
+package org.glassfish.weld.ejb;
 
-import org.jboss.webbeans.ejb.spi.BusinessInterfaceDescriptor;
+import org.jboss.weld.ejb.spi.BusinessInterfaceDescriptor;
 
 /**
  */

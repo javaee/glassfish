@@ -35,9 +35,9 @@
  */
 
 
-package org.glassfish.webbeans.ejb;
+package org.glassfish.weld.ejb;
 
-import org.jboss.webbeans.ejb.spi.BusinessInterfaceDescriptor;
+import org.jboss.weld.ejb.spi.BusinessInterfaceDescriptor;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
@@ -53,7 +53,7 @@ import java.util.HashSet;
 
 /**
  */
-public class EjbDescriptorImpl<T> implements org.jboss.webbeans.ejb.spi.EjbDescriptor<T>
+public class EjbDescriptorImpl<T> implements org.jboss.weld.ejb.spi.EjbDescriptor<T>
 {
 
     private EjbDescriptor ejbDesc;

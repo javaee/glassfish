@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.webbeans;
+package org.glassfish.weld;
 
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.deployment.*;
