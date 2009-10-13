@@ -25,7 +25,7 @@ import org.glassfish.external.amx.AMXGlassfish;
 
 import javax.management.j2ee.Management;
 
-//import com.sun.appserv.security.ProgrammaticLogin;
+import com.sun.appserv.security.ProgrammaticLogin;
 
 /**
     Standalone MEJB test -- requires running server and disabling security on MEJB.
@@ -238,15 +238,20 @@ public class MEJBTest {
         try {
             final String mejbName = "java:global/mejb/MEJBBean";
             final String username = "admin";
-            final String password = "changeit";
+            final String password = "";
             System.out.println( "Authenticating with \"" + username + "\", \"" + password + "\"");
             
             final Properties props = new Properties();
             props.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
             props.setProperty("org.omg.CORBA.ORBInitialHost", "localhost");
             props.setProperty("org.omg.CORBA.ORBInitialPort", "3700");
-            props.setProperty( Context.SECURITY_PRINCIPAL, username);
-            props.setProperty( Context.SECURITY_CREDENTIALS, password);
+            
+            // "Programmatic login failed: java.lang.SecurityException: Unable to locate a login configuration"
+            //final ProgrammaticLogin pm = new ProgrammaticLogin();
+            //pm.login( username, password, "admin-realm", true);
+
+            //props.setProperty( Context.SECURITY_PRINCIPAL, username);
+            //props.setProperty( Context.SECURITY_CREDENTIALS, password);
             final InitialContext initial = new InitialContext(props);
             
             println("Looking up: " + mejbName);
