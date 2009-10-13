@@ -47,6 +47,7 @@
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
+        setPageSessionAttribute(key="dependentType" value="connector-resource");
         setPageSessionAttribute(key="resHeader" value="$resource{i18njca.resourcesTable.colResAdapter}");
         setPageSessionAttribute(key="extraInfoHeader" value="$resource{i18njca.resourcesTable.colDefinition}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");

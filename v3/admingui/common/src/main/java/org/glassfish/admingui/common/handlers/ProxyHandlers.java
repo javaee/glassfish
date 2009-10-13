@@ -156,53 +156,46 @@ public class ProxyHandlers {
             @HandlerInput(name = "key", type = String.class, defaultValue="Name", required = false)})
     public static void deleteChildren(HandlerContext handlerCtx) {
         String type = (String) handlerCtx.getInputValue("type");
-        if (type.equals(CONNECTOR_CONNECTION_POOL) || type.equals(JDBC_CONNECTION_POOL)) {
-            deleteCascade(handlerCtx);
-        } else {
-            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-            String key = (String) handlerCtx.getInputValue("key");
-            AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
+        String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+        String key = (String) handlerCtx.getInputValue("key");
+        AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
 
-            List<Map> selectedRows = (List) handlerCtx.getInputValue("selectedRows");
-            try {
-                for (Map oneRow : selectedRows) {
-                    String Name = (String) oneRow.get(key);
-                    amx.removeChild(type, Name);
-                }
-            } catch (Exception ex) {
-                GuiUtil.handleException(handlerCtx, ex);
+        List<Map> selectedRows = (List) handlerCtx.getInputValue("selectedRows");
+        try {
+            for (Map oneRow : selectedRows) {
+                String Name = (String) oneRow.get(key);
+                amx.removeChild(type, Name);
             }
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
         }
     }
 
 /*  deleteCascade handles delete for jdbc connection pool and connector connection pool
  *  The dependent resources jdbc resource and connector resource are deleted on deleting
  *  the pools
- *  Currently is called only from deleteChildren handler and not directly from jsf
+ *  
  */
-//  @Handler(id = "deleteCascade",
-//      input = {
-//          @HandlerInput(name = "objectNameStr", type = String.class, required = true),
-//          @HandlerInput(name = "type", type = String.class, required = true),
-//          @HandlerInput(name = "dependentType", type = String.class, required = true),
-//          @HandlerInput(name = "selectedRows", type = List.class, required = true)})
-    private static void deleteCascade(HandlerContext handlerCtx) {
+  @Handler(id = "deleteCascade",
+      input = {
+          @HandlerInput(name = "objectNameStr", type = String.class, required = true),
+          @HandlerInput(name = "type", type = String.class, required = true),
+          @HandlerInput(name = "dependentType", type = String.class, required = true),
+          @HandlerInput(name = "selectedRows", type = List.class, required = true)})
+    public static void deleteCascade(HandlerContext handlerCtx) {
         try {
-            String type = (String) handlerCtx.getInputValue("type");
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-            String dependentType = null;
+            String type = (String) handlerCtx.getInputValue("type");
+            String dependentType = (String) handlerCtx.getInputValue("dependentType");
+            
             String dependentNameKey = "Name";
-            if (type.equals(CONNECTOR_CONNECTION_POOL)) {
-                dependentType = CONNECTOR_RESOURCE;
-            } else if (type.equals(JDBC_CONNECTION_POOL)) {
-                dependentType = JDBC_RESOURCE;
+            if (type.equals(JDBC_CONNECTION_POOL)) {
                 dependentNameKey = "JndiName";
             }
             
             if (dependentType != null) {
                 AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
                 List<Map> selectedRows = (List) handlerCtx.getInputValue("selectedRows");
-                //List dependencies = new ArrayList();
                 
                 for (Map oneRow : selectedRows) {
                     String name = (String) oneRow.get("Name");
@@ -980,8 +973,6 @@ public class ProxyHandlers {
 
     //TODO
     //Resources - can this obtained from AMX?
-    public static final String JDBC_RESOURCE = "jdbc-resource";
     public static final String JDBC_CONNECTION_POOL = "jdbc-connection-pool";
-    public static final String CONNECTOR_RESOURCE = "connector-resource";
     public static final String CONNECTOR_CONNECTION_POOL = "connector-connection-pool";
 }
