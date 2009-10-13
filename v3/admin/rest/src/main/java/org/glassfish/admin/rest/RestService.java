@@ -48,9 +48,11 @@ import org.jvnet.hk2.config.ConfigSupport;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.v3.admin.LocalPasswordImpl;
 import com.sun.logging.LogDomains;
 
 import org.glassfish.api.Startup;
+import org.glassfish.internal.api.LocalPassword;
 import org.glassfish.internal.api.RestInterfaceUID;
 import org.glassfish.server.ServerEnvironmentImpl;
 
@@ -73,6 +75,9 @@ public class RestService implements Startup, PostConstruct, PreDestroy, RestInte
 
     @Inject
     ServerEnvironmentImpl env;
+
+    @Inject
+    LocalPassword localPassword;
 
     private static com.sun.enterprise.config.serverbeans.Domain theDomain;
     private static org.glassfish.flashlight.MonitoringRuntimeDataRegistry theMonitoringRegistry;
@@ -135,16 +140,11 @@ public class RestService implements Startup, PostConstruct, PreDestroy, RestInte
     }
 
 
-    public String getUID() throws SecurityException {
-        SecurityManager securityManager = System.getSecurityManager();
-        if(securityManager != null) {
-            securityManager.checkPermission(new
-                RestInterfaceUIDPermission("get.uid"));
-        }
-
-        // sensitive code
+    public String getUID() {
         if (_uid == null) {
-            _uid = java.util.UUID.randomUUID().toString();
+            if (localPassword instanceof LocalPasswordImpl) {
+            _uid = ((LocalPasswordImpl)localPassword).getLocalPassword();
+            }
         }
         return _uid;
     }
