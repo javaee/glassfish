@@ -63,9 +63,9 @@
              " <b>$resource{i18n_web.vs.httpLink, $pageSession{configName}}</b>
              # <sun:helpInline id="flag1H" style="padding: 4pt" style="font-size: 8pt" text=""/>
              "<br />
-             <sun:radioButton id="ena"  name="ssoGroup" label="$resource{i18n_web.vs.alwaysEnable}" selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="on" />
+             <sun:radioButton id="ena"  name="ssoGroup" label="$resource{i18n_web.vs.alwaysEnable}" selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="true" />
              "<br />
-             <sun:radioButton id="dis"  name="ssoGroup" label="$resource{i18n_web.vs.alwaysDisable}" selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="off" />
+             <sun:radioButton id="dis"  name="ssoGroup" label="$resource{i18n_web.vs.alwaysDisable}" selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="false" />
              "<br />
          </sun:property>
 
@@ -110,9 +110,9 @@
              " <b>$resource{i18n_web.vs.httpLink, $pageSession{configName}}</b>
              # <sun:helpInline id="flag1H" style="padding: 4pt" style="font-size: 8pt" text=""/>
              "<br />
-             <sun:radioButton id="ena"  name="accessLoggingFlagGp" label="$resource{i18n_web.vs.alwaysEnable}" selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="on" />
+             <sun:radioButton id="ena"  name="accessLoggingFlagGp" label="$resource{i18n_web.vs.alwaysEnable}" selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="true" />
              "<br />
-             <sun:radioButton id="dis"  name="accessLoggingFlagGp" label="$resource{i18n_web.vs.alwaysDisable}" selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="off" />
+             <sun:radioButton id="dis"  name="accessLoggingFlagGp" label="$resource{i18n_web.vs.alwaysDisable}" selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="false" />
              "<br />
          </sun:property>
 
