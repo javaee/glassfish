@@ -1,1 +1,1 @@
-org.glassfish.webbeans.jsf.WebBeansFacesConfigProvider
+org.glassfish.weld.jsf.WeldFacesConfigProvider

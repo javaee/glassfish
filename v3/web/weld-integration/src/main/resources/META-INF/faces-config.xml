@@ -5,11 +5,11 @@
               version="2.0">
 
     <lifecycle>
-        <phase-listener>org.jboss.webbeans.jsf.WebBeansPhaseListener</phase-listener>
+        <phase-listener>org.jboss.weld.jsf.WeldPhaseListener</phase-listener>
     </lifecycle>
 
     <factory>
-        <application-factory>org.glassfish.webbeans.jsf.WebBeansApplicationFactory</application-factory>
+        <application-factory>org.glassfish.weld.jsf.WeldApplicationFactory</application-factory>
     </factory>
 
     
