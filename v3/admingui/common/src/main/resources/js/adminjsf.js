@@ -2097,10 +2097,12 @@ admingui.ajax = {
                     return false;
                 };
             }
-        } else  if (node.nodeName == 'TITLE') {
+        } else if (node.nodeName == 'TITLE') {
+	    recurse = false;
             document.title = node.text;
-	    // No longer needed, remove
-	    node.parentNode.removeChild(node);
+	    // Node no longer needed, mark for removal
+	    // Can't remove here, breaks tree traversal...
+	    //node.parentNode.removeChild(node);
         } else if (node.nodeName == 'SCRIPT') {
 	    recurse = false;  // don't walk scripts
 	    if (queueScripts) {
