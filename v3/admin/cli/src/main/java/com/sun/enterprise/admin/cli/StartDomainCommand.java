@@ -76,7 +76,7 @@ public class StartDomainCommand extends LocalDomainCommand {
     // 5 minute timeout should be plenty!
     private static final int DEATH_TIMEOUT_MS = 5 * 60 * 1000;
     // the name of the master password option
-    private static final String MASTER_PASSWORD = "AS_ADMIN_MASTER_PASSWORD";
+    private static final String MASTER_PASSWORD = "AS_ADMIN_MASTERPASSWORD";
 
     /**
      * The prepare method must ensure that the commandOpts,
