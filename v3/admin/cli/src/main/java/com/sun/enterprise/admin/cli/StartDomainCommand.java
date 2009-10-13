@@ -69,6 +69,7 @@ public class StartDomainCommand extends LocalDomainCommand {
     private boolean verbose;
     private boolean upgrade;
     private boolean debug;
+    private File pidFile;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartDomainCommand.class);
@@ -104,6 +105,10 @@ public class StartDomainCommand extends LocalDomainCommand {
         verbose = getBooleanOption("verbose");
         upgrade = getBooleanOption("upgrade");
         debug = getBooleanOption("debug");
+        if (domainName != null) {
+            // local case, initialize pidFile
+            pidFile = new File(new File(domainRootDir, "config"), "pid");
+        }
 
         String gfejar = System.getenv("GFE_JAR");
         if (gfejar != null && gfejar.length() > 0)
@@ -124,6 +129,21 @@ public class StartDomainCommand extends LocalDomainCommand {
                 if (err != null) {
                     logger.printWarning(err);
                     return ERROR;
+                }
+
+                /*
+                 * If we're going to wait for the pid file to exist to
+                 * declare the server up, make sure it doesn't exist
+                 * before we start.
+                 */
+                if (pidFile != null && pidFile.exists()) {
+                    logger.printDebugMessage("pid file " + pidFile +
+                                                " exists, removing it");
+                    if (!pidFile.delete()) {
+                        // Hmmm... can't delete it, don't use it
+                        logger.printDebugMessage("Couldn't remove pid file");
+                        pidFile = null;
+                    }
                 }
             }
 
@@ -314,12 +334,20 @@ public class StartDomainCommand extends LocalDomainCommand {
 
         pinged:
         while (!timedOut(startWait)) {
-            // first, see if the admin port is responding
-            // if it is, the DAS is up
-            for (int port : ports) {
-                if (isServerAlive(port)) {
+            if (pidFile != null) {
+                logger.printDebugMessage("Check for pid file: " + pidFile);
+                if (pidFile.exists()) {
                     alive = true;
                     break pinged;
+                }
+            } else {
+                // first, see if the admin port is responding
+                // if it is, the DAS is up
+                for (int port : ports) {
+                    if (isServerAlive(port)) {
+                        alive = true;
+                        break pinged;
+                    }
                 }
             }
 
