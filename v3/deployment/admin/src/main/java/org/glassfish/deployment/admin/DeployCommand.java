@@ -566,21 +566,27 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     private String getVirtualServers() {
         StringBuilder sb = new StringBuilder();
         boolean first = true;
-        List<Config> configs = domain.getConfigs().getConfig();
-        for (Config config : configs) {
-            List<VirtualServer> hosts =
-                config.getHttpService().getVirtualServer();
-            if (hosts != null) {
-                for (VirtualServer host : hosts) {
-                    if (("__asadmin").equals(host.getId())) {
-                        continue;
-                    }
-                    if (first) {
-                        sb.append(host.getId());
-                        first = false;
-                    } else {
-                        sb.append(",");
-                        sb.append(host.getId());
+        Server server = domain.getServerNamed(target);
+        if (server != null) {
+            Config config = domain.getConfigs().getConfigByName(
+                server.getConfigRef());
+            if (config != null) {
+                HttpService httpService = config.getHttpService();
+                if (httpService != null) {
+                    List<VirtualServer> hosts = httpService.getVirtualServer();
+                    if (hosts != null) {
+                        for (VirtualServer host : hosts) {
+                            if (("__asadmin").equals(host.getId())) {
+                                continue;
+                            }
+                            if (first) {
+                                sb.append(host.getId());
+                                first = false;
+                            } else {
+                                sb.append(",");
+                                sb.append(host.getId());
+                            }
+                        }
                     }
                 }
             }
