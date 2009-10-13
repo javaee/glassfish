@@ -110,7 +110,6 @@ public class CreateProtocol implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-        System.out.println("*********************** CreateProtocol.execute");
         final ActionReport report = context.getActionReport();
 
         // check for duplicates
@@ -139,23 +138,19 @@ public class CreateProtocol implements AdminCommand {
                     boolean accessLogAdded = false;
                     Protocol newProtocol = param.createChild(Protocol.class);
                     newProtocol.setName(protocolName);
-                    newProtocol.setSecurityEnabled(securityEnabled);
+                    newProtocol.setSecurityEnabled(securityEnabled.toString());
                     param.getProtocol().add(newProtocol);
                     return newProtocol;
                 }
             }, protocols);
         } catch(TransactionFailure e) {
-            System.out.println("*************************** e = " + e);
-            report.setMessage(
-                localStrings.getLocalString("create.protocol.fail",
+            report.setMessage(localStrings.getLocalString("create.protocol.fail",
                 "Failed to create protocol {0} ", protocolName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;
         } catch(Exception e) {
-            System.out.println("*************************** e = " + e);
-            report.setMessage(
-                localStrings.getLocalString("create.protocol.fail",
+            report.setMessage(localStrings.getLocalString("create.protocol.fail",
                     "Failed to create protocol {0} ", protocolName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
@@ -163,7 +158,6 @@ public class CreateProtocol implements AdminCommand {
         }
 
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        System.out.println("*********************** CreateProtocol.execute");
 
     }
 }

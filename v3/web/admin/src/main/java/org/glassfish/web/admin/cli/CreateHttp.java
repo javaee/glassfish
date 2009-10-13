@@ -141,9 +141,10 @@ public class CreateHttp implements AdminCommand {
                     cache.setEnabled("false");
                     http.setFileCache(cache);
                     http.setDefaultVirtualServer(defaultVirtualServer);
-                    http.setDnsLookupEnabled(dnsLookupEnabled);
+                    http.setDnsLookupEnabled(dnsLookupEnabled.toString());
                     http.setMaxConnections(maxConnections);
                     http.setRequestTimeoutSeconds(requestTimeoutSeconds);
+                    http.setTimeoutSeconds(timeoutSeconds);
                     http.setXpoweredBy(xPoweredBy.toString());
                     http.setServerName(serverName);
                     param.setHttp(http);
