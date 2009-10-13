@@ -104,5 +104,13 @@ public class DynamicServletRegistrationImpl
         wrapper.setRunAs(roleName);
     }
 
+    protected void setServletClassName(String className) {
+        wrapper.setServletClassName(className);
+    }
+
+    protected void setServletClass(Class <? extends Servlet> clazz) {
+        wrapper.setServletClass(clazz);
+    }
+
 }
 

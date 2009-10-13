@@ -48,6 +48,7 @@ import javax.annotation.security.RunAs;
 import javax.servlet.*;
 import javax.servlet.http.HttpSession;
 import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.ServletSecurity;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
@@ -1743,77 +1744,7 @@ public class WebModule extends PwcWebModule {
     @Override
     protected ServletRegistrationImpl createDynamicServletRegistrationImpl(
             StandardWrapper wrapper) {
-        if (webBundleDescriptor == null) {
-            throw new IllegalStateException("Missing WebBundleDescriptor " +
-                "for context with name " + getName());
-        }
-        WebComponentDescriptor wcd =
-            webBundleDescriptor.getWebComponentByCanonicalName(
-                wrapper.getName());
-        if (wcd == null) {
-            /*
-             * Servlet not present in the WebBundleDescriptor provided
-             * by the deployment backend, which means we are dealing with
-             * the dynamic registration for a programmtically added Servlet,
-             * as opposed to the dynamic registration for a Servlet with a
-             * preliminary declaration, that is, one without any class name.
-             *
-             * Propagate the new Servlet to the WebBundleDescriptor, so that
-             * corresponding security constraints may be calculated by the
-             * security subsystem, which uses the WebBundleDescriptor as its
-             * input.
-             */
-            wcd = new WebComponentDescriptor();
-            wcd.setName(wrapper.getName());
-            wcd.setCanonicalName(wrapper.getName());
-            String servletClassName = wrapper.getServletClassName();
-            if (servletClassName != null) {
-                Class clazz = wrapper.getServletClass();
-                if (clazz == null) {
-                    if (wrapper.getServlet() != null) {
-                        clazz = wrapper.getServlet().getClass();
-                    } else {                  
-                        try {
-                            clazz = getLoader().getClassLoader().loadClass(
-                                servletClassName);
-                            wrapper.setServletClass(clazz);
-                        } catch(Exception ex) {
-                            throw new IllegalArgumentException(ex);
-                        }
-                    }
-                }
-                processServletAnnotations(clazz, webBundleDescriptor, wcd,
-                        wrapper);
-            }
-            webBundleDescriptor.addWebComponentDescriptor(wcd);
-        }
-
         return new DynamicWebServletRegistrationImpl(wrapper, this);
-    }
-
-    private void processServletAnnotations(Class clazz,
-            WebBundleDescriptor webBundleDescriptor,
-            WebComponentDescriptor wcd, StandardWrapper wrapper) {
-        // Process RunAs annotation
-        if (clazz.isAnnotationPresent(RunAs.class)) {
-            RunAs runAs = (RunAs)clazz.getAnnotation(RunAs.class);
-            String roleName = runAs.value();
-            webBundleDescriptor.addRole(new Role(roleName));
-            RunAsIdentityDescriptor runAsDesc =
-                new RunAsIdentityDescriptor();
-            runAsDesc.setRoleName(roleName);
-            wcd.setRunAsIdentity(runAsDesc);
-        }
-        // Process MultipartConfig annotation
-        if (clazz.isAnnotationPresent(MultipartConfig.class)) {
-            MultipartConfig mpConfig = (MultipartConfig)
-                clazz.getAnnotation(MultipartConfig.class);
-            wrapper.setMultipartLocation(mpConfig.location());
-            wrapper.setMultipartMaxFileSize(mpConfig.maxFileSize());
-            wrapper.setMultipartMaxRequestSize(mpConfig.maxRequestSize());
-            wrapper.setMultipartFileSizeThreshold(
-                mpConfig.fileSizeThreshold());
-        }
     }
 
     @Override
@@ -2121,9 +2052,60 @@ class WebServletRegistrationImpl extends ServletRegistrationImpl {
 class DynamicWebServletRegistrationImpl
         extends DynamicServletRegistrationImpl {
 
+    private WebBundleDescriptor wbd;
+    private WebComponentDescriptor wcd;
+
     public DynamicWebServletRegistrationImpl(StandardWrapper wrapper, 
-                                             StandardContext context) {
-        super(wrapper, context);
+                                             WebModule webModule) {
+        super(wrapper, webModule);
+        wbd = webModule.getWebBundleDescriptor();
+        if (wbd == null) {
+            throw new IllegalStateException(
+                "Missing WebBundleDescriptor for " +
+                getContext().getName());
+        }
+        wcd = wbd.getWebComponentByCanonicalName(wrapper.getName());
+        if (wcd == null) {
+            /*
+             * Servlet not present in the WebBundleDescriptor provided
+             * by the deployment backend, which means we are dealing with
+             * the dynamic registration for a programmtically added Servlet,
+             * as opposed to the dynamic registration for a Servlet with a
+             * preliminary declaration (that is, one without any class name).
+             *
+             * Propagate the new Servlet to the WebBundleDescriptor, so that
+             * corresponding security constraints may be calculated by the
+             * security subsystem, which uses the WebBundleDescriptor as its
+             * input.
+             */
+            wcd = new WebComponentDescriptor();
+            wcd.setName(wrapper.getName());
+            wcd.setCanonicalName(wrapper.getName());
+            wbd.addWebComponentDescriptor(wcd);
+            String servletClassName = wrapper.getServletClassName();
+            if (servletClassName != null) {
+                Class clazz = wrapper.getServletClass();
+                if (clazz == null) {
+                    if (wrapper.getServlet() != null) {
+                        clazz = wrapper.getServlet().getClass();
+                    } else {                  
+                        try {
+                            clazz = ctx.getLoader().getClassLoader().loadClass(
+                                servletClassName);
+                            wrapper.setServletClass(clazz);
+                        } catch(Exception ex) {
+                            throw new IllegalArgumentException(ex);
+                        }
+                    }
+                }
+                processServletAnnotations(clazz, wbd, wcd, wrapper);
+            } else {
+                // Should never happen
+                throw new RuntimeException(
+                    "Programmatic servlet registration without any " +
+                    "supporting servlet class");
+            }
+        }
     }
 
     @Override
@@ -2138,19 +2120,6 @@ class DynamicWebServletRegistrationImpl
              * by the security subsystem, which uses the
              * WebBundleDescriptor as its input
              */
-            WebBundleDescriptor wbd =
-                ((WebModule) getContext()).getWebBundleDescriptor();
-            if (wbd == null) {
-                throw new IllegalStateException(
-                    "Missing WebBundleDescriptor for " +
-                    getContext().getName());
-            }
-            WebComponentDescriptor wcd =
-                wbd.getWebComponentByCanonicalName(getName());
-            if (wcd == null) {
-                throw new IllegalStateException(
-                    "Missing WebComponentDescriptor for " + getName());
-            }
             for (String urlPattern : urlPatterns) {
                 wcd.addUrlPattern(urlPattern);
             }
@@ -2168,18 +2137,6 @@ class DynamicWebServletRegistrationImpl
          * by the security subsystem, which uses the
          * WebBundleDescriptor as its input
          */
-        WebBundleDescriptor wbd =
-            ((WebModule) getContext()).getWebBundleDescriptor();
-        if (wbd == null) {
-            throw new IllegalStateException(
-                "Missing WebBundleDescriptor for " + getContext().getName());
-        }
-        WebComponentDescriptor wcd =
-            wbd.getWebComponentByCanonicalName(getName());
-        if (wcd == null) {
-            throw new IllegalStateException(
-                "Missing WebComponentDescriptor for " + getName());
-        }
         wbd.addRole(new Role(roleName));
         RunAsIdentityDescriptor runAsDesc = new RunAsIdentityDescriptor();
         runAsDesc.setRoleName(roleName);
@@ -2189,7 +2146,63 @@ class DynamicWebServletRegistrationImpl
     @Override
     public void setServletSecurity(ServletSecurityElement constraint) {
         super.setServletSecurity(constraint);
-        // TBD
+        // TBD SHING WAI
     }
 
+    /**
+     * Completes preliminary servlet registration by loading the class with
+     * the given name and scanning it for servlet annotations
+     */
+    @Override
+    protected void setServletClassName(String className) {
+        super.setServletClassName(className);
+        try {
+            processServletAnnotations(
+                (Class <? extends Servlet>)
+                    ctx.getLoader().getClassLoader().loadClass(className),
+                wbd, wcd, wrapper);
+        } catch(Exception ex) {
+            throw new IllegalArgumentException(ex);
+        }
+    }
+
+    /**
+     * Completes preliminary servlet registration by scanning the supplied
+     * servlet class for servlet annotations
+     */
+    @Override
+    protected void setServletClass(Class <? extends Servlet> clazz) {
+        super.setServletClass(clazz);
+        processServletAnnotations(clazz, wbd, wcd, wrapper);
+    }
+
+    private void processServletAnnotations(
+            Class <? extends Servlet> clazz,
+            WebBundleDescriptor webBundleDescriptor,
+            WebComponentDescriptor wcd, StandardWrapper wrapper) {
+        // Process RunAs annotation
+        if (clazz.isAnnotationPresent(RunAs.class)) {
+            RunAs runAs = (RunAs)clazz.getAnnotation(RunAs.class);
+            String roleName = runAs.value();
+            webBundleDescriptor.addRole(new Role(roleName));
+            RunAsIdentityDescriptor runAsDesc =
+                new RunAsIdentityDescriptor();
+            runAsDesc.setRoleName(roleName);
+            wcd.setRunAsIdentity(runAsDesc);
+        }
+        // Process MultipartConfig annotation
+        if (clazz.isAnnotationPresent(MultipartConfig.class)) {
+            MultipartConfig mpConfig = (MultipartConfig)
+                clazz.getAnnotation(MultipartConfig.class);
+            wrapper.setMultipartLocation(mpConfig.location());
+            wrapper.setMultipartMaxFileSize(mpConfig.maxFileSize());
+            wrapper.setMultipartMaxRequestSize(mpConfig.maxRequestSize());
+            wrapper.setMultipartFileSizeThreshold(
+                mpConfig.fileSizeThreshold());
+        }
+        // Process ServletSecurity annotation
+        if (clazz.isAnnotationPresent(ServletSecurity.class)) {
+            // TBD SHING WAI
+        }
+    }
 }
