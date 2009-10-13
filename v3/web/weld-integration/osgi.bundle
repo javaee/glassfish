@@ -1,2 +1,2 @@
--exportcontents: org.glassfish.webbeans.*; com.sun.enterprise.deployment.*; version=${project.osgi.version}
-Bundle-Activator: org.glassfish.webbeans.WebBeansActivator
+-exportcontents: org.glassfish.weld.*; com.sun.enterprise.deployment.*; version=${project.osgi.version}
+Bundle-Activator: org.glassfish.weld.WeldActivator
