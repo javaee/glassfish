@@ -41,11 +41,10 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
-import org.glassfish.j2ee.statistics.Statistic;
-import org.glassfish.j2ee.statistics.CountStatistic; 
-import org.glassfish.j2ee.statistics.TimeStatistic;
-import org.glassfish.j2ee.statistics.Stats;
-import com.sun.enterprise.admin.monitor.stats.HTTPListenerStats;
+import org.glassfish.external.statistics.Statistic;
+import org.glassfish.external.statistics.CountStatistic; 
+import org.glassfish.external.statistics.TimeStatistic;
+import org.glassfish.external.statistics.Stats;
 import org.glassfish.admin.monitor.cli.MonitorContract;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
@@ -64,7 +63,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
  */
 @Service
 @Scoped(PerLookup.class)
-public class HTTPListenerStatsImpl implements HTTPListenerStats, MonitorContract {
+public class HTTPListenerStatsImpl implements MonitorContract {
 
     @Inject
     private MonitoringRuntimeDataRegistry mrdr;
@@ -108,29 +107,28 @@ public class HTTPListenerStatsImpl implements HTTPListenerStats, MonitorContract
         double processingTime = 0;
         long requestCount = 0;
 
+        CountStatistic cs = null;
+        long val = 0L;
+
         List<TreeNode> tnL = serverNode.getNodes("server.web.request.*");
         for (TreeNode tn : tnL) {
             if (tn.hasChildNodes()) {
                 continue;
             }
 
-            if (logger.isLoggable(Level.FINEST)) {
-                logger.finest("HTTPListenerStatsImpl: tn name = " + tn.getName());
-                logger.finest("HTTPListenerStatsImpl: tn value = " + tn.getValue());
-                logger.finest("HTTPListenerStatsImpl: tn class name = " + ((tn.getValue()).getClass()).getName());
+            if (tn.getValue() != null) {
+                cs = (CountStatistic)tn.getValue();
+                val = cs.getCount();
             }
-            if ("errorCount".equals(tn.getName())) {
-                if (tn.getValue() != null)
-                errorCount = (Long) tn.getValue(); 
-            } else if ("maxTime".equals(tn.getName())) {
-                if (tn.getValue() != null)
-                maxTime = (Long) tn.getValue(); 
-            } else if ("processingTime".equals(tn.getName())) {
-                if (tn.getValue() != null)
-                processingTime = (((Double) tn.getValue()).isNaN() ? 0.0 : (Double) tn.getValue()); 
-            } else if ("requestCount".equals(tn.getName())) {
-                if (tn.getValue() != null)
-                requestCount = (Long) tn.getValue(); 
+
+            if ("errorcount".equals(tn.getName())) {
+                errorCount = val;
+            } else if ("maxtime".equals(tn.getName())) {
+                maxTime = val;
+            } else if ("processingtime".equals(tn.getName())) {
+                processingTime = val;
+            } else if ("requestcount".equals(tn.getName())) {
+                requestCount = val;
             }
         }
 
