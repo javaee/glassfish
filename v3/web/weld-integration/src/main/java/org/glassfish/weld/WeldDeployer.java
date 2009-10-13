@@ -44,11 +44,12 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Collection;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
@@ -61,8 +62,10 @@ import org.glassfish.ejb.api.EjbContainerServices;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.weld.services.EjbServicesImpl;
 import org.glassfish.weld.services.InjectionServicesImpl;
+import org.glassfish.weld.services.SecurityServicesImpl;
 import org.glassfish.weld.services.ServletServicesImpl;
 import org.glassfish.weld.services.TransactionServicesImpl;
+import org.glassfish.weld.services.ValidationServicesImpl;
 
 import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.api.Environments;
@@ -70,8 +73,10 @@ import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.context.api.helpers.ConcurrentHashMapBeanStore;
 import org.jboss.weld.ejb.spi.EjbServices;
 import org.jboss.weld.injection.spi.InjectionServices;
+import org.jboss.weld.security.spi.SecurityServices;
 import org.jboss.weld.servlet.api.ServletServices;
 import org.jboss.weld.transaction.spi.TransactionServices;
+import org.jboss.weld.validation.spi.ValidationServices;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -198,7 +203,6 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                 WeldBootstrap.class);
         if (null == bootstrap) {
             bootstrap = new WeldBootstrap();
-
             Application app = context.getModuleMetaData(Application.class);
             appToBootstrap.put(app, bootstrap);
         }
@@ -209,20 +213,15 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
         EjbServices ejbServices = null;
 
         if( ejbBundle != null ) {
-
             ejbs = ejbBundle.getEjbs();
-
             ejbServices = new EjbServicesImpl(habitat);
-
         }
 
         DeploymentImpl deploymentImpl = new DeploymentImpl(archive, ejbs);
 
         if( ejbBundle != null ) {
-
             // EJB Services is registered as a top-level service
             deploymentImpl.getServices().add(EjbServices.class, ejbServices);
-
         }
 
         // Add services
@@ -233,6 +232,11 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
         TransactionServices transactionServices = new TransactionServicesImpl(habitat);
         deploymentImpl.getServices().add(TransactionServices.class, transactionServices);
 
+        ValidationServices validationServices = new ValidationServicesImpl();
+        deploymentImpl.getServices().add(ValidationServices.class, validationServices);
+
+        SecurityServices securityServices = new SecurityServicesImpl();
+        deploymentImpl.getServices().add(SecurityServices.class, securityServices);
 
         // Register EE injection manager at the bean deployment archive level.
         // We use the generic InjectionService service to handle all EE-style
@@ -240,16 +244,15 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
         // TODO change this to register for each bean deployment archive
         InjectionManager injectionMgr = habitat.getByContract(InjectionManager.class);
         InjectionServices injectionServices = new InjectionServicesImpl(injectionMgr);
-        deploymentImpl.getBeanDeploymentArchives().iterator().next().getServices().
-                add(InjectionServices.class, injectionServices);
-
+        Iterator bdaIter = deploymentImpl.getBeanDeploymentArchives().iterator();
+        while (bdaIter.hasNext()) {
+            BeanDeploymentArchive bda = (BeanDeploymentArchive)bdaIter.next();
+            bda.getServices().add(InjectionServices.class, injectionServices);
+        }
 
         WebBundleDescriptor wDesc = context.getModuleMetaData(WebBundleDescriptor.class);
         if( wDesc != null) {
-
-
             wDesc.setExtensionProperty(WELD_EXTENSION, "true");
-
             // Add the Web Beans Listener if it does not already exist..
             wDesc.addAppListenerDescriptor(new AppListenerDescriptorImpl(WELD_LISTENER));
         }
@@ -260,7 +263,6 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             bundleToBeanDeploymentArchive.put(bundle, deploymentImpl.getBeanDeploymentArchives().iterator().next());
         }
         
-
         WeldApplicationContainer wbApp = new WeldApplicationContainer(bootstrap);
 
         // Stash the WeldBootstrap instance, so we may access the WeldManager later..
@@ -273,7 +275,6 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
 
     private EjbBundleDescriptor getEjbBundleFromContext(DeploymentContext context) {
 
-
         EjbBundleDescriptor ejbBundle = context.getModuleMetaData(EjbBundleDescriptor.class);
 
         if( ejbBundle == null ) {
@@ -285,13 +286,9 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                     ejbBundle = ejbBundles.iterator().next();
                 }
             }
-
         }
-
         return ejbBundle;
-
     }
-
 }
 
 
