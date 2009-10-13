@@ -290,12 +290,10 @@ public class MEJBTest {
         try {
             final String mejbName = "java:global/mejb/MEJBBean";
             final String username = "admin";
-            final String password = "changeit";
+            final String password = "admin";
             final String realm = "admin-realm";
             System.out.println( "Authenticating with \"" + username + "\", \"" + password + "\"");
             
-            
-            // "Programmatic login failed: java.lang.SecurityException: Unable to locate a login configuration"
             final ProgrammaticLogin pm = new ProgrammaticLogin();
             pm.login( username, password, realm, true);
 
