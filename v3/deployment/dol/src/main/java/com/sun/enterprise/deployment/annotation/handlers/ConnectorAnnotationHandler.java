@@ -178,7 +178,8 @@ public class ConnectorAnnotationHandler extends AbstractHandler  {
                 // if it was not specified in DD, add it to connector-descriptor
                 if (!ignore) {
                     String credentialInterfaceName = ora.getCredentialInterfaceName(auth.credentialInterface());
-                    AuthMechanism authM = new AuthMechanism(auth.description(), authMechInt,
+                    //XXX: Siva: For now use the first provided description
+                    AuthMechanism authM = new AuthMechanism(auth.description()[0], authMechInt,
                             credentialInterfaceName);
                     ora.addAuthMechanism(authM);
                 }
@@ -213,7 +214,10 @@ public class ConnectorAnnotationHandler extends AbstractHandler  {
                     com.sun.enterprise.deployment.SecurityPermission sp =
                             new com.sun.enterprise.deployment.SecurityPermission();
                     sp.setPermission(perm.permissionSpec());
-                    sp.setDescription(perm.description());
+                    //XXX: Siva for now use the first provided Description
+                    String firstDesc = "";
+                    if(perm.description().length > 0) firstDesc = perm.description()[0];
+                    sp.setDescription(firstDesc);
                     desc.addSecurityPermission(sp);
                 }
             }

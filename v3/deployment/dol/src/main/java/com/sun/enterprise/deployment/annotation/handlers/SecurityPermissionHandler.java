@@ -72,8 +72,13 @@ public class SecurityPermissionHandler extends AbstractHandler {
             if (isConnectionDefinition) {
                 RarBundleContext rarContext = (RarBundleContext) aeHandler;
                 ConnectorDescriptor desc = rarContext.getDescriptor();
+                //XXX: Siva : For now use the first provided description
+                String firstDesc = "";
+                if (securityPermission.description().length > 0) {
+                    firstDesc = securityPermission.description()[0];
+                }
                 com.sun.enterprise.deployment.SecurityPermission permission =
-                        new com.sun.enterprise.deployment.SecurityPermission(securityPermission.description(),
+                        new com.sun.enterprise.deployment.SecurityPermission(firstDesc,
                                 securityPermission.permissionSpec());
                 desc.addSecurityPermission(permission);
             } else {

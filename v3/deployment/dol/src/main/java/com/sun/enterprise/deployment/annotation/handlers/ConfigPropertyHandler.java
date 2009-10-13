@@ -76,7 +76,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
             ConnectorDescriptor desc = rbc.getDescriptor();
 
             String defaultValue = configProperty.defaultValue();
-            String description = configProperty.description();
+            String[] description = configProperty.description();
             boolean ignore = configProperty.ignore();
             boolean supportsDynamicUpdates = configProperty.supportsDynamicUpdates();
             boolean confidential = configProperty.confidential();
@@ -112,7 +112,12 @@ public class ConfigPropertyHandler extends AbstractHandler {
                     }
                 }
 
-                ConnectorConfigProperty ep = getConfigProperty(defaultValue, description, ignore,
+                //XXX: Siva: For now use the first provided description
+                String firstDesc = "";
+                if (description.length > 0){
+                    firstDesc = description[0];
+                }
+                ConnectorConfigProperty ep = getConfigProperty(defaultValue, firstDesc, ignore,
                         supportsDynamicUpdates, confidential, type, m.getName().substring(3));
 
 
@@ -137,7 +142,10 @@ public class ConfigPropertyHandler extends AbstractHandler {
                 if(defaultValue == null || defaultValue.equals("")){
                     defaultValue = deriveDefaultValueOfField(f);
                 }
-                ConnectorConfigProperty ep = getConfigProperty(defaultValue,description, ignore,
+                //XXX: Siva: For now use the first provided description
+                String firstDesc = "";
+                if (description.length > 0) firstDesc = description[0];
+                ConnectorConfigProperty ep = getConfigProperty(defaultValue,firstDesc, ignore,
                         supportsDynamicUpdates, confidential,  type, f.getName());
 
                 handleConfigPropertyAnnotation(element, desc, ep, c);

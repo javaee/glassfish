@@ -63,7 +63,7 @@
 
       DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
       
-      Copyright 2003-2007 Sun Microsystems, Inc. All rights reserved.
+      Copyright 2003-2009 Sun Microsystems, Inc. All rights reserved.
       
       The contents of this file are subject to the terms of either the
       GNU General Public License Version 2 only ("GPL") or the Common
@@ -104,7 +104,7 @@
 
   <xsd:annotation>
     <xsd:documentation>
-<![CDATA[[
+      <![CDATA[[
       This is the XML Schema for the Connector 1.6 deployment
       descriptor.  The deployment descriptor must be named
       "META-INF/ra.xml" in the connector's rar file.  All Connector
@@ -130,7 +130,7 @@
       
       http://java.sun.com/xml/ns/javaee/connector_1_6.xsd
       
-]]>
+      ]]>
     </xsd:documentation>
   </xsd:annotation>
 
@@ -193,7 +193,7 @@
                    type="javaee:fully-qualified-classType">
         <xsd:annotation>
           <xsd:documentation>
-<![CDATA[[
+            <![CDATA[[
             The element activationspec-class specifies the fully
             qualified Java class name of the activation
             specification class. This class must implement the
@@ -205,7 +205,7 @@
             	  <activationspec-class>com.wombat.ActivationSpecImpl
             	  </activationspec-class>
             
-]]>
+            ]]>
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -257,7 +257,7 @@
                    type="javaee:fully-qualified-classType">
         <xsd:annotation>
           <xsd:documentation>
-<![CDATA[[
+            <![CDATA[[
             The element adminobject-interface specifies the
             fully qualified name of the Java type of the
             interface implemented by an administered object.
@@ -266,7 +266,7 @@
             	<adminobject-interface>javax.jms.Destination
             	</adminobject-interface>
             
-]]>
+            ]]>
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -274,7 +274,7 @@
                    type="javaee:fully-qualified-classType">
         <xsd:annotation>
           <xsd:documentation>
-<![CDATA[[
+            <![CDATA[[
             The element adminobject-class specifies the fully
             qualified Java class name of an administered object.
             
@@ -282,7 +282,7 @@
             	  <adminobject-class>com.wombat.DestinationImpl
             	  </adminobject-class>
             
-]]>
+            ]]>
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -326,7 +326,7 @@
                    type="javaee:xsdStringType">
         <xsd:annotation>
           <xsd:documentation>
-<![CDATA[[
+            <![CDATA[[
             The element authentication-mechanism-type specifies
             type of an authentication mechanism.
             
@@ -341,7 +341,7 @@
             Any additional security mechanisms are outside the
             scope of the Connector architecture specification.
             
-]]>
+            ]]>
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -358,7 +358,7 @@
   <xsd:complexType name="config-property-nameType">
     <xsd:annotation>
       <xsd:documentation>
-<![CDATA[[
+        <![CDATA[[
         The config-property-nameType contains the name of a
         configuration property.
         
@@ -385,7 +385,7 @@
         
         Example: <config-property-name>ServerName</config-property-name>
         
-]]>
+        ]]>
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
@@ -399,7 +399,7 @@
   <xsd:complexType name="config-property-typeType">
     <xsd:annotation>
       <xsd:documentation>
-<![CDATA[[
+        <![CDATA[[
         The config-property-typeType contains the fully
         qualified Java type of a configuration property.
         
@@ -413,7 +413,7 @@
         Example:
         <config-property-type>java.lang.String</config-property-type>
         
-]]>
+        ]]>
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
@@ -467,7 +467,7 @@
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
-<![CDATA[[
+            <![CDATA[[
             The element config-property-value contains the value
             of a configuration entry. Note, it is possible for a
             resource adapter deployer to override this
@@ -476,7 +476,7 @@
             Example:
             <config-property-value>WombatServer</config-property-value>
             
-]]>
+            ]]>
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -559,7 +559,7 @@
                    type="javaee:fully-qualified-classType">
         <xsd:annotation>
           <xsd:documentation>
-<![CDATA[[
+            <![CDATA[[
             The element managedconnectionfactory-class specifies
             the fully qualified name of the Java class that
             implements the
@@ -574,7 +574,7 @@
             	  com.wombat.ManagedConnectionFactoryImpl
             </managedconnectionfactory-class>
             
-]]>
+            ]]>
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -586,7 +586,7 @@
                    type="javaee:fully-qualified-classType">
         <xsd:annotation>
           <xsd:documentation>
-<![CDATA[[
+            <![CDATA[[
             The element connectionfactory-interface specifies
             the fully qualified name of the ConnectionFactory
             interface supported by the resource adapter.
@@ -600,7 +600,7 @@
             <connectionfactory-interface>javax.resource.cci.ConnectionFactory
             </connectionfactory-interface>
             
-]]>
+            ]]>
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -608,7 +608,7 @@
                    type="javaee:fully-qualified-classType">
         <xsd:annotation>
           <xsd:documentation>
-<![CDATA[[
+            <![CDATA[[
             The element connectionfactory-impl-class specifies
             the fully qualified name of the ConnectionFactory
             class that implements resource adapter
@@ -619,7 +619,7 @@
             <connectionfactory-impl-class>com.wombat.ConnectionFactoryImpl
             </connectionfactory-impl-class>
             
-]]>
+            ]]>
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -627,7 +627,7 @@
                    type="javaee:fully-qualified-classType">
         <xsd:annotation>
           <xsd:documentation>
-<![CDATA[[
+            <![CDATA[[
             The connection-interface element specifies the fully
             qualified name of the Connection interface supported
             by the resource adapter.
@@ -637,7 +637,7 @@
             	  <connection-interface>javax.resource.cci.Connection
             	  </connection-interface>
             
-]]>
+            ]]>
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -645,7 +645,7 @@
                    type="javaee:fully-qualified-classType">
         <xsd:annotation>
           <xsd:documentation>
-<![CDATA[[
+            <![CDATA[[
             The connection-impl-classType specifies the fully
             qualified name of the Connection class that
             implements resource adapter specific Connection
@@ -657,7 +657,7 @@
             	  <connection-impl-class>com.wombat.ConnectionImpl
             	  </connection-impl-class>
             
-]]>
+            ]]>
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -680,18 +680,24 @@
     <xsd:sequence>
       <xsd:group ref="javaee:descriptionGroup"/>
       <xsd:element name="vendor-name"
-                   type="javaee:xsdStringType">
+                   type="javaee:xsdStringType"
+                   minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
 
             The element vendor-name specifies the name of
             resource adapter provider vendor.
             
+            If there is no vendor-name specified, the application 
+            server must consider the default "" (empty string) as
+            the name of the resource adapter provider vendor.
+            
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="eis-type"
-                   type="javaee:xsdStringType">
+                   type="javaee:xsdStringType"
+                   minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
 
@@ -703,17 +709,27 @@
             This helps in identifying EIS instances that can be
             used with this resource adapter.
             
+            If there is no eis-type specified, the application 
+            server must consider the default "" (empty string) as
+            the type of the EIS.
+            
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="resourceadapter-version"
-                   type="javaee:xsdStringType">
+                   type="javaee:xsdStringType"
+                   minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
 
             The element resourceadapter-version specifies a string-based version
             of the resource adapter from the resource adapter
             provider.
+            
+            If there is no resourceadapter-version specified, the application 
+            server must consider the default "" (empty string) as
+            the version of the resource adapter.
+            	
             
           </xsd:documentation>
         </xsd:annotation>
@@ -722,22 +738,7 @@
                    type="javaee:licenseType"
                    minOccurs="0"/>
       <xsd:element name="resourceadapter"
-                   type="javaee:resourceadapterType">
-        <xsd:unique name="adminobject-type-uniqueness">
-          <xsd:annotation>
-            <xsd:documentation>
-
-              	        The adminobject-interface and adminobject-class element content must be
-              	        unique in the resourceadapterType. Several admin objects
-              	        can not use the same adminobject-interface and adminobject-class.
-              	        
-            </xsd:documentation>
-          </xsd:annotation>
-          <xsd:selector xpath="javaee:adminobject"/>
-          <xsd:field xpath="javaee:adminobject-interface"/>
-          <xsd:field xpath="javaee:adminobject-class"/>
-        </xsd:unique>
-      </xsd:element>
+                   type="javaee:resourceadapterType"/>
       <xsd:element name="required-work-context"
                    type="javaee:fully-qualified-classType"
                    minOccurs="0"
@@ -953,7 +954,7 @@
                    type="javaee:fully-qualified-classType">
         <xsd:annotation>
           <xsd:documentation>
-<![CDATA[[
+            <![CDATA[[
             The element messagelistener-type specifies the fully
             qualified name of the Java type of a message
             listener interface.
@@ -963,7 +964,7 @@
             	<messagelistener-type>javax.jms.MessageListener
             	</messagelistener-type>
             
-]]>
+            ]]>
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -989,37 +990,56 @@
         provided, one or more authentication mechanisms supported
         and additional required security permissions.
         
+        If there is no connection-definition specified as part of
+        resource adapter element, then the application server must
+        search for connection definitions specified through annotations
+        in the resource adapter archive. If no connection-definition
+        is specified as part of the resource adapter element and the
+        application server cannot discover Connection definitions 
+        through annotations, the application server must consider 
+        this as an error and fail deployment. 
+        
         If there is no authentication-mechanism specified as part of
         resource adapter element then the resource adapter does not
         support any standard security authentication mechanisms as
         part of security contract. The application server ignores
         the security part of the system contracts in this case.
         
+        If there is no transaction-support specified as part of
+        resource adapter element, then the application server must
+        consider that the resource adapter does not support either 
+        the resource manager local or JTA transactions and must consider
+        the transaction support as NoTransaction. 
+        
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="connection-definition"
                    type="javaee:connection-definitionType"
-                   maxOccurs="unbounded"/>
+                   maxOccurs="unbounded"
+                   minOccurs="0"/>
       <xsd:element name="transaction-support"
-                   type="javaee:transaction-supportType"/>
+                   type="javaee:transaction-supportType"
+                   minOccurs="0"/>
       <xsd:element name="authentication-mechanism"
                    type="javaee:authentication-mechanismType"
                    minOccurs="0"
                    maxOccurs="unbounded"/>
       <xsd:element name="reauthentication-support"
-                   type="javaee:true-falseType">
+                   type="javaee:true-falseType"
+                   minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
 
-            The element reauthentication-support specifies
-            whether the resource adapter implementation supports
-            re-authentication of existing Managed- Connection
-            instance. Note that this information is for the
-            resource adapter implementation and not for the
-            underlying EIS instance. This element must have
-            either a "true" or "false" value.
+            	    The element reauthentication-support specifies
+            	    whether the resource adapter implementation supports
+            	    re-authentication of existing Managed- Connection
+            	    instance. Note that this information is for the
+            	    resource adapter implementation and not for the
+            	    underlying EIS instance. This element must have
+            	    either a "true" or "false" value.
             
+            	  
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -1034,7 +1054,7 @@
   <xsd:complexType name="required-config-propertyType">
     <xsd:annotation>
       <xsd:documentation>
-<![CDATA[[
+        <![CDATA[[
         The required-config-propertyType contains a declaration
         of a single configuration property used for specifying a
         required configuration property name. It is used
@@ -1049,7 +1069,7 @@
         <config-property-name>Destination</config-property-name>
         </required-config-property>
         
-]]>
+        ]]>
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
@@ -1128,6 +1148,20 @@
                    type="javaee:adminobjectType"
                    minOccurs="0"
                    maxOccurs="unbounded">
+        <xsd:unique name="adminobject-type-uniqueness">
+          <xsd:annotation>
+            <xsd:documentation>
+
+              The adminobject-interface and adminobject-class element content must be
+              unique in the resourceadapterType. Several admin objects
+              can not use the same adminobject-interface and adminobject-class.
+              
+            </xsd:documentation>
+          </xsd:annotation>
+          <xsd:selector xpath="javaee:adminobject"/>
+          <xsd:field xpath="javaee:adminobject-interface"/>
+          <xsd:field xpath="javaee:adminobject-class"/>
+        </xsd:unique>
       </xsd:element>
       <xsd:element name="security-permission"
                    type="javaee:security-permissionType"
@@ -1173,7 +1207,7 @@
             implementation of the security permission
             specification:
             
-            http://java.sun.com/products/jdk/1.4/docs/guide/security/PolicyFiles.html#FileSyntax
+            http://java.sun.com/javase/6/docs/technotes/guides/security/PolicyFiles.html
             
           </xsd:documentation>
         </xsd:annotation>

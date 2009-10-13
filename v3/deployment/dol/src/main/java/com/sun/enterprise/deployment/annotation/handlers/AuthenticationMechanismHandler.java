@@ -85,11 +85,16 @@ public class AuthenticationMechanismHandler extends AbstractHandler  {
                     desc.setOutboundResourceAdapter(ora);
                 }
                 OutboundResourceAdapter ora = desc.getOutboundResourceAdapter();
-                String description = authMechanism.description();
+                String[] description = authMechanism.description();
                 int authMechanismValue = getAuthMechVal(authMechanism.authMechanism());
                 AuthenticationMechanism.CredentialInterface ci = authMechanism.credentialInterface();
                 String credentialInterface = ora.getCredentialInterfaceName(ci);
-                AuthMechanism auth = new AuthMechanism(description, authMechanismValue, credentialInterface);
+                //XXX: Siva: For now use the first description
+                String firstDesc = "";
+                if(description.length > 0) {
+                    firstDesc = description[0];
+                }
+                AuthMechanism auth = new AuthMechanism(firstDesc, authMechanismValue, credentialInterface);
                 ora.addAuthMechanism(auth);
             } else {
                 getFailureResult(element, "Not a @Connector annotation : @AuthenticationMechanism must " +
