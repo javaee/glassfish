@@ -81,10 +81,10 @@ public class CreateNetworkListener implements AdminCommand {
     String listenerName;
     @Param(name = "transport", optional = true, defaultValue = "tcp")
     String transport;
-    @Param(name = "enabled", optional = true)
-    String enabled;
-    @Param(name="jkenabled", optional=true)
-    String jkEnabled;
+    @Param(name = "enabled", optional = true, defaultValue = "true")
+    Boolean enabled;
+    @Param(name="jkenabled", optional=true, defaultValue = "false")
+    Boolean jkEnabled;
 
     @Inject
     Configs configs;
@@ -120,8 +120,8 @@ public class CreateNetworkListener implements AdminCommand {
                     NetworkListener newNetworkListener = param.createChild(NetworkListener.class);
                     newNetworkListener.setProtocol(protocol);
                     newNetworkListener.setTransport(transport);
-                    newNetworkListener.setEnabled(enabled);
-                    newNetworkListener.setJkEnabled(jkEnabled);
+                    newNetworkListener.setEnabled(enabled.toString());
+                    newNetworkListener.setJkEnabled(jkEnabled.toString());
                     newNetworkListener.setPort(port);
                     newNetworkListener.setThreadPool(threadPool);
                     newNetworkListener.setName(listenerName);
@@ -132,8 +132,10 @@ public class CreateNetworkListener implements AdminCommand {
                 }
             }, nls);
         } catch (TransactionFailure e) {
+            e.printStackTrace();
             report.setMessage(
-                localStrings.getLocalString("create.network.listener.fail", "{0} create failed ", listenerName));
+                localStrings.getLocalString("create.network.listener.fail", "{0} create failed: "
+                    + (e.getMessage() == null ? "No reason given" : e.getMessage()), listenerName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;
