@@ -25,7 +25,10 @@ import org.glassfish.external.amx.AMXGlassfish;
 
 import javax.management.j2ee.Management;
 
-//import com.sun.appserv.security.ProgrammaticLogin;
+import com.sun.appserv.security.ProgrammaticLogin;
+
+
+import org.junit.Ignore;
 
 /**
     Standalone MEJB test -- requires running server and disabling security on MEJB.
@@ -35,6 +38,7 @@ export MAIN=org.glassfish.admin.mejb.test.MEJBTest
 java -cp $V3M/gf-client.jar:$V3M/javax.management.j2ee.jar:target/MEJB.jar $MAIN
 
  */
+@Ignore
 public class MEJBTest {    
     private final Management mMEJB;
     
@@ -231,8 +235,8 @@ public class MEJBTest {
             ex.printStackTrace();
         }
     }
-*/
-
+    
+    
 
     public static void main(String[] args) {
         try {
@@ -279,48 +283,53 @@ public class MEJBTest {
         System.exit( -1 );
     }
 
+*/
 
 
-    /*
-     lic static void main(String[] args) {
+    public static void main(String[] args) {
         try {
-            final Properties env = new Properties();
-            env.put("java.naming.factory.initial", "com.sun.jndi.cosnaming.CNCtxFactory");
-            env.put("java.naming.provider.url", "iiop://localhost:3700");
-            //env.put( Context.SECURITY_PRINCIPAL, "admin");
-            //env.put( Context.SECURITY_CREDENTIALS, "adminadmin");
-            //env.put( Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.cosnaming.CNCtxFactory");
-            //env.put( Context.PROVIDER_URL, "iiop://localhost:3700");
+            final String mejbName = "java:global/mejb/MEJBBean";
+            final String username = "admin";
+            final String password = "changeit";
+            final String realm = "admin-realm";
+            System.out.println( "Authenticating with \"" + username + "\", \"" + password + "\"");
+            
+            
+            // "Programmatic login failed: java.lang.SecurityException: Unable to locate a login configuration"
+            final ProgrammaticLogin pm = new ProgrammaticLogin();
+            pm.login( username, password, realm, true);
 
-            final Context initial = new InitialContext(env);
-
-            final String mejbHomeName = "java:global/MEJB/MEJBBean!org.glassfish.admin.mejb.MEJBHome";
-            final ManagementHome homerefref = (ManagementHome)initial.lookup(mejbHomeName);
-            Management bean = homerefref.create();
-
-
-
-            final String mejbName = MEJBUtility.MEJB_DEFAULT_NAME;
-            //final String mejbName = "java:global/MEJB/MEJBBean";
+            println("Looking up: " + mejbName);
+            final InitialContext initial = new InitialContext();
             final Object objref = initial.lookup(mejbName);
-            println("Received from initial.lookup(): " + objref + " for " + mejbName);
 
-            final ManagementHome home = (ManagementHome)PortableRemoteObject.narrow(objref, ManagementHome.class);
-            println("ManagementHome: " + home + " for " + mejbName);
-
-            final Management mejb = home.create();
+            final ManagementHome home = (ManagementHome) PortableRemoteObject.narrow(objref, ManagementHome.class);
+            try
+            {
+                final ManagementHome home2 = (ManagementHome)objref;
+            }
+            catch( final Exception e )
+            {
+                println("WARNING: (ManagementHome)PortableRemoteObject.narrow(objref, ManagementHome.class) works, but (ManagementHome)objref does not!" );
+            }
+            
+            //println("ManagementHome: " + home + " for " + mejbName);
+            final Management mejb = (Management)home.create();
             println("Got the MEJB");
 
-            test(mejb);
+            new MEJBTest( mejb ).test();
 
+            println( "Calling mejb.remove()" );
             mejb.remove();
 
         } catch (Exception ex) {
             System.err.println("Caught an unexpected exception!");
             ex.printStackTrace();
         }
+        println( "Exiting main() forcibly" );
+        System.exit( -1 );
     }
-    */
+
     private static final void println(final Object o) {
         System.out.println("" + o);
     }

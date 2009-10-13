@@ -87,6 +87,7 @@
             <groupId>org.glassfish.security</groupId>
             <artifactId>security</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         
     </dependencies>
