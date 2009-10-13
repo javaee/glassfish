@@ -49,12 +49,10 @@ import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.config.dom.ThreadPool;
 import com.sun.grizzly.config.dom.Transport;
-import com.sun.grizzly.config.dom.Http;
-import com.sun.grizzly.config.dom.Protocol;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
@@ -67,7 +65,6 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.Transactions;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 
 /**
  * Create Http Listener Command
@@ -138,7 +135,6 @@ public class CreateHttpListener implements AdminCommand {
             final ThreadPool threadPool = getThreadPool(networkConfig);
             listener = createNetworkListener(networkConfig, transport, threadPool);
             updateVirtualServer(vs);
-            System.out.println("************************* report.getActionExitCode() = " + report.getActionExitCode());
         } catch (TransactionFailure e) {
             if (listener) {
                 deleteListener(context);
@@ -293,7 +289,7 @@ public class CreateHttpListener implements AdminCommand {
         final CreateProtocol command = (CreateProtocol) runner
             .getCommand("create-protocol", context.getActionReport(), context.getLogger());
         command.protocolName = listenerId;
-        command.securityEnabled = securityEnabled.toString();
+        command.securityEnabled = securityEnabled;
         command.execute(context);
         checkProgress(context);
         return true;
