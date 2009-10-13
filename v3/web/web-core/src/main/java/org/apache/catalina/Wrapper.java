@@ -165,6 +165,12 @@ public interface Wrapper extends Container {
 
 
     /**
+     * Gets the name of the wrapped servler.
+     */
+    public String getServletName();
+
+
+    /**
      * Set the fully qualified servlet class name for this servlet.
      *
      * @param className Servlet class name
@@ -449,5 +455,4 @@ public interface Wrapper extends Container {
      * false otherwise
      */
     public boolean isAsyncSupported();
-
 }
