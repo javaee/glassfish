@@ -91,13 +91,13 @@
 </sun:propertySheet>
 <!-- Table .... -->
 <sun:table id="basicTable"  style="padding: 10pt" title="$resource{web.monitoring.MonitorLevelTableTitle}"
-            deselectMultipleButton="$boolean{true}"
-            deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
+             deselectMultipleButton="$boolean{true}"
+            deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
             selectMultipleButton="$boolean{true}"
-            selectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)" >
-         <!afterCreate
-            getClientId(component="$this{component}" clientId=>$page{tableId});
-        />
+            selectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{tableId});
+            />
 <!-- Actions (Top) -->
     <!facet actionsTop>
     <sun:panelGroup id="topActionsGroup1">
@@ -129,7 +129,7 @@
             <sun:checkbox id="select"
                 selected="#{td.value.selected}"
                 selectedValue="$boolean{true}"
-                onClick="setTimeout('initAllRows(); changeOneTableButton()', 0)"
+                onClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
             />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{web.monitoring.MonitorCompNameCol}" sort="monitorCompName" rowHeader="$boolean{false}" id="col2">
