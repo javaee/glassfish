@@ -42,6 +42,7 @@ import com.sun.logging.LogDomains;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.api.ServerContext;
 
 /**
  *
@@ -92,9 +93,21 @@ public class WsTxUtils {
      */
     private static String getPort(boolean secure) {
         try {
+            String serverName = System.getProperty(SystemPropertyConstants.SERVER_NAME);
+            if (serverName == null) {
+                final ServerContext serverContext = Globals.get(org.glassfish.internal.api.ServerContext.class);
+                if (serverContext != null) {
+                    serverName = serverContext.getInstanceName();
+                }
+
+                if (serverName == null) {
+                    serverName = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+                }
+            }
+
             Config config = Globals.getDefaultHabitat().getInhabitantByType(Config.class).get();
-            String[] networkListenerNames = config.getHttpService().getVirtualServerByName(System.getProperty(SystemPropertyConstants.SERVER_NAME)).getNetworkListeners().split(",");
-            
+            String[] networkListenerNames = config.getHttpService().getVirtualServerByName(serverName).getNetworkListeners().split(",");
+
             for (String listenerName : networkListenerNames) {
                 if (listenerName == null || listenerName.length() == 0) {
                     continue;
@@ -104,7 +117,7 @@ public class WsTxUtils {
 
                 if (secure == Boolean.valueOf(listener.findHttpProtocol().getSecurityEnabled())) {
                     return listener.getPort();
-                }                
+                }
             }
         } catch (Throwable t) {
             // error condition handled in wsit code
