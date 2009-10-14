@@ -315,13 +315,12 @@ public class AppServerStartup implements ModuleStartup {
 
         env.setStatus(ServerEnvironment.Status.started);
         events.send(new Event(EventTypes.SERVER_READY), false);
+        pidWriter.writePidFile();
 
         // now run the post Startup service
         for (Inhabitant<? extends PostStartup> postStartup : habitat.getInhabitants(PostStartup.class)) {
             postStartup.get();
         }
-
-        pidWriter.writePidFile();
      }
 
     private void printModuleStatus(Level level)
