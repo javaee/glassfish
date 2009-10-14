@@ -14,6 +14,12 @@ public class HelloSingleton implements Hello {
 
     @Resource SessionContext sessionCtx;
 
+    @Resource(mappedName="java:module/foobarmanagedbean")
+    private FooBarManagedBean fbmb;
+
+    @Resource
+    private FooBarManagedBean fbmb2;
+
     @Resource(name="java:module/env/MORB2")
     private ORB orb;
 

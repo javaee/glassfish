@@ -21,6 +21,12 @@ import javax.naming.*;
 @EJB(name="java:module/m1", beanName="HelloSingleton", beanInterface=Hello.class)
 public class HelloServlet extends HttpServlet {
 
+    @Resource(mappedName="java:module/foobarmanagedbean")
+    private FooBarManagedBean fbmb;
+
+    @Resource
+    private FooBarManagedBean fbmb2;
+
     @EJB(name="java:module/env/m2")
     private Hello m1;
 
