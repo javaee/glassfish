@@ -58,7 +58,7 @@
         setPageSessionAttribute(key="tableTitle" value="$resource{i18njca.resourcesTable.Pools}");
         setPageSessionAttribute(key="resHeader" value="$resource{i18njca.resourcesTable.colResAdapter}");
         setPageSessionAttribute(key="extraInfoHeader" value="$resource{i18njca.resourcesTable.colDefinition}");
-        setPageSessionAttribute(key="jcapool" value="#{false}" );
+        setPageSessionAttribute(key="jcapool" value="#{true}" );
         
     />
     </event>
