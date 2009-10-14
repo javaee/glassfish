@@ -48,7 +48,6 @@ import org.jvnet.hk2.config.ConfigSupport;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.v3.admin.LocalPasswordImpl;
 import com.sun.logging.LogDomains;
 
 import org.glassfish.api.Startup;
@@ -142,9 +141,7 @@ public class RestService implements Startup, PostConstruct, PreDestroy, RestInte
 
     public String getUID() {
         if (_uid == null) {
-            if (localPassword instanceof LocalPasswordImpl) {
-            _uid = ((LocalPasswordImpl)localPassword).getLocalPassword();
-            }
+            _uid = localPassword.getLocalPassword();
         }
         return _uid;
     }
