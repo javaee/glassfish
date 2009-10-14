@@ -473,7 +473,7 @@ public class InterceptorManager {
         int size = CallbackType.values().length;
         ArrayList[] callbacks = new ArrayList[size];
         boolean scanFor2xLifecycleMethods = true;
-
+        int numPostConstructFrameworkCallbacks = 0;
         for (CallbackType eventType : CallbackType.values()) {
             int index = eventType.ordinal();
             callbacks[index] = new ArrayList<CallbackInterceptor>();
@@ -497,6 +497,9 @@ public class InterceptorManager {
                                 classLoaderToUse);
                         for (CallbackInterceptor inter : inters) {
                             callbacks[index].add(inter);
+                            if( eventType == CallbackType.POST_CONSTRUCT) {
+                                numPostConstructFrameworkCallbacks++;
+                            }
                         }
                     }
                 }
@@ -532,7 +535,7 @@ public class InterceptorManager {
             || (container instanceof MessageBeanContainer);
         
         if (lookForEjbCreateMethod) {
-            loadOnlyEjbCreateMethod(callbacks);
+            loadOnlyEjbCreateMethod(callbacks, numPostConstructFrameworkCallbacks);
         }
         
         callbackChain = new CallbackChainImpl[size];
@@ -638,7 +641,7 @@ public class InterceptorManager {
                 try {
                     Method method = beanClass.getMethod(
                             pre30LCMethodNames[i], (Class[]) null);
-                    if (method != null) {
+                    if (method != null) {    
                         CallbackInterceptor meta =
                                 new BeanCallbackInterceptor(method);
                         metaArray[i].add(meta);
@@ -655,7 +658,8 @@ public class InterceptorManager {
     //TODO: load2xLifecycleMethods and loadOnlyEjbCreateMethod can be 
     //  refactored to use a common method.
     private void loadOnlyEjbCreateMethod(
-            ArrayList<CallbackInterceptor>[] metaArray) {
+            ArrayList<CallbackInterceptor>[] metaArray,
+            int numPostConstructFrameworkCallbacks) {
         int sz = lcAnnotationClasses.length;
         for (int i = 0; i < sz; i++) {
             if (lcAnnotationClasses[i] != PostConstruct.class) {
@@ -665,7 +669,7 @@ public class InterceptorManager {
             boolean needToScan = true;
             if (metaArray[i] != null) {
                 ArrayList<CallbackInterceptor> al = metaArray[i];
-                needToScan =  (al.size() == 0);
+                needToScan =  (al.size() == numPostConstructFrameworkCallbacks);
             }
             
             if (! needToScan) {

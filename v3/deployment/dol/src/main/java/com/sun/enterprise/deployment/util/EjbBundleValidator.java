@@ -931,41 +931,30 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
         return intfInfoMap;
     }
 
+    /**
+     * Get a map of bean class to managed bean descriptor for the managed beans
+     * defined within the current module.
+     */
     private Map<String, ManagedBeanDescriptor> getManagedBeanMap() {
         BundleDescriptor thisBundle = getBundleDescriptor();
 
-        Set<BundleDescriptor> bundleDescs = new HashSet<BundleDescriptor>();
+        Set<ManagedBeanDescriptor> managedBeans = new HashSet<ManagedBeanDescriptor>();
 
+        // Make sure we're dealing with the top-level bundle descriptor when looking
+        // for managed beans
         if( thisBundle != null ) {
-            Application app = thisBundle.getApplication();
-            if( app != null ) {
-                bundleDescs = app.getBundleDescriptors();
-            } else {
-                bundleDescs.add(thisBundle);
+            Object desc = thisBundle.getModuleDescriptor().getDescriptor();
+            if( desc instanceof BundleDescriptor ) {
+                managedBeans = ((BundleDescriptor)desc).getManagedBeans();
             }
-
         }
 
         Map<String, ManagedBeanDescriptor> managedBeanMap = new HashMap<String, ManagedBeanDescriptor>();
-        Set<String> allManagedBeanClasses = new HashSet<String>();
 
-        for(BundleDescriptor bundle : bundleDescs ) {
+        for(ManagedBeanDescriptor managedBean : managedBeans ) {
 
-            for(ManagedBeanDescriptor managedBean : bundle.getManagedBeans() ) {
-
-                String beanClassName = managedBean.getBeanClassName();
-
-                // If more than one managed bean is found with the same class
-                // name, automatic mapping can't occur so just skip it
-                if( allManagedBeanClasses.contains(beanClassName) ) {
-                    managedBeanMap.remove(beanClassName);
-                    break;
-                } else {
-                    allManagedBeanClasses.add(beanClassName);
-                    managedBeanMap.put(beanClassName, managedBean);
-                }
-
-            }
+            String beanClassName = managedBean.getBeanClassName();
+            managedBeanMap.put(beanClassName, managedBean);
 
         }
 

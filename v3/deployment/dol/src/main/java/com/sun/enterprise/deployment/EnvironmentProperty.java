@@ -431,7 +431,7 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
     }
     
     public Set<InjectionTarget> getInjectionTargets() {
-        return injectionTargets;
+        return (injectionTargets != null) ? injectionTargets : new HashSet<InjectionTarget>();
     }
 
     public boolean isInjectable() {
