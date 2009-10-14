@@ -99,7 +99,12 @@
                 <tr>
                     <td><div class="logLbl"><span class="LblLev2Txt">
 </f:verbatim>
-                    <sun:staticText text="$resource{i18n.restart.RestartContinue}" />
+                    <sun:staticText text="#{pageSession.url2}" >
+                        <!beforeCreate
+                            getRestartURL(url="#{pageSession.restartURL}")
+                            setPageSessionAttribute(key="url2", value="$resource{i18n.restart.RestartContinue, #{pageSession.restartURL}}")
+                        />
+                    </sun:staticText>
 <f:verbatim>
                     </span></div></td>
                 </tr>

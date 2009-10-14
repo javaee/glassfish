@@ -44,6 +44,8 @@ import org.glassfish.admin.amx.intf.config.Property;
 
 import org.glassfish.admin.amx.intf.config.Resources;
 import org.glassfish.admin.amx.intf.config.Server;
+import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
+import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -158,8 +160,8 @@ public class V3AMX {
         return domain.getResources();
     }
 
-    public AMXProxy getAdminListener(){
-        return getConfig("server-config").getNetworkConfig().child("network-listeners").childrenMap("network-listener").get("admin-listener");
+    public NetworkListener getAdminListener(){
+        return  getConfig("server-config").getNetworkConfig().as(NetworkConfig.class).getNetworkListeners().getNetworkListener().get("admin-listener");
     }
 
 

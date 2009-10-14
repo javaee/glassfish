@@ -62,13 +62,13 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 
 
-import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import org.glassfish.admingui.common.util.MiscUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.HtmlAdaptor;
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.V3AMXUtil;
 
 
 
@@ -220,8 +220,27 @@ public class CommonHandlers {
 	ExternalContext extContext = handlerCtx.getFacesContext().getExternalContext();
 	HttpServletRequest request = (HttpServletRequest) extContext.getRequest();
 	request.getSession().invalidate();
-    } 
-    
+    }
+
+    /**
+     *	<p> This method looks at the port of the admin-listener to generate the href to show to user so that </p>
+     *      when server restart, user can click on that link to access GUI again.  We need to do that since the </p>
+     *      port maybe changed from the current one when server restart.
+     *	<p> Output value: "url" -- Type: <code>java.lang.String</code></p>
+     *	@param	handlerCtx	The HandlerContext.
+     */
+    @Handler(id="getRestartURL",
+    output={
+        @HandlerOutput(name="url", type=String.class)}
+    )
+    public static void getRestartURL(HandlerContext handlerCtx) {
+        String port = ""+ V3AMXUtil.getAdminPort();
+        String security = (String) V3AMX.getInstance().getAdminListener().findProtocol().attributesMap().get("SecurityEnabled");
+        String url = security.equals("true")? "https" : "http";
+        url = url + "://" + GuiUtil.getSessionValue("serverName")+":" + port;
+        handlerCtx.setOutputValue("url", url);
+    }
+
     /**
      *	<p> This method sets the required attribute of a UI component .
      *	<p> Input value: "id" -- Type: <code>java.lang.String</code></p>
