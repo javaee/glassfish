@@ -81,7 +81,6 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.logging.*;
 import com.sun.logging.*;
-import java.io.IOException;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -1412,7 +1411,7 @@ as_context_mech
      /** if ejb requires no security - then skip checking the client-conformance
      */    
     private boolean skip_client_conformance (EjbIORConfigurationDescriptor ior){
-        String none = ior.NONE;        
+        String none = EjbIORConfigurationDescriptor.NONE;
 	// sanity check
 	if(ior == null){
 	   return false;

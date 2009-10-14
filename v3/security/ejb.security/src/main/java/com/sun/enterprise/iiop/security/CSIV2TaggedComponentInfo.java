@@ -129,8 +129,7 @@ public final class CSIV2TaggedComponentInfo
     
     public CSIV2TaggedComponentInfo(ORB orb, Habitat habitat) {
 	this.orb = orb;	
-        orbHelper = 
-                habitat.getComponent(GlassFishORBHelper.class);
+        orbHelper = Lookups.getGlassFishORBHelper();
     }
 
     public CSIV2TaggedComponentInfo(ORB orb, int sslMutualAuthPort , Habitat habitat) {
