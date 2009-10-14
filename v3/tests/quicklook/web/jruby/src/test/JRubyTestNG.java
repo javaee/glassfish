@@ -34,7 +34,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package test.web.jruby.helloapp;
+package test.web.jruby.helloworld;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Configuration;
 import org.testng.annotations.ExpectedExceptions;
@@ -56,7 +56,7 @@ public class JRubyTestNG {
     
     static String result = "";
 
-    private String contextRoot = "helloapp";
+    private String contextRoot = "helloworld";
     String host=System.getProperty("http.host");
     String port=System.getProperty("http.port");
     //String fileName="/tmp/JRuby_deploy.output";
@@ -145,7 +145,7 @@ public class JRubyTestNG {
         try{
 
         String testurl = "http://" + host  + ":" + port + "/"+ contextRoot
-                +"/mycontroller/testview";
+                +"/say/hello";
         URL url = new URL(testurl);
         //echo("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -161,7 +161,7 @@ public class JRubyTestNG {
         String testLine = null;        
         while ((line = input.readLine()) != null) {
               //System.out.println(line);
-            if(line.indexOf("Mycontroller#testview")!=-1){
+            if(line.indexOf("Say#hello")!=-1){
                 result=true;
              testLine = line;
             }

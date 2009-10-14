@@ -11,7 +11,12 @@
     <import file="${ws.root}/gfproject/build-impl.xml"/>
     <import file="${ws.root}/gfproject/v3-targets.xml"/>
 
-<target name="all" depends="setup-jruby,set-jrubyhome,deploy,runtest,undeploy,stop-server"/>
+<target name="all" depends="clean-jruby,start-server,setup-jruby,create-app,build,deploy,runtest,undeploy,stop-server"/>
+
+<target name="clean-jruby">
+   <delete dir="${ws.root}/classes"/>
+   <delete dir="${appName}"/>
+</target>
 
 <target name="setJRubyCon">
    <available file="${JRUBY_HOME}" type="dir" property="local.jruby.present"/>
@@ -33,18 +38,12 @@
 
 <target name="deploy">
    <record name="deploy.output" action="start"/>
-   <mkdir dir="${dist.dir}"/>
-   <move todir="${dist.dir}/helloworld" failonerror="false">
-      <fileset dir="helloworld"/>
-   </move>
-   <antcall target="deploy-v3-impl">
-      <param name="deployed.app" value="${appName}"/>
-   </antcall>
+   <antcall target="deploy-jruby-app"/>
    <record name="deploy.output" action="stop"/>
 </target>
 
 <target  name="runtest">
-   <sleep seconds="7"/>
+   <sleep seconds="10"/>
    <antcall target="runtest-impl">
        <param name="testng.test.name" value="${testng.test.name}"/>
        <param name="testng.testclient" value="JRubyTestNG"/>
@@ -60,6 +59,7 @@
     <echo message="${JRUBY_HOME}/bin/jruby -S rails -d mysql ${appName}"/>
     <antcall target="create-app-common-unix"/>
     <antcall target="create-app-common-windows"/>
+    <antcall target="configFW"/>
 </target>
 
 <target name="create-app-common-unix" if="isUnix">
@@ -78,6 +78,11 @@
     <exec executable="${JRUBY_HOME}/bin/jruby.bat" failonerror="true">
         <arg line="${appName}/script/generate controller ${controller} ${view}"/>
     </exec>
+</target>
+
+<target name="configFW">
+    <replace file="${appName}/config/environment.rb" token="# config.frameworks" value="config.frameworks"/>
+    <replace file="${appName}/config/environment.rb" token="RAILS_GEM_VERSION" value="# RAILS_GEM_VERSION"/>
 </target>
     
 </project>

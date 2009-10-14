@@ -96,25 +96,11 @@
  <echo message="asconf ${asconf_jruby}"/>
 </target>
 
-<target name="set-jrubyhome" unless="asconf_jruby" depends="setOSConditions,jrubyHomeCon">
-    <antcall target="set-jrubyhome-unix"/>
-    <antcall target="set-jrubyhome-win"/>
-</target>
-
-<target name="set-jrubyhome-unix" if="isUnix">
-<echo message="${glassfish.home}/config/asenv.conf"/>
-<concat destfile="${glassfish.home}/config/asenv.conf" append="true" >JRUBY_HOME=${JRUBY_HOME}
-</concat>
-    <antcall target="stop-server"/>
-    <antcall target="start-server"/>
-</target>
-
-<target name="set-jrubyhome-win" if="isWindows">
-<echo message="${glassfish.home}/config/asenv.bat"/>
-<concat destfile="${glassfish.home}/config/asenv.bat" append="true" >set JRUBY_HOME=${JRUBY_HOME}
-</concat>
-    <antcall target="stop-server"/>
-    <antcall target="start-server"/>
+<target name="deploy-jruby-app" depends="setOSConditions,asenv-unix,asenv-windows">
+    <exec executable="${ASADMIN}" outputproperty="message1">
+        <arg line="deploy --property jruby.home=${JRUBY_HOME} ${appName}"/>
+    </exec>
+    <echo message="${message1}"/>
 </target>
 
 <target name="start-server" depends="setOSConditions">
