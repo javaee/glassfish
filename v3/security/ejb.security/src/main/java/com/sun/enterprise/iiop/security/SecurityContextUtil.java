@@ -40,7 +40,6 @@ import com.sun.corba.ee.spi.ior.IOR;
 import com.sun.corba.ee.spi.presentation.rmi.StubAdapter;
 import com.sun.enterprise.common.iiop.security.SecurityContext;
 import com.sun.enterprise.security.CORBAObjectPermission;
-import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.logging.LogDomains;
 
@@ -58,7 +57,6 @@ import org.glassfish.enterprise.iiop.api.ProtocolManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 
@@ -83,12 +81,11 @@ public class SecurityContextUtil implements PostConstruct {
     private static String IS_A = "_is_a";
     private Policy policy;
     
-    //TODO: change the below two to @Inject
-    private GlassFishORBHelper orbHelper;
-    private SecurityMechanismSelector sms;
-  
     @Inject
-    private Habitat habitat;
+    private GlassFishORBHelper orbHelper;
+
+    @Inject
+    private SecurityMechanismSelector sms;
     
     public SecurityContextUtil() {
     
@@ -96,8 +93,6 @@ public class SecurityContextUtil implements PostConstruct {
 
     public void postConstruct() {
         policy = Policy.getPolicy();
-        orbHelper = habitat.getComponent(GlassFishORBHelper.class);
-        sms = habitat.getComponent(SecurityMechanismSelector.class);
     }
     /**
      * This is called by the CSIv2 interceptor on the client before

@@ -53,9 +53,7 @@ import com.sun.corba.ee.spi.ior.iiop.IIOPAddress ;
 import com.sun.corba.ee.spi.transport.IORToSocketInfo;
 import com.sun.corba.ee.spi.transport.SocketInfo;
 
-import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.logging.LogDomains;
-import org.jvnet.hk2.component.Habitat;
 
 /**
  * This implements IORToSocketInfo for ORB.
@@ -82,8 +80,7 @@ public class IORToSocketInfoImpl implements IORToSocketInfo {
     private SecurityMechanismSelector selector;
     
     public IORToSocketInfoImpl() {
-        Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
-        selector = habitat.getComponent(SecurityMechanismSelector.class);
+        selector = Lookups.getSecurityMechanismSelector();
     }
     
     public List getSocketInfo(IOR ior, List previous) 

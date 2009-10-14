@@ -110,8 +110,8 @@ public class SecClientRequestInterceptor extends    org.omg.CORBA.LocalObject
         this.codec  = codec;
         this.prname = name + "::";
         this.habitat = habitat;
-        orbHelper = habitat.getComponent(GlassFishORBHelper.class);
-        secContextUtil = habitat.getComponent(SecurityContextUtil.class);
+        orbHelper = Lookups.getGlassFishORBHelper();
+        secContextUtil = Lookups.getSecurityContextUtil();
     }
 
     public String name() {

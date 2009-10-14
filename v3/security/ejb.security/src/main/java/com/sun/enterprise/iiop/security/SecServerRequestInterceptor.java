@@ -120,9 +120,9 @@ public class SecServerRequestInterceptor
         this.name    = name;
         this.codec   = codec;
         this.prname  = name + "::";
-        secContextUtil = habitat.getComponent(SecurityContextUtil.class);
-        orbHelper = habitat.getComponent(GlassFishORBHelper.class);
-        smSelector = habitat.getComponent(SecurityMechanismSelector.class);
+        secContextUtil = Lookups.getSecurityContextUtil();
+        orbHelper = Lookups.getGlassFishORBHelper();
+        smSelector = Lookups.getSecurityMechanismSelector();
     }
 
     public String name() {
@@ -256,12 +256,12 @@ public class SecServerRequestInterceptor
             if(_logger.isLoggable(Level.FINE)){
                 _logger.log(Level.FINE,"Create an X500Name object from identity token");
             }
-            X500Name name = new X500Name(derenc);
+            X500Name xname = new X500Name(derenc);
 	    if(_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE,"Identity to be asserted is " + name.toString());
+                _logger.log(Level.FINE,"Identity to be asserted is " + xname.toString());
 		_logger.log(Level.FINE,"Adding X500Name to subject's PublicCredentials");
 	    }
-            sc.subject.getPublicCredentials().add(name);
+            sc.subject.getPublicCredentials().add(xname);
             sc.identcls = X500Name.class;
             break;
             
