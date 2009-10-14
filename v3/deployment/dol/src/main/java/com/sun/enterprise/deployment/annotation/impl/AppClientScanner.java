@@ -47,6 +47,7 @@ import org.glassfish.deployment.common.GenericAnnotationDetector;
 import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
 
+import com.sun.enterprise.deployment.deploy.shared.MultiReadableArchive;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -124,18 +125,29 @@ public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor>
                 addScanDirectory(new File(archive.getURI()));
             } else if (archive instanceof InputJarArchive) {
                 URI uriToAdd = archive.getURI();
-                if (uriToAdd.getScheme().equals("jar")) {
-                    try {
-                        uriToAdd = new URI("file", uriToAdd.getSchemeSpecificPart(), null);
-                    } catch (URISyntaxException ex) {
-                        throw new IOException(ex);
-                    }
-                }
-                addScanJar(new File(uriToAdd));
+                addScanJar(scanJar(uriToAdd));
+            } else if (archive instanceof MultiReadableArchive) {
+                /*
+                 * During app client launches, scan the developer's archive
+                 * which is in slot #1, not the facade archive which is in
+                 * slot #0.
+                 */
+                addScanJar(scanJar(((MultiReadableArchive) archive).getURI(1)));
             }
         }
 
         this.classLoader = classLoader;
         this.archiveFile = null; // = archive;
+    }
+
+    private File scanJar(URI uriToAdd) throws IOException {
+        if (uriToAdd.getScheme().equals("jar")) {
+            try {
+                uriToAdd = new URI("file", uriToAdd.getSchemeSpecificPart(), null);
+            } catch (URISyntaxException ex) {
+                throw new IOException(ex);
+            }
+        }
+        return new File(uriToAdd);
     }
 }
