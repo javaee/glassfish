@@ -3665,6 +3665,8 @@ public class Request
                 new RequestAttachment<org.apache.catalina.connector.Request>(
                     asyncContext.getTimeout(), this, requestCompletionHandler,
                     res));
+            // XXX: The following call should not be needed
+            setAsyncTimeout(asyncContext.getTimeout());
         }
 
         asyncStarted = true;
