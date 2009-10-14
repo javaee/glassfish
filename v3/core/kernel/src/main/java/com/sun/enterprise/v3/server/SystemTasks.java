@@ -91,9 +91,44 @@ public class SystemTasks implements Init, PostConstruct {
         setSystemPropertiesFromEnv();
         setSystemPropertiesFromDomainXml();
         resolveJavaConfig();
-        writePidFile();
         _logger.fine( "SystemTasks: loaded server named: " + server.getName() );
     }
+
+    /**
+     * write our Process ID to a file
+     */
+    public void writePidFile() {
+        Writer writer = null;
+        File pidFile = null;
+
+        try {
+            pidFile = getPidFile();
+            String pidString = getPidString();
+            writer = new PrintWriter(pidFile);
+            writer.write(pidString);
+        }
+        catch(PidException pe) {
+            _logger.warning(pe.getMessage());
+        }
+        catch(Exception e) {
+            _logger.warning(strings.get("internal_error", e));
+        }
+        finally {
+            if(writer != null) {
+                try {
+                    writer.flush();
+                    writer.close();
+                }
+                catch(Exception e) {
+                    //ignore
+                }
+                pidFile.setReadable(true);
+                pidFile.setWritable(true);
+                pidFile.deleteOnExit();
+            }
+        }
+    }
+
 
     /*
      * Here is where we make the change Post-TP2 to *not* use JVM System Properties
@@ -180,39 +215,6 @@ public class SystemTasks implements Init, PostConstruct {
             }
         }
     }
-    
-    private void writePidFile() {
-        Writer writer = null;
-        File pidFile = null;
-
-        try {
-            pidFile = getPidFile();
-            String pidString = getPidString();
-            writer = new PrintWriter(pidFile);
-            writer.write(pidString);
-        }
-        catch(PidException pe) {
-            _logger.warning(pe.getMessage());
-        }
-        catch(Exception e) {
-            _logger.warning(strings.get("internal_error", e));
-        }
-        finally {
-            if(writer != null) {
-                try {
-                    writer.flush();
-                    writer.close();
-                }
-                catch(Exception e) {
-                    //ignore
-                }
-                pidFile.setReadable(true);
-                pidFile.setWritable(true);
-                pidFile.deleteOnExit();
-            }
-        }
-    }
-
     private String getPidString() {
         return "" + ProcessUtils.getPid();
     }

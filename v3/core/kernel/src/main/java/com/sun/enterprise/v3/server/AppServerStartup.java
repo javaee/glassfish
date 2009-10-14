@@ -112,8 +112,11 @@ public class AppServerStartup implements ModuleStartup {
     @Inject
     CommonClassLoaderServiceImpl commonCLS;
 
-    //@Inject
-    //ClassLoaderHierarchy cch;
+    @Inject
+    SystemTasks pidWriter;
+
+     //@Inject
+     //ClassLoaderHierarchy cch;
 
     /**
      * A keep alive thread that keeps the server JVM from going down
@@ -318,7 +321,8 @@ public class AppServerStartup implements ModuleStartup {
             postStartup.get();
         }
 
-    }
+        pidWriter.writePidFile();
+     }
 
     private void printModuleStatus(Level level)
     {
