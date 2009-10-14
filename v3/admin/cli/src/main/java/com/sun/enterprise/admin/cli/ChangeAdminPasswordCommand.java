@@ -124,6 +124,13 @@ public class ChangeAdminPasswordCommand extends RemoteCommand {
         super.validate();
 
         /*
+         * No more prompting at this point.  If the remote command
+         * fails authentication, for example, don't prompt for the
+         * password because it was already entered above.
+         */
+        programOpts.setInteractive(false);
+
+        /*
          * Now that the user-supplied parameters have been validated,
          * we add the parameters required by the server command and
          * set their values.
