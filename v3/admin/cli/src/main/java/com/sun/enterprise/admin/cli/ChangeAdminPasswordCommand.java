@@ -36,11 +36,13 @@
 
 package com.sun.enterprise.admin.cli;
 
+import java.io.Console;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
@@ -86,7 +88,31 @@ public class ChangeAdminPasswordCommand extends RemoteCommand {
         if (programOpts.isHelp())
             return;
 
-        // first, prompt for the passwords
+        /*
+         * If --user wasn't specified as a program option,
+         * we treat it as a required option and prompt for it
+         * if possible.
+         */
+        if (programOpts.getUser() == null) {
+            // prompt for it (if interactive)
+            Console cons = System.console();
+            if (cons != null && programOpts.isInteractive()) {
+                cons.printf("%s", strings.get("AdminUserDefaultPrompt",
+                    SystemPropertyConstants.DEFAULT_ADMIN_USER));
+                String val = cons.readLine();
+                if (ok(val))
+                    programOpts.setUser(val);
+                else
+                    programOpts.setUser(
+                                    SystemPropertyConstants.DEFAULT_ADMIN_USER);
+            } else {
+                //logger.printMessage(strings.get("AdminUserRequired"));
+                throw new CommandValidationException(
+                    strings.get("AdminUserRequired"));
+            }
+        }
+
+        // now, prompt for the passwords
         try {
             String password = getPasswords();
             programOpts.setPassword(password,
