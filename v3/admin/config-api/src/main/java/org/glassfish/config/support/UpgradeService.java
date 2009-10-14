@@ -3,6 +3,8 @@ package org.glassfish.config.support;
 import java.beans.PropertyVetoException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.List;
+import java.util.ArrayList;
 import java.io.File;
 
 import com.sun.enterprise.config.serverbeans.*;
@@ -43,7 +45,10 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
         // in v3-prelude, engines were created under application directly,
         // in v3 final, engines are placed under individual modules composing the application
         // so if we have engines under application and not modules deployed, we need to upgrade
-        for (Application app : domain.getApplications().getModules(Application.class)) {
+        List<Application> allApps = new ArrayList<Application>();
+        allApps.addAll(domain.getApplications().getApplications());
+        allApps.addAll(domain.getSystemApplications().getApplications());
+        for (Application app : allApps) {
             if (app.getEngine()!=null && app.getEngine().size()>0 &&
                     (app.getModule()==null || app.getModule().size()==0)) {
                 // we need to update the application declaration from v3 prelude,
