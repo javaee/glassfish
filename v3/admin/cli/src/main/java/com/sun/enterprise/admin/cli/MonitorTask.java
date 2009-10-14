@@ -82,7 +82,7 @@ public class MonitorTask extends TimerTask {
         String title = "";
         if ("servlet".equals(type)) {
             title = String.format("%1$-10s %2$-10s %3$-10s",
-            "ActSess", "SessTtl", "SrvltLdC");
+            "aslc", "mslc", "tslc");
         } else if ("httplistener".equals(type)) {
             title = String.format("%1$-4s %2$-4s %3$-6s %4$-4s",
             "ec", "mt", "pt", "rc");

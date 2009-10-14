@@ -43,6 +43,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.external.statistics.Statistic;
 import org.glassfish.external.statistics.CountStatistic; 
+import org.glassfish.external.statistics.RangeStatistic;
 import org.glassfish.external.statistics.TimeStatistic;
 import org.glassfish.external.statistics.Stats;
 import org.glassfish.admin.monitor.cli.MonitorContract;
@@ -107,28 +108,20 @@ public class HTTPListenerStatsImpl implements MonitorContract {
         double processingTime = 0;
         long requestCount = 0;
 
-        CountStatistic cs = null;
-        long val = 0L;
-
         List<TreeNode> tnL = serverNode.getNodes("server.web.request.*");
         for (TreeNode tn : tnL) {
             if (tn.hasChildNodes()) {
                 continue;
             }
 
-            if (tn.getValue() != null) {
-                cs = (CountStatistic)tn.getValue();
-                val = cs.getCount();
-            }
-
             if ("errorcount".equals(tn.getName())) {
-                errorCount = val;
+                errorCount = getCountStatisticValue(tn.getValue());
             } else if ("maxtime".equals(tn.getName())) {
-                maxTime = val;
+                maxTime = getCountStatisticValue(tn.getValue());
             } else if ("processingtime".equals(tn.getName())) {
-                processingTime = val;
+                processingTime = getCountStatisticValue(tn.getValue());
             } else if ("requestcount".equals(tn.getName())) {
-                requestCount = val;
+                requestCount = getCountStatisticValue(tn.getValue());
             }
         }
 
@@ -137,6 +130,15 @@ public class HTTPListenerStatsImpl implements MonitorContract {
             errorCount, maxTime, processingTime, requestCount));
         report.setActionExitCode(ExitCode.SUCCESS);
         return report;
+    }
+
+    private long getCountStatisticValue(Object obj) {
+        long l = 0L;
+        if (obj == null) return l;
+        if (obj instanceof CountStatistic) {
+            return ((CountStatistic)obj).getCount();
+        }
+        return l;
     }
 
     /**

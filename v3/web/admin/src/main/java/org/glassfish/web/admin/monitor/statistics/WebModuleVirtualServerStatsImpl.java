@@ -43,6 +43,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.external.statistics.Statistic;
 import org.glassfish.external.statistics.CountStatistic; 
+import org.glassfish.external.statistics.RangeStatistic; 
 import org.glassfish.external.statistics.TimeStatistic;
 import org.glassfish.external.statistics.Stats;
 import org.glassfish.external.statistics.StringStatistic;
@@ -57,7 +58,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
  *
  * For v3 Prelude, following stats will be available
  *
- * asc activeSessionsCurrent, 
+ * asc activeSessionsCount, 
  * ast activatedSessionsTotal, 
  * rst rejectedSessionsTotal, 
  * st  sessionsTotal
@@ -75,8 +76,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
  */
 @Service
 @Scoped(PerLookup.class)
-public class WebModuleVirtualServerStatsImpl 
-    implements /*WebModuleVirtualServerStats,*/ MonitorContract {
+public class WebModuleVirtualServerStatsImpl implements MonitorContract {
 
     // app name otherwise web
     @Param (optional=true)
@@ -124,13 +124,15 @@ public class WebModuleVirtualServerStatsImpl
                     "server.web.servlet.*", "server.web.jsp.*"};
         }
         
-	long activeSessionsCurrent = 0; 
-	long activatedSessionsTotal = 0; 
-	long rejectedSessionsTotal = 0; 
+	long activeSessionsCount = 0; 
 	long sessionsTotal = 0;
+	long rejectedSessionsTotal = 0; 
+	long activatedSessionsTotal = 0; 
+
 	long activeJspsLoadedCount = 0; 
 	long maxJspsLoadedCount = 0; 
 	long totalJspsLoadedCount = 0;
+
 	long activeServletsLoadedCount = 0; 
 	long maxServletsLoadedCount = 0; 
 	long totalServletsLoadedCount = 0;
@@ -144,39 +146,33 @@ public class WebModuleVirtualServerStatsImpl
                     continue;
                 }
 
-                if ( (tn.getName() != null) && (tn.getValue() != null) ) {
-                    lval = (Long) tn.getValue();
-                } else {
-                    continue;
-                }
-
-                if ("activeSessionsCurrent".equals(tn.getName())) { 
-                    activeSessionsCurrent = lval; 
-                } else if ("activatedSessionsTotal".equals(tn.getName())) { 
-                    activatedSessionsTotal = lval; 
-                } else if ("rejectedSessionsTotal".equals(tn.getName())) { 
-                    rejectedSessionsTotal = lval; 
-                } else if ("sessionsTotal".equals(tn.getName())) { 
-                    sessionsTotal = lval; 
-                } else if ("activeJspsLoadedCount".equals(tn.getName())) { 
-                    activeJspsLoadedCount = lval; 
-                } else if ("maxJspsLoadedCount".equals(tn.getName())) { 
-                    maxJspsLoadedCount = lval; 
-                } else if ("totalJspsLoadedCount".equals(tn.getName())) { 
-                    totalJspsLoadedCount = lval; 
-                } else if ("activeServletsLoadedCount".equals(tn.getName())) { 
-                    activeServletsLoadedCount = lval; 
-                } else if ("maxServletsLoadedCount".equals(tn.getName())) { 
-                    maxServletsLoadedCount = lval; 
-                } else if ("totalServletsLoadedCount".equals(tn.getName())) { 
-                    totalServletsLoadedCount = lval; 
+                if ("activesessionscount".equals(tn.getName())) { 
+                    activeSessionsCount = getRangeStatisticValue(tn.getValue());
+                } else if ("activatedsessionstotal".equals(tn.getName())) { 
+                    activatedSessionsTotal = getCountStatisticValue(tn.getValue());
+                } else if ("rejectedsessionstotal".equals(tn.getName())) { 
+                    rejectedSessionsTotal = getCountStatisticValue(tn.getValue());
+                } else if ("sessionstotal".equals(tn.getName())) { 
+                    sessionsTotal = getCountStatisticValue(tn.getValue());
+                } else if ("activejspsloadedcount".equals(tn.getName())) { 
+                    activeJspsLoadedCount = getRangeStatisticValue(tn.getValue());
+                } else if ("maxjspsloadedcount".equals(tn.getName())) { 
+                    maxJspsLoadedCount = getCountStatisticValue(tn.getValue());
+                } else if ("totaljspsloadedcount".equals(tn.getName())) { 
+                    totalJspsLoadedCount = getCountStatisticValue(tn.getValue());
+                } else if ("activeservletsloadedcount".equals(tn.getName())) { 
+                    activeServletsLoadedCount = getRangeStatisticValue(tn.getValue());
+                } else if ("maxservletsloadedcount".equals(tn.getName())) { 
+                    maxServletsLoadedCount = getCountStatisticValue(tn.getValue());
+                } else if ("totalservletsloadedcount".equals(tn.getName())) { 
+                    totalServletsLoadedCount = getCountStatisticValue(tn.getValue());
                 }
             }
 
         }
 
         report.setMessage(String.format(displayFormat, 
-                activeSessionsCurrent, activatedSessionsTotal,
+                activeSessionsCount, activatedSessionsTotal,
                 rejectedSessionsTotal, sessionsTotal,
                 activeJspsLoadedCount, maxJspsLoadedCount, 
                 totalJspsLoadedCount,
@@ -227,7 +223,7 @@ public class WebModuleVirtualServerStatsImpl
      *.
      * @return Number of currently active sessions
      */
-    public CountStatistic getActiveSessionsCurrent() {
+    public CountStatistic getactiveSessionsCount() {
         return null;
     }
 	
@@ -309,5 +305,23 @@ public class WebModuleVirtualServerStatsImpl
 
     public Statistic getStatistic(String statisticName) {
     	return null;
+    }
+
+    private long getCountStatisticValue(Object obj) {
+        long l = 0L;
+        if (obj == null) return l;
+        if (obj instanceof CountStatistic) {
+            return ((CountStatistic)obj).getCount();
+        }
+        return l;
+    }
+
+    private long getRangeStatisticValue(Object obj) {
+        long l = 0L;
+        if (obj == null) return l;
+        if (obj instanceof RangeStatistic) {
+            return ((RangeStatistic)obj).getCurrent();
+        }
+        return l;
     }
 }

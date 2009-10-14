@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.web.admin.monitor.statistics;
 
 import org.jvnet.hk2.annotations.Service;
@@ -42,25 +41,29 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
-
 import org.glassfish.external.statistics.Statistic;
-import org.glassfish.external.statistics.CountStatistic;
-import org.glassfish.external.statistics.TimeStatistic;
-
+import org.glassfish.external.statistics.CountStatistic; 
+import org.glassfish.external.statistics.RangeStatistic; 
 import org.glassfish.admin.monitor.cli.MonitorContract;
-
-//import com.sun.appserv.management.monitor.statistics.AltServletStats;
-
-/** 
-	Defines additional Application Server specific statistics 
-	ServletStats interface.
- */
+import org.glassfish.flashlight.datatree.TreeNode;
+import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
+import org.glassfish.api.Param;
+import java.util.List;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 @Service
 @Scoped(PerLookup.class)
-public class AltServletStatsImpl implements /*AltServletStats,*/ MonitorContract {
+public class AltServletStatsImpl implements MonitorContract {
+
+    @Inject
+    private MonitoringRuntimeDataRegistry mrdr;
+
+    private final LocalStringManagerImpl localStrings = 
+        new LocalStringManagerImpl(AltServletStatsImpl.class);
 
     private final String name = "servlet";
+
+    private final String displayFormat = "%1$-10s %2$-10s %3$-10s";
 
     public String getName() {
         return name;
@@ -68,81 +71,66 @@ public class AltServletStatsImpl implements /*AltServletStats,*/ MonitorContract
 
     public ActionReport process(final ActionReport report, final String filter) {
 
-        /*
-        StringBuffer sb = new StringBuffer();
-        sb.append("MSR: test message from AltServletStatsImpl ..." + System.getProperty("line.separator"));
-        String str = String.format("%1$-10s %2$-10s %3$-10s", "ActSess", "SessTtl", "SrvltLdC");
-        sb.append(str + System.getProperty("line.separator"));
-        str = String.format("%1$-10s %2$-10s %3$-10s", 10, 20, 30);
-        sb.append(str + System.getProperty("line.separator"));
-        report.setMessage("MSR: test message from AltServletStatsImpl ...");
-        report.setMessage(sb.toString());
-        */
+        if (mrdr == null) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(localStrings.getLocalString("mrdr.null", 
+                "MonitoringRuntimeDataRegistry is null"));
+            return report;
+        }
 
-        String str = null;
-        ActionReport.MessagePart part = null;
+        TreeNode serverNode = mrdr.get("server");
+        if (serverNode == null) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(localStrings.getLocalString("mrdr.null", 
+                "MonitoringRuntimeDataRegistry server node is null"));
+            return report;
+        }
 
-/*
-        str = String.format("%1$-10s %2$-10s %3$-10s", "ActSess", "SessTtl", "SrvltLdC");
-        part = report.getTopMessagePart().addChild();
-        part.setChildrenType("monitor_header");
-        part.setMessage(str);
-*/
+        String [] patternArr = new String [] {"server.web.servlet.*"};
         
-        str = String.format("%1$-10s %2$-10s %3$-10s", 10, 20, 30);
-        part = report.getTopMessagePart().addChild();
-        part.setChildrenType("monitor_values");
-        part.setMessage(str);
+	long activeServletsLoadedCount = 0; 
+	long maxServletsLoadedCount = 0; 
+	long totalServletsLoadedCount = 0;
 
+        for (String pattern : patternArr) {
+            List<TreeNode> tnL = serverNode.getNodes(pattern);
+            for (TreeNode tn : tnL) {
+                if (tn.hasChildNodes()) {
+                    continue;
+                }
+                if ("activeservletsloadedcount".equals(tn.getName())) { 
+                    activeServletsLoadedCount = getRangeStatisticValue(tn.getValue());
+                } else if ("maxservletsloadedcount".equals(tn.getName())) { 
+                    maxServletsLoadedCount = getCountStatisticValue(tn.getValue());
+                } else if ("totalservletsloadedcount".equals(tn.getName())) { 
+                    totalServletsLoadedCount = getCountStatisticValue(tn.getValue());
+                }
+            }
+        }
+
+        report.setMessage(String.format(displayFormat, 
+                activeServletsLoadedCount, maxServletsLoadedCount,
+                totalServletsLoadedCount));
 
         report.setActionExitCode(ExitCode.SUCCESS);
         return report;
     }
-    
-    /**
-     * @return CountStatistic
-     */
-    public CountStatistic getErrorCount() {
-    	return null;
-    }
-    
-    /**
-     * @return CountStatistic
-     */
-    public CountStatistic getRequestCount() {
-    	return null;
-    }
-    
-    /**
-     * @return CountStatistic
-     */
-    public CountStatistic getProcessingTime() {
-    	return null;
-    }
-    
-    /**
-     * @return CountStatistic
-     */
-    public CountStatistic getMaxTime() {
-    	return null;
-    }
-    
-    /**
-     * @return TimeStatistic
-     */
-    public TimeStatistic getServiceTime() {
-    	return null;
+
+    private long getCountStatisticValue(Object obj) {
+        long l = 0L;
+        if (obj == null) return l;
+        if (obj instanceof CountStatistic) {
+            return ((CountStatistic)obj).getCount();
+        }
+        return l;
     }
 
-    public Statistic[] getStatistics() {
-    	return null;
-    }
-
-    public String[] getStatisticNames() {
-    	return null;
-    }
-
-    public Statistic getStatistic(String statisticName) {
-    	return null;
+    private long getRangeStatisticValue(Object obj) {
+        long l = 0L;
+        if (obj == null) return l;
+        if (obj instanceof RangeStatistic) {
+            return ((RangeStatistic)obj).getCurrent();
+        }
+        return l;
     }
 }
