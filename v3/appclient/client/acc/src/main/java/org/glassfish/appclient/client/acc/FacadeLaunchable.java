@@ -35,11 +35,11 @@
  */
 package org.glassfish.appclient.client.acc;
 
+import com.sun.enterprise.deployment.deploy.shared.MultiReadableArchive;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.archivist.ACCAppClientArchivist;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.util.LocalStringManager;
@@ -88,12 +88,12 @@ public class FacadeLaunchable implements Launchable {
     public static final ArchiveFactory archiveFactory = ACCModulesManager.getComponent(ArchiveFactory.class);
     private static final Logger logger = LogDomains.getLogger(FacadeLaunchable.class,
             LogDomains.ACC_LOGGER);
-    
+
     private static final LocalStringManager localStrings = new LocalStringManagerImpl(FacadeLaunchable.class);
     private final String mainClassNameToLaunch;
     private final URI[] classPathURIs;
-    private final ReadableArchive clientRA;
     private ReadableArchive facadeClientRA;
+    private MultiReadableArchive combinedRA;
     private static AppClientArchivist facadeArchivist = null;
     private ApplicationClientDescriptor acDesc = null;
     private ClassLoader classLoader = null;
@@ -125,8 +125,9 @@ public class FacadeLaunchable implements Launchable {
             final String anchorDir) throws IOException {
         super();
         this.facadeClientRA = facadeClientRA;
+        this.combinedRA = habitat.getComponent(MultiReadableArchive.class);
+        combinedRA.open(facadeClientRA.getURI(), clientRA.getURI());
         this.mainClassNameToLaunch = mainClassNameToLaunch;
-        this.clientRA = clientRA;
         this.classPathURIs = toURIs(mainAttrs.getValue(Name.CLASS_PATH));
         this.habitat = habitat;
         this.anchorDir = anchorDir;
@@ -149,19 +150,19 @@ public class FacadeLaunchable implements Launchable {
         return result;
     }
 
-    protected AppClientArchivist getFacadeArchivist() {
-        return getFacadeArchivist(habitat);
+    protected AppClientArchivist getArchivist() {
+        return getArchivist(habitat);
     }
 
-    protected synchronized static AppClientArchivist getFacadeArchivist(final Habitat habitat) {
+    protected synchronized static AppClientArchivist getArchivist(final Habitat habitat) {
         if (facadeArchivist == null) {
-            facadeArchivist = habitat.getComponent(ACCAppClientArchivist.class);
+            facadeArchivist = habitat.getComponent(AppClientArchivist.class);
         }
         return facadeArchivist;
     }
 
     public void validateDescriptor() {
-        getFacadeArchivist().validate(classLoader);
+        getArchivist().validate(classLoader);
     }
 
     /**
@@ -189,7 +190,7 @@ public class FacadeLaunchable implements Launchable {
      */
     static FacadeLaunchable newFacade(
             final Habitat habitat,
-            final ReadableArchive facadeRA, 
+            final ReadableArchive facadeRA,
             final String callerSuppliedMainClassName,
             final String callerSuppliedAppName)
                 throws IOException, BootException, URISyntaxException,
@@ -263,16 +264,23 @@ public class FacadeLaunchable implements Launchable {
              * persistence (perhaps).  So create a temporary loader just to
              * load the descriptor.
              */
-            final AppClientArchivist arch = getFacadeArchivist();
-            acDesc = LaunchableUtil.openWithAnnoProcessingAndTempLoader(
-                    arch, loader, facadeClientRA, clientRA);
+            final AppClientArchivist archivist = getArchivist();
+            archivist.setAnnotationProcessingRequested(true);
+            final ACCClassLoader tempLoader = new ACCClassLoader(loader.getURLs(), loader.getParent());
+            archivist.setClassLoader(tempLoader);
+
+            acDesc = archivist.open(combinedRA, mainClassNameToLaunch);
+            archivist.setDescriptor(acDesc);
+
+//            acDesc = LaunchableUtil.openWithAnnoProcessingAndTempLoader(
+//                    arch, loader, facadeClientRA, clientRA);
             Application.createApplication(habitat, null, acDesc.getModuleDescriptor());
 
-            final Manifest facadeMF = facadeClientRA.getManifest();
+            final Manifest facadeMF = combinedRA.getManifest();
             final Attributes mainAttrs = facadeMF.getMainAttributes();
             final String appName = mainAttrs.getValue(GLASSFISH_APP_NAME);
             acDesc.getApplication().setAppName(appName);
-            
+
             /*
              * Save the class loader for later use.
              */
@@ -303,7 +311,7 @@ public class FacadeLaunchable implements Launchable {
                     groupFacadeURI);
             throw new UserError(msg);
         }
-        
+
         /*
          * Save the client names and main classes in case we need them in an
          * error to the user.
@@ -337,8 +345,8 @@ public class FacadeLaunchable implements Launchable {
             }
             URI clientURI = clientFacadeURI.resolve(gfAppClient);
             ReadableArchive clientRA = af.openArchive(clientURI);
-            
-            AppClientArchivist facadeClientArchivist = getFacadeArchivist(habitat);
+
+            AppClientArchivist facadeClientArchivist = getArchivist(habitat);
             final ApplicationClientDescriptor facadeClientDescriptor = facadeClientArchivist.open(clientFacadeRA);
             final String moduleID = Launchable.LaunchableUtil.moduleID(
                     groupFacadeURI, clientURI, facadeClientDescriptor);
@@ -393,7 +401,7 @@ public class FacadeLaunchable implements Launchable {
                     (callerSpecifiedAppClientName != null &&
                         ! Launchable.LaunchableUtil.matchesName(moduleID,
                             groupFacadeURI, facadeClientDescriptor, callerSpecifiedAppClientName))) {
-                            
+
                     logger.log(Level.WARNING, "appclient.singleNestedClientNoMatch",
                             new Object[]{groupFacadeURI, knownClientNames.toString(),
                                          knownMainClasses.toString(),
@@ -401,7 +409,7 @@ public class FacadeLaunchable implements Launchable {
                                          callerSpecifiedAppClientName});
                 }
             } else if (Launchable.LaunchableUtil.matchesMainClassName(clientRA, callerSpecifiedMainClassName)) {
-                facade = new FacadeLaunchable(habitat, clientFacadeRA, 
+                facade = new FacadeLaunchable(habitat, clientFacadeRA,
                         facadeMainAttrs, clientRA, callerSpecifiedMainClassName,
                         anchorDir);
             } else if (Launchable.LaunchableUtil.matchesName(

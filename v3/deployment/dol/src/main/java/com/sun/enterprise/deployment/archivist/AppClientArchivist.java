@@ -68,6 +68,8 @@ import java.util.logging.Level;
 @Scoped(PerLookup.class)
 public class AppClientArchivist extends Archivist<ApplicationClientDescriptor> {
 
+    private String mainClassNameToRun = null;
+
     DeploymentDescriptorFile standardDD = new AppClientDeploymentDescriptorFile();
 
     /**
@@ -86,6 +88,11 @@ public class AppClientArchivist extends Archivist<ApplicationClientDescriptor> {
         return XModuleType.CAR;
     }
 
+    public ApplicationClientDescriptor open(final ReadableArchive archive,
+            final String mainClassNameToRun) throws IOException, SAXParseException {
+        this.mainClassNameToRun = mainClassNameToRun;
+        return super.open(archive);
+    }
 
     public void setDescriptor(Application application) {
 
@@ -160,8 +167,11 @@ public class AppClientArchivist extends Archivist<ApplicationClientDescriptor> {
                                        ReadableArchive archive) throws IOException {
         super.postStandardDDsRead(descriptor, archive);
         // look for MAIN_CLASS
-        Manifest m = archive.getManifest();
-        descriptor.setMainClassName(getMainClassName(m));
+        if (mainClassNameToRun == null) {
+            Manifest m = archive.getManifest();
+            mainClassNameToRun = getMainClassName(m);
+        }
+        descriptor.setMainClassName(mainClassNameToRun);
     }
 
     /**
@@ -176,13 +186,13 @@ public class AppClientArchivist extends Archivist<ApplicationClientDescriptor> {
 
         super.postOpen(descriptor, archive);
 
-        runValidations(archive);
+        runValidations(descriptor, archive);
     }
 
-    protected void runValidations(final ReadableArchive archive) {
-        ApplicationClientDescriptor appClient = descriptor;
+    protected void runValidations(final ApplicationClientDescriptor acDesc,
+            final ReadableArchive archive) {
         ModuleContentValidator mdv = new ModuleContentValidator(archive);
-        appClient.visit(mdv);
+        acDesc.visit(mdv);
     }
 
     /**
