@@ -106,13 +106,15 @@
             <artifactId>glassfish-hk2</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
-        </dependency>
+            <optional>true</optional>
+	</dependency>
 
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-grizzly</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -120,6 +122,7 @@
             <artifactId>glassfish-nucleus</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -127,6 +130,7 @@
             <artifactId>glassfish-scripting</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
 
       <dependency>
@@ -134,73 +138,84 @@
             <artifactId>glassfish-common</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-management</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jca</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jpa</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jta</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
       </dependency>
       <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jts</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
        </dependency>
        <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-corba-omgapi</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
        </dependency>
-
       <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-ejb-lite</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jsf</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-web</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jcdi</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jdbc</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
@@ -209,5 +224,5 @@
             <type>zip</type>
             <optional>true</optional>
         </dependency>
-</dependencies>
+    </dependencies>
 </project>
