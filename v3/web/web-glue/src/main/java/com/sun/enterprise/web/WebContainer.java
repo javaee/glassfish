@@ -1146,10 +1146,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 }
             }
             if (!found) {
-                _logger.log(Level.SEVERE,
-                    "Listener " + listener +
-                        " referenced by virtual server " +
-                        vs.getName() + " does not exist");
+                String msg = rb.getString(
+                    "webcontainer.listenerReferencedByHostNotExist");
+                msg = MessageFormat.format(msg, listener, vs.getName());
+                _logger.log(Level.SEVERE, msg);
             }
         }
 
@@ -1358,8 +1358,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         _logger.log(Level.SEVERE, msg, le);
                     }
                     _logger.info("Virtual server " + vs.getName() + 
-                                    " loaded default web module "+defaultPath);
-
+                        " loaded default web module " + defaultPath);
                 } else {
                     // No need to create default web module off of virtual
                     // server's docroot since system web modules are already
@@ -2629,10 +2628,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     }
                 }
                 if (!found) {
-                    _logger.log(Level.SEVERE,
-                        "Listener " + listener +
-                            " referenced by virtual server " +
-                            vs.getName() + " does not exist");
+                    String msg = rb.getString(
+                        "webcontainer.listenerReferencedByHostNotExist");
+                    msg = MessageFormat.format(msg, listener, vs.getName());
+                    _logger.log(Level.SEVERE, msg);
                 }
             }
             // Update the port numbers with which the virtual server is
