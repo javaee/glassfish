@@ -139,7 +139,9 @@ public class ApplicationValidator extends EjbBundleValidator
             for (;iorconfig.hasNext(); ){
                 EjbIORConfigurationDescriptor desc = 
                     (EjbIORConfigurationDescriptor)iorconfig.next();
-                desc.setRealmName(rlm);
+                if(rlm != null){
+                    desc.setRealmName(rlm);
+                }
             }
         }
     }

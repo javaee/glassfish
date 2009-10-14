@@ -306,6 +306,7 @@ public final class CSIV2TaggedComponentInfo
                 if (desc.getApplication() != null) {
                     realmName = desc.getApplication().getRealm();
                 }
+                
                 if (realmName == null) {
                     realmName = DEFAULT_REALM;
                 }
@@ -350,6 +351,10 @@ public final class CSIV2TaggedComponentInfo
 	    
             if(desc != null && desc.getApplication() != null)  {
                 realmName = desc.getApplication().getRealm();
+            }
+
+            if(realmName == null) {
+                realmName = iorDesc.getRealmName();
             }
 
             if(realmName == null) {
@@ -456,6 +461,10 @@ public final class CSIV2TaggedComponentInfo
         if(_logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE, "IIOP:AS_Context: Realm Name for login = "+
                         realmName);
+        }
+
+        if (realmName == null) {
+            realmName = iorDesc.getRealmName();
         }
         if (realmName == null) {
             realmName = DEFAULT_REALM;

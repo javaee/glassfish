@@ -1380,6 +1380,9 @@ as_context_mech
             if(ejbDesc != null && ejbDesc.getApplication() != null) {
                 realmName = ejbDesc.getApplication().getRealm();
             }
+            if(realmName == null) {
+                realmName = iorDesc.getRealmName();
+            }
             if (realmName == null) {
                 realmName = "default";
             }
