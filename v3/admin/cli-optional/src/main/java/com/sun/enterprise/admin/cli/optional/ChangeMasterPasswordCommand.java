@@ -67,6 +67,7 @@ public class ChangeMasterPasswordCommand extends LocalDomainCommand {
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandType = "STRING";
+        operandName = "domain_name";
         operandMin = 0;
         operandMax = 1;
 
