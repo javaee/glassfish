@@ -62,6 +62,7 @@ import com.sun.enterprise.transaction.api.TransactionAdminBean;
 public class TransactionServiceStatsProvider {
 
     private static final int COLUMN_LENGTH = 25;
+    private static final String LINE_BREAK = "%%%EOL%%%";
 
     private CountStatisticImpl activeCount = new CountStatisticImpl("ActiveCount", "count", 
             "Provides the number of transactions that are currently active.");
@@ -119,7 +120,6 @@ public class TransactionServiceStatsProvider {
     @ManagedAttribute(id="activeids")
     @Description( "List of inflight transactions." )
     public StringStatistic getActiveIds() {
-try {
         StringBuffer strBuf = new StringBuffer(1024);
 
         if (txMgr == null) {
@@ -141,19 +141,18 @@ try {
             }
             if (aList.size() > 0) {
                 
-                // XXX strBuf.append("\n\n");
+                strBuf.append(LINE_BREAK).append(LINE_BREAK);
                 appendColumn(strBuf, "Transaction Id", COLUMN_LENGTH+15);
                 appendColumn(strBuf, "Status", COLUMN_LENGTH);
                 appendColumn(strBuf, "ElapsedTime(ms)", COLUMN_LENGTH);
                 appendColumn(strBuf, "ComponentName", componentNameLength);
-                strBuf.append("ResourceNames "); // XXX \n");
+                strBuf.append("ResourceNames ").append(LINE_BREAK);
             }
 
             for (int i=0; i < aList.size(); i++) {
                 TransactionAdminBean txnBean = (TransactionAdminBean)aList.get(i);
                 String txnId = txnBean.getId();
 
-                // XXX strBuf.append("\n");
                 _logger.fine("=== Processing txnId: " + txnId);
                 appendColumn(strBuf, txnId, COLUMN_LENGTH+15);
                 appendColumn(strBuf, txnBean.getStatus(), COLUMN_LENGTH);
@@ -167,15 +166,14 @@ try {
                         strBuf.append(",");
                     }
                 }
+                strBuf.append(LINE_BREAK);
             }
         }
 
         _logger.fine("Prepared inflightTransactions text: \n" + strBuf);
 
         inflightTransactions.setCurrent((strBuf == null)? "" : strBuf.toString());
-} catch (Throwable t) {
-t.printStackTrace();
-}
+        _logger.info("inflightTransactions.getCurrent: " + inflightTransactions.getCurrent());
         return inflightTransactions.getStatistic();
     }
     
