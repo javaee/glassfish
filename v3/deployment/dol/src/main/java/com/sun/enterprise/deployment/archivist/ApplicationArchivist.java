@@ -316,12 +316,11 @@ public class ApplicationArchivist extends Archivist<Application>
                         || (directory &&
                         (name.endsWith("_war") ||
                                 name.endsWith(".war")))) {
-                    String contextRoot =
-                            uri.substring(uri.lastIndexOf('/') + 1, uri.lastIndexOf('.'));
                     ModuleDescriptor<BundleDescriptor> md = new ModuleDescriptor<BundleDescriptor>();
                     md.setArchiveUri(uri);
                     md.setModuleType(XModuleType.WAR);
-                    md.setContextRoot(contextRoot);
+                    // the context root will be set later after 
+                    // we process the sub modules
                     app.addModule(md);
                 }
                 //Section EE.8.4.2.1.b
@@ -626,6 +625,13 @@ public class ApplicationArchivist extends Archivist<Application>
                 aModule.setDescriptor((BundleDescriptor) descriptor);
                 ((BundleDescriptor) descriptor).setApplication(app);
                 aModule.setManifest(newArchivist.getManifest());
+                // for optional application.xml case, set the 
+                // context root as module name for web modules
+                if (!appArchive.exists("META-INF/application.xml")) {
+                    if (aModule.getModuleType().equals(XModuleType.WAR)) {
+                        aModule.setContextRoot(aModule.getModuleName());
+                    }
+                }
             } else {
                 // display a message only if we had a handle on the sub archive
                 if (embeddedArchive!=null) {
