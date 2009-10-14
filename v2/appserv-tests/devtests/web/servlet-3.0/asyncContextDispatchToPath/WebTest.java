@@ -42,7 +42,7 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static final String TEST_NAME = "async-context-dispatch";
+    private static final String TEST_NAME = "async-context-dispatch-to-path";
 
     private static final String EXPECTED_RESPONSE = "Hello world";
 
