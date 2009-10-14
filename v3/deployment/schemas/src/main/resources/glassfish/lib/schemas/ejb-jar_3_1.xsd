@@ -771,10 +771,10 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:group ref="javaee:descriptionGroup"/>
       <xsd:element name="module-name"
                    type="javaee:string"
                    minOccurs="0"/>
+      <xsd:group ref="javaee:descriptionGroup"/>
       <xsd:element name="enterprise-beans"
                    type="javaee:enterprise-beansType"
                    minOccurs="0"/>
