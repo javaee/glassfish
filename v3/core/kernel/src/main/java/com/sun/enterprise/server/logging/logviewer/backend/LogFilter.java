@@ -341,15 +341,11 @@ public class LogFilter {
                 // If the absolute path is not provided, the burden of
                 // constructing the parent path falls on us. We try
                 // using the default parent path used for the current LogFile.
-                if( getLogFile() != null ) {
-                    parent = new File( 
-                        getLogFile().getLogFileName() ).getParent( );     
-                } else {
-                    String[] logPath = { System.getProperty( 
-                        SystemPropertyConstants.INSTANCE_ROOT_PROPERTY ), 
-                        "logs"};
-                    parent = StringUtils.makeFilePath( logPath, false );
-                }
+                // assume the user specified the path from the instance root and that is the parent
+
+                parent = System.getProperty(
+                        SystemPropertyConstants.INSTANCE_ROOT_PROPERTY );
+
             } catch( Exception e ) {
                 System.err.println( "Exception " + e + 
                     "thrown in Logviewer backend" );
