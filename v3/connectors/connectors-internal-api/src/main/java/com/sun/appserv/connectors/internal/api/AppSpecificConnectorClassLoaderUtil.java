@@ -13,9 +13,11 @@ import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.runtime.connector.SunConnector;
 import com.sun.enterprise.deployment.runtime.connector.ResourceAdapter;
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.logging.LogDomains;
 
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 @Service
@@ -26,6 +28,8 @@ public class AppSpecificConnectorClassLoaderUtil {
 
     @Inject
     Habitat habitat;
+
+    private Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
 
     /**
      * {@inheritDoc}
@@ -39,9 +43,11 @@ public class AppSpecificConnectorClassLoaderUtil {
         }
         Application app = appInfo.getMetaData(Application.class);
 
-        if(app == null){
-            // for non Java EE Applications, Application object is not available
-            // need a better mechanism to distinguis Java EE app and a non Java EE app.
+        if(!appInfo.isJavaEEApp()){
+            if(_logger.isLoggable(Level.FINEST)){
+                _logger.finest("Application ["+appName+"] is not a Java EE application, skipping " +
+                        "resource-adapter references detection");
+            }
             return;
         }
 
@@ -106,9 +112,7 @@ public class AppSpecificConnectorClassLoaderUtil {
         ApplicationInfo appInfo = appRegistry.get(appName);
         if (appInfo != null) {
             Application app = appInfo.getMetaData(Application.class);
-            // for non Java EE Applications, Application object is not available
-            // need a better mechanism to distinguis Java EE app and a non Java EE app.
-            if(app != null){
+            if(appInfo.isJavaEEApp()){
                 return app.getResourceAdapters();
             }
         }
