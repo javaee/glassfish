@@ -214,9 +214,21 @@ public class DefaultTransactionService implements TransactionService,
                 }
             }
             if( serverId != null ) {
-                Configuration.setServerName(serverName + "," + 
-            Configuration.getPropertyValue(Configuration.INSTANCE_NAME)
-            +  ",P" + serverId/*#Frozen*/, true);
+                String tempServerName = serverName + "," + 
+                        Configuration.getPropertyValue(Configuration.INSTANCE_NAME) + 
+                        ",P" + serverId/*#Frozen*/;
+                if (tempServerName.length() > 56) {
+                    int hc = tempServerName.hashCode();
+                    String newString = Integer.toString(hc);
+
+                    if (hc < 0) {
+                         newString.replace("-", "R");
+                    }
+
+                    int hcLength = (56 - newString.length());
+                    tempServerName = tempServerName.substring(0, hcLength) + newString;
+                }
+                Configuration.setServerName(tempServerName, true);
                 recoverable = true;
             } else {
                 long timestamp = System.currentTimeMillis();
