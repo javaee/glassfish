@@ -52,6 +52,12 @@
         if(!#{viewVal}) {
             setAttribute(key="viewVal" value="#{firstVal}");
         }
+        setAttribute(key="webStatsMbeanName" value="#{viewVal}/server");
+        getStatsbyTypeName(type="servlet-mon" name="#{webStatsMbeanName}", result=>$attribute{servletList}  hasStats=>$attribute{hasStatsServletsTemp});
+        if(!#{hasStatsServletsTemp}) {
+            setAttribute(key="webStatsMbeanName" value="#{viewVal}/#{viewVal}.war/server");
+        }
+        
     />
 </event>    
 #include "/common/shared/restart.inc"        
@@ -197,7 +203,7 @@
     <sun:tableRowGroup id="servlets" rendered="#{hasStatsSS}" data={"$attribute{servletList}"}  sourceVar="td" headerText="$resource{web.monitoring.servletStatisticsWeb} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="#{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="servlet-mon" name="#{viewVal}/server", result=>$attribute{servletList}  hasStats=>$attribute{hasStatsSS});
+            getStatsbyTypeName(type="servlet-mon" name="#{webStatsMbeanName}", result=>$attribute{servletList}  hasStats=>$attribute{hasStatsSS});
 
          />
 #include "/common/monitor/monitoringTableRows.inc"
@@ -207,7 +213,7 @@
     <sun:tableRowGroup id="session" rendered="#{hasStatsSSP}" data={"$attribute{sessionList}"}  sourceVar="td" headerText="$resource{web.monitoring.sessionStatisticsWeb} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="session-mon" name="#{viewVal}/server", result=>$attribute{sessionList}  hasStats=>$attribute{hasStatsSSP});
+            getStatsbyTypeName(type="session-mon" name="#{webStatsMbeanName}", result=>$attribute{sessionList}  hasStats=>$attribute{hasStatsSSP});
 
          />
 
@@ -217,7 +223,7 @@
     <sun:tableRowGroup id="requestStats" rendered="#{hasStatsWR}" data={"$attribute{requestStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.requestStatisticsWeb} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="web-request-mon" name="#{viewVal}/server", result=>$attribute{requestStatsList}  hasStats=>$attribute{hasStatsWR});
+            getStatsbyTypeName(type="web-request-mon" name="#{webStatsMbeanName}", result=>$attribute{requestStatsList}  hasStats=>$attribute{hasStatsWR});
 
          />
 
@@ -227,7 +233,7 @@
     <sun:tableRowGroup id="jspStats" rendered="#{hasStatsJSP}" data={"$attribute{jspStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jspStatisticsWeb} : #{viewVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="jsp-mon" name="#{viewVal}/server", result=>$attribute{jspStatsList}  hasStats=>$attribute{hasStatsJSP});
+            getStatsbyTypeName(type="jsp-mon" name="#{webStatsMbeanName}", result=>$attribute{jspStatsList}  hasStats=>$attribute{hasStatsJSP});
 
          />
 
