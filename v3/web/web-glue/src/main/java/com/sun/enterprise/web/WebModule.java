@@ -2144,9 +2144,9 @@ class DynamicWebServletRegistrationImpl
     }
 
     @Override
-    public void setServletSecurity(ServletSecurityElement constraint) {
-        super.setServletSecurity(constraint);
+    public Set<String> setServletSecurity(ServletSecurityElement constraint) {
         // TBD SHING WAI
+        return super.setServletSecurity(constraint);
     }
 
     /**

@@ -75,8 +75,9 @@ public class DynamicServletRegistrationImpl
         wrapper.setIsAsyncSupported(isAsyncSupported);
     }
 
-    public void setServletSecurity(ServletSecurityElement constraint) {
+    public Set<String> setServletSecurity(ServletSecurityElement constraint) {
         // TBD
+        return null;
     }
 
     public void setMultipartConfig(MultipartConfigElement mpConfig) {
