@@ -141,6 +141,9 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
         else {
             instanceName = s;
         }
+        // bnevins IT 10209
+        asenv.getProps().put(SystemPropertyConstants.SERVER_NAME, instanceName);
+        System.setProperty(SystemPropertyConstants.SERVER_NAME, instanceName);
     }
 
     public String getInstanceName() {
