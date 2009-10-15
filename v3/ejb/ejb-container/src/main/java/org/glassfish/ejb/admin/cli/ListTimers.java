@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,7 +58,7 @@ public class ListTimers implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(ListTimers.class);
 
-    @Param(primary=true)
+    @Param(primary=true, optional=true)
     String target;
 
     @Inject
@@ -76,7 +76,7 @@ public class ListTimers implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         //TODO Required to be modified when cluster is supported.
-        if (!target.equals(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)) {
+        if (target != null && !target.equals(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)) {
             report.setMessage(localStrings.getLocalString("list.timers" +
                     ".invalid.target", "Invalid target specified as Operand"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
