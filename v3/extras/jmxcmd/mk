@@ -96,6 +96,7 @@ initialize
 #jarMC
 #mv ${TEMP_DIR}/mx.jar $PUBLISH_DIR
 
+mvn install
 
 cp target/mx.jar $PUBLISH_DIR/jars
 
