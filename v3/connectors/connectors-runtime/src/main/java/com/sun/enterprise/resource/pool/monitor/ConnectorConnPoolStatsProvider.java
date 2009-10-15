@@ -402,7 +402,20 @@ public class ConnectorConnPoolStatsProvider {
         }
         PoolStatus status = ConnectorRuntime.getRuntime().getPoolManager().getPoolStatus(ccPoolName);
         numConnUsed.setCurrent(status.getNumConnUsed());
-        numConnFree.setCurrent(status.getNumConnFree());        
+        numConnFree.setCurrent(status.getNumConnFree());    
+        numConnCreated.reset();
+        numConnDestroyed.reset();
+        numConnFailedValidation.reset();
+        numConnTimedOut.reset();
+        numConnAcquired.reset();
+        numConnReleased.reset();
+        connRequestWaitTime.reset();
+        numConnSuccessfullyMatched.reset();
+        numConnNotSuccessfullyMatched.reset();
+        numPotentialConnLeak.reset();
+        averageConnWaitTime.reset();
+        totalConnRequestWaitTime.reset();
+        waitQueueLength.reset();        
     }
     
     /**
