@@ -5,7 +5,6 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.beans.PropertyVetoException;
 
 /**
@@ -24,7 +23,6 @@ public interface ApplicationName extends Named {
     @Override
     @NotNull
     @Attribute(required=true)
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     public String getName();
 
     @Override
