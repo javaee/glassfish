@@ -87,13 +87,9 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
             applyApplicationConfig(appContext);
         }
 
-        // TODO : dochez : add action report here...
         List<Result<WebModule>> results = container.loadWebModule(
-
             wmInfo, "null", props);
-
         props = null;
-
         if (results == null) {
             logger.log(Level.SEVERE,
                 "Unknown error, loadWebModule returned null, file a bug");

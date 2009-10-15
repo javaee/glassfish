@@ -1484,18 +1484,25 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * Creates and configures a web module for each virtual server
      * that the web module is hosted under.
      *
-     * If no virtual servers are specified, then the web module is
-     * loaded on EVERY virtual server.
+     * If no virtual servers have been specified, then the web module will
+     * not be loaded.
      */
     public List<Result<WebModule>> loadWebModule(
             WebModuleConfig wmInfo, String j2eeApplication,
             Properties deploymentProperties) {
-
         List<Result<WebModule>> results = new ArrayList<Result<WebModule>>();
         String vsIDs = wmInfo.getVirtualServers();
         List vsList = StringUtils.parseStringList(vsIDs, " ,");
         if (vsList == null || vsList.isEmpty()) {
+            _logger.log(Level.INFO,
+                "webcontainer.webModuleNotLoadedNoVirtualServers",
+                wmInfo.getName());
             return results;
+        }
+
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "About to load web module " +
+                wmInfo.getName() + " to virtual servers " + vsIDs);
         }
 
         Container[] vsArray = getEngine().findChildren();
