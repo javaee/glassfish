@@ -64,10 +64,18 @@ public class ProcessEnvironment {
      * ACC is the application client
      * Other is a standalone java.
      */
-    public enum ProcessType { Server, ACC, Other ; 
+    public enum ProcessType { Server, ACC, Embedded, Other ; 
 
         public boolean isServer() {
+            return this==Server || this==Embedded;
+        }
+
+        public boolean isStandaloneServer() {
             return this==Server;
+        }
+
+        public boolean isEmbedded() {
+            return this==Embedded;
         }
     }
 

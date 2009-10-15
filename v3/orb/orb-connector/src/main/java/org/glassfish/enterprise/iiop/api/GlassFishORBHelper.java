@@ -78,7 +78,7 @@ public class GlassFishORBHelper implements PostConstruct, ORBLocator {
                         // cannot depend on having access to the protocol manager.
                         orb = orbFactory.createORB(props);
 
-                        if( processEnv.getProcessType() == ProcessType.Server) {
+                        if( processEnv.getProcessType().isServer()) {
 
                             ProtocolManager tempProtocolManager =
 			                    habitat.getByContract(ProtocolManager.class);
@@ -141,7 +141,7 @@ public class GlassFishORBHelper implements PostConstruct, ORBLocator {
      */
     public ProtocolManager getProtocolManager() {
 
-        if( processEnv.getProcessType() != ProcessType.Server ) {
+        if( !processEnv.getProcessType().isServer() ) {
             return null;
         }
 

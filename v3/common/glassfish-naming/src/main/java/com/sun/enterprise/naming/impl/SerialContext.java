@@ -220,7 +220,7 @@ public class SerialContext implements Context {
         targetHostFromEnv = (String)myEnv.get(ORBLocator.OMG_ORB_INIT_HOST_PROPERTY);
         targetPortFromEnv = (String)myEnv.get(ORBLocator.OMG_ORB_INIT_PORT_PROPERTY);
 
-        intraServerLookups = (processType == ProcessType.Server) && (orbFromEnv == null) &&
+        intraServerLookups = (processType.isServer()) && (orbFromEnv == null) &&
                         (targetHostFromEnv == null) && (targetPortFromEnv == null);
 
         // Set target host / port from env.  If only one of the two is set, fill in the

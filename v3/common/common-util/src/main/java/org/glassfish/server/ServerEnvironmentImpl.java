@@ -287,5 +287,9 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     public void setStatus(Status status) {
         this.status = status;
     }
+
+    public boolean isEmbedded() {
+        return server!=null;
+    }
 }
 

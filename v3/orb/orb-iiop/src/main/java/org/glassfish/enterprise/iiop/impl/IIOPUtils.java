@@ -59,7 +59,7 @@ public class IIOPUtils implements PostConstruct {
 
         processType = processEnv.getProcessType();
 
-        if( processEnv.getProcessType() == ProcessType.Server) {
+        if( processEnv.getProcessType().isServer()) {
 
             iiopService = habitat.getComponent(IiopService.class);
             final Collection<ThreadPool> threadPool = habitat.getAllByContract(ThreadPool.class);
@@ -104,7 +104,7 @@ public class IIOPUtils implements PostConstruct {
     }
 
     private void assertServer() {
-        if ( processType != processType.Server ) {
+        if ( !processType.isServer() ) {
             throw new IllegalStateException("Only available in Server mode");
         }
     }

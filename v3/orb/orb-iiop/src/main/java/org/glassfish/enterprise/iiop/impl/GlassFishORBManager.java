@@ -510,7 +510,7 @@ public final class GlassFishORBManager {
 
             // In a server, don't configure any default acceptors so that lazy init
             // can be used.  Actual lazy init setup takes place in PEORBConfigurator
-            if (processType == ProcessType.Server) {
+            if (processType.isServer()) {
                 validateIiopListeners();
                 orbInitProperties.put(ORBConstants.NO_DEFAULT_ACCEPTORS, "true");
             }

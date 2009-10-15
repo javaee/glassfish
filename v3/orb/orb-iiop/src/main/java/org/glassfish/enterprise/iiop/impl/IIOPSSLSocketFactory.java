@@ -131,7 +131,7 @@ public class IIOPSSLSocketFactory  implements ORBSocketFactory, Serializable
                 processType = penv.getProcessType();
             }
             //if (Switch.getSwitch().getContainerType() == Switch.EJBWEB_CONTAINER) {
-            if((processType != null) && (processType == ProcessType.Server)) {
+            if((processType != null) && (processType.isServer())) {
                 //this is the EJB container
                 IiopService iiopBean = Globals.getDefaultHabitat().getComponent(IiopService.class);
                 List<IiopListener> iiopListeners = iiopBean.getIiopListener();

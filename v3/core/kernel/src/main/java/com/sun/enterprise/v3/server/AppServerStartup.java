@@ -115,9 +115,6 @@ public class AppServerStartup implements ModuleStartup {
     @Inject
     SystemTasks pidWriter;
 
-     //@Inject
-     //ClassLoaderHierarchy cch;
-
     /**
      * A keep alive thread that keeps the server JVM from going down
      * as long as GlassFish kernel is up.
@@ -199,7 +196,13 @@ public class AppServerStartup implements ModuleStartup {
         // remove all existing inhabitant to n
         habitat.removeAllByType(ProcessEnvironment.class);
 
-        habitat.add(new ExistingSingletonInhabitant<ProcessEnvironment>(ProcessEnvironment.class, new ProcessEnvironment(ProcessEnvironment.ProcessType.Server)));
+        if (env.isEmbedded()) {
+            habitat.add(new ExistingSingletonInhabitant<ProcessEnvironment>(ProcessEnvironment.class,
+                    new ProcessEnvironment(ProcessEnvironment.ProcessType.Embedded)));
+        } else {
+            habitat.add(new ExistingSingletonInhabitant<ProcessEnvironment>(ProcessEnvironment.class,
+                    new ProcessEnvironment(ProcessEnvironment.ProcessType.Server)));
+        }
 
         Map<Class, Long> servicesTiming = new HashMap<Class, Long>();
 
