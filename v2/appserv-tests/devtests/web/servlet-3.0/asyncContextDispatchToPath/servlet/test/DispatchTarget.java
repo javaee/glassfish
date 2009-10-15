@@ -43,7 +43,7 @@ import javax.servlet.http.*;
 public class DispatchTarget extends HttpServlet {
 
     private static final String EXPECTED_ASYNC_REQUEST_URI =
-        "/web-async-context-dispatch/TestServlet";
+        "/web-async-context-dispatch-to-path/TestServlet";
 
     private static final String EXPECTED_ASYNC_SERVLET_PATH =
         "/TestServlet";
