@@ -364,6 +364,10 @@ public class ApplicationContext
     public boolean setInitParameter(String name, String value) {
         try {
             context.addParameter(name, value);
+            if (parameters != null) {
+                // Avoid call to mergeParameters
+                parameters.put(name, value);
+            }
             return true;
         } catch (IllegalArgumentException iae) {
             return false;
@@ -1357,13 +1361,13 @@ public class ApplicationContext
      * the application parameters appropriately.
      */
     private void mergeParameters() {
-
-        if (parameters != null)
+        if (parameters != null) {
             return;
+        }
         HashMap results = new HashMap();
-        String names[] = context.findParameters();
-        for (int i = 0; i < names.length; i++)
-            results.put(names[i], context.findParameter(names[i]));
+        for (String name : context.findParameters()) {
+            results.put(name, context.findParameter(name));
+        }
         List<ApplicationParameter> params =
             context.findApplicationParameters();
         synchronized(params) {
