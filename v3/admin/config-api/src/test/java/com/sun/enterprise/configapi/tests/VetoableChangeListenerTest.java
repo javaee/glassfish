@@ -54,7 +54,24 @@ public class VetoableChangeListenerTest extends ConfigApiTest implements Vetoabl
             ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
 
                 public Object run(VirtualServer param) throws PropertyVetoException, TransactionFailure {
-                    // first one is fine...
+                    param.setId("foo");
+                    param.setAccessLog("Foo");
+                    return null;
+                }
+            }, target);
+        } catch(TransactionFailure e) {
+            e.printStackTrace();
+            result=true;
+        }
+
+        assertTrue(result);
+
+        result=false;
+        // let's do it again.
+        try {
+            ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
+
+                public Object run(VirtualServer param) throws PropertyVetoException, TransactionFailure {
                     param.setId("foo");
                     param.setAccessLog("Foo");
                     return null;
@@ -66,6 +83,24 @@ public class VetoableChangeListenerTest extends ConfigApiTest implements Vetoabl
         }
 
         ((ConfigBean) ConfigSupport.getImpl(target)).getOptionalFeature(ConstrainedBeanListener.class).removeVetoableChangeListener(this);
+        assertTrue(result);
+
+
+        // this time it should work !
+        try {
+            ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
+
+                public Object run(VirtualServer param) throws PropertyVetoException, TransactionFailure {
+                    // first one is fine...
+                    param.setAccessLog("Foo");
+                    return null;
+                }
+            }, target);
+        } catch(TransactionFailure e) {
+            e.printStackTrace();
+            result=false;
+        }
+
         assertTrue(result);
     }
 
