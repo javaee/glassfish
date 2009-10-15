@@ -125,8 +125,7 @@ public class FacadeLaunchable implements Launchable {
             final String anchorDir) throws IOException {
         super();
         this.facadeClientRA = facadeClientRA;
-        this.combinedRA = habitat.getComponent(MultiReadableArchive.class);
-        combinedRA.open(facadeClientRA.getURI(), clientRA.getURI());
+        this.combinedRA = openCombinedReadableArchive(habitat, facadeClientRA, clientRA);
         this.mainClassNameToLaunch = mainClassNameToLaunch;
         this.classPathURIs = toURIs(mainAttrs.getValue(Name.CLASS_PATH));
         this.habitat = habitat;
@@ -139,6 +138,15 @@ public class FacadeLaunchable implements Launchable {
 
     public String getAnchorDir() {
         return anchorDir;
+    }
+
+    private static MultiReadableArchive openCombinedReadableArchive(
+            final Habitat habitat,
+            final ReadableArchive facadeRA,
+            final ReadableArchive clientRA) throws IOException {
+        final MultiReadableArchive combinedRA = habitat.getComponent(MultiReadableArchive.class);
+        combinedRA.open(facadeRA.getURI(), clientRA.getURI());
+        return combinedRA;
     }
 
     protected URI[] toURIs(final String uriList) {
@@ -347,7 +355,8 @@ public class FacadeLaunchable implements Launchable {
             ReadableArchive clientRA = af.openArchive(clientURI);
 
             AppClientArchivist facadeClientArchivist = getArchivist(habitat);
-            final ApplicationClientDescriptor facadeClientDescriptor = facadeClientArchivist.open(clientFacadeRA);
+            MultiReadableArchive combinedRA = openCombinedReadableArchive(habitat, clientFacadeRA, clientRA);
+            final ApplicationClientDescriptor facadeClientDescriptor = facadeClientArchivist.open(combinedRA);
             final String moduleID = Launchable.LaunchableUtil.moduleID(
                     groupFacadeURI, clientURI, facadeClientDescriptor);
 
