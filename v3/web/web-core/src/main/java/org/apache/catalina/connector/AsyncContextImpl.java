@@ -266,6 +266,12 @@ public class AsyncContextImpl implements AsyncContext {
         }
     }
 
+    public <T extends AsyncListener> T createListener(Class<T> clazz)
+            throws ServletException {
+        // TBD
+        return null;
+    }
+
     @Override
     public void setTimeout(long timeout) {
         if (!isOkToConfigure.get()) {
