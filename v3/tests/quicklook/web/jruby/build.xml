@@ -18,6 +18,8 @@
    <delete dir="${appName}"/>
 </target>
 
+<target name="build-deploy" depends="setup-jruby,create-app,build,deploy" />
+
 <target name="setJRubyCon">
    <available file="${JRUBY_HOME}" type="dir" property="local.jruby.present"/>
 </target>
