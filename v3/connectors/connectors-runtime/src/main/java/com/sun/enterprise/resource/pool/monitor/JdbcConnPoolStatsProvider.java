@@ -81,16 +81,20 @@ public class JdbcConnPoolStatsProvider {
     private CountStatisticImpl numConnTimedOut = new CountStatisticImpl(
             "numconntimedout", StatisticImpl.UNIT_COUNT, "The total number of " +
             "connections in the pool that timed out between the start time and the last sample time.");
-    private CountStatisticImpl numConnFree = new CountStatisticImpl(
+    private RangeStatisticImpl numConnFree = new RangeStatisticImpl(
+            0, 0, 0,
             "numconnfree", StatisticImpl.UNIT_COUNT, "The total number of free " +
-            "connections in the pool as of the last sampling.");
-    private CountStatisticImpl numConnUsed = new CountStatisticImpl(
+            "connections in the pool as of the last sampling.",
+            System.currentTimeMillis(), System.currentTimeMillis());
+    private RangeStatisticImpl numConnUsed = new RangeStatisticImpl(
+            0, 0, 0,
             "numconnused", StatisticImpl.UNIT_COUNT, "Provides connection usage " +
             "statistics. The total number of connections that are currently being " +
             "used, as well as information about the maximum number of connections " +
-            "that were used (the high water mark).");
+            "that were used (the high water mark).",
+            System.currentTimeMillis(), System.currentTimeMillis());
     private RangeStatisticImpl connRequestWaitTime = new RangeStatisticImpl(
-            0, Long.MAX_VALUE, 0, 
+            0, 0, 0, 
             "connrequestwaittime", StatisticImpl.UNIT_MILLISECOND, 
             "The longest and shortest wait times of connection requests. The " +
             "current value indicates the wait time of the last request that was " +
@@ -184,8 +188,9 @@ public class JdbcConnPoolStatsProvider {
                              poolName);
             }
             //Decrement counter
-            numConnFree.decrement();
-            numConnFree.setCount(numConnFree.getCount()<0 ? 0 : numConnFree.getCount());
+            synchronized(numConnFree) {
+                numConnFree.setCurrent(numConnFree.getCurrent() - 1);
+            }
         }
     }
     
@@ -207,11 +212,17 @@ public class JdbcConnPoolStatsProvider {
             }
             if(beingDestroyed) {
                 //if pruned by resizer thread
-                if(numConnFree.getCount() + numConnUsed.getCount() < steadyPoolSize) {
-                    numConnFree.increment();
-                }                    
+                synchronized(numConnFree) {
+                    synchronized(numConnUsed) {
+                        if(numConnFree.getCurrent() + numConnUsed.getCurrent() < steadyPoolSize) {
+                            numConnFree.setCurrent(numConnFree.getCurrent() + 1);    
+                        }
+                    }
+                }
             } else {
-                numConnFree.increment();
+                synchronized(numConnFree) {
+                    numConnFree.setCurrent(numConnFree.getCurrent() + 1);
+                }
             }            
         }
     }
@@ -232,7 +243,9 @@ public class JdbcConnPoolStatsProvider {
                              poolName);
             }
             //Decrement numConnUsed counter
-            numConnUsed.decrement();
+            synchronized(numConnUsed) {
+                numConnUsed.setCurrent(numConnUsed.getCurrent() - 1);
+            }
         }
     }
     
@@ -250,12 +263,14 @@ public class JdbcConnPoolStatsProvider {
             if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Connections Freed event received - poolName = " + 
                              poolName);
-                logger.finest("numConnUsed =" + numConnUsed.getCount() + 
-                    " numConnFree=" + numConnFree.getCount() + 
+                logger.finest("numConnUsed =" + numConnUsed.getCurrent() + 
+                    " numConnFree=" + numConnFree.getCurrent() + 
                     " Number of connections freed =" + count);
             }
             //set numConnFree to the count value
-            numConnFree.setCount(count);
+            synchronized(numConnFree) {
+                numConnFree.setCurrent(count);
+            }
         }
     }
 
@@ -273,7 +288,9 @@ public class JdbcConnPoolStatsProvider {
                              poolName);
             }
             //increment numConnUsed
-            numConnUsed.increment();
+            synchronized(numConnUsed) {
+                numConnUsed.setCurrent(numConnUsed.getCurrent() + 1);
+            }
         }
     }
 
@@ -387,8 +404,8 @@ public class JdbcConnPoolStatsProvider {
             logger.finest("Reset event received - poolName = " + jdbcPoolName);
         }
         PoolStatus status = ConnectorRuntime.getRuntime().getPoolManager().getPoolStatus(jdbcPoolName);
-        numConnUsed.setCount(status.getNumConnUsed());
-        numConnFree.setCount(status.getNumConnFree());
+        numConnUsed.setCurrent(status.getNumConnUsed());
+        numConnFree.setCurrent(status.getNumConnFree());
     }
     
     /**
@@ -492,8 +509,8 @@ public class JdbcConnPoolStatsProvider {
     }*/
     
     private void lowLevelLog(StringBuffer stackTrace) {
-        stackTrace.append("\n curNumConnUsed = " + numConnUsed.getCount());
-        stackTrace.append("\n curNumConnFree = " + numConnFree.getCount());
+        stackTrace.append("\n curNumConnUsed = " + numConnUsed.getCurrent());
+        stackTrace.append("\n curNumConnFree = " + numConnFree.getCurrent());
         stackTrace.append("\n numConnCreated = " + numConnCreated.getCount());
         stackTrace.append("\n numConnDestroyed = " + numConnDestroyed.getCount());        
     }
@@ -533,12 +550,12 @@ public class JdbcConnPoolStatsProvider {
     }
 
     @ManagedAttribute(id="numconnused")
-    public CountStatistic getNumConnUsed() {
+    public RangeStatistic getNumConnUsed() {
         return numConnUsed.getStatistic();
     }
 
     @ManagedAttribute(id="numconnfree")
-    public CountStatistic getNumConnFree() {
+    public RangeStatistic getNumConnFree() {
         return numConnFree.getStatistic();
     }
 
