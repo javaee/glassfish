@@ -208,47 +208,47 @@ public class MEJBTest {
 
 
 
-    public static void main(String[] args) {
-        try {
-            final String mejbName = "java:global/mejb/MEJBBean";
-            final String username = "admin";
-            final String password = "admin";
-            final String realm = "admin-realm";
-            System.out.println( "Authenticating with \"" + username + "\", \"" + password + "\"");
-            
-            final ProgrammaticLogin pm = new ProgrammaticLogin();
-            pm.login( username, password, realm, true);
+public static void main(String[] args) {
+    try {
+        final String mejbName = "java:global/mejb/MEJBBean";
+        final String username = "admin";
+        final String password = "";
+        final String realm = "admin-realm";
+        System.out.println( "Authenticating with \"" + username + "\", \"" + password + "\"");
+        
+        final ProgrammaticLogin pm = new ProgrammaticLogin();
+        pm.login( username, password, realm, true);
 
-            println("Looking up: " + mejbName);
-            final InitialContext initial = new InitialContext();
-            final Object objref = initial.lookup(mejbName);
+        println("Looking up: " + mejbName);
+        final InitialContext initial = new InitialContext();
+        final Object objref = initial.lookup(mejbName);
 
-            final ManagementHome home = (ManagementHome) PortableRemoteObject.narrow(objref, ManagementHome.class);
-            try
-            {
-                final ManagementHome home2 = (ManagementHome)objref;
-            }
-            catch( final Exception e )
-            {
-                println("WARNING: (ManagementHome)PortableRemoteObject.narrow(objref, ManagementHome.class) works, but (ManagementHome)objref does not!" );
-            }
-            
-            //println("ManagementHome: " + home + " for " + mejbName);
-            final Management mejb = (Management)home.create();
-            println("Got the MEJB");
-
-            new MEJBTest( mejb ).test();
-
-            println( "Calling mejb.remove()" );
-            mejb.remove();
-
-        } catch (Exception ex) {
-            System.err.println("Caught an unexpected exception!");
-            ex.printStackTrace();
+        final ManagementHome home = (ManagementHome) PortableRemoteObject.narrow(objref, ManagementHome.class);
+        try
+        {
+            final ManagementHome home2 = (ManagementHome)objref;
         }
-        println( "Exiting main() forcibly" );
-        System.exit( -1 );
+        catch( final Exception e )
+        {
+            println("WARNING: (ManagementHome)PortableRemoteObject.narrow(objref, ManagementHome.class) works, but (ManagementHome)objref does not!" );
+        }
+        
+        //println("ManagementHome: " + home + " for " + mejbName);
+        final Management mejb = (Management)home.create();
+        println("Got the MEJB");
+
+        new MEJBTest( mejb ).test();
+
+        println( "Calling mejb.remove()" );
+        mejb.remove();
+
+    } catch (Exception ex) {
+        System.err.println("Caught an unexpected exception!");
+        ex.printStackTrace();
     }
+    println( "Exiting main() forcibly" );
+    System.exit( -1 );
+}
 
     private static final void println(final Object o) {
         System.out.println("" + o);
