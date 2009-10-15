@@ -39,6 +39,11 @@ package org.glassfish.web.osgi;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
@@ -46,6 +51,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.api.Globals;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.osgi.framework.Bundle;
 
@@ -53,6 +59,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.List;
 
 /**
  * This is a stateful service. This is responsible for deployment
@@ -280,7 +287,45 @@ public class JavaEEDeploymentRequest
         parameters.enabled = Boolean.TRUE;
         parameters.origin = DeployCommandParameters.Origin.deploy;
         parameters.force = true;
+        parameters.virtualservers = getAllVirtualServers();
         return parameters;
+    }
+
+    /*
+     * @return comma-separated list of all defined virtual servers (exclusive
+     * of __asadmin)
+     */
+    private String getAllVirtualServers() {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        Domain domain = Globals.get(Domain.class);
+        String target = "server"; // Need to understand how to dynamically obtains this
+        Server server = domain.getServerNamed(target);
+        if (server != null) {
+            Config config = domain.getConfigs().getConfigByName(
+                server.getConfigRef());
+            if (config != null) {
+                HttpService httpService = config.getHttpService();
+                if (httpService != null) {
+                    List<VirtualServer> hosts = httpService.getVirtualServer();
+                    if (hosts != null) {
+                        for (VirtualServer host : hosts) {
+                            if (("__asadmin").equals(host.getId())) {
+                                continue;
+                            }
+                            if (first) {
+                                sb.append(host.getId());
+                                first = false;
+                            } else {
+                                sb.append(",");
+                                sb.append(host.getId());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return sb.toString();
     }
 
 }
