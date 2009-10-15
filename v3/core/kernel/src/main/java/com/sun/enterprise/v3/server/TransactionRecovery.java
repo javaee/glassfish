@@ -20,17 +20,13 @@ public class TransactionRecovery implements Startup, PostConstruct {
     @Inject
     Applications applications;
 
-    @Inject(optional=true)
-    Holder<ResourceRecoveryManager> rrMgr;
+    @Inject
+    Habitat habitat;
 
     public void postConstruct() {
-        if (rrMgr==null) {
-            return;
-        }
-
         final List<Application> apps = applications.getApplications();
         if (apps!=null && apps.size()>0) {
-            rrMgr.get();
+            habitat.getByContract(ResourceRecoveryManager.class);
         }
     }
 

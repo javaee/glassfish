@@ -49,7 +49,7 @@ import org.glassfish.api.embedded.EmbeddedFileSystem;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.UndeployCommandParameters;
-import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.archive.*;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandRunner;
@@ -58,6 +58,7 @@ import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.internal.data.*;
+import org.glassfish.deployment.common.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -168,6 +169,25 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         if(params.properties != null){
             context.getAppProps().putAll(params.properties);        
         }
+
+        ArchiveHandler archiveHandler = context.getArchiveHandler();
+        if (archiveHandler == null) {
+            try {
+                archiveHandler = deployment.getArchiveHandler(archive);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (archiveHandler==null) {
+                throw new RuntimeException("Cannot find archive handler for source archive");
+        }
+
+        if (params.name==null) {
+                params.name = archiveHandler.getDefaultApplicationName(archive, context);
+                if (!params.force) {
+                    params.name = DeploymentUtils.resolveAppNameConflict(params.name, habitat);
+                }
+            }
         
         final ClassLoader cl = context.getClassLoader();
         Collection<Sniffer> sniffers = snifferMgr.getSniffers(archive, cl);
