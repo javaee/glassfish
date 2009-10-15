@@ -82,6 +82,10 @@
 	    <version>${project.version}</version>
        </dependency>
        <dependency>
+          <groupId>com.ctc.wstx</groupId>
+           <artifactId>woodstox-osgi</artifactId>
+       </dependency>
+       <dependency>
           <groupId>com.sun.xml.ws</groupId>
            <artifactId>webservices-osgi</artifactId>
        </dependency>
