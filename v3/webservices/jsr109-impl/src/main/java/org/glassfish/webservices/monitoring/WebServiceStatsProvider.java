@@ -55,7 +55,7 @@ public class WebServiceStatsProvider {
     }
 
     // sun-jaxws.xml deployment
-    @ProbeListener("glassfish:webservices:ri:deploy")
+    @ProbeListener("glassfish:webservices:deployment-ri:deploy")
     public void riDeploy(@ProbeParam("adapter")ServletAdapter adapter) {
         String path = adapter.getServletContext().getContextPath()+adapter.getValidPath();
         if (!endpoints.containsKey(path)) {
@@ -65,7 +65,7 @@ public class WebServiceStatsProvider {
     }
 
     // sun-jaxws.xml undeployment
-    @ProbeListener("glassfish:webservices:ri:undeploy")
+    @ProbeListener("glassfish:webservices:deployment-ri:undeploy")
     public void riUndeploy(@ProbeParam("adapter")ServletAdapter adapter) {
         ServletContext ctxt = adapter.getServletContext();
         String name = ctxt.getContextPath()+adapter.getValidPath();
