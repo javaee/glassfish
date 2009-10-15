@@ -352,7 +352,7 @@ public final class AMXStartupService
         // loads the high-level AMX MBeans, like DomainRoot, QueryMgr, etc
         loadDomainRoot();
         FeatureAvailability.getInstance().registerFeature(FeatureAvailability.AMX_CORE_READY_FEATURE, getDomainRoot());
-        ImplUtil.getLogger().info("AMXStartupServiceNew: AMX core MBeans are ready for use, DamainRoot = " + getDomainRoot());
+        ImplUtil.getLogger().fine("AMXStartupServiceNew: AMX core MBeans are ready for use, DomainRoot = " + getDomainRoot());
 
         try
         {
