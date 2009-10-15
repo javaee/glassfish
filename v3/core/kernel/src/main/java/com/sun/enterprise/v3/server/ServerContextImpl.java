@@ -60,7 +60,6 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
     Habitat habitat;
 
     File instanceRoot;
-    String instanceName = "server"; // weird
     String[] args;
 
     /** Creates a new instance of ServerContextImpl */
@@ -87,7 +86,7 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
     }
 
     public String getInstanceName() {
-        return instanceName;
+        return env.getInstanceName();
     }
 
     public String getServerConfigURL() {
