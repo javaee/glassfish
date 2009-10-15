@@ -99,6 +99,11 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
 
             application.setAppName(name);
 
+            if (application.isVirtual()) {
+                ModuleDescriptor md = application.getStandaloneBundleDescriptor().getModuleDescriptor();
+                md.setModuleName(name);
+            }
+
             try {
                 applicationFactory.openWith(application, sourceArchive, 
                     archivist);
