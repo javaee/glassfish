@@ -67,7 +67,7 @@ import java.util.logging.Logger;
  */
 public class OSGiWebContainer
 {
-    // TODO(Sahoo): Integration with event admin service
+    // TODO(Sahoo): Integration wh event admin service
 
     static class OSGiApplicationInfo
     {
@@ -109,15 +109,15 @@ public class OSGiWebContainer
             try {
                 ServletContext sc = setServletContextAttr(osgiAppInfo);
                 registerService(b, sc);
+                applications.put(b, osgiAppInfo);
+                logger.logp(Level.INFO, "OSGiWebContainer", "deploy",
+                        "deployed bundle {0} at {1}",
+                        new Object[]{b, osgiAppInfo.appInfo.getSource().getURI()});
             } catch (Exception e) {
                 logger.logp(Level.WARNING, "OSGiWebContainer", "deploy",
                         "Rolling back deployment as exception occured", e);
                 undeployJavaEEArtifacts(osgiAppInfo, report);
             }
-            applications.put(b, osgiAppInfo);
-            logger.logp(Level.INFO, "OSGiWebContainer", "deploy",
-                    "deployed bundle {0} at {1}",
-                    new Object[]{b, osgiAppInfo.appInfo.getSource().getURI()});
         }
         else
         {
