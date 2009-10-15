@@ -54,6 +54,7 @@ import com.sun.corba.ee.spi.transport.IORToSocketInfo;
 import com.sun.corba.ee.spi.transport.SocketInfo;
 
 import com.sun.logging.LogDomains;
+import org.glassfish.internal.api.Globals;
 
 /**
  * This implements IORToSocketInfo for ORB.
@@ -80,7 +81,7 @@ public class IORToSocketInfoImpl implements IORToSocketInfo {
     private SecurityMechanismSelector selector;
     
     public IORToSocketInfoImpl() {
-        selector = Lookups.getSecurityMechanismSelector();
+        selector = Globals.get(SecurityMechanismSelector.class);
     }
     
     public List getSocketInfo(IOR ior, List previous) 

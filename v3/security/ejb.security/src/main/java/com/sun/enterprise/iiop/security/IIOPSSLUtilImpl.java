@@ -137,13 +137,13 @@ public class IIOPSSLUtilImpl implements IIOPSSLUtil {
     }
     
      public Object getSSLPortsAsSocketInfo(Object ior) {         
-          SecurityMechanismSelector selector = Lookups.getSecurityMechanismSelector();
+          SecurityMechanismSelector selector = Lookups.getSecurityMechanismSelector(habitat);
           return selector.getSSLSocketInfo(ior);
      }
      
      public TaggedComponent createSSLTaggedComponent(IORInfo iorInfo, Object sInfos) {
          List<com.sun.corba.ee.spi.folb.SocketInfo> socketInfos = (List<com.sun.corba.ee.spi.folb.SocketInfo>)sInfos;
-         orbHelper = Lookups.getGlassFishORBHelper();
+         orbHelper = Lookups.getGlassFishORBHelper(habitat);
          TaggedComponent result = null;
           org.omg.CORBA.ORB orb = orbHelper.getORB();
             int sslMutualAuthPort = -1;

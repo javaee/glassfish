@@ -120,9 +120,9 @@ public class SecServerRequestInterceptor
         this.name    = name;
         this.codec   = codec;
         this.prname  = name + "::";
-        secContextUtil = Lookups.getSecurityContextUtil();
-        orbHelper = Lookups.getGlassFishORBHelper();
-        smSelector = Lookups.getSecurityMechanismSelector();
+        secContextUtil = Lookups.getSecurityContextUtil(habitat);
+        orbHelper = Lookups.getGlassFishORBHelper(habitat);
+        smSelector = Lookups.getSecurityMechanismSelector(habitat);
     }
 
     public String name() {

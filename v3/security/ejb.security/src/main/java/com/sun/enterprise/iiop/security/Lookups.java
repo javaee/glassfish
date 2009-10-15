@@ -38,6 +38,7 @@ package com.sun.enterprise.iiop.security;
 import java.lang.ref.WeakReference;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * This class is a local utility class to provide for hk2 lookups during runtime.
@@ -48,45 +49,47 @@ class Lookups {
     private static WeakReference<SecurityMechanismSelector> sms = new WeakReference<SecurityMechanismSelector>(null);
     private static WeakReference<GlassFishORBHelper> orb = new WeakReference<GlassFishORBHelper>(null);
     private static WeakReference<SecurityContextUtil> sc = new WeakReference<SecurityContextUtil>(null);
+    
+    
 
-    static SecurityMechanismSelector getSecurityMechanismSelector() {
+    static SecurityMechanismSelector getSecurityMechanismSelector(Habitat habitat) {
         if (sms.get() != null) {
             return sms.get();
         }
-        return _getSecurityMechanismSelector();
+        return _getSecurityMechanismSelector(habitat);
     }
 
-    private static synchronized SecurityMechanismSelector _getSecurityMechanismSelector() {
+    private static synchronized SecurityMechanismSelector _getSecurityMechanismSelector(Habitat habitat) {
         if (sms.get() == null) {
-            sms = new WeakReference<SecurityMechanismSelector>(Globals.get(SecurityMechanismSelector.class));
+            sms = new WeakReference<SecurityMechanismSelector>(habitat.getComponent(SecurityMechanismSelector.class));
         }
         return sms.get();
     }
 
-    static GlassFishORBHelper getGlassFishORBHelper() {
+    static GlassFishORBHelper getGlassFishORBHelper(Habitat habitat) {
         if (orb.get() != null) {
             return orb.get();
         }
-        return _getGlassFishORBHelper();
+        return _getGlassFishORBHelper(habitat);
     }
 
-    private static synchronized GlassFishORBHelper _getGlassFishORBHelper() {
+    private static synchronized GlassFishORBHelper _getGlassFishORBHelper(Habitat habitat) {
         if (orb.get() == null) {
-            orb = new WeakReference<GlassFishORBHelper>(Globals.get(GlassFishORBHelper.class));
+            orb = new WeakReference<GlassFishORBHelper>(habitat.getComponent(GlassFishORBHelper.class));
         }
         return orb.get();
     }
 
-    static SecurityContextUtil getSecurityContextUtil() {
+    static SecurityContextUtil getSecurityContextUtil(Habitat habitat) {
         if (sc.get() != null) {
             return sc.get();
         }
-        return _getSecurityContextUtil();
+        return _getSecurityContextUtil(habitat);
     }
 
-    private static synchronized SecurityContextUtil _getSecurityContextUtil() {
+    private static synchronized SecurityContextUtil _getSecurityContextUtil(Habitat habitat) {
         if (sc.get() == null) {
-            sc = new WeakReference<SecurityContextUtil>(Globals.get(SecurityContextUtil.class));
+            sc = new WeakReference<SecurityContextUtil>(habitat.getComponent(SecurityContextUtil.class));
         }
         return sc.get();
     }

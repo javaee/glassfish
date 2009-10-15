@@ -172,7 +172,7 @@ public class GSSUPToken {
         /* Get the target name from the IOR. The IOR is stored in the
          * ConnectionContext object
          */
-        SecurityMechanismSelector sms = Lookups.getSecurityMechanismSelector();
+        SecurityMechanismSelector sms = Lookups.getSecurityMechanismSelector(habitat);
         ConnectionContext cc   = sms.getClientConnectionContext();
         CompoundSecMech   mech = cc.getMechanism();
         byte[] target_name     = mech.as_context_mech.target_name;
