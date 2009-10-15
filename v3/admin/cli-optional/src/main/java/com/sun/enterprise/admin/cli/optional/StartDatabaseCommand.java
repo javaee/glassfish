@@ -240,17 +240,14 @@ public final class StartDatabaseCommand extends DatabaseCommand {
                 logger.printDebugMessage("Start Database");
                 cpe.execute("startDatabaseCmd", startDatabaseCmd(), false);
                 if (cpe.exitValue() != 0) {
-                    throw new CommandException(
-                            strings.get("UnableToStartDatabase", dbLog));
+                    throw new CommandException(strings.get("UnableToStartDatabase", dbLog));
                 }
             } else if (cpe.exitValue() < 0) {
                 // Something terribly wrong!
-                throw new CommandException(
-                            strings.get("CommandUnSuccessful", name));
+                throw new CommandException(strings.get("CommandUnSuccessful", name));
             } else {
                 // database already started
-                logger.printMessage(
-                            strings.get("StartDatabaseStatus", dbHost, dbPort));
+                logger.printMessage(strings.get("StartDatabaseStatus", dbHost, dbPort));
             }
         } catch (IllegalThreadStateException ite) {
             // IllegalThreadStateException is thrown if the 
@@ -259,30 +256,27 @@ public final class StartDatabaseCommand extends DatabaseCommand {
             // This is good since that means the database is up and running.
             CLIProcessExecutor cpePing = new CLIProcessExecutor();
             CLIProcessExecutor cpeSysInfo = new CLIProcessExecutor();
-            if (!(programOpts.isTerse() || getBooleanOption("terse"))) {
-                try {
-                    
+            try {
+                if (!(programOpts.isTerse() || getBooleanOption("terse"))) {
                     // try getting sysinfo
-                    logger.printDetailMessage(
-                            strings.get("database.info.msg", dbHost, dbPort));
-                    cpePing.execute("pingDatabaseCmd",
-                        pingDatabaseCmd(true), true);
-                    int counter = 0;
-                    //give time for the database to be started
-                    while (cpePing.exitValue() != 0 && counter < 10) {
-                        cpePing.execute("pingDatabaseCmd",
-                            pingDatabaseCmd(true), true);
-                        Thread.sleep(500);
-                        counter++;
-                        //break out if start-database failed
-                       try {
-                            cpe.exitValue();
-                            break;
-                        } catch (IllegalThreadStateException itse) {
-                            continue;
-                        }
+                    logger.printDetailMessage(strings.get("database.info.msg", dbHost, dbPort));
+                }
+                cpePing.execute("pingDatabaseCmd", pingDatabaseCmd(true), true);
+                int counter = 0;
+                //give time for the database to be started
+                while (cpePing.exitValue() != 0 && counter < 10) {
+                    cpePing.execute("pingDatabaseCmd", pingDatabaseCmd(true), true);
+                    Thread.sleep(500);
+                    counter++;
+                    //break out if start-database failed
+                    try {
+                        cpe.exitValue();
+                        break;
+                    } catch (IllegalThreadStateException itse) {
+                        continue;
                     }
-                    
+                }
+                if (!(programOpts.isTerse() || getBooleanOption("terse"))) {
                     logger.printDebugMessage("Database SysInfo");
                     if (cpePing.exitValue() == 0) {
                         cpeSysInfo.execute("sysinfoCmd", sysinfoCmd(), true);
@@ -290,10 +284,9 @@ public final class StartDatabaseCommand extends DatabaseCommand {
                             logger.printMessage(strings.get("CouldNotGetSysInfo"));
                         }
                     }
-                } catch (Exception e) {
-                    throw new CommandException(
-                                strings.get("CommandUnSuccessful", name), e);
                 }
+            } catch (Exception e) {
+                throw new CommandException(strings.get("CommandUnSuccessful", name), e);
             }
             if (cpePing.exitValue() == 0) {
                 logger.printMessage(strings.get("DatabaseStartMsg"));
@@ -301,12 +294,10 @@ public final class StartDatabaseCommand extends DatabaseCommand {
                     logger.printMessage(strings.get("LogRedirectedTo", dbLog));
                 }
             } else {
-                throw new CommandException(strings.get("DatabaseNotStarted"));
+                throw new CommandException(strings.get("UnableToStartDatabase", dbLog));
             }
-            
         } catch (Exception e) {
-            throw new CommandException(
-                                strings.get("CommandUnSuccessful", name), e);
+            throw new CommandException(strings.get("CommandUnSuccessful", name), e);
         }
         return exitCode;
     }
