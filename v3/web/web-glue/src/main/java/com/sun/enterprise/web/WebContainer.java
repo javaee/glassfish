@@ -1810,9 +1810,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         ctx.setMonitoringNodeName(monitoringNodeName);
 
         List<String> servletNames = new ArrayList<String>();
-        for (WebComponentDescriptor webCompDesc : wbd.getWebComponentDescriptors()) {
-            if (webCompDesc.isServlet()) {
-                servletNames.add(webCompDesc.getCanonicalName());
+        if (wbd != null) {
+            for (WebComponentDescriptor webCompDesc : wbd.getWebComponentDescriptors()) {
+                if (webCompDesc.isServlet()) {
+                    servletNames.add(webCompDesc.getCanonicalName());
+                }
             }
         }
 
