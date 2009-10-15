@@ -52,20 +52,19 @@ package com.sun.enterprise.web.connector.grizzly;
 
 import java.net.InetAddress;
 import java.net.URLEncoder;
-import java.util.Enumeration;
-import java.util.StringTokenizer;
+import java.text.MessageFormat;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import javax.management.ObjectName;
-
 import com.sun.grizzly.http.Management;
 import com.sun.grizzly.http.SelectorThread;
 import com.sun.grizzly.ssl.SSLSelectorThread;
 import com.sun.grizzly.tcp.http11.Constants;
 import com.sun.grizzly.util.net.SSLImplementation;
 import com.sun.grizzly.util.net.ServerSocketFactory;
+import com.sun.logging.LogDomains;
 import org.apache.tomcat.util.modeler.Registry;
 
 /**
@@ -77,6 +76,12 @@ import org.apache.tomcat.util.modeler.Registry;
  * @author Jean-Francois Arcand
  */
 public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {    
+
+    private static final Logger logger =
+        LogDomains.getLogger(GrizzlyConnectorLauncher.class,
+            LogDomains.WEB_LOGGER);
+
+    private static final ResourceBundle rb = logger.getResourceBundle();
     
     private int socketBuffer = 9000;
     
@@ -167,8 +172,8 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
         try {
             checkSocketFactory();
         } catch( Exception ex ) {
-            SelectorThread.logger().log(Level.SEVERE,
-                       "grizzlyHttpProtocol.socketfactory.initerror",ex);
+            logger.log(Level.SEVERE,
+                "grizzlyHttpProtocol.socketfactory.initerror", ex);
             throw ex;
         }
 
@@ -192,8 +197,8 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
              selectorThread.initEndpoint();
 
         } catch (Exception ex) {
-            SelectorThread.logger().log(Level.SEVERE, 
-                       "grizzlyHttpProtocol.endpoint.initerror", ex);
+            logger.log(Level.SEVERE, 
+                "grizzlyHttpProtocol.endpoint.initerror", ex);
             throw ex;
         }
     }
@@ -205,40 +210,35 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
             if ( this.oname != null ) {
                 jmxManagement = new ModelerManagement();
                 selectorThread.setManagement(jmxManagement);
-                
                 try {
                     ObjectName sname = new ObjectName(domain
                                    +  ":type=Selector,name=http"
-                                   + selectorThread.getPort());                   
-                    jmxManagement.registerComponent(selectorThread, sname, null);
+                                   + selectorThread.getPort());
+                    jmxManagement.registerComponent(selectorThread, sname,
+                        null);
                 } catch (Exception ex) {
-                    SelectorThread.logger().log(Level.SEVERE,
-                      "grizzlyHttpProtocol.selectorRegistrationFailed", ex);
+                    String msg = rb.getString(
+                        "grizzlyHttpProtocol.selectorRegistrationFailed");
+                    msg = MessageFormat.format(msg, oname);
+                    logger.log(Level.SEVERE, msg, ex);
                 }
-            } else {
-                SelectorThread.logger().log(Level.INFO,
-                           "grizzlyHttpProtocol.selectorRegisterProtocol");
             }
-
             selectorThread.start();
         } catch (Exception ex) {
-            SelectorThread.logger().log(Level.SEVERE, 
-                       "grizzlyHttpProtocol.endpoint.starterror", 
-                       ex);
+            logger.log(Level.SEVERE,
+                "grizzlyHttpProtocol.endpoint.starterror", ex);
             throw ex;
         }
         
-        SelectorThread.logger().log(Level.INFO, 
-                   "grizzlyHttpProtocol.start", String.valueOf(getPort()));
+        logger.log(Level.INFO, "grizzlyHttpProtocol.start",
+            String.valueOf(getPort()));
     }
 
 
     @Override
     public void destroy() throws Exception {
-        SelectorThread.logger().log(Level.INFO, 
-                   "grizzlyHttpProtocol.stop", 
-                                String.valueOf(getPort()));
-        
+        logger.log(Level.INFO, "grizzlyHttpProtocol.stop", 
+            String.valueOf(getPort()));
         if ( domain != null ){
            jmxManagement.
                     unregisterComponent(new ObjectName(domain,"type", "Selector"));
@@ -844,23 +844,6 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
      */
     public String getWebAppRootPath(){
         return selectorThread.getWebAppRootPath();
-    }
-
-
-    /**
-     * Set the logger
-     */
-    public static void setLogger(Logger logger){
-        if ( logger != null )
-            SelectorThread.setLogger(logger);
-    }
-
-
-    /**
-     * Return the logger used by the Grizzly classes.
-     */
-    public static Logger getLogger(){
-        return SelectorThread.logger();
     }
 
 
