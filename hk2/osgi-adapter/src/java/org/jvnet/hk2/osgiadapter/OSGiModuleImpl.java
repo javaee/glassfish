@@ -58,6 +58,8 @@ import java.net.URL;
 import java.net.URI;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.PrivilegedExceptionAction;
+import java.security.PrivilegedActionException;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -148,7 +150,22 @@ public final class OSGiModuleImpl implements Module {
             return;
         }
         try {
-            bundle.start(Bundle.START_TRANSIENT);
+            SecurityManager sm = System.getSecurityManager();
+            if (sm != null) {
+                try {
+                    AccessController.doPrivileged(new PrivilegedExceptionAction(){
+                        public Object run() throws BundleException
+                        {
+                            bundle.start(Bundle.START_TRANSIENT);
+                            return null;
+                        }
+                    });
+                } catch (PrivilegedActionException e) {
+                    throw (BundleException)e.getException();
+                }
+            } else {
+                bundle.start(Bundle.START_TRANSIENT);
+            }
             isTransientlyActive = true;
             if (logger.isLoggable(Level.FINE)) {
                 logger.logp(Level.FINE, "OSGiModuleImpl",
