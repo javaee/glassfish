@@ -43,6 +43,7 @@ import java.util.concurrent.atomic.*;
 import java.util.logging.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import org.apache.catalina.ContainerEvent;
 import org.apache.catalina.Globals;
 import org.apache.catalina.connector.*;
 import org.apache.catalina.core.*;
@@ -268,8 +269,18 @@ public class AsyncContextImpl implements AsyncContext {
 
     public <T extends AsyncListener> T createListener(Class<T> clazz)
             throws ServletException {
-        // TBD
-        return null;
+        T listener = null;
+        try {
+            listener = clazz.newInstance();
+        } catch (Throwable t) {
+            throw new ServletException(t);
+        }
+        StandardContext ctx = (StandardContext) origRequest.getContext();
+        if (ctx != null) {
+            ctx.fireContainerEvent(ContainerEvent.AFTER_LISTENER_INSTANTIATED,
+                                   listener);
+        }
+        return listener;
     }
 
     @Override
