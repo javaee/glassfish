@@ -2255,8 +2255,7 @@ class DynamicWebServletRegistrationImpl
             DeclareRoles declareRoles = (DeclareRoles)
                 clazz.getAnnotation(DeclareRoles.class);
             for (String roleName : declareRoles.value()) {
-                Role role = new Role(roleName);
-                webBundleDescriptor.addRole(roleName);
+                webBundleDescriptor.addRole(new Role(roleName));
             }
         }
         // Process MultipartConfig annotation
