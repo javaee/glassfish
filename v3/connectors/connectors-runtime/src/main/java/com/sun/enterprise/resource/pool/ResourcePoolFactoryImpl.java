@@ -64,7 +64,7 @@ public class ResourcePoolFactoryImpl {
     public static ResourcePool newInstance(String poolName, PoolType pt)
             throws PoolingException {
 
-        if(!ConnectorRuntime.getRuntime().isAppClientRuntime()){
+        if(ConnectorRuntime.getRuntime().isAppClientRuntime()){
             if("TRUE".equalsIgnoreCase(switchOffACCConnectionPoolingProperty))
                 return new UnpooledResource( poolName );
         }
