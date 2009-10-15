@@ -61,7 +61,7 @@ public class WeldFacesConfigProvider implements FacesConfigResourceProvider {
             "org.glassfish.servlet.habitat";
     private InvocationManager invokeMgr;
 
-    private static final String META_INF_FACES_CONFIG = "META-INF/faces-config.xml";
+    private static final String SERVICES_FACES_CONFIG = "META-INF/services/faces-config.xml";
 
     public Collection<URL> getResources(ServletContext context) {
 
@@ -82,7 +82,7 @@ public class WeldFacesConfigProvider implements FacesConfigResourceProvider {
         // be available from the same classloader that loaded this instance.
         // Doing so allows us to be more OSGi friendly.
         ClassLoader loader = this.getClass().getClassLoader();
-        list.add(loader.getResource(META_INF_FACES_CONFIG));
+        list.add(loader.getResource(SERVICES_FACES_CONFIG));
         return list;
     }
 
