@@ -1,0 +1,353 @@
+
+/* Primary block-level tag characteristics */
+
+body {
+	font-family: Trebuchet, Arial, sans-serif;
+	font-size: 90%;
+	line-height: 140%;
+}
+
+p {
+	margin-bottom: 0.5em;
+}
+
+h1 {
+	font-size: 153.9%;
+	margin: 2em 0 1em 0;
+	font-weight: bold;
+	line-height: 120%;
+}
+
+h2 {
+	font-size: 123.1%;
+	margin: 2em 0 1em 0;
+	font-weight: bold;
+	line-height: 120%;	
+}
+
+h3 {
+	font-weight: bold;
+	margin: 2em 0 0.5em 0;
+	line-height: 120%;	
+}
+
+h3 {
+	font-weight: bold;
+	margin: 2em 0 0.5em 0;
+	line-height: 120%;	
+}
+
+ol {
+	margin-left: 2em;
+}
+
+ol li {
+	margin-bottom: 0.5em;
+	list-style-type: decimal;
+}
+
+ul {
+	margin-left:  1.5em;
+}
+
+ul li {
+	margin-bottom: 0.5em;
+	list-style-type: square;
+}
+
+dt {
+	margin-left: 2em;
+	font-weight: bold;
+}
+
+dd {
+	margin-left: 2em;
+	margin-bottom: 1em;
+}
+
+
+/* Primary in-line tag characteristics */
+
+a {
+	text-decoration: none;
+	color: #264277;
+}
+
+a:hover {
+	color: red;
+	text-decoration: underline;
+}
+
+strong {
+	font-weight: bold;
+}
+
+em {
+	font-style: italic;
+}
+
+/* disable visual characteristics of hyperlinked headings */
+
+h1 a, h2 a, h3 a {
+	color: black;
+}
+
+h1 a:hover, h2 a:hover, h3 a:hover {
+	color: #264277;
+	text-decoration: none;
+}
+
+/* standardized page header/footer */
+
+div#hd div.title {
+	font-family: Georgia;
+	font-size: 153.9%;
+	text-align: center;
+	clear: both;
+	font-weight: bold;
+}
+
+div#hd div.subtitle {
+	font-family: Georgia;
+	font-size: 100%;
+	text-align: center;
+	line-height: 120%;
+	font-style: italic;
+	color: #78a2cc;
+}
+
+div#hd div.byline {
+	font-family: Georgia;
+	font-size: 88%;
+	text-align: center;
+	margin-top: 0.2em;
+	line-height: 120%;
+	font-style: italic;
+}
+
+div#ft {
+	font-family: Georgia;
+	text-align: center;
+}
+
+div#globalnav {
+	background-color: #78a2cc;
+	font-family: Helvetica, Arial, sans;
+}
+
+div#globalnav li {
+	font-size: 88%;
+	border-right: 2px dashed gray;
+}
+
+
+/* Standardized style */
+
+div.photo div.caption {
+	font-style: italic;
+}
+
+div.info {
+	background-color: #dbebfe;
+	border: 2px solid #7b8490;
+}
+
+div.warning {
+	background-color: #f6bbb2;
+	border: 2px solid red;
+}
+
+img.stroke1 {
+	border: 1px solid #000;
+}
+
+img.stroke2 {
+	border: 1px solid #000;
+}
+
+table caption {
+	text-align: center;
+	font-size: 123.1%;
+	font-weight: bold;
+}
+
+th {
+	font-weight: bold;
+}
+
+a.permalink {
+	color: lightgray;
+	border: 1px solid lightgray;
+	letter-spacing: .3em;
+	font: 9px "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+	display: inline-block;
+	padding: 1px 2px 1px 3px;
+	margin-left: 1em;
+	vertical-align: 3px;
+}
+
+a:hover.permalink {
+	color: red;
+	background-color: lightgray;
+	border: 1px solid gray;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* Page heading layout for article pages */
+
+div#siteheader {
+	padding: 1em 0 1em 0;
+	border-bottom: 2px solid lightgray;
+	cursor: pointer;	
+}
+
+div#articlenav {
+	margin: 0;
+	line-height: 18px;
+}
+
+div#articleTitle {
+	margin-top: 1.3em;
+	float: left;
+	color: lightgray;
+	font-size: 88%;
+	font-weight: bold;
+	font-style: italic;
+}
+
+select#TOCSelect {
+	margin-top: 1em;
+	float: right;
+}
+
+/* Gross layout for article pages */
+
+div#bd {
+	margin: 1em 5em 1em 5em;
+}
+
+div.columnheadings {
+	margin-bottom: 1em;
+}
+
+
+div.bottomnav {
+	text-align: right;
+}
+
+div.nextpage {
+	font-weight: bold;
+}
+
+div.prevpage {
+	font-size: 88%;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* standard gross white space management */
+
+div#ft {
+	border-top: 1px solid lightgray;
+	padding: 1em 0 1em 0;
+}
+
+/* General layout */
+
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+div.photo {
+	text-align: center;
+	margin: 1em 3em 1em 3em;
+}
+
+
+div.callout {
+	margin: 1em 4em 1em 4em;
+	padding: 0.8em 1em 0.8em 1em;
+	-webkit-border-radius: 0.75em;	
+}
+
+
+table {
+	margin-top: 1em;
+	margin-left: auto;
+	margin-right: auto;	
+	margin-bottom: 1em;
+	font-size: 85%;
+}
+
+table caption {
+	margin-bottom: 0.5em;
+}
+
+thead {
+	border-bottom: 1px solid black;
+}
+
+th {
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+	background-color:  #F8F8F8;
+	border: 1px solid #AAA;
+}
+
+td {
+	border: 1px solid #CCC;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+}
+
+div#globalnav {
+	height: 1.9em;
+}
+
+div#globalnav ul {
+	margin-left: 0;
+	display: inline;
+}
+
+div#globalnav li {
+	float: left;
+	list-style-type: none;
+	display: inline;
+	height: 1.9em;
+	line-height: 2em;
+	padding: 0em 1em 0em 1em;
+}
+
+.pseudobutton {
+	cursor: pointer;
+}
+
+div#globalnav li img {
+	margin-top: 0.3em;
+	line-height: 30px;
+}
+
+
+
+

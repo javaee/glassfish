@@ -1,0 +1,55 @@
+<html>
+<head>
+<title>JmxCmd Optional Facilities</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1 align="center">JmxCmd</h1>
+<h4 align="center"><i>optional facilities</i></h4>
+<p><font size="-1">Author: lloyd.chambers@sun.com<br>
+  Last updated: 23 Feb 2004</font></p>
+<h2>1. Introduction</h2>
+<p>Please familiarize yourself with the <a href="./jmxcmd-index.html">jmxcmd overview</a>.</p>
+<p>JmxCmd supports facilities for adding additional functionality. These facilities 
+  include:</p>
+<ul>
+  <li>protocol providers -- add custom protocols and/or vendor specific tweaks 
+    to existing protocols </li>
+  <li>commands -- add new commands (this functionality is inherited from <a href="./jcmd-index.html">JCmd</a>)</li>
+</ul>
+<p>To add new commands, see the <a href="./jcmd-index.html">JCmd</a> optional 
+  <a href="./jcmd-optional.html">documentation</a>.</p>
+<h2>2. Protocol providers<a name="Providers"></a></h2>
+<h3>2.1 Providers Overview</h3>
+<p>Not all JMX MBean servers use the standard JSR 160 (Remote JMX) Connectors, 
+  and even if they do, they can still require their own product-specific information, 
+  such as authentication information. To work around both of these issues, the 
+  <a href="./jmxcmd-commands.html#providers">providers</a> command allows the 
+  additional of pluggable modules that know how to &quot;speak&quot; to the vendor's 
+  server. By default, jmxcmd supports the standard JMXMP Connector.</p>
+<p>Implementing a provider is a simple affair; in most cases it should require 
+  only a few pages of code, at most. The idea is that the command framework provides 
+  all the parameters provided by the caller to your provider, which need only 
+  concern itself with establishing the connection, subject to the information 
+  provided by the provided parameters.</p>
+<p>If a provider has been implemented for you, and you wish to use it, you must 
+  configure jmxcmd to use it via the <a href="./jmxcmd-commands.html#providers">providers</a> 
+  command. Once configured, the provider is remembered so that you do not have 
+  to configure it again. The jar file for the provider will need to be in the 
+  classpath. Once configured, providers are equal with any other protocol type 
+  and connections are made using the <a href="./jmxcmd-commands.html#connect">connect</a> 
+  command.</p>
+<h3>2.2 Protocol provider implementation notes</h3>
+<p>To write a provider, you must implement <font size="-1" face="Courier New, Courier, mono"><a href="./javadoc/com/sun/cli/jmxcmd/spi/JMXConnectorProvider.html">com.sun.cli.jmxcmd.spi.JMXConnectorProvider</a></font>. 
+  Your provider will also need to import <font size="-1" face="Courier New, Courier, mono"><a href="./javadoc/com/sun/cli/jmxcmd/spi/JMXConnectorProviderInfo.html">com.sun.cli.jmxcmd.spi.JMXConnectorProviderInfo</a></font>. 
+  A good sample of how to implement a provider is <font face="Courier New, Courier, mono" size="-1"><a href="./javadoc/com/sun/cli/jmxcmd/spi/JMXMPDefaultConnectorProvider.html">com.sun.cli.jmxcmd.spi.JMXMPDefaultConnectorProvider</a></font>. 
+  Clicking on a classname within the Javadoc will show the <a href="./javadoc/src-html/com/sun/cli/jmxcmd/spi/JMXMPDefaultConnectorProvider.html#line.42">source 
+  code</a>.<br>
+  <font size="-1" face="Courier New, Courier, mono"><br>
+  </font></p>
+<h2>&nbsp;</h2>
+<p>&nbsp;</p>
+<h4>&nbsp;</h4>
+</body>
+</html>
