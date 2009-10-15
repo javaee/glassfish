@@ -107,18 +107,21 @@
            <artifactId>glassfish-hk2</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
+            <optional>true</optional>
        </dependency>
        <dependency>
           <groupId>org.glassfish.packager</groupId>
           <artifactId>glassfish-grizzly</artifactId>
           <version>${project.version}</version>
           <type>zip</type>
+          <optional>true</optional>
       </dependency>
       <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-nucleus</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
