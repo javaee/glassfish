@@ -44,6 +44,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RunAs;
 import javax.servlet.*;
 import javax.servlet.http.HttpSession;
@@ -2249,6 +2250,15 @@ class DynamicWebServletRegistrationImpl
             runAsDesc.setRoleName(roleName);
             wcd.setRunAsIdentity(runAsDesc);
         }
+        // Process DeclareRoles annotation
+        if (clazz.isAnnotationPresent(DeclareRoles.class)) {
+            DeclareRoles declareRoles = (DeclareRoles)
+                clazz.getAnnotation(DeclareRoles.class);
+            for (String roleName : declareRoles.value()) {
+                Role role = new Role(roleName);
+                webBundleDescriptor.addRole(roleName);
+            }
+        }
         // Process MultipartConfig annotation
         if (clazz.isAnnotationPresent(MultipartConfig.class)) {
             MultipartConfig mpConfig = (MultipartConfig)
@@ -2261,7 +2271,11 @@ class DynamicWebServletRegistrationImpl
         }
         // Process ServletSecurity annotation
         if (clazz.isAnnotationPresent(ServletSecurity.class)) {
-            // TBD SHING WAI
+            ServletSecurity servletSecurity = (ServletSecurity)
+                clazz.getAnnotation(ServletSecurity.class);
+            webModule.processServletSecurityElement(
+                    new ServletSecurityElement(servletSecurity),
+                    webBundleDescriptor, wcd);
         }
     }
 }
