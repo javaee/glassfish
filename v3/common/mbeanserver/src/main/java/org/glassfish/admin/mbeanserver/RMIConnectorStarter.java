@@ -102,7 +102,7 @@ final class RMIConnectorStarter extends ConnectorStarter
     {
         final String name = "jmxrmi";
         
-        final String hostname = Util.localhost();
+        final String hostname = hostname();
         final Map<String, Object> env = new HashMap<String, Object>();
 
         //env.put( "jmx.remote.jndi.rebind", "true" );

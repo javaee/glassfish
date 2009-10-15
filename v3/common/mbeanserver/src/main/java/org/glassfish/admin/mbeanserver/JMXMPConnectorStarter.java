@@ -108,7 +108,7 @@ final class JMXMPConnectorStarter extends ConnectorStarter
             env.put("jmx.remote.authenticator", authenticator);
         }
 
-        final JMXServiceURL serviceURL = new JMXServiceURL("service:jmx:" + JMXMP + "://" + Util.localhost() + ":" + port);
+        final JMXServiceURL serviceURL = new JMXServiceURL("service:jmx:" + JMXMP + "://" +hostname() + ":" + port);
         JMXConnectorServer jmxmp = null;
 
         boolean startedOK = false;

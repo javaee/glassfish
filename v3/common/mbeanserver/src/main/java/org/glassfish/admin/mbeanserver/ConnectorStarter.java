@@ -56,6 +56,16 @@ abstract class ConnectorStarter
     {
         return mJMXServiceURL;
     }
+    
+    public String hostname()
+    {
+        if ( mAddress.equals("") || mAddress.equals("0.0.0.0") || mAddress.equals("localhost") )
+        {
+            return Util.localhost();
+        }
+        
+        return mAddress;
+    }
 
 
     ConnectorStarter(
