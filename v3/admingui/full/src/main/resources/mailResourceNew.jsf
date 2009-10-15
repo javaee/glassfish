@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -61,7 +61,6 @@
         createMap(result="#{pageSession.valueMap2}")
         mapPut(map="#{pageSession.valueMap2}" key="Enabled" value="true");
         setPageSessionAttribute(key="createResourceRef" value="#{true}" );
-        
     />
     </event>
 #include "/common/shared/restart.inc"
@@ -69,57 +68,16 @@
         //#include treeBreadcrumbs.inc
 #include "/common/shared/alertMsg.inc"
 
-                <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18njmail.javaMail.newPageTitle}" helpText="$resource{i18njmail.javaMail.newPageTitleHelp}">
+    <!-- Page Title -->
+    <sun:title id="propertyContentPage" title="$resource{i18njmail.javaMail.newPageTitle}" helpText="$resource{i18njmail.javaMail.newPageTitleHelp}">
 #include "/common/shared/editPageButtons.inc"
-    <!facet pageButtonsBottom>
-        <sun:panelGroup id="bottomButtons">
-            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
-                <!command
-                if(#{pageSession.hasPropertySheet}){
-                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
-                        skipAttrs="#{pageSession.skipAttrsList}"
-                        convertToFalse="#{pageSession.convertToFalseList}"
-                    );
-                }
-                if (#{pageSession.hasPropertyTable}){
-                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
-                }
-                prepareSuccessfulMsg();
-                redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
-                />
-            </sun:button>
-            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
-                <!command
-                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                            attrs="#{pageSession.valueMap}"
-                            convertToFalse="#{pageSession.convertToFalseList}"
-                            result => $attribute{objStr});
-                    if (#{pageSession.hasPropertyTable}){
-                        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
-                    }
-                    redirect(page="#{parentPage}?configName=#{configName}")
-                />
-            </sun:button>
-            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
-                <!command
-                    redirect(page="#{parentPage}?configName=#{configName}");
-                />
-            </sun:button>
-        </sun:panelGroup>
-    </facet>
-                    
-                    "<br><br>
+    </sun:title>
 #include "/full/mailResourceAttr.inc"
 #include "/common/shared/propertyDescTable.inc"
 
-</sun:title>
+    <sun:title>
+#include "/common/shared/editPageButtons_2.inc"
+    </sun:title>
 
 	<sun:hidden id="helpKey" value="$resource{help_jmail.javaMailSessionNew}" />
             </sun:form>

@@ -75,54 +75,16 @@
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njmail.javaMail.editPageTitle}" helpText="$resource{i18njmail.javaMail.editPageTitleHelp}" >
 #include "/common/shared/editPageButtons.inc"
-    <!facet pageButtonsBottom>
-        <sun:panelGroup id="bottomButtons">
-            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
-                <!command
-                if(#{pageSession.hasPropertySheet}){
-                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
-                        skipAttrs="#{pageSession.skipAttrsList}"
-                        convertToFalse="#{pageSession.convertToFalseList}"
-                    );
-                }
-                if (#{pageSession.hasPropertyTable}){
-                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
-                }
-                prepareSuccessfulMsg();
-                redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
-                />
-            </sun:button>
-            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
-                <!command
-                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                            attrs="#{pageSession.valueMap}"
-                            convertToFalse="#{pageSession.convertToFalseList}"
-                            result => $attribute{objStr});
-                    if (#{pageSession.hasPropertyTable}){
-                        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
-                    }
-                    redirect(page="#{parentPage}?configName=#{configName}")
-                />
-            </sun:button>
-            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
-                <!command
-                    redirect(page="#{parentPage}?configName=#{configName}");
-                />
-            </sun:button>
-        </sun:panelGroup>
-    </facet>
+    </sun:title>
 
-    "<br><br>
-    
 #include "/full/mailResourceAttr.inc"
 #include "/common/shared/propertyDescTable.inc"
-    </sun:title>    
+    "<br/><br/>
+    
+    <sun:title>
+#include "/common/shared/editPageButtons_2.inc"
+    </sun:title>
+
     <sun:hidden id="helpKey" value="$resource{help_jmail.javaMailSessionEdit}" />
 </sun:form>
             "<br/>
