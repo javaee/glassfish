@@ -154,10 +154,10 @@ public abstract class ServiceAdapter implements Service{
         File f = SmartFile.sanitize(new File(path));
 
         if(!f.isFile())
-            throw new IllegalArgumentException(strings.get("windows.services.passwordFileNotA", f));
+            throw new IllegalArgumentException(Strings.get("windows.services.passwordFileNotA", f));
         
         if(!f.canRead())
-            throw new IllegalArgumentException(strings.get("windows.services.passwordFileNotReadable", f));
+            throw new IllegalArgumentException(Strings.get("windows.services.passwordFileNotReadable", f));
 
         Properties p = getProperties(f);
         validateProperty(f, p, "AS_ADMIN_PASSWORD");
@@ -176,7 +176,7 @@ public abstract class ServiceAdapter implements Service{
         String value = (String)p.get(key);
 
         if(!ok(value))
-            throw new IllegalArgumentException(strings.get("missingParamsInFile", f, key));
+            throw new IllegalArgumentException(Strings.get("missingParamsInFile", f, key));
 
         return value;
     }
@@ -222,5 +222,4 @@ public abstract class ServiceAdapter implements Service{
     private boolean         dryRun;
 
     private AppserverServiceType type = AppserverServiceType.Domain;
-    private final static LocalStringsImpl strings = new LocalStringsImpl(ServiceAdapter.class);
 }

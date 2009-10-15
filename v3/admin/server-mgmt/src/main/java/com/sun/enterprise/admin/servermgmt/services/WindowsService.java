@@ -63,7 +63,7 @@ public class WindowsService extends ServiceAdapter{
     WindowsService() {
         if(!apropos()) {
             // programmer error
-            throw new IllegalArgumentException(strings.get("internal.error",
+            throw new IllegalArgumentException(Strings.get("internal.error",
                 "Constructor called but Windows Services are not available."));
         }
     }
@@ -78,7 +78,7 @@ public class WindowsService extends ServiceAdapter{
             trace("**********   Object Dump  **********\n" + this.toString());
             
             if(uninstall() == 0)
-                System.out.println(strings.get("windows.services.uninstall.good"));
+                System.out.println(Strings.get("windows.services.uninstall.good"));
             else
                 trace("No preexisting Service with that id and/or name was found");
 
@@ -94,7 +94,7 @@ public class WindowsService extends ServiceAdapter{
     }
 
     public String getSuccessMessage() {
-        return strings.get("WindowsServiceCreated", getName(),
+        return Strings.get("WindowsServiceCreated", getName(),
             serverName + " GlassFish Server", serverDir, targetXml, targetWin32Exe);
     }
         ///////////////////////////////////////////////////////////////////////
@@ -114,13 +114,13 @@ public class WindowsService extends ServiceAdapter{
         targetDir.mkdirs(); // just in case...
 
         if(!targetDir.isDirectory())
-            throw new RuntimeException(strings.get("noTargetDir", targetDir));
+            throw new RuntimeException(Strings.get("noTargetDir", targetDir));
 
         targetWin32Exe = new File(targetDir, serverName + "Service.exe");
         targetXml      = new File(targetDir, serverName + "Service.xml");
 
         if(targetWin32Exe.exists() || targetXml.exists())
-            throw new RuntimeException(strings.get("windows.services.alreadyCreated", new File(targetDir, serverName + "Service")));
+            throw new RuntimeException(Strings.get("windows.services.alreadyCreated", new File(targetDir, serverName + "Service")));
 
         FileUtils.copy(sourceWin32Exe, targetWin32Exe);
         trace("Copied from " + sourceWin32Exe + " to " + targetWin32Exe);
@@ -170,13 +170,13 @@ public class WindowsService extends ServiceAdapter{
         String ir = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
 
         if(!ok(ir))
-            throw new RuntimeException(strings.get("internal.error", "System Property not set: "
+            throw new RuntimeException(Strings.get("internal.error", "System Property not set: "
                     +  SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
 
         installRootDir = SmartFile.sanitize(new File(ir));
 
         if(!installRootDir.isDirectory())
-            throw new RuntimeException(strings.get("internal.error",
+            throw new RuntimeException(Strings.get("internal.error",
                     "Not a directory: " + installRootDir));
     }
     
@@ -184,7 +184,7 @@ public class WindowsService extends ServiceAdapter{
         libDir = SmartFile.sanitize(new File(installRootDir, "lib"));
 
         if(!libDir.isDirectory())
-            throw new RuntimeException(strings.get("internal.error",
+            throw new RuntimeException(Strings.get("internal.error",
                     "Not a directory: " + libDir));
     }
 
@@ -240,7 +240,7 @@ public class WindowsService extends ServiceAdapter{
         int ret = mgr.getExitValue();
 
         if(ret != 0)
-            throw new RuntimeException(strings.get("windows.services.install.bad",
+            throw new RuntimeException(Strings.get("windows.services.install.bad",
                     "" + ret, mgr.getStdout(), mgr.getStderr()));
 
         trace("Install STDERR: " + mgr.getStderr());
@@ -256,7 +256,6 @@ public class WindowsService extends ServiceAdapter{
         return s != null && s.length() > 0;
     }
 
-    private final static LocalStringsImpl   strings                     = new LocalStringsImpl(WindowsService.class);
     private static final String             TRACE_PREPEND               = "TRACE:  ";
     private static final String             SOURCE_WIN32_EXE_FILENAME   = "winsw.exe";
     private static final String             TARGET_DIR                  = "bin";

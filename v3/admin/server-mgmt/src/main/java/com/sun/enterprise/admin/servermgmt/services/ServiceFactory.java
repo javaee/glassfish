@@ -47,6 +47,6 @@ public final class ServiceFactory {
         else if(WindowsService.apropos())
             return new WindowsService();
         else
-            throw new RuntimeException("noSuitableServiceImplementation");
+            throw new RuntimeException(Strings.get("noSuitableServiceImplementation"));
     }
 }

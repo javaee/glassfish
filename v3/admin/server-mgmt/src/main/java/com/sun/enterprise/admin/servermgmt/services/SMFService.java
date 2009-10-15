@@ -508,11 +508,11 @@ public final class SMFService implements Service {
 }
 
     public String getSuccessMessage() {
-        String msg = strings.get("SMFServiceCreated", getName(), getType().toString(),
+        String msg = Strings.get("SMFServiceCreated", getName(), getType().toString(),
                 getLocation(), getManifestFilePath(), shortName);
 
         if(dryRun) {
-            msg += strings.get("dryrun");
+            msg += Strings.get("dryrun");
         }
 
         return msg;
@@ -695,6 +695,4 @@ public final class SMFService implements Service {
     public boolean isDryRun() {
         return dryRun;
     }
-    
-    private final static LocalStringsImpl   strings = new LocalStringsImpl(SMFService.class);
 }
