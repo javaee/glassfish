@@ -62,6 +62,8 @@ own identifying information: Portions Copyright [yyyy]
         <taskdef name="rejar" classname="org.jvnet.maven.plugin.antrun.RejarTask" />
          <rejar destfile="${finaljar}" duplicate="preserve">
             <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
+	    <!-- for connector support -->
+            <fileset dir="${jardir}/glassfishv3/glassfish"  includes="lib/install/applications/**/*" excludes="**/*.war"/>
             <manifest>
                  <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
              </manifest>
