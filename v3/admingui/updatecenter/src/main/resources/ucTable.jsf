@@ -35,15 +35,14 @@
 -->
 <!-- updateCenter/ucTable.inc -->
 
-<sun:table id="ucTable" title="$attribute{tableTitle}" sortPanelToggleButton="#{false}" deselectMultipleButton="$boolean{true}"
+<sun:table id="ucTable" title="$attribute{tableTitle}" sortPanelToggleButton="#{false}" 
+        deselectMultipleButton="#{!readOnly}"
         deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
-        selectMultipleButton="$boolean{true}"
+        selectMultipleButton="#{!readOnly}"
         selectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" width="100%">
-
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
-
     <!facet actionsTop>
          <sun:panelGroup id="topActionsGroup1" rendered="#{!readOnly}">
             <!afterCreate
@@ -55,27 +54,13 @@
                         else {return false;}"
             > 
             <!command
-            
-                # make sure that the if() is in this order. otherwise, after calling the navigate() handler, forInstall will be set
-                # to null, and will pass through and and execute the next if() statements.
-                
-                if ("!$pageSession{forInstall}"){
-                    getUIComponent(clientId="$pageSession{rowGroupId}", component=>$attribute{tableRowGroup});      
-                    getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                    updateCenterProcess(selectedRows="${selectedRows}" action="#{action}" );
-                    prepareAlertMsg(summary="#{successMsg}" type="success");
-                    setApplicationAttribute(key="restartNeeded" value="#{true}");
-                    redirect(page="#{fromPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-                }
-                if ("$pageSession{forInstall}"){
-                    getUIComponent(clientId="$pageSession{rowGroupId}", component=>$attribute{tableRowGroup});      
-                    getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                    setAttribute(key="selectedRows" value="${selectedRows}");
-                    setAttribute(key="fromPage" value="#{fromPage}");
-                    setAttribute(key="action" value="#{action}");
-                    setAttribute(key="successMsg" value="#{successMsg}");
-                    navigate(page="/updateCenter/acceptLicense.jsf");
-                }
+                getUIComponent(clientId="$pageSession{rowGroupId}", component=>$attribute{tableRowGroup});
+                getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
+                setAttribute(key="selectedRows" value="${selectedRows}");
+                setAttribute(key="fromPage" value="#{fromPage}");
+                setAttribute(key="action" value="#{action}");
+                setAttribute(key="successMsg" value="#{successMsg}");
+                navigate(page="#{request.contextPath}/updateCenter/acceptLicense.jsf");
             />
             </sun:button>
             <h:panelGroup rendered="#{applicationScope.restartNeeded == true}">
@@ -91,20 +76,20 @@
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{rowGroupId});
     />
-   
+
    <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0" rendered="#{!readOnly}">
             <sun:checkbox id="select"
                 selected="#{td.value.selected}" 
                 selectedValue="$boolean{true}" 
                 onClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
             />
-    </sun:tableColumn>    
+    </sun:tableColumn>
     
     <sun:tableColumn headerText="$resource{i18nUC.ucTable.component}" sort="pkgName" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.pkgName}" toolTip="#{td.value.tooltip}"
             url="/updateCenter/pkgDetails.jsf?fmriStr=#{td.value.fmriStr}&auth=#{td.value.auth}&fromPage=#{fromPage}" />
     </sun:tableColumn>
-    
+
     <sun:tableColumn headerText="$resource{i18nUC.ucTable.category}" sort="category" rowHeader="$boolean{true}" id="colc">
         <staticText id="Colc" value="#{td.value.category}" />
     </sun:tableColumn>
@@ -112,19 +97,19 @@
     <sun:tableColumn headerText="#{versonColHeader}"  sort="version" rowHeader="$boolean{true}" id="col2">
         <staticText id="col2" value="#{td.value.version}" />
     </sun:tableColumn>
-    
+
     <sun:tableColumn headerText="$resource{i18nUC.ucTable.newVersion}" rendered="#{showNewVersion}" sort="newVersion" rowHeader="$boolean{true}" id="colnv">
         <staticText id="col2" value="#{td.value.newVersion}" />
     </sun:tableColumn>
-    
+
     <sun:tableColumn headerText="#{sizeColHeader}" sort="size" align="right" rowHeader="$boolean{true}" id="colize">
         <staticText id="colsize" value="#{td.value.pkgSize}" />
     </sun:tableColumn>
-    
+
     <sun:tableColumn headerText="$resource{i18nUC.ucTable.source}" sort="auth" rowHeader="$boolean{true}" id="source">
         <staticText id="source" value="#{td.value.auth}" />
     </sun:tableColumn>
-    
+
   </sun:tableRowGroup>
   
 </sun:table>

@@ -39,25 +39,25 @@
         <sun:tab id="addOn" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.AddOnTab}">
             <!command
                 setSessionAttribute(key="ucTabs" value="addOn");
-                redirect(page="addOn.jsf");
+                redirect(page="#{request.contextPath}/updateCenter/ucaddOn.jsf");
             />
         </sun:tab>
         <sun:tab id="update" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.UpdateTab}">
             <!command
                 setSessionAttribute(key="ucTabs" value="update");
-                redirect(page="update.jsf");
+                redirect(page="#{request.contextPath}/updateCenter/update.jsf");
             />
         </sun:tab>
         <sun:tab id="installed" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.InstalledTab}" >
                 <!command
                     setSessionAttribute(key="ucTabs" value="installed");
-                    redirect(page="installed.jsf");
+                    redirect(page="#{request.contextPath}/updateCenter/installed.jsf");
                 />       
         </sun:tab>
         <sun:tab id="config" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.ConfigTab}" >
                 <!command
                     setSessionAttribute(key="ucTabs" value="config");
-                    redirect(page="ucConfig.jsf");
+                    redirect(page="#{request.contextPath}/updateCenter/ucConfig.jsf");
                 />       
         </sun:tab>
         

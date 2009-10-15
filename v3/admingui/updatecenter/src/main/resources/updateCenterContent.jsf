@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,7 @@
         admingui.nav.selectTreeNodeById('form:tree:updateCenter');
     </script>
 </f:verbatim>
- #include "/common/shared/treeBreadcrumbs.inc"
+   //#include "/common/shared/treeBreadcrumbs.inc"
 #include "/updateCenter/ucTabs.inc"
 #include "/common/shared/alertMsg.inc"
         <!-- Page Title -->
@@ -61,9 +61,6 @@
             </sun:propertySheetSection>
         </sun:propertySheet> 
         "<br /><br />
-        
-            
-        
 #include "/updateCenter/ucTable.jsf"
          "<br /><br />
 	<sun:hidden id="helpKey" value="$attribute{helpKey}" />

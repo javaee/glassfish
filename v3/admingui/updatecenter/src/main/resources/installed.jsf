@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,7 @@
     <!beforeCreate
         setSessionAttribute(key="ucTabs" value="installed");
         setPageSessionAttribute(key="buttonText" value="$resource{i18n.button.UnInstall}");
-        setPageSessionAttribute(key="readOnly" value="#{false}");
+        setPageSessionAttribute(key="readOnly" value="#{true}");
         setPageSessionAttribute(key="action" value="remove");
         setAttribute(key="pageTitle" value="$resource{i18nUC.updateCenter.installed.pageTitle}");
         setAttribute(key="pageTitleHelp" value="$resource{i18nUC.updateCenter.installed.pageTitleHelp}");
