@@ -54,6 +54,7 @@ public class SecurityConstraintImpl extends Descriptor implements SecurityConstr
     private Set<WebResourceCollection> webResourceCollections;
     private AuthorizationConstraint authorizationConstraint;
     private UserDataConstraint userDataConstraint;
+    private MetadataSource metadataSource = MetadataSource.XML;
     
     /** Default constructor.*/
     public SecurityConstraintImpl() {
@@ -128,7 +129,15 @@ public class SecurityConstraintImpl extends Descriptor implements SecurityConstr
     public void setUserDataConstraint(UserDataConstraintImpl userDataConstraint) {
 	setUserDataConstraint((UserDataConstraint) userDataConstraint);
     }
-    
+
+    public MetadataSource getMetadataSource() {
+        return metadataSource;
+    }
+
+    public void setMetadataSource(MetadataSource metadataSource) {
+        this.metadataSource = metadataSource;
+    }
+
     /** Returns a formatted String representing of my state.*/
     public void print(StringBuffer toStringBuffer) {
 	toStringBuffer.append("SecurityConstraint: ");

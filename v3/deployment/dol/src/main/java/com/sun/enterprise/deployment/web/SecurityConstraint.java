@@ -37,6 +37,7 @@
 package com.sun.enterprise.deployment.web;
 
 import java.util.Set;
+import com.sun.enterprise.deployment.MetadataSource;
     /** Objects exhibiting this interface represent a security constraint on the web application
     * that owns them. */
 
@@ -52,5 +53,8 @@ public interface SecurityConstraint {
 	/** The user data constraint. */
     public UserDataConstraint getUserDataConstraint();
     public void setUserDataConstraint(UserDataConstraint userDataConstraint);
-    
+
+    public MetadataSource getMetadataSource();
+    public void setMetadataSource(MetadataSource metadataSource);
+
 }

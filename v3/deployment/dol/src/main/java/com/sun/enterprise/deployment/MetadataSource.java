@@ -42,5 +42,5 @@ package com.sun.enterprise.deployment;
  * @author Shing Wai Chan
  */
 public enum MetadataSource {
-    XML, ANNOTATION;
+    XML, ANNOTATION, PROGRAMMATIC;
 }

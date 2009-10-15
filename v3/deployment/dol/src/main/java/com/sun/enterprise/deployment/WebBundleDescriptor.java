@@ -1334,7 +1334,7 @@ public class WebBundleDescriptor extends BundleDescriptor
         }
     }
 
-    private Set<SecurityConstraint> getSecurityConstraintsSet() {
+    public Set<SecurityConstraint> getSecurityConstraintsSet() {
         if (securityConstraints == null) {
             securityConstraints = new HashSet<SecurityConstraint>();
         }

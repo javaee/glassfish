@@ -53,12 +53,14 @@ import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.deployment.AbsoluteOrderingDescriptor;
+import com.sun.enterprise.deployment.MetadataSource;
 import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.WebServicesDescriptor;
+import com.sun.enterprise.deployment.annotation.handlers.ServletSecurityHandler;
 import com.sun.enterprise.deployment.runtime.web.CookieProperties;
 import com.sun.enterprise.deployment.runtime.web.LocaleCharsetInfo;
 import com.sun.enterprise.deployment.runtime.web.LocaleCharsetMap;
@@ -67,7 +69,9 @@ import com.sun.enterprise.deployment.runtime.web.SessionManager;
 import com.sun.enterprise.deployment.runtime.web.SessionProperties;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
+import com.sun.enterprise.deployment.web.SecurityConstraint;
 import com.sun.enterprise.deployment.web.ServletFilterMapping;
+import com.sun.enterprise.deployment.web.WebResourceCollection;
 import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.enterprise.universal.GFBase64Decoder;
 import com.sun.enterprise.universal.GFBase64Encoder;
@@ -1978,6 +1982,58 @@ public class WebModule extends PwcWebModule {
             vsId);
     }
 
+    void processServletSecurityElement(ServletSecurityElement servletSecurityElement,
+            WebBundleDescriptor wbd, WebComponentDescriptor wcd) {
+
+        Set<String> urlPatterns = wcd.getUrlPatternsSet();
+
+        //remove collided security constraint from annotation
+        Iterator<SecurityConstraint> scIter = wbd.getSecurityConstraintsSet().iterator();
+        while (scIter.hasNext()) {
+            SecurityConstraint sc = scIter.next();
+            Iterator<WebResourceCollection> wrcIter = sc.getWebResourceCollections().iterator();
+            while (wrcIter.hasNext()) {
+                WebResourceCollection wrc = wrcIter.next();
+                if (sc.getMetadataSource() == MetadataSource.XML) {
+                    urlPatterns.removeAll(wrc.getUrlPatterns());
+                } else { // ANNOTATION or PROGRMMATIC
+                    wrc.getUrlPatterns().removeAll(urlPatterns);
+
+                    if (wrc.getUrlPatterns().size() == 0) {
+                        wrcIter.remove();
+                    }
+                }
+            }
+            if (sc.getWebResourceCollections().size() == 0) {
+                scIter.remove();
+            }
+        }
+
+        if (urlPatterns.size() > 0) {
+            SecurityConstraint securityConstraint =
+                ServletSecurityHandler.createSecurityConstraint(wbd,
+                    urlPatterns, servletSecurityElement.getRolesAllowed(),
+                    servletSecurityElement.getEmptyRoleSemantic(),
+                    servletSecurityElement.getTransportGuarantee(),
+                    null, MetadataSource.PROGRAMMATIC);
+
+            //we know there is one WebResourceCollection there
+            WebResourceCollection webResColl =
+                    securityConstraint.getWebResourceCollections().iterator().next();
+            for (HttpMethodConstraintElement httpMethodConstraintElement :
+                    servletSecurityElement.getHttpMethodConstraints()) {
+                String httpMethod = httpMethodConstraintElement.getMethodName();
+                ServletSecurityHandler.createSecurityConstraint(wbd,
+                        urlPatterns, httpMethodConstraintElement.getRolesAllowed(),
+                        httpMethodConstraintElement.getEmptyRoleSemantic(),
+                        httpMethodConstraintElement.getTransportGuarantee(),
+                        httpMethod, MetadataSource.PROGRAMMATIC);
+
+                //exclude this from the top level constraint
+                webResColl.addHttpMethodOmission(httpMethod);
+            }
+        }
+    }
 }
 
 class V3WebappLoader extends WebappLoader {
@@ -2054,10 +2110,12 @@ class DynamicWebServletRegistrationImpl
 
     private WebBundleDescriptor wbd;
     private WebComponentDescriptor wcd;
+    private WebModule webModule;
 
     public DynamicWebServletRegistrationImpl(StandardWrapper wrapper, 
                                              WebModule webModule) {
         super(wrapper, webModule);
+        this.webModule = webModule;
         wbd = webModule.getWebBundleDescriptor();
         if (wbd == null) {
             throw new IllegalStateException(
@@ -2131,7 +2189,7 @@ class DynamicWebServletRegistrationImpl
     public void setRunAsRole(String roleName) {
         super.setRunAsRole(roleName);
         /*
-         * Propagate the new mappings to the underlying 
+         * Propagate the new run-as role to the underlying 
          * WebBundleDescriptor provided by the deployment backend,
          * so that corresponding security constraints may be calculated
          * by the security subsystem, which uses the
@@ -2145,7 +2203,7 @@ class DynamicWebServletRegistrationImpl
 
     @Override
     public Set<String> setServletSecurity(ServletSecurityElement constraint) {
-        // TBD SHING WAI
+        webModule.processServletSecurityElement(constraint, wbd, wcd);
         return super.setServletSecurity(constraint);
     }
 
@@ -2180,6 +2238,7 @@ class DynamicWebServletRegistrationImpl
             Class <? extends Servlet> clazz,
             WebBundleDescriptor webBundleDescriptor,
             WebComponentDescriptor wcd, StandardWrapper wrapper) {
+
         // Process RunAs annotation
         if (clazz.isAnnotationPresent(RunAs.class)) {
             RunAs runAs = (RunAs)clazz.getAnnotation(RunAs.class);

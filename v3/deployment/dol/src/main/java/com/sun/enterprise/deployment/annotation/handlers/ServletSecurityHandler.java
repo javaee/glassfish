@@ -36,6 +36,7 @@
 package com.sun.enterprise.deployment.annotation.handlers;
 
 import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
+import com.sun.enterprise.deployment.MetadataSource;
 import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.SecurityConstraintImpl;
 import com.sun.enterprise.deployment.UserDataConstraintImpl;
@@ -145,7 +146,7 @@ public class ServletSecurityHandler extends AbstractWebHandler {
                     urlPatterns, httpConstraint.rolesAllowed(),
                     httpConstraint.value(),
                     httpConstraint.transportGuarantee(),
-                    null);
+                    null, MetadataSource.ANNOTATION);
 
             // we know there is one WebResourceCollection there
             WebResourceCollection webResColl =
@@ -161,7 +162,7 @@ public class ServletSecurityHandler extends AbstractWebHandler {
                         urlPatterns, httpMethodConstraint.rolesAllowed(),
                         httpMethodConstraint.emptyRoleSemantic(),
                         httpMethodConstraint.transportGuarantee(),
-                        httpMethod);
+                        httpMethod, MetadataSource.ANNOTATION);
 
                 //exclude this from the top level constraint
                 webResColl.addHttpMethodOmission(httpMethod);
@@ -195,14 +196,15 @@ public class ServletSecurityHandler extends AbstractWebHandler {
         return nonOverridedUrlPatterns;
     }
 
-    private SecurityConstraint createSecurityConstraint(
+    public static SecurityConstraint createSecurityConstraint(
             WebBundleDescriptor webBundleDesc,
             Set<String> urlPatterns, String[] rolesAllowed,
             EmptyRoleSemantic emptyRoleSemantic,
             TransportGuarantee transportGuarantee,
-            String httpMethod) {
+            String httpMethod, MetadataSource metadataSource) {
 
         SecurityConstraint securityConstraint = new SecurityConstraintImpl();
+        securityConstraint.setMetadataSource(metadataSource);
         WebResourceCollectionImpl webResourceColl = new WebResourceCollectionImpl();
         securityConstraint.addWebResourceCollection(webResourceColl);
         for (String urlPattern : urlPatterns) {
@@ -214,7 +216,7 @@ public class ServletSecurityHandler extends AbstractWebHandler {
             if (emptyRoleSemantic ==  EmptyRoleSemantic.DENY) {
                  throw new IllegalArgumentException(localStrings.getLocalString(
                         "enterprise.deployment.annotation.handlers.denyWithRolesAllowed",
-                        "One cannot specify DENY with an non-empty array of rolesAllowed in @ServletSecurity"));
+                        "One cannot specify DENY with an non-empty array of rolesAllowed in @ServletSecurity / ServletSecurityElement"));
             }
 
             ac = new AuthorizationConstraintImpl();
