@@ -424,8 +424,7 @@ public class EjbContainerUtilImpl
             } else {
                 _logger.log (Level.INFO, "Loading EJBTimerService. Please wait.");
 
-                ServerContext sc = habitat.getByContract(ServerContext.class);
-                File root = sc.getInstallRoot();
+                File root = serverContext.getInstallRoot();
                 File app = new File(root,
                         "lib/install/applications/" + 
                         EjbContainerUtil.TIMER_SERVICE_APP_NAME + ".war");

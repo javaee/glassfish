@@ -38,30 +38,25 @@ package com.sun.ejb.codegen;
 import java.lang.reflect.Method;
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.ClientArtifactsManager;
-import org.glassfish.loader.util.ASClassLoaderUtil;
+import org.glassfish.ejb.spi.CMPDeployer;
 
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.jvnet.hk2.component.Habitat;
 
+import com.sun.enterprise.config.serverbeans.JavaConfig;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.deployment.EjbReferenceDescriptor;
 import com.sun.enterprise.deployment.util.TypeUtil;
-import com.sun.enterprise.config.serverbeans.JavaConfig;
-import com.sun.enterprise.util.OS;
 import com.sun.enterprise.universal.process.ProcessStreamDrainer;
+import com.sun.enterprise.util.OS;
 
 /**
  * This class is used to generate the RMI-IIOP version of a 
@@ -77,13 +72,14 @@ public class StaticRmiStubGenerator {
 
      private static final String ORG_OMG_STUB_PREFIX  = "org.omg.stub.";
 
-     private final String javaExePath;
      private final String toolsJarPath;
+
+     private List<String> rmicOptionsList;
 
     /**
      * This class is only instantiated internally.
      */
-    public StaticRmiStubGenerator() { 
+    public StaticRmiStubGenerator(Habitat h) { 
         // Find java path and tools.jar
 
         //Try this jre's parent
@@ -123,19 +119,27 @@ public class StaticRmiStubGenerator {
 
         if(jdkDir == null) {
             _logger.warning("Cannot identify JDK location.");
-            javaExePath = null;
             toolsJarPath = null;
         } else {
             String javaName = (OS.isWindows())? "java.exe" : "java";
             File javaExe = new File(jdkDir + "/bin/" + javaName);
-            javaExePath = javaExe.getPath();
             File toolsJar = new File(jdkDir + "/lib/tools.jar" );
             if (toolsJar != null && toolsJar.exists()) {
                 toolsJarPath = toolsJar.getPath();
             } else {
                 toolsJarPath = null;
             }
+        }
 
+        JavaConfig jc = h.getComponent(JavaConfig.class);
+        String rmicOptions = jc.getRmicOptions();
+
+        rmicOptionsList = new ArrayList<String>();
+        StringTokenizer st = new StringTokenizer(rmicOptions, " ");
+        while (st.hasMoreTokens()) {
+            String op = (String) st.nextToken();
+            rmicOptionsList.add(op);
+            _logger.log(Level.INFO, "Detected Rmic option: " + op);
         }
     }
 
@@ -166,7 +170,7 @@ public class StaticRmiStubGenerator {
      * @return   array of the client stubs files as zip items or empty array
      *
      */
-    public void ejbc(Habitat h, DeploymentContext deploymentCtx) throws Exception {
+    public void ejbc(DeploymentContext deploymentCtx) throws Exception {
 
         // stubs dir for the current deployment
         File stubsDir = deploymentCtx.getScratchDir("ejb");
@@ -178,7 +182,7 @@ public class StaticRmiStubGenerator {
         long startTime = now();
 
         // class path to be used for this application during javac & rmic
-        String classPath =  ASClassLoaderUtil.getModuleClassPath(h, deploymentCtx);
+        String classPath =  deploymentCtx.getTransientAppMetaData(CMPDeployer.MODULE_CLASSPATH, String.class);
 
         // getClassPath(ejbcCtx.getClasspathUrls(), stubsDir);
 
@@ -217,17 +221,7 @@ public class StaticRmiStubGenerator {
         allStubClasses.addAll(ejbStubClasses);
 
         // Compile and RMIC all Stubs
-        List<String> rmicOptionsList = new ArrayList<String>();
-        JavaConfig jc = h.getComponent(JavaConfig.class);
-
-        String rmicOptions = jc.getRmicOptions();
-        StringTokenizer st = new StringTokenizer(rmicOptions, " ");
-        while (st.hasMoreTokens()) {
-            String op = (String) st.nextToken();
-            rmicOptionsList.add(op);
-            _logger.log(Level.INFO, "Detected Rmic option: " + op);
-        }
-        rmic(classPath, rmicOptionsList, allStubClasses, stubsDir, gnrtrTMP, explodedDir);
+        rmic(classPath, allStubClasses, stubsDir, gnrtrTMP, explodedDir);
 
         _logger.log(Level.INFO,  "[RMIC] RMIC execution time: " + (now() - startTime) + " msec");
 
@@ -299,7 +293,6 @@ public class StaticRmiStubGenerator {
      * Compile all the generated .java files, run rmic on them.
      *
      * @param    classPath         class path for javac & rmic
-     * @param    rmicOptions       options for rmic
      * @param    stubClasses  additional classes to be compilled with
      *                             the other files
      * @param    destDir           destination directory for javac & rmic
@@ -309,19 +302,13 @@ public class StaticRmiStubGenerator {
      * @exception    GeneratorException  if an error during code generation
      * @exception    IOException         if an i/o error
      */
-    private void rmic(String classPath, List<String> rmicOptions,
-                                Set<String> stubClasses, File destDir,
+    private void rmic(String classPath, Set<String> stubClasses, File destDir,
                                 String repository, String explodedDir)
         throws GeneratorException, IOException
     {
 
         if( stubClasses.size() == 0 ) {
             _logger.log(Level.INFO,  "[RMIC] No code generation required");
-            return;
-        }
-
-        if( javaExePath == null ) {
-            _logger.log(Level.INFO,  "[RMIC] JDK location was not found");
             return;
         }
 
@@ -335,65 +322,36 @@ public class StaticRmiStubGenerator {
                                          "Compiling RMI-IIOP code."));
 
         List<String> cmds = new ArrayList<String>();
-        cmds.add(javaExePath);
+        cmds.addAll(rmicOptionsList);
         cmds.add("-classpath");
 
         StringBuilder sb = new StringBuilder().append(System.getProperty("java.class.path"));
         if (toolsJarPath != null) {
              sb.append(File.pathSeparator).append(toolsJarPath);
         }
-        sb.append(File.pathSeparator).append(classPath)
-          .append(File.pathSeparator).append(explodedDir)
-          .append(File.pathSeparator).append(repository);
+        sb.append(File.pathSeparator).append(explodedDir)
+          .append(File.pathSeparator).append(repository)
+          .append(File.pathSeparator).append(classPath);
 
-        String bigClasspath = sb.toString();
-        cmds.add(bigClasspath);
-        if (OS.isDarwin()) {
-            // add lib/endorsed so it finds the right rmic
-            cmds.add("-Djava.endorsed.dirs=" + System.getProperty("com.sun.aas.installRoot") +
-                    File.separatorChar + "lib" + File.separatorChar + "endorsed");
-        }
-
-        cmds.add("-Djava.ext.dirs=" + System.getProperty("java.ext.dirs"));
-        cmds.add("sun.rmi.rmic.Main");
-        cmds.add("-classpath");
-        cmds.add(bigClasspath);
+        cmds.add(sb.toString());
         cmds.add("-d");
         cmds.add(destDir.toString());
-        cmds.addAll(rmicOptions);
         cmds.addAll(stubClasses);
 
-        if (_logger.isLoggable(Level.INFO)){
-            StringBuilder sbuf = new StringBuilder();
-            for(String o : cmds) {
-                sbuf.append("\n\t").append(o);
-            }
-            _logger.log(Level.INFO,"[RMIC] RMIC COMMAND: " + sbuf.toString());
-        }
+        _logger.info("[RMIC] options: " + cmds);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        int result = -1;
-        try {
-            Process p = Runtime.getRuntime().exec(cmds.toArray(new String[0]));
+        sun.rmi.rmic.Main compiler = new sun.rmi.rmic.Main(baos, "rmic");
+        boolean success = compiler.compile(cmds.toArray(new String[0]));
+        //success = true;  // it ALWAYS returns an "error" if -Xnocompile is used!!
 
-            // This call suppose to prevent problems with err and out streams
-            ProcessStreamDrainer.redirect("rmic", p);
-
-            result = p.waitFor();
-        } catch(Exception e) {
-            _logger.log(Level.INFO,"ejbc.codegen_rmi_fail",e);
-            String msg =
-                localStrings.getString("generator.rmic_compilation_failed");
-            GeneratorException ge = new GeneratorException(msg);
-            ge.initCause(e);
-            throw ge;
-        }
-
-        if (result != 0) {
+        String output = baos.toString();
+        if (!success) {
+             _logger.warning("[RMIC] Errors: " + output);
             throw new GeneratorException(
                     localStrings.getString("generator.rmic_compilation_failed_see_log"));
         }
     }
-
 
     /**
      * Assembles the name of the client jar files into the given vector.
@@ -563,5 +521,6 @@ public class StaticRmiStubGenerator {
         }
         return null;
     }
+
 }
 

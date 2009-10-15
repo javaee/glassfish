@@ -280,10 +280,11 @@ public class EjbDeployer
         DeployCommandParameters dcp =
                 dc.getCommandParameters(DeployCommandParameters.class);
         boolean generateRmicStubs = dcp.generatermistubs;
+        dc.addTransientAppMetaData(CMPDeployer.MODULE_CLASSPATH, getModuleClassPath(dc));
         if( generateRmicStubs ) {
-            StaticRmiStubGenerator staticStubGenerator = new StaticRmiStubGenerator();
+            StaticRmiStubGenerator staticStubGenerator = new StaticRmiStubGenerator(habitat);
             try {
-                staticStubGenerator.ejbc(habitat, dc);
+                staticStubGenerator.ejbc(dc);
             } catch(Exception e) {
                 throw new DeploymentException("Static RMI-IIOP Stub Generation exception for " +
                         dc.getSourceDir(), e);
@@ -299,7 +300,6 @@ public class EjbDeployer
         if (cmpDeployer == null) {
             throw new DeploymentException("No CMP Deployer is available to deploy this module");
         }
-        dc.addTransientAppMetaData(CMPDeployer.MODULE_CLASSPATH, getModuleClassPath(dc));
         cmpDeployer.deploy(dc);   
 
 
