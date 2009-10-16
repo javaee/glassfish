@@ -105,7 +105,7 @@ public class EjbTimedObjectStatsProvider {
     @ProbeListener("glassfish:ejb:timers:timerRemovedEvent")
     public void ejbTimerRemovedEvent() {
         _logger.fine("=== timerRemovedEvent");
-        timerDeliveredStat.increment();
+        timerRemoveStat.increment();
     }
 
     @ProbeListener("glassfish:ejb:timers:timerDeliveredEvent")
