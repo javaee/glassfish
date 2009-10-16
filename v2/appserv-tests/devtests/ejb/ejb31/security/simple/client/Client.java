@@ -23,13 +23,14 @@ public class Client {
 
     @EJB static Hello hello;
 
-    /* TODO uncomment this to test App validation in ACC
-     @Resource
+    @Resource
     static FooManagedBean2 fooMb2;
-    */
 
     @Resource(lookup="java:module/FooManagedBean")
     static FooManagedBean fooMb;
+
+    @Resource(lookup="java:comp/env/com.acme.Client/fooMb2")
+    static FooManagedBean2 fooMb3;
 
     @Resource(lookup="java:module/ModuleName")
     static String moduleName;
@@ -78,6 +79,8 @@ public class Client {
 	    System.out.println("ModuleName = " + moduleName);
 
 	    fooMb.hello();
+	    fooMb2.hello();
+	    fooMb3.hello();
 
 	    Integer envEntry = (Integer)
 		new InitialContext().lookup("java:app/env/value1");
