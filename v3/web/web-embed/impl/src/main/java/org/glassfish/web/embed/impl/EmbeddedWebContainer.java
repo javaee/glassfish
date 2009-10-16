@@ -119,7 +119,7 @@ public class EmbeddedWebContainer implements
     public List<Sniffer> getSniffers() {
         List<Sniffer> sniffers = new ArrayList<Sniffer>();
         sniffers.add(habitat.getComponent(Sniffer.class, "web"));
-        sniffers.add(habitat.getComponent(Sniffer.class, "webbeans"));        
+        sniffers.add(habitat.getComponent(Sniffer.class, "weld"));        
         Sniffer security = habitat.getComponent(Sniffer.class, "Security");
         if (security!=null) {
             sniffers.add(security);
