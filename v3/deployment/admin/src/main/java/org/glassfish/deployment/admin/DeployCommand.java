@@ -200,9 +200,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             if (name==null) {
                 name = archiveHandler.getDefaultApplicationName(archive, initialContext);
-                if (!force) {
-                    name = DeploymentUtils.resolveAppNameConflict(name, habitat);
-                }
             }
 
             ActionReport.MessagePart part = report.getTopMessagePart();
@@ -326,6 +323,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                         file.getAbsolutePath()), e);
             }
             if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
+                report.setMessage(localStrings.getLocalString("deploy.command.success","Application deployed successfully with name {0}", name));
+
                 logger.info(localStrings.getLocalString(
                         "deploy.done", 
                         "Deployment of {0} done is {1} ms",

@@ -184,9 +184,6 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
 
         if (params.name==null) {
                 params.name = archiveHandler.getDefaultApplicationName(archive, context);
-                if (!params.force) {
-                    params.name = DeploymentUtils.resolveAppNameConflict(params.name, habitat);
-                }
             }
         
         final ClassLoader cl = context.getClassLoader();

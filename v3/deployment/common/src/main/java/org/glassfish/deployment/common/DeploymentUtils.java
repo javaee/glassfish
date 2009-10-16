@@ -221,34 +221,4 @@ public class DeploymentUtils {
         return appRootPath + File.separator + getRelativeEmbeddedModulePath(appRootPath, moduleUri) ;
     }
 
-    // find if the application name is already in use, if yes
-    // assign another name
-    public static String resolveAppNameConflict(String appName, 
-        Habitat habitat) {
-        String originalAppName = appName;
-        ApplicationRegistry appRegistry = habitat.getComponent(
-            ApplicationRegistry.class);
-        Set<String> allAppNames = appRegistry.getAllApplicationNames();
-        boolean needResolveConflict = true;
-        int appendix = 1;
-        while (needResolveConflict) {
-            needResolveConflict = false;
-            for (String name : allAppNames) {
-                if (appName.equals(name)) {
-                    // found a conflict
-                    needResolveConflict = true;
-                    break;
-                }
-            }
-            if (needResolveConflict) {
-                appName = originalAppName + "_" + String.valueOf(appendix);
-                appendix++;
-                // once we assign a different name, we need re-check
-                // to see if this new cause any conflict
-                needResolveConflict = true;
-            }
-        }
-
-        return appName;
-    }
 }
