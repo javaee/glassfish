@@ -25,12 +25,15 @@ package org.glassfish.ejb.startup;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import com.sun.ejb.Container;
 import com.sun.ejb.ContainerFactory;
 import com.sun.ejb.containers.AbstractSingletonContainer;
+import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
@@ -78,6 +81,14 @@ public class EjbApplication
     
     private PolicyLoader policyLoader;
 
+    private boolean initializeInOrder;
+
+    private volatile boolean started;
+
+    private static final String CONTAINER_LIST_KEY = "org.glassfish.ejb.startup.EjbContainerList";
+
+    private static final String EJB_APP_MARKED_AS_STARTED_STATUS = "org.glassfish.ejb.startup.EjbApplicationMarkedAsStarted";
+
     public EjbApplication(
             EjbBundleDescriptor bundle, DeploymentContext dc,
             ClassLoader cl, Habitat habitat, 
@@ -90,6 +101,9 @@ public class EjbApplication
         this.ejbContainerFactory = habitat.getByContract(ContainerFactory.class);
         this.ejbSMF = ejbSecMgrFactory;
         this.policyLoader = habitat.getComponent(PolicyLoader.class);
+
+        Application app = ejbBundle.getApplication();
+        initializeInOrder = (app != null) && (app.isInitializeInOrder());
     }
     
     public Collection<EjbDescriptor> getDescriptor() {
@@ -100,8 +114,31 @@ public class EjbApplication
         return ejbBundle;
     }
 
-    public boolean start(ApplicationContext startupContext) throws Exception {
+    public boolean isStarted() {
+        return started;
+    }                                                                                     // TODO handle singleton startup dependencies that refer to singletons in a different
+            // module within the application
 
+    void markAllContainersAsStarted() {
+        for (Container container : containers) {
+                container.setStartedState();
+        }
+    }
+
+    public boolean start(ApplicationContext startupContext) throws Exception {
+        started = true;
+
+        if (! initializeInOrder) {
+            Boolean alreadyMarked = dc.getTransientAppMetaData(EJB_APP_MARKED_AS_STARTED_STATUS, Boolean.class);
+            if (! alreadyMarked.booleanValue()) {
+                List<EjbApplication> ejbAppList = dc.getTransientAppMetaData(CONTAINER_LIST_KEY, List.class);
+                for (EjbApplication app : ejbAppList) {
+                    app.markAllContainersAsStarted();
+                }
+                dc.addTransientAppMetaData(EJB_APP_MARKED_AS_STARTED_STATUS, new Boolean(true));
+            }
+        }
+        
         try {
             DeployCommandParameters params = ((DeploymentContext)startupContext).
                     getCommandParameters(DeployCommandParameters.class);
@@ -110,9 +147,7 @@ public class EjbApplication
                 container.startApplication(params.origin == OpsParams.Origin.deploy);
             }
 
-            // TODO handle singleton startup dependencies that refer to singletons in a different
-            // module within the application
-            singletonLCM.doStartup();
+            singletonLCM.doStartup(this);
 
         } catch(Exception e) {
             abortInitializationAfterException();
@@ -126,32 +161,36 @@ public class EjbApplication
      * Initial phase of continer initialization.  This creates the concrete container
      * instance for each EJB component, registers JNDI entries, etc.  However, no
      * EJB bean instances or invocations occur during this phase.  Those must be
-     * delayed until start() is called.  
+     * delayed until start() is called.
      * @param startupContext
      * @return
      */
     boolean loadContainers(ApplicationContext startupContext) {
-        /*
-        Set<EjbDescriptor> descs = (Set<GEjbDescriptor>) bundleDesc.getEjbs();
 
-        long appUniqueID = ejbs.getUniqueId();
-        long appUniqueID = 0;
-        if (appUniqueID == 0) {
-            appUniqueID = (System.currentTimeMillis() & 0xFFFFFFFF) << 16;
-        }
-        */
+        DeploymentContext dc = (DeploymentContext) startupContext;
 
-
-        DeployCommandParameters params = ((DeploymentContext)startupContext).
-            getCommandParameters(DeployCommandParameters.class);
+        DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
 
         // If true the application is being deployed.  If false, it's
         // an initialization after the app was already deployed. 
         boolean deploy = (params.origin == OpsParams.Origin.deploy );
 
-        int counter = 0;
+        String dcMapToken = "org.glassfish.ejb.startup.SingletonLCM";
+        singletonLCM = dc.getTransientAppMetaData(dcMapToken, SingletonLifeCycleManager.class);
+        if (singletonLCM == null) {
+            singletonLCM = new SingletonLifeCycleManager(initializeInOrder);
+            dc.addTransientAppMetaData(dcMapToken, singletonLCM);
+        }
 
-        singletonLCM = new SingletonLifeCycleManager();
+        if (! initializeInOrder) {
+            dc.addTransientAppMetaData(EJB_APP_MARKED_AS_STARTED_STATUS, new Boolean(false));
+            List<EjbApplication> ejbAppList = dc.getTransientAppMetaData(CONTAINER_LIST_KEY, List.class);
+            if (ejbAppList == null) {
+                ejbAppList = new ArrayList<EjbApplication>();
+                dc.addTransientAppMetaData(CONTAINER_LIST_KEY, ejbAppList);
+            }
+            ejbAppList.add(this);
+        }
 
         try {
             policyLoader.loadPolicy();
@@ -170,7 +209,7 @@ public class EjbApplication
                 containers.add(container);
 
                 if (container instanceof AbstractSingletonContainer) {
-                    singletonLCM.addSingletonContainer((AbstractSingletonContainer) container);
+                    singletonLCM.addSingletonContainer(this, (AbstractSingletonContainer) container);
                 }
 
             }

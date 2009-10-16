@@ -2,11 +2,15 @@ package org.glassfish.ejb.startup;
 
 import com.sun.ejb.containers.AbstractSingletonContainer;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
 
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.logging.LogDomains;
+
 import java.util.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * @author Mahesh Kannan
@@ -14,34 +18,41 @@ import java.util.*;
  */
 public class SingletonLifeCycleManager {
 
-    Set<String> names = new HashSet<String>();
+    private Set<String> names = new HashSet<String>();
 
-    Map<String, Set<String>> initialDependency =
+    private Map<String, Set<String>> initialDependency =
             new HashMap<String, Set<String>>();
 
-    Map<String, Integer> name2Index = new HashMap<String, Integer>();
+    private Map<String, Integer> name2Index = new HashMap<String, Integer>();
 
-    Map<Integer, String> index2Name = new HashMap<Integer, String>();
+    private Map<Integer, String> index2Name = new HashMap<Integer, String>();
 
-    Set<String> leafNodes = new HashSet<String>();
+    private Set<String> leafNodes = new HashSet<String>();
 
-    int maxIndex = 0;
+    private int maxIndex = 0;
 
-    boolean adj[][];
+    private boolean adj[][];
 
     // List of eagerly initialized singletons, in the order they were
     // initialized.
-    List<AbstractSingletonContainer> initializedSingletons =
+    private List<AbstractSingletonContainer> initializedSingletons =
             new ArrayList<AbstractSingletonContainer>();
 
     private Map<String, AbstractSingletonContainer> name2Container =
             new HashMap<String, AbstractSingletonContainer>();
 
-    public SingletonLifeCycleManager() {
+    private boolean initializeInOrder;
 
+    private Map<String, EjbApplication> name2EjbApp = new HashMap<String, EjbApplication>();
+
+    private static final Logger _logger =
+            LogDomains.getLogger(SingletonLifeCycleManager.class, LogDomains.EJB_LOGGER);
+
+    SingletonLifeCycleManager(boolean initializeInOrder) {
+        this.initializeInOrder = initializeInOrder;
     }
 
-    public void addSingletonContainer(AbstractSingletonContainer c) {
+    void addSingletonContainer(EjbApplication ejbApp, AbstractSingletonContainer c) {
         c.setSingletonLifeCycleManager(this);
         EjbSessionDescriptor sdesc = (EjbSessionDescriptor) c.getEjbDescriptor();
         String modName = sdesc.getEjbBundleDescriptor().getName();
@@ -51,65 +62,64 @@ public class SingletonLifeCycleManager {
         String[] depends = sdesc.getDependsOn();
         String[] newDepends = new String[depends.length];
 
+        StringBuilder sb = new StringBuilder("Partial order of dependent(s). "  + src + " => {");
         for(int i=0; i < depends.length; i++) {
-            newDepends[0] = normalizeSingletonName(depends[i], sdesc);
+            newDepends[i] = normalizeSingletonName(depends[i], sdesc);
+            sb.append(newDepends[i] + " ");
+        }
+        sb.append("}");
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, sb.toString());
         }
         this.addDependency(src, newDepends);
 
-        name2Container.put(src, (AbstractSingletonContainer) c);
+        name2Container.put(src, c);
+        name2EjbApp.put(src, ejbApp);
     }
 
     private String normalizeSingletonName(String origName, EjbSessionDescriptor sessionDesc) {
-
         String normalizedName = origName;
-
         boolean fullyQualified = origName.contains("#");
 
         Application app = sessionDesc.getEjbBundleDescriptor().getApplication();
-
-        if( fullyQualified ) {
-
+        if (fullyQualified) {
             int indexOfHash = origName.indexOf("#");
-            String ejbName = origName.substring(indexOfHash+1);
+            String ejbName = origName.substring(indexOfHash + 1);
             String relativeJarPath = origName.substring(0, indexOfHash);
 
             BundleDescriptor bundle = app.getRelativeBundle(sessionDesc.getEjbBundleDescriptor(),
-                        relativeJarPath);
-
-            if( bundle == null ) {
+                    relativeJarPath);
+            if (bundle == null) {
                 throw new IllegalStateException("Invalid @DependOn value = " + origName +
                         " for Singleton " + sessionDesc.getName());
             }
-
             normalizedName = bundle.getModuleDescriptor().getArchiveUri() + "#" + ejbName;
-
         } else {
-
             normalizedName = sessionDesc.getEjbBundleDescriptor().getModuleDescriptor().getArchiveUri() +
                     "#" + origName;
-
         }
 
         return normalizedName;
-
     }
 
-    public void doStartup() {
-        AbstractSingletonContainer[] partialOrder = this.getPartiallyOrderedSingletonDescriptors();
-        int orderSz = partialOrder.length;
+    void doStartup(EjbApplication ejbApp) {
+        Collection<EjbDescriptor> ejbs = ejbApp.getEjbBundleDescriptor().getEjbs();
+        int descSz = ejbs.size();
 
-        for (int i = 0; i < orderSz; i++) {
-            EjbSessionDescriptor sdesc = (EjbSessionDescriptor) partialOrder[i].getEjbDescriptor();
-
-            String normalizedSingletonName = normalizeSingletonName(sdesc.getName(), sdesc);
-
-            if (sdesc.getInitOnStartup()) {
-                initializeSingleton(name2Container.get(normalizedSingletonName));
+        for (EjbDescriptor desc : ejbs) {
+            if (desc instanceof EjbSessionDescriptor) {
+                EjbSessionDescriptor sdesc = (EjbSessionDescriptor) desc;
+                if ((sdesc.isSingleton())) {
+                    if (sdesc.getInitOnStartup()) {
+                        String normalizedSingletonName = normalizeSingletonName(sdesc.getName(), sdesc);
+                        initializeSingleton(name2Container.get(normalizedSingletonName));
+                    }
+                }
             }
         }
     }
 
-    public void doShutdown() {
+    void doShutdown() {
 
         // Shutdown singletons in the reverse order of their initialization
         Collections.reverse(initializedSingletons);
@@ -124,25 +134,51 @@ public class SingletonLifeCycleManager {
     }
 
     public synchronized void initializeSingleton(AbstractSingletonContainer c) {
+        initializeSingleton(c, new ArrayList<String>());
+    }
+
+    private void initializeSingleton(AbstractSingletonContainer c, List<String> initList) {
         if (! initializedSingletons.contains(c)) {
             String normalizedSingletonName = normalizeSingletonName(c.getEjbDescriptor().getName(),
                     (EjbSessionDescriptor) c.getEjbDescriptor());
             List<String> computedDeps = computeDependencies(normalizedSingletonName);
             int sz = computedDeps.size();
             AbstractSingletonContainer[] deps = new AbstractSingletonContainer[sz];
+            initList.add(normalizedSingletonName);
             for (int i = 0; i < sz; i++) {
-                deps[i] = (AbstractSingletonContainer)
-                        name2Container.get(computedDeps.get(i));
+                String nextSingletonName = computedDeps.get(i);
+                deps[i] = name2Container.get(nextSingletonName);
+                if (initializeInOrder) {
+                    EjbApplication ejbApp = name2EjbApp.get(nextSingletonName);
+                    if (! ejbApp.isStarted()) {
+                        String msg = "application.xml specifies module initialization ordering but "
+                                + initList.get(0) + " depends on " + nextSingletonName
+                                + " which is in a module that hasn't been started yet";
+                        if (_logger.isLoggable(Level.WARNING)) {
+                            StringBuilder sb = new StringBuilder(initList.get(0));
+                            for (int k=1; k<initList.size(); k++) {
+                                sb.append(" -> ").append(initList.get(k));
+                            }
+                            sb.append(" -> ").append(nextSingletonName);
+                            _logger.log(Level.WARNING, "Partial order of singleton beans involved in this: "
+                                + sb.toString());
+                        }
+                        throw new RuntimeException(msg);
+                    }
+                }
 
-                initializeSingleton(deps[i]);
+                initializeSingleton(deps[i], initList);
             }
 
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "SingletonLifeCycleManager: initializingSingleton: " + normalizedSingletonName);
+            }
             c.instantiateSingletonInstance();
             initializedSingletons.add(c);
         }
     }
 
-    public void addDependency(String src, String[] depends) {
+    private void addDependency(String src, String[] depends) {
         if (depends != null && depends.length > 0) {
             for (String s : depends) {
                 addDependency(src, s);
@@ -152,7 +188,7 @@ public class SingletonLifeCycleManager {
         }
     }
 
-    public void addDependency(String src, List<String> depends) {
+    private void addDependency(String src, List<String> depends) {
         if (depends != null) {
             for (String s : depends) {
                 addDependency(src, s);
@@ -162,9 +198,8 @@ public class SingletonLifeCycleManager {
         }
     }
 
-    public void addDependency(String src, String depends) {
+    private void addDependency(String src, String depends) {
         src = src.trim();
-
         Set<String> deps = getExistingDependecyList(src);
         StringTokenizer tok = new StringTokenizer(depends, " ,");
         while (tok.hasMoreTokens()) {
@@ -174,7 +209,7 @@ public class SingletonLifeCycleManager {
         }
     }
 
-    public String[] getPartialOrdering() {
+    private String[] getPartialOrdering() {
         if (adj == null) {
             fillAdjacencyMatrix();
         }
@@ -220,19 +255,18 @@ public class SingletonLifeCycleManager {
 
     }
 
-    public AbstractSingletonContainer[] getPartiallyOrderedSingletonDescriptors() {
+    private AbstractSingletonContainer[] getPartiallyOrderedSingletonContainer() {
         String[] computedDeps = getPartialOrdering();
         int sz = computedDeps.length;
         AbstractSingletonContainer[] deps = new AbstractSingletonContainer[sz];
         for (int i = 0; i < sz; i++) {
-            deps[i] = (AbstractSingletonContainer)
-                    name2Container.get(computedDeps[i]);
+            deps[i] = name2Container.get(computedDeps[i]);
         }
 
         return deps;
     }
 
-    public List<String> computeDependencies(String root) {
+    private List<String> computeDependencies(String root) {
         if (adj == null) {
             fillAdjacencyMatrix();
         }
@@ -248,8 +282,7 @@ public class SingletonLifeCycleManager {
                 if (adj[topIndex][j]) {
                     String name = index2Name.get(j);
                     if (stk.contains(name)) {
-                        String str = "Cyclic dependency: "
-                                + top + " => " + name + "? ";
+                        String str = "Cyclic dependency: " + top + " => " + name + "? ";
                         throw new IllegalArgumentException(
                                 str + getCyclicString(adj));
                     } else {
@@ -333,7 +366,7 @@ public class SingletonLifeCycleManager {
         return sb.toString();
     }
 
-    public void printAdjacencyMatrix() {
+    private void printAdjacencyMatrix() {
         if (adj == null) {
             fillAdjacencyMatrix();
         }
@@ -360,7 +393,7 @@ public class SingletonLifeCycleManager {
 
 
     private static void test1() {
-        SingletonLifeCycleManager ts = new SingletonLifeCycleManager();
+        SingletonLifeCycleManager ts = new SingletonLifeCycleManager(false);
         ts.addDependency("A", "B, C");
         ts.addDependency("B", "C, D");
         ts.addDependency("D", "E");
@@ -369,7 +402,7 @@ public class SingletonLifeCycleManager {
 
         ts.getPartialOrdering();
 
-        SingletonLifeCycleManager t = new SingletonLifeCycleManager();
+        SingletonLifeCycleManager t = new SingletonLifeCycleManager(false);
         t.addDependency("C", ts.computeDependencies("C"));
         t.addDependency("D", ts.computeDependencies("D"));
 
@@ -387,7 +420,7 @@ public class SingletonLifeCycleManager {
     }
 
     private static void test2() {
-        SingletonLifeCycleManager ts = new SingletonLifeCycleManager();
+        SingletonLifeCycleManager ts = new SingletonLifeCycleManager(false);
         ts.addDependency("A", "D, E");
         ts.addDependency("B", "F");
         ts.addDependency("C", "G, H");
@@ -417,7 +450,7 @@ public class SingletonLifeCycleManager {
         }
         System.out.println();
 
-        SingletonLifeCycleManager ts2 = new SingletonLifeCycleManager();
+        SingletonLifeCycleManager ts2 = new SingletonLifeCycleManager(false);
         ts2.addDependency("E", ts.computeDependencies("E"));
         ts2.addDependency("U", ts.computeDependencies("U"));
         ts2.addDependency("H", ts.computeDependencies("H"));
@@ -428,7 +461,7 @@ public class SingletonLifeCycleManager {
     }
 
     private static void test3() {
-        SingletonLifeCycleManager ts = new SingletonLifeCycleManager();
+        SingletonLifeCycleManager ts = new SingletonLifeCycleManager(false);
         ts.addDependency("A", (String) null);
         ts.addDependency("B", (String) null);
         ts.addDependency("C", (String) null);
@@ -445,7 +478,7 @@ public class SingletonLifeCycleManager {
     }
 
     private static void test4() {
-        SingletonLifeCycleManager ts = new SingletonLifeCycleManager();
+        SingletonLifeCycleManager ts = new SingletonLifeCycleManager(false);
         ts.addDependency("A", "D, B, C");
         ts.addDependency("B", "F, I");
         ts.addDependency("C", "F, H, G");
