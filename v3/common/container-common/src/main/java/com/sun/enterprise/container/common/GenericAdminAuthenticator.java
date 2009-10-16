@@ -109,12 +109,12 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
      * @throws LoginException
      */
     public boolean loginAsAdmin(String user, String password, String realm) throws LoginException {
+        boolean isLocal = isLocalPassword(user, password); //local password gets preference
+        if (isLocal)
+            return true;
         if (as.usesFileRealm())
             return handleFileRealm(user, password);
         else {
-            boolean isLocal = isLocalPassword(user, password); //see 10
-            if (isLocal)
-                return true;
             //now, deleate to the security service
             ClassLoader pc = null;
             boolean hack = false;
@@ -166,13 +166,6 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     private boolean handleFileRealm(String user, String password) throws LoginException {
         /* I decided to handle FileRealm  as a special case. Maybe it is not such a good idea, but
            loading the security subsystem for FileRealm is really not required.
-         */
-
-        boolean isLocal = isLocalPassword(user, password);
-        if (isLocal)
-            return true;
-
-        /*
          * If no user name was supplied, assume the default admin user name,
          * if there is one.
          */
