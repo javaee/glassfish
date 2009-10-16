@@ -61,9 +61,8 @@
                                 <resolveArtifact artifactId="jaxr-ra" property="jaxr-ra.rar"/>
 				<mkdir dir="target/tmp"/>
 				<mkdir dir="target/classes/glassfish/lib/install/applications/jaxr-ra"/>
-				<unjar src="${jaxr-ra.rar}" dest="target/tmp"></unjar>
-				<unjar src="target/tmp/jaxr-ra.jar"
-					dest="target/classes/glassfish/lib/install/applications/jaxr-ra">
+				<unjar src="${jaxr-ra.rar}" 
+                                       dest="target/classes/glassfish/lib/install/applications/jaxr-ra">
                                 </unjar>
                             </tasks>
                         </configuration>
