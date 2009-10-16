@@ -39,11 +39,10 @@ package com.sun.enterprise.admin.cli.remote;
 import com.sun.enterprise.admin.cli.CLILogger;
 import com.sun.enterprise.universal.NameValue;
 import com.sun.enterprise.universal.StringUtils;
-import com.sun.enterprise.universal.collections.CollectionUtils;
 import com.sun.enterprise.universal.glassfish.AdminCommandResponse;
 import java.io.*;
+import java.net.URLDecoder;
 import java.util.*;
-import java.util.jar.*;
 
 /**
  *
@@ -191,7 +190,7 @@ class ManifestManager implements ResponseManager {
         if (ok(allChildren)) {
             String[] children = allChildren.split(";");
             for (String child : children) {
-                sb.append(child).append(EOL);
+                sb.append(decode(child)).append(EOL);
             }
         }
         return sb;
@@ -205,6 +204,16 @@ class ManifestManager implements ResponseManager {
         return s != null && s.length() > 0 && !s.equals("null");
     }
 
+    private String decode(String value) {
+        try {
+            return URLDecoder.decode(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return value;
+        } catch (IllegalArgumentException e1) {
+            return value;
+        }
+    }
+    
     private AdminCommandResponse response;
     private static final String EOL = StringUtils.EOL;
     private static final String TAB = "    ";
