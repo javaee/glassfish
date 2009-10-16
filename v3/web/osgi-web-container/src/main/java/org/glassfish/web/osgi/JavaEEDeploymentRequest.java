@@ -44,6 +44,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
@@ -287,11 +288,11 @@ public class JavaEEDeploymentRequest
         parameters.enabled = Boolean.TRUE;
         parameters.origin = DeployCommandParameters.Origin.deploy;
         parameters.force = true;
-        parameters.virtualservers = getAllVirtualServers();
+        parameters.virtualservers = getDefaultVirtualServer();
         return parameters;
     }
 
-    /*
+    /**
      * @return comma-separated list of all defined virtual servers (exclusive
      * of __asadmin)
      */
@@ -328,4 +329,11 @@ public class JavaEEDeploymentRequest
         return sb.toString();
     }
 
+    /**
+     * @return the dafault virtual server
+     */
+    private String getDefaultVirtualServer() {
+        NetworkListener nl = Globals.get(NetworkListener.class);
+        return nl.findHttpProtocol().getHttp().getDefaultVirtualServer();
+    }
 }
