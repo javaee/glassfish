@@ -38,15 +38,15 @@ package com.sun.common.util.logging;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.io.IOException;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
+import java.util.logging.LogManager;
+import java.io.*;
 
 /**
  * Implementation of a OutputStream that flush the records to a Logger.
  * This is useful to redirect stderr and stdout to loggers.
  *
  * User: Jerome Dochez
+ * author: Jerome Dochez, Carla Mott
  */
 public class LoggingOutputStream extends ByteArrayOutputStream {
 
@@ -66,6 +66,7 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
         this.logger = logger;
         this.level = level;
         lineSeparator = System.getProperty("line.separator");
+
     }
 
     /**
@@ -90,4 +91,286 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
             logger.logp(level, "", "", record);
         }
     }
+
+
+/*
+ * LoggingPrintStream creates a PrintStream with a
+ * LoggingByteArrayOutputStream as its OutputStream. Once it is
+ * set as the System.out or System.err, all outputs to these
+ * PrintStreams will end up in LoggingByteArrayOutputStream
+ * which will log these on a flush.
+ * This simple behavious has a negative side effect that
+ * stack traces are logged with each line being a new log record.
+ * The reason for above is that printStackTrace converts each line
+ * into a separate println, causing a flush at the end of each.
+ * One option that was thought of to smooth this over was to see
+ * if the caller of println is Throwable.[some set of methods].
+ * Unfortunately, there are others who interpose on System.out and err
+ * (like jasper) which makes that check untenable.
+ * Hence the logic currently used is to see if there is a println(Throwable)
+ * and do a printStackTrace and log the complete StackTrace ourselves.
+ * If this is followed by a series of printlns, then we keep ignoring
+ * those printlns as long as they were the same as that recorded by
+ * the stackTrace. This needs to be captured on a per thread basis
+ * to take care of potentially parallel operations.
+ * Care is taken to optimise the frequently used path where exceptions
+ * are not being printed.
+ */
+
+    public class LoggingPrintStream extends PrintStream{
+        LogManager logManager = LogManager.getLogManager( );
+
+        private ThreadLocal perThreadStObjects = new ThreadLocal();
+
+        public LoggingPrintStream (ByteArrayOutputStream os) {
+              super (os, true);
+
+        }
+
+        public void setLogger(Logger l) {
+            logger=l;
+        }
+
+    public void println(Object x) {
+            if (!checkLocks())  return;
+
+        StackTraceObjects sTO;
+
+    if ( (sTO = (StackTraceObjects) perThreadStObjects.get()) != null ) {
+        /*
+         * should not happen, but being safe.
+         * Only case under which we can come here is if there is
+         * code which does synchronized(System.err) and then does
+         * System.err.println(Throwable) without printing stackTrace
+         * other than java.lang.Throwable. We could have done
+         * this check prior to the check on holdsLock, but since
+         * that is the most common path, let us avoid any overhead
+         * println(String) will also do above check and hence there
+         * is no danger of missing out on valid printlns
+         */
+        perThreadStObjects.set(null);
+    }
+
+    if ( !(x instanceof java.lang.Throwable) ) {
+        // No special processing if it is not an exception.
+                super.println(x);
+        return;
+    }
+
+    // if we pass all these checks, then we log the stacktrace
+    sTO = new StackTraceObjects((Throwable)x);
+    perThreadStObjects.set(sTO);
+    super.println(sTO.toString());
+    }
+    public void println(String str) {
+            if (!checkLocks())  return;
+
+        StackTraceObjects sTO;
+    sTO = (StackTraceObjects) perThreadStObjects.get();
+    if ( sTO == null ) {
+        // lets get done with the common case fast
+        super.println(str);
+        return;
+    }
+
+    if ( !sTO.ignorePrintln(str) ) {
+        perThreadStObjects.set(null);
+        super.println(str);
+        return;
+    }
+
+    if (sTO.checkCompletion()) {
+        perThreadStObjects.set(null);
+        return;
+    }
+    }
+
+        public void print(String x) {
+            if (checkLocks())
+                super.print(x);
+        }
+
+
+        public void print(Object x) {
+            if (checkLocks())
+                super.print(x);
+        }
+
+        public void print(boolean x) {
+            if (checkLocks()) {
+            super.print(x);
+            }
+        }
+        public void println(boolean x) {
+            if (checkLocks())
+                super.println(x);
+        }
+
+        public void print(char x) {
+            if (checkLocks()) {
+           super.print(x);
+            }
+        }
+        public void println(char x) {
+            if (checkLocks())
+               super.println(x);
+        }
+
+        public void print(int x) {
+            if (checkLocks()) {
+            super.print(x);
+            }
+        }
+        public void println(int x) {
+            if (checkLocks())
+                super.println(x);
+        }
+
+        public void print(long x) {
+            if (checkLocks()) {
+            super.print(x);
+            }
+        }
+        public void println(long x) {
+            if (checkLocks())
+                super.println(x);
+        }
+
+        public void print(float x) {
+            if (checkLocks()) {
+            super.print(x);
+            }
+        }
+        public void println(float x) {
+            if (checkLocks())
+                super.println(x);
+        }
+
+        public void print(double x) {
+            if (checkLocks()) {
+            super.print(x);
+            }
+        }
+        public void println(double x) {
+            if (checkLocks())
+                super.println(x);
+        }
+
+        public void print(char[] x) {
+            if (checkLocks()) {
+            super.print(x);
+            }
+        }
+        public void println(char[] x) {
+            if (checkLocks())
+                super.println(x);
+        }
+
+
+        public void println() {
+            if (checkLocks()) {
+            super.println();
+            }
+        }
+
+        public void write(byte[] buf, int off, int len) {
+            if (checkLocks()) {
+            super.write(buf,off,len);
+            }
+        }
+
+        public void write(int b) {
+            if (checkLocks()) {
+            super.write(b);
+            }
+        }
+
+        /*
+          LoggingPrintStream class is to support the java System.err and System.out
+          redirection to Appserver log file--server.log.
+          When Java IO is redirected and System.out.println(...) is invoked by a thread with
+          LogManager or Logger(SYSTEMERR_LOGGER,SYSTEOUT_LOGGER) locked, all kind of dead
+          locks among threads will happen.
+          These dead locks are easily reproduced when jvm system properties
+          "-Djava.security.manager" and "-Djava.security.debug=access,failure" are defined.
+          These dead lcoks are basically because each thread has its own sequence of
+          acquiring lock objects(LogManager,Logger,FileandSysLogHandler, the buffer inside
+          LoggingPrintStream).
+          There is no obvious way to define the lock hierarchy and control the lock sequence;
+          Trylock is not a strightforward solution either.Beside they both create heavy
+          dependence on the detail implementation of JDK and Appserver.
+
+          This method(checkLocks) is to find which locks current thread has and
+          LoggingPrintStream object will decide whether to continue to do printing or
+          give ip up to avoid the dead lock.
+         */
+        private boolean checkLocks() {
+            Thread t = Thread.currentThread();
+            if ( !t.holdsLock(logger) && !t.holdsLock(logManager) ) {
+               return true;
+            }
+            return false;
+        }
+    }
+
+/*
+ * StackTraceObjects keeps track of StackTrace printed
+ * by a thread as a result of println(Throwable) and
+ * it keeps track of subsequent println(String) to
+ * avoid duplicate logging of stacktrace
+ */
+    private class	StackTraceObjects {
+
+        private ByteArrayOutputStream stackTraceBuf;
+        private PrintStream stStream;
+        private String stString;
+        private ByteArrayOutputStream comparisonBuf;
+        private int comparisonBufIndex = 0;
+        private PrintStream cbStream;
+        private int stackTraceBufBytes = 0;
+        private int charsIgnored = 0;
+
+        private	StackTraceObjects(Throwable x) {
+        // alloc buffer for getting stack trace.
+        stackTraceBuf = new ByteArrayOutputStream();
+        stStream = new PrintStream(stackTraceBuf, true);
+        comparisonBuf = new ByteArrayOutputStream();
+        cbStream = new PrintStream(comparisonBuf, true);
+        ((Throwable)x).printStackTrace(stStream);
+        stString = stackTraceBuf.toString();
+        stackTraceBufBytes = stackTraceBuf.size();
+        // helps keep our stack trace skipping logic simpler.
+        cbStream.println(x);
+        }
+
+        public String toString() {
+            return stString;
+        }
+
+        boolean ignorePrintln(String str) {
+        String cbString;
+        int cbLen;
+        cbStream.println(str);
+        cbString = comparisonBuf.toString();
+        cbLen = cbString.length();
+        if (stString.regionMatches(charsIgnored, cbString, 0, cbLen)) {
+            charsIgnored+= cbLen;
+            comparisonBuf.reset();
+            return true;
+        }
+
+        return false;
+
+        }
+
+        boolean checkCompletion() {
+            if ( charsIgnored >= stackTraceBufBytes ) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+
 }

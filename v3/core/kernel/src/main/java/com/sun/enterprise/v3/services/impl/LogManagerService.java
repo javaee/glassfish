@@ -43,6 +43,7 @@ import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.common.util.logging.LoggingOutputStream;
+import com.sun.common.util.logging.LoggingOutputStream.LoggingPrintStream;
 import com.sun.common.util.logging.LoggingXMLNames;
 import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -62,6 +63,9 @@ import org.jvnet.hk2.component.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.ByteArrayOutputStream;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.Collection;
@@ -186,11 +190,11 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
         // redirect stderr and stdout, a better way to do this
         //http://blogs.sun.com/nickstephen/entry/java_redirecting_system_out_and
         LoggingOutputStream los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.INFO);
-        PrintStream pout = new  PrintStream(los, true);
+        LoggingOutputStream.LoggingPrintStream pout = los.new  LoggingPrintStream(los);
         System.setOut(pout);
 
         los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.SEVERE);
-        PrintStream perr = new PrintStream(los, true);
+        LoggingOutputStream.LoggingPrintStream perr = los.new  LoggingPrintStream(los);
         System.setErr(perr);
         
 
@@ -228,6 +232,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                                 }
 
                             }
+
                             logger.log(Level.INFO,"Updated log levels for loggers.");
                         } catch (IOException e) {
                             logger.log(Level.SEVERE, "Cannot read logging.properties file : ", e);
@@ -257,6 +262,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
             }
         }
     }
+
 
     public void preDestroy() {
         //destroy the handlers
