@@ -230,7 +230,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @return possible object is {@link String }
      */
     @Attribute(defaultValue = "inherit")
-    @Pattern(regexp="(true|false|inherit)")
+    @Pattern(regexp="(true|on|false|off|inherit)")
     String getSsoEnabled();
 
     /**
@@ -246,7 +246,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @return possible object is {@link String }
      */
     @Attribute(defaultValue = "inherit")
-    @Pattern(regexp="(true|false|inherit)")
+    @Pattern(regexp="(true|on|false|off|inherit)")
     String getAccessLoggingEnabled();
 
     /**
