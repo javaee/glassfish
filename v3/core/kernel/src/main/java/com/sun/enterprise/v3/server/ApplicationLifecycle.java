@@ -322,10 +322,10 @@ public class ApplicationLifecycle implements Deployment {
             tracker.actOn(logger);
             return null;
         } finally {
-            if (appInfo==null) {
-                events.send(new Event<DeploymentContext>(Deployment.DEPLOYMENT_FAILURE, context));
-            } else {
+            if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                 events.send(new Event<ApplicationInfo>(Deployment.DEPLOYMENT_SUCCESS, appInfo));
+            } else {
+                events.send(new Event<DeploymentContext>(Deployment.DEPLOYMENT_FAILURE, context));
             }
         }
     }
