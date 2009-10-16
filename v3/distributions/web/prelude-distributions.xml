@@ -57,6 +57,10 @@ own identifying information: Portions Copyright [yyyy]
         <property name="image.dir" value="${image.dir}"/>
     </ant>
     <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-web-incorporation"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
         <property name="package.name" value="glassfish-web-profile"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>

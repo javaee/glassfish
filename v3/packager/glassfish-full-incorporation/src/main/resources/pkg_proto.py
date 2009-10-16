@@ -48,7 +48,7 @@ pkg = {
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 
-	    	        "pkg:/glassfish-web-incorporation@" + conf.glassfish_version : {"type" : "incorporate" },
+	    	        "pkg:/glassfish-web-incorporation@" + conf.glassfish_version : {"type" : "require" },
 			"pkg:/glassfish-common-full@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-ejb@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-codegen@" + conf.corba_version : {"type" : "incorporate" },

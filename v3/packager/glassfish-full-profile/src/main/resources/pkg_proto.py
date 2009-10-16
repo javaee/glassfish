@@ -62,6 +62,7 @@ pkg = {
 			"pkg:/mq-bin-exe" : {"type" : "require" },
                         "pkg:/mq-config-gf" : {"type" : "require" },
 			"pkg:/mq-locale" : {"type" : "require" },
+			"pkg:/glassfish-full-incorporation" : {"type" : "require" },
                       },
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},

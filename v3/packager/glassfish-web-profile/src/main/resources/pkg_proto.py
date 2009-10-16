@@ -74,6 +74,7 @@ pkg = {
 			"pkg:/glassfish-jcdi" : {"type" : "require" },
 			"pkg:/glassfish-jdbc" : {"type" : "require" },
 			"pkg:/glassfish-gui" : {"type" : "require" },
+			"pkg:/glassfish-web-incorporation" : {"type" : "require" },
                       },
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},
