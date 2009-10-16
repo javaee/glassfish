@@ -40,6 +40,7 @@
     <event>
     <!beforeCreate
         getRequestValue(key="appName" value="#{pageSession.appName}");
+        urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
         getRequestValue(key="moduleName" value="#{pageSession.moduleName}");
         getRequestValue(key="ddPath" value="#{pageSession.ddPath}");
         getDeploymentDescriptor(appName="#{pageSession.appName}", moduleName="#{pageSession.moduleName}", descriptorName="#{pageSession.ddPath}",
@@ -56,7 +57,7 @@
                 <sun:button id="closeButton" text="$resource{i18n.button.Back}" primary="#{true}">
                     <!command
                         //setSessionAttribute(key="descriptorForDisplay" value="")
-                        redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{appName}");
+                        redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{pageSession.encodedAppName}");
                     />
                 </sun:button>
             </sun:panelGroup>
@@ -91,7 +92,7 @@
             <sun:button id="closeButton2" text="$resource{i18n.button.Back}" primary="#{true}">
                 <!command
                     //setSessionAttribute(key="descriptorForDisplay" value="")
-                    redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{appName}");
+                    redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{pageSession.encodedAppName}");
                 />
             </sun:button>
         </sun:panelGroup>

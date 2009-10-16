@@ -41,13 +41,14 @@
     <!beforeCreate
         setSessionAttribute(key="appGeneralTabs" value="general");
         getRequestValue(key="appName" value="#{pageSession.appName}");
+        urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
         getApplicationType(appName="#{pageSession.appName}" appType="#{pageSession.appType}")
         getAppEditIntegrationPoint(type="org.glassfish.admingui:editAppPage"  appEditPageMap="#{requestScope.editMap}")
         mapGet(Map="#{requestScope.editMap}"  Key="#{pageSession.appType}"  Value="#{requestScope.dPage}")
         if (! #{requestScope.dPage}){
             mapGet(Map="#{requestScope.editMap}"  Key="other"  Value="#{requestScope.dPage}")
         }
-        redirect(page="#{request.contextPath}/#{requestScope.dPage}?appName=#{pageSession.appName}")
+        redirect(page="#{request.contextPath}/#{requestScope.dPage}?appName=#{pageSession.encodedAppName}")
      />
     </event>
 </define>

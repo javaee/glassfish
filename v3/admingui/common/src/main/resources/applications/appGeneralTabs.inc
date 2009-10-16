@@ -39,14 +39,14 @@
     <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
         <!command
             setSessionAttribute(key="appGeneralTabs" value="general");
-            redirect(page="#{request.contextPath}/common/applications/applicationEdit.jsf?appName=#{pageSession.appName}");
+            redirect(page="#{request.contextPath}/common/applications/applicationEdit.jsf?appName=#{pageSession.encodedAppName}");
         />       
     </sun:tab>
     
     <sun:tab id="descriptorTab" immediate="$boolean{true}" text="$resource{i18n.common.DescriptorTab}">
         <!command
             setSessionAttribute(key="appGeneralTabs" value="descriptorTab");
-            redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{pageSession.appName}");
+            redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{pageSession.encodedAppName}");
         />
     </sun:tab>
 </sun:tabSet>

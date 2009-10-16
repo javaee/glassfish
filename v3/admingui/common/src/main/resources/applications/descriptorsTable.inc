@@ -50,7 +50,9 @@
             <sun:hyperlink id="link" text="#{td.value.ddPath}" >
                 <!command
                     //setSessionAttribute(key="descriptorForDisplay" value="#{td.value.ddContent}")
-                    redirect(page="#{request.contextPath}/common/applications/viewDD.jsf?appName=#{pageSession.appName}&moduleName=#{td.value.moduleName}&ddPath=#{td.value.ddPath}");
+                    urlencode(value="#{td.value.moduleName}" encoding="UTF-8" result="#{pageSession.encodedModName}");
+                    urlencode(value="#{td.value.ddPath}" encoding="UTF-8" result="#{pageSession.encodedDdPath}");
+                    redirect(page="#{request.contextPath}/common/applications/viewDD.jsf?appName=#{pageSession.encodedAppName}&moduleName=#{pageSession.encodedModName}&ddPath=#{pageSession.encodedDdPath}");
                 />
             </sun:hyperlink>
         </sun:tableColumn>

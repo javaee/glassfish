@@ -41,6 +41,7 @@
     <!beforeCreate
         setSessionAttribute(key="appGeneralTabs" value="general");
         getRequestValue(key="appName" value="#{pageSession.appName}");
+        urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         
@@ -91,7 +92,7 @@
                     restartApplication(appName="#{pageSession.appName}");
                 }
                 prepareSuccessfulMsg();
-                redirect(page="#{pageSession.editPage}?appName=#{pageSession.appName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                redirect(page="#{pageSession.editPage}?appName=#{pageSession.encodedAppName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
           />
           </sun:button>
           <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
