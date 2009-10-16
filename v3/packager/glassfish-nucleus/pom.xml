@@ -150,7 +150,7 @@
        <dependency>
            <groupId>org.glassfish.docs</groupId>
            <artifactId>basedocs</artifactId>
-           <version>3.0-Prelude</version>
+           <version>3.0-b03</version>
 	   <type>distribution-fragment</type>
        </dependency> 
        <!-- Remove gfprobe-provider-client when all external modules are using management-api instead -->
