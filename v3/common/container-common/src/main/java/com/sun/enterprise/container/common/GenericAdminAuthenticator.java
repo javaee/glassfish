@@ -112,6 +112,9 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
         if (as.usesFileRealm())
             return handleFileRealm(user, password);
         else {
+            boolean isLocal = isLocalPassword(user, password); //see 10
+            if (isLocal)
+                return true;
             //now, deleate to the security service
             ClassLoader pc = null;
             boolean hack = false;
