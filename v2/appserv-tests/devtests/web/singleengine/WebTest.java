@@ -33,80 +33,72 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 import java.io.*;
 import java.net.*;
-
 import com.sun.ejte.ccl.reporter.*;
+
 /**
- * Unit test for 4929994 Admin virtual server should be treated as special case.
+ * Unit test for 4929994 ("Admin virtual server should be treated as
+ * special case").
+ * See also https://glassfish.dev.java.net/issues/show_bug.cgi?id=7548
+ *
+ * Make sure the admin port has not been accessed up until the time this
+ * test is run.
  */
 public class WebTest{
 
-    static SimpleReporterAdapter stat=
-           new SimpleReporterAdapter("appserv-tests");
-    private static URLConnection conn = null;
-    private static URL url;
-    private static ObjectOutputStream objectWriter = null;
-    private static ObjectInputStream objectReader = null;  
+    private static final String TEST_NAME = "single-engine";
+
+    private static final SimpleReporterAdapter stat=
+        new SimpleReporterAdapter("appserv-tests");
     
-    public static void main(String args[]) throws Exception{
-        String host = args[0];
-        String port = args[1];
-        String contextRoot = args[2];
-        int adminPort = Integer.parseInt(args[3]);
+    private String host;
+    private String port;
+    private String contextRoot;
+    private String adminPort;
 
-        try{
-            stat.addDescription("Single Engine Test");
-            
-            System.out.println("Running test");
-            url = new URL("http://" + host  + ":" + port + contextRoot + "/ServletTest");
-            System.out.println("\n Invoking url: " + url.toString());
-            conn = url.openConnection();
-            if (conn instanceof HttpURLConnection) {
-                HttpURLConnection urlConnection = (HttpURLConnection)conn;
-                urlConnection.setDoOutput(true);
-
-                DataOutputStream out = 
-                   new DataOutputStream(urlConnection.getOutputStream());
-                                    out.writeByte(1);
-
-               int responseCode=  urlConnection.getResponseCode();
-               System.out.println("responseCode: " + responseCode);
-                
-               if (urlConnection.getResponseCode() != 200){
-                    stat.addStatus("singleEngine_responseCode", stat.FAIL);
-               } else {
-                    stat.addStatus("singleEngine_responseCode", stat.PASS);
-               }
-            }
-
-
-            url = new URL("http://" + host  + ":" + adminPort + contextRoot + "/ServletTest");
-            System.out.println("\n Invoking url: " + url.toString());
-            conn = url.openConnection();
-            if (conn instanceof HttpURLConnection) {
-                HttpURLConnection urlConnection = (HttpURLConnection)conn;
-                urlConnection.setDoOutput(true);
-
-                DataOutputStream out = 
-                   new DataOutputStream(urlConnection.getOutputStream());
-                                    out.writeByte(1);
-
-               int responseCode=  urlConnection.getResponseCode();
-               System.out.println("responseCode: " + responseCode);
-                
-               if (urlConnection.getResponseCode() != 404){
-                    stat.addStatus("singleEngine-__asadamin", stat.FAIL);
-               } else {
-                    stat.addStatus("singleEngine-__asadmin", stat.PASS);
-               }
-            }
-
-
-            stat.printSummary("web/singleEngine");
-        }catch(Exception ex){
-            ex.printStackTrace();
-        }
+    public WebTest(String[] args) {
+        host = args[0];
+        port = args[1];
+        contextRoot = args[2];
+        adminPort = args[3];
     }
 
+    public static void main(String[] args) {
+
+        stat.addDescription("Unit test for 4929994");
+        WebTest webTest = new WebTest(args);
+
+        try {
+            webTest.doTest(webTest.port, 200);
+            webTest.doTest(webTest.adminPort, 202);
+            // Sleep long enough for the admin console to have been 
+            // installed and deployed
+            Thread.currentThread().sleep(40000);
+            webTest.doTest(webTest.adminPort, 404);
+            stat.addStatus(TEST_NAME, stat.PASS);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            stat.addStatus(TEST_NAME, stat.FAIL);
+        }
+
+        stat.printSummary();
+    }
+
+    public void doTest(String port, int expectedResponseStatus) throws Exception {
+
+        URL url = new URL("http://" + host  + ":" + port +
+            contextRoot + "/ServletTest");
+        System.out.println("Connecting to: " + url.toString());
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode != expectedResponseStatus) {
+            throw new Exception("Unexpected return code: " + responseCode +
+                ", expected: " + expectedResponseStatus);
+        }
+    }
 }
